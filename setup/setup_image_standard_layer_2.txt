@@ -1,0 +1,128 @@
+###
+### Setup myNode Specifics
+### Start with <device>_standard_layer_1.img
+###
+
+# Log in as admin
+
+
+# Install Bitcoin
+mkdir -p /tmp/download
+cd /tmp/download
+ARCH="arm-linux-gnueabihf"
+uname -a | grep aarch64
+if [ $? = 0 ]; then
+    ARCH="aarch64-linux-gnu"
+fi
+BTC_UPGRADE_URL=https://bitcoin.org/bin/bitcoin-core-0.18.0/bitcoin-0.18.0-$ARCH.tar.gz
+BTC_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btc_url
+wget $BTC_UPGRADE_URL -O bitcoin.tar.gz
+tar -xvf bitcoin.tar.gz
+mv bitcoin-* bitcoin
+sudo install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
+bitcoind --version
+sudo su - bitcoin
+ln -s /mnt/hdd/mynode/bitcoin /home/bitcoin/.bitcoin
+ln -s /mnt/hdd/mynode/lnd /home/bitcoin/.lnd
+exit
+mkdir /home/admin/.bitcoin
+sudo mkdir -p /home/bitcoin/.mynode/
+echo $BTC_UPGRADE_URL | sudo tee $BTC_UPGRADE_URL_FILE
+sudo chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+
+
+# Install Lightning
+mkdir -p /tmp/download
+cd /tmp/download
+sudo mkdir -p /home/bitcoin/.mynode/
+LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/v0.6.1-beta/lnd-linux-armv7-v0.6.1-beta.tar.gz
+LND_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lnd_url
+wget $LND_UPGRADE_URL -O lnd.tar.gz
+tar -xzf lnd.tar.gz
+mv lnd-* lnd
+sudo install -m 0755 -o root -g root -t /usr/local/bin lnd/*
+sudo ln -s /bin/ip /usr/bin/ip
+lnd --version
+echo $LND_UPGRADE_URL | sudo tee $LND_UPGRADE_URL_FILE
+cd ~
+sudo chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+
+
+# Setup "install" location for some apps
+sudo mkdir -p /opt/mynode
+sudo chown -R bitcoin:bitcoin /opt/mynode
+
+
+# Install LND Hub
+sudo su - bitcoin
+cd /opt/mynode
+git clone https://github.com/BlueWallet/LndHub.git
+cd LndHub
+npm install
+ln -s /home/bitcoin/.lnd/tls.cert tls.cert
+ln -s /home/bitcoin/.lnd/data/chain/bitcoin/mainnet/admin.macaroon admin.macaroon
+exit
+
+
+# Install electrs (only build to save new version, not included in overlay)
+#cd /home/admin/download
+#wget https://github.com/romanz/electrs/archive/v0.7.0.tar.gz
+#tar -xvf v0.7.0.tar.gz 
+#cd electrs-0.7.0
+#cargo build --release
+#sudo install -g root -o root target/release/electrs /usr/bin/electrs
+#cd ~
+
+
+# Install RTL
+sudo su - bitcoin
+cd /opt/mynode
+wget https://github.com/ShahanaFarooqui/RTL/archive/v0.3.3.tar.gz -O RTL.tar.gz
+tar -xvf RTL.tar.gz
+rm RTL.tar.gz
+mv RTL-* RTL
+cd RTL
+npm install
+exit
+
+
+# Install LND Admin
+sudo su - bitcoin
+cd /opt/mynode
+wget https://github.com/janoside/lnd-admin/archive/v0.10.12.tar.gz -O lnd-admin.tar.gz
+tar -xvf lnd-admin.tar.gz
+rm lnd-admin.tar.gz
+mv lnd-* lnd-admin
+cd lnd-admin
+npm install
+exit
+
+
+# Install Bitcoin RPC Explorer
+sudo su - bitcoin
+cd /opt/mynode
+wget https://github.com/janoside/btc-rpc-explorer/archive/v1.0.3.tar.gz -O btc-rpc-explorer.tar.gz
+tar -xvf btc-rpc-explorer.tar.gz
+rm btc-rpc-explorer.tar.gz
+mv btc-rpc-* btc-rpc-explorer
+cd btc-rpc-explorer
+npm install
+exit
+
+
+# Install LND Connect
+mkdir -p /tmp/download
+cd /tmp/download
+wget https://github.com/LN-Zap/lndconnect/releases/download/v0.1.0/lndconnect-linux-armv7-v0.1.0.tar.gz -O lndconnect.tar.gz
+tar -xvf lndconnect.tar.gz
+rm lndconnect.tar.gz
+mv lndconnect-* lndconnect
+sudo install -m 0755 -o root -g root -t /usr/local/bin lndconnect/* 
+
+
+sync
+
+### MAKE IMAGE NOW ###
+# This prevents auto gen files like certs to be part of the base image
+# Must make sure image can boot after this point and fully come up
+

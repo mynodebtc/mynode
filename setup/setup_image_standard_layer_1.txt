@@ -1,0 +1,69 @@
+###
+### Setup Base OS
+### Start with <device>_start.img.gz
+###
+
+# Update OS
+sudo apt-get update
+sudo apt-get -y upgrade
+
+# Install other tools (run section multiple times to make sure success)
+sudo apt-get -y install htop git curl bash-completion jq dphys-swapfile lsof libzmq3-dev
+sudo apt-get -y install build-essential python-dev python-pip python3-dev python3-pip 
+sudo apt-get -y install transmission-cli fail2ban ufw tclsh bluez python-bluez redis-server
+sudo apt-get -y install mongodb-server clang hitch zlib1g-dev libffi-dev file toilet ncdu
+sudo apt-get -y install toilet-fonts avahi-daemon figlet libsecp256k1-dev 
+sudo apt-get -y install inotify-tools libssl-dev 
+
+
+# Install other things without recommendation
+sudo apt-get -y install --no-install-recommends expect
+
+# Add bitcoin users
+sudo useradd -m -s /bin/bash bitcoin
+
+# Install python tools (run twice, some broken deps may cause install failures on first try for line 3)
+sudo pip install setuptools
+sudo pip install wheel
+sudo pip install speedtest-cli transmissionrpc flask python-bitcoinrpc redis prometheus_client requests
+sudo pip install python-pam python-bitcoinlib psutil
+sudo pip install grpcio grpcio-tools googleapis-common-protos 
+
+
+# Update python3 to 3.7.2
+mkdir -p download
+cd download
+wget https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tar.xz
+tar xf Python-3.7.2.tar.xz
+cd Python-3.7.2
+./configure
+make -j4
+sudo make install
+cd ../
+
+
+# Install python3 specific tools (run multiple times to make sure success)
+sudo pip3 install wheel setuptools
+sudo pip3 install bitstring lnd-grpc pycoin aiohttp connectrum python-bitcoinlib
+
+
+# Install Rust (Interactive)
+curl https://sh.rustup.rs -sSf | sh
+
+# Install node
+curl -sL https://deb.nodesource.com/setup_11.x | sudo bash -
+sudo apt-get install -y nodejs
+
+# Install node packages
+sudo npm install -g pug-cli browserify uglify-js babel-cli
+
+# Remove existing MOTD login info
+sudo rm -rf /etc/motd
+sudo rm -rf /etc/update-motd.d/*
+
+# Reboot
+sudo reboot
+
+######################
+### MAKE IMAGE NOW ###
+######################

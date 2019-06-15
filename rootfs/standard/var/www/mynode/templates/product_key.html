@@ -1,0 +1,105 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode.css")}}">
+        <link rel="stylesheet" href="{{ url_for('static', filename="jquery_ui/jquery-ui.css")}}">
+        <meta http-equiv="Content-Language" content="en">
+        <meta name="google" content="notranslate">
+        <script src="{{ url_for('static', filename="js/jquery-3.3.1.min.js")}}"></script>
+        <script src="{{ url_for('static', filename="jquery_ui/jquery-ui.js")}}"></script>
+        <script src="{{ url_for('static', filename="js/mynode.js")}}"></script>
+        <script>
+        $(document).ready(function() {
+
+            $("#pk_submit").button().button("disable");
+
+            function replace_all(str, find, replace)
+            {
+                tmp = str.replace(find, replace);
+                while (tmp != str)
+                {
+                    str = tmp;
+                    tmp = str.replace(find, replace);
+                }
+                return tmp;
+            }
+
+            function onKeyChange() {
+                // Get input and generate "clean" copy
+                input_key = $("#product_key").val();
+                clean_key = input_key.toUpperCase();
+                clean_key = replace_all(clean_key, "-", "");
+
+                // Clear message
+                $("#product_key_message").html("&nbsp;");
+                $("#product_key_message").removeClass("red_text");
+                $("#product_key_message").removeClass("green_text");
+
+                // Check key if proper size
+                if (clean_key.length == 12)
+                {
+                    $("#product_key_message").html("Checking key...");
+                    var data = {
+                        product_key: clean_key
+                    }
+                    var posting = $.post( "https://www.mynodebtc.com/device_api/check_product_key.php", data );
+                    posting.done(function( data ) {
+                        console.log("Response for check key: " + data)
+
+                        if (data == "OK") {
+                            $("#product_key_message").text("Valid Product Key");
+                            $("#product_key_message").addClass("green_text");
+                            $('#pk_submit').button("enable");
+                        } else if (data == "INVALID_KEY") {
+                            $("#product_key_message").text("Invalid Product Key");
+                            $("#product_key_message").addClass("red_text");
+                            $('#pk_submit').button("disable");
+                        } else {
+                            $("#product_key_message").text("Unknown Error");
+                            $("#product_key_message").addClass("red_text");
+                            $('#pk_submit').button("disable");
+                        }
+                    });
+                }
+                else if (clean_key.length > 12)
+                {
+                    clean_key = clean_key.substring(0, 12);
+                }
+
+                // Display key with dashes
+                display_key = "";
+                for (i=0; i<clean_key.length; i++)
+                {
+                    display_key += clean_key[i]
+                    if ( ((i+1) % 4 == 0) && (i < (clean_key.length-1)) )
+                    {
+                        display_key += "-"
+                    }
+                }
+                $("#product_key").val(display_key);
+            }
+            $("#product_key").change( onKeyChange );
+            $("#product_key").on("input", onKeyChange);
+        });
+        </script>
+     </head>
+
+    <body>
+        <div class="logo_header"><a href="/"><img class="logo_image" src="{{ url_for('static', filename="images/logo.png")}}"/></a></div>
+        
+        <div class="state_header">{{ header_text }}</div>
+        <div class="state_subheader">Please enter your product key...</div>
+
+        <br/><br/>
+
+        <form class="product_key_form" action="/product-key" method="POST">
+            <p id="product_key_message">&nbsp;</p>
+            <input type="text" id="product_key" name="product_key" class="ui-corner-all product_key_input"/>
+
+            <input type="submit" id="pk_submit" name="pk_submit" value="Save Product Key" class="ui-button ui-widget ui-corner-all product_key_save_button"/>
+            <button id="pk_skip" name="pk_skip" class="ui-button ui-widget ui-corner-all product_key_button product_key_skip_button">Choose Community Edition</button>
+        </form>
+
+     </body>
+</html>

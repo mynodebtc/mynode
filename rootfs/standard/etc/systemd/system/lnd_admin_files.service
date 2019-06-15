@@ -1,0 +1,21 @@
+# myNode LND Admin Files
+# /etc/systemd/system/lnd_admin_files.service
+
+[Unit]
+Description=Copy LND Files to Admin User
+Wants=lnd.service
+After=lnd.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/mynode_lnd_admin_files.sh
+Restart=always
+RestartSec=1
+User=root
+Group=root
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=lndbackup
+
+[Install]
+WantedBy=multi-user.target

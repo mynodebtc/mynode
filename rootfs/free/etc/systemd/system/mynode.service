@@ -1,0 +1,22 @@
+# myNode start service
+# /etc/systemd/system/mynode.service
+
+[Unit]
+Description=myNode Startup
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/mynode_startup.sh
+User=root
+Group=root
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=mynode
+
+RestartSec=30
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

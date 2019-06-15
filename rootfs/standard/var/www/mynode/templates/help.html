@@ -1,0 +1,56 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>myNode Help</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode.css")}}">
+        <link href="{{ url_for('static', filename="jquery_ui/jquery-ui.css")}}" rel="stylesheet">
+        <meta http-equiv="Content-Language" content="en">
+        <meta name="google" content="notranslate">
+        <script src="{{ url_for('static', filename="js/jquery-3.3.1.min.js")}}"></script>
+        <script src="{{ url_for('static', filename="jquery_ui/jquery-ui.js")}}"></script>
+        <script src="{{ url_for('static', filename="js/mynode.js")}}"></script>
+     </head>
+
+    <body>
+        <div class="logo_header"><a href="/"><img class="logo_image" src="{{ url_for('static', filename="images/logo.png")}}"/></a></div>
+        <div class="mynode_back_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        </div>
+
+        <div class="main_header">Help</div>
+
+        <br/>
+        <div class="settings_block">
+            <div class="settings_block_header">Contacts</div>
+            <p>
+                Please use the following links below and see if your problem can be resolved. If you are still
+                having issues, plese contact myNode via email at the following address:
+                <br/><br/>
+                <a href="mailto:help@mynodebtc.com">help@mynodebtc.com</a>
+            </p>
+            
+        </div>
+
+        <div class="settings_block">
+            <div class="settings_block_header">Tutorials</div>
+            <p>
+                Tutorials for settings up your myNode as well as associated wallets and apps are available on our
+                website.
+                <br/></br>
+                <a href="http://www.mynodebtc.com">mynodebtc.com</a>
+            </p>
+
+        </div>
+
+        <div class="settings_block">
+            <div class="settings_block_header">FAQ</div>
+            <p>
+                Answers to frequently asked questions can be found on our website.
+                <br/></br>
+                <a href="http://www.mynodebtc.com">mynodebtc.com</a>
+            </p>
+        </div>
+
+        {% include 'includes/footer.html' %}
+     </body>
+</html>

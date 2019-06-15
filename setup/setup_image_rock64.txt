@@ -1,0 +1,23 @@
+###
+### Setup Base OS
+### Creates rock64_start.img
+###
+
+# After Armbian Flash
+#  - Login with root / 1234
+#  - Change root password to something longish like boltbolt
+#  - Create admin user with password bolt
+
+# Login as admin
+
+# Delete root password
+sudo passwd -d root
+
+# Set hostname
+echo "myNode" | sudo tee /etc/hostname
+sudo sed -i 's/rock64/myNode/g' /etc/hosts
+# OR armbian-config -> Personal -> Hostname
+
+# Overclock
+sudo sed -i "s/MAX_SPEED=.*/MAX_SPEED=1510000/" /etc/default/cpufrequtils 
+sudo systemctl restart cpufrequtils

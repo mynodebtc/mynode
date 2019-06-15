@@ -1,0 +1,41 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode.css")}}">
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode_bitcoind.css")}}">
+        <link href="{{ url_for('static', filename="jquery_ui/jquery-ui.css")}}" rel="stylesheet">
+        <meta http-equiv="Content-Language" content="en">
+        <meta name="google" content="notranslate">
+        <script src="{{ url_for('static', filename="js/jquery-3.3.1.min.js")}}"></script>
+        <script src="{{ url_for('static', filename="jquery_ui/jquery-ui.js")}}"></script>
+        <script src="{{ url_for('static', filename="js/mynode.js")}}"></script>
+     </head>
+
+    <body>
+        <div class="logo_header"><a href="/"><img class="logo_image" src="{{ url_for('static', filename="images/logo.png")}}"/></a></div>
+        <div class="mynode_back_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        </div>
+
+        <div class="main_header">Electrum Server Status</div>
+        <br/>
+        
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Status</div>
+                <div class="info_tile_contents">{{status}}</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">Server Port</div>
+                <div class="info_tile_contents">{{port}}</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">Current Block</div>
+                <div class="info_tile_contents">{{current_block}}</div>
+            </div>
+        </div>
+
+        {% include 'includes/footer.html' %}
+     </body>
+</html>

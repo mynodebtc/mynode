@@ -1,0 +1,20 @@
+# myNode www service
+# /etc/systemd/system/www.service
+
+[Unit]
+Description=myNode Drive Check
+Wants=mynode.service
+After=mynode.service
+
+[Service]
+Type=simple
+KillMode=process
+TimeoutSec=30
+Restart=always
+RestartSec=10
+ExecStart=/usr/bin/drive_check.sh
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target

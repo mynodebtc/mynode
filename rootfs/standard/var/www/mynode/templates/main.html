@@ -1,0 +1,180 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode.css")}}">
+        <link href="{{ url_for('static', filename="jquery_ui/jquery-ui.css")}}" rel="stylesheet">
+        <meta http-equiv="Content-Language" content="en">
+        <meta name="google" content="notranslate">
+        <script src="{{ url_for('static', filename="js/jquery-3.3.1.min.js")}}"></script>
+        <script src="{{ url_for('static', filename="jquery_ui/jquery-ui.js")}}"></script>
+        <script src="{{ url_for('static', filename="js/mynode.js")}}"></script>
+        <meta http-equiv="refresh" content="120">
+
+        <script>
+            $(document).ready(function() {
+                electrs_enabled = {% if electrs_enabled %}1{% else %}0{% endif %}
+                lndhub_enabled = {% if lndhub_enabled %}1{% else %}0{% endif %}
+
+                $("#lndhub").on("click", function() {
+                    url = location.protocol+'//'+location.hostname+':3000'
+                    window.open(url,'_blank');
+                })
+
+                $("#rtl").on("click", function() {
+                    url = location.protocol+'//'+location.hostname+':3010'
+                    window.open(url,'_blank');
+                })
+
+                $("#lnd_admin").on("click", function() {
+                    url = location.protocol+'//'+location.hostname+':3004'
+                    window.open(url,'_blank');
+                })
+
+                $("#btcrpcexplorer").on("click", function() {
+                    url = location.protocol+'//'+location.hostname+':3002'
+                    window.open(url,'_blank');
+                })
+
+                $("#toggle-electrs").on("click", function() {
+                    if (electrs_enabled)
+                    {
+                        // Disable electrs
+                        window.location.href="/toggle-electrs"
+                    }
+                    else
+                    {
+                        // Enable electrs
+                        var okFunction = function() {
+                            window.location.href="/toggle-electrs"
+                        }
+                        openConfirmDialog("confirm-dialog", 
+                                          "Enable Electrum Server", 
+                                          "Enabling Electrum Server will take a 1-2 days to fully sync for \
+                                           the first time. Your myNode may run slowly during this time.<br/><br/> \
+                                           Would you like to enable electrum server?",
+                                           okFunction)
+                    }
+                    return false
+                });
+
+                $("#toggle-btcrpcexplorer").on("click", function() {
+                        window.location.href="/toggle-btcrpcexplorer"
+                });
+
+            });
+        </script>
+     </head>
+
+    <body>
+        <div class="logo_header"><a href="/"><img class="logo_image" src="{{ url_for('static', filename="images/logo.png")}}"/></a></div>
+        
+        <div class="main_header">Core Services</div>
+        <div class="app_tile_row">
+            <div class="app_tile">
+                <div class="app_status_icon {{ bitcoind_status_color }}"></div>
+                <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/bitcoin.png")}}"/></div>
+                <div class="app_title">Bitcoin</div>
+                <div class="app_status">{{ bitcoind_status }}</div>
+                <div class="app_contents">
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="/bitcoind">Status</a>
+                </div>
+            </div>
+            <div class="app_tile">
+                <div class="app_status_icon {{ lnd_status_color }}"></div>
+                <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lightning.png")}}"/></div>
+                <div class="app_title">Lightning</div>
+                <div class="app_status">{{ lnd_status }}</div>
+                <div class="app_contents">
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="/lnd">Lightning Wallet</a>
+                </div>
+            </div>
+        </div>
+
+        {% if product_key_error %}
+        <div class="main_page_error_block">
+            <center>
+            <p>
+                Your product key is invalid or is currently in use on other devices. This may inhibit your use of support and other premium features.
+                <br/><br/>
+                Please contact myNode support at <a href="mailto:help@mynodebtc.com">help@mynodebtc.com</a>
+                <br/><br/>
+                <a href="/product-key">Enter Product Key</a>
+            </p>
+            </center>
+        </div>
+        {% endif %}
+
+        <div class="main_header">Apps</div>
+        {% include 'includes/apps_standard.html' %}
+
+        {% if product_key_skipped %}
+        <div class="main_header">Community Edition</div>
+        <div class="upgrade_ad_main_page">
+            <p>
+                You are currently running myNode Community Edition. Upgrading to myNode Premium provides:
+                <br/>
+                <ul>
+                    <li>Premium Support</li>
+                    <li>One Click Upgrades!</li>
+                    <li>Supports the Open Source Bitcoin Community</li>
+                    <li>And more!</li>
+                </ul>
+                Upgrade now at <a target="_blank" href="mynodebtc.com">mynodebtc.com</a>!
+            </p>
+        </div>
+        {% endif %}
+
+        <div class="main_header">Settings and Info</div>
+        <div class="app_tile_row">
+            <div class="app_tile">
+                <div class="app_status_icon"></div>
+                <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/settings.png")}}"/></div>
+                <div class="app_title">Settings</div>
+                <div class="app_status"></div>
+                <div class="app_contents"><a class="ui-button ui-widget ui-corner-all mynode_button" href="/settings">Settings</a></div>
+            </div>
+            <div class="app_tile">
+                <div class="app_status_icon"></div>
+                <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/drive.png")}}"/></div>
+                <div class="app_title">Disk Usage</div>
+                <div class="app_status"></div>
+                <div class="app_contents"><div class="drive_usage">{{drive_usage}}</div></div>
+            </div>
+            <div class="app_tile">
+                <div class="app_status_icon"></div>
+                <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/cpu.png")}}"/></div>
+                <div class="app_title">CPU</div>
+                <div class="app_status"></div>
+                <div class="app_contents"><div class="drive_usage">{{cpu_usage}}</div></div>
+            </div>
+            <div class="app_tile">
+                <div class="app_status_icon"></div>
+                <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/ram.png")}}"/></div>
+                <div class="app_title">RAM</div>
+                <div class="app_status"></div>
+                <div class="app_contents"><div class="drive_usage">{{ram_usage}}</div></div>
+            </div>
+            <!--
+            <div class="app_tile">
+                <div class="app_status_icon"></div>
+                <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/ram.png")}}"/></div>
+                <div class="app_title">Swap</div>
+                <div class="app_status"></div>
+                <div class="app_contents"><div class="drive_usage">{{swap_usage}}</div></div>
+            </div>
+            -->
+        </div>
+
+        {% if product_key_skipped %}
+        <div class="upgrade_ad_main_page">
+            <p style="text-align: center;"><b>Tip Address</b><br/>bc1q75z4fj946pqucfu9gasxdrzma0z4seh8f58sfd</p>
+        </div>
+        {% endif %}
+
+        <div id="confirm-dialog"></div>
+        <div id="info-dialog"></div>
+        
+        {% include 'includes/footer.html' %}
+     </body>
+</html>

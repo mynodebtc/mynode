@@ -1,0 +1,21 @@
+# myNode Unlock LND
+# /etc/systemd/system/lnd_unlock.service
+
+[Unit]
+Description=Post LND Unlock
+Wants=lnd.service
+After=lnd.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/unlock_lnd.sh
+User=bitcoin
+Group=bitcoin
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=lnd
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target

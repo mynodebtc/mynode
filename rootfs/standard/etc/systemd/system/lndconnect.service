@@ -1,0 +1,25 @@
+# lndconnect qr code generation
+# /etc/systemd/system/lndconnect.service
+
+[Unit]
+Description=LND Connect QR Code Generation
+Wants=mynode.service
+After=mynode.service
+
+[Service]
+ExecStart=/usr/bin/mynode_lndconnect.sh
+
+User=bitcoin
+Group=bitcoin
+Type=simple
+KillMode=control-group
+LimitNOFILE=128000
+TimeoutSec=30
+Restart=always
+RestartSec=30
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=lndconnect
+
+[Install]
+WantedBy=multi-user.target  

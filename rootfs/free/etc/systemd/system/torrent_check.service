@@ -1,0 +1,20 @@
+# myNode torrent_check service
+# /etc/systemd/system/torrent_check.service
+
+[Unit]
+Description=myNode Torrent Check
+Wants=mynode.service
+After=mynode.service
+
+[Service]
+Type=simple
+KillMode=process
+TimeoutSec=30
+Restart=always
+RestartSec=10
+ExecStart=/usr/bin/mynode_torrent_check.sh
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target

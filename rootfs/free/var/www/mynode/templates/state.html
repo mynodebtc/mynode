@@ -1,0 +1,20 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode.css")}}">
+        <meta http-equiv="Content-Language" content="en">
+        <meta name="google" content="notranslate">
+        <script src="{{ url_for('static', filename="js/jquery-3.3.1.min.js")}}"></script>
+        <script src="{{ url_for('static', filename="js/mynode.js")}}"></script>
+        <meta http-equiv="refresh" content="30">
+     </head>
+
+    <body>
+        <div class="logo_header"><a href="/"><img class="logo_image" src="{{ url_for('static', filename="images/logo.png")}}"/></a></div>
+        
+        <div class="state_header">{{ header_text }}</div>
+        <div class="state_subheader">{{ subheader_text }}</div>
+
+     </body>
+</html>
