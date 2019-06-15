@@ -1,0 +1,72 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode.css")}}">
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode_bitcoind.css")}}">
+        <link href="{{ url_for('static', filename="jquery_ui/jquery-ui.css")}}" rel="stylesheet">
+        <meta http-equiv="Content-Language" content="en">
+        <meta name="google" content="notranslate">
+        <script src="{{ url_for('static', filename="js/jquery-3.3.1.min.js")}}"></script>
+        <script src="{{ url_for('static', filename="jquery_ui/jquery-ui.js")}}"></script>
+        <script src="{{ url_for('static', filename="js/mynode.js")}}"></script>
+     </head>
+
+    <body>
+        <div class="logo_header"><a href="/"><img class="logo_image" src="{{ url_for('static', filename="images/logo.png")}}"/></a></div>
+        <div class="mynode_back_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        </div>
+
+        <div class="main_header">Bitcoin Explorer</div>
+
+        <br/>
+        <div class="bitcoind_search">
+            <form action="/explorer/search" method="POST">
+                <input class="ui-corner-all bitcoind_search_input" name="search" type="text">
+                <input type="submit" class="ui-button ui-widget ui-corner-all bitcoind_search_button" value="Search">
+                <br/>
+                <span class="bitcoind_search_text">Search for addresses, blocks, or transactions...</span>
+            </form>
+        </div>
+
+        <br/>
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Blocks</div>
+                <div class="info_tile_contents">{{block_num}}</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">Mempool TX</div>
+                <div class="info_tile_contents">{{mempool_tx}}</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">Mempool Size</div>
+                <div class="info_tile_contents">{{mempool_size}}</div>
+            </div>
+        </div>
+
+        <br/>
+        <div class="main_header">Recent Blocks</div>
+        <table class="bitcoind_table">
+            <thead class="bitcoind_table_header">
+                <td>Height</td>
+                <td>Age</td>
+                <td>Transactions</td>
+                <td>Size (kB)</td>
+            </thead>
+            <tbody>
+                {% for block in blocks %}
+                    <tr>
+                        <td><a href="/explorer/block/{{ block.hash }}">{{ block.height }}</a></td>
+                        <td>{{ block.age }}</td>
+                        <td>{{ block.nTx }}</td>
+                        <td>{{ block.size }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% include 'includes/footer.html' %}
+     </body>
+</html>

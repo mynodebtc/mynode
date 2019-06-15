@@ -1,0 +1,56 @@
+import os
+from config import *
+
+
+# Enable disable functions on homepage
+def is_lndhub_enabled():
+    if os.path.isfile(LNDHUB_ENABLED_FILE):
+        return True
+    return False
+
+def enable_lndhub():
+    os.system("systemctl enable lndhub --no-pager")
+    os.system("systemctl start lndhub --no-pager")
+    open(LNDHUB_ENABLED_FILE, 'a').close() # touch file
+
+def disable_lndhub():
+    if os.path.isfile(LNDHUB_ENABLED_FILE):
+        os.remove(LNDHUB_ENABLED_FILE)
+    os.system("systemctl stop lndhub --no-pager")
+    os.system("systemctl disable lndhub --no-pager")
+
+
+def is_electrs_enabled():
+    if os.path.isfile(ELECTRS_ENABLED_FILE):
+        return True
+    return False
+
+def enable_electrs():
+    os.system("systemctl enable electrs --no-pager")
+    os.system("systemctl start electrs --no-pager")
+    open(ELECTRS_ENABLED_FILE, 'a').close() # touch file
+
+def disable_electrs():
+    if os.path.isfile(ELECTRS_ENABLED_FILE):
+        os.remove(ELECTRS_ENABLED_FILE)
+    os.system("killall -9 electrs") # Hard kill since we are disabing
+    os.system("systemctl stop electrs --no-pager")
+    os.system("systemctl disable electrs --no-pager")
+
+
+def is_btcrpcexplorer_enabled():
+    if os.path.isfile(BTCRPCEXPLORER_ENABLED_FILE):
+        return True
+    return False
+
+def enable_btcrpcexplorer():
+    os.system("systemctl enable btc_rpc_explorer --no-pager")
+    os.system("systemctl start btc_rpc_explorer --no-pager")
+    open(BTCRPCEXPLORER_ENABLED_FILE, 'a').close() # touch file
+
+def disable_btcrpcexplorer():
+    if os.path.isfile(BTCRPCEXPLORER_ENABLED_FILE):
+        os.remove(BTCRPCEXPLORER_ENABLED_FILE)
+    #os.system("killall -9 electrs") # Hard kill since we are disabing
+    os.system("systemctl stop btc_rpc_explorer --no-pager")
+    os.system("systemctl disable btc_rpc_explorer --no-pager")

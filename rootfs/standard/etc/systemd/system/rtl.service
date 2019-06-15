@@ -1,0 +1,26 @@
+# RTL service
+# /etc/systemd/system/rtl.service
+
+[Unit]
+Description=RTL
+Wants=bitcoind.service
+After=bitcoind.service
+
+[Service]
+ExecStartPre=/usr/bin/wait_on_lnd.sh
+WorkingDirectory=/opt/mynode/RTL
+ExecStart=/usr/bin/node rtl
+
+User=bitcoin
+Group=bitcoin
+Type=simple
+LimitNOFILE=128000
+TimeoutSec=240
+Restart=always
+RestartSec=60
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=rtl
+
+[Install]
+WantedBy=multi-user.target

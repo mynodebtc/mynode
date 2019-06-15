@@ -1,0 +1,63 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode.css")}}">
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode_cli.css")}}">
+        <link href="{{ url_for('static', filename="jquery_ui/jquery-ui.css")}}" rel="stylesheet">
+        <meta http-equiv="Content-Language" content="en">
+        <meta name="google" content="notranslate">
+        <script src="{{ url_for('static', filename="js/jquery-3.3.1.min.js")}}"></script>
+        <script src="{{ url_for('static', filename="jquery_ui/jquery-ui.js")}}"></script>
+        <script src="{{ url_for('static', filename="js/mynode.js")}}"></script>
+        <script>
+        $(document).ready(function() {
+            $("#cmd_form").submit(function( event ) {
+                // Prevent "real" submission
+                event.preventDefault();
+
+                var $form = $( this );
+                cmd = $form.find( "input[name='cmd']" ).val();
+                url = $form.attr( "action" );
+
+                console.log("URL    : "+url)
+                console.log("Command: "+cmd)
+
+                var posting = $.post( "/bitcoin-cli/run", {cmd:  cmd} );
+                posting.done(function( data ) {
+                    console.log("Response:" + data) 
+
+                    $("#cmd" ).val("");
+                    
+                    $("#cli_contents").append( "<b>>>> "+cmd+"</b><br/>" );
+                    $("#cli_contents").append( data+"<br/>" );
+                    $("#cli_contents").append( "<b>>>></b>" );
+
+                    var objDiv = document.getElementById("cli_scrollable");
+                    objDiv.scrollTop = objDiv.scrollHeight;
+                });
+            });
+        });
+        </script>
+     </head>
+
+    <body>
+        <div class="logo_header"><a href="/"><img class="logo_image" src="{{ url_for('static', filename="images/logo.png")}}"/></a></div>
+        <div class="mynode_back_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        </div>
+        
+        <div class="main_header">Bitcoin CLI</div>
+
+        <div class="cli_contents" id="cli_scrollable"><pre id="cli_contents"></pre></div>
+
+        <div class="cli_command">
+            <form id="cmd_form" action="/bitcoin-cli/run">
+                <input class="ui-corner-all cli_command_input" id="cmd" name="cmd" type="text">
+                <input type="submit" class="ui-button ui-widget ui-corner-all cli_enter_button" value="Enter">
+            </form>
+        </div>
+
+        {% include 'includes/footer.html' %}
+     </body>
+</html>

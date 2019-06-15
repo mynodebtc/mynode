@@ -1,0 +1,29 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# dotenv
+.env
+
+# vscode
+.vscode/
+
+.DS_Store
+
+# Output (rootfs, etc...)
+out/
+tools/product_key_gen/keys.txt
+tools/product_key_gen/keys.pdf
+tools/product_key_gen/keys.html
+tools/product_key_gen/keys.sql
+
+# Release tarballs
+releases/

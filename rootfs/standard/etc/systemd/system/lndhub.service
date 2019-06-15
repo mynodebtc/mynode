@@ -1,0 +1,28 @@
+# lndhub service
+# /etc/systemd/system/lndhub.service
+
+[Unit]
+Description=LND Hub
+Wants=lnd.service
+After=lnd.service
+
+[Service]
+ExecStartPre=/usr/bin/wait_on_lnd.sh
+Environment=PORT=3000
+WorkingDirectory=/opt/mynode/LndHub
+ExecStart=/usr/bin/npm start
+
+User=bitcoin
+Group=bitcoin
+Type=simple
+KillMode=process
+LimitNOFILE=128000
+TimeoutSec=240
+Restart=always
+RestartSec=60
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=lndhub
+
+[Install]
+WantedBy=multi-user.target

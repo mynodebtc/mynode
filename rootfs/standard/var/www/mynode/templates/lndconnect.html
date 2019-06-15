@@ -1,0 +1,59 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode.css")}}">
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode_bitcoind.css")}}">
+        <link href="{{ url_for('static', filename="jquery_ui/jquery-ui.css")}}" rel="stylesheet">
+        <meta http-equiv="Content-Language" content="en">
+        <meta name="google" content="notranslate">
+        <script src="{{ url_for('static', filename="js/jquery-3.3.1.min.js")}}"></script>
+        <script src="{{ url_for('static', filename="jquery_ui/jquery-ui.js")}}"></script>
+        <script src="{{ url_for('static', filename="js/mynode.js")}}"></script>
+
+        <script>
+            $(document).ready(function() {
+    
+                $( "#lndconnect_tabs" ).tabs();
+
+            });
+        </script>
+     </head>
+
+    <body>
+        <div class="logo_header"><a href="/"><img class="logo_image" src="{{ url_for('static', filename="images/logo.png")}}"/></a></div>
+        <div class="mynode_back_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/lnd"><span class="ui-icon ui-icon-transfer-e-w"></span>ln wallet&nbsp;</a>
+        </div>
+
+        <div class="main_header">LND Connect</div>
+        <div id="lndconnect_tabs" style="width: 800px;">
+            <ul>
+                <li><a href="#tabs-1">Local gRPC</a></li>
+                <li><a href="#tabs-2">Local REST</a></li>
+                <li><a href="#tabs-3">Remote gRPC</a></li>
+                <li><a href="#tabs-4">Remote REST</a></li>
+            </ul>
+            <div id="tabs-1">
+                <img class="lndconnect_qr_code" src="data:image/png;base64,{{lndconnect_local_grpc_img}}"/>
+                <p>{{ lndconnect_local_grpc_text }}</p>
+            </div>
+            <div id="tabs-2">
+                <img class="lndconnect_qr_code" src="data:image/png;base64,{{lndconnect_local_rest_img}}"/>
+                <p>{{ lndconnect_local_rest_text }}</p>
+            </div>
+            <div id="tabs-3">
+                <img class="lndconnect_qr_code" src="data:image/png;base64,{{lndconnect_remote_grpc_img}}"/>
+                <p>{{ lndconnect_remote_grpc_text }}</p>
+            </div>
+            <div id="tabs-4">
+                <img class="lndconnect_qr_code" src="data:image/png;base64,{{lndconnect_remote_rest_img}}"/>
+                <p>{{ lndconnect_remote_rest_text }}</p>
+            </div>
+        </div>
+
+
+        {% include 'includes/footer.html' %}
+    </body>
+</html>

@@ -1,0 +1,48 @@
+/var/log/syslog
+/var/log/electrs.log
+/var/log/flask
+/var/log/lndhub.log
+/var/log/lnd.log
+/var/log/lnd_backup.log
+/var/log/log2ram.log
+/var/log/mynode.log
+/var/log/mynode_quicksync.log
+/var/log/redis-server.log
+/var/log/rtl.log
+/var/log/www.log
+/var/log/*
+{
+	rotate 3
+	daily
+    maxsize 3M
+	missingok
+	notifempty
+	postrotate
+		invoke-rc.d rsyslog rotate > /dev/null
+	endscript
+}
+
+/var/log/mail.info
+/var/log/mail.warn
+/var/log/mail.err
+/var/log/mail.log
+/var/log/daemon.log
+/var/log/kern.log
+/var/log/auth.log
+/var/log/user.log
+/var/log/lpr.log
+/var/log/cron.log
+/var/log/debug
+/var/log/messages
+{
+	rotate 3
+	daily
+    maxsize 3M
+	missingok
+	notifempty
+	delaycompress
+	sharedscripts
+	postrotate
+		invoke-rc.d rsyslog rotate > /dev/null
+	endscript
+}

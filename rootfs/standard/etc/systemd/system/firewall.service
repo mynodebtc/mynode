@@ -1,0 +1,21 @@
+# myNode firewall service
+# /etc/systemd/system/firewall.service
+
+[Unit]
+Description=myNode Firewall
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/mynode_firewall.sh
+User=root
+Group=root
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=mynode
+
+RestartSec=30
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,43 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>myNode About</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode.css")}}">
+        <link href="{{ url_for('static', filename="jquery_ui/jquery-ui.css")}}" rel="stylesheet">
+        <meta http-equiv="Content-Language" content="en">
+        <meta name="google" content="notranslate">
+        <script src="{{ url_for('static', filename="js/jquery-3.3.1.min.js")}}"></script>
+        <script src="{{ url_for('static', filename="jquery_ui/jquery-ui.js")}}"></script>
+        <script src="{{ url_for('static', filename="js/mynode.js")}}"></script>
+     </head>
+
+    <body>
+        <div class="logo_header"><a href="/"><img class="logo_image" src="{{ url_for('static', filename="images/logo.png")}}"/></a></div>
+        <div class="mynode_back_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        </div>
+
+        <div class="main_header">About</div>
+
+        <br/>
+        <div class="settings_block">
+            <div class="settings_block_header">Contacts</div>
+            <p>
+                If you have any questions or comments, please contact myNode via email at the following address:
+                <br/></br>
+                <a href="mailto:mynode@mynodebtc.com">mynode@mynodebtc.com</a>
+            </p>
+        </div>
+
+        <div class="settings_block">
+            <div class="settings_block_header">Open Source</div>
+            <p>Thanks to all the open source projects that make this possible!</p>
+            <p>If it wasn't for these projects and people like you, Bitcoin, the Lightning Network, and all these related projects would not be possible.</p>
+
+            <p><b>Bitcoin</b><br/><a href="https://github.com/bitcoin/bitcoin">https://github.com/bitcoin/bitcoin</a></p>
+            <p><b>LND</b><br/> <a href="https://github.com/lightningnetwork/lnd">https://github.com/lightningnetwork/lnd</a></p>
+        </div>
+
+        {% include 'includes/footer.html' %}
+     </body>
+</html>

@@ -1,0 +1,21 @@
+# myNode Backup LND
+# /etc/systemd/system/lnd_backup.service
+
+[Unit]
+Description=Backup LND Channel File
+Wants=lnd.service
+After=lnd.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/mynode_lnd_channel_backup.sh
+Restart=always
+RestartSec=1
+User=bitcoin
+Group=bitcoin
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=lndbackup
+
+[Install]
+WantedBy=multi-user.target

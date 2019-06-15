@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# General Info
+transmission-remote -t 1 -i
+
+# Session Info
+transmission-remote -t 1 -si
+
+# Session Stats
+#transmission-remote -t 1 -st
+
+# Peer Info
+echo ""
+echo "PEER INFO"
+transmission-remote -t 1 --peer-info

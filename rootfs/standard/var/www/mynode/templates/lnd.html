@@ -1,0 +1,268 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode.css")}}">
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode_bitcoind.css")}}">
+        <link href="{{ url_for('static', filename="jquery_ui/jquery-ui.css")}}" rel="stylesheet">
+        <meta http-equiv="Content-Language" content="en">
+        <meta name="google" content="notranslate">
+        <script src="{{ url_for('static', filename="js/jquery-3.3.1.min.js")}}"></script>
+        <script src="{{ url_for('static', filename="jquery_ui/jquery-ui.js")}}"></script>
+        <script src="{{ url_for('static', filename="js/mynode.js")}}"></script>
+        <meta http-equiv="refresh" content="120">
+
+        <script>
+            $(document).ready(function() {
+    
+                function downloadMacaroon() {
+                    $("#download_macaroon_form").submit();
+                    download_macaroon_dialog.dialog( "close" );
+                }
+                download_macaroon_dialog = $( "#download-macaroon-dialog" ).dialog({
+                    autoOpen: false,
+                    resizable: false,
+                    height: "auto",
+                    width: 600,
+                    modal: true,
+                    position: { my: "center top", at: "center top", of: window, collision: "none" },
+                    buttons: {
+                        "Download": downloadMacaroon,
+                        Cancel: function() {
+                            download_macaroon_dialog.dialog( "close" );
+                        }
+                    },
+                    open: function() {
+                        $("#password_download_macaroon").val("")
+                    }
+                });
+                $("#download_macaroon").on("click", function() {
+                    download_macaroon_dialog.dialog( "open" );
+                });
+                $("#download_macaroon_form").on("submit", function() {
+                    download_macaroon_dialog.dialog( "close" );
+                });
+
+                function lndconnect() {
+                    $("#lndconnect_form").submit();
+                    lndconnect_dialog.dialog( "close" );
+                }
+                lndconnect_dialog = $( "#lndconnect-dialog" ).dialog({
+                    autoOpen: false,
+                    resizable: false,
+                    height: "auto",
+                    width: 600,
+                    modal: true,
+                    position: { my: "center top", at: "center top", of: window, collision: "none" },
+                    buttons: {
+                        "View": lndconnect,
+                        Cancel: function() {
+                            lndconnect_dialog.dialog( "close" );
+                        }
+                    },
+                    open: function() {
+                        $("#password_lndconnect").val("")
+                    }
+                });
+                $("#lndconnect").on("click", function() {
+                    lndconnect_dialog.dialog( "open" );
+                });
+
+                $("#lndconnect_form").on("submit", function() {
+                    lndconnect_dialog.dialog( "close" );
+                });
+
+                $("#rtl").on("click", function() {
+                    url = location.protocol+'//'+location.hostname+':3010'
+                    window.open(url,'_blank');
+                })
+
+            });
+        </script>
+     </head>
+
+    <body>
+        <div class="logo_header"><a href="/"><img class="logo_image" src="{{ url_for('static', filename="images/logo.png")}}"/></a></div>
+        <div class="mynode_back_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        </div>
+
+        <div style="margin: auto; text-align: center;">
+            {{ message }}
+        </div>
+
+        <div class="main_header">Lightning Status</div>
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Manage Wallet</div>
+                <div class="info_tile_contents" style="width: 250px;">
+{% if wallet_exists %}
+                    Wallet Created
+{% else %}
+                    <a class="ui-button ui-widget ui-corner-all" style="width: 180px; margin-bottom: 15px;" href="/lnd/create_wallet">Create Wallet</a>
+                    <a class="ui-button ui-widget ui-corner-all" style="width: 180px; margin-bottom: 15px;" href="/lnd/create_wallet_with_seed">Create Wallet with Seed</a>
+{% endif %}
+                </div>
+            </div>
+        </div>
+
+{% if wallet_exists or channel_backup_exists %}
+        <div class="app_tile_row">
+{% if wallet_exists %}
+            <div class="info_tile">
+                <div class="info_tile_header">LND Connect</div>
+                <div class="info_tile_contents">
+                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="lndconnect" style="width: 70%;" href="#">LND Connect</a>
+                </div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">TLS Certificate</div>
+                <div class="info_tile_contents">
+                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;" href="/lnd/tls.cert">download</a>
+                </div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">Admin Macaroon</div>
+                <div class="info_tile_contents">
+                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="download_macaroon" style="width: 70%;" href="#">download</a>
+                </div>
+            </div>
+{% endif %}
+{% if channel_backup_exists %}
+            <div class="info_tile">
+                <div class="info_tile_header">Channel Backup</div>
+                <div class="info_tile_contents">
+                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;" href="/lnd/channel.backup">download</a>
+                </div>
+            </div>
+{% endif %}
+        </div>
+{% endif %}
+
+{% if wallet_exists %}
+{% if wallet_logged_in %}
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Status</div>
+                <div class="info_tile_contents">{{status}}</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">Alias</div>
+                <div class="info_tile_contents">{{alias}}</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">Num Peers</div>
+                <div class="info_tile_contents">{{num_peers}}</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">Height</div>
+                <div class="info_tile_contents">{{height}}</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">Local gRPC Port</div>
+                <div class="info_tile_contents">10009</div>
+            </div>
+        </div>
+
+<!--
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Pubkey</div>
+                <div class="info_tile_contents">{{pubkey}}</div>
+            </div>
+            
+            <div class="info_tile">
+                <div class="info_tile_header">IP</div>
+                <div class="info_tile_contents">{{ip}}</div>
+            </div>
+            
+        </div>
+-->
+
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">URI</div>
+                <div class="info_tile_contents">{{uri}}</div>
+            </div>
+        </div>
+
+{% else %}
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Status</div>
+                <div class="info_tile_contents">{{status}}</div>
+            </div>
+        </div>
+{% endif %}
+{% endif %}
+
+{% if wallet_exists and wallet_logged_in %}
+    <div class="main_header">Acess your Wallet</div>
+        <div class="main_header_sub_text">
+            There are numerous ways to access and manage your wallet. Choose any option below!
+        </div>
+        <div class="app_tile_row">
+            <div class="app_tile_short">
+                <div class="app_status_icon"></div>
+                <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/rtl.png")}}"/></div>
+                <div class="app_title">RTL</div>
+                <div class="app_status"></div>
+                <div class="app_contents">
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="rtl">Access Wallet</a>
+                </div>
+            </div>
+
+            <div class="app_tile_short">
+                <div class="app_status_icon"></div>
+                <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/zap.png")}}"/></div>
+                <div class="app_title">Zap</div>
+                <div class="app_status"></div>
+                <div class="app_contents">
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="/FILLINLINK">Zap Guide</a>
+                </div>
+            </div>
+
+            <div class="app_tile_short">
+                <div class="app_status_icon"></div>
+                <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/bluewallet.png")}}"/></div>
+                <div class="app_title">BlueWallet</div>
+                <div class="app_status"></div>
+                <div class="app_contents">
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="/FILLINLINK">BlueWallet Guide</a>
+                </div>
+            </div>
+
+        </div>
+{% endif %}
+
+        <div id="download-macaroon-dialog" title="Download Macaroon" style="display:none;">
+            <form id="download_macaroon_form" name="download_macaroon_form" action="/lnd/admin.macaroon" method="POST">
+                <p>The macaroon is an important key for controlling your Lightning Wallet. Do not share this file with others
+                    or they will be able to control your funds.</p>
+                <p>Please enter your password to download your macaroon file.</p>
+                <b>Password:</b>
+                <br/>
+                <input type="password" name="password_download_macaroon" id="password_download_macaroon" value="" class="text ui-widget-content ui-corner-all">
+            
+                <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </form>
+        </div>
+
+        <div id="lndconnect-dialog" title="LND Connect Access" style="display:none;">
+            <form id="lndconnect_form" name="lndconnect_form" action="/lnd/lndconnect" method="POST">
+                <p>LND Connect info will allow access to your Lightning Wallet! Do not share this info with others
+                    or they will be able to control your funds.</p>
+                <p>Please enter your password to view your lndconnect codes.</p>
+                <b>Password:</b>
+                <br/>
+                <input type="password" name="password_lndconnect" id="password_lndconnect" value="" class="text ui-widget-content ui-corner-all">
+            
+                <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </form>
+        </div>
+
+        {% include 'includes/footer.html' %}
+    </body>
+</html>

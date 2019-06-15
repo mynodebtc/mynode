@@ -1,0 +1,59 @@
+###
+### Setup myNode Specifics
+### Start with <device>_standard_layer_2.img
+###
+
+# Log in as admin
+
+# Copy myNode rootfs on top of existing image
+FOLDER="rootfs_rock64"
+which raspi-config
+if [ $? = 0 ]; then
+    FOLDER="rootfs_raspi"
+fi
+sudo scp -r taylorhelsper@192.168.86.115:~/GitHub/mynode/out/$FOLDER/* /
+
+
+# Setup myNode Startup Script
+sudo systemctl daemon-reload
+sudo systemctl enable mynode
+sudo systemctl enable quicksync
+sudo systemctl enable torrent_check
+sudo systemctl enable firewall
+sudo systemctl enable bandwidth
+sudo systemctl enable www
+sudo systemctl enable drive_check
+sudo systemctl enable bitcoind
+sudo systemctl enable lnd
+sudo systemctl enable lnd_unlock
+sudo systemctl enable lnd_backup
+sudo systemctl enable lnd_admin_files
+sudo systemctl enable lndconnect
+sudo systemctl enable redis-server
+sudo systemctl enable mongodb
+#sudo systemctl enable electrs # DISABLED BY DEFAULT
+#sudo systemctl enable lndhub # DISABLED BY DEFAULT
+#sudo systemctl enable btc_rpc_explorer # DISABLED BY DEFAULT
+sudo systemctl enable tls_proxy
+sudo systemctl enable rtl
+sudo systemctl enable lnd_admin
+
+
+# Delete junk
+sudo rm -rf /home/admin/download
+sudo rm -rf /home/admin/.bash_history
+sudo rm -rf /home/bitcoin/.bash_history
+sudo rm -rf /root/.bash_history
+sudo rm -rf /root/.ssh/known_hosts
+sudo rm -rf /etc/resolv.conf
+sudo rm -rf /tmp/*
+
+sync
+
+### MAKE IMAGE NOW ###
+# This prevents auto gen files like certs to be part of the base image
+# Must make sure image can boot after this point and fully come up
+
+
+# Reboot again
+sudo reboot

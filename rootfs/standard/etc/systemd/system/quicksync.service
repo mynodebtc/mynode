@@ -1,0 +1,23 @@
+# myNode QuickSync Service
+# /etc/systemd/system/quicksync.service
+
+[Unit]
+Description=myNode QuickSync
+Wants=mynode.service
+After=mynode.service
+
+[Service]
+Type=simple
+KillMode=control-group
+TimeoutSec=60
+Restart=always
+RestartSec=30
+ExecStart=/usr/bin/mynode_quicksync.sh
+User=bitcoin
+Group=bitcoin
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=mynode_quicksync
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+THIS_SCRIPT="header"
+MOTD_DISABLE=""
+
+toilet -f standard -F metal "myNode    Free"
+
+printf '\nWelcome to myNode!\n'
+uname -a
+printf '\n'

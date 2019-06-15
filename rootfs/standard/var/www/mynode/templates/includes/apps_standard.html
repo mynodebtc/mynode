@@ -1,0 +1,83 @@
+<div class="app_tile_row">
+    <div class="app_tile">
+        <div class="app_status_icon {{ rtl_status_color }}"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/rtl.png")}}"/></div>
+        <div class="app_title">RTL</div>
+        <div class="app_status">{% if not lnd_ready %}Waiting on LND...{% else %}{{ rtl_status }}{% endif %}</div>
+        <div class="app_contents">
+            {% if lnd_ready %}
+            <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="rtl">RTL</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="app_tile">
+        <div class="app_status_icon {{ lnd_admin_status_color }}"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lnd_admin.png")}}"/></div>
+        <div class="app_title">LND Admin</div>
+        <div class="app_status">{% if not lnd_ready %}Waiting on LND...{% else %}{{ lnd_admin_status }}{% endif %}</div>
+        <div class="app_contents">
+            {% if lnd_ready %}
+            <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lnd_admin">LND Admin</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="app_tile">
+        <div class="app_status_icon {{ lndhub_status_color }}"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lndhub.png")}}"/></div>
+        <div class="app_title">LND Hub</div>
+        <div class="app_status">{% if not lnd_ready %}Waiting on LND...{% endif %}</div>
+        <div class="app_contents">
+            {% if lnd_ready %}
+            {% if lndhub_enabled %}
+            <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lndhub">LND Hub</a>
+            {% endif %}
+            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-lndhub" id="toggle-lndhub">{% if lndhub_enabled %}Disable{% else %}Enable{% endif %}</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="app_tile_row">
+    <div class="app_tile">
+        <div class="app_status_icon {{ bitcoind_status_color }}"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/bitcoin.png")}}"/></div>
+        <div class="app_title">Explorer</div>
+        <div class="app_status">{{ explorer_status }}</div>
+        <div class="app_contents">
+            {% if explorer_ready %}
+            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/explorer">Explorer</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="app_tile">
+        <div class="app_status_icon {{ btcrpcexplorer_status_color }}"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/btc_rpc_explorer.png")}}"/></div>
+        <div class="app_title">Explorer</div>
+        <div class="app_status">{{ btcrpcexplorer_status }}</div>
+        <div class="app_contents">
+            {% if btcrpcexplorer_enabled %}
+            <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="btcrpcexplorer">Explorer</a>
+            {% endif %}
+            <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-btcrpcexplorer">{% if btcrpcexplorer_enabled %}Disable{% else %}Enable{% endif %}</a>
+        </div>
+    </div>
+    <div class="app_tile">
+        <div class="app_status_icon {{ electrs_status_color }}"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/electrum_logo.png")}}"/></div>
+        <div class="app_title">Electrum Server</div>
+        <div class="app_status">{{ electrs_status }}</div>
+        <div class="app_contents">
+            {% if electrs_enabled %}
+            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/electrum-server">Info</a>
+            {% endif %}
+            <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-electrs">{% if electrs_enabled %}Disable{% else %}Enable{% endif %}</a>
+        </div>
+    </div>
+    <div class="app_tile">
+        <div class="app_status_icon"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/cli.png")}}"/></div>
+        <div class="app_title">BTC CLI</div>
+        <div class="app_status"></div>
+        <div class="app_contents"><a class="ui-button ui-widget ui-corner-all mynode_button" href="/bitcoin-cli">CLI</a></div>
+    </div>
+</div>
