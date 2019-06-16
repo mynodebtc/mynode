@@ -50,6 +50,15 @@ We currently support images for the following devices:
 ## Running myNode
 TODO (explain how to download pre-built images)
 
+## Screenshots
+![](images/2.png)
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+![](images/3.png)
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+![](images/5.png)
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+![](images/6.png)
+
 ## Building myNode Images
 TODO (explain how to build images)
 
