@@ -24,6 +24,24 @@ https://mynodebtc.com/
 <br/>
 ![](images/device.jpg)
 
+## Features
+Each myNode device comes with a number of wonderful features:
+
+- Full Bitcoin Node
+- Lightning Wallet
+- Simple UI / Web Interface
+- Bitcoin Explorer
+- Electrum Server - BTC Light Wallet Server
+- Ride the Lightning - Lightning Wallet
+- LND Admin - Lightning Wallet
+- LND Hub - Lightning Wallet Server
+- Bitcoin CLI
+- QuickSync - Quickly sync Bitcoin blockchain
+- LND Connect - Generate QR Codes for connecting wallets
+- LN Channel Backup
+- Dedicated hardware keeps you constantly and securely connected!
+- And more!
+
 ## Suported Devices
 We currently support images for the following devices:
  - Raspberry Pi 3B+
