@@ -20,10 +20,8 @@ instance/
 
 # Output (rootfs, etc...)
 out/
-tools/product_key_gen/keys.txt
-tools/product_key_gen/keys.pdf
-tools/product_key_gen/keys.html
-tools/product_key_gen/keys.sql
 
-# Release tarballs
+# Release tarballs stuff
 releases/
+release.sh
+
