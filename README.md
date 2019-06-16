@@ -17,6 +17,9 @@ By running a Bitcoin Full node and Lightning on your myNode device, you maintain
 ## myNode Premium
 myNode offers premium support, simplified upgrades and more! If you are running myNode Community Edition and want one-click upgrades or you want to purchase a supported, high quility device, please visit mynodebtc.com.
 
+Upgrade now at:
+https://mynodebtc.com/
+
 ## Suported Devices
 We currently support images for the following devices:
  - Raspberry Pi 3B+
