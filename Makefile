@@ -16,7 +16,7 @@ release.sh:
 
 .PHONY: release
 release: rootfs release.sh
-	@echo "Run release"
+	@sh release.sh
 
 .PHONY: clean
 clean:
