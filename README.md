@@ -48,7 +48,17 @@ We currently support images for the following devices:
  - Rock64
 
 ## Running myNode
-TODO (explain how to download pre-built images)
+You can run myNode on your own device in just a few easy steps!
+
+1. Download an Image
+1.1 Raspberry Pi 3B+ | http://mynodebtc.com/device/base_images/raspi_standard_final.img.gz
+1.2 Rock64 | http://mynodebtc.com/device/base_images/rock64_standard_final.img.gz
+2. Flash Image onto SD Card
+2.1 Download Etcher | https://www.balena.io/etcher/
+2.2 Flash Downloaded Image
+3. Insert SD Card and Boot your Device
+4. Attach 500GB+ External HD to Device
+5. Visit http://mynode.local/ or http://<ip of device>/
 
 ## Screenshots
 ![](images/2.png)
