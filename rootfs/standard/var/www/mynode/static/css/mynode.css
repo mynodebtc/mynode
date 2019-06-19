@@ -40,6 +40,12 @@ a:active {
     left: 20px;
 }
 
+.mynode_upgrade_div {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+}
+
 .state_header {
     color: #555555;
     text-align: center;

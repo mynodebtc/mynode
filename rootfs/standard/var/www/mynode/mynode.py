@@ -298,6 +298,13 @@ def index():
             else:
                 explorer_status = Markup("Bitcoin Explorer<br/><br/>Requires Electrum Server")
 
+        # Check for new version of software
+        upgrade_available = False
+        current = get_current_version()
+        latest = get_latest_version()
+        if current != "0.0" and latest != "0.0" and current != latest:
+            upgrade_available = True
+
 
         templateData = {
             "title": "myNode Home",
@@ -328,7 +335,8 @@ def index():
             "drive_usage": get_drive_usage(),
             "cpu_usage": get_cpu_usage(),
             "ram_usage": get_ram_usage(),
-            "swap_usage": get_swap_usage()
+            "swap_usage": get_swap_usage(),
+            "upgrade_available": upgrade_available
         }
         return render_template('main.html', **templateData)
     else:

@@ -5,10 +5,14 @@
 rootfs:
 	@./make_rootfs.sh
 
-# Copy rootfs to device
-.PHONY: copy_to_device
-copy_to_device:
-	@./scripts/copy_to_device.sh
+.PHONY: rootfs_auto
+rootfs_auto:
+	@./make_rootfs_auto.sh
+
+# Start file server to allow downloads to devices
+.PHONY: start_file_server
+start_file_server:
+	@python3 -m http.server --directory ./out
 
 
 # Download base images

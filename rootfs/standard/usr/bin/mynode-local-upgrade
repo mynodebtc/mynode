@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# mynode-local-upgrade
+# This script needs to be run with sudo
+# It reqeusts an IP, downloads the latest rootfs, installs it, and reboots the device
+
+set -e
+
+source /usr/share/mynode/mynode_config.sh
+
+# Prompt for IP
+echo "Make sure your PC is running 'make start_file_server'..."
+ip_address="error"
+if [ "$#" -ne 1 ]; then
+    echo -n "Dev PC IP Address: "
+    read ip_address
+else
+    ip_address="$1"
+fi
+
+# Delete any existing rootfs tarball and download new one
+rm -f mynode_rootfs_${DEVICE_TYPE}.tar.gz
+wget http://${ip_address}:8000/mynode_rootfs_${DEVICE_TYPE}.tar.gz -O /tmp/mynode_rootfs_${DEVICE_TYPE}.tar.gz
+
+# Extract on top of mynode fs
+rm -rf /tmp/rootfs/
+mkdir -p /tmp/rootfs/
+tar -xvf /tmp/mynode_rootfs_${DEVICE_TYPE}.tar.gz -C /tmp/rootfs/
+
+# Install files
+cp -rf /tmp/rootfs/out/rootfs_${DEVICE_TYPE}/* /
+systemctl daemon-reload
+
+# Sleep and sync FS
+sleep 1
+sync
+
+# Reboot Device
+reboot
