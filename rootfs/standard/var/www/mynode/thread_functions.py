@@ -130,6 +130,11 @@ def check_in():
         "version": get_current_version(),
         "product_key": get_product_key()
     }
+
+    # Check for new version
+    update_latest_version()
+
+    # Check In
     check_in_success = False
     while not check_in_success:
         try:

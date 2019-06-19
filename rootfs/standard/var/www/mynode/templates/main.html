@@ -69,6 +69,12 @@
     <body>
         <div class="logo_header"><a href="/"><img class="logo_image" src="{{ url_for('static', filename="images/logo.png")}}"/></a></div>
         
+        {% if upgrade_available %}
+        <div class="mynode_upgrade_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/settings"><span class="ui-icon ui-icon-notice"></span>upgrade available&nbsp;</a>
+        </div> 
+        {% endif %}
+
         <div class="main_header">Core Services</div>
         <div class="app_tile_row">
             <div class="app_tile">

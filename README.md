@@ -57,8 +57,24 @@ You can run myNode on your own device in just a few easy steps!
     * Download Etcher | https://www.balena.io/etcher/
     * Flash Downloaded Image
 3. Insert SD Card and Boot your Device
-4. Attach 500GB+ External HD to Device
-5. Visit http://mynode.local/ or http://<ip of device>/
+4. Attach External HD to Device
+    * 500GB+ Required, 1TB+ Recommended
+5. Visit http://mynode.local/ or http://ip_of_device/
+
+## Developing for myNode
+Once you are running myNode, you can easily modify and update the software yourself!
+
+1. Start by running myNode on your device via the instructions above
+2. Modify myNode files
+3. Run 'make rootfs'
+    * Or run 'make rootfs_auto' in a new tab
+    * This will automatically create artifacts as local files are modified
+4. Run 'make start_file_server'
+    * This will run a local HTTP server so your device can download files
+5. On your device, run 'sudo mynode-local-upgrade [dev pc ip address]'
+    * This will download the locally generated relate and install it on your device
+6. Test your changes!
+7. Submit Pull Request to share your updates!
 
 ## Screenshots
 ![](images/2.png)
