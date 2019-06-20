@@ -72,7 +72,7 @@ Once you are running myNode, you can easily modify and update the software yours
 4. Run 'make start_file_server'
     * This will run a local HTTP server so your device can download files
 5. On your device, run 'sudo mynode-local-upgrade [dev pc ip address]'
-    * This will download the locally generated relate and install it on your device
+    * This will download your locally generated artifact and install it on your device
 6. Test your changes!
 7. Submit Pull Request to share your updates!
 
