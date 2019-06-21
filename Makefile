@@ -15,14 +15,24 @@ start_file_server:
 	@python3 -m http.server --directory ./out
 
 
-# Download base images
-out/base_images/raspi_standard_final.img.gz:
-	@mkdir -p out/base_images/
-	@wget http://mynodebtc.com/device/base_images/raspi_standard_final.img.gz -O out/base_images/raspi_standard_final.img.gz
-out/base_images/rock64_standard_final.img.gz:
-	@mkdir -p out/base_images/
-	@wget http://mynodebtc.com/device/base_images/rock64_standard_final.img.gz -O out/base_images/rock64_standard_final.img.gz
-download_base_images: out/base_images/raspi_standard_final.img.gz out/base_images/rock64_standard_final.img.gz
+# Download base Linux images
+out/linux_base_images/raspi.zip:
+	@mkdir -p out/linux_base_images/
+	@wget http://downloads.raspberrypi.org/raspbian/images/raspbian-2019-04-09/2019-04-08-raspbian-stretch.zip -O out/linux_base_images/raspi.zip
+out/linux_base_images/rock64_armbian.7z:
+	@mkdir -p out/linux_base_images/
+	@wget https://dl.armbian.com/rock64/Debian_stretch_default.7z -O out/linux_base_images/rock64_armbian.7z
+download_linux_base_images: out/linux_base_images/raspi.zip out/linux_base_images/rock64_armbian.7z
+
+
+# Download latest nyNode images
+out/mynode_images/raspi_standard_final.img.gz:
+	@mkdir -p out/mynode_images/
+	@wget http://mynodebtc.com/device/mynode_images/raspi_standard_final.img.gz -O out/mynode_images/raspi_standard_final.img.gz
+out/mynode_images/rock64_standard_final.img.gz:
+	@mkdir -p out/mynode_images/
+	@wget http://mynodebtc.com/device/mynode_images/rock64_standard_final.img.gz -O out/mynode_images/rock64_standard_final.img.gz
+download_mynode_images: out/mynode_images/raspi_standard_final.img.gz out/mynode_images/rock64_standard_final.img.gz
 
 
 # TODO: Make images programmatically
