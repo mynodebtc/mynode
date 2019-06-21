@@ -35,6 +35,8 @@ fi
 # Download torrent
 rm -rf $QUICKSYNC_DIR/blockchain_temp.torrent
 wget -O $QUICKSYNC_DIR/blockchain_temp.torrent $QUICKSYNC_TORRENT_URL
+sync
+sleep 1
 
 if [ ! -f $QUICKSYNC_DIR/blockchain_temp.torrent ]; then
     echo "Torrent download failed...."
