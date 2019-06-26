@@ -80,8 +80,8 @@ Once you are running myNode, you can easily modify and update the software yours
 
 ## Convert new device to run myNode
 1. Run make command for your device. Ex:
--- make setup_new_rock64
--- make setup_new_raspi
+    * make setup_new_rock64
+    * make setup_new_raspi
 3. Follow Instructions
 2. Reboot Device
 4. Congratulations! You're running a new myNode device!
