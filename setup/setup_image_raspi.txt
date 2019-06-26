@@ -45,8 +45,16 @@ chmod +x install.sh
 sudo ./install.sh
 cd ~
 
+# Sync
+sync
+
+######################
+### MAKE IMAGE NOW ###
+######################
+
 
 # Final results
 # - Image with SSH access
 # - Root user disabled
 # - Default user admin with password bolt
+

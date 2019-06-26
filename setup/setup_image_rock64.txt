@@ -21,3 +21,10 @@ sudo sed -i 's/rock64/myNode/g' /etc/hosts
 # Overclock
 sudo sed -i "s/MAX_SPEED=.*/MAX_SPEED=1510000/" /etc/default/cpufrequtils 
 sudo systemctl restart cpufrequtils
+
+# Sync
+sync
+
+######################
+### MAKE IMAGE NOW ###
+######################
