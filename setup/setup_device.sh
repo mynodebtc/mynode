@@ -29,7 +29,12 @@ apt-get -y install inotify-tools libssl-dev
 apt-get -y install --no-install-recommends expect
 
 # Add bitcoin users
-useradd -m -s /bin/bash bitcoin || true
+getent passwd bitcoin > /dev/null 2&>1
+if [ $? -ne 0 ]; then
+    useradd -m -s /bin/bash bitcoin
+else
+    echo "User 'bitcoin' already exists"
+fi
 
 # Install python tools (run twice, some broken deps may cause install failures on first try for line 3)
 pip install setuptools
@@ -40,15 +45,20 @@ pip install grpcio grpcio-tools googleapis-common-protos
 
 
 # Update python3 to 3.7.2
-mkdir -p /tmp/download
-cd /tmp/download
-wget https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tar.xz
-tar xf Python-3.7.2.tar.xz
-cd Python-3.7.2
-./configure
-make -j4
-sudo make install
-cd ~
+PYTHON3_VERSION=$(python3 --version)
+if [ "$PYTHON3_VERSION" != "Python 3.7.2" ]; then
+    mkdir -p /tmp/download
+    cd /tmp/download
+    wget https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tar.xz
+    tar xf Python-3.7.2.tar.xz
+    cd Python-3.7.2
+    ./configure
+    make -j4
+    sudo make install
+    cd ~
+else
+    echo "Python up to date"
+fi
 
 
 # Install python3 specific tools (run multiple times to make sure success)
@@ -56,8 +66,9 @@ pip3 install wheel setuptools
 pip3 install bitstring lnd-grpc pycoin aiohttp connectrum python-bitcoinlib
 
 
-# Install Rust (Interactive)
-curl https://sh.rustup.rs -sSf | sh -- -y
+# Install Rust
+wget https://sh.rustup.rs -O /tmp/setup_rust.sh
+/bin/bash /tmp/setup_rust.sh -y
 
 # Install node
 curl -sL https://deb.nodesource.com/setup_11.x | bash -
@@ -75,8 +86,6 @@ rm -rf /etc/update-motd.d/*
 
 
 # Install Bitcoin
-mkdir -p /tmp/download
-cd /tmp/download
 ARCH="arm-linux-gnueabihf"
 uname -a | grep aarch64
 if [ $? = 0 ]; then
@@ -84,35 +93,52 @@ if [ $? = 0 ]; then
 fi
 BTC_UPGRADE_URL=https://bitcoin.org/bin/bitcoin-core-0.18.0/bitcoin-0.18.0-$ARCH.tar.gz
 BTC_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btc_url
-wget $BTC_UPGRADE_URL -O bitcoin.tar.gz
-tar -xvf bitcoin.tar.gz
-mv bitcoin-* bitcoin
-install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
-bitcoind --version
-sudo -u bitcoin ln -s /mnt/hdd/mynode/bitcoin /home/bitcoin/.bitcoin
-sudo -u bitcoin ln -s /mnt/hdd/mynode/lnd /home/bitcoin/.lnd
-mkdir /home/admin/.bitcoin
-mkdir -p /home/bitcoin/.mynode/
-echo $BTC_UPGRADE_URL | sudo tee $BTC_UPGRADE_URL_FILE
-chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+CURRENT=""
+if [ -f $BTC_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $BTC_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$BTC_UPGRADE_URL" ]; then
+    rm -rf /tmp/download
+    mkdir -p /tmp/download
+    cd /tmp/download
 
+    wget $BTC_UPGRADE_URL -O bitcoin.tar.gz
+    tar -xvf bitcoin.tar.gz
+    mv bitcoin-* bitcoin
+    install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
+
+    sudo -u bitcoin ln -s /mnt/hdd/mynode/bitcoin /home/bitcoin/.bitcoin
+    sudo -u bitcoin ln -s /mnt/hdd/mynode/lnd /home/bitcoin/.lnd
+    mkdir /home/admin/.bitcoin
+    mkdir -p /home/bitcoin/.mynode/
+    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+    echo $BTC_UPGRADE_URL | sudo tee $BTC_UPGRADE_URL_FILE
+fi
+cd ~
 
 # Install Lightning
-mkdir -p /tmp/download
-cd /tmp/download
-mkdir -p /home/bitcoin/.mynode/
 LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/v0.6.1-beta/lnd-linux-armv7-v0.6.1-beta.tar.gz
 LND_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lnd_url
-wget $LND_UPGRADE_URL -O lnd.tar.gz
-tar -xzf lnd.tar.gz
-mv lnd-* lnd
-install -m 0755 -o root -g root -t /usr/local/bin lnd/*
-ln -s /bin/ip /usr/bin/ip
-lnd --version
-echo $LND_UPGRADE_URL | sudo tee $LND_UPGRADE_URL_FILE
-cd ~
-chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+CURRENT=""
+if [ -f $LND_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $LND_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$LND_UPGRADE_URL" ]; then
+    rm -rf /tmp/download
+    mkdir -p /tmp/download
+    cd /tmp/download
 
+    wget $LND_UPGRADE_URL -O lnd.tar.gz
+    tar -xzf lnd.tar.gz
+    mv lnd-* lnd
+    install -m 0755 -o root -g root -t /usr/local/bin lnd/*
+    ln -s /bin/ip /usr/bin/ip
+
+    mkdir -p /home/bitcoin/.mynode/
+    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+    echo $LND_UPGRADE_URL | sudo tee $LND_UPGRADE_URL_FILE
+fi
+cd ~
 
 # Setup "install" location for some apps
 mkdir -p /opt/mynode
@@ -121,6 +147,7 @@ chown -R bitcoin:bitcoin /opt/mynode
 
 # Install LND Hub
 cd /opt/mynode
+rm -rf LndHub
 sudo -u bitcoin git clone https://github.com/BlueWallet/LndHub.git
 cd LndHub
 sudo -u bitcoin npm install
@@ -128,7 +155,7 @@ sudo -u bitcoin ln -s /home/bitcoin/.lnd/tls.cert tls.cert
 sudo -u bitcoin ln -s /home/bitcoin/.lnd/data/chain/bitcoin/mainnet/admin.macaroon admin.macaroon
 
 
-# Install electrs (only build to save new version, not included in overlay)
+# Install electrs (only build to save new version, now included in overlay)
 #cd /home/admin/download
 #wget https://github.com/romanz/electrs/archive/v0.7.0.tar.gz
 #tar -xvf v0.7.0.tar.gz 
@@ -140,6 +167,7 @@ sudo -u bitcoin ln -s /home/bitcoin/.lnd/data/chain/bitcoin/mainnet/admin.macaro
 
 # Install RTL
 cd /opt/mynode
+rm -rf RTL
 sudo -u bitcoin wget https://github.com/ShahanaFarooqui/RTL/archive/v0.3.3.tar.gz -O RTL.tar.gz
 sudo -u bitcoin tar -xvf RTL.tar.gz
 sudo -u bitcoin rm RTL.tar.gz
@@ -150,6 +178,7 @@ sudo -u bitcoin npm install
 
 # Install LND Admin
 cd /opt/mynode
+rm -rf lnd-admin
 sudo -u bitcoin wget https://github.com/janoside/lnd-admin/archive/v0.10.12.tar.gz -O lnd-admin.tar.gz
 sudo -u bitcoin tar -xvf lnd-admin.tar.gz
 sudo -u bitcoin rm lnd-admin.tar.gz
@@ -160,6 +189,7 @@ sudo -u bitcoin npm install
 
 # Install Bitcoin RPC Explorer
 cd /opt/mynode
+rm -rf btc-rpc-explorer
 sudo -u bitcoin wget https://github.com/janoside/btc-rpc-explorer/archive/v1.0.3.tar.gz -O btc-rpc-explorer.tar.gz
 sudo -u bitcoin tar -xvf btc-rpc-explorer.tar.gz
 sudo -u bitcoin rm btc-rpc-explorer.tar.gz
@@ -169,6 +199,7 @@ sudo -u bitcoin npm install
 
 
 # Install LND Connect
+rm -rf /tmp/download
 mkdir -p /tmp/download
 cd /tmp/download
 wget https://github.com/LN-Zap/lndconnect/releases/download/v0.1.0/lndconnect-linux-armv7-v0.1.0.tar.gz -O lndconnect.tar.gz
@@ -184,7 +215,7 @@ install -m 0755 -o root -g root -t /usr/local/bin lndconnect/*
 rm -rf /tmp/rootfs.tar.gz
 rm -rf /tmp/upgrade/
 
-wget http://${SERVER_IP}/mynode_rootfs_rock64.tar.gz -O /tmp/rootfs.tar.gz
+wget http://${SERVER_IP}:8000/mynode_rootfs_rock64.tar.gz -O /tmp/rootfs.tar.gz
 
 tar -xvf /tmp/rootfs.tar.gz -C /tmp/upgrade/
 

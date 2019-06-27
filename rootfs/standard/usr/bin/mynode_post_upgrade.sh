@@ -24,11 +24,6 @@ if [ "$CURRENT" != "$BTC_UPGRADE_URL" ]; then
     # Download and install Bitcoin
     rm -rf /tmp/bitcoin*
     cd /tmp
-    ARCH="arm-linux-gnueabihf"
-    uname -a | grep aarch64
-    if [ $? = 0 ]; then
-        ARCH="aarch64-linux-gnu"
-    fi
     wget $BTC_UPGRADE_URL -O bitcoin.tar.gz
     tar -xvf bitcoin.tar.gz
     mv bitcoin-* bitcoin

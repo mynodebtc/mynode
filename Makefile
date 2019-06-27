@@ -51,12 +51,12 @@ download_mynode_images: download_base_images out/mynode_images/raspi_standard_fi
 # Setup of New Device
 .PHONY: setup_new_rock64
 setup_new_rock64: start_file_server download_base_images rootfs
-	@cp -f setup/setup_rock64.sh out/setup_rock64.sh 
+	@cp -f setup/setup_device.sh out/setup_device.sh 
 	@/bin/bash scripts/setup_new_rock64.sh
 
 .PHONY: setup_new_raspi
 setup_new_raspi: start_file_server download_base_images rootfs 
-	@cp -f setup/setup_raspi.sh out/setup_raspi.sh 
+	@cp -f setup/setup_device.sh out/setup_device.sh 
 	@/bin/bash scripts/setup_new_raspi.sh
 
 # TODO: Make images programmatically
