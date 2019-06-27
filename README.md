@@ -95,9 +95,6 @@ Once you are running myNode, you can easily modify and update the software yours
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ![](images/6.png)
 
-## Building myNode Images
-TODO (explain how to build images)
-
 
 ## What is Bitcoin?
 Bitcoin is a unique form of digital money that enables users to send money over the Internet securely without the need for banks or other 3rd parties. This enables anyone with Internet access the ability to participate in the global economy no matter where they live - anywhere from rural Africa to Venezuela to Antarctica to space!
