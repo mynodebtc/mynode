@@ -125,10 +125,11 @@ def update_lnd_info_thread():
 # Checkin every 24 hours
 def check_in():
     # Check in
+    product_key = get_product_key()
     data = {
         "serial": get_device_serial(),
         "version": get_current_version(),
-        "product_key": get_product_key()
+        "product_key": product_key
     }
 
     # Check for new version
@@ -143,7 +144,8 @@ def check_in():
                 if r.text == "OK":
                     print("Check In Success: {}".format(r.text))
 
-                    unset_skipped_product_key()
+                    if product_key != "community_edition":
+                        unset_skipped_product_key()
                     delete_product_key_error()
                 else:
                     os.system("echo '{}' > /home/bitcoin/.mynode/.product_key_error".format(r.text))
