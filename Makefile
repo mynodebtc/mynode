@@ -67,6 +67,7 @@ images: rootfs
 
 # Clone repo to get release tools
 release.sh:
+	@rm -rf out/mynode_release_tool
 	@git clone git@github.com:mynodebtc/mynode_release_tool.git out/mynode_release_tool
 	@cp out/mynode_release_tool/release.sh ./release.sh
 
@@ -79,6 +80,5 @@ release: rootfs release.sh
 # Clean build files
 .PHONY: clean
 clean: stop_file_server
-	@rm -rf out/
 	@rm -rf out/
 	@rm -rf release.sh
