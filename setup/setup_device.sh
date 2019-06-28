@@ -214,6 +214,7 @@ install -m 0755 -o root -g root -t /usr/local/bin lndconnect/*
 # Copy myNode rootfs
 rm -rf /tmp/rootfs.tar.gz
 rm -rf /tmp/upgrade/
+mkdir -p /tmp/upgrade
 
 wget http://${SERVER_IP}:8000/mynode_rootfs_rock64.tar.gz -O /tmp/rootfs.tar.gz
 
