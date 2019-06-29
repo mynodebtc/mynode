@@ -28,6 +28,12 @@ def get_latest_version():
     return latest_version
 
 
+def get_system_uptime():
+    uptime = subprocess.check_output('awk \'{print int($1/86400)" days "int($1%86400/3600)" hour(s) "int(($1%3600)/60)" minute(s) "int($1%60)" seconds(s)"}\' /proc/uptime', shell=True)
+    uptime = uptime.strip()
+    return uptime
+
+
 def get_device_serial():
     serial = subprocess.check_output("cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2", shell=True)
     serial = serial.strip()
