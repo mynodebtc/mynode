@@ -22,7 +22,7 @@ apt-get -y install build-essential python-dev python-pip python3-dev python3-pip
 apt-get -y install transmission-cli fail2ban ufw tclsh bluez python-bluez redis-server
 apt-get -y install mongodb-server clang hitch zlib1g-dev libffi-dev file toilet ncdu
 apt-get -y install toilet-fonts avahi-daemon figlet libsecp256k1-dev 
-apt-get -y install inotify-tools libssl-dev 
+apt-get -y install inotify-tools libssl-dev tor
 
 
 # Install other things without recommendation
@@ -35,6 +35,7 @@ if [ $? -ne 0 ]; then
 else
     echo "User 'bitcoin' already exists"
 fi
+usermod -a -G debian-tor bitcoin
 
 # Install python tools (run twice, some broken deps may cause install failures on first try for line 3)
 pip install setuptools
@@ -250,6 +251,7 @@ systemctl enable mongodb
 systemctl enable tls_proxy
 systemctl enable rtl
 systemctl enable lnd_admin
+systemctl enable tor
 
 
 # Delete junk
