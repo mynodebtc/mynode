@@ -80,26 +80,31 @@ if [ ! -f /home/bitcoin/.mynode/.btcrpcpw ]; then
     chmod 600 /home/bitcoin/.mynode/.btcrpcpw
 fi
 
+# Setup LND Node Name
+if [ ! -f /home/bitcoin/.mynode/.lndalias ]; then
+    echo "mynodebtc.com [myNode]"> /home/bitcoin/.mynode/.lndalias
+fi
 
-# Copy config files from /usr/share to /mnt/hdd if necessary
-if [ ! -f /mnt/hdd/mynode/bitcoin/bitcoin.conf ]; then
-    cp -f /usr/share/mynode/bitcoin.conf /mnt/hdd/mynode/bitcoin/bitcoin.conf
-    
-    PW=$(cat /home/bitcoin/.mynode/.btcrpcpw)
-    sed -i "s/rpcpassword=.*/rpcpassword=$PW/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
-    
-    cp -f /mnt/hdd/mynode/bitcoin/bitcoin.conf /home/admin/.bitcoin/bitcoin.conf
-    chown bitcoin:bitcoin /mnt/hdd/mynode/bitcoin/bitcoin.conf
-    chown admin:admin /home/admin/.bitcoin/bitcoin.conf
-fi
-if [ ! -f /mnt/hdd/mynode/lnd/lnd.conf ]; then
-    cp /usr/share/mynode/lnd.conf /mnt/hdd/mynode/lnd/lnd.conf
-    chown bitcoin:bitcoin /mnt/hdd/mynode/lnd/lnd.conf
-fi
-if [ ! -f /opt/mynode/RTL/RTL.conf ]; then
-    cp /usr/share/mynode/RTL.conf /opt/mynode/RTL/RTL.conf
-    chown bitcoin:bitcoin /opt/mynode/RTL/RTL.conf
-fi
+
+# BTC Config
+cp -f /usr/share/mynode/bitcoin.conf /mnt/hdd/mynode/bitcoin/bitcoin.conf
+
+PW=$(cat /home/bitcoin/.mynode/.btcrpcpw)
+sed -i "s/rpcpassword=.*/rpcpassword=$PW/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+
+cp -f /mnt/hdd/mynode/bitcoin/bitcoin.conf /home/admin/.bitcoin/bitcoin.conf
+chown bitcoin:bitcoin /mnt/hdd/mynode/bitcoin/bitcoin.conf
+chown admin:admin /home/admin/.bitcoin/bitcoin.conf
+
+# LND Config
+cp /usr/share/mynode/lnd.conf /mnt/hdd/mynode/lnd/lnd.conf
+ALIAS=$(cat /home/bitcoin/.mynode/.lndalias)
+sed -i "s/alias=.*/alias=$ALIAS/g" /mnt/hdd/mynode/lnd/lnd.conf
+chown bitcoin:bitcoin /mnt/hdd/mynode/lnd/lnd.conf
+
+# RTL config
+cp /usr/share/mynode/RTL.conf /opt/mynode/RTL/RTL.conf
+chown bitcoin:bitcoin /opt/mynode/RTL/RTL.conf
 
 
 # Update files that need RPC password (needed if upgrades overwrite files)
