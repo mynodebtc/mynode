@@ -11,7 +11,7 @@ which raspi-config
 if [ $? = 0 ]; then
     FOLDER="rootfs_raspi"
 fi
-sudo scp -r taylorhelsper@192.168.86.115:~/GitHub/mynode/out/$FOLDER/* /
+sudo scp -r <username>@<your ip>:~/GitHub/mynode/out/$FOLDER/* /
 
 
 # Setup myNode Startup Script
