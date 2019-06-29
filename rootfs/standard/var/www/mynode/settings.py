@@ -101,6 +101,7 @@ def page_settings():
     product_key = get_product_key()
     pk_skipped = skipped_product_key()
     pk_error = not is_valid_product_key()
+    uptime = get_system_uptime()
 
     templateData = {
         "title": "myNode Settings",
@@ -110,7 +111,8 @@ def page_settings():
         "serial_number": serial_number,
         "product_key": product_key,
         "product_key_skipped": pk_skipped,
-        "product_key_error": pk_error
+        "product_key_error": pk_error,
+        "uptime": uptime
     }
     return render_template('settings.html', **templateData)
 
