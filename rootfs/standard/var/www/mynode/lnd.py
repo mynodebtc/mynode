@@ -3,6 +3,7 @@ from pprint import pprint, pformat
 from threading import Timer
 from bitcoin_info import *
 from lightning_info import *
+from settings import reboot_device
 import base64
 import subprocess
 import json
@@ -10,7 +11,7 @@ import pam
 import time
 import re
 import requests
-import os.path
+import os
 
 
 mynode_lnd = Blueprint('mynode_lnd',__name__)
@@ -234,3 +235,35 @@ def page_lnd_lndconnect():
         "lndconnect_remote_rest_img": lndconnect_remote_rest_img
     }
     return render_template('lndconnect.html', **templateData)
+
+
+@mynode_lnd.route("/lnd/change_alias", methods=["POST"])
+def page_lnd_change_alias():
+    # Load page
+    p = pam.pam()
+    pw = request.form.get('password_change_alias')
+    if pw == None or p.authenticate("admin", pw) == False:
+        return redirect(url_for(".page_lnd", error_message="Invalid Password"))
+
+    # Change alias
+    alias = request.form.get('alias')
+    if alias == None or alias == "":
+        return redirect(url_for(".page_lnd", error_message="Empty Alias"))
+    if len(alias) > 35:
+        return redirect(url_for(".page_lnd", error_message="Invalid Alias"))
+    with open("/home/bitcoin/.mynode/.lndalias", "w") as f:
+        utf8_alias = alias.decode('utf-8', 'ignore')
+        f.write(utf8_alias)
+        f.close()
+
+    # Reboot
+    t = Timer(1.0, reboot_device)
+    t.start()
+
+    # Wait until device is restarted
+    templateData = {
+        "title": "myNode Reboot",
+        "header_text": "Restarting",
+        "subheader_text": "This will take several minutes..."
+    }
+    return render_template('reboot.html', **templateData)

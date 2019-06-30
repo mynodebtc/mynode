@@ -82,7 +82,7 @@ fi
 
 # Setup LND Node Name
 if [ ! -f /home/bitcoin/.mynode/.lndalias ]; then
-    echo "mynodebtc.com [myNode]"> /home/bitcoin/.mynode/.lndalias
+    echo "mynodebtc.com [myNode]" > /home/bitcoin/.mynode/.lndalias
 fi
 
 
