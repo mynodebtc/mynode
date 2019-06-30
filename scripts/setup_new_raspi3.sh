@@ -8,17 +8,17 @@ echo ""
 
 clear
 echo "Step 1: "
-echo "  Flash SD Card with Rock64 Image: out/base_images/rock64_base.img.gz"
+echo "  Flash SD Card with Raspberry Pi Image: out/base_images/raspi_base.img.gz"
 echo "  OR"
 echo "  If you would rather create your own base image, follow the"
-echo "  manual instructions in setup/setup_image_rock64.txt"
+echo "  manual instructions in setup/setup_image_raspi.txt"
 echo ""
 echo "Press a key when complete..."
 read -n 1
 
 clear
 echo "Step 2: "
-echo "  Insert SD Card into your Rock64 and boot the device"
+echo "  Insert SD Card into your Raspberry Pi and boot the device"
 echo ""
 echo "Press a key when complete..."
 read -n 1

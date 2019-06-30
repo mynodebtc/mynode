@@ -1,6 +1,5 @@
 ###
 ### Setup Base OS
-### raspi_start.img.gz
 ###
 
 # After Raspi Flash
