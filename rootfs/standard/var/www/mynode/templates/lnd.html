@@ -14,6 +14,8 @@
 
         <script>
             $(document).ready(function() {
+
+                alias="{{alias}}"
     
                 function downloadMacaroon() {
                     $("#download_macaroon_form").submit();
@@ -41,6 +43,32 @@
                 });
                 $("#download_macaroon_form").on("submit", function() {
                     download_macaroon_dialog.dialog( "close" );
+                });
+
+                function change_alias() {
+                    $("#change_alias_form").submit();
+                    change_alias_dialog.dialog( "close" );
+                }
+                change_alias_dialog = $( "#change-alias-dialog" ).dialog({
+                    autoOpen: false,
+                    resizable: false,
+                    height: "auto",
+                    width: 600,
+                    modal: true,
+                    position: { my: "center top", at: "center top", of: window, collision: "none" },
+                    buttons: {
+                        "Save": change_alias,
+                        Cancel: function() {
+                            change_alias_dialog.dialog( "close" );
+                        }
+                    },
+                    open: function() {
+                        $("#alias").val(alias)
+                        $("#password_change_alias").val("")
+                    }
+                });
+                $("#change_alias").on("click", function() {
+                    change_alias_dialog.dialog( "open" );
                 });
 
                 function lndconnect() {
@@ -148,7 +176,7 @@
             </div>
             <div class="info_tile">
                 <div class="info_tile_header">Alias</div>
-                <div class="info_tile_contents">{{alias}}</div>
+                <div class="info_tile_contents">{{alias}} <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="change_alias" href="#"><span class="ui-icon ui-icon-gear"></a></div>
             </div>
             <div class="info_tile">
                 <div class="info_tile_header">Num Peers</div>
@@ -243,6 +271,23 @@
                 <b>Password:</b>
                 <br/>
                 <input type="password" name="password_download_macaroon" id="password_download_macaroon" value="" class="text ui-widget-content ui-corner-all">
+            
+                <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </form>
+        </div>
+
+        <div id="change-alias-dialog" title="Change LND Alias" style="display:none;">
+            <form id="change_alias_form" name="change_alias_form" action="/lnd/change_alias" method="POST">
+                <p>The LND alias is a public name for your lightning node and you can modify it with the form below. Changing the alias will restart your myNode to take effect.</p>
+                <p>Please enter a new alias and your current password.</p>
+                <b>New Alias:</b>
+                <br/>
+                <input type="text" name="alias" id="alias" value="" class="text ui-widget-content ui-corner-all" size="35" maxlength="35">
+                <br/><br/>
+                <b>Password:</b>
+                <br/>
+                <input type="password" name="password_change_alias" id="password_change_alias" value="" class="text ui-widget-content ui-corner-all">
             
                 <!-- Allow form submission with keyboard without duplicating the dialog button -->
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
