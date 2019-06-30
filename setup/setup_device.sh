@@ -217,7 +217,13 @@ rm -rf /tmp/rootfs.tar.gz
 rm -rf /tmp/upgrade/
 mkdir -p /tmp/upgrade
 
-wget http://${SERVER_IP}:8000/mynode_rootfs_rock64.tar.gz -O /tmp/rootfs.tar.gz
+TARBALL="mynode_rootfs_rock64.tar.gz"
+which raspi-config
+if [ $? = 0 ]; then
+    FOLDER="mynode_rootfs_rock64.tar.gz"
+fi
+
+wget http://${SERVER_IP}:8000/${TARBALL} -O /tmp/rootfs.tar.gz
 
 tar -xvf /tmp/rootfs.tar.gz -C /tmp/upgrade/
 

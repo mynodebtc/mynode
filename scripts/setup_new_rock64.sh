@@ -38,7 +38,7 @@ clear
 echo "Step 4:"
 echo "  Login to device with username 'admin' and password 'bolt'"
 echo "  Run the following commands. Use bolt at password prompts."
-echo "  "
+echo "    sudo mynode-local-upgrade ${LOCAL_IP}"
 echo "Press a key when complete..."
 read -n 1
 

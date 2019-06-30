@@ -1,0 +1,61 @@
+###
+### Setup Base OS
+###
+
+# TODO: MAY NEED UPDATES - NEED TO TEST
+
+# After Raspi Flash
+#  - Touch ssh file on rootfs
+
+# Login as pi / raspberry
+
+# MANUAL: Run raspi-config
+    Update 8: Get latest configuration tool
+    Network Options 2: Hostname -> myNode
+    Boot Options 3: Choose Desktop / CLI -> Console
+    Boot Options 3: Wait for Network at Boot
+    Localisation 4: I2 -> US -> Central
+    Localisation 4: I4 -> US
+    Advanced 7: Expand Filesystem 
+    Advanced 7: Memory Split -> 16
+    Exit by selecting <Finish>, and <No> as no reboot is necessary
+    
+# Add admin user
+sudo useradd -p $(openssl passwd -1 bolt) -m -s /bin/bash admin
+sudo adduser admin sudo
+
+# Reboot
+sudo reboot
+
+
+### Log back in as admin
+
+
+# Delete pi user
+sudo deluser pi
+sudo rm -rf /home/pi
+
+
+# Install Log2Ram (Armbian has own solution)
+cd /tmp
+wget https://github.com/azlux/log2ram/archive/v1.2.2.tar.gz -O log2ram.tar.gz
+tar -xvf log2ram.tar.gz
+mv log2ram-* log2ram
+cd log2ram
+chmod +x install.sh
+sudo ./install.sh
+cd ~
+
+# Sync
+sync
+
+######################
+### MAKE IMAGE NOW ###
+######################
+
+
+# Final results
+# - Image with SSH access
+# - Root user disabled
+# - Default user admin with password bolt
+
