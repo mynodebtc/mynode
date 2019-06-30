@@ -14,7 +14,18 @@ def get_current_version():
 
 
 def update_latest_version():
-    os.system("wget "+LATEST_VERSION_URL+" -O /usr/share/mynode/latest_version")
+    success = False
+    while not success:
+        try:
+            r = requests.post(LATEST_VERSION_URL, data=data, timeout=5)
+            if r.status_code == 200:
+                with open("/usr/share/mynode/latest_version","w") as f:
+                    f.write(r.text)
+                    f.close()
+                    success = True
+        except:
+            pass
+                
     return True
 
 
