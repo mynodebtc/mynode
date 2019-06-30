@@ -11,7 +11,7 @@ echo "Step 1: "
 echo "  Flash SD Card with Raspberry Pi Image: out/base_images/raspi4_base.img.gz"
 echo "  OR"
 echo "  If you would rather create your own base image, follow the"
-echo "  manual instructions in setup/setup_image_raspi3.txt"
+echo "  manual instructions in setup/setup_image_raspi4.txt"
 echo ""
 echo "Press a key when complete..."
 read -n 1
@@ -36,18 +36,14 @@ read -n 1
 
 clear
 echo "Step 4:"
-echo "  Login to device with username 'admin' and password 'bolt'"
-echo "  Run the following commands. Use bolt at password prompts."
-echo "    sudo mynode-local-upgrade ${LOCAL_IP}"
-echo "Press a key when complete..."
-read -n 1
-
-clear
-echo "Step 5:"
 echo "  Reboot your device."
 echo ""
 echo "Press a key when complete..."
 read -n 1
 
-echo ""
+clear
 echo "Congratulations! Your device is now ready!"
+echo "  Access it via a web browser at http://mynode.local/ or http://<device ip>/"
+echo "  Access it via SSH using the default credentials: admin / bolt"
+echo "  You should change your password on the settings page in the web GUI"
+echo ""

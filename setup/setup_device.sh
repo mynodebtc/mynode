@@ -12,6 +12,12 @@ if [ "$#" != "1" ]; then
 fi
 SERVER_IP=$1
 
+# Determine Device
+IS_ROCK64=0
+IS_RASPI3=0
+IS_RASPI4=0
+uname -a | grep aarch64 && IS_ROCK64=1 || IS_RASPI3=1
+
 # Update OS
 apt-get update
 apt-get -y upgrade
@@ -29,12 +35,7 @@ apt-get -y install inotify-tools libssl-dev tor
 apt-get -y install --no-install-recommends expect
 
 # Add bitcoin users
-getent passwd bitcoin > /dev/null 2&>1
-if [ $? -ne 0 ]; then
-    useradd -m -s /bin/bash bitcoin
-else
-    echo "User 'bitcoin' already exists"
-fi
+useradd -m -s /bin/bash bitcoin || true
 usermod -a -G debian-tor bitcoin
 
 # Install python tools (run twice, some broken deps may cause install failures on first try for line 3)
@@ -68,12 +69,18 @@ pip3 install bitstring lnd-grpc pycoin aiohttp connectrum python-bitcoinlib
 
 
 # Install Rust
-wget https://sh.rustup.rs -O /tmp/setup_rust.sh
-/bin/bash /tmp/setup_rust.sh -y
+if [ ! -f /tmp/installed_rust ]; then
+    wget https://sh.rustup.rs -O /tmp/setup_rust.sh
+    /bin/bash /tmp/setup_rust.sh -y
+    touch /tmp/installed_rust
+fi
 
 # Install node
-curl -sL https://deb.nodesource.com/setup_11.x | bash -
-apt-get install -y nodejs
+if [ ! -f /tmp/installed_node ]; then
+    curl -sL https://deb.nodesource.com/setup_11.x | bash -
+    apt-get install -y nodejs
+    touch /tmp/installed_node
+fi
 
 # Install node packages
 npm install -g pug-cli browserify uglify-js babel-cli
@@ -88,8 +95,7 @@ rm -rf /etc/update-motd.d/*
 
 # Install Bitcoin
 ARCH="arm-linux-gnueabihf"
-uname -a | grep aarch64
-if [ $? = 0 ]; then
+if [ $IS_ROCK64 = 1 ]; then
     ARCH="aarch64-linux-gnu"
 fi
 BTC_UPGRADE_URL=https://bitcoin.org/bin/bitcoin-core-0.18.0/bitcoin-0.18.0-$ARCH.tar.gz
@@ -113,7 +119,7 @@ if [ "$CURRENT" != "$BTC_UPGRADE_URL" ]; then
     mkdir /home/admin/.bitcoin
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
-    echo $BTC_UPGRADE_URL | sudo tee $BTC_UPGRADE_URL_FILE
+    echo $BTC_UPGRADE_URL > $BTC_UPGRADE_URL_FILE
 fi
 cd ~
 
@@ -137,7 +143,7 @@ if [ "$CURRENT" != "$LND_UPGRADE_URL" ]; then
 
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
-    echo $LND_UPGRADE_URL | sudo tee $LND_UPGRADE_URL_FILE
+    echo $LND_UPGRADE_URL > $LND_UPGRADE_URL_FILE
 fi
 cd ~
 
@@ -147,14 +153,16 @@ chown -R bitcoin:bitcoin /opt/mynode
 
 
 # Install LND Hub
-cd /opt/mynode
-rm -rf LndHub
-sudo -u bitcoin git clone https://github.com/BlueWallet/LndHub.git
-cd LndHub
-sudo -u bitcoin npm install
-sudo -u bitcoin ln -s /home/bitcoin/.lnd/tls.cert tls.cert
-sudo -u bitcoin ln -s /home/bitcoin/.lnd/data/chain/bitcoin/mainnet/admin.macaroon admin.macaroon
-
+if [ ! -f /tmp/installed_lndhub ]; then
+    cd /opt/mynode
+    rm -rf LndHub
+    sudo -u bitcoin git clone https://github.com/BlueWallet/LndHub.git
+    cd LndHub
+    sudo -u bitcoin npm install
+    sudo -u bitcoin ln -s /home/bitcoin/.lnd/tls.cert tls.cert
+    sudo -u bitcoin ln -s /home/bitcoin/.lnd/data/chain/bitcoin/mainnet/admin.macaroon admin.macaroon
+    touch /tmp/installed_lndhub
+fi
 
 # Install electrs (only build to save new version, now included in overlay)
 #cd /home/admin/download
@@ -167,47 +175,59 @@ sudo -u bitcoin ln -s /home/bitcoin/.lnd/data/chain/bitcoin/mainnet/admin.macaro
 
 
 # Install RTL
-cd /opt/mynode
-rm -rf RTL
-sudo -u bitcoin wget https://github.com/ShahanaFarooqui/RTL/archive/v0.3.3.tar.gz -O RTL.tar.gz
-sudo -u bitcoin tar -xvf RTL.tar.gz
-sudo -u bitcoin rm RTL.tar.gz
-sudo -u bitcoin mv RTL-* RTL
-cd RTL
-sudo -u bitcoin npm install
+if [ ! -f /tmp/installed_rtl ]; then
+    cd /opt/mynode
+    rm -rf RTL
+    sudo -u bitcoin wget https://github.com/ShahanaFarooqui/RTL/archive/v0.3.3.tar.gz -O RTL.tar.gz
+    sudo -u bitcoin tar -xvf RTL.tar.gz
+    sudo -u bitcoin rm RTL.tar.gz
+    sudo -u bitcoin mv RTL-* RTL
+    cd RTL
+    sudo -u bitcoin npm install
+    touch /tmp/installed_rtl
+fi
 
 
 # Install LND Admin
-cd /opt/mynode
-rm -rf lnd-admin
-sudo -u bitcoin wget https://github.com/janoside/lnd-admin/archive/v0.10.12.tar.gz -O lnd-admin.tar.gz
-sudo -u bitcoin tar -xvf lnd-admin.tar.gz
-sudo -u bitcoin rm lnd-admin.tar.gz
-sudo -u bitcoin mv lnd-* lnd-admin
-cd lnd-admin
-sudo -u bitcoin npm install
+if [ ! -f /tmp/installed_lndadmin ]; then
+    cd /opt/mynode
+    rm -rf lnd-admin
+    sudo -u bitcoin wget https://github.com/janoside/lnd-admin/archive/v0.10.12.tar.gz -O lnd-admin.tar.gz
+    sudo -u bitcoin tar -xvf lnd-admin.tar.gz
+    sudo -u bitcoin rm lnd-admin.tar.gz
+    sudo -u bitcoin mv lnd-* lnd-admin
+    cd lnd-admin
+    sudo -u bitcoin npm install
+    touch /tmp/installed_lndadmin
+fi
 
 
 # Install Bitcoin RPC Explorer
-cd /opt/mynode
-rm -rf btc-rpc-explorer
-sudo -u bitcoin wget https://github.com/janoside/btc-rpc-explorer/archive/v1.0.3.tar.gz -O btc-rpc-explorer.tar.gz
-sudo -u bitcoin tar -xvf btc-rpc-explorer.tar.gz
-sudo -u bitcoin rm btc-rpc-explorer.tar.gz
-sudo -u bitcoin mv btc-rpc-* btc-rpc-explorer
-cd btc-rpc-explorer
-sudo -u bitcoin npm install
+if [ ! -f /tmp/installed_btcrpcexplorer ]; then
+    cd /opt/mynode
+    rm -rf btc-rpc-explorer
+    sudo -u bitcoin wget https://github.com/janoside/btc-rpc-explorer/archive/v1.0.3.tar.gz -O btc-rpc-explorer.tar.gz
+    sudo -u bitcoin tar -xvf btc-rpc-explorer.tar.gz
+    sudo -u bitcoin rm btc-rpc-explorer.tar.gz
+    sudo -u bitcoin mv btc-rpc-* btc-rpc-explorer
+    cd btc-rpc-explorer
+    sudo -u bitcoin npm install
+    touch /tmp/installed_btcrpcexplorer
+fi
 
 
 # Install LND Connect
-rm -rf /tmp/download
-mkdir -p /tmp/download
-cd /tmp/download
-wget https://github.com/LN-Zap/lndconnect/releases/download/v0.1.0/lndconnect-linux-armv7-v0.1.0.tar.gz -O lndconnect.tar.gz
-tar -xvf lndconnect.tar.gz
-rm lndconnect.tar.gz
-mv lndconnect-* lndconnect
-install -m 0755 -o root -g root -t /usr/local/bin lndconnect/* 
+if [ ! -f /tmp/installed_lndconnect ]; then
+    rm -rf /tmp/download
+    mkdir -p /tmp/download
+    cd /tmp/download
+    wget https://github.com/LN-Zap/lndconnect/releases/download/v0.1.0/lndconnect-linux-armv7-v0.1.0.tar.gz -O lndconnect.tar.gz
+    tar -xvf lndconnect.tar.gz
+    rm lndconnect.tar.gz
+    mv lndconnect-* lndconnect
+    install -m 0755 -o root -g root -t /usr/local/bin lndconnect/* 
+    touch /tmp/installed_lndconnect
+fi
 
 #########################################################
 
@@ -217,12 +237,14 @@ rm -rf /tmp/rootfs.tar.gz
 rm -rf /tmp/upgrade/
 mkdir -p /tmp/upgrade
 
-TARBALL="mynode_rootfs_rock64.tar.gz"
-which raspi-config
-if [ $? = 0 ]; then
-    FOLDER="mynode_rootfs_rock64.tar.gz"
+TARBALL=""
+if [ $IS_ROCK64 = 1 ]; then
+    TARBALL="mynode_rootfs_rock64.tar.gz"
+elif [ $IS_RASPI3 = 1 ]; then
+    TARBALL="mynode_rootfs_raspi3.tar.gz"
+elif [ $IS_RASPI4 = 1 ]; then
+    TARBALL="mynode_rootfs_raspi4.tar.gz"
 fi
-
 wget http://${SERVER_IP}:8000/${TARBALL} -O /tmp/rootfs.tar.gz
 
 tar -xvf /tmp/rootfs.tar.gz -C /tmp/upgrade/
@@ -270,6 +292,16 @@ rm -rf /etc/resolv.conf
 rm -rf /tmp/*
 
 sync
+
+set +x
+echo ""
+echo ""
+echo "##################################"
+echo "          SETUP COMPLETE          "
+echo "   Reboot your device to begin!   "
+echo "##################################"
+echo ""
+echo ""
 
 ### MAKE IMAGE NOW ###
 # This prevents auto gen files like certs to be part of the base image
