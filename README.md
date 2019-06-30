@@ -15,7 +15,7 @@ myNode is a software that integrates a number of Bitcoin related open source pro
 By running a Bitcoin Full node and Lightning on your myNode device, you maintain all the security and advantages originally intended in the Bitcoin protocol. Information about your Bitcoin addresses and spending is verified by your local node and removes the need to trust online 3rd parties for getting information about your funds.
 
 ## myNode Premium
-myNode offers premium support, simplified upgrades and more! If you are running myNode Community Edition and want one-click upgrades or you want to purchase a supported, high quility device, please visit mynodebtc.com.
+myNode offers premium support, simplified upgrades and more! If you are running myNode Community Edition and want one-click upgrades or you want to purchase a supported, high quality device, please visit mynodebtc.com.
 
 Upgrade now or purchase a device at:<br/>
 https://mynodebtc.com/
@@ -39,6 +39,7 @@ Each myNode device comes with a number of wonderful features:
 - QuickSync - Quickly sync Bitcoin blockchain
 - LND Connect - Generate QR Codes for connecting wallets
 - LN Channel Backup
+- Tor
 - Dedicated hardware keeps you constantly and securely connected!
 - And more!
 
@@ -52,7 +53,7 @@ We currently support images for the following devices:
 You can run myNode on your own device in just a few easy steps!
 
 1. Download an Image
-    * Raspberry Pi 3B+ | http://mynodebtc.com/device/base_images/raspi_standard_final.img.gz
+    * Raspberry Pi 3B+ | http://mynodebtc.com/device/base_images/raspi3_standard_final.img.gz
     * Raspberry Pi 4B+ | Coming soon...
     * Rock64 | http://mynodebtc.com/device/base_images/rock64_standard_final.img.gz
 2. Flash Image onto SD Card
@@ -69,19 +70,21 @@ Once you are running myNode, you can easily modify and update the software yours
 1. Start by running myNode on your device via the instructions above
 2. Modify myNode files
 3. Run 'make rootfs'
-    * Or run 'make rootfs_auto' in a new tab
+    * Or run 'make rootfs_auto' in a new console tab
     * This will automatically create artifacts as local files are modified
 4. Run 'make start_file_server'
     * This will run a local HTTP server so your device can download files
 5. On your device, run 'sudo mynode-local-upgrade [dev pc ip address]'
     * This will download your locally generated artifact and install it on your device
+    * You may need to reboot or restart certain services for some changes to take effect
 6. Test your changes!
 7. Submit Pull Request to share your updates!
 
 ## Convert new device to run myNode
 1. Run make command for your device. Ex:
     * make setup_new_rock64
-    * make setup_new_raspi
+    * make setup_new_raspi3
+    * make setup_new_raspi4
 3. Follow Instructions
 2. Reboot Device
 4. Congratulations! You're running a new myNode device!
