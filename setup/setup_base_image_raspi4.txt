@@ -2,12 +2,14 @@
 ### Setup Base OS
 ###
 
-# After Raspi Flash
+# TODO: MAY NEED UPDATES - NEED TO TEST
+
+# MANUAL: After Raspi Flash
 #  - Touch ssh file on rootfs
 
 # Login as pi / raspberry
 
-# MANUAL: Run raspi-config
+# MANUAL: Run sudo raspi-config
     Update 8: Get latest configuration tool
     Network Options 2: Hostname -> myNode
     Boot Options 3: Choose Desktop / CLI -> Console
@@ -21,6 +23,10 @@
 # Add admin user
 sudo useradd -p $(openssl passwd -1 bolt) -m -s /bin/bash admin
 sudo adduser admin sudo
+
+# Update OS
+sudo apt-get update
+sudo apt-get -y upgrade
 
 # Reboot
 sudo reboot
@@ -56,4 +62,3 @@ sync
 # - Image with SSH access
 # - Root user disabled
 # - Default user admin with password bolt
-

@@ -38,9 +38,12 @@ apt-get -y install --no-install-recommends expect
 useradd -m -s /bin/bash bitcoin || true
 usermod -a -G debian-tor bitcoin
 
-# Install python tools (run twice, some broken deps may cause install failures on first try for line 3)
+
+# Install pip packages
 pip install setuptools
+pip install --upgrade setuptools
 pip install wheel
+pip install --upgrade wheel
 pip install speedtest-cli transmissionrpc flask python-bitcoinrpc redis prometheus_client requests
 pip install python-pam python-bitcoinlib psutil
 pip install grpcio grpcio-tools googleapis-common-protos 
