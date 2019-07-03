@@ -293,6 +293,7 @@ rm -rf /root/.bash_history
 rm -rf /root/.ssh/known_hosts
 rm -rf /etc/resolv.conf
 rm -rf /tmp/*
+rm -rf ~/setup_device.sh
 
 sync
 
