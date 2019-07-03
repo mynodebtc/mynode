@@ -2,7 +2,7 @@
 CONFIG = {}
 
 # Device Config
-CONFIG["device_type"] = "raspi"
+CONFIG["device_type"] = "raspi3"
 
 # Enabled Features
 CONFIG["rtl_enabled"] = True
