@@ -64,6 +64,8 @@ def gen_new_wallet_seed():
     return seed
 
 def restart_lnd_actual():
+    global lnd_ready
+    lnd_ready = False
     os.system("systemctl restart lnd")
     os.system("systemctl restart lnd_unlock")
 
@@ -129,6 +131,8 @@ def get_lnd_status():
             height = m.group(1)
             percent = 100.0 * (float(height) / bitcoin_block_height)
             return "Syncing... {:.2f}%".format(percent)
+        elif "Waiting for chain backend to finish sync" in line:
+            return "Syncing..."
         elif "Started rescan from block" in line:
             return "Scanning..."
     return "Waiting..."
