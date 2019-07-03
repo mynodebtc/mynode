@@ -28,7 +28,7 @@ apt-get -y install build-essential python-dev python-pip python3-dev python3-pip
 apt-get -y install transmission-cli fail2ban ufw tclsh bluez python-bluez redis-server
 apt-get -y install mongodb-server clang hitch zlib1g-dev libffi-dev file toilet ncdu
 apt-get -y install toilet-fonts avahi-daemon figlet libsecp256k1-dev 
-apt-get -y install inotify-tools libssl-dev tor
+apt-get -y install inotify-tools libssl-dev tor tmux screen
 
 
 # Install other things without recommendation
@@ -127,7 +127,7 @@ fi
 cd ~
 
 # Install Lightning
-LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/v0.6.1-beta/lnd-linux-armv7-v0.6.1-beta.tar.gz
+LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/v0.7.0-beta/lnd-linux-armv7-v0.7.0-beta.tar.gz
 LND_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lnd_url
 CURRENT=""
 if [ -f $LND_UPGRADE_URL_FILE ]; then
