@@ -4,7 +4,7 @@
 IS_RASPI=1
 IS_ROCK64=0
 IS_STANDARD=1
-DEVICE_TYPE="raspi"
+DEVICE_TYPE="raspi4"
 
 # Other Info
 UPGRADE_DOWNLOAD_URL="http://www.mynodebtc.com/device_api/download_latest_standard.php?type=${DEVICE_TYPE}&product_key=${PRODUCT_KEY}&serial=${SERIAL_NUM}"
