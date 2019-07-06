@@ -20,6 +20,7 @@ if [ ! -f /var/lib/mynode/.expanded_rootfs ]; then
     fi
     if [ $IS_ROCK64 = 1 ]; then
         /usr/lib/armbian/armbian-resize-filesystem start
+        touch /var/lib/mynode/.expanded_rootfs 
     fi
 fi
 
