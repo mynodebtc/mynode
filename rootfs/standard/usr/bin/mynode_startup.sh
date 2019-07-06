@@ -12,10 +12,14 @@ fi
 
 # Expand Root FS
 mkdir -p /var/lib/mynode
-if [ $IS_RASPI -eq 1 ]; then
-    if [ ! -f /var/lib/mynode/.expanded_rootfs ]; then
+
+if [ ! -f /var/lib/mynode/.expanded_rootfs ]; then
+    if [ $IS_RASPI -eq 1 ]; then
         raspi-config --expand-rootfs
         touch /var/lib/mynode/.expanded_rootfs 
+    fi
+    if [ $IS_ROCK64 = 1 ]; then
+        /usr/lib/armbian/armbian-resize-filesystem start
     fi
 fi
 
@@ -44,6 +48,7 @@ done
 
 # Setup Drive
 mkdir -p /mnt/hdd/mynode
+mkdir -p /mnt/hdd/mynode/settings
 mkdir -p /mnt/hdd/mynode/bitcoin
 mkdir -p /mnt/hdd/mynode/lnd
 mkdir -p /mnt/hdd/mynode/quicksync
@@ -56,12 +61,13 @@ rm -rf $MYNODE_DIR/.mynode_bitcoind_synced
 
 
 # Setup SD Card (if necessary)
+mkdir -p /home/bitcoin/.mynode/
 mkdir -p /home/admin/.bitcoin/
 chown admin:admin /home/admin/.bitcoin/
+rm -rf /etc/motd # Remove simple motd for update-motd.d
 
 
 # Regen SSH keys
-mkdir -p /home/bitcoin/.mynode/
 if [ ! -f /home/bitcoin/.mynode/.gensshkeys ]; then
     rm -rf /etc/ssh/ssh_host_*
     dpkg-reconfigure openssh-server
@@ -70,26 +76,28 @@ if [ ! -f /home/bitcoin/.mynode/.gensshkeys ]; then
     touch /home/bitcoin/.mynode/.gensshkeys
 fi
 
+# Sync product key (SD preferred)
+cp -f /home/bitcoin/.mynode/.product_key* /mnt/hdd/mynode/settings/
+cp -f /mnt/hdd/mynode/settings/.product_key* home/bitcoin/.mynode/
 
 # Randomize RPC password
-mkdir -p /home/bitcoin/.mynode/
-if [ ! -f /home/bitcoin/.mynode/.btcrpcpw ]; then
+if [ ! -f /mnt/hdd/mynode/settings/.btcrpcpw ]; then
     # Write random pw to .btcrpcpw
-    < /dev/urandom tr -dc A-Za-z0-9 | head -c${1:-24} > /home/bitcoin/.mynode/.btcrpcpw
-    chown bitcoin:bitcoin /home/bitcoin/.mynode/.btcrpcpw
-    chmod 600 /home/bitcoin/.mynode/.btcrpcpw
+    < /dev/urandom tr -dc A-Za-z0-9 | head -c${1:-24} > /mnt/hdd/mynode/settings/.btcrpcpw
+    chown bitcoin:bitcoin /mnt/hdd/mynode/settings/.btcrpcpw
+    chmod 600 /mnt/hdd/mynode/settings/.btcrpcpw
 fi
 
 # Setup LND Node Name
-if [ ! -f /home/bitcoin/.mynode/.lndalias ]; then
-    echo "mynodebtc.com [myNode]" > /home/bitcoin/.mynode/.lndalias
+if [ ! -f /mnt/hdd/mynode/settings/.lndalias ]; then
+    echo "mynodebtc.com [myNode]" > /mnt/hdd/mynode/settings/.lndalias
 fi
 
 
 # BTC Config
 cp -f /usr/share/mynode/bitcoin.conf /mnt/hdd/mynode/bitcoin/bitcoin.conf
 
-PW=$(cat /home/bitcoin/.mynode/.btcrpcpw)
+PW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
 sed -i "s/rpcpassword=.*/rpcpassword=$PW/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
 
 cp -f /mnt/hdd/mynode/bitcoin/bitcoin.conf /home/admin/.bitcoin/bitcoin.conf
@@ -98,7 +106,7 @@ chown admin:admin /home/admin/.bitcoin/bitcoin.conf
 
 # LND Config
 cp /usr/share/mynode/lnd.conf /mnt/hdd/mynode/lnd/lnd.conf
-ALIAS=$(cat /home/bitcoin/.mynode/.lndalias)
+ALIAS=$(cat /mnt/hdd/mynode/settings/.lndalias)
 sed -i "s/alias=.*/alias=$ALIAS/g" /mnt/hdd/mynode/lnd/lnd.conf
 chown bitcoin:bitcoin /mnt/hdd/mynode/lnd/lnd.conf
 
@@ -108,15 +116,15 @@ chown bitcoin:bitcoin /opt/mynode/RTL/RTL.conf
 
 
 # Update files that need RPC password (needed if upgrades overwrite files)
-PW=$(cat /home/bitcoin/.mynode/.btcrpcpw)
+PW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
 if [ -f /opt/mynode/LndHub/config.js ]; then
     sed -i "s/mynode:.*@/mynode:$PW@/g" /opt/mynode/LndHub/config.js
 fi
 if [ -f /opt/mynode/btc-rpc-explorer/.env ]; then
     sed -i "s/BTCEXP_BITCOIND_PASS=.*/BTCEXP_BITCOIND_PASS=$PW/g" /opt/mynode/btc-rpc-explorer/.env
 fi
-echo "BTC_RPC_PASSWORD=$PW" > /home/bitcoin/.mynode/.btcrpc_environment
-chown bitcoin:bitcoin /home/bitcoin/.mynode/.btcrpc_environment
+echo "BTC_RPC_PASSWORD=$PW" > /mnt/hdd/mynode/settings/.btcrpc_environment
+chown bitcoin:bitcoin /mnt/hdd/mynode/settings/.btcrpc_environment
 if [ -f /mnt/hdd/mynode/bitcoin/bitcoin.conf ]; then
     sed -i "s/rpcpassword=.*/rpcpassword=$PW/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
 fi
@@ -135,6 +143,10 @@ echo "BTCARGS=" > /mnt/hdd/mynode/bitcoin/env
 USER=$(stat -c '%U' /mnt/hdd/mynode/quicksync)
 if [ "$USER" != "bitcoin" ]; then
     chown -R bitcoin:bitcoin /mnt/hdd/mynode/quicksync
+fi
+USER=$(stat -c '%U' /mnt/hdd/mynode/settings)
+if [ "$USER" != "bitcoin" ]; then
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/settings
 fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/bitcoin)
 if [ "$USER" != "bitcoin" ]; then

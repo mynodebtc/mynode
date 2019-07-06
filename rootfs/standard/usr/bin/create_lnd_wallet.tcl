@@ -2,7 +2,7 @@
 
 set timeout 5
 
-set f [open "/home/bitcoin/.mynode/.lndpw"]
+set f [open "/mnt/hdd/mynode/settings/.lndpw"]
 set pw [read $f]
 set seed [lindex $argv 0];
 close $f

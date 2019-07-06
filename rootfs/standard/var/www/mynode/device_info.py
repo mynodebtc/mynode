@@ -42,14 +42,17 @@ def get_device_serial():
 
 def set_skipped_product_key():
     os.system("touch /home/bitcoin/.mynode/.product_key_skipped")
+    os.system("touch /mnt/hdd/mynode/settings/.product_key_skipped")
 def unset_skipped_product_key():
     os.system("rm -rf /home/bitcoin/.mynode/.product_key_skipped")
+    os.system("rm -rf /mnt/hdd/mynode/settings/.product_key_skipped")
 def skipped_product_key():
     return os.path.isfile("/home/bitcoin/.mynode/.product_key_skipped")
 
 
 def delete_product_key():
     os.system("rm -rf /home/bitcoin/.mynode/.product_key")
+    os.system("rm -rf /mnt/hdd/mynode/settings/.product_key")
 def has_product_key():
     return os.path.isfile("/home/bitcoin/.mynode/.product_key")
 def get_product_key():
@@ -71,6 +74,8 @@ def is_valid_product_key():
 def save_product_key(product_key):
     pk = product_key.replace("-","")
     os.system("echo '{}' > /home/bitcoin/.mynode/.product_key".format(pk))
+    os.system("echo '{}' > /mnt/hdd/mynode/settings/.product_key".format(pk))
 def delete_product_key_error():
     os.system("rm -rf /home/bitcoin/.mynode/.product_key_error")
+    os.system("rm -rf /mnt/hdd/mynode/settings/.product_key_error")
     

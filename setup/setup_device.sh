@@ -18,6 +18,11 @@ IS_RASPI3=0
 IS_RASPI4=0
 uname -a | grep aarch64 && IS_ROCK64=1 || IS_RASPI3=1
 
+# Make sure FS is expanded for Rock64
+if [ $IS_ROCK64 = 1 ]; then
+    /usr/lib/armbian/armbian-resize-filesystem start
+fi
+
 # Update OS
 apt-get update
 apt-get -y upgrade
@@ -29,6 +34,7 @@ apt-get -y install transmission-cli fail2ban ufw tclsh bluez python-bluez redis-
 apt-get -y install mongodb-server clang hitch zlib1g-dev libffi-dev file toilet ncdu
 apt-get -y install toilet-fonts avahi-daemon figlet libsecp256k1-dev 
 apt-get -y install inotify-tools libssl-dev tor tmux screen
+#apt-get -y install python-grpcio python3-grpcio # Need Debian Buster on Rock64 first...
 
 
 # Install other things without recommendation
@@ -294,6 +300,7 @@ rm -rf /root/.ssh/known_hosts
 rm -rf /etc/resolv.conf
 rm -rf /tmp/*
 rm -rf ~/setup_device.sh
+rm -rf /etc/motd # Remove simple motd for update-motd.d
 
 sync
 
