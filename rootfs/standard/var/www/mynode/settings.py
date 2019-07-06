@@ -32,8 +32,8 @@ def reset_bitcoin_env_file():
 def delete_bitcoin_data():
     os.system("rm -rf /mnt/hdd/mynode/bitcoin")
     os.system("rm -rf /mnt/hdd/mynode/quicksync/.quicksync_complete")
-    os.system("rm -rf /home/bitcoin/.mynode/.btcrpc_environment")
-    os.system("rm -rf /home/bitcoin/.mynode/.btcrpcpw")
+    os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpc_environment")
+    os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpcpw")
 
 def delete_quicksync_data():
     os.system("rm -rf /mnt/hdd/mynode/quicksync")
@@ -43,7 +43,7 @@ def delete_lnd_data():
     #os.system("rm -f "+LND_WALLET_FILE)
     os.system("rm -rf "+LND_DATA_FOLDER)
     os.system("rm -rf /home/bitcoin/.lnd-admin/credentials.json")
-    os.system("rm -rf /home/bitcoin/.mynode/.lndpw")
+    os.system("rm -rf /mnt/hdd/mynode/settings/.lndpw")
     os.system("rm -rf /home/admin/.lnd/")
     return True
 

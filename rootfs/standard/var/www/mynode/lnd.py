@@ -251,7 +251,7 @@ def page_lnd_change_alias():
         return redirect(url_for(".page_lnd", error_message="Empty Alias"))
     if len(alias) > 35:
         return redirect(url_for(".page_lnd", error_message="Invalid Alias"))
-    with open("/home/bitcoin/.mynode/.lndalias", "w") as f:
+    with open("/mnt/hdd/mynode/settings/.lndalias", "w") as f:
         utf8_alias = alias.decode('utf-8', 'ignore')
         f.write(utf8_alias)
         f.close()

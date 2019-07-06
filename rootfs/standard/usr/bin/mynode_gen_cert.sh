@@ -2,12 +2,22 @@
 
 # Main variables
 OUTPUT_DIR="/home/bitcoin/.mynode/electrs"
+HDD_DIR="/mnt/hdd/mynode/settings/electrs"
 domain=myNode.local
 commonname=myNode.local
 
 mkdir -p $OUTPUT_DIR
+mkdir -p $HDD_DIR
+
+# Check for files on HDD and move to SD
+if [ ! -f $OUTPUT_DIR/$domain.pem ] && [ -f $HDD_DIR/$domain.pem ]; then
+    cp -f $HDD_DIR/* $OUTPUT_DIR/
+fi
 
 if [ -f $OUTPUT_DIR/$domain.pem ]; then
+    # Verify files are stored on HDD
+    cp -f $OUTPUT_DIR/* $HDD_DIR/
+
     exit 0
 fi
  
@@ -41,4 +51,6 @@ echo "Creating PEM"
 cat $OUTPUT_DIR/$domain.key > $OUTPUT_DIR/$domain.pem
 echo "" >> $OUTPUT_DIR/$domain.pem
 cat $OUTPUT_DIR/$domain.crt >> $OUTPUT_DIR/$domain.pem
- 
+
+# Put copy of files of HDD
+cp -f $OUTPUT_DIR/* $HDD_DIR/

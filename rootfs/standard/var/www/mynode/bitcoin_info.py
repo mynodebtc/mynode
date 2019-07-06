@@ -20,7 +20,7 @@ def get_bitcoin_rpc_username():
 
 def get_bitcoin_rpc_password():
     try:
-        with open("/home/bitcoin/.mynode/.btcrpcpw", "r") as f:
+        with open("/mnt/hdd/mynode/settings/.btcrpcpw", "r") as f:
             return f.read()
     except:
         return "error_getting_password"

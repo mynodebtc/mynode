@@ -5,7 +5,7 @@ set timeout 20
 set tls_cert "/home/bitcoin/.lnd/tls.cert" 
 set macaroon "/home/bitcoin/.lnd/data/chain/bitcoin/mainnet/admin.macaroon"
 
-set f [open "/home/bitcoin/.mynode/.lndpw"]
+set f [open "/mnt/hdd/mynode/settings/.lndpw"]
 set pw [read $f]
 
 spawn lncli --tlscertpath $tls_cert --macaroonpath $macaroon unlock
