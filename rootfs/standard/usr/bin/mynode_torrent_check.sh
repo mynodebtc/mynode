@@ -3,10 +3,15 @@
 source /usr/share/mynode/mynode_config.sh
 
 echo "Waiting until QuickSync is complete..."
-while [ ! -f $QUICKSYNC_DIR/.quicksync_complete ]; do
+while [ ! -f "$QUICKSYNC_COMPLETE_FILE" ]; do
     sleep 1m
 done
-echo "Quicksync Complete. Checking if there is a new torrent available..."
+echo "Quicksync Complete! Waiting until Bitcoin Sync is complete..."
+while [ ! -f "$BITCOIN_SYNCED_FILE" ]; do
+    sleep 1m
+done
+echo "Bitcoin Sync Complete! Checking if there is a new torrent available..."
+sleep 1d
 
 while true; do
     # Wait a while... we don't want everyone starting on a new torrent at once

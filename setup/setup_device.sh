@@ -17,6 +17,7 @@ IS_ROCK64=0
 IS_RASPI3=0
 IS_RASPI4=0
 uname -a | grep aarch64 && IS_ROCK64=1 || IS_RASPI3=1
+# TODO: Determine RASPI4
 
 # Make sure FS is expanded for Rock64
 if [ $IS_ROCK64 = 1 ]; then

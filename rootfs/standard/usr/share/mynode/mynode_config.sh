@@ -24,6 +24,9 @@ LND_CHANNEL_FILE_BACKUP="/home/bitcoin/lnd_backup/channel.backup"
 LND_ADMIN_MACAROON_FILE="/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon"
 PRODUCT_KEY_FILE="/home/bitcoin/.mynode/.product_key"
 
+BITCOIN_SYNCED_FILE="/mnt/hdd/mynode/.mynode_bitcoind_synced"
+QUICKSYNC_COMPLETE_FILE="$QUICKSYNC_DIR/.quicksync_complete"
+
 PRODUCT_KEY="not_found"
 if [ -f $PRODUCT_KEY_FILE ]; then
     PRODUCT_KEY=$(cat $PRODUCT_KEY_FILE)
