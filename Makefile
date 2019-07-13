@@ -21,7 +21,7 @@ stop_file_server:
 # Download Linux images
 out/linux_images/raspi_raspbian.zip:
 	@mkdir -p out/linux_images/
-	@wget https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2019-06-24/2019-06-20-raspbian-buster-lite.zip -O out/linux_images/raspi_raspbian.zip
+	@wget https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2019-07-12/2019-07-10-raspbian-buster-lite.zip -O out/linux_images/raspi_raspbian.zip
 out/linux_images/rock64_debian.7z:
 	@mkdir -p out/linux_images/
 	@wget https://dl.armbian.com/rock64/Debian_buster_default.7z -O out/linux_images/rock64_debian.7z
@@ -32,26 +32,26 @@ download_linux_images: out/linux_images/raspi_raspbian.zip out/linux_images/rock
 out/base_images/raspi3_base.img.gz:
 	@mkdir -p out/base_images/
 	@wget http://mynodebtc.com/device/mynode_images/raspi3_base.img.gz -O out/base_images/raspi3_base.img.gz
-#out/base_images/raspi4_base.img.gz:
-#	@mkdir -p out/base_images/
-#	@wget http://mynodebtc.com/device/mynode_images/raspi4_base.img.gz -O out/base_images/raspi4_base.img.gz
+out/base_images/raspi4_base.img.gz:
+	@mkdir -p out/base_images/
+	@wget http://mynodebtc.com/device/mynode_images/raspi4_base.img.gz -O out/base_images/raspi4_base.img.gz
 out/base_images/rock64_base.img.gz:
 	@mkdir -p out/base_images/
 	@wget http://mynodebtc.com/device/mynode_images/rock64_base.img.gz -O out/base_images/rock64_base.img.gz
-download_base_images: download_linux_images out/base_images/raspi3_base.img.gz out/base_images/rock64_base.img.gz
+download_base_images: download_linux_images out/base_images/raspi3_base.img.gz out/base_images/raspi4_base.img.gz out/base_images/rock64_base.img.gz
 
 
 # Download latest nyNode images
-out/mynode_images/raspi3_standard_final.img.gz:
+out/mynode_images/raspi3_final.img.gz:
 	@mkdir -p out/mynode_images/
-	@wget http://mynodebtc.com/device/mynode_images/raspi3_standard_final.img.gz -O out/mynode_images/raspi3_standard_final.img.gz
-#out/mynode_images/raspi4_standard_final.img.gz:
-#	@mkdir -p out/mynode_images/
-#	@wget http://mynodebtc.com/device/mynode_images/raspi4_standard_final.img.gz -O out/mynode_images/raspi4_standard_final.img.gz
-out/mynode_images/rock64_standard_final.img.gz:
+	@wget http://mynodebtc.com/device/mynode_images/raspi3_final.img.gz -O out/mynode_images/raspi3_final.img.gz
+out/mynode_images/raspi4_final.img.gz:
 	@mkdir -p out/mynode_images/
-	@wget http://mynodebtc.com/device/mynode_images/rock64_standard_final.img.gz -O out/mynode_images/rock64_standard_final.img.gz
-download_mynode_images: download_base_images out/mynode_images/raspi3_standard_final.img.gz out/mynode_images/rock64_standard_final.img.gz
+	@wget http://mynodebtc.com/device/mynode_images/raspi4_final.img.gz -O out/mynode_images/raspi4_final.img.gz
+out/mynode_images/rock64_final.img.gz:
+	@mkdir -p out/mynode_images/
+	@wget http://mynodebtc.com/device/mynode_images/rock64_final.img.gz -O out/mynode_images/rock64_final.img.gz
+download_mynode_images: download_base_images out/mynode_images/raspi3_final.img.gz out/mynode_images/raspi4_final.img.gz out/mynode_images/rock64_final.img.gz
 
 
 # Setup of New Device
@@ -69,11 +69,6 @@ setup_new_raspi3: start_file_server download_base_images rootfs
 setup_new_raspi4: start_file_server download_base_images rootfs 
 	@cp -f setup/setup_device.sh out/setup_device.sh 
 	@/bin/bash scripts/setup_new_raspi4.sh
-
-# TODO: Make images programmatically
-.PHONY: images
-images: rootfs
-	@echo "TODO"
 
 
 # Clone repo to get release tools
