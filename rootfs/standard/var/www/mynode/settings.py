@@ -103,8 +103,15 @@ def page_settings():
     pk_error = not is_valid_product_key()
     uptime = get_system_uptime()
 
+    message = ""
+    if request.args.get('error_message'):
+        message = Markup("<div class='error_message'>"+request.args.get('error_message')+"</div>")
+    if request.args.get('success_message'):
+        message = Markup("<div class='success_message'>"+request.args.get('success_message')+"</div>")
+
     templateData = {
         "title": "myNode Settings",
+        "message": message,
         "password_message": "",
         "current_version": current_version,
         "latest_version": latest_version,
@@ -196,12 +203,7 @@ def factory_reset_page():
     p = pam.pam()
     pw = request.form.get('password_factory_reset')
     if pw == None or p.authenticate("admin", pw) == False:
-        message = "<div class='error_message'>Invalid Password</div>"
-        templateData = {
-            "title": "myNode Settings",
-            "overall_message": Markup(message)
-        }
-        return render_template('settings.html', **templateData)
+        return redirect(url_for(".page_settings", error_message="Invalid Password"))
     else:
         t = Timer(2.0, factory_reset)
         t.start()
@@ -225,52 +227,32 @@ def change_password_page():
     p = pam.pam()
     current = request.form.get('current_password')
     if current == None or p.authenticate("admin", current) == False:
-        message = "<div class='error_message'>Incorrect password</div>"
-        templateData = {
-            "title": "myNode Settings",
-            "password_message": Markup(message)
-        }
-        return render_template('settings.html', **templateData)
+        return redirect(url_for(".page_settings", error_message="Invalid Password"))
 
     p1 = request.form.get('password1')
     p2 = request.form.get('password2')
 
     if p1 == None or p2 == None or p1 == "" or p2 == "" or p1 != p2:
-        message = "<div class='error_message'>Passwords did not match or were empty!</div>"
+        return redirect(url_for(".page_settings", error_message="Passwords did not match or were empty!"))
     else:
         # Change password
         subprocess.call(['/usr/bin/mynode_chpasswd.sh', p1])
 
-    templateData = {
-        "title": "myNode Settings",
-        "password_message": Markup(message)
-    }
-    return render_template('settings.html', **templateData)
+    return redirect(url_for(".page_settings", success_message="Password Updated!"))
 
 
 @mynode_settings.route("/settings/delete-lnd-wallet", methods=['POST'])
 def page_lnd_delete_wallet():
-
     p = pam.pam()
     pw = request.form.get('password_lnd_delete')
     if pw == None or p.authenticate("admin", pw) == False:
-        message = "<div class='error_message'>Invalid Password</div>"
-        templateData = {
-            "title": "myNode Settings",
-            "overall_message": Markup(message)
-        }
-        return render_template('settings.html', **templateData)
+        return redirect(url_for(".page_settings", error_message="Invalid Password"))
     else:
         # Successful Auth
         delete_lnd_data()
         restart_lnd()
 
-    message = "<div class='success_message'>Lighting Wallet Deleted!</div>"
-    templateData = {
-        "title": "myNode Settings",
-        "overall_message": Markup(message)
-    }
-    return render_template('settings.html', **templateData)
+    return redirect(url_for(".page_settings", success_message="Lightning wallet deleted!"))
 
 @mynode_settings.route("/settings/mynode_logs.tar.gz")
 def download_logs_page():

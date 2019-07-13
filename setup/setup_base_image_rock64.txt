@@ -1,6 +1,5 @@
 ###
 ### Setup Base OS
-### Creates rock64_start.img
 ###
 
 # After Armbian Flash

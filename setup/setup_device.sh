@@ -1,5 +1,5 @@
 ###
-### Setup myNode on Rock64
+### Setup myNode (all devices)
 ### Run with "sudo"
 ###
 

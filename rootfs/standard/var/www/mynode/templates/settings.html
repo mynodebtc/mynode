@@ -196,7 +196,13 @@
                 </tr>
                 <tr>
                     <td>Product Key</td>
-                    <td style="padding-left: 20px;">{{product_key}}</td>
+                    <td style="padding-left: 20px;">
+                        {{product_key}}
+                        {% if product_key_skipped %}
+                            <br/>
+                            <a href="/product-key" class="ui-button ui-widget ui-corner-all settings_button_small">Enter Product Key</a>
+                        {% endif %}
+                    </td>
                 </tr>
                 <tr>
                     <td>Uptime</td>
