@@ -21,6 +21,10 @@ sudo sed -i 's/rock64/myNode/g' /etc/hosts
 sudo sed -i "s/MAX_SPEED=.*/MAX_SPEED=1510000/" /etc/default/cpufrequtils 
 sudo systemctl restart cpufrequtils
 
+# Update packages
+sudo apt-get update
+sudo apt-get -y upgrade
+
 # Sync
 sync
 

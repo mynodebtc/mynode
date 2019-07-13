@@ -1,3 +1,5 @@
+#!/bin/bash
+
 ###
 ### Setup myNode (all devices)
 ### Run with "sudo"
@@ -24,18 +26,23 @@ if [ $IS_ROCK64 = 1 ]; then
     /usr/lib/armbian/armbian-resize-filesystem start
 fi
 
+# Add sources
+echo "deb http://repo.mongodb.org/apt/debian "$(lsb_release -sc)"/mongodb-org/4.0 main" | tee /etc/apt/sources.list.d/mongodb.list
+
 # Update OS
-apt-get update
+apt -y update # Needed to accept new repos
+apt-get -y update
 apt-get -y upgrade
 
 # Install other tools (run section multiple times to make sure success)
 apt-get -y install htop git curl bash-completion jq dphys-swapfile lsof libzmq3-dev
 apt-get -y install build-essential python-dev python-pip python3-dev python3-pip 
 apt-get -y install transmission-cli fail2ban ufw tclsh bluez python-bluez redis-server
-apt-get -y install mongodb-server clang hitch zlib1g-dev libffi-dev file toilet ncdu
+#apt-get -y install mongodb-org
+apt-get -y install clang hitch zlib1g-dev libffi-dev file toilet ncdu
 apt-get -y install toilet-fonts avahi-daemon figlet libsecp256k1-dev 
 apt-get -y install inotify-tools libssl-dev tor tmux screen
-#apt-get -y install python-grpcio python3-grpcio # Need Debian Buster on Rock64 first...
+apt-get -y install python-grpcio python3-grpcio # Need Debian Buster on Rock64 first...
 
 
 # Install other things without recommendation
@@ -56,9 +63,9 @@ pip install python-pam python-bitcoinlib psutil
 pip install grpcio grpcio-tools googleapis-common-protos 
 
 
-# Update python3 to 3.7.2
+# Update python3 to 3.7.X
 PYTHON3_VERSION=$(python3 --version)
-if [ "$PYTHON3_VERSION" != "Python 3.7.2" ]; then
+if [[ "$PYTHON3_VERSION" != *"Python 3.7"* ]]; then
     mkdir -p /tmp/download
     cd /tmp/download
     wget https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tar.xz
