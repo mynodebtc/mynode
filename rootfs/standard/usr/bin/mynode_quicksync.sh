@@ -82,5 +82,6 @@ fi
 echo "Running torrent..."
 transmission-cli \
     --download-dir $QUICKSYNC_DIR \
+    --config-dir $QUICKSYNC_CONFIG_DIR \
     --finish=/usr/bin/mynode_quicksync_complete.sh \
     $QUICKSYNC_DIR/blockchain.torrent
