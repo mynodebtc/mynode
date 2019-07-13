@@ -25,7 +25,13 @@ done
 echo "QuickSync Complete! Enabling Uploading."
 
 while true; do
-    if [ -f $QUICKSYNC_BANDWIDTH_FILE ]; then
+    if [ ! -f "/mnt/hdd/mynode/quicksync/.quicksync_complete" ]; then
+        echo "QuickSync not complete, stopping upload"
+        transmission-remote -u 0
+    elif [ ! -f "/mnt/hdd/mynode/.mynode_bitcoind_synced" ]; then
+        echo "Bitcoin not synced, stopping upload"
+        transmission-remote -u 0
+    elif [ -f $QUICKSYNC_BANDWIDTH_FILE ]; then
         RATE=$(cat $QUICKSYNC_BANDWIDTH_FILE)
         echo "Setting upload rate to $RATE kbps"
         transmission-remote -u $RATE
@@ -33,7 +39,7 @@ while true; do
         echo "Setting upload rate to unlimited"
         transmission-remote -U
     fi
-    sleep 1d
+    sleep 1h
 done
 
 # We should not exit
