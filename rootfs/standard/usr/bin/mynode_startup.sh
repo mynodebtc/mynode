@@ -50,6 +50,7 @@ done
 # Setup Drive
 mkdir -p /mnt/hdd/mynode
 mkdir -p /mnt/hdd/mynode/settings
+mkdir -p /mnt/hdd/mynode/.config
 mkdir -p /mnt/hdd/mynode/bitcoin
 mkdir -p /mnt/hdd/mynode/lnd
 mkdir -p /mnt/hdd/mynode/quicksync
@@ -148,6 +149,10 @@ fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/settings)
 if [ "$USER" != "bitcoin" ]; then
     chown -R bitcoin:bitcoin /mnt/hdd/mynode/settings
+fi
+USER=$(stat -c '%U' /mnt/hdd/mynode/.config)
+if [ "$USER" != "bitcoin" ]; then
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/.config
 fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/bitcoin)
 if [ "$USER" != "bitcoin" ]; then

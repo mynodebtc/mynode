@@ -37,7 +37,8 @@ def delete_bitcoin_data():
 
 def delete_quicksync_data():
     os.system("rm -rf /mnt/hdd/mynode/quicksync")
-    os.system("rm -rf /home/bitcoin/.config/transmission")
+    os.system("rm -rf /home/bitcoin/.config/transmission") # Old dir
+    os.system("rm -rf /mnt/hdd/mynode/.config/transmission")
 
 def delete_lnd_data():
     #os.system("rm -f "+LND_WALLET_FILE)

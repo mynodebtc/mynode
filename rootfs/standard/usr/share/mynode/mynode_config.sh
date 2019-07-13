@@ -13,7 +13,7 @@ SERIAL_NUM=$(cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2)
 # Set all default / standard bash config settings
 MYNODE_DIR=/mnt/hdd/mynode
 QUICKSYNC_DIR=/mnt/hdd/mynode/quicksync
-QUICKSYNC_CONFIG_DIR=/home/bitcoin/.config/transmission
+QUICKSYNC_CONFIG_DIR=/mnt/hdd/mynode/.config/transmission
 QUICKSYNC_TORRENT_URL="https://mynodebtc.com/device/blockchain.tar.gz.torrent"
 QUICKSYNC_BANDWIDTH_FILE="/mnt/hdd/mynode/settings/.bandwidth"
 LND_BACKUP_FOLDER="/home/bitcoin/lnd_backup/"
