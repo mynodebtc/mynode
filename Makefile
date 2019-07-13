@@ -24,7 +24,7 @@ out/linux_images/raspi_raspbian.zip:
 	@wget https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2019-06-24/2019-06-20-raspbian-buster-lite.zip -O out/linux_images/raspi_raspbian.zip
 out/linux_images/rock64_debian.7z:
 	@mkdir -p out/linux_images/
-	@wget https://dl.armbian.com/rock64/Debian_stretch_default.7z -O out/linux_images/rock64_debian.7z
+	@wget https://dl.armbian.com/rock64/Debian_buster_default.7z -O out/linux_images/rock64_debian.7z
 download_linux_images: out/linux_images/raspi_raspbian.zip out/linux_images/rock64_debian.7z
 
 
