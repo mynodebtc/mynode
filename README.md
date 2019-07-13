@@ -46,16 +46,16 @@ Each myNode device comes with a number of wonderful features:
 ## Suported Devices
 We currently support images for the following devices:
  - Raspberry Pi 3B+
- - Raspberry Pi 4B+ - Coming Soon!
+ - Raspberry Pi 4B+
  - Rock64
 
 ## Running myNode
 You can run myNode on your own device in just a few easy steps!
 
 1. Download an Image
-    * Raspberry Pi 3B+ | http://mynodebtc.com/device/base_images/raspi3_standard_final.img.gz
-    * Raspberry Pi 4B+ | Coming soon...
-    * Rock64 | http://mynodebtc.com/device/base_images/rock64_standard_final.img.gz
+    * Raspberry Pi 3B+ | http://mynodebtc.com/device/base_images/raspi3_final.img.gz
+    * Raspberry Pi 4B+ | http://mynodebtc.com/device/base_images/raspi4_final.img.gz
+    * Rock64 | http://mynodebtc.com/device/base_images/rock64_final.img.gz
 2. Flash Image onto SD Card
     * Download Etcher | https://www.balena.io/etcher/
     * Flash Downloaded Image
@@ -76,7 +76,7 @@ Once you are running myNode, you can easily modify and update the software yours
     * This will run a local HTTP server so your device can download files
 5. On your device, run 'sudo mynode-local-upgrade [dev pc ip address]'
     * This will download your locally generated artifact and install it on your device
-    * You may need to reboot or restart certain services for some changes to take effect
+    * Your device will automatically reboot to ensure updates take effect
 6. Test your changes!
 7. Submit Pull Request to share your updates!
 

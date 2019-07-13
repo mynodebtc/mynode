@@ -19,7 +19,7 @@ IS_ROCK64=0
 IS_RASPI3=0
 IS_RASPI4=0
 uname -a | grep aarch64 && IS_ROCK64=1 || IS_RASPI3=1
-# TODO: Determine RASPI4
+cat /proc/cpuinfo | grep 03111 && IS_RASPI4=1 && IS_RASPI3=0 || IS_RASPI3=1
 
 # Make sure FS is expanded for Rock64
 if [ $IS_ROCK64 = 1 ]; then
@@ -27,7 +27,7 @@ if [ $IS_ROCK64 = 1 ]; then
 fi
 
 # Add sources
-echo "deb http://repo.mongodb.org/apt/debian "$(lsb_release -sc)"/mongodb-org/4.0 main" | tee /etc/apt/sources.list.d/mongodb.list
+
 
 # Update OS
 apt -y update # Needed to accept new repos
