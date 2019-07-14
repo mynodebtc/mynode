@@ -195,7 +195,7 @@ fi
 if [ ! -f /tmp/installed_rtl ]; then
     cd /opt/mynode
     rm -rf RTL
-    sudo -u bitcoin wget https://github.com/ShahanaFarooqui/RTL/archive/v0.3.3.tar.gz -O RTL.tar.gz
+    sudo -u bitcoin wget https://github.com/ShahanaFarooqui/RTL/archive/v0.4.2.tar.gz -O RTL.tar.gz
     sudo -u bitcoin tar -xvf RTL.tar.gz
     sudo -u bitcoin rm RTL.tar.gz
     sudo -u bitcoin mv RTL-* RTL
