@@ -176,7 +176,7 @@
                 <tr>
                     <td>Latest Version</td>
                     <td>{{latest_version}}</td>
-                    <td><a href="/settings/get-latest-version" class="ui-button ui-widget ui-corner-all settings_button_small">Check for Updates</a></td>
+                    <td>&nbsp;<a href="/settings/get-latest-version" class="ui-button ui-widget ui-corner-all settings_button_small">Check for Updates</a></td>
                 </tr>
             </table>
             {% if current_version != latest_version %}
@@ -199,10 +199,13 @@
                     <td style="padding-left: 20px;">
                         {{product_key}}
                         {% if product_key_skipped %}
-                            <br/>
-                            <a href="/product-key" class="ui-button ui-widget ui-corner-all settings_button_small">Enter Product Key</a>
+                            &nbsp;<a href="/product-key" class="ui-button ui-widget ui-corner-all settings_button_small">Enter Product Key</a>
                         {% endif %}
                     </td>
+                </tr>
+                <tr>
+                    <td>Device Type</td>
+                    <td style="padding-left: 20px;">{{device_type}}</td>
                 </tr>
                 <tr>
                     <td>Uptime</td>

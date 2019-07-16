@@ -40,6 +40,10 @@ def get_device_serial():
     return serial
 
 
+def get_device_type():
+    return CONFIG["device_type"]
+
+
 def set_skipped_product_key():
     os.system("touch /home/bitcoin/.mynode/.product_key_skipped")
     os.system("touch /mnt/hdd/mynode/settings/.product_key_skipped")
