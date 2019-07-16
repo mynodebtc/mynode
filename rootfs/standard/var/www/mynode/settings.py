@@ -99,6 +99,7 @@ def page_settings():
     latest_version = get_latest_version()
 
     serial_number = get_device_serial()
+    device_type = get_device_type()
     product_key = get_product_key()
     pk_skipped = skipped_product_key()
     pk_error = not is_valid_product_key()
@@ -117,6 +118,7 @@ def page_settings():
         "current_version": current_version,
         "latest_version": latest_version,
         "serial_number": serial_number,
+        "device_type": device_type,
         "product_key": product_key,
         "product_key_skipped": pk_skipped,
         "product_key_error": pk_error,
