@@ -18,7 +18,7 @@ By running a Bitcoin node and Lightning on your myNode device, you maintain all 
 myNode offers premium support, simplified upgrades and more! If you are running myNode Community Edition and want one-click upgrades or you want to purchase a supported, high quality device, please visit mynodebtc.com.
 
 Upgrade now or purchase a device at:<br/>
-https://mynodebtc.com/
+https://mynodebtc.com/order_now
 
 <b>myNode 1 Device</b>
 <br/>
