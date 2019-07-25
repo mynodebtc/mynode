@@ -6,6 +6,7 @@ Description=Bitcoin daemon
 After=network.target mynode.service
 
 [Service]
+ExecStartPre=/usr/bin/wait_on_uploader.sh
 ExecStartPre=/bin/sh -c 'cat /mnt/hdd/mynode/quicksync/.quicksync_complete'
 EnvironmentFile=/mnt/hdd/mynode/bitcoin/env
 ExecStart=/usr/local/bin/bitcoind -daemon $BTCARGS -deprecatedrpc=accounts -par=-1 -conf=/home/bitcoin/.bitcoin/bitcoin.conf -printtoconsole -pid=/home/bitcoin/.bitcoin/bitcoind.pid

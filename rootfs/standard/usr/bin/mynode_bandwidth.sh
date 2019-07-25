@@ -8,6 +8,13 @@ source /usr/share/mynode/mynode_config.sh
 # Let transmission startup
 sleep 60s
 
+# If marked as uploader, dont slow down
+while [ -f $UPLOADER_FILE ]; do
+    echo "Marked as uploader, unlimited upload"
+    transmission-remote -U
+    sleep 1h
+done
+
 # Upload slowly while downloading
 transmission-remote -u 0
 
@@ -25,7 +32,10 @@ done
 echo "QuickSync Complete! Enabling Uploading."
 
 while true; do
-    if [ ! -f "/mnt/hdd/mynode/quicksync/.quicksync_complete" ]; then
+    if [ -f $UPLOADER_FILE ]; then
+        echo "Marked as uploader, unlimited upload"
+        transmission-remote -U
+    elif [ ! -f "/mnt/hdd/mynode/quicksync/.quicksync_complete" ]; then
         echo "QuickSync not complete, stopping upload"
         transmission-remote -u 0
     elif [ ! -f "/mnt/hdd/mynode/.mynode_bitcoind_synced" ]; then
