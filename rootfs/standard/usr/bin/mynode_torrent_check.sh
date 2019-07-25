@@ -6,16 +6,23 @@ echo "Waiting until QuickSync is complete..."
 while [ ! -f "$QUICKSYNC_COMPLETE_FILE" ]; do
     sleep 1m
 done
-echo "Quicksync Complete! Waiting until Bitcoin Sync is complete..."
-while [ ! -f "$BITCOIN_SYNCED_FILE" ]; do
-    sleep 1m
-done
-echo "Bitcoin Sync Complete! Checking if there is a new torrent available..."
-sleep 1d
+if [ ! -f $UPLOADER_FILE ]; then
+    echo "Quicksync Complete! Waiting until Bitcoin Sync is complete..."
+    while [ ! -f "$BITCOIN_SYNCED_FILE" ]; do
+        sleep 1m
+    done
+    echo "Bitcoin Sync Complete! Checking if there is a new torrent available..."
+    sleep 1d
+fi
 
 while true; do
     # Wait a while... we don't want everyone starting on a new torrent at once
-    sleep 7d
+    if [ -f $UPLOADER_FILE ]; then
+        echo "Marked as uploader, checking for new torrent in 1 day..."
+        sleep 1d
+    else
+        sleep 10d
+    fi
 
     # Download current torrent
     rm -rf /tmp/blockchain_temp.torrent

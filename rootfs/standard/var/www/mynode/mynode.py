@@ -88,6 +88,17 @@ def index():
     pk_skipped = skipped_product_key()
     pk_error = not is_valid_product_key()
 
+    # Show uploader page if we are marked as an uploader
+    if is_uploader():
+        status = subprocess.check_output(["mynode-get-quicksync-status"])
+        status = Markup("<div style='text-align: left; font-size: 12px; width: 800px;'><pre>"+status+"</pre></div>")
+        templateData = {
+            "title": "myNode Uploader",
+            "header_text": "Uploader Device",
+            "subheader_text": status
+        }
+        return render_template('state.html', **templateData)
+
     # Show product key page if key not set
     if not has_product_key() and not skipped_product_key():
         return redirect("/product-key")
