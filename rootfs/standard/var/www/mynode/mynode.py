@@ -91,7 +91,8 @@ def index():
     # Show uploader page if we are marked as an uploader
     if is_uploader():
         status = subprocess.check_output(["mynode-get-quicksync-status"])
-        status = Markup("<div style='text-align: left; font-size: 12px; width: 800px;'><pre>"+status+"</pre></div>")
+        settings_button="<a class='ui-button ui-widget ui-corner-all mynode_button' href='/settings'>Settings</a>"
+        status = Markup("<center>"+settings_button+"</center><div style='text-align: left; font-size: 12px; width: 800px;'><pre>"+status+"</pre></div>")
         templateData = {
             "title": "myNode Uploader",
             "header_text": "Uploader Device",
