@@ -105,6 +105,12 @@ def page_settings():
     pk_error = not is_valid_product_key()
     uptime = get_system_uptime()
 
+    quicksync_status = ""
+    try:
+        quicksync_status = subprocess.check_output(["mynode-get-quicksync-status"])
+    except:
+        quicksync_status = "ERROR"
+
     message = ""
     if request.args.get('error_message'):
         message = Markup("<div class='error_message'>"+request.args.get('error_message')+"</div>")
@@ -122,6 +128,7 @@ def page_settings():
         "product_key": product_key,
         "product_key_skipped": pk_skipped,
         "product_key_error": pk_error,
+        "quicksync_status": quicksync_status,
         "uptime": uptime
     }
     return render_template('settings.html', **templateData)

@@ -141,6 +141,11 @@
                     factory_reset_dialog.dialog( "open" );
                 });
 
+                $("#show_quicksync_status").on("click", function() {
+                    $("#show_quicksync_status").hide(0);
+                    $("#quicksync_status").show();
+                });
+
                 {% if product_key_skipped %}
                 $( "#upgrade" ).button({
                     disabled: true
@@ -236,6 +241,13 @@
                 </table>
                 <input type="submit" id="password_submit" value="Change Password" class="ui-button ui-widget ui-corner-all settings_button"/>
             </form>
+            <div class="divider"></div>
+
+
+            <div class="settings_block_subheader">QuickSync Status</div>
+            <button id="show_quicksync_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
+            <div id="quicksync_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{quicksync_status}}</pre></div>
+
         </div>
 
         <div class="settings_block">
