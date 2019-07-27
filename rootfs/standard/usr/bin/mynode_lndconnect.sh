@@ -12,6 +12,12 @@ while [ ! -f $LND_WALLET_FILE ]; do
     sleep 1m
 done
 echo "LND Wallet found!"
+echo "Waiting on admin macaroon..."
+while [ ! -f $LND_ADMIN_MACAROON_FILE ]; do
+    sleep 10s
+done
+echo "Admin macroon found!"
+sleep 5s
 
 while true; do
     echo "Generating lndconnect QR codes..."
