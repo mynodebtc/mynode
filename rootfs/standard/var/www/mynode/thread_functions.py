@@ -128,6 +128,7 @@ def check_in():
     product_key = get_product_key()
     data = {
         "serial": get_device_serial(),
+        "device_type": get_device_type(),
         "version": get_current_version(),
         "product_key": product_key
     }
