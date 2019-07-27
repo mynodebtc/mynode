@@ -175,10 +175,10 @@ if [ "$USER" != "redis" ]; then
     chown -R redis:redis /mnt/hdd/mynode/redis
 fi
 chown -R redis:redis /etc/redis/
-USER=$(stat -c '%U' /mnt/hdd/mynode/mongodb)
-if [ "$USER" != "mongodb" ]; then
-    chown -R mongodb:mongodb /mnt/hdd/mynode/mongodb
-fi
+#USER=$(stat -c '%U' /mnt/hdd/mynode/mongodb)
+#if [ "$USER" != "mongodb" ]; then
+#    chown -R mongodb:mongodb /mnt/hdd/mynode/mongodb
+#fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/electrs)
 if [ "$USER" != "bitcoin" ]; then
     chown -R bitcoin:bitcoin /mnt/hdd/mynode/electrs
