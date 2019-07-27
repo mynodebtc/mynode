@@ -90,15 +90,19 @@ def index():
 
     # Show uploader page if we are marked as an uploader
     if is_uploader():
-        status = subprocess.check_output(["mynode-get-quicksync-status"])
-        settings_button="<a class='ui-button ui-widget ui-corner-all mynode_button' href='/settings'>Settings</a>"
-        status = Markup("<center>"+settings_button+"</center><div style='text-align: left; font-size: 12px; width: 800px;'><pre>"+status+"</pre></div>")
+        status=""
+        try:
+            status = subprocess.check_output(["mynode-get-quicksync-status"])
+        except:
+            status = "Waiting on quicksync to start..."
+
+        status = Markup("<div style='text-align: left; font-size: 12px; width: 800px;'><pre>"+status+"</pre></div>")
         templateData = {
             "title": "myNode Uploader",
             "header_text": "Uploader Device",
-            "subheader_text": status
+            "quicksync_status": status
         }
-        return render_template('state.html', **templateData)
+        return render_template('uploader.html', **templateData)
 
     # Show product key page if key not set
     if not has_product_key() and not skipped_product_key():
