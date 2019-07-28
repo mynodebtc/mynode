@@ -16,6 +16,7 @@ QUICKSYNC_DIR=/mnt/hdd/mynode/quicksync
 QUICKSYNC_CONFIG_DIR=/mnt/hdd/mynode/.config/transmission
 QUICKSYNC_TORRENT_URL="https://mynodebtc.com/device/blockchain.tar.gz.torrent"
 QUICKSYNC_BANDWIDTH_FILE="/mnt/hdd/mynode/settings/bandwidth"
+LATEST_VERSION_URL="http://www.mynodebtc.com/device/latest_version"
 UPLOADER_FILE="/mnt/hdd/mynode/settings/uploader"
 LND_BACKUP_FOLDER="/home/bitcoin/lnd_backup/"
 LND_TLS_CERT_FILE="/mnt/hdd/mynode/lnd/tls.cert"
