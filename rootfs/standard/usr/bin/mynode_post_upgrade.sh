@@ -53,6 +53,73 @@ if [ "$CURRENT" != "$LND_UPGRADE_URL" ]; then
     echo $LND_UPGRADE_URL > $LND_UPGRADE_URL_FILE
 fi
 
+# Upgrade RTL
+RTL_UPGRADE_URL=https://github.com/ShahanaFarooqui/RTL/archive/v0.4.4.tar.gz
+RTL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.rtl_url
+CURRENT=""
+if [ -f $RTL_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $RTL_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
+    cd /opt/mynode
+    rm -rf RTL
+    sudo -u bitcoin wget $RTL_UPGRADE_URL -O RTL.tar.gz
+    sudo -u bitcoin tar -xvf RTL.tar.gz
+    sudo -u bitcoin rm RTL.tar.gz
+    sudo -u bitcoin mv RTL-* RTL
+    cd RTL
+    sudo -u bitcoin npm install
+    
+    mkdir -p /home/bitcoin/.mynode/
+    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+    echo $RTL_UPGRADE_URL > $RTL_UPGRADE_URL_FILE
+fi
+
+# Upgrade LND Admin
+LNDADMIN_UPGRADE_URL=https://github.com/janoside/lnd-admin/archive/v0.10.12.tar.gz
+LNDADMIN_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lndadmin_url
+CURRENT=""
+if [ -f $LNDADMIN_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $LNDADMIN_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$LNDADMIN_UPGRADE_URL" ]; then
+    cd /opt/mynode
+    rm -rf lnd-admin
+    sudo -u bitcoin wget $LNDADMIN_UPGRADE_URL -O lnd-admin.tar.gz
+    sudo -u bitcoin tar -xvf lnd-admin.tar.gz
+    sudo -u bitcoin rm lnd-admin.tar.gz
+    sudo -u bitcoin mv lnd-* lnd-admin
+    cd lnd-admin
+    sudo -u bitcoin npm install
+
+    mkdir -p /home/bitcoin/.mynode/
+    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+    echo $LNDADMIN_UPGRADE_URL > $LNDADMIN_UPGRADE_URL_FILE
+fi
+
+# Upgrade Bitcoin RPC Explorer
+BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v1.0.3.tar.gz
+BTCRPCEXPLORER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btcrpcexplorer_url
+CURRENT=""
+if [ -f $BTCRPCEXPLORER_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $BTCRPCEXPLORER_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$BTCRPCEXPLORER_UPGRADE_URL" ]; then
+    cd /opt/mynode
+    rm -rf btc-rpc-explorer
+    sudo -u bitcoin wget $BTCRPCEXPLORER_UPGRADE_URL -O btc-rpc-explorer.tar.gz
+    sudo -u bitcoin tar -xvf btc-rpc-explorer.tar.gz
+    sudo -u bitcoin rm btc-rpc-explorer.tar.gz
+    sudo -u bitcoin mv btc-rpc-* btc-rpc-explorer
+    cd btc-rpc-explorer
+    sudo -u bitcoin npm install
+
+    mkdir -p /home/bitcoin/.mynode/
+    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+    echo $BTCRPCEXPLORER_UPGRADE_URL > $BTCRPCEXPLORER_UPGRADE_URL_FILE
+fi
+
+
 # Enable any new/required services
 # systemctl enable ...
 
