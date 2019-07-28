@@ -2,6 +2,14 @@
 
 source /usr/share/mynode/mynode_config.sh
 
+set -x
+
+# Shut down main services to save memory and CPU
+systemctl stop bitcoind
+systemctl stop lnd
+systemctl stop electrs
+systemctl stop quicksync
+
 # Install any new software
 # apt-get -y install ...
 

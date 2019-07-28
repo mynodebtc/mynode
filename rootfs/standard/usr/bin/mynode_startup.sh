@@ -114,6 +114,10 @@ chown bitcoin:bitcoin /mnt/hdd/mynode/lnd/lnd.conf
 
 # RTL config
 cp /usr/share/mynode/RTL.conf /opt/mynode/RTL/RTL.conf
+if [ -f /home/bitcoin/.mynode/.hashedpw ]; then
+    HASH=$(cat /home/bitcoin/.mynode/.hashedpw)
+    sed -i "s/rtlPassHashed=.*/rtlPassHashed=$HASH/g" /opt/mynode/RTL/RTL.conf
+fi
 chown bitcoin:bitcoin /opt/mynode/RTL/RTL.conf
 
 
