@@ -79,8 +79,8 @@ if [ ! -f /home/bitcoin/.mynode/.gensshkeys ]; then
 fi
 
 # Sync product key (SD preferred)
-cp -f /home/bitcoin/.mynode/.product_key* /mnt/hdd/mynode/settings/
-cp -f /mnt/hdd/mynode/settings/.product_key* home/bitcoin/.mynode/
+cp -f /home/bitcoin/.mynode/.product_key* /mnt/hdd/mynode/settings/ || true
+cp -f /mnt/hdd/mynode/settings/.product_key* home/bitcoin/.mynode/ || true
 
 # Randomize RPC password
 if [ ! -f /mnt/hdd/mynode/settings/.btcrpcpw ]; then
