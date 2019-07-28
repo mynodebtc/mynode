@@ -192,58 +192,94 @@ fi
 
 
 # Install RTL
-if [ ! -f /tmp/installed_rtl ]; then
+RTL_UPGRADE_URL=https://github.com/ShahanaFarooqui/RTL/archive/v0.4.4.tar.gz
+RTL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.rtl_url
+CURRENT=""
+if [ -f $RTL_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $RTL_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
     cd /opt/mynode
     rm -rf RTL
-    sudo -u bitcoin wget https://github.com/ShahanaFarooqui/RTL/archive/v0.4.2.tar.gz -O RTL.tar.gz
+    sudo -u bitcoin wget $RTL_UPGRADE_URL -O RTL.tar.gz
     sudo -u bitcoin tar -xvf RTL.tar.gz
     sudo -u bitcoin rm RTL.tar.gz
     sudo -u bitcoin mv RTL-* RTL
     cd RTL
     sudo -u bitcoin npm install
-    touch /tmp/installed_rtl
+    
+    mkdir -p /home/bitcoin/.mynode/
+    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+    echo $RTL_UPGRADE_URL > $RTL_UPGRADE_URL_FILE
 fi
 
 
 # Install LND Admin
-if [ ! -f /tmp/installed_lndadmin ]; then
+LNDADMIN_UPGRADE_URL=https://github.com/janoside/lnd-admin/archive/v0.10.12.tar.gz
+LNDADMIN_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lndadmin_url
+CURRENT=""
+if [ -f $LNDADMIN_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $LNDADMIN_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$LNDADMIN_UPGRADE_URL" ]; then
     cd /opt/mynode
     rm -rf lnd-admin
-    sudo -u bitcoin wget https://github.com/janoside/lnd-admin/archive/v0.10.12.tar.gz -O lnd-admin.tar.gz
+    sudo -u bitcoin wget $LNDADMIN_UPGRADE_URL -O lnd-admin.tar.gz
     sudo -u bitcoin tar -xvf lnd-admin.tar.gz
     sudo -u bitcoin rm lnd-admin.tar.gz
     sudo -u bitcoin mv lnd-* lnd-admin
     cd lnd-admin
     sudo -u bitcoin npm install
-    touch /tmp/installed_lndadmin
+
+    mkdir -p /home/bitcoin/.mynode/
+    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+    echo $LNDADMIN_UPGRADE_URL > $LNDADMIN_UPGRADE_URL_FILE
 fi
 
 
 # Install Bitcoin RPC Explorer
-if [ ! -f /tmp/installed_btcrpcexplorer ]; then
+BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v1.0.3.tar.gz
+BTCRPCEXPLORER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btcrpcexplorer_url
+CURRENT=""
+if [ -f $BTCRPCEXPLORER_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $BTCRPCEXPLORER_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$BTCRPCEXPLORER_UPGRADE_URL" ]; then
     cd /opt/mynode
     rm -rf btc-rpc-explorer
-    sudo -u bitcoin wget https://github.com/janoside/btc-rpc-explorer/archive/v1.0.3.tar.gz -O btc-rpc-explorer.tar.gz
+    sudo -u bitcoin wget $BTCRPCEXPLORER_UPGRADE_URL -O btc-rpc-explorer.tar.gz
     sudo -u bitcoin tar -xvf btc-rpc-explorer.tar.gz
     sudo -u bitcoin rm btc-rpc-explorer.tar.gz
     sudo -u bitcoin mv btc-rpc-* btc-rpc-explorer
     cd btc-rpc-explorer
     sudo -u bitcoin npm install
-    touch /tmp/installed_btcrpcexplorer
+
+    mkdir -p /home/bitcoin/.mynode/
+    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+    echo $BTCRPCEXPLORER_UPGRADE_URL > $BTCRPCEXPLORER_UPGRADE_URL_FILE
 fi
 
 
 # Install LND Connect
-if [ ! -f /tmp/installed_lndconnect ]; then
+LNDCONNECT_UPGRADE_URL=https://github.com/LN-Zap/lndconnect/releases/download/v0.1.0/lndconnect-linux-armv7-v0.1.0.tar.gz
+LNDCONNECT_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lndconnect_url
+CURRENT=""
+if [ -f $LNDCONNECT_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $LNDCONNECT_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$LNDCONNECT_UPGRADE_URL" ]; then
     rm -rf /tmp/download
     mkdir -p /tmp/download
     cd /tmp/download
-    wget https://github.com/LN-Zap/lndconnect/releases/download/v0.1.0/lndconnect-linux-armv7-v0.1.0.tar.gz -O lndconnect.tar.gz
+    wget $LNDCONNECT_UPGRADE_URL -O lndconnect.tar.gz
     tar -xvf lndconnect.tar.gz
     rm lndconnect.tar.gz
     mv lndconnect-* lndconnect
     install -m 0755 -o root -g root -t /usr/local/bin lndconnect/* 
-    touch /tmp/installed_lndconnect
+
+    mkdir -p /home/bitcoin/.mynode/
+    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+    echo $LNDCONNECT_UPGRADE_URL > $LNDCONNECT_UPGRADE_URL_FILE
 fi
 
 #########################################################

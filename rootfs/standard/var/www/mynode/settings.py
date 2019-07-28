@@ -143,7 +143,7 @@ def upgrade_page():
     templateData = {
         "title": "myNode Upgrade",
         "header_text": "Upgrading",
-        "subheader_text": "This will take several minutes..."
+        "subheader_text": "This may take a while..."
     }
     return render_template('reboot.html', **templateData)
 
