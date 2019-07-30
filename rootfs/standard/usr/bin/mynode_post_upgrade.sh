@@ -76,6 +76,7 @@ if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
     sudo -u bitcoin rm RTL.tar.gz
     sudo -u bitcoin mv RTL-* RTL
     cd RTL
+    export NG_CLI_ANALYTICS=false
     sudo -u bitcoin npm install
     
     mkdir -p /home/bitcoin/.mynode/
