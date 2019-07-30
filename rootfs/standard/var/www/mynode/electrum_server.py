@@ -32,7 +32,15 @@ def get_electrs_status():
     global electrum_server_current_block
     global eelctrs_active
     bitcoin_block_height = get_bitcoin_block_height()
-    log = subprocess.check_output("tail -n 100 /var/log/electrs.log /var/log/electrs.log.1", shell=True)
+    log = ""
+    try:
+        log += subprocess.check_output("tail -n 100 /var/log/electrs.log.1", shell=True)
+    except:
+        pass
+    try:
+        log += subprocess.check_output("tail -n 100 /var/log/electrs.log", shell=True)
+    except:
+        pass
     lines = log.splitlines()
     lines.reverse()
     for line in lines:
