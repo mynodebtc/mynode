@@ -117,7 +117,7 @@ def index():
         return render_template('state.html', **templateData)
     elif status == STATE_DRIVE_MOUNTED:
         templateData = {
-            "title": "myNode QuickSync",
+            "title": "myNode Drive Mounted",
             "header_text": "Drive Mounted",
             "subheader_text": "myNode starting soon..."
         }
