@@ -15,6 +15,9 @@ mkdir -p $QUICKSYNC_CONFIG_DIR
 
 cp -f /usr/share/quicksync/settings.json $QUICKSYNC_CONFIG_DIR/settings.json
 
+# Wait a bit for boot to complete
+sleep 15s
+
 # Check if quicksync was disabled
 while [ -f /home/bitcoin/.mynode/quicksync_disabled ] || [ -f /mnt/hdd/mynode/settings/quicksync_disabled ]; do
     # Pretend quicksync step is complete
