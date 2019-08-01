@@ -42,7 +42,7 @@ if [ "$CURRENT" != "$BTC_UPGRADE_URL" ]; then
 fi
 
 # Upgrade LND
-LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/v0.7.0-beta/lnd-linux-armv7-v0.7.0-beta.tar.gz
+LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/v0.7.1-beta/lnd-linux-armv7-v0.7.1-beta.tar.gz
 LND_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lnd_url
 CURRENT=""
 if [ -f $LND_UPGRADE_URL_FILE ]; then
