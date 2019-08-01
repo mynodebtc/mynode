@@ -15,6 +15,11 @@ mkdir -p $QUICKSYNC_CONFIG_DIR
 
 cp -f /usr/share/quicksync/settings.json $QUICKSYNC_CONFIG_DIR/settings.json
 
+# Check if quicksync was disabled
+while [ -f $QUICKSYNC_DIR/.quicksync_disabled || -f /home/bitcoin/.mynode/.quicksync_disabled ]; do
+    sleep 1d
+done
+
 # Make sure folder exists
 mkdir -p $QUICKSYNC_DIR
 if [ ! -f $QUICKSYNC_DIR/.quicksync_download_complete ]; then

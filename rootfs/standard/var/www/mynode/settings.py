@@ -129,6 +129,7 @@ def page_settings():
         "product_key_skipped": pk_skipped,
         "product_key_error": pk_error,
         "quicksync_status": quicksync_status,
+        "is_uploader_device": is_uploader(),
         "uptime": uptime
     }
     return render_template('settings.html', **templateData)
@@ -280,6 +281,26 @@ def repair_drive_page():
     os.system("touch /home/bitcoin/.mynode/check_drive")
     os.system("sync")
     
+    # Trigger reboot
+    t = Timer(1.0, reboot_device)
+    t.start()
+
+    # Wait until device is restarted
+    templateData = {
+        "title": "myNode Reboot",
+        "header_text": "Restarting",
+        "subheader_text": "This will take several minutes..."
+    }
+    return render_template('reboot.html', **templateData)
+
+@mynode_settings.route("/settings/toggle-uploader")
+def toggle_uploader_page():
+    # Toggle uploader
+    if is_uploader():
+        unset_uploader()
+    else:
+        set_uploader()
+
     # Trigger reboot
     t = Timer(1.0, reboot_device)
     t.start()
