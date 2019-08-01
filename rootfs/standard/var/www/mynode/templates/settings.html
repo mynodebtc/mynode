@@ -326,6 +326,19 @@
 
         </div>
 
+        <div class="settings_block">
+            <div class="settings_block_header">Developer</div>
+
+            <div class="settings_block_subheader">Uploader Device</div>
+            This disables most features and prioritize sharing QuickSync files.
+            <br/>
+            {% if is_uploader_device %}
+            <a href="/settings/toggle-uploader" class="ui-button ui-widget ui-corner-all settings_button">Disable Uploader Device</a>
+            {% else %}
+            <a href="/settings/toggle-uploader" class="ui-button ui-widget ui-corner-all settings_button">Enable Uploader Device</a>
+            {% endif %}
+        </div>
+
 
 
         <div id="confirm-dialog"></div>

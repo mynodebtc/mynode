@@ -45,7 +45,14 @@ def get_device_type():
 
 
 def is_uploader():
-    return os.path.isfile("/mnt/hdd/mynode/settings/uploader")
+    return os.path.isfile("/home/bitcoin/.mynode/uploader") or \
+           os.path.isfile("/mnt/hdd/mynode/settings/uploader")
+def set_uploader():
+    os.system("touch /home/bitcoin/.mynode/uploader")
+    os.system("touch /mnt/hdd/mynode/settings/uploader")
+def unset_uploader():
+    os.system("rm -rf /home/bitcoin/.mynode/uploader")
+    os.system("rm -rf /mnt/hdd/mynode/settings/uploader")
 
 
 def set_skipped_product_key():
@@ -55,7 +62,8 @@ def unset_skipped_product_key():
     os.system("rm -rf /home/bitcoin/.mynode/.product_key_skipped")
     os.system("rm -rf /mnt/hdd/mynode/settings/.product_key_skipped")
 def skipped_product_key():
-    return os.path.isfile("/home/bitcoin/.mynode/.product_key_skipped")
+    return os.path.isfile("/home/bitcoin/.mynode/.product_key_skipped") or \
+           os.path.isfile("/mnt/hdd/mynode/settings/.product_key_skipped")
 
 
 def delete_product_key():

@@ -36,11 +36,11 @@ def get_electrs_status():
     try:
         log += subprocess.check_output("tail -n 100 /var/log/electrs.log.1", shell=True)
     except:
-        pass
+        log += ""
     try:
         log += subprocess.check_output("tail -n 100 /var/log/electrs.log", shell=True)
     except:
-        pass
+        log += ""
     lines = log.splitlines()
     lines.reverse()
     for line in lines:
