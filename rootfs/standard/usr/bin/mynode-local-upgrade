@@ -11,7 +11,7 @@ source /usr/share/mynode/mynode_config.sh
 # Prompt for IP
 echo "Make sure your PC is running 'make start_file_server'..."
 ip_address="error"
-if [ "$#" -ne 1 ]; then
+if [ "$#" -lt 1 ]; then
     echo -n "Dev PC IP Address: "
     read ip_address
 else
@@ -32,8 +32,22 @@ cp -rf /tmp/rootfs/out/rootfs_${DEVICE_TYPE}/* /
 systemctl daemon-reload
 
 # Sleep and sync FS
+echo "Syncing filesystem..."
 sleep 1
 sync
 
-# Reboot Device
-reboot
+# Restart or reboot
+if [ "$#" -ge 2 ]; then
+    # Restart service
+    if [ "$2" = "www" ]; then
+        echo "Restarting www service..."
+        systemctl restart www
+    else
+        # Service not found, reboot
+        echo "Service not found, rebooting device..."
+        reboot
+    fi
+else
+    echo "Rebooting device..."
+    reboot
+fi
