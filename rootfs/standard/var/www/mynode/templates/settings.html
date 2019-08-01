@@ -253,6 +253,17 @@
         <div class="settings_block">
             <div class="settings_block_header">Bitcoin</div>
 
+            <div class="settings_block_subheader">Toggle QuickSync</div>
+            Disabling QuickSync will reset blockchain data and re-download and validate the blockchain independently. This may take a long time, but you can re-enable QuickSync later.
+            <br/>
+            {% if is_quicksync_disabled %}
+            <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Re-enable QuickSync</a>
+            {% else %}
+            <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Disable QuickSync</a>
+            {% endif %}
+
+            <div class="divider"></div>
+
             <div class="settings_block_subheader">Reset Blockchain</div>
             If bitcoind is having issues, you can restart from the initial state right after QuickSync completed. This will take several hours.
             <br/>
@@ -330,7 +341,7 @@
             <div class="settings_block_header">Developer</div>
 
             <div class="settings_block_subheader">Uploader Device</div>
-            This disables most features and prioritize sharing QuickSync files.
+            This disables most features and prioritize sharing QuickSync files. It can be reversed later.
             <br/>
             {% if is_uploader_device %}
             <a href="/settings/toggle-uploader" class="ui-button ui-widget ui-corner-all settings_button">Disable Uploader Device</a>

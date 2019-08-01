@@ -55,6 +55,17 @@ def unset_uploader():
     os.system("rm -rf /mnt/hdd/mynode/settings/uploader")
 
 
+def is_quicksync_enabled():
+    return not os.path.isfile("/home/bitcoin/.mynode/quicksync_disabled") and \
+           not os.path.isfile("/mnt/hdd/mynode/settings/quicksync_disabled")
+def disable_quicksync():
+    os.system("touch /home/bitcoin/.mynode/quicksync_disabled")
+    os.system("touch /mnt/hdd/mynode/settings/quicksync_disabled")
+def enable_quicksync():
+    os.system("rm -rf /home/bitcoin/.mynode/quicksync_disabled")
+    os.system("rm -rf /mnt/hdd/mynode/settings/quicksync_disabled")
+
+
 def set_skipped_product_key():
     os.system("touch /home/bitcoin/.mynode/.product_key_skipped")
     os.system("touch /mnt/hdd/mynode/settings/.product_key_skipped")

@@ -23,8 +23,24 @@ def restart_lnd():
 def stop_bitcoind():
     os.system("systemctl stop bitcoind")
 
-def stop_quickcync():
+def stop_quicksync():
     os.system("systemctl stop quicksync")
+
+def settings_disable_quicksync():
+    stop_bitcoind()
+    stop_quicksync()
+    disable_quicksync()
+    delete_bitcoin_data()
+    delete_quicksync_data()
+    reboot_device()
+
+def settings_enable_quicksync():
+    stop_bitcoind()
+    stop_quicksync()
+    enable_quicksync()
+    delete_bitcoin_data()
+    delete_quicksync_data()
+    reboot_device()
 
 def reset_bitcoin_env_file():
     os.system("echo 'BTCARGS=' > "+BITCOIN_ENV_FILE)
@@ -59,7 +75,7 @@ def reset_blockchain():
 def restart_quicksync():
     os.system('echo "quicksync_reset" > /mnt/hdd/mynode/.mynode_status')
     stop_bitcoind()
-    stop_quickcync()
+    stop_quicksync()
     delete_bitcoin_data()
     delete_quicksync_data()
     reboot_device()
@@ -129,6 +145,7 @@ def page_settings():
         "product_key_skipped": pk_skipped,
         "product_key_error": pk_error,
         "quicksync_status": quicksync_status,
+        "is_quicksync_disabled": not is_quicksync_enabled(),
         "is_uploader_device": is_uploader(),
         "uptime": uptime
     }
@@ -304,6 +321,24 @@ def toggle_uploader_page():
     # Trigger reboot
     t = Timer(1.0, reboot_device)
     t.start()
+
+    # Wait until device is restarted
+    templateData = {
+        "title": "myNode Reboot",
+        "header_text": "Restarting",
+        "subheader_text": "This will take several minutes..."
+    }
+    return render_template('reboot.html', **templateData)
+
+@mynode_settings.route("/settings/toggle-quicksync")
+def toggle_quicksync_page():
+    # Toggle uploader
+    if is_quicksync_enabled():
+        t = Timer(1.0, settings_disable_quicksync)
+        t.start()
+    else:
+        t = Timer(1.0, settings_enable_quicksync)
+        t.start()
 
     # Wait until device is restarted
     templateData = {
