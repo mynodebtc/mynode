@@ -10,6 +10,7 @@ from bitcoin_info import *
 # Variables
 lightning_info = None
 lnd_ready = False
+lnd_version = None
 
 LND_FOLDER = "/mnt/hdd/mynode/lnd/"
 MACAROON_FILE = "/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon"
@@ -150,3 +151,8 @@ def get_lnd_channels():
         print("EXCEPTION: {}".format(str(e)))
         return False
 
+def get_lnd_version():
+    global lnd_version
+    if lnd_version == None:
+        lnd_version = subprocess.check_output("lnd --version | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+' | head -n 1", shell=True)
+    return lnd_version

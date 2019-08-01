@@ -63,6 +63,7 @@ def page_lnd():
             "title": "myNode Lightning Wallet",
             "wallet_exists": wallet_exists,
             "wallet_logged_in": wallet_logged_in,
+            "version": get_lnd_version(),
             "status": status,
             "message": message
         }
@@ -74,6 +75,7 @@ def page_lnd():
             "wallet_exists": wallet_exists,
             "wallet_logged_in": wallet_logged_in,
             "status": get_lnd_status(),
+            "version": get_lnd_version(),
             "message": message
         }
         return render_template('lnd.html', **templateData)
@@ -107,6 +109,7 @@ def page_lnd():
         "title": "myNode Lightning Status",
         "wallet_exists": wallet_exists,
         "wallet_logged_in": wallet_logged_in,
+        "version": get_lnd_version(),
         "channel_backup_exists": channel_backup_exists,
         "status": status,
         "height": height,
