@@ -42,7 +42,8 @@ apt-get -y install transmission-cli fail2ban ufw tclsh bluez python-bluez redis-
 apt-get -y install clang hitch zlib1g-dev libffi-dev file toilet ncdu
 apt-get -y install toilet-fonts avahi-daemon figlet libsecp256k1-dev 
 apt-get -y install inotify-tools libssl-dev tor tmux screen
-apt-get -y install python-grpcio python3-grpcio # Need Debian Buster on Rock64 first...
+apt-get -y install python-grpcio python3-grpcio
+apt-get -y install pv
 
 
 # Install other things without recommendation
@@ -61,6 +62,7 @@ pip install --upgrade wheel
 pip install speedtest-cli transmissionrpc flask python-bitcoinrpc redis prometheus_client requests
 pip install python-pam python-bitcoinlib psutil
 pip install grpcio grpcio-tools googleapis-common-protos 
+pip install tzupdate
 
 
 # Update python3 to 3.7.X
