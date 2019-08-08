@@ -11,10 +11,11 @@ systemctl stop electrs
 systemctl stop quicksync
 
 # Install any new software
-# apt-get -y install ...
+apt -y install pv
 
 # Install any pip software
-# ...
+pip install tzupdate
+
 
 # Upgrade BTC
 ARCH="arm-linux-gnueabihf"
