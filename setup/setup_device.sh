@@ -117,7 +117,7 @@ ARCH="arm-linux-gnueabihf"
 if [ $IS_ROCK64 = 1 ]; then
     ARCH="aarch64-linux-gnu"
 fi
-BTC_UPGRADE_URL=https://bitcoin.org/bin/bitcoin-core-0.18.0/bitcoin-0.18.0-$ARCH.tar.gz
+BTC_UPGRADE_URL=https://bitcoin.org/bin/bitcoin-core-0.18.1/bitcoin-0.18.1-$ARCH.tar.gz
 BTC_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btc_url
 CURRENT=""
 if [ -f $BTC_UPGRADE_URL_FILE ]; then
