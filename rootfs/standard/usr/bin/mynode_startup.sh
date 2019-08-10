@@ -68,6 +68,8 @@ mkdir -p /home/admin/.bitcoin/
 chown admin:admin /home/admin/.bitcoin/
 rm -rf /etc/motd # Remove simple motd for update-motd.d
 
+# Make any users we need to
+useradd -m -s /bin/bash pivpn || true
 
 # Regen SSH keys
 if [ ! -f /home/bitcoin/.mynode/.gensshkeys ]; then
