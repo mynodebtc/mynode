@@ -5,10 +5,10 @@ source /usr/share/mynode/mynode_config.sh
 set -x
 
 # Shut down main services to save memory and CPU
-systemctl stop bitcoind
-systemctl stop lnd
 systemctl stop electrs
+systemctl stop lnd
 systemctl stop quicksync
+systemctl stop bitcoind
 
 # Install any new software
 apt -y install pv
@@ -23,7 +23,7 @@ uname -a | grep aarch64
 if [ $? = 0 ]; then
     ARCH="aarch64-linux-gnu"
 fi
-BTC_UPGRADE_URL=https://bitcoin.org/bin/bitcoin-core-0.18.0/bitcoin-0.18.0-$ARCH.tar.gz
+BTC_UPGRADE_URL=https://bitcoin.org/bin/bitcoin-core-0.18.1/bitcoin-0.18.1-$ARCH.tar.gz
 BTC_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btc_url
 CURRENT=""
 if [ -f $BTC_UPGRADE_URL_FILE ]; then
