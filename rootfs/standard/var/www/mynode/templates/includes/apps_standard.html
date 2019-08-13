@@ -1,3 +1,4 @@
+<div class="main_header">Apps</div>
 <div class="app_tile_row">
     <div class="app_tile">
         <div class="app_status_icon {{ rtl_status_color }}"></div>
@@ -62,6 +63,17 @@
         </div>
     </div>
     <div class="app_tile">
+        <div class="app_status_icon"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/cli.png")}}"/></div>
+        <div class="app_title">BTC CLI</div>
+        <div class="app_status"></div>
+        <div class="app_contents"><a class="ui-button ui-widget ui-corner-all mynode_button" href="/bitcoin-cli">CLI</a></div>
+    </div>
+</div>
+
+<div class="main_header">Services</div>
+<div class="app_tile_row">
+    <div class="app_tile">
         <div class="app_status_icon {{ electrs_status_color }}"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/electrum_logo.png")}}"/></div>
         <div class="app_title">Electrum Server</div>
@@ -74,10 +86,19 @@
         </div>
     </div>
     <div class="app_tile">
-        <div class="app_status_icon"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/cli.png")}}"/></div>
-        <div class="app_title">BTC CLI</div>
-        <div class="app_status"></div>
-        <div class="app_contents"><a class="ui-button ui-widget ui-corner-all mynode_button" href="/bitcoin-cli">CLI</a></div>
+        <div class="app_status_icon {{ vpn_status_color }}"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/vpn.png")}}"/></div>
+        <div class="app_title">VPN</div>
+        <div class="app_status">{{ vpn_status }}</div>
+        <div class="app_contents">
+            {% if product_key_skipped %}
+                Premium Feature
+            {% else %}
+                {% if vpn_enabled %}
+                <a class="ui-button ui-widget ui-corner-all mynode_button" href="/vpn-info">Info</a>
+                {% endif %}
+                <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-vpn">{% if vpn_enabled %}Disable{% else %}Enable{% endif %}</a>
+            {% endif %}
+        </div>
     </div>
 </div>

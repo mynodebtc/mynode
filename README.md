@@ -61,7 +61,7 @@ You can run myNode on your own device in just a few easy steps!
     * Flash Downloaded Image
 3. Insert SD Card and Boot your Device
 4. Attach External HD to Device
-    * 500GB+ Required, 1TB+ Recommended
+    * 1TB+ Required
 5. Visit http://mynode.local/ or http://ip_of_device/
 
 ## Developing for myNode

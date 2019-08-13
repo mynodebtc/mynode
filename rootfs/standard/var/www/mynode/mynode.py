@@ -197,6 +197,8 @@ def index():
         btcrpcexplorer_status = ""
         btcrpcexplorer_ready = False
         btcrpcexplorer_status_color = "gray"
+        vpn_status_color = "gray"
+        vpn_status = ""
 
         if not get_has_updated_btc_info():
             message = "<div class='small_message'>{}</<div>".format( get_message(include_funny=True) )
@@ -314,6 +316,18 @@ def index():
             else:
                 explorer_status = Markup("Bitcoin Explorer<br/><br/>Requires Electrum Server")
 
+        if is_vpn_enabled():
+            status = os.system("systemctl status vpn --no-pager")
+            if status != 0:
+                vpn_status_color = "red"
+                vpn_status = "Unknown"
+            else:
+                vpn_status_color = "green"
+                if os.path.isfile("/home/pivpn/ovpns/mynode_vpn.ovpn"):
+                     vpn_status = "Running"
+                else:
+                    vpn_status = "Setting up..."
+
         # Check for new version of software
         upgrade_available = False
         current = get_current_version()
@@ -346,6 +360,9 @@ def index():
             "btcrpcexplorer_status_color": btcrpcexplorer_status_color,
             "btcrpcexplorer_status": btcrpcexplorer_status,
             "btcrpcexplorer_enabled": is_btcrpcexplorer_enabled(),
+            "vpn_status_color": vpn_status_color,
+            "vpn_status": vpn_status,
+            "vpn_enabled": is_vpn_enabled(),
             "product_key_skipped": pk_skipped,
             "product_key_error": pk_error,
             "drive_usage": get_drive_usage(),
@@ -397,7 +414,37 @@ def page_product_key():
             return redirect("/")
 
         return "Error"
-    
+
+@app.route("/vpn-info")
+def page_vpn_info():
+
+    message = ""
+    if request.args.get('error_message'):
+        message = Markup("<div class='error_message'>"+request.args.get('error_message')+"</div>")
+    if request.args.get('success_message'):
+        message = Markup("<div class='success_message'>"+request.args.get('success_message')+"</div>")
+
+    status = "Setting up..."
+    if os.path.isfile("/home/pivpn/ovpns/mynode_vpn.ovpn"):
+        status = "Running"
+    templateData = {
+        "title": "myNode VPN Info",
+        "status": status,
+        "message": message,
+        "port": "51194"
+    }
+    return render_template('vpn_info.html', **templateData)
+
+@app.route("/mynode.ovpn", methods=["POST"])
+def page_download_ovpn():
+    p = pam.pam()
+    pw = request.form.get('password_download_ovpn')
+    if pw == None or p.authenticate("admin", pw) == False:
+        return redirect(url_for(".page_vpn_info", error_message="Invalid Password"))
+
+    # Download ovpn
+    return send_from_directory(directory="/home/pivpn/ovpns/", filename="mynode_vpn.ovpn")
+
 
 @app.route("/toggle-lndhub")
 def page_toggle_lndhub():
@@ -421,6 +468,14 @@ def page_toggle_btcrpcexplorer():
         disable_btcrpcexplorer()
     else:
         enable_btcrpcexplorer()
+    return redirect("/")
+
+@app.route("/toggle-vpn")
+def page_toggle_vpn():
+    if is_vpn_enabled():
+        disable_vpn()
+    else:
+        enable_vpn()
     return redirect("/")
 
 @app.route("/about")
