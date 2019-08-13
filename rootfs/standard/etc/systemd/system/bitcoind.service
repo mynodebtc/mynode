@@ -16,6 +16,7 @@ Group=bitcoin
 Type=forking
 KillMode=process
 Restart=always
+Nice=-1
 TimeoutSec=300
 RestartSec=30
 StandardOutput=syslog

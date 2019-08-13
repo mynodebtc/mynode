@@ -18,6 +18,7 @@ Type=simple
 KillMode=control-group
 LimitNOFILE=128000
 TimeoutSec=240
+Nice=-1
 Restart=always
 RestartSec=1
 StandardOutput=syslog
