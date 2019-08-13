@@ -141,7 +141,8 @@ verifyFreeDiskSpace() {
 
 chooseInterface() {
     # We use the ethernet port
-    echo "eth0" > /tmp/pivpnINT
+    pivpnInterface="eth0"
+    echo ${pivpnInterface} > /tmp/pivpnINT
 }
 
 avoidStaticIPv4Ubuntu() {
@@ -152,6 +153,7 @@ avoidStaticIPv4Ubuntu() {
 getStaticIPv4Settings() {
     # Dont prompt for IP
     echo "Using DHCP address as static IP..."
+    IPv4dns="8.8.8.8"
 }
 
 setDHCPCD() {
@@ -398,6 +400,7 @@ update_repo() {
 
 setCustomProto() {
     # We'll use UDP
+    pivpnProto="udp"
     PROTO="udp"
     $SUDO cp /tmp/pivpnPROTO /etc/pivpn/INSTALL_PROTO
 }
@@ -405,7 +408,8 @@ setCustomProto() {
 
 setCustomPort() {
     # We'll use port 51194
-    echo "51194" > /tmp/INSTALL_PORT
+    PORT=51194
+    echo ${PORT} > /tmp/INSTALL_PORT
     $SUDO cp /tmp/INSTALL_PORT /etc/pivpn/INSTALL_PORT
 }
 
@@ -494,7 +498,7 @@ confOpenVPN() {
         #    "384" "Use a 384-bit certificate" OFF \
         #    "521" "Use a 521-bit certificate (paranoid level)" OFF 3>&1 1>&2 2>&3)
         #fi
-        ENCRYPT="2048"
+        ENCRYPT="1024"
 
         #exitstatus=$?
         #if [ $exitstatus != 0 ]; then
@@ -905,7 +909,7 @@ displayFinalMessage() {
 
 update_dialogs() {
     # Always "update"
-    useUpdateVars=true
+    useUpdateVars=false
 }
 
 clone_or_update_repos() {
