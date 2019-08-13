@@ -12,6 +12,7 @@ KillSignal=2
 TimeoutSec=30
 Restart=always
 RestartSec=10
+Nice=-15
 ExecStart=/usr/bin/python /var/www/mynode/mynode.py
 User=root
 Group=root

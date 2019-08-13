@@ -12,6 +12,7 @@ KillMode=control-group
 TimeoutSec=60
 Restart=always
 RestartSec=30
+Nice=5
 ExecStart=/usr/bin/mynode_quicksync.sh
 User=bitcoin
 Group=bitcoin
