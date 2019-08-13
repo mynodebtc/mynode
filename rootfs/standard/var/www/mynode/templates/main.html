@@ -15,6 +15,7 @@
             $(document).ready(function() {
                 electrs_enabled = {% if electrs_enabled %}1{% else %}0{% endif %}
                 lndhub_enabled = {% if lndhub_enabled %}1{% else %}0{% endif %}
+                vpn_enabled = {% if vpn_enabled %}1{% else %}0{% endif %}
 
                 $("#lndhub").on("click", function() {
                     url = location.protocol+'//'+location.hostname+':3000'
@@ -53,6 +54,28 @@
                                           "Enabling Electrum Server will take a 1-2 days to fully sync for \
                                            the first time. Your myNode may run slowly during this time.<br/><br/> \
                                            Would you like to enable electrum server?",
+                                           okFunction)
+                    }
+                    return false
+                });
+
+                $("#toggle-vpn").on("click", function() {
+                    if (vpn_enabled)
+                    {
+                        // Disable vpn
+                        window.location.href="/toggle-vpn"
+                    }
+                    else
+                    {
+                        // Enable vpn
+                        var okFunction = function() {
+                            window.location.href="/toggle-vpn"
+                        }
+                        openConfirmDialog("confirm-dialog", 
+                                          "Enable VPN", 
+                                          "Enabling VPN will set your IP to a static IP rather than a dynamic one via DHCP. \
+                                           The initial setup may take a couple hours.<br/><br/> \
+                                           Would you like to enable VPN?",
                                            okFunction)
                     }
                     return false
@@ -111,7 +134,6 @@
         </div>
         {% endif %}
 
-        <div class="main_header">Apps</div>
         {% include 'includes/apps_standard.html' %}
 
         {% if product_key_skipped %}

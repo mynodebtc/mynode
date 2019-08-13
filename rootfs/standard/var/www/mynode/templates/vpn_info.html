@@ -1,0 +1,95 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode.css")}}">
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode_bitcoind.css")}}">
+        <link href="{{ url_for('static', filename="jquery_ui/jquery-ui.css")}}" rel="stylesheet">
+        <meta http-equiv="Content-Language" content="en">
+        <meta name="google" content="notranslate">
+        <script src="{{ url_for('static', filename="js/jquery-3.3.1.min.js")}}"></script>
+        <script src="{{ url_for('static', filename="jquery_ui/jquery-ui.js")}}"></script>
+        <script src="{{ url_for('static', filename="js/mynode.js")}}"></script>
+
+        <script>
+            $(document).ready(function() {
+
+                function downloadOvpn() {
+                    $("#download_ovpn_form").submit();
+                    download_ovpn_dialog.dialog( "close" );
+                }
+                download_ovpn_dialog = $( "#download-ovpn-dialog" ).dialog({
+                    autoOpen: false,
+                    resizable: false,
+                    height: "auto",
+                    width: 600,
+                    modal: true,
+                    position: { my: "center top", at: "center top", of: window, collision: "none" },
+                    buttons: {
+                        "Download": downloadOvpn,
+                        Cancel: function() {
+                            download_ovpn_dialog.dialog( "close" );
+                        }
+                    },
+                    open: function() {
+                        $("#password_download_ovpn").val("")
+                    }
+                });
+                $("#download_ovpn").on("click", function() {
+                    download_ovpn_dialog.dialog( "open" );
+                });
+                $("#download_ovpn_form").on("submit", function() {
+                    download_ovpn_dialog.dialog( "close" );
+                });
+            });
+        </script>
+    </head>
+
+    <body>
+        <div class="logo_header"><a href="/"><img class="logo_image" src="{{ url_for('static', filename="images/logo.png")}}"/></a></div>
+        <div class="mynode_back_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        </div>
+
+        <div style="margin: auto; text-align: center;">
+            {{ message }}
+        </div>
+
+        <div class="main_header">VPN Status</div>
+        <br/>
+        
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Status</div>
+                <div class="info_tile_contents">{{status}}</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">VPN Port</div>
+                <div class="info_tile_contents">{{port}}</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">Download OVPN File</div>
+                <div class="info_tile_contents">
+                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="download_ovpn" style="width: 70%;" href="#">download</a>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="download-ovpn-dialog" title="Download OVPN File" style="display:none;">
+            <form id="download_ovpn_form" name="download_ovpn_form" action="/mynode.ovpn" method="POST">
+                <p>The OVPN file is required to connect to your device remotely with Open VPN. Do not share this with others or
+                    they will be able to access your myNode device and your network.</p>
+                <p>Please enter your password to download your OVPN file.</p>
+                <b>Password:</b>
+                <br/>
+                <input type="password" name="password_download_ovpn" id="password_download_ovpn" value="" class="text ui-widget-content ui-corner-all">
+            
+                <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </form>
+        </div>
+
+        {% include 'includes/footer.html' %}
+     </body>
+</html>

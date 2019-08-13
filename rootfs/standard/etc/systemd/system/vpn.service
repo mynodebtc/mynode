@@ -1,0 +1,23 @@
+# myNode VPN Service
+# /etc/systemd/system/vpn.service
+
+[Unit]
+Description=myNode VPN
+Wants=mynode.service
+After=mynode.service
+
+[Service]
+Type=simple
+KillMode=control-group
+TimeoutSec=60
+Restart=always
+RestartSec=30
+ExecStart=/usr/bin/mynode_vpn.sh
+User=root
+Group=root
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=vpn
+
+[Install]
+WantedBy=multi-user.target

@@ -54,3 +54,22 @@ def disable_btcrpcexplorer():
     #os.system("killall -9 electrs") # Hard kill since we are disabing
     os.system("systemctl stop btc_rpc_explorer --no-pager")
     os.system("systemctl disable btc_rpc_explorer --no-pager")
+
+
+def is_vpn_enabled():
+    if os.path.isfile(VPN_ENABLED_FILE):
+        return True
+    return False
+
+def enable_vpn():
+    os.system("systemctl enable vpn --no-pager")
+    os.system("systemctl start vpn --no-pager")
+    open(VPN_ENABLED_FILE, 'a').close() # touch file
+
+def disable_vpn():
+    if os.path.isfile(VPN_ENABLED_FILE):
+        os.remove(VPN_ENABLED_FILE)
+    os.system("systemctl stop vpn --no-pager")
+    os.system("systemctl disable vpn --no-pager")
+    os.system("systemctl stop openvpn --no-pager")
+    os.system("systemctl disable openvpn --no-pager")
