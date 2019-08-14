@@ -18,7 +18,7 @@ expect {
         timeout { exit 2 }
 }
 expect {
-        "Confirm wallet password:" {
+        "password:" {
                 send -- "$pw\n"
         }
         timeout { exit 2 }
