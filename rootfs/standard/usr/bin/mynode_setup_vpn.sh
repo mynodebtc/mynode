@@ -498,7 +498,7 @@ confOpenVPN() {
         #    "384" "Use a 384-bit certificate" OFF \
         #    "521" "Use a 521-bit certificate (paranoid level)" OFF 3>&1 1>&2 2>&3)
         #fi
-        ENCRYPT="1024"
+        ENCRYPT="2048"
 
         #exitstatus=$?
         #if [ $exitstatus != 0 ]; then

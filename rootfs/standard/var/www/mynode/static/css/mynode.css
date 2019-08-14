@@ -378,3 +378,13 @@ a:active {
     margin: auto;
     margin-bottom: 20px;
 }
+
+.port_forwarded_icon {
+    width: 26px;
+    height: 24px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 50%;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+}

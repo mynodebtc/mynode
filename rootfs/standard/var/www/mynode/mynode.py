@@ -3,6 +3,7 @@ from config import *
 from flask import Flask, render_template, Markup, send_from_directory, redirect, request, url_for
 from bitcoind import mynode_bitcoind
 from bitcoin_cli import mynode_bitcoin_cli
+from vpn import mynode_vpn
 if CONFIG["electrs_enabled"]:
     from electrum_server import *
 from lnd import mynode_lnd, lnd_wallet_exists, is_lnd_logged_in, lnd_get, get_lnd_status
@@ -36,6 +37,7 @@ app.register_blueprint(mynode_lnd)
 app.register_blueprint(mynode_bitcoin_cli)
 if CONFIG["electrs_enabled"]:
     app.register_blueprint(mynode_electrum_server)
+app.register_blueprint(mynode_vpn)
 app.register_blueprint(mynode_settings)
 
 ### Definitions
@@ -415,37 +417,6 @@ def page_product_key():
             return redirect("/")
 
         return "Error"
-
-@app.route("/vpn-info")
-def page_vpn_info():
-
-    message = ""
-    if request.args.get('error_message'):
-        message = Markup("<div class='error_message'>"+request.args.get('error_message')+"</div>")
-    if request.args.get('success_message'):
-        message = Markup("<div class='success_message'>"+request.args.get('success_message')+"</div>")
-
-    status = "Setting up..."
-    if os.path.isfile("/home/pivpn/ovpns/mynode_vpn.ovpn"):
-        status = "Running"
-    templateData = {
-        "title": "myNode VPN Info",
-        "status": status,
-        "message": message,
-        "port": "51194"
-    }
-    return render_template('vpn_info.html', **templateData)
-
-@app.route("/mynode.ovpn", methods=["POST"])
-def page_download_ovpn():
-    p = pam.pam()
-    pw = request.form.get('password_download_ovpn')
-    if pw == None or p.authenticate("admin", pw) == False:
-        return redirect(url_for(".page_vpn_info", error_message="Invalid Password"))
-
-    # Download ovpn
-    return send_from_directory(directory="/home/pivpn/ovpns/", filename="mynode_vpn.ovpn")
-
 
 @app.route("/toggle-lndhub")
 def page_toggle_lndhub():
