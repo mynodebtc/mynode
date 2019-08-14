@@ -8,7 +8,7 @@ from lightning_info import *
 from device_info import *
 from enable_disable_functions import *
 from electrum_server import update_electrs_info
-
+from requests import get
 
 # Info to get from the update threads
 has_updated_btc_info = False
@@ -16,6 +16,7 @@ drive_usage = "0%"
 cpu_usage = "..."
 ram_usage = "..."
 swap_usage = "..."
+public_ip = "not_detected"
 
 
 # Getters
@@ -34,6 +35,9 @@ def get_ram_usage():
 def get_swap_usage():
     global swap_usage
     return swap_usage
+def get_public_ip():
+    global public_ip
+    return public_ip
 
 # Updates device info every 30 seconds
 def update_device_info():
@@ -124,6 +128,8 @@ def update_lnd_info_thread():
 
 # Checkin every 24 hours
 def check_in():
+    global public_ip
+
     # Check in
     product_key = get_product_key()
     data = {
@@ -132,6 +138,12 @@ def check_in():
         "version": get_current_version(),
         "product_key": product_key
     }
+
+    # Get public IP
+    try:
+        public_ip = get('http://mynodebtc.com/device_api/get_public_ip.php').text
+    except Exception as e:
+        public_ip = "error"
 
     # Check for new version
     update_latest_version()

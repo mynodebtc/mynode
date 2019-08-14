@@ -308,15 +308,22 @@ install_dependent_packages() {
         PIVPN_DEPS+=("apt-transport-https")
     fi
 
-    if command -v debconf-apt-progress &> /dev/null; then
-        $SUDO debconf-apt-progress -- ${PKG_INSTALL} "${argArray1[@]}"
-    else
-        for i in "${argArray1[@]}"; do
-            echo -n ":::    Checking for $i..."
-            $SUDO package_check_install "${i}" &> /dev/null
-            echo " installed!"
-        done
-    fi
+    #if command -v debconf-apt-progress &> /dev/null; then
+    #    $SUDO debconf-apt-progress -- ${PKG_INSTALL} "${argArray1[@]}"
+    #else
+    #    for i in "${argArray1[@]}"; do
+    #        echo -n ":::    Checking for $i..."
+    #        $SUDO package_check_install "${i}" &> /dev/null
+    #        echo " installed!"
+    #    done
+    #fi
+
+    # myNode - Install all dependent packages without GUI
+    for i in "${argArray1[@]}"; do
+        echo -n ":::    Checking for $i..."
+        $SUDO package_check_install "${i}" &> /dev/null
+        echo " installed!"
+    done
 }
 
 unattendedUpgrades() {
