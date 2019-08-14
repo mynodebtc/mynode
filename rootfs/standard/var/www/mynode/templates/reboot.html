@@ -20,13 +20,13 @@
                     var jqxhr = $.get("/settings/ping", function() {
                         if (hasShutdown) {
                             // Redirect to home
-                            setTimeout(redirectHome, 5000)
+                            setTimeout(redirectHome, 2500)
                         }
                     })
                     .done(function() {
                         if (hasShutdown) {
                             // Redirect to home
-                            setTimeout(redirectHome, 5000)
+                            setTimeout(redirectHome, 2500)
                         }
                     })
                     .fail(function() {
