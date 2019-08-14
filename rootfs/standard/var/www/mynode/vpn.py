@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, session, abort, Markup, request, redirect, send_from_directory, url_for
+from thread_functions import get_public_ip
 import subprocess
-from requests import get
 import pam
 import os
 
@@ -8,9 +8,7 @@ import os
 mynode_vpn = Blueprint('mynode_vpn',__name__)
 
 # Helper functions
-def get_public_ip():
-    ip = get('https://api.ipify.org').text
-    return ip
+
 
 # Flask Pages
 @mynode_vpn.route("/vpn-info")
