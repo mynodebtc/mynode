@@ -17,12 +17,15 @@ eelctrs_active = False
 def update_electrs_info():
     global electrum_server_current_block
 
-    raw_data = requests.get("http://localhost:4224")
-    prom_data = text_string_to_metric_families(raw_data.text)
-    for family in prom_data:
-        for sample in family.samples:
-            if sample.name == "electrs_index_height":
-                electrum_server_current_block = int(sample.value)
+    try:
+        raw_data = requests.get("http://localhost:4224")
+        prom_data = text_string_to_metric_families(raw_data.text)
+        for family in prom_data:
+            for sample in family.samples:
+                if sample.name == "electrs_index_height":
+                    electrum_server_current_block = int(sample.value)
+    except:
+        pass
 
 def is_electrs_active():
     global eelctrs_active
