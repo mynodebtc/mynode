@@ -46,7 +46,8 @@ if [ "$#" -ge 2 ]; then
         echo "Only updating files... Done."
     else
         # Service not found, reboot
-        echo "Service not found, rebooting device..."
+        echo "Service not found, doing full upgrade and rebooting device..."
+        /bin/bash /usr/bin/mynode_post_upgrade.sh
         reboot
     fi
 else
