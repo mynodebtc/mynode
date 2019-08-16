@@ -1,12 +1,7 @@
 #!/bin/bash
 
 # Device info
-IS_RASPI=1
-IS_RASPI3=0
-IS_RASPI4=1
-IS_ROCK64=0
-IS_STANDARD=1
-DEVICE_TYPE="raspi4"
+# Now calculated in main config file...
 
 # Other Info
 UPGRADE_DOWNLOAD_URL="http://www.mynodebtc.com/device_api/download_latest_standard.php?type=${DEVICE_TYPE}&product_key=${PRODUCT_KEY}&serial=${SERIAL_NUM}"

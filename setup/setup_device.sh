@@ -19,7 +19,9 @@ IS_ROCK64=0
 IS_RASPI3=0
 IS_RASPI4=0
 uname -a | grep aarch64 && IS_ROCK64=1 || IS_RASPI3=1
-cat /proc/cpuinfo | grep 03111 && IS_RASPI4=1 && IS_RASPI3=0 || IS_RASPI3=1
+if [ $IS_RASPI3 -eq 1 ]; then
+    cat /proc/cpuinfo | grep 03111 && IS_RASPI4=1 && IS_RASPI3=0 || IS_RASPI3=1
+fi
 
 # Make sure FS is expanded for Rock64
 if [ $IS_ROCK64 = 1 ]; then

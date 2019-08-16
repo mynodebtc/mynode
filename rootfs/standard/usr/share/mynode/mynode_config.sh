@@ -1,12 +1,24 @@
 #!/bin/bash
 
 # Device info
+IS_ROCK64=0
 IS_RASPI=0
 IS_RASPI3=0
 IS_RASPI4=0
-IS_ROCK64=1
-IS_STANDARD=1
-DEVICE_TYPE="rock64"
+DEVICE_TYPE="unknown"
+uname -a | grep aarch64 && IS_ROCK64=1 || IS_RASPI=1
+if [ $IS_RASPI -eq 1 ]; then
+    cat /proc/cpuinfo | grep 03111 && IS_RASPI4=1 || IS_RASPI3=1
+fi
+
+if [ $IS_RASPI3 -eq 1 ]; then
+    DEVICE_TYPE="raspi3"
+elif [ $IS_RASPI4 -eq 1 ]; then
+    DEVICE_TYPE="raspi4"
+elif [ $IS_ROCK64 -eq 1 ]; then
+    DEVICE_TYPE="rock64"
+fi
+
 
 SERIAL_NUM=$(cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2)
 
