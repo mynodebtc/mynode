@@ -55,6 +55,7 @@ runUnattended=false
 IPv4dev=$(ip route get 8.8.8.8 | awk '{for(i=1;i<=NF;i++)if($i~/dev/)print $(i+1)}')
 IPv4addr=$(ip route get 8.8.8.8| awk '{print $7}')
 IPv4gw=$(ip route get 8.8.8.8 | awk '{print $3}')
+IPv4dns=8.8.8.8
 
 availableInterfaces=$(ip -o link | grep "state UP" | awk '{print $2}' | cut -d':' -f1 | cut -d'@' -f1)
 dhcpcdFile=/etc/dhcpcd.conf
@@ -148,12 +149,6 @@ chooseInterface() {
 avoidStaticIPv4Ubuntu() {
     # Not ubuntu...
     echo "We aren't Ubuntu (probably)..."
-}
-
-getStaticIPv4Settings() {
-    # Dont prompt for IP
-    echo "Using DHCP address as static IP..."
-    IPv4dns="8.8.8.8"
 }
 
 setDHCPCD() {
@@ -1005,7 +1000,6 @@ main() {
         if [[ $PLAT != "Raspbian" ]]; then
             avoidStaticIPv4Ubuntu
         else
-            getStaticIPv4Settings
             setStaticIPv4
         fi
 
