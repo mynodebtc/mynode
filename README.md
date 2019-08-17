@@ -53,9 +53,7 @@ We currently support images for the following devices:
 You can run myNode on your own device in just a few easy steps!
 
 1. Download an Image
-    * Raspberry Pi 3 | [Download](http://mynodebtc.com/device/mynode_images/raspi3_final.img.gz)
-    * Raspberry Pi 4 | [Download](http://mynodebtc.com/device/mynode_images/raspi4_final.img.gz)
-    * Rock64 | [Download](http://mynodebtc.com/device/mynode_images/rock64_final.img.gz)
+    * [Downloads](https://mynodebtc.com/download)
 2. Flash Image onto SD Card
     * Download [Etcher](https://www.balena.io/etcher/)
     * Flash Downloaded Image
