@@ -7,7 +7,7 @@ while [ true ]; do
         /usr/bin/mynode_setup_vpn.sh
 
         mkdir -p /home/pivpn/ovpns
-        pivpn add -n mynode_vpn -p bolt -d 3650
+        pivpn add -n mynode_vpn nopass -d 3650
     fi
 
     systemctl enable openvpn
