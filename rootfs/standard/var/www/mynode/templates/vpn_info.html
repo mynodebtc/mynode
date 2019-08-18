@@ -126,7 +126,11 @@
             <div class="info_tile">
                 <div class="info_tile_header">Regenerate VPN Files</div>
                 <div class="info_tile_contents">
+                    {% if vpn_file_exists %}
                     <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="regen_ovpn" style="width: 70%;" href="#">regenerate</a>
+                    {% else %}
+                    Generating file...
+                    {% endif %}
                 </div>
             </div>
         </div>
