@@ -87,6 +87,7 @@ fi
 # Install python3 specific tools (run multiple times to make sure success)
 pip3 install wheel setuptools
 pip3 install bitstring lnd-grpc pycoin aiohttp connectrum python-bitcoinlib
+pip3 install python-bitcointx
 
 
 # Install Rust
