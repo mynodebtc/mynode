@@ -38,6 +38,11 @@ LND_CHANNEL_FILE_BACKUP="/home/bitcoin/lnd_backup/channel.backup"
 LND_ADMIN_MACAROON_FILE="/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon"
 PRODUCT_KEY_FILE="/home/bitcoin/.mynode/.product_key"
 
+ELECTRS_ENABLED_FILE="/mnt/hdd/mynode/.mynode_electrs_enabled"
+LNDHUB_ENABLED_FILE="/mnt/hdd/mynode/.mynode_lndhub_enabled"
+BTCRPCEXPLORER_ENABLED_FILE="/mnt/hdd/mynode/.mynode_btcrpceplorer_enabled"
+VPN_ENABLED_FILE="/mnt/hdd/mynode/.mynode_vpn_enabled"
+
 BITCOIN_SYNCED_FILE="/mnt/hdd/mynode/.mynode_bitcoind_synced"
 QUICKSYNC_COMPLETE_FILE="$QUICKSYNC_DIR/.quicksync_complete"
 
