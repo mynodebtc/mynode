@@ -17,6 +17,9 @@ apt -y install pv
 pip install tzupdate
 
 
+# Install any pip3 software
+pip3 install python-bitcointx
+
 # Upgrade BTC
 ARCH="arm-linux-gnueabihf"
 uname -a | grep aarch64
