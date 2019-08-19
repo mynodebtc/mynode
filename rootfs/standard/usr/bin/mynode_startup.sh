@@ -211,6 +211,42 @@ echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
 echo 'nameserver 8.8.4.4' >> /etc/resolv.conf
 echo 'nameserver 1.1.1.1' >> /etc/resolv.conf
 
+
+# Make sure every enabled service is really enabled
+#   This can happen from full-SD card upgrades
+STARTUP_MODIFIED=0
+if [ -f $ELECTRS_ENABLED_FILE ]; then
+    if systemctl status electrs | grep "disabled;"; then
+        systemctl enable electrs
+        STARTUP_MODIFIED=1
+    fi
+fi
+if [ -f $LNDHUB_ENABLED_FILE ]; then
+    if systemctl status lndhub | grep "disabled;"; then
+        systemctl enable lndhub
+        STARTUP_MODIFIED=1
+    fi
+fi
+if [ -f $BTCRPCEXPLORER_ENABLED_FILE ]; then
+    if systemctl status btc_rpc_explorer | grep "disabled;"; then
+        systemctl enable btc_rpc_explorer
+        STARTUP_MODIFIED=1
+    fi
+fi
+if [ -f $VPN_ENABLED_FILE ]; then
+    if systemctl status vpn | grep "disabled;"; then
+        systemctl enable vpn
+        systemctl enable openvpn || true
+        STARTUP_MODIFIED=1
+    fi
+fi
+if [ $STARTUP_MODIFIED -eq 1 ]; then
+    sync
+    reboot
+    exit 0
+fi
+
+
 # Check for new versions
 wget $LATEST_VERSION_URL -O /usr/share/mynode/latest_version || true
 
