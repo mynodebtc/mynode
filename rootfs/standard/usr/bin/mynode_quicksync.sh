@@ -84,14 +84,15 @@ else
         if [ $COMPLETED -eq 1 ]; then
             touch $QUICKSYNC_DIR/.quicksync_download_complete
             touch $QUICKSYNC_DIR/.quicksync_complete
-
-            # Since this will start/continue a background download, wait so everything else boots smoothly
-            sleep 5m
-            /usr/bin/wait_on_bitcoin.sh
-            sleep 10m
         fi
         sync
     fi
+fi
+
+# If Quicksync has already completed, let's give BTC some time to start
+if [ -f $QUICKSYNC_DIR/.quicksync_complete ]; then
+    /usr/bin/wait_on_bitcoin.sh
+    sleep 5m
 fi
 
 # Start torrent

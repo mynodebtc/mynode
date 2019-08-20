@@ -32,6 +32,7 @@ done
 echo "QuickSync Complete! Enabling Uploading."
 
 while true; do
+    PERCENT=$(transmission-remote -t 1 -i | grep "Percent Done:")
     if [ -f $UPLOADER_FILE ]; then
         echo "Marked as uploader, unlimited upload"
         transmission-remote -U
@@ -40,6 +41,9 @@ while true; do
         transmission-remote -u 0
     elif [ ! -f "/mnt/hdd/mynode/.mynode_bitcoind_synced" ]; then
         echo "Bitcoin not synced, stopping upload"
+        transmission-remote -u 0
+    elif [[ "$PERCENT" != *"100"* ]]; then
+        echo "QuickSync is downloading, stopping upload"
         transmission-remote -u 0
     elif [ -f $QUICKSYNC_BANDWIDTH_FILE ]; then
         RATE=$(cat $QUICKSYNC_BANDWIDTH_FILE)
