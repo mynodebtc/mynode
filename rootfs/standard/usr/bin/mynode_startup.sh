@@ -102,7 +102,9 @@ fi
 cp -f /usr/share/mynode/bitcoin.conf /mnt/hdd/mynode/bitcoin/bitcoin.conf
 
 PW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
-sed -i "s/rpcpassword=.*/rpcpassword=$PW/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+RPCAUTH=$(gen_rpcauth.py mynode $PW)
+#sed -i "s/rpcpassword=.*/rpcpassword=$PW/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+sed -i "s/rpcauth=.*/$RPCAUTH/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
 
 cp -f /mnt/hdd/mynode/bitcoin/bitcoin.conf /home/admin/.bitcoin/bitcoin.conf
 chown bitcoin:bitcoin /mnt/hdd/mynode/bitcoin/bitcoin.conf
@@ -134,14 +136,12 @@ fi
 echo "BTC_RPC_PASSWORD=$PW" > /mnt/hdd/mynode/settings/.btcrpc_environment
 chown bitcoin:bitcoin /mnt/hdd/mynode/settings/.btcrpc_environment
 if [ -f /mnt/hdd/mynode/bitcoin/bitcoin.conf ]; then
-    sed -i "s/rpcpassword=.*/rpcpassword=$PW/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    #sed -i "s/rpcpassword=.*/rpcpassword=$PW/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    sed -i "s/rpcauth=.*/$RPCAUTH/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
 fi
-if [ -f /home/admin/.bitcoin/bitcoin.conf ]; then
-    sed -i "s/rpcpassword=.*/rpcpassword=$PW/g" /home/admin/.bitcoin/bitcoin.conf
-else
-    cp -f /mnt/hdd/mynode/bitcoin/bitcoin.conf /home/admin/.bitcoin/bitcoin.conf
-    chown admin:admin /home/admin/.bitcoin/bitcoin.conf
-fi
+cp -f /mnt/hdd/mynode/bitcoin/bitcoin.conf /home/admin/.bitcoin/bitcoin.conf
+chown admin:admin /home/admin/.bitcoin/bitcoin.conf
+
 
 # Reset BTCARGS
 echo "BTCARGS=" > /mnt/hdd/mynode/bitcoin/env
