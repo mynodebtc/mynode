@@ -9,7 +9,7 @@ mynode_bitcoin_cli = Blueprint('mynode_bitcoin_cli',__name__)
 
 ### Helper functions
 def runcmd(cmd):
-    cmd = "bitcoin-cli --conf=/home/admin/.bitcoin/bitcoin.conf "+cmd+"; exit 0"
+    cmd = "bitcoin-cli --conf=/home/admin/.bitcoin/bitcoin.conf --datadir=/mnt/hdd/mynode/bitcoin "+cmd+"; exit 0"
     try:
         results = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
     except Exception as e:
