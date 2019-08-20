@@ -132,13 +132,28 @@
 {% endif %}
                 </div>
             </div>
-{% if wallet_exists %}
+        </div>
+
+{% if wallet_exists and wallet_logged_in %}
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Status</div>
+                <div class="info_tile_contents">{{status}}</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">Height</div>
+                <div class="info_tile_contents">{{height}}</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">Num Peers</div>
+                <div class="info_tile_contents">{{num_peers}}</div>
+            </div>
             <div class="info_tile">
                 <div class="info_tile_header">Version</div>
                 <div class="info_tile_contents">{{version}}</div>
             </div>
-{% endif %}
         </div>
+{% endif %}
 
 {% if wallet_exists or channel_backup_exists %}
         <div class="app_tile_row">
@@ -177,24 +192,16 @@
 {% if wallet_logged_in %}
         <div class="app_tile_row">
             <div class="info_tile">
-                <div class="info_tile_header">Status</div>
-                <div class="info_tile_contents">{{status}}</div>
-            </div>
-            <div class="info_tile">
                 <div class="info_tile_header">Alias</div>
                 <div class="info_tile_contents">{{alias}} <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="change_alias" href="#"><span class="ui-icon ui-icon-gear"></a></div>
             </div>
             <div class="info_tile">
-                <div class="info_tile_header">Num Peers</div>
-                <div class="info_tile_contents">{{num_peers}}</div>
-            </div>
-            <div class="info_tile">
-                <div class="info_tile_header">Height</div>
-                <div class="info_tile_contents">{{height}}</div>
-            </div>
-            <div class="info_tile">
                 <div class="info_tile_header">Local gRPC Port</div>
                 <div class="info_tile_contents">10009</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">Local REST Port</div>
+                <div class="info_tile_contents">10080</div>
             </div>
         </div>
 
