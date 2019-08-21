@@ -63,33 +63,39 @@ fi
 if [ ! -f $QUICKSYNC_DIR/blockchain.torrent ]; then
     cp $QUICKSYNC_DIR/blockchain_temp.torrent $QUICKSYNC_DIR/blockchain.torrent
 else
-    # Run commands as long as torrents are different (last command updates torrent file)
-    COMPLETED=0
-    if [ -f $QUICKSYNC_DIR/.quicksync_complete ]; then
-        COMPLETED=1
-    fi
-    
-    NEW_TORRENT=0
-    cmp --silent $QUICKSYNC_DIR/blockchain_temp.torrent $QUICKSYNC_DIR/blockchain.torrent || NEW_TORRENT=1
-    if [ $NEW_TORRENT -eq 1 ]; then
-        # Delete old QuickSync data+config and start new one
-        rm -f $QUICKSYNC_DIR/*
-        rm -rf $QUICKSYNC_CONFIG_DIR
-        mkdir -p $QUICKSYNC_CONFIG_DIR
-        cp -f /usr/share/quicksync/settings.json $QUICKSYNC_CONFIG_DIR/settings.json
-        cp $QUICKSYNC_DIR/blockchain_temp.torrent $QUICKSYNC_DIR/blockchain.torrent
-        sync
-
-        # If download had been completed
-        if [ $COMPLETED -eq 1 ]; then
-            touch $QUICKSYNC_DIR/.quicksync_download_complete
-            touch $QUICKSYNC_DIR/.quicksync_complete
+    if [ $IS_RASPI3 -eq 1 ] && [ ! -f $UPLOADER_FILE ]; then
+        # Don't help with uploads during normal operation.... too slow
+        sleep 1s
+    else
+        # Run commands as long as torrents are different (last command updates torrent file)
+        COMPLETED=0
+        if [ -f $QUICKSYNC_DIR/.quicksync_complete ]; then
+            COMPLETED=1
         fi
-        sync
+        
+        NEW_TORRENT=0
+        cmp --silent $QUICKSYNC_DIR/blockchain_temp.torrent $QUICKSYNC_DIR/blockchain.torrent || NEW_TORRENT=1
+        if [ $NEW_TORRENT -eq 1 ]; then
+            # Delete old QuickSync data+config and start new one
+            rm -f $QUICKSYNC_DIR/*
+            rm -rf $QUICKSYNC_CONFIG_DIR
+            mkdir -p $QUICKSYNC_CONFIG_DIR
+            cp -f /usr/share/quicksync/settings.json $QUICKSYNC_CONFIG_DIR/settings.json
+            cp $QUICKSYNC_DIR/blockchain_temp.torrent $QUICKSYNC_DIR/blockchain.torrent
+            sync
+
+            # If download had been completed
+            if [ $COMPLETED -eq 1 ]; then
+                touch $QUICKSYNC_DIR/.quicksync_download_complete
+                touch $QUICKSYNC_DIR/.quicksync_complete
+            fi
+            sync
+        fi
     fi
 fi
 
-# If Quicksync has already completed, let's give BTC some time to start
+# If Quicksync has already completed, let's give BTC some time to start before
+# seeding or downloading a more recent copy
 if [ -f $QUICKSYNC_DIR/.quicksync_complete ]; then
     /usr/bin/wait_on_bitcoin.sh
     sleep 5m

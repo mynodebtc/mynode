@@ -10,7 +10,7 @@
     "bind-address-ipv6": "::",
     "blocklist-enabled": false,
     "blocklist-url": "http://www.example.com/blocklist",
-    "cache-size-mb": 4,
+    "cache-size-mb": 64,
     "dht-enabled": true,
     "download-dir": "/mnt/hdd/mynode/quicksync",
     "download-queue-enabled": false,
@@ -25,7 +25,7 @@
     "peer-congestion-algorithm": "",
     "peer-id-ttl-hours": 6,
     "peer-limit-global": 200,
-    "peer-limit-per-torrent": 50,
+    "peer-limit-per-torrent": 5,
     "peer-port": 56881,
     "peer-port-random-high": 56899,
     "peer-port-random-low": 56881,
@@ -63,6 +63,6 @@
     "start-added-torrents": true,
     "trash-original-torrent-files": false,
     "umask": 18,
-    "upload-slots-per-torrent": 5,
+    "upload-slots-per-torrent": 3,
     "utp-enabled": false
 }
