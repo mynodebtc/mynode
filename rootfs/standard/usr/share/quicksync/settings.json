@@ -10,7 +10,7 @@
     "bind-address-ipv6": "::",
     "blocklist-enabled": false,
     "blocklist-url": "http://www.example.com/blocklist",
-    "cache-size-mb": 64,
+    "cache-size-mb": 4,
     "dht-enabled": true,
     "download-dir": "/mnt/hdd/mynode/quicksync",
     "download-queue-enabled": false,

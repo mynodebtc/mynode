@@ -5,7 +5,7 @@ set -x
 
 source /usr/share/mynode/mynode_config.sh
 
-BACKGROUND_DL_RATE=4000
+BACKGROUND_DL_RATE=2500
 if [ $IS_RASPI3 -eq 1 ]; then
     BACKGROUND_DL_RATE=500
 fi
