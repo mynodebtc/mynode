@@ -45,7 +45,7 @@ apt-get -y install clang hitch zlib1g-dev libffi-dev file toilet ncdu
 apt-get -y install toilet-fonts avahi-daemon figlet libsecp256k1-dev 
 apt-get -y install inotify-tools libssl-dev tor tmux screen
 apt-get -y install python-grpcio python3-grpcio
-apt-get -y install pv
+apt-get -y install pv sysstat
 
 
 # Install other things without recommendation
