@@ -323,13 +323,16 @@ install_dependent_packages() {
 
 unattendedUpgrades() {
     # Enable unattended upgrades
-    UNATTUPG="unattended-upgrades"
+    #UNATTUPG="unattended-upgrades"
     #whiptail --msgbox --backtitle "Security Updates" --title "Unattended Upgrades" "Since this server will have at least one port open to the internet, it is recommended you enable unattended-upgrades.\nThis feature will check daily for security package updates only and apply them when necessary.\nIt will NOT automatically reboot the server so to fully apply some updates you should periodically reboot." ${r} ${c}
     #if (whiptail --backtitle "Security Updates" --title "Unattended Upgrades" --yesno "Do you want to enable unattended upgrades of security patches to this server?" ${r} ${c}) then
     #    UNATTUPG="unattended-upgrades"
     #else
     #    UNATTUPG=""
     #fi
+
+    # myNode will manage upgrades since this would make some OS assumptions
+    UNATTUPG=""
 }
 
 stopServices() {
