@@ -30,6 +30,7 @@ Each myNode device comes with a number of wonderful features:
 - Bitcoin Node
 - Lightning Wallet
 - Simple UI / Web Interface
+- VPN for Remote Access
 - Bitcoin Explorer
 - Electrum Server - BTC Light Wallet Server
 - Ride the Lightning - Lightning Wallet
