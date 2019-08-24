@@ -16,6 +16,7 @@ drive_usage = "0%"
 cpu_usage = "..."
 ram_usage = "..."
 swap_usage = "..."
+device_temp = "..."
 public_ip = "not_detected"
 
 
@@ -35,6 +36,9 @@ def get_ram_usage():
 def get_swap_usage():
     global swap_usage
     return swap_usage
+def get_device_temp():
+    global device_temp
+    return device_temp
 def get_public_ip():
     global public_ip
     return public_ip
@@ -45,6 +49,7 @@ def update_device_info():
     global cpu_usage
     global ram_usage
     global swap_usage
+    global device_temp
 
     # Get drive info
     try:
@@ -68,6 +73,10 @@ def update_device_info():
         #cpu_usage = "{}%".format(psutil.cpu_percent(interval=30.0))
         cpu_info = psutil.cpu_times_percent(interval=30.0, percpu=False)
         cpu_usage = "{}%".format(100.0 - cpu_info.idle)
+
+        # Get device temp
+        results = subprocess.check_output("cat /sys/class/thermal/thermal_zone0/temp", shell=True)
+        device_temp = int(results) / 1000
 
     except Exception as e:
         print("CAUGHT update_device_info EXCEPTION: " + str(e))

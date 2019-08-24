@@ -372,6 +372,7 @@ def index():
             "cpu_usage": get_cpu_usage(),
             "ram_usage": get_ram_usage(),
             "swap_usage": get_swap_usage(),
+            "device_temp": get_device_temp(),
             "upgrade_available": upgrade_available
         }
         return render_template('main.html', **templateData)
