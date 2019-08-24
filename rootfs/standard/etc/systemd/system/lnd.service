@@ -9,7 +9,7 @@ After=bitcoind.service
 [Service]
 ExecStartPre=/usr/bin/pre_lnd.sh
 ExecStartPre=/usr/bin/wait_on_bitcoin.sh
-ExecStart=/usr/local/bin/lnd
+ExecStart=/usr/local/bin/lnd --caches.channel-cache-size=35000
 #ExecStartPost=/usr/bin/unlock_lnd.sh
 
 User=bitcoin
