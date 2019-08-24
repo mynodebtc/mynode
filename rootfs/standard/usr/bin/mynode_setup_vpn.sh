@@ -629,39 +629,8 @@ EOF
 }
 
 confUnattendedUpgrades() {
-    cd /etc/apt/apt.conf.d
-
-    if [[ $UNATTUPG == "unattended-upgrades" ]]; then
-        $SUDO apt-get --yes --quiet --no-install-recommends install "$UNATTUPG" > /dev/null & spinner $!
-        if [[ $PLAT == "Ubuntu" ]]; then
-            # Ubuntu 50unattended-upgrades should already just have security enabled
-            # so we just need to configure the 10periodic file
-            cat << EOT | $SUDO tee 10periodic >/dev/null
-    APT::Periodic::Update-Package-Lists "1";
-    APT::Periodic::Download-Upgradeable-Packages "1";
-    APT::Periodic::AutocleanInterval "5";
-    APT::Periodic::Unattended-Upgrade "1";
-EOT
-        else
-            # Fix Raspbian config
-            if [[ $PLAT == "Raspbian" ]]; then
-                wget -q -O - "$UNATTUPG_CONFIG" | $SUDO tar xz
-                $SUDO cp "unattended-upgrades-$UNATTUPG_RELEASE/data/50unattended-upgrades.Raspbian" 50unattended-upgrades
-                $SUDO rm -rf "unattended-upgrades-$UNATTUPG_RELEASE"
-            fi
-
-            # Add the remaining settings for all other distributions
-            cat << EOT | $SUDO tee 02periodic >/dev/null
-    APT::Periodic::Enable "1";
-    APT::Periodic::Update-Package-Lists "1";
-    APT::Periodic::Download-Upgradeable-Packages "1";
-    APT::Periodic::Unattended-Upgrade "1";
-    APT::Periodic::AutocleanInterval "7";
-    APT::Periodic::Verbose "0";
-EOT
-        fi
-    fi
-
+    # myNode Removed
+    echo "skipped confUnattendedUpgrades"
 }
 
 confNetwork() {
