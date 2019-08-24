@@ -13,7 +13,7 @@ User=bitcoin
 Group=bitcoin
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=lnd
+SyslogIdentifier=unlock_lnd
 Restart=always
 RestartSec=1
 
