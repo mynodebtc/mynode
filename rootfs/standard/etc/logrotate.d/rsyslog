@@ -10,6 +10,8 @@
 /var/log/redis-server.log
 /var/log/rtl.log
 /var/log/www.log
+/var/log/bitcoind.log
+/var/log/unlock_lnd.log
 /var/log/*
 {
 	rotate 3
