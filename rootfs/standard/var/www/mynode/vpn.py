@@ -51,10 +51,16 @@ def page_regen_vpn():
     if pw == None or p.authenticate("admin", pw) == False:
         return redirect(url_for(".page_vpn_info", error_message="Invalid Password"))
 
+    # Stop
     #os.system("rm /home/pivpn/ovpns/mynode_vpn.ovpn")
     os.system("pivpn -r mynode_vpn")
     os.system("systemctl stop openvpn")
     os.system("systemctl stop vpn")
+
+    # Clean up files
+    os.system("rm -rf /mnt/hdd/mynode/vpn/*")
+
+    # Restart
     os.system("systemctl start vpn")
 
     # Download ovpn

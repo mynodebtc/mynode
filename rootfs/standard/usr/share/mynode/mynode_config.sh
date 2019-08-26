@@ -24,6 +24,7 @@ SERIAL_NUM=$(cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2)
 
 # Set all default / standard bash config settings
 MYNODE_DIR=/mnt/hdd/mynode
+VPN_BACKUP_DIR=/mnt/hdd/mynode/vpn
 QUICKSYNC_DIR=/mnt/hdd/mynode/quicksync
 QUICKSYNC_CONFIG_DIR=/mnt/hdd/mynode/.config/transmission
 QUICKSYNC_TORRENT_URL="https://mynodebtc.com/device/blockchain.tar.gz.torrent"
