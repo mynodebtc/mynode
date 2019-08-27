@@ -3,6 +3,7 @@ from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from pprint import pprint, pformat
 from prometheus_client.parser import text_string_to_metric_families
 from bitcoin_info import *
+from device_info import get_local_ip
 import requests
 import json
 import time
@@ -86,11 +87,14 @@ def electrum_server_page():
         current_block = "Unknown"
     status = get_electrs_status()
 
+    server_url = get_local_ip() + ":50002:s"
+
     # Load page
     templateData = {
         "title": "myNode Electrum Server",
         "port": 50002,
         "status": status,
-        "current_block": current_block
+        "current_block": current_block,
+        "server_url": server_url
     }
     return render_template('electrum_server.html', **templateData)
