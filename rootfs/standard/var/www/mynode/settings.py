@@ -4,6 +4,7 @@ from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from pprint import pprint, pformat
 from threading import Timer
 from device_info import *
+from thread_functions import *
 import pam
 import json
 import time
@@ -120,6 +121,8 @@ def page_settings():
     pk_skipped = skipped_product_key()
     pk_error = not is_valid_product_key()
     uptime = get_system_uptime()
+    local_ip = get_local_ip()
+    public_ip = get_public_ip()
 
     quicksync_status = ""
     try:
@@ -147,7 +150,9 @@ def page_settings():
         "quicksync_status": quicksync_status,
         "is_quicksync_disabled": not is_quicksync_enabled(),
         "is_uploader_device": is_uploader(),
-        "uptime": uptime
+        "uptime": uptime,
+        "public_ip": public_ip,
+        "local_ip": local_ip
     }
     return render_template('settings.html', **templateData)
 
