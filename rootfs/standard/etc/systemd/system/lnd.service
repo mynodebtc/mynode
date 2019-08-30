@@ -10,7 +10,7 @@ After=bitcoind.service
 ExecStartPre=/usr/bin/pre_lnd.sh
 ExecStartPre=/usr/bin/wait_on_bitcoin.sh
 ExecStart=/usr/local/bin/lnd --caches.channel-cache-size=35000
-#ExecStartPost=/usr/bin/unlock_lnd.sh
+ExecStartPost=echo 'abc' > /mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/poke_login
 
 User=bitcoin
 Group=bitcoin
