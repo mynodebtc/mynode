@@ -3,7 +3,7 @@ from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from pprint import pprint, pformat
 from prometheus_client.parser import text_string_to_metric_families
 from bitcoin_info import *
-from device_info import get_local_ip
+from device_info import get_local_ip, skipped_product_key
 import requests
 import json
 import time
@@ -105,6 +105,7 @@ def electrum_server_page():
         "title": "myNode Electrum Server",
         "port": 50002,
         "status": status,
+        "product_key_skipped": skipped_product_key(),
         "current_block": current_block,
         "server_url": server_url,
         "electrs_onion_hostname": electrs_onion_hostname,
