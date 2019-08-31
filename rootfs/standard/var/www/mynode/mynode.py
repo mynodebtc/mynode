@@ -3,6 +3,7 @@ from config import *
 from flask import Flask, render_template, Markup, send_from_directory, redirect, request, url_for
 from bitcoind import mynode_bitcoind
 from bitcoin_cli import mynode_bitcoin_cli
+from tor import mynode_tor
 from vpn import mynode_vpn
 if CONFIG["electrs_enabled"]:
     from electrum_server import *
@@ -35,6 +36,7 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.register_blueprint(mynode_bitcoind)
 app.register_blueprint(mynode_lnd)
 app.register_blueprint(mynode_bitcoin_cli)
+app.register_blueprint(mynode_tor)
 if CONFIG["electrs_enabled"]:
     app.register_blueprint(mynode_electrum_server)
 app.register_blueprint(mynode_vpn)
