@@ -43,6 +43,29 @@
             </div>
         </div>
 
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Electrum Tor Service</div>
+                <div class="info_tile_contents">{% if not product_key_skipped %}Enabled{% else %}Premium Feature{% endif %}</div>
+            </div>
+            {% if not product_key_skipped %}
+            <div class="info_tile">
+                <div class="info_tile_header">Electrum Tor Hostname</div>
+                <div class="info_tile_contents">{{electrs_onion_hostname}}</div>
+            </div>
+        </div>
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Electrum Tor Command</div>
+                <div class="info_tile_contents">{{electrs_onion_command}}</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">Electrum Tor Help</div>
+                <div class="info_tile_contents"><a href="http://docs.electrum.org/en/latest/tor.html" target="_blank">Link</a></div>
+            </div>
+            {% endif %}
+        </div>
+
         {% include 'includes/footer.html' %}
      </body>
 </html>
