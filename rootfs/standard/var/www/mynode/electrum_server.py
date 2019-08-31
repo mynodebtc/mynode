@@ -89,12 +89,25 @@ def electrum_server_page():
 
     server_url = get_local_ip() + ":50002:s"
 
+    # Get Onion URLs
+    electrs_onion_hostname = "..."
+    electrs_onion_command = "..."
+    if os.path.isfile("/var/lib/tor/electrs_hidden_service/hostname"):
+        with open("/var/lib/tor/electrs_hidden_service/hostname") as f:
+            electrs_onion_hostname = f.read().strip()
+            electrs_onion_command = "./electrum -1 -s {}:50001:t -p socks5:localhost:9050".format(electrs_onion_hostname)
+    else:
+        electrs_onion_hostname = "disabled"
+        electrs_onion_command = "disabled"
+
     # Load page
     templateData = {
         "title": "myNode Electrum Server",
         "port": 50002,
         "status": status,
         "current_block": current_block,
-        "server_url": server_url
+        "server_url": server_url,
+        "electrs_onion_hostname": electrs_onion_hostname,
+        "electrs_onion_command": electrs_onion_command
     }
     return render_template('electrum_server.html', **templateData)
