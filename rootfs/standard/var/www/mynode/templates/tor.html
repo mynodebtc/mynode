@@ -1,0 +1,61 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode.css")}}">
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode_bitcoind.css")}}">
+        <link href="{{ url_for('static', filename="jquery_ui/jquery-ui.css")}}" rel="stylesheet">
+        <meta http-equiv="Content-Language" content="en">
+        <meta name="google" content="notranslate">
+        <script src="{{ url_for('static', filename="js/jquery-3.3.1.min.js")}}"></script>
+        <script src="{{ url_for('static', filename="jquery_ui/jquery-ui.js")}}"></script>
+        <script src="{{ url_for('static', filename="js/mynode.js")}}"></script>
+
+    </head>
+
+    <body>
+        <div class="logo_header"><a href="/"><img class="logo_image" src="{{ url_for('static', filename="images/logo.png")}}"/></a></div>
+        <div class="mynode_back_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        </div>
+
+        <div style="margin: auto; text-align: center;">
+            {{ message }}
+        </div>
+
+        <div class="main_header">Tor Services</div>
+        <br/>
+        
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Bitcoin</div>
+                <div class="info_tile_contents">Tor Enabled</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">Lightning</div>
+                <div class="info_tile_contents">Tor Enabled</div>
+            </div>
+        </div>
+
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Electrum Server</div>
+                <div class="info_tile_contents">Tor Enabled</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">Onion Hostname</div>
+                <div class="info_tile_contents">{{electrs_onion_hostname}}</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">Electrum Command</div>
+                <div class="info_tile_contents">{{electrs_onion_command}}</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">Help</div>
+                <div class="info_tile_contents"><a href="http://docs.electrum.org/en/latest/tor.html" target="_blank">Link</a></div>
+            </div>
+        </div>
+
+        {% include 'includes/footer.html' %}
+     </body>
+</html>

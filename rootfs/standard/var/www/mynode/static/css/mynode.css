@@ -93,12 +93,34 @@ a:active {
     padding-bottom: 10px;
 }
 
+.app_tile_row_divider_left {
+    width: 50%;
+    float: left;
+    margin: 0px;
+}
+
+.app_tile_row_divider_right {
+    width: 50%;
+    float: right;
+    margin: 0px;
+
+}
+
 .app_tile_row {
     margin: auto;
     display: flex;
     text-align: center;
     justify-content: center;
     margin-bottom: 10px;
+}
+.app_tile_row_section {
+    margin: auto;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    margin-bottom: 0px;
+    margin-left: 20px;
+    margin-right: 20px;
 }
 .app_tile {
     display: inline-block;
