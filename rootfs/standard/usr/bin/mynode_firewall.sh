@@ -38,5 +38,9 @@ systemctl enable ufw
 # Check UFW status
 ufw status
 
+# Reload firewall after some time to reset (fixes VPN)
+sleep 120s
+ufw reload
+
 # Success
 exit 0
