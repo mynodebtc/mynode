@@ -113,8 +113,7 @@ def page_lnd():
         "num_inactive_channels": num_inactive_channels,
         "pubkey": pubkey,
         "uri": uri,
-        "ip": ip,
-        "message": message
+        "ip": ip
     }
     return render_template('lnd.html', **templateData)
 
