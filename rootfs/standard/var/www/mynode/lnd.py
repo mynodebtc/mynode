@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, abort, Markup, request, redirect, send_from_directory, url_for
+from flask import Blueprint, render_template, session, abort, Markup, request, redirect, send_from_directory, url_for, flash
 from pprint import pprint, pformat
 from threading import Timer
 from bitcoin_info import *
@@ -53,20 +53,13 @@ def page_lnd():
     wallet_logged_in = is_lnd_logged_in()
     channel_backup_exists = lnd_channel_backup_exists()
 
-    message = ""
-    if request.args.get('error_message'):
-        message = Markup("<div class='error_message'>"+request.args.get('error_message')+"</div>")
-    if request.args.get('success_message'):
-        message = Markup("<div class='success_message'>"+request.args.get('success_message')+"</div>")
-
     if not lnd_wallet_exists():
         templateData = {
             "title": "myNode Lightning Wallet",
             "wallet_exists": wallet_exists,
             "wallet_logged_in": wallet_logged_in,
             "version": get_lnd_version(),
-            "status": status,
-            "message": message
+            "status": status
         }
         return render_template('lnd.html', **templateData)
 
@@ -76,8 +69,7 @@ def page_lnd():
             "wallet_exists": wallet_exists,
             "wallet_logged_in": wallet_logged_in,
             "status": get_lnd_status(),
-            "version": get_lnd_version(),
-            "message": message
+            "version": get_lnd_version()
         }
         return render_template('lnd.html', **templateData)
 
@@ -135,7 +127,8 @@ def lnd_macaroon():
     p = pam.pam()
     pw = request.form.get('password_download_macaroon')
     if pw == None or p.authenticate("admin", pw) == False:
-        return redirect(url_for(".page_lnd", error_message="Invalid Password"))
+        flash("Invalid Password", category="error")
+        return redirect(url_for(".page_lnd"))
 
     # Download macaroon
     return send_from_directory(directory="/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/", filename="admin.macaroon")
@@ -175,10 +168,12 @@ def page_lnd_create_wallet_with_seed():
     # Create wallet!
     seed = request.form.get('seed').strip()
     if create_wallet(seed):
-        return redirect(url_for(".page_lnd", success_message="Wallet Created!"))
+        flash("Wallet Created!", category="message")
+        return redirect(url_for(".page_lnd"))
     
     # Error creating wallet
-    return redirect(url_for(".page_lnd", error_message="Error Creating Wallet"))
+    flash("Error Creating Wallet!", category="error")
+    return redirect(url_for(".page_lnd"))
 
 
 @mynode_lnd.route("/lnd/create_wallet_confirm", methods=['GET','POST'])
@@ -194,15 +189,18 @@ def page_lnd_create_wallet_confirm():
     seed = request.form.get('seed').strip()
     if seed != session['seed']:
         session["seed"] = None
-        return redirect(url_for(".page_lnd", error_message="Incorrect Seed"))
+        flash("Incorrect Seed", category="error")
+        return redirect(url_for(".page_lnd"))
     session["seed"] = None
 
     # Seed matches, create wallet!
     if create_wallet(seed):
-        return redirect(url_for(".page_lnd", success_message="Wallet Created!"))
+        flash("Wallet Created!", category="message")
+        return redirect(url_for(".page_lnd"))
     
     # Error creating wallet
-    return redirect(url_for(".page_lnd", error_message="Error Creating Wallet"))
+    flash("Error Creating Wallet!", category="error")
+    return redirect(url_for(".page_lnd"))
 
 
 @mynode_lnd.route("/lnd/lndconnect", methods=["GET","POST"])
@@ -213,8 +211,14 @@ def page_lnd_lndconnect():
 
     p = pam.pam()
     pw = request.form.get('password_lndconnect')
+    from_homepage = request.form.get('lndconnect_from_homepage')
     if pw == None or p.authenticate("admin", pw) == False:
-        return redirect(url_for(".page_lnd", error_message="Invalid Password"))
+        if from_homepage != None:
+            flash("Invalid Password", category="error")
+            return redirect("/")
+        else:
+            flash("Invalid Password", category="error")
+            return redirect(url_for(".page_lnd"))
 
     lndconnect_local_grpc_text = get_text_contents("/tmp/mynode_lndconnect/lndconnect_local_grpc.txt")
     lndconnect_local_rest_text = get_text_contents("/tmp/mynode_lndconnect/lndconnect_local_rest.txt")
@@ -253,14 +257,17 @@ def page_lnd_change_alias():
     p = pam.pam()
     pw = request.form.get('password_change_alias')
     if pw == None or p.authenticate("admin", pw) == False:
-        return redirect(url_for(".page_lnd", error_message="Invalid Password"))
+        flash("Invalid Password", category="error")
+        return redirect(url_for(".page_lnd"))
 
     # Change alias
     alias = request.form.get('alias')
     if alias == None or alias == "":
-        return redirect(url_for(".page_lnd", error_message="Empty Alias"))
+        flash("Empty Alias", category="error")
+        return redirect(url_for(".page_lnd"))
     if len(alias) > 35:
-        return redirect(url_for(".page_lnd", error_message="Invalid Alias"))
+        flash("Invalid Alias", category="error")
+        return redirect(url_for(".page_lnd"))
     with open("/mnt/hdd/mynode/settings/.lndalias", "w") as f:
         utf8_alias = alias.decode('utf-8', 'ignore')
         f.write(utf8_alias)

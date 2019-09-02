@@ -1,0 +1,21 @@
+<!-- Show any Success -->
+{% with errors = get_flashed_messages(category_filter=["message"]) %}
+{% if errors %}
+<div style="margin: auto; text-align: center;">
+    {%- for msg in errors %}
+    <div class='success_message'>{{ msg }}</div><br/>
+    {% endfor -%}
+</div>
+{% endif %}
+{% endwith %}
+
+<!-- Show any Errors -->
+{% with errors = get_flashed_messages(category_filter=["error"]) %}
+{% if errors %}
+<div style="margin: auto; text-align: center;">
+    {%- for msg in errors %}
+    <div class='error_message'>{{ msg }}</div><br/>
+    {% endfor -%}
+</div>
+{% endif %}
+{% endwith %}
