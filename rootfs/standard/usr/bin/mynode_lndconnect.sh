@@ -23,21 +23,24 @@ while true; do
     echo "Generating lndconnect QR codes..."
     rm -rf /tmp/mynode_lndconnect/*
 
+    # Find URLs
+    LND_TOR_ADDR=$(cat /var/lib/tor/lnd_api/hostname | awk '{print $1}')
+
     # Generate QR Codes
-    #lndconnect --lnddir=/mnt/hdd/mynode/lnd -o --bitcoin.mainnet
-    #cp -f lndconnect-qr.png lndconnect_remote_grpc.png
     lndconnect --lnddir=/mnt/hdd/mynode/lnd -o --bitcoin.mainnet --localip
     cp -f lndconnect-qr.png lndconnect_local_grpc.png
-    #lndconnect --lnddir=/mnt/hdd/mynode/lnd -o --bitcoin.mainnet -p 10080
-    #cp -f lndconnect-qr.png lndconnect_remote_rest.png
     lndconnect --lnddir=/mnt/hdd/mynode/lnd -o --bitcoin.mainnet --localip -p 10080
     cp -f lndconnect-qr.png lndconnect_local_rest.png
+    lndconnect --lnddir=/mnt/hdd/mynode/lnd -o --bitcoin.mainnet --host=$LND_TOR_ADDR
+    cp -f lndconnect-qr.png lndconnect_tor_grpc.png
+    lndconnect --lnddir=/mnt/hdd/mynode/lnd -o --bitcoin.mainnet --host=$LND_TOR_ADDR -p 10080
+    cp -f lndconnect-qr.png lndconnect_tor_rest.png
 
     # Generate Text Files
-    #lndconnect --lnddir=/mnt/hdd/mynode/lnd -j --bitcoin.mainnet > lndconnect_remote_grpc.txt
     lndconnect --lnddir=/mnt/hdd/mynode/lnd -j --bitcoin.mainnet --localip > lndconnect_local_grpc.txt
-    #lndconnect --lnddir=/mnt/hdd/mynode/lnd -j --bitcoin.mainnet -p 10080 > lndconnect_remote_rest.txt
     lndconnect --lnddir=/mnt/hdd/mynode/lnd -j --bitcoin.mainnet --localip -p 10080 > lndconnect_local_rest.txt
+    lndconnect --lnddir=/mnt/hdd/mynode/lnd -j --bitcoin.mainnet --host=$LND_TOR_ADDR > lndconnect_tor_grpc.txt
+    lndconnect --lnddir=/mnt/hdd/mynode/lnd -j --bitcoin.mainnet --host=$LND_TOR_ADDR -p 10080 > lndconnect_tor_rest.txt
 
     echo "Done! Waiting until LND changes, then regen lndconnect codes!"
     inotifywait -e modify -e create -e delete $LND_ADMIN_MACAROON_FILE
