@@ -19,9 +19,7 @@
             <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
         </div>
 
-        <div style="margin: auto; text-align: center;">
-            {{ message }}
-        </div>
+        {% include 'includes/message_display.html' %}
 
         <div class="main_header">Tor Services</div>
         <br/>
@@ -36,6 +34,8 @@
                 <div class="info_tile_contents">Tor Enabled</div>
             </div>
         </div>
+
+        <div class="divider" style="width: 800px;"></div>
 
         <div class="app_tile_row">
             <div class="info_tile">
@@ -55,6 +55,37 @@
             <div class="info_tile">
                 <div class="info_tile_header">Electrum Tor Help</div>
                 <div class="info_tile_contents"><a href="http://docs.electrum.org/en/latest/tor.html" target="_blank">Link</a></div>
+            </div>
+        </div>
+
+        <div class="divider" style="width: 800px;"></div>
+
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">LND</div>
+                <div class="info_tile_contents">Tor Enabled</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">LND gRPC Port</div>
+                <div class="info_tile_contents">10009</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">LND REST Port</div>
+                <div class="info_tile_contents">10080</div>
+            </div>
+        </div>
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">LND Tor Hostname</div>
+                <div class="info_tile_contents">{{lnd_onion_hostname}}</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">LND Tor Client Name</div>
+                <div class="info_tile_contents">mynode</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">LND Tor Client Password</div>
+                <div class="info_tile_contents">{{lnd_onion_password}}</div>
             </div>
         </div>
 
