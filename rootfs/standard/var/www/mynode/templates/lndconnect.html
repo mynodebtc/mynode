@@ -30,8 +30,10 @@
         <div class="main_header">LND Connect</div>
         <div id="lndconnect_tabs" style="width: 800px;">
             <ul>
-                <li><a href="#tabs-1">gRPC</a></li>
-                <li><a href="#tabs-2">REST</a></li>
+                <li><a href="#tabs-1">gRPC Local IP</a></li>
+                <li><a href="#tabs-2">REST Local IP</a></li>
+                <li><a href="#tabs-3">gRPC Tor</a></li>
+                <li><a href="#tabs-4">REST Tor</a></li>
             </ul>
             <div id="tabs-1">
                 <img class="lndconnect_qr_code" src="data:image/png;base64,{{lndconnect_local_grpc_img}}"/>
@@ -40,6 +42,14 @@
             <div id="tabs-2">
                 <img class="lndconnect_qr_code" src="data:image/png;base64,{{lndconnect_local_rest_img}}"/>
                 <p>{{ lndconnect_local_rest_text }}</p>
+            </div>
+            <div id="tabs-3">
+                <img class="lndconnect_qr_code" src="data:image/png;base64,{{lndconnect_tor_grpc_img}}"/>
+                <p>{{ lndconnect_tor_grpc_text }}</p>
+            </div>
+            <div id="tabs-4">
+                <img class="lndconnect_qr_code" src="data:image/png;base64,{{lndconnect_tor_rest_img}}"/>
+                <p>{{ lndconnect_tor_rest_text }}</p>
             </div>
         </div>
 

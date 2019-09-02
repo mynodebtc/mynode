@@ -4,6 +4,7 @@ from threading import Timer
 from bitcoin_info import *
 from lightning_info import *
 from settings import reboot_device
+from device_info import is_community_edition
 import base64
 import subprocess
 import json
@@ -217,25 +218,31 @@ def page_lnd_lndconnect():
 
     lndconnect_local_grpc_text = get_text_contents("/tmp/mynode_lndconnect/lndconnect_local_grpc.txt")
     lndconnect_local_rest_text = get_text_contents("/tmp/mynode_lndconnect/lndconnect_local_rest.txt")
-    lndconnect_remote_grpc_text = get_text_contents("/tmp/mynode_lndconnect/lndconnect_remote_grpc.txt")
-    lndconnect_remote_rest_text = get_text_contents("/tmp/mynode_lndconnect/lndconnect_remote_rest.txt")
+    lndconnect_tor_grpc_text = get_text_contents("/tmp/mynode_lndconnect/lndconnect_tor_grpc.txt")
+    lndconnect_tor_rest_text = get_text_contents("/tmp/mynode_lndconnect/lndconnect_tor_rest.txt")
+    if is_community_edition():
+        lndconnect_tor_grpc_text = "Premium Feature"
+        lndconnect_tor_rest_text = "Premium Feature"
 
     lndconnect_local_grpc_img = get_image_contents("/tmp/mynode_lndconnect/lndconnect_local_grpc.png")
     lndconnect_local_rest_img = get_image_contents("/tmp/mynode_lndconnect/lndconnect_local_rest.png")
-    lndconnect_remote_grpc_img = get_image_contents("/tmp/mynode_lndconnect/lndconnect_remote_grpc.png")
-    lndconnect_remote_rest_img = get_image_contents("/tmp/mynode_lndconnect/lndconnect_remote_rest.png")
-    
+    lndconnect_tor_grpc_img = get_image_contents("/tmp/mynode_lndconnect/lndconnect_tor_grpc.png")
+    lndconnect_tor_rest_img = get_image_contents("/tmp/mynode_lndconnect/lndconnect_tor_rest.png")
+    if is_community_edition():
+        lndconnect_tor_grpc_img = get_image_contents("/var/www/mynode/static/images/dots.png")
+        lndconnect_tor_rest_img = get_image_contents("/var/www/mynode/static/images/dots.png")
+
     # Show lndconnect page
     templateData = {
         "title": "myNode Lightning Wallet",
         "lndconnect_local_grpc_text": lndconnect_local_grpc_text,
         "lndconnect_local_rest_text": lndconnect_local_rest_text,
-        "lndconnect_remote_grpc_text": lndconnect_remote_grpc_text,
-        "lndconnect_remote_rest_text": lndconnect_remote_rest_text,
+        "lndconnect_tor_grpc_text": lndconnect_tor_grpc_text,
+        "lndconnect_tor_rest_text": lndconnect_tor_rest_text,
         "lndconnect_local_grpc_img": lndconnect_local_grpc_img,
         "lndconnect_local_rest_img": lndconnect_local_rest_img,
-        "lndconnect_remote_grpc_img": lndconnect_remote_grpc_img,
-        "lndconnect_remote_rest_img": lndconnect_remote_rest_img
+        "lndconnect_tor_grpc_img": lndconnect_tor_grpc_img,
+        "lndconnect_tor_rest_img": lndconnect_tor_rest_img
     }
     return render_template('lndconnect.html', **templateData)
 

@@ -78,7 +78,8 @@ def unset_skipped_product_key():
 def skipped_product_key():
     return os.path.isfile("/home/bitcoin/.mynode/.product_key_skipped") or \
            os.path.isfile("/mnt/hdd/mynode/settings/.product_key_skipped")
-
+def is_community_edition():
+    return skipped_product_key()
 
 def delete_product_key():
     os.system("rm -rf /home/bitcoin/.mynode/.product_key")
