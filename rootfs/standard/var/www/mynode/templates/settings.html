@@ -53,6 +53,33 @@
                 });
 
 
+                function resetTor() {
+                    $("#reset_tor_form").submit();
+                    reset_tor_dialog.dialog( "close" );
+                }
+                reset_tor_dialog = $( "#reset-tor-dialog" ).dialog({
+                    autoOpen: false,
+                    resizable: false,
+                    height: "auto",
+                    width: 600,
+                    modal: true,
+                    position: { my: "center top", at: "center top", of: window, collision: "none" },
+                    buttons: {
+                        "Reset Tor": resetTor,
+                        Cancel: function() {
+                            reset_tor_dialog.dialog( "close" );
+                        }
+                    },
+                    open: function() {
+                        $("#password_reset_tor").val("")
+                    }
+                });
+                $("#reset_tor").on("click", function() {
+                    reset_tor_dialog.dialog( "open" );
+                });
+
+
+
                 $("#reset-blockchain").on("click", function() {
                     // Enable electrs
                     var okFunction = function() {
@@ -297,6 +324,16 @@
         </div>
 
         <div class="settings_block">
+            <div class="settings_block_header">Tor</div>
+            
+            <div class="settings_block_subheader">Reset Tor</div>
+            This will reset all of your Tor service settings and re-generate your Onion URLs.
+            <br/>
+            <button id="reset_tor" class="ui-button ui-widget ui-corner-all settings_button">Reset Tor</button>
+
+        </div>
+
+        <div class="settings_block">
             <div class="settings_block_header">Advanced</div>
 
             <div class="settings_block_subheader">Reboot Device</div>
@@ -370,6 +407,19 @@
                 <b>Password:</b>
                 <br/>
                 <input type="password" name="password_lnd_delete" id="password_lnd_delete" value="" class="text ui-widget-content ui-corner-all">
+            
+                <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </form>
+        </div>
+
+        <div id="reset-tor-dialog" title="Reset Tor" style="display:none;">
+            <form id="reset_tor_form" name="reset_tor_form" action="/settings/reset-tor" method="POST">
+                <p>This will reset all your Tor services. After rebooting, they will get new IDs and certificates.</p>
+                <p>This will reboot your device.</p>   
+                <b>Password:</b>
+                <br/>
+                <input type="password" name="password_reset_tor" id="password_reset_tor" value="" class="text ui-widget-content ui-corner-all">
             
                 <!-- Allow form submission with keyboard without duplicating the dialog button -->
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
