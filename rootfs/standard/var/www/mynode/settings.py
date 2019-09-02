@@ -81,6 +81,11 @@ def restart_quicksync():
     delete_quicksync_data()
     reboot_device()
 
+def reset_tor():
+    os.system("rm -rf /var/lib/tor/*")
+    os.system("rm -rf /mnt/hdd/mynode/bitcoin/onion_private_key")
+    os.system("rm -rf /mnt/hdd/mynode/lnd/v2_onion_private_key")
+
 def factory_reset():
     # Reset subsystems that have local data
     delete_quicksync_data()
@@ -88,8 +93,14 @@ def factory_reset():
     # Delete LND data
     delete_lnd_data()
 
+    # Delete Tor data
+    reset_tor()
+
     # Disable services
-    os.system("systemctl disable electrs")
+    os.system("systemctl disable electrs --no-pager")
+    os.system("systemctl disable lndhub --no-pager")
+    os.system("systemctl disable btc_rpc_explorer --no-pager")
+    os.system("systemctl disable vpn --no-pager")
 
     # Trigger drive to be reformatted on reboot
     os.system("rm -f /mnt/hdd/.mynode")
@@ -283,6 +294,29 @@ def page_lnd_delete_wallet():
 
     flash("Lightning wallet deleted!", category="message")
     return redirect(url_for(".page_settings"))
+
+@mynode_settings.route("/settings/reset-tor", methods=['POST'])
+def page_reset_tor():
+    p = pam.pam()
+    pw = request.form.get('password_reset_tor')
+    if pw == None or p.authenticate("admin", pw) == False:
+        flash("Invalid Password", category="error")
+        return redirect(url_for(".page_settings"))
+    else:
+        # Successful Auth
+        reset_tor()
+
+        # Trigger reboot
+        t = Timer(1.0, reboot_device)
+        t.start()
+
+    # Wait until device is restarted
+    templateData = {
+        "title": "myNode Reboot",
+        "header_text": "Restarting",
+        "subheader_text": "This will take several minutes..."
+    }
+    return render_template('reboot.html', **templateData)
 
 @mynode_settings.route("/settings/mynode_logs.tar.gz")
 def download_logs_page():
