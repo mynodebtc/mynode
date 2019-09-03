@@ -87,7 +87,10 @@ def electrum_server_page():
         current_block = "Unknown"
     status = get_electrs_status()
 
-    server_url = get_local_ip() + ":50002:s"
+    #server_url = get_local_ip() + ":50002:s"
+    server_ip = get_local_ip()
+    server_standard_port = "50001"
+    server_secure_port = "50002"
 
     # Get Onion URLs
     electrs_onion_hostname = "..."
@@ -107,7 +110,10 @@ def electrum_server_page():
         "status": status,
         "product_key_skipped": skipped_product_key(),
         "current_block": current_block,
-        "server_url": server_url,
+        #"server_url": server_url,
+        "server_ip": server_ip,
+        "server_standard_port": server_standard_port,
+        "server_secure_port": server_secure_port,
         "electrs_onion_hostname": electrs_onion_hostname,
         "electrs_onion_command": electrs_onion_command
     }
