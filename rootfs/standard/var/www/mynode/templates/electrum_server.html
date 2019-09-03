@@ -30,18 +30,24 @@
                 <div class="info_tile_header">Current Block</div>
                 <div class="info_tile_contents">{{current_block}}</div>
             </div>
-            <div class="info_tile">
-                <div class="info_tile_header">Server Port</div>
-                <div class="info_tile_contents">{{port}}</div>
-            </div>
         </div>
 
         <div class="app_tile_row">
             <div class="info_tile">
                 <div class="info_tile_header">Electrum Server IP</div>
-                <div class="info_tile_contents">{{server_url}}</div>
+                <div class="info_tile_contents">{{server_ip}}</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">Standard Port</div>
+                <div class="info_tile_contents">{{server_standard_port}}</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">Secure Port</div>
+                <div class="info_tile_contents">{{server_secure_port}}</div>
             </div>
         </div>
+
+        <div class="divider" style="width: 800px;"></div>
 
         <div class="app_tile_row">
             <div class="info_tile">
