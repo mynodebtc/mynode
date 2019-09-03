@@ -216,6 +216,7 @@ CookieAuthFileGroupReadable 1
 HiddenServiceDir /var/lib/tor/electrs_hidden_service/
 HiddenServiceVersion 2
 HiddenServicePort 50001 127.0.0.1:50001
+HiddenServicePort 50002 127.0.0.1:50002
 
 # Hidden Service for LND
 HiddenServiceDir /var/lib/tor/lnd_api/
