@@ -26,7 +26,7 @@ def page_tor():
         if os.path.isfile("/var/lib/tor/electrs_hidden_service/hostname"):
             with open("/var/lib/tor/electrs_hidden_service/hostname") as f:
                 electrs_onion_hostname = f.read().strip()
-                electrs_onion_command = "./electrum -1 -s {}:50001:t -p socks5:localhost:9050".format(electrs_onion_hostname)
+                electrs_onion_command = "./electrum -1 -s {}:50002:t -p socks5:localhost:9050".format(electrs_onion_hostname)
         else:
             electrs_onion_hostname = "disabled"
             electrs_onion_command = "disabled"
