@@ -9,8 +9,8 @@ After=mynode.service
 [Service]
 ExecStart=/usr/bin/mynode_lndconnect.sh
 
-User=bitcoin
-Group=bitcoin
+User=root
+Group=root
 Type=simple
 KillMode=control-group
 LimitNOFILE=128000
