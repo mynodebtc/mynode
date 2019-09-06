@@ -2,8 +2,10 @@
 
 start_server () {
     echo "Starting HTTP Server on port 8000..."
-    python3 -m http.server --directory ./out > /dev/null &
+    cd out
+    python3 -m http.server > /dev/null &
     PID=$!
+    cd ../
     echo $PID > ./out/file_server_pid
     sleep 1
 }
