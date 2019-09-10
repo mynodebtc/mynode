@@ -122,3 +122,12 @@ def get_local_ip():
             local_ip = "error"
 
     return local_ip
+
+
+def get_device_changelog():
+    changelog = ""
+    try:
+        changelog = subprocess.check_output(["cat", "/usr/share/mynode/changelog"])
+    except:
+        changelog = "ERROR"
+    return changelog
