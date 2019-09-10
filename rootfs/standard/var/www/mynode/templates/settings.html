@@ -173,6 +173,11 @@
                     $("#quicksync_status").show();
                 });
 
+                $("#show_mynode_changelog").on("click", function() {
+                    $("#show_mynode_changelog").hide(0);
+                    $("#mynode_changelog").show();
+                });
+
                 {% if product_key_skipped %}
                 $( "#upgrade" ).button({
                     disabled: true
@@ -253,7 +258,11 @@
             </table>
             <div class="divider"></div>
 
-            
+            <div class="settings_block_subheader">Change Log</div>
+            <button id="show_mynode_changelog" class="ui-button ui-widget ui-corner-all settings_button">View Change Log</button>
+            <div id="mynode_changelog" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{changelog}}</pre></div>
+            <div class="divider"></div>
+
             <div class="settings_block_subheader">Change Password</div>
             {{password_message}}
             This will change the password used to connect to your myNode via SSH.

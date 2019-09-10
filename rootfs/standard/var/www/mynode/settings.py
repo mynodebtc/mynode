@@ -126,6 +126,7 @@ def page_settings():
     current_version = get_current_version()
     latest_version = get_latest_version()
 
+    changelog = get_device_changelog()
     serial_number = get_device_serial()
     device_type = get_device_type()
     product_key = get_product_key()
@@ -151,6 +152,7 @@ def page_settings():
         "product_key": product_key,
         "product_key_skipped": pk_skipped,
         "product_key_error": pk_error,
+        "changelog": changelog,
         "quicksync_status": quicksync_status,
         "is_quicksync_disabled": not is_quicksync_enabled(),
         "is_uploader_device": is_uploader(),
