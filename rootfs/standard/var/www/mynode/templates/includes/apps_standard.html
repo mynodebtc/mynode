@@ -26,7 +26,7 @@
         <div class="app_status_icon {{ lnd_status_color }}"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lndconnect.png")}}"/></div>
         <div class="app_title">LND Connect</div>
-        <div class="app_status">{% if not lnd_ready %}Waiting on LND...{% endif %}</div>
+        <div class="app_status">{% if not lnd_ready %}Waiting on LND...{% else %}Lightning Tool{% endif %}</div>
         <div class="app_contents">
             {% if lnd_ready %}
             <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lndconnect">LND Connect</a>
