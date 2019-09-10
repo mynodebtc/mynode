@@ -84,6 +84,7 @@ Once you are running myNode, you can easily modify and update the software yours
     * make setup_new_rock64
     * make setup_new_raspi3
     * make setup_new_raspi4
+    * make setup_new_other
 3. Follow Instructions
 2. Reboot Device
 4. Congratulations! You're running a new myNode device!
