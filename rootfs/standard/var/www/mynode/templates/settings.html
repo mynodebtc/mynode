@@ -117,6 +117,17 @@
                                       okFunction)
                 });
 
+                $("#shutdown-device").on("click", function() {
+                    // Enable electrs
+                    var okFunction = function() {
+                        window.location.href="/settings/shutdown-device"
+                    }
+                    openConfirmDialog("confirm-dialog",
+                                      "Shutdown Device",
+                                      "Are you sure you want to shutdown your device?",
+                                      okFunction)
+                });
+
                 $("#reindex-blockchain").on("click", function() {
                     // Enable electrs
                     var okFunction = function() {
@@ -350,6 +361,13 @@
             This will reboot your myNode.
             <br/>
             <button id="reboot-device" class="ui-button ui-widget ui-corner-all settings_button">Reboot Device</button>
+            
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Shutdown Device</div>
+            This will shutdown your myNode. You will need to power cycle the device to turn it back on.
+            <br/>
+            <button id="shutdown-device" class="ui-button ui-widget ui-corner-all settings_button">Shutdown Device</button>
             
             <div class="divider"></div>
 

@@ -68,6 +68,9 @@ def delete_lnd_data():
 def reboot_device():
     os.system("reboot")
 
+def shutdown_device():
+    os.system("shutdown -h now")
+
 def reset_blockchain():
     stop_bitcoind()
     delete_bitcoin_data()
@@ -220,6 +223,20 @@ def reboot_device_page():
         "subheader_text": "This will take several minutes..."
     }
     return render_template('reboot.html', **templateData)
+
+@mynode_settings.route("/settings/shutdown-device")
+def shutdown_device_page():
+    # Trigger shutdown
+    t = Timer(1.0, shutdown_device)
+    t.start()
+
+    # Wait until device is restarted
+    templateData = {
+        "title": "myNode Shutdown",
+        "header_text": "Shutting down...",
+        "subheader_text": Markup("Your myNode is shutting down.<br/><br/>You will need to power cycle the device to turn it back on.")
+    }
+    return render_template('shutdown.html', **templateData)
 
 @mynode_settings.route("/settings/reindex-blockchain")
 def reindex_blockchain_page():
