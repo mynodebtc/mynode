@@ -7,6 +7,38 @@
         <meta name="google" content="notranslate">
         <script src="{{ url_for('static', filename="js/jquery-3.3.1.min.js")}}"></script>
         <script src="{{ url_for('static', filename="js/mynode.js")}}"></script>
+
+        <script>
+            $(document).ready(function() {
+                hasShutdown = 0
+
+                function redirectHome() {
+                    window.location.replace("/");
+                }
+
+                function checkStatus() {
+                    var jqxhr = $.get("/settings/ping", function() {
+                        if (hasShutdown) {
+                            // Redirect to home
+                            setTimeout(redirectHome, 2500)
+                        }
+                    })
+                    .done(function() {
+                        if (hasShutdown) {
+                            // Redirect to home
+                            setTimeout(redirectHome, 2500)
+                        }
+                    })
+                    .fail(function() {
+                        hasShutdown = 1
+                    })
+                }
+                
+                checkStatus()
+                setInterval(checkStatus, 2500);
+            });
+        </script>
+
      </head>
 
     <body>
