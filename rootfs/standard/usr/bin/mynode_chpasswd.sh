@@ -12,3 +12,7 @@ echo "$HASH" > /home/bitcoin/.mynode/.hashedpw
 # Change RTL password
 sed -i "s/rtlPassHashed=.*/rtlPassHashed=$HASH/g" /opt/mynode/RTL/RTL.conf
 systemctl restart rtl
+
+# Change LND Admin Password
+sed -i "s/\"adminPasswordSha256\":.*/\"adminPasswordSha256\": \"$HASH\"/g" /home/bitcoin/.lnd-admin/credentials.json
+systemctl restart lnd_admin
