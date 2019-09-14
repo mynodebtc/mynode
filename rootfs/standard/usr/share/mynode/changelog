@@ -1,6 +1,7 @@
 === v0.1.44 ===
 - Add changelog to settings page
 - Add shutdown option on settings page
+- LND Admin password will match the overall myNode password
 
 === v0.1.43 ===
 - Initial changelog
