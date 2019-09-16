@@ -1,3 +1,6 @@
+=== v0.1.46 ===
+- Improve VPN consistency between device reboots
+
 === v0.1.45 ===
 - Improve Tor webpage information
 - Add Tor services for RTL, LND Hub, GUI Access, and more

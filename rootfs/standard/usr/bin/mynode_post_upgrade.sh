@@ -133,7 +133,7 @@ fi
 
 
 # Enable any new/required services
-# systemctl enable ...
+systemctl enable firewall
 
 # Reload service settings
 systemctl daemon-reload
