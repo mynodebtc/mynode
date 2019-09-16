@@ -12,10 +12,8 @@ mynode_tor = Blueprint('mynode_tor',__name__)
 ### Page functions
 @mynode_tor.route("/tor")
 def page_tor():
-    electrs_onion_hostname = "..."
-    electrs_onion_command = "..."
-    lnd_onion_hostname = "..."
-    lnd_onion_password = "..."
+    mynode_onion_hostname = "..."
+    mynode_onion_password = "..."
 
     # Check if we are premium
     if is_community_edition():
@@ -23,30 +21,31 @@ def page_tor():
 
     # Get Onion URLs
     try:
-        if os.path.isfile("/var/lib/tor/electrs_hidden_service/hostname"):
-            with open("/var/lib/tor/electrs_hidden_service/hostname") as f:
-                electrs_onion_hostname = f.read().strip()
-                electrs_onion_command = "./electrum -1 -s {}:50002:s -p socks5:localhost:9050".format(electrs_onion_hostname)
-        else:
-            electrs_onion_hostname = "disabled"
-            electrs_onion_command = "disabled"
-
-        if os.path.isfile("/var/lib/tor/lnd_api/hostname"):
-            with open("/var/lib/tor/lnd_api/hostname") as f:
+        if os.path.isfile("/var/lib/tor/mynode/hostname"):
+            with open("/var/lib/tor/mynode/hostname") as f:
                 contents = f.read().split()
-                lnd_onion_hostname = contents[0]
-                lnd_onion_password = contents[1]
+                mynode_onion_hostname = contents[0]
+                mynode_onion_password = contents[1]
     except:
-        electrs_onion_hostname = "error"
-        lnd_onion_hostname = "error"
+        mynode_onion_hostname = "error"
+        mynode_onion_password = "error"
 
-
+    services = []
+    services.append({"service":"myNode Web","address":mynode_onion_hostname,"port": "80","password":mynode_onion_password})
+    services.append({"service":"LND Hub","address":mynode_onion_hostname,"port": "3000","password":mynode_onion_password})
+    services.append({"service":"BTC RPC Explorer","address":mynode_onion_hostname,"port": "3002","password":mynode_onion_password})
+    services.append({"service":"LND Admin","address":mynode_onion_hostname,"port": "3004","password":mynode_onion_password})
+    services.append({"service":"Ride the Lightning","address":mynode_onion_hostname,"port": "3010","password":mynode_onion_password})
+    services.append({"service":"LND API (gRPC)","address":mynode_onion_hostname,"port": "10009","password":mynode_onion_password})
+    services.append({"service":"LND API (REST)","address":mynode_onion_hostname,"port": "10080","password":mynode_onion_password})
+    services.append({"service":"Electrum Server","address":mynode_onion_hostname,"port": "50001","password":mynode_onion_password})
+    services.append({"service":"Electrum Server","address":mynode_onion_hostname,"port": "50002","password":mynode_onion_password})
+    
     # Load page
     templateData = {
         "title": "myNode Tor Services",
-        "electrs_onion_hostname": electrs_onion_hostname,
-        "electrs_onion_command": electrs_onion_command,
-        "lnd_onion_hostname": lnd_onion_hostname,
-        "lnd_onion_password": lnd_onion_password
+        "mynode_onion_hostname": mynode_onion_hostname,
+        "mynode_onion_password": mynode_onion_password,
+        "services": services
     }
     return render_template('tor.html', **templateData)

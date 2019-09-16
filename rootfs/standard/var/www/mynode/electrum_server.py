@@ -95,8 +95,8 @@ def electrum_server_page():
     # Get Onion URLs
     electrs_onion_hostname = "..."
     electrs_onion_command = "..."
-    if os.path.isfile("/var/lib/tor/electrs_hidden_service/hostname"):
-        with open("/var/lib/tor/electrs_hidden_service/hostname") as f:
+    if os.path.isfile("/var/lib/tor/mynode/hostname"):
+        with open("/var/lib/tor/mynode/hostname") as f:
             electrs_onion_hostname = f.read().strip()
             electrs_onion_command = "./electrum -1 -s {}:50002:s -p socks5:localhost:9050".format(electrs_onion_hostname)
     else:

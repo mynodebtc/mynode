@@ -21,7 +21,7 @@
 
         {% include 'includes/message_display.html' %}
 
-        <div class="main_header">Tor Services</div>
+        <div class="main_header">Core Services</div>
         <br/>
         
         <div class="app_tile_row">
@@ -35,61 +35,27 @@
             </div>
         </div>
 
-        <div class="divider" style="width: 800px;"></div>
+        <br/>
+        <div class="main_header">Tor Onion URLs</div>
+        <table class="bitcoind_table">
+            <thead class="bitcoind_table_header">
+                <td>Service</td>
+                <td>Address</td>
+                <td>Port</td>
+                <td>Password</td>
+            </thead>
+            <tbody>
+                {% for service in services %}
+                    <tr>
+                        <td><b>{{ service.service }}</b></td>
+                        <td>{{ service.address }}</td>
+                        <td>{{ service.port }}</td>
+                        <td>{{ service.password }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-        <div class="app_tile_row">
-            <div class="info_tile">
-                <div class="info_tile_header">Electrum Server</div>
-                <div class="info_tile_contents">Tor Enabled</div>
-            </div>
-            <div class="info_tile">
-                <div class="info_tile_header">Electrum Tor Hostname</div>
-                <div class="info_tile_contents">{{electrs_onion_hostname}}</div>
-            </div>
-        </div>
-        <div class="app_tile_row">
-            <div class="info_tile">
-                <div class="info_tile_header">Electrum Tor Command</div>
-                <div class="info_tile_contents">{{electrs_onion_command}}</div>
-            </div>
-            <div class="info_tile">
-                <div class="info_tile_header">Electrum Tor Help</div>
-                <div class="info_tile_contents"><a href="http://docs.electrum.org/en/latest/tor.html" target="_blank">Link</a></div>
-            </div>
-        </div>
-
-        <div class="divider" style="width: 800px;"></div>
-
-        <div class="app_tile_row">
-            <div class="info_tile">
-                <div class="info_tile_header">LND</div>
-                <div class="info_tile_contents">Tor Enabled</div>
-            </div>
-            <div class="info_tile">
-                <div class="info_tile_header">LND gRPC Port</div>
-                <div class="info_tile_contents">10009</div>
-            </div>
-            <div class="info_tile">
-                <div class="info_tile_header">LND REST Port</div>
-                <div class="info_tile_contents">10080</div>
-            </div>
-        </div>
-        <div class="app_tile_row">
-            <div class="info_tile">
-                <div class="info_tile_header">LND Tor Hostname</div>
-                <div class="info_tile_contents">{{lnd_onion_hostname}}</div>
-            </div>
-            <!--
-            <div class="info_tile">
-                <div class="info_tile_header">LND Tor Client Name</div>
-                <div class="info_tile_contents">mynode</div>
-            </div>
-            -->
-            <div class="info_tile">
-                <div class="info_tile_header">LND Tor Client Password</div>
-                <div class="info_tile_contents">{{lnd_onion_password}}</div>
-            </div>
-        </div>
 
         {% include 'includes/footer.html' %}
      </body>

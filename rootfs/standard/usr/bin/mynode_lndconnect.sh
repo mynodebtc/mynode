@@ -24,7 +24,7 @@ while true; do
     rm -rf /tmp/mynode_lndconnect/*
 
     # Find URLs
-    LND_TOR_ADDR=$(cat /var/lib/tor/lnd_api/hostname | awk '{print $1}')
+    LND_TOR_ADDR=$(cat /var/lib/tor/mynode/hostname | awk '{print $1}')
 
     # Generate QR Codes
     lndconnect --lnddir=/mnt/hdd/mynode/lnd -o --bitcoin.mainnet --localip

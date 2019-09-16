@@ -212,15 +212,29 @@ ControlPort 9051
 CookieAuthentication 1
 CookieAuthFileGroupReadable 1
 
-# Hidden Service for Electrum Server
+# Hidden Service for Electrum Server (legacy)
 HiddenServiceDir /var/lib/tor/electrs_hidden_service/
 HiddenServiceVersion 2
 HiddenServicePort 50001 127.0.0.1:50001
 HiddenServicePort 50002 127.0.0.1:50002
 
-# Hidden Service for LND
+# Hidden Service for LND (legacy)
 HiddenServiceDir /var/lib/tor/lnd_api/
 HiddenServiceVersion 2
 HiddenServiceAuthorizeClient stealth mynode
 HiddenServicePort 10009 127.0.0.1:10009
 HiddenServicePort 10080 127.0.0.1:10080
+
+# Hidden Service for myNode
+HiddenServiceDir /var/lib/tor/mynode/
+HiddenServiceVersion 2
+HiddenServiceAuthorizeClient stealth mynode
+HiddenServicePort 80 127.0.0.1:80
+HiddenServicePort 3000 127.0.0.1:3000
+HiddenServicePort 3002 127.0.0.1:3002
+HiddenServicePort 3004 127.0.0.1:3004
+HiddenServicePort 3010 127.0.0.1:3010
+HiddenServicePort 10009 127.0.0.1:10009
+HiddenServicePort 10080 127.0.0.1:10080
+HiddenServicePort 50001 127.0.0.1:50001
+HiddenServicePort 50002 127.0.0.1:50002
