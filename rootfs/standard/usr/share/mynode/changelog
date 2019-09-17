@@ -1,5 +1,6 @@
 === v0.1.46 ===
 - Improve VPN consistency between device reboots
+- Tweak DNS settings
 
 === v0.1.45 ===
 - Improve Tor webpage information
