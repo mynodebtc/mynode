@@ -4,7 +4,6 @@
 /var/log/lndhub.log
 /var/log/lnd.log
 /var/log/lnd_backup.log
-/var/log/log2ram.log
 /var/log/mynode.log
 /var/log/mynode_quicksync.log
 /var/log/redis-server.log

@@ -135,6 +135,10 @@ fi
 # Enable any new/required services
 systemctl enable firewall
 
+# Disable any old services
+sudo systemctl disable hitch
+sudo systemctl disable mongodb
+
 # Reload service settings
 systemctl daemon-reload
 
