@@ -13,6 +13,8 @@
         <script>
             $(document).ready(function() {
 
+                var showChangelog=0;
+
                 $("#upgrade").on("click", function() {
                     // Enable electrs
                     var okFunction = function() {
@@ -185,8 +187,18 @@
                 });
 
                 $("#show_mynode_changelog").on("click", function() {
-                    $("#show_mynode_changelog").hide(0);
-                    $("#mynode_changelog").show();
+                    if (showChangelog)
+                    {
+                        $("#show_mynode_changelog").text("Show Change Log");
+                        $("#mynode_changelog").hide();
+                        showChangelog=0;
+                    }
+                    else
+                    {
+                        $("#show_mynode_changelog").text("Hide Change Log");
+                        $("#mynode_changelog").show();
+                        showChangelog=1;
+                    }
                 });
 
                 {% if product_key_skipped %}
