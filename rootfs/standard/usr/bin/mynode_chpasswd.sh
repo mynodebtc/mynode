@@ -14,5 +14,6 @@ sed -i "s/rtlPassHashed=.*/rtlPassHashed=$HASH/g" /opt/mynode/RTL/RTL.conf
 systemctl restart rtl
 
 # Change LND Admin Password
+cp -f /usr/share/mynode/lnd_admin_credentials.json /home/bitcoin/.lnd-admin/credentials.json
 sed -i "s/\"adminPasswordSha256\":.*/\"adminPasswordSha256\": \"$HASH\"/g" /home/bitcoin/.lnd-admin/credentials.json
 systemctl restart lnd_admin
