@@ -43,14 +43,20 @@
                 <td>Address</td>
                 <td>Port</td>
                 <td>Password</td>
+                <td>Guide</td>
             </thead>
             <tbody>
                 {% for service in services %}
                     <tr>
                         <td><b>{{ service.service }}</b></td>
-                        <td>{{ service.address }}</td>
+                        <td>{{ mynode_onion_hostname }}</td>
                         <td>{{ service.port }}</td>
-                        <td>{{ service.password }}</td>
+                        <td>{{ mynode_onion_password }}</td>
+                        <td>
+                            {% if service.guide|length %}
+                                <a href="{{ service.guide }}" target="_blank">Guide</a>
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
