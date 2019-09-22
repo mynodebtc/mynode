@@ -47,6 +47,11 @@ do
     sleep 10
 done
 
+
+# Disable autosuspend and enable USB drives
+for dev in /sys/bus/usb/devices/*/power/control; do echo "on" > $dev; done 
+
+
 # Setup Drive
 mkdir -p /mnt/hdd/mynode
 mkdir -p /mnt/hdd/mynode/settings
