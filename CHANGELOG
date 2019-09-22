@@ -1,5 +1,7 @@
 === v0.1.47 ===
--  Improve Info on Using Electrum Server
+- Improve Info on Using Electrum Server
+- Add Guide Links
+- Improve SSD power options
 
 === v0.1.46 ===
 - Improve VPN consistency between device reboots
