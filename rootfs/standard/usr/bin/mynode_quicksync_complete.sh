@@ -17,8 +17,11 @@ sync
 echo "quicksync_copy" > $MYNODE_DIR/.mynode_status
 rm -rf $MYNODE_DIR/bitcoin/blocks/
 rm -rf $MYNODE_DIR/bitcoin/chainstate/
-#tar -xvf $QUICKSYNC_DIR/blockchain*.tar.gz -C $MYNODE_DIR/bitcoin/ --dereference
-pv -L 10m $QUICKSYNC_DIR/blockchain*.tar.gz | tar xzvf - -C $MYNODE_DIR/bitcoin/ --dereference
+tar -xvf $QUICKSYNC_DIR/blockchain*.tar.gz -C $MYNODE_DIR/bitcoin/ --dereference 2>&1 > /tmp/tar_log_$(date +%s)
+#pv -L 10m $QUICKSYNC_DIR/blockchain*.tar.gz | tar xzvf - -C $MYNODE_DIR/bitcoin/ --dereference
+
+sync
+sleep 30s
 
 # Mark quicksync complete and give BTC a few minutes to startup with its new data
 touch $QUICKSYNC_DIR/.quicksync_complete
