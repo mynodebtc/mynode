@@ -31,15 +31,15 @@ def page_tor():
         mynode_onion_password = "error"
 
     services = []
-    services.append({"service":"myNode Web","address":mynode_onion_hostname,"port": "80","password":mynode_onion_password})
-    services.append({"service":"LND Hub","address":mynode_onion_hostname,"port": "3000","password":mynode_onion_password})
-    services.append({"service":"BTC RPC Explorer","address":mynode_onion_hostname,"port": "3002","password":mynode_onion_password})
-    services.append({"service":"LND Admin","address":mynode_onion_hostname,"port": "3004","password":mynode_onion_password})
-    services.append({"service":"Ride the Lightning","address":mynode_onion_hostname,"port": "3010","password":mynode_onion_password})
-    services.append({"service":"LND API (gRPC)","address":mynode_onion_hostname,"port": "10009","password":mynode_onion_password})
-    services.append({"service":"LND API (REST)","address":mynode_onion_hostname,"port": "10080","password":mynode_onion_password})
-    services.append({"service":"Electrum Server","address":mynode_onion_hostname,"port": "50001","password":mynode_onion_password})
-    services.append({"service":"Electrum Server","address":mynode_onion_hostname,"port": "50002","password":mynode_onion_password})
+    services.append({"service":"myNode Web","port": "80","guide":""})
+    services.append({"service":"LND Hub","port": "3000","guide":""})
+    services.append({"service":"BTC RPC Explorer","port": "3002","guide":""})
+    services.append({"service":"LND Admin","port": "3004","guide":""})
+    services.append({"service":"Ride the Lightning","port": "3010","guide":""})
+    services.append({"service":"LND API (gRPC)","port": "10009","guide":""})
+    services.append({"service":"LND API (REST)","port": "10080","guide":""})
+    services.append({"service":"Electrum Server","port": "50001","guide":"https://mynodebtc.com/guide/electrum_server_tor"})
+    services.append({"service":"Electrum Server","port": "50002","guide":"https://mynodebtc.com/guide/electrum_server_tor"})
     
     # Load page
     templateData = {
