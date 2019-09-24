@@ -10,6 +10,11 @@ if [ ! -w / ]; then
     mount -o remount,rw /;
 fi
 
+
+# Disable autosuspend for USB drives
+for dev in /sys/bus/usb/devices/*/power/control; do echo "on" > $dev; done 
+
+
 # Expand Root FS
 mkdir -p /var/lib/mynode
 
@@ -46,10 +51,6 @@ do
     mount_drive.tcl || true
     sleep 10
 done
-
-
-# Disable autosuspend and enable USB drives
-for dev in /sys/bus/usb/devices/*/power/control; do echo "on" > $dev; done 
 
 
 # Setup Drive
