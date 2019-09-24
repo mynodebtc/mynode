@@ -134,6 +134,7 @@ fi
 
 # Enable any new/required services
 systemctl enable firewall
+systemctl enable invalid_block_check
 
 # Disable any old services
 sudo systemctl disable hitch

@@ -338,6 +338,7 @@ systemctl enable tls_proxy
 systemctl enable rtl
 systemctl enable lnd_admin
 systemctl enable tor
+systemctl enable invalid_block_check
 
 
 # Delete junk
