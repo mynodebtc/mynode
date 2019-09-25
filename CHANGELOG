@@ -1,3 +1,8 @@
+=== v0.1.48 ===
+- Add script to check for invalid blocks and auto-correct
+- Bug fixes
+- Improve logging
+
 === v0.1.47 ===
 - Improve Info on Using Electrum Server
 - Add Guide Links
