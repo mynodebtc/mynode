@@ -5,6 +5,8 @@ myNode aims to be the easiest way to run a dedicated, easy to use, Bitcoin Node 
 
 Website: https://mynodebtc.com
 
+
+## GUI
 ![](images/1.png)
 
 ## Overview
