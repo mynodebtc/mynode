@@ -12,7 +12,7 @@
 /var/log/bitcoind.log
 /var/log/unlock_lnd.log
 {
-	rotate 3
+	rotate 2
 	daily
     maxsize 3M
 	missingok
@@ -35,7 +35,7 @@
 /var/log/debug
 /var/log/messages
 {
-	rotate 3
+	rotate 2
 	daily
     maxsize 3M
 	missingok
