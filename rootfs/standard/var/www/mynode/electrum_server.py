@@ -92,6 +92,9 @@ def electrum_server_page():
     server_standard_port = "50001"
     server_secure_port = "50002"
 
+    # Get IP URLs
+    electrs_command = "./electrum -1 -s {}:50002:s".format(server_ip)
+
     # Get Onion URLs
     electrs_onion_hostname = "..."
     electrs_onion_password = "..."
@@ -118,6 +121,7 @@ def electrum_server_page():
         "server_ip": server_ip,
         "server_standard_port": server_standard_port,
         "server_secure_port": server_secure_port,
+        "electrs_command": electrs_command,
         "electrs_onion_hostname": electrs_onion_hostname,
         "electrs_onion_password": electrs_onion_password,
         "electrs_onion_command": electrs_onion_command
