@@ -123,20 +123,23 @@ def get_lnd_status():
     if is_lnd_ready():
         return "Running"
 
-    log = subprocess.check_output("tail -n 100 /var/log/lnd.log", shell=True)
-    lines = log.splitlines()
-    lines.reverse()
-    for line in lines:
-        if "Caught up to height" in line:
-            m = re.search("height ([0-9]+)", line)
-            height = m.group(1)
-            percent = 100.0 * (float(height) / bitcoin_block_height)
-            return "Syncing... {:.2f}%".format(percent)
-        elif "Waiting for chain backend to finish sync" in line:
-            return "Syncing..."
-        elif "Started rescan from block" in line:
-            return "Scanning..."
-    return "Waiting..."
+    try:
+        log = subprocess.check_output("tail -n 100 /var/log/lnd.log", shell=True)
+        lines = log.splitlines()
+        lines.reverse()
+        for line in lines:
+            if "Caught up to height" in line:
+                m = re.search("height ([0-9]+)", line)
+                height = m.group(1)
+                percent = 100.0 * (float(height) / bitcoin_block_height)
+                return "Syncing... {:.2f}%".format(percent)
+            elif "Waiting for chain backend to finish sync" in line:
+                return "Syncing..."
+            elif "Started rescan from block" in line:
+                return "Scanning..."
+        return "Waiting..."
+    except:
+        return "Status Error"
 
 def get_lnd_channels():
     try:
