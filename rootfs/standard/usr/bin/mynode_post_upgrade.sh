@@ -11,7 +11,7 @@ systemctl stop quicksync
 systemctl stop bitcoind
 
 # Install any new software
-apt -y install pv sysstat
+apt -y install pv sysstat network-manager
 
 # Install any pip software
 pip install tzupdate
