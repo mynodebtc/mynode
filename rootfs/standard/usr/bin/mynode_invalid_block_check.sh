@@ -14,7 +14,7 @@ while [ 1 ]; do
             bitcoin-cli -rpccookiefile=/mnt/hdd/mynode/bitcoin/.cookie invalidateblock $block
             bitcoin-cli -rpccookiefile=/mnt/hdd/mynode/bitcoin/.cookie reconsiderblock $block
             echo "Done fixing block $block"
-            sleep 10m
+            sleep 30m
         fi
     fi
     sleep 5m
