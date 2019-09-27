@@ -96,9 +96,11 @@ fi
 
 # If Quicksync has already completed, let's give BTC some time to start before
 # seeding or downloading a more recent copy
-if [ -f $QUICKSYNC_DIR/.quicksync_complete ]; then
-    /usr/bin/wait_on_bitcoin.sh
-    sleep 5m
+if [ ! -f $UPLOADER_FILE ]; then
+    if [ -f $QUICKSYNC_DIR/.quicksync_complete ]; then
+        /usr/bin/wait_on_bitcoin.sh
+        sleep 5m
+    fi
 fi
 
 # Start torrent
