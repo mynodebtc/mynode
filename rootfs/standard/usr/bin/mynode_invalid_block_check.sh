@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 sleep 5m
 
 while [ 1 ]; do
