@@ -1,7 +1,13 @@
+=== v0.1.49 ===
+- Add more info on Electrum Server page
+- Network improvements
+- Improve QuickSync uploader tool
+
 === v0.1.48 ===
 - Add script to check for invalid blocks and auto-correct
 - Bug fixes
 - Improve logging
+- DNS improvements
 
 === v0.1.47 ===
 - Improve Info on Using Electrum Server
