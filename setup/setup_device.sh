@@ -341,6 +341,18 @@ systemctl enable tor
 systemctl enable invalid_block_check
 
 
+# Regenerate MAC Address for Rock64
+if [ $IS_ROCK64 = 1 ]; then
+    . /usr/lib/armbian/armbian-common
+    CONNECTION="$(nmcli -f UUID,ACTIVE,DEVICE,TYPE connection show --active | tail -n1)"
+    UUID=$(awk -F" " '/ethernet/ {print $1}' <<< "${CONNECTION}")
+    get_random_mac
+    nmcli connection modify $UUID ethernet.cloned-mac-address $MACADDR
+    nmcli connection modify $UUID -ethernet.mac-address ""
+fi
+
+
+
 # Delete junk
 rm -rf /home/admin/download
 rm -rf /home/admin/.bash_history
