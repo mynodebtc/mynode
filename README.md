@@ -68,8 +68,10 @@ You can run myNode on your own device in just a few easy steps!
 ## Developing for myNode
 Once you are running myNode, you can easily modify and update the software yourself!
 
-1. Start by running myNode on your device via the instructions above
+1. Start by running myNode on your device via the instructions above in "Running myNode"
 2. Modify myNode files
+    * Clone the git repo - 'git clone https://github.com/mynodebtc/mynode.git'
+    * Make your modifications
 3. Run 'make rootfs'
     * Or run 'make rootfs_auto' in a new console tab
     * This will automatically create artifacts as local files are modified
@@ -80,6 +82,20 @@ Once you are running myNode, you can easily modify and update the software yours
     * Your device will automatically reboot to ensure updates take effect
 6. Test your changes!
 7. Submit Pull Request to share your updates!
+
+## Upgrading your myNode
+Once you are running myNode, you can easily update the software yourself!
+
+1. Start by running myNode on your device via the instructions above in "Running myNode"
+2. Clone this git repo
+    * Run 'git clone https://github.com/mynodebtc/mynode.git
+3. Run 'make rootfs'
+4. Run 'make start_file_server'
+    * This will run a local HTTP server so your device can download files
+5. On your device, run 'sudo mynode-local-upgrade [dev pc ip address]'
+    * This will download your locally generated artifact and install it on your device
+    * Your device will automatically reboot to ensure updates take effect
+6. You are now running the latest version of myNode software!
 
 ## Convert new device to run myNode
 1. Run make command for your device. Ex:
