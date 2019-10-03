@@ -18,9 +18,16 @@ SERVER_IP=$1
 IS_ROCK64=0
 IS_RASPI3=0
 IS_RASPI4=0
+IS_X86=0
 uname -a | grep aarch64 && IS_ROCK64=1 || IS_RASPI3=1
 if [ $IS_RASPI3 -eq 1 ]; then
     cat /proc/cpuinfo | grep 03111 && IS_RASPI4=1 && IS_RASPI3=0 || IS_RASPI3=1
+fi
+uname -a | grep amd64 && IS_X86=1 || true
+if [ $IS_X86 -eq 1 ]; then
+    IS_ROCK64=0
+    IS_RASPI3=0
+    IS_RASPI4=0
 fi
 
 # Make sure FS is expanded for Rock64
@@ -45,7 +52,7 @@ apt-get -y install clang hitch zlib1g-dev libffi-dev file toilet ncdu
 apt-get -y install toilet-fonts avahi-daemon figlet libsecp256k1-dev 
 apt-get -y install inotify-tools libssl-dev tor tmux screen
 apt-get -y install python-grpcio python3-grpcio
-apt-get -y install pv sysstat network-manager
+apt-get -y install pv sysstat network-manager rsync
 
 
 # Install other things without recommendation
@@ -120,6 +127,9 @@ ARCH="arm-linux-gnueabihf"
 if [ $IS_ROCK64 = 1 ]; then
     ARCH="aarch64-linux-gnu"
 fi
+if [ $IS_X86 = 1 ]; then
+    ARCH="x86_64-linux-gnu" 
+fi
 BTC_UPGRADE_URL=https://bitcoin.org/bin/bitcoin-core-0.18.1/bitcoin-0.18.1-$ARCH.tar.gz
 BTC_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btc_url
 CURRENT=""
@@ -135,10 +145,13 @@ if [ "$CURRENT" != "$BTC_UPGRADE_URL" ]; then
     tar -xvf bitcoin.tar.gz
     mv bitcoin-* bitcoin
     install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
-
-    sudo -u bitcoin ln -s /mnt/hdd/mynode/bitcoin /home/bitcoin/.bitcoin
-    sudo -u bitcoin ln -s /mnt/hdd/mynode/lnd /home/bitcoin/.lnd
-    mkdir /home/admin/.bitcoin
+    if [ ! -L /home/bitcoin/.bitcoin ]; then
+        sudo -u bitcoin ln -s /mnt/hdd/mynode/bitcoin /home/bitcoin/.bitcoin
+    fi
+    if [ ! -L /home/bitcoin/.lnd ]; then
+        sudo -u bitcoin ln -s /mnt/hdd/mynode/lnd /home/bitcoin/.lnd
+    fi
+    mkdir -p /home/admin/.bitcoin
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $BTC_UPGRADE_URL > $BTC_UPGRADE_URL_FILE
@@ -146,7 +159,11 @@ fi
 cd ~
 
 # Install Lightning
-LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/v0.7.1-beta/lnd-linux-armv7-v0.7.1-beta.tar.gz
+LNDARCH="lnd-linux-armv7"
+if [ $IS_X86 = 1 ]; then
+    LNDARCH="lnd-linux-amd64"
+fi
+LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/v0.7.1-beta/$LNDARCH-v0.7.1-beta.tar.gz
 LND_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lnd_url
 CURRENT=""
 if [ -f $LND_UPGRADE_URL_FILE ]; then
@@ -161,7 +178,7 @@ if [ "$CURRENT" != "$LND_UPGRADE_URL" ]; then
     tar -xzf lnd.tar.gz
     mv lnd-* lnd
     install -m 0755 -o root -g root -t /usr/local/bin lnd/*
-    ln -s /bin/ip /usr/bin/ip
+    ln -s /bin/ip /usr/bin/ip || true
 
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
@@ -266,7 +283,11 @@ fi
 
 
 # Install LND Connect
-LNDCONNECT_UPGRADE_URL=https://github.com/LN-Zap/lndconnect/releases/download/v0.1.0/lndconnect-linux-armv7-v0.1.0.tar.gz
+LNDCONNECTARCH="lndconnect-linux-armv7"
+if [ $IS_X86 = 1 ]; then
+    LNDCONNECTARCH="lndconnect-linux-amd64"
+fi
+LNDCONNECT_UPGRADE_URL=https://github.com/LN-Zap/lndconnect/releases/download/v0.1.0/$LNDCONNECTARCH-v0.1.0.tar.gz
 LNDCONNECT_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lndconnect_url
 CURRENT=""
 if [ -f $LNDCONNECT_UPGRADE_URL_FILE ]; then
@@ -302,13 +323,19 @@ elif [ $IS_RASPI3 = 1 ]; then
     TARBALL="mynode_rootfs_raspi3.tar.gz"
 elif [ $IS_RASPI4 = 1 ]; then
     TARBALL="mynode_rootfs_raspi4.tar.gz"
+elif [ $IS_X86 = 1 ]; then
+    TARBALL="mynode_rootfs_debian.tar.gz"
 fi
 wget http://${SERVER_IP}:8000/${TARBALL} -O /tmp/rootfs.tar.gz
 
 tar -xvf /tmp/rootfs.tar.gz -C /tmp/upgrade/
 
 # Install files
-cp -rf /tmp/upgrade/out/rootfs_*/* /
+if [ $IS_X86 = 1 ]; then
+    rsync -r -K /tmp/upgrade/out/rootfs_*/* /
+else
+    cp -rf /tmp/upgrade/out/rootfs_*/* /
+fi
 sleep 1
 sync
 sleep 1

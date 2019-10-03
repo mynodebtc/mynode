@@ -1,0 +1,46 @@
+###
+### Setup Base OS
+###
+
+# Install Debian 10.1.0 Net-install via CD
+#  - Graphical Install
+#  - English, US, American English
+#  - Hostname: myNode
+#  - Domain Name: <Leave Empty>
+#  - Root Password: bolt
+#  - Full Name: myNode
+#  - Username: mynode
+#  - Password: bolt
+#  - Timezone: Central
+#  - Partition: Guided Use Entire Disk, Continue, Continue, Continue, Yes
+#  - CDs and Packages: No, Next, Next
+#  - Software Selection: No GUI, No Print Server, Add SSH Server
+#  - Install Grub: Yes, /dev/sda
+#  - Install Complete: Continue
+
+# Login as root / bolt
+
+# Install basic Software
+apt-get -y install sudo
+useradd -p $(openssl passwd -1 bolt) -m -s /bin/bash admin
+adduser admin sudo
+
+# Delete mynode user
+deluser mynode
+rm -rf /home/mynode
+
+# Login as admin / bolt
+
+# Delete root password
+sudo passwd -d root
+
+# Update packages
+sudo apt-get update
+sudo apt-get -y upgrade
+
+# Sync
+sync
+
+######################
+### MAKE IMAGE NOW ###
+######################

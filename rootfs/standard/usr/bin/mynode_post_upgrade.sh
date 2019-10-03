@@ -26,6 +26,9 @@ uname -a | grep aarch64
 if [ $? = 0 ]; then
     ARCH="aarch64-linux-gnu"
 fi
+if [ $IS_X86 = 1 ]; then
+    ARCH="x86_64-linux-gnu" 
+fi
 BTC_UPGRADE_URL=https://bitcoin.org/bin/bitcoin-core-0.18.1/bitcoin-0.18.1-$ARCH.tar.gz
 BTC_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btc_url
 CURRENT=""
@@ -46,7 +49,11 @@ if [ "$CURRENT" != "$BTC_UPGRADE_URL" ]; then
 fi
 
 # Upgrade LND
-LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/v0.7.1-beta/lnd-linux-armv7-v0.7.1-beta.tar.gz
+LNDARCH="lnd-linux-armv7"
+if [ $IS_X86 = 1 ]; then
+    LNDARCH="lnd-linux-amd64"
+fi
+LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/v0.7.1-beta/$LNDARCH-v0.7.1-beta.tar.gz
 LND_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lnd_url
 CURRENT=""
 if [ -f $LND_UPGRADE_URL_FILE ]; then

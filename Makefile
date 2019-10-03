@@ -70,6 +70,11 @@ setup_new_raspi4: start_file_server download_base_images rootfs
 	@cp -f setup/setup_device.sh out/setup_device.sh 
 	@/bin/bash scripts/setup_new_raspi4.sh
 
+.PHONY: setup_new_debian
+setup_new_debian: start_file_server download_base_images rootfs 
+	@cp -f setup/setup_device.sh out/setup_device.sh 
+	@/bin/bash scripts/setup_new_debian.sh
+
 
 # Clone repo to get release tools
 release.sh:
