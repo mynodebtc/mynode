@@ -25,6 +25,18 @@ sudo systemctl restart cpufrequtils
 sudo apt-get update
 sudo apt-get -y upgrade
 
+# Install some necessary tools
+apt-get -y install network-manager
+
+# Regenerate MAC Address for Rock64
+. /usr/lib/armbian/armbian-common
+CONNECTION="$(nmcli -f UUID,ACTIVE,DEVICE,TYPE connection show --active | tail -n1)"
+UUID=$(awk -F" " '/ethernet/ {print $1}' <<< "${CONNECTION}")
+get_random_mac
+nmcli connection modify $UUID ethernet.cloned-mac-address $MACADDR
+nmcli connection modify $UUID -ethernet.mac-address ""
+
+
 # Sync
 sync
 

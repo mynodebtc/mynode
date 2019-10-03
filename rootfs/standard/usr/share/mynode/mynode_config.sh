@@ -5,10 +5,18 @@ IS_ROCK64=0
 IS_RASPI=0
 IS_RASPI3=0
 IS_RASPI4=0
+IS_X86=0
 DEVICE_TYPE="unknown"
 uname -a | grep aarch64 && IS_ROCK64=1 || IS_RASPI=1
 if [ $IS_RASPI -eq 1 ]; then
     cat /proc/cpuinfo | grep 03111 && IS_RASPI4=1 || IS_RASPI3=1
+fi
+uname -a | grep amd64 && IS_X86=1 || true
+if [ $IS_X86 -eq 1 ]; then
+    IS_RASPI=0
+    IS_ROCK64=0
+    IS_RASPI3=0
+    IS_RASPI4=0
 fi
 
 if [ $IS_RASPI3 -eq 1 ]; then
@@ -17,6 +25,8 @@ elif [ $IS_RASPI4 -eq 1 ]; then
     DEVICE_TYPE="raspi4"
 elif [ $IS_ROCK64 -eq 1 ]; then
     DEVICE_TYPE="rock64"
+elif [ $IS_X86 -eq 1 ]; then
+    DEVICE_TYPE="debian"
 fi
 
 
@@ -59,4 +69,7 @@ UPGRADE_PUBKEY_URL="https://raw.githubusercontent.com/mynodebtc/pubkey/master/my
 # Update settings for other devices
 if [ -f /usr/share/mynode/mynode_config_raspi.sh ]; then
     source /usr/share/mynode/mynode_config_raspi.sh
+fi
+if [ -f /usr/share/mynode/mynode_config_debian.sh ]; then
+    source /usr/share/mynode/mynode_config_debian.sh
 fi
