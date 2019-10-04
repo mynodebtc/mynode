@@ -2,6 +2,7 @@
 - Add more info on Electrum Server page
 - Network improvements
 - Improve QuickSync uploader tool
+- Improve console loggin
 
 === v0.1.48 ===
 - Add script to check for invalid blocks and auto-correct
