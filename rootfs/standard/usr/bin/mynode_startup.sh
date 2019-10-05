@@ -136,6 +136,11 @@ if [ ! -f /home/bitcoin/.lnd-admin/credentials.json ]; then
     chown bitcoin:bitcoin /home/bitcoin/.lnd-admin/credentials.json
 fi
 
+# BTC RPC Explorer Config
+if [ ! -f /opt/mynode/btc-rpc-explorer/.env ]; then
+    cp /usr/share/mynode/btc_rpc_explorer_env /opt/mynode/btc-rpc-explorer/.env
+    chown bitcoin:bitcoin /opt/mynode/btc-rpc-explorer/.env
+fi
 
 # Update files that need RPC password (needed if upgrades overwrite files)
 PW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)

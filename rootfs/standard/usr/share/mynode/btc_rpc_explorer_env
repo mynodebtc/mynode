@@ -1,0 +1,78 @@
+# The active coin: BTC/LTC
+BTCEXP_COIN=BTC
+
+# Host/Port to bind to
+BTCEXP_HOST=0.0.0.0
+BTCEXP_PORT=3002
+
+# Bitcoin RPC Credentials (URI -OR- HOST/PORT/USER/PASS)
+#BTCEXP_BITCOIND_URI=bitcoin://rpcusername:rpcpassword@127.0.0.1:8332?timeout=10000
+BTCEXP_BITCOIND_HOST=localhost
+BTCEXP_BITCOIND_PORT=8332
+BTCEXP_BITCOIND_USER=mynode
+BTCEXP_BITCOIND_PASS=bolt
+#BTCEXP_BITCOIND_COOKIE=/path/to/bitcoind/.cookie
+BTCEXP_BITCOIND_RPC_TIMEOUT=10000
+
+# Select optional "address API" to display address tx lists and balances
+# Options: electrumx, blockchain.com, blockchair.com, blockcypher.com
+# If electrumx set, the BTCEXP_ELECTRUMX_SERVERS variable must also be
+# set.
+#BTCEXP_ADDRESS_API=(electrumx|blockchain.com|blockcypher.com)
+BTCEXP_ADDRESS_API=electrumx
+
+# Optional ElectrumX Servers. See BTCEXP_ADDRESS_API. This value is only
+# used if BTCEXP_ADDRESS_API=electrumx
+#BTCEXP_ELECTRUMX_SERVERS=tls://electrumx.server.com:50002,tcp://127.0.0.1:50001,...
+BTCEXP_ELECTRUMX_SERVERS=tcp://127.0.0.1:50001
+
+# Optional InfluxDB Credentials (URI -OR- HOST/PORT/DBNAME/USER/PASS)
+#BTCEXP_ENABLE_INFLUXDB=true
+#BTCEXP_INFLUXDB_URI=influx://username:password@127.0.0.1:8086
+#BTCEXP_INFLUXDB_HOST=127.0.0.1
+#BTCEXP_INFLUXDB_PORT=8086
+#BTCEXP_INFLUXDB_DBNAME=influxdb
+#BTCEXP_INFLUXDB_USER=dbuser
+#BTCEXP_INFLUXDB_PASS=dbpassword
+
+# Set number of concurrent RPC requests. Should be lower than your node's "rpcworkqueue" value.
+# The default for this value is 10, aiming to be less than Bitcoin Core's default rpcworkqueue=16.
+#BTCEXP_RPC_CONCURRENCY=10
+BTCEXP_RPC_CONCURRENCY=4
+
+# Disable app's in-memory RPC caching to reduce memory usage
+#BTCEXP_NO_INMEMORY_RPC_CACHE=true
+
+# Optional redis server for RPC caching
+#BTCEXP_REDIS_URL=redis://localhost:6379
+
+#BTCEXP_COOKIE_SECRET=0000aaaafffffgggggg
+
+# Whether public-demo aspects of the site are active
+#BTCEXP_DEMO=true
+
+# Privacy mode disables:
+# Exchange-rate queries, IP-geolocation queries
+#BTCEXP_PRIVACY_MODE=true
+
+# Don't request currency exchange rates
+BTCEXP_NO_RATES=true
+
+# Password protection for site via basic auth (enter any username, only the password is checked)
+#BTCEXP_BASIC_AUTH_PASSWORD=mypassword
+
+# Enable to allow access to all RPC methods
+#BTCEXP_RPC_ALLOWALL=true
+
+# Custom RPC method blacklist
+#BTCEXP_RPC_BLACKLIST=signrawtransaction,sendtoaddress,stop,...
+
+#BTCEXP_GANALYTICS_TRACKING=UA-XXXX-X
+#BTCEXP_SENTRY_URL=https://00000fffffff@sentry.io/XXXX
+#BTCEXP_IPSTACK_APIKEY=000000fffffaaaaa
+
+# Optional value for "max_old_space_size", default: 1024
+#BTCEXP_OLD_SPACE_MAX_SIZE=2048
+
+# Show tools list in a sub-nav at top of screen (default: true)
+BTCEXP_UI_SHOW_TOOLS_SUBHEADER=true
