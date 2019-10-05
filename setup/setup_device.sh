@@ -260,7 +260,7 @@ fi
 
 
 # Install Bitcoin RPC Explorer
-BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v1.0.3.tar.gz
+BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v1.1.1.tar.gz
 BTCRPCEXPLORER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btcrpcexplorer_url
 CURRENT=""
 if [ -f $BTCRPCEXPLORER_UPGRADE_URL_FILE ]; then
