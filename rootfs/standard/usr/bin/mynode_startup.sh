@@ -106,6 +106,13 @@ fi
 
 # BTC Config
 cp -f /usr/share/mynode/bitcoin.conf /mnt/hdd/mynode/bitcoin/bitcoin.conf
+touch /mnt/hdd/mynode/settings/bitcoin_additional_config
+echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+echo "### CUSTOM CONFIG ###" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+cat /mnt/hdd/mynode/settings/bitcoin_additional_config >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+
 
 PW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
 RPCAUTH=$(gen_rpcauth.py mynode $PW)
