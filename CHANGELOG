@@ -1,8 +1,10 @@
 === v0.1.49 ===
-- Add more info on Electrum Server page
-- Network improvements
+- Update BTC RPC Explorer
+- Add way to customize Bitcoin config
+- Add beta x86 VM setup
 - Improve QuickSync uploader tool
-- Improve console loggin
+- Improve console logging
+- Add more info on Electrum Server page
 
 === v0.1.48 ===
 - Add script to check for invalid blocks and auto-correct
