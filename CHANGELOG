@@ -1,3 +1,6 @@
+=== v0.1.50 ===
+- Big fixes for myNode VM
+
 === v0.1.49 ===
 - Update BTC RPC Explorer
 - Add way to customize Bitcoin config
