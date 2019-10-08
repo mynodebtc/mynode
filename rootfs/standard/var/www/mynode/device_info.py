@@ -40,6 +40,10 @@ def get_system_uptime():
 def get_device_serial():
     serial = subprocess.check_output("cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2", shell=True)
     serial = serial.strip()
+    if serial == "":
+        # For VMs, use the UUID
+        serial = subprocess.check_output("sudo dmidecode | grep UUID | cut -d ' ' -f 2", shell=True)
+        serial = serial.strip()
     return serial
 
 
