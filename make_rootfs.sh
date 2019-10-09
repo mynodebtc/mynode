@@ -10,6 +10,7 @@ mkdir -p out/rootfs_debian/
 
 ### Make rock64 rootfs ###
 cp -rf rootfs/standard/* out/rootfs_rock64/
+cp -rf rootfs/rock64/* out/rootfs_rock64/
 cp -f CHANGELOG out/rootfs_rock64/usr/share/mynode/changelog
 rm -f out/mynode_rootfs_rock64.tar.gz
 tar -zcvf out/mynode_rootfs_rock64.tar.gz ./out/rootfs_rock64/*
