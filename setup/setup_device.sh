@@ -52,7 +52,7 @@ apt-get -y install clang hitch zlib1g-dev libffi-dev file toilet ncdu
 apt-get -y install toilet-fonts avahi-daemon figlet libsecp256k1-dev 
 apt-get -y install inotify-tools libssl-dev tor tmux screen
 apt-get -y install python-grpcio python3-grpcio
-apt-get -y install pv sysstat network-manager rsync parted
+apt-get -y install pv sysstat network-manager rsync parted unzip
 
 
 # Install other things without recommendation
@@ -306,6 +306,19 @@ if [ "$CURRENT" != "$LNDCONNECT_UPGRADE_URL" ]; then
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $LNDCONNECT_UPGRADE_URL > $LNDCONNECT_UPGRADE_URL_FILE
+fi
+
+
+# Install ngrok for debugging
+if [ ! -f /usr/bin/ngrok  ]; then
+    cd /tmp
+    NGROK_URL=https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip
+    if [ $IS_X86 = 1 ]; then
+        NGROK_URL=https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-386.zip
+    fi
+    wget $NGROK_URL
+    unzip ngrok-*.zip
+    cp ngrok /usr/bin/
 fi
 
 #########################################################
