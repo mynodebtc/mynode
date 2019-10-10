@@ -4,6 +4,7 @@
 /var/log/lndhub.log
 /var/log/lnd.log
 /var/log/lnd_backup.log
+/var/log/lnd_admin.log
 /var/log/mynode.log
 /var/log/mynode_quicksync.log
 /var/log/redis-server.log
@@ -40,7 +41,6 @@
     maxsize 3M
 	missingok
 	notifempty
-	delaycompress
 	sharedscripts
 	postrotate
 		invoke-rc.d rsyslog rotate > /dev/null
