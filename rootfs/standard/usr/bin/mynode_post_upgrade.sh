@@ -11,7 +11,7 @@ systemctl stop quicksync
 systemctl stop bitcoind
 
 # Install any new software
-apt -y install pv sysstat network-manager
+apt -y install pv sysstat network-manager unzip
 
 # Install any pip software
 pip install tzupdate
@@ -138,6 +138,17 @@ if [ "$CURRENT" != "$BTCRPCEXPLORER_UPGRADE_URL" ]; then
     echo $BTCRPCEXPLORER_UPGRADE_URL > $BTCRPCEXPLORER_UPGRADE_URL_FILE
 fi
 
+# Install ngrok for debugging
+if [ ! -f /usr/bin/ngrok  ]; then
+    cd /tmp
+    NGROK_URL=https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip
+    if [ $IS_X86 = 1 ]; then
+        NGROK_URL=https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-386.zip
+    fi
+    wget $NGROK_URL
+    unzip ngrok-*.zip
+    cp ngrok /usr/bin/
+fi
 
 # Enable any new/required services
 systemctl enable firewall
