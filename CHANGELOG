@@ -1,6 +1,7 @@
 === v0.1.51 ===
 - Logging and RAM tweaks for Rock64
 - Add ngrok for debugging
+- Upgrade RTL to 0.5.1
 
 === v0.1.50 ===
 - Big fixes for myNode VM (still beta)
