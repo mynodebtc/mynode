@@ -73,7 +73,7 @@ if [ "$CURRENT" != "$LND_UPGRADE_URL" ]; then
 fi
 
 # Upgrade RTL
-RTL_UPGRADE_URL=https://github.com/ShahanaFarooqui/RTL/archive/v0.4.4.tar.gz
+RTL_UPGRADE_URL=https://github.com/ShahanaFarooqui/RTL/archive/v0.5.1.tar.gz
 RTL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.rtl_url
 CURRENT=""
 if [ -f $RTL_UPGRADE_URL_FILE ]; then
@@ -141,6 +141,7 @@ fi
 # Install ngrok for debugging
 if [ ! -f /usr/bin/ngrok  ]; then
     cd /tmp
+    rm -rf /tmp/ngrok*
     NGROK_URL=https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip
     if [ $IS_X86 = 1 ]; then
         NGROK_URL=https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-386.zip
