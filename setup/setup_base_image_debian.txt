@@ -3,6 +3,8 @@
 ###
 
 # Install Debian 10.1.0 Net-install via CD
+#  URL: https://www.debian.org/CD/netinst/
+#  Follow instructions:
 #  - Graphical Install
 #  - English, US, American English
 #  - Hostname: myNode
@@ -29,6 +31,7 @@ adduser admin sudo
 deluser mynode
 rm -rf /home/mynode
 
+exit
 # Login as admin / bolt
 
 # Delete root password
@@ -43,4 +46,5 @@ sync
 
 ######################
 ### MAKE IMAGE NOW ###
+###  (if imaging)  ###
 ######################
