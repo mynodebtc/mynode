@@ -1,3 +1,7 @@
+=== v0.1.52 ===
+- Fix bug with device product key check
+- Improve drive mounting on Raspis w/ SSDs
+
 === v0.1.51 ===
 - Logging and RAM tweaks for Rock64
 - Add ngrok for debugging
