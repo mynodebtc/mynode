@@ -74,7 +74,7 @@ proc createMyNodeFsOnBlockDevice {blockDevice} {
         puts "Formatting new partition ${blockDevice}1"
         runCommand mkfs.ext4 -F -L myNode /dev/${blockDevice}1
 
-        runCommand mount /dev/${blockDevice}1 /mnt/hdd
+        runCommand mount /dev/${blockDevice}1 /mnt/hdd -o errors=continue
         runCommand date >/mnt/hdd/.mynode
         runCommand echo /dev/${blockDevice}1 > /tmp/.mynode_drive
     }] {
