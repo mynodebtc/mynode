@@ -11,8 +11,8 @@ CONFIG["btcrpcexplorer_enabled"] = True
 CONFIG["lndhub_enabled"] = True
 
 # myNode variables
-LATEST_VERSION_URL = "http://www.mynodebtc.com/device/latest_version"
-CHECKIN_URL = "http://www.mynodebtc.com/device_api/check_in.php"
+LATEST_VERSION_URL = "https://www.mynodebtc.com/device/latest_version"
+CHECKIN_URL = "https://www.mynodebtc.com/device_api/check_in.php"
 
 # Bitcoin Variables
 BITCOIN_ENV_FILE = "/mnt/hdd/mynode/bitcoin/env"
