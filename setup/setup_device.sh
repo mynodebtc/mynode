@@ -35,6 +35,25 @@ if [ $IS_ROCK64 = 1 ]; then
     /usr/lib/armbian/armbian-resize-filesystem start
 fi
 
+
+# Download rootfs
+rm -rf /tmp/rootfs.tar.gz
+rm -rf /tmp/upgrade/
+mkdir -p /tmp/upgrade
+
+TARBALL=""
+if [ $IS_ROCK64 = 1 ]; then
+    TARBALL="mynode_rootfs_rock64.tar.gz"
+elif [ $IS_RASPI3 = 1 ]; then
+    TARBALL="mynode_rootfs_raspi3.tar.gz"
+elif [ $IS_RASPI4 = 1 ]; then
+    TARBALL="mynode_rootfs_raspi4.tar.gz"
+elif [ $IS_X86 = 1 ]; then
+    TARBALL="mynode_rootfs_debian.tar.gz"
+fi
+wget http://${SERVER_IP}:8000/${TARBALL} -O /tmp/rootfs.tar.gz
+
+
 # Add sources
 
 
@@ -324,23 +343,7 @@ fi
 #########################################################
 
 
-# Copy myNode rootfs
-rm -rf /tmp/rootfs.tar.gz
-rm -rf /tmp/upgrade/
-mkdir -p /tmp/upgrade
-
-TARBALL=""
-if [ $IS_ROCK64 = 1 ]; then
-    TARBALL="mynode_rootfs_rock64.tar.gz"
-elif [ $IS_RASPI3 = 1 ]; then
-    TARBALL="mynode_rootfs_raspi3.tar.gz"
-elif [ $IS_RASPI4 = 1 ]; then
-    TARBALL="mynode_rootfs_raspi4.tar.gz"
-elif [ $IS_X86 = 1 ]; then
-    TARBALL="mynode_rootfs_debian.tar.gz"
-fi
-wget http://${SERVER_IP}:8000/${TARBALL} -O /tmp/rootfs.tar.gz
-
+# Copy myNode rootfs (downlaoded earlier)
 tar -xvf /tmp/rootfs.tar.gz -C /tmp/upgrade/
 
 # Install files
