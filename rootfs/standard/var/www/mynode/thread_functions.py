@@ -150,7 +150,7 @@ def check_in():
 
     # Get public IP
     try:
-        public_ip = get('http://mynodebtc.com/device_api/get_public_ip.php').text
+        public_ip = get('https://mynodebtc.com/device_api/get_public_ip.php').text
     except Exception as e:
         public_ip = "error"
 
