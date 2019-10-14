@@ -1,0 +1,22 @@
+# myNode usb driver check
+# /etc/systemd/system/usb_driver_check.service
+
+[Unit]
+Description=myNode USB Driver Check
+Wants=mynode.service
+After=mynode.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/mynode_usb_driver_check.sh
+User=root
+Group=root
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=mynode
+
+RestartSec=30
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
