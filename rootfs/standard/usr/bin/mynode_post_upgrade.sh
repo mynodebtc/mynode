@@ -57,8 +57,8 @@ if [ "$CURRENT" != "$BTC_UPGRADE_URL" ]; then
         gpg --verify SHA256SUMS.asc
         if [ $? == 0 ]; then
             # Install Bitcoin
-            tar -xvf bitcoin-*.tar.gz
-            mv bitcoin-* bitcoin
+            tar -xvf bitcoin-$BTC_VERSION-$ARCH.tar.gz
+            mv bitcoin-$BTC_VERSION bitcoin
             install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
 
             # Mark current version
