@@ -27,6 +27,7 @@ gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C268459
 
 
 # Upgrade BTC
+BTC_VERSION="0.18.1"
 ARCH="arm-linux-gnueabihf"
 uname -a | grep aarch64
 if [ $? = 0 ]; then
@@ -35,23 +36,39 @@ fi
 if [ $IS_X86 = 1 ]; then
     ARCH="x86_64-linux-gnu" 
 fi
-BTC_UPGRADE_URL=https://bitcoin.org/bin/bitcoin-core-0.18.1/bitcoin-0.18.1-$ARCH.tar.gz
+BTC_UPGRADE_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/bitcoin-$BTC_VERSION-$ARCH.tar.gz
 BTC_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btc_url
+BTC_UPGRADE_SHA256SUM_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/SHA256SUMS.asc
 CURRENT=""
 if [ -f $BTC_UPGRADE_URL_FILE ]; then
     CURRENT=$(cat $BTC_UPGRADE_URL_FILE)
 fi
 if [ "$CURRENT" != "$BTC_UPGRADE_URL" ]; then
     # Download and install Bitcoin
-    rm -rf /tmp/bitcoin*
-    cd /tmp
-    wget $BTC_UPGRADE_URL -O bitcoin.tar.gz
-    tar -xvf bitcoin.tar.gz
-    mv bitcoin-* bitcoin
-    install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
+    rm -rf /tmp/download
+    mkdir -p /tmp/download
+    cd /tmp/download
 
-    # Mark current version
-    echo $BTC_UPGRADE_URL > $BTC_UPGRADE_URL_FILE
+    wget $BTC_UPGRADE_URL
+    wget $BTC_UPGRADE_SHA256SUM_URL -O SHA256SUMS.asc
+
+    sha256sum --ignore-missing --check SHA256SUMS.asc
+    if [ $? == 0 ]; then
+        gpg --verify SHA256SUMS.asc
+        if [ $? == 0 ]; then
+            # Install Bitcoin
+            tar -xvf bitcoin-*.tar.gz
+            mv bitcoin-* bitcoin
+            install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
+
+            # Mark current version
+            echo $BTC_UPGRADE_URL > $BTC_UPGRADE_URL_FILE
+        else
+            echo "ERROR UPGRADING BITCOIN - GPG FAILED"
+        fi
+    else
+        echo "ERROR UPGRADING BITCOIN - SHASUM FAILED"
+    fi
 fi
 
 # Upgrade LND
@@ -74,15 +91,15 @@ if [ "$CURRENT" != "$LND_UPGRADE_URL" ]; then
     mkdir -p /tmp/download
     cd /tmp/download
 
-    wget $LND_UPGRADE_URL -O lnd.tar.gz
-    wget $LND_UPGRADE_MANIFEST_URL -O manifest-lnd.txt
-    wget $LND_UPGRADE_MANIFEST_SIG_URL -O manifest-lnd.txt.sig
+    wget $LND_UPGRADE_URL
+    wget $LND_UPGRADE_MANIFEST_URL
+    wget $LND_UPGRADE_MANIFEST_SIG_URL
 
-    gpg --verify manifest-lnd.txt.sig
+    gpg --verify manifest-*.txt.sig
     if [ $? == 0 ]; then
         # Install LND
-        tar -xzf lnd.tar.gz
-        mv lnd-* lnd
+        tar -xzf lnd-*.tar.gz
+        mv $LND_ARCH-$LND_VERSION lnd
         install -m 0755 -o root -g root -t /usr/local/bin lnd/*
 
         # Mark current version
