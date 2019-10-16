@@ -174,8 +174,9 @@ if [ "$CURRENT" != "$BTC_UPGRADE_URL" ]; then
     sha256sum --ignore-missing --check SHA256SUMS.asc
     gpg --verify SHA256SUMS.asc
 
-    tar -xvf bitcoin-*.tar.gz
-    mv bitcoin-* bitcoin
+    # Install Bitcoin
+    tar -xvf bitcoin-$BTC_VERSION-$ARCH.tar.gz
+    mv bitcoin-$BTC_VERSION bitcoin
     install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
     if [ ! -L /home/bitcoin/.bitcoin ]; then
         sudo -u bitcoin ln -s /mnt/hdd/mynode/bitcoin /home/bitcoin/.bitcoin
