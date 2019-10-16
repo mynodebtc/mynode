@@ -20,6 +20,12 @@ pip install tzupdate
 # Install any pip3 software
 pip3 install python-bitcointx
 
+
+# Import Keys
+curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
+gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
+
+
 # Upgrade BTC
 ARCH="arm-linux-gnueabihf"
 uname -a | grep aarch64
@@ -49,27 +55,41 @@ if [ "$CURRENT" != "$BTC_UPGRADE_URL" ]; then
 fi
 
 # Upgrade LND
-LNDARCH="lnd-linux-armv7"
+LND_VERSION="v0.8.0-beta"
+LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
-    LNDARCH="lnd-linux-amd64"
+    LND_ARCH="lnd-linux-amd64"
 fi
-LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/v0.7.1-beta/$LNDARCH-v0.7.1-beta.tar.gz
+LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/$LND_ARCH-$LND_VERSION.tar.gz
 LND_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lnd_url
+LND_UPGRADE_MANIFEST_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
+LND_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt.sig
 CURRENT=""
 if [ -f $LND_UPGRADE_URL_FILE ]; then
     CURRENT=$(cat $LND_UPGRADE_URL_FILE)
 fi
 if [ "$CURRENT" != "$LND_UPGRADE_URL" ]; then
     # Download and install LND
-    rm -rf /tmp/lnd*
-    cd /tmp
-    wget $LND_UPGRADE_URL -O lnd.tar.gz
-    tar -xzf lnd.tar.gz
-    mv lnd-* lnd
-    install -m 0755 -o root -g root -t /usr/local/bin lnd/*
+    rm -rf /tmp/download
+    mkdir -p /tmp/download
+    cd /tmp/download
 
-    # Mark current version
-    echo $LND_UPGRADE_URL > $LND_UPGRADE_URL_FILE
+    wget $LND_UPGRADE_URL -O lnd.tar.gz
+    wget $LND_UPGRADE_MANIFEST_URL -O manifest-lnd.txt
+    wget $LND_UPGRADE_MANIFEST_SIG_URL -O manifest-lnd.txt.sig
+
+    gpg --verify manifest-lnd.txt.sig
+    if [ $? == 0 ]; then
+        # Install LND
+        tar -xzf lnd.tar.gz
+        mv lnd-* lnd
+        install -m 0755 -o root -g root -t /usr/local/bin lnd/*
+
+        # Mark current version
+        echo $LND_UPGRADE_URL > $LND_UPGRADE_URL_FILE
+    else
+        echo "ERROR UPGRADING LND - GPG FAILED"
+    fi
 fi
 
 # Upgrade RTL
