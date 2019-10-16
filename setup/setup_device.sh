@@ -168,13 +168,13 @@ if [ "$CURRENT" != "$BTC_UPGRADE_URL" ]; then
     mkdir -p /tmp/download
     cd /tmp/download
 
-    wget $BTC_UPGRADE_URL -O bitcoin.tar.gz
+    wget $BTC_UPGRADE_URL
     wget $BTC_UPGRADE_SHA256SUM_URL -O SHA256SUMS.asc
 
     sha256sum --ignore-missing --check SHA256SUMS.asc
-    gpg --verify SHA256SUMS.ascx
+    gpg --verify SHA256SUMS.asc
 
-    tar -xvf bitcoin.tar.gz
+    tar -xvf bitcoin-*.tar.gz
     mv bitcoin-* bitcoin
     install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
     if [ ! -L /home/bitcoin/.bitcoin ]; then
@@ -209,14 +209,14 @@ if [ "$CURRENT" != "$LND_UPGRADE_URL" ]; then
     mkdir -p /tmp/download
     cd /tmp/download
 
-    wget $LND_UPGRADE_URL -O lnd.tar.gz
-    wget $LND_UPGRADE_MANIFEST_URL -O manifest-lnd.txt
-    wget $LND_UPGRADE_MANIFEST_SIG_URL -O manifest-lnd.txt.sig
+    wget $LND_UPGRADE_URL
+    wget $LND_UPGRADE_MANIFEST_URL
+    wget $LND_UPGRADE_MANIFEST_SIG_URL
 
-    gpg --verify manifest-lnd.txt.sig
+    gpg --verify manifest-*.txt.sig
 
-    tar -xzf lnd.tar.gz
-    mv lnd-* lnd
+    tar -xzf lnd-*.tar.gz
+    mv $LND_ARCH-$LND_VERSION lnd
     install -m 0755 -o root -g root -t /usr/local/bin lnd/*
     ln -s /bin/ip /usr/bin/ip || true
 
