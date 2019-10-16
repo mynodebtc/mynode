@@ -93,6 +93,11 @@ pip install grpcio grpcio-tools googleapis-common-protos
 pip install tzupdate
 
 
+# Import Keys
+curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
+gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
+
+
 # Update python3 to 3.7.X
 PYTHON3_VERSION=$(python3 --version)
 if [[ "$PYTHON3_VERSION" != *"Python 3.7"* ]]; then
@@ -178,12 +183,15 @@ fi
 cd ~
 
 # Install Lightning
-LNDARCH="lnd-linux-armv7"
+LND_VERSION="v0.8.0-beta"
+LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
-    LNDARCH="lnd-linux-amd64"
+    LND_ARCH="lnd-linux-amd64"
 fi
-LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/v0.7.1-beta/$LNDARCH-v0.7.1-beta.tar.gz
+LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/$LND_ARCH-$LND_VERSION.tar.gz
 LND_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lnd_url
+LND_UPGRADE_MANIFEST_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
+LND_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt.sig
 CURRENT=""
 if [ -f $LND_UPGRADE_URL_FILE ]; then
     CURRENT=$(cat $LND_UPGRADE_URL_FILE)
@@ -194,6 +202,11 @@ if [ "$CURRENT" != "$LND_UPGRADE_URL" ]; then
     cd /tmp/download
 
     wget $LND_UPGRADE_URL -O lnd.tar.gz
+    wget $LND_UPGRADE_MANIFEST_URL -O manifest-lnd.txt
+    wget $LND_UPGRADE_MANIFEST_SIG_URL -O manifest-lnd.txt.sig
+
+    gpg --verify manifest-lnd.txt.sig
+
     tar -xzf lnd.tar.gz
     mv lnd-* lnd
     install -m 0755 -o root -g root -t /usr/local/bin lnd/*
