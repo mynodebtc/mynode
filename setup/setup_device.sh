@@ -147,6 +147,7 @@ rm -rf /etc/update-motd.d/*
 
 
 # Install Bitcoin
+BTC_VERSION="0.18.1"
 ARCH="arm-linux-gnueabihf"
 if [ $IS_ROCK64 = 1 ]; then
     ARCH="aarch64-linux-gnu"
@@ -154,18 +155,25 @@ fi
 if [ $IS_X86 = 1 ]; then
     ARCH="x86_64-linux-gnu" 
 fi
-BTC_UPGRADE_URL=https://bitcoin.org/bin/bitcoin-core-0.18.1/bitcoin-0.18.1-$ARCH.tar.gz
+BTC_UPGRADE_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/bitcoin-$BTC_VERSION-$ARCH.tar.gz
 BTC_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btc_url
+BTC_UPGRADE_SHA256SUM_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/SHA256SUMS.asc
 CURRENT=""
 if [ -f $BTC_UPGRADE_URL_FILE ]; then
     CURRENT=$(cat $BTC_UPGRADE_URL_FILE)
 fi
 if [ "$CURRENT" != "$BTC_UPGRADE_URL" ]; then
+    # Download and install Bitcoin
     rm -rf /tmp/download
     mkdir -p /tmp/download
     cd /tmp/download
 
     wget $BTC_UPGRADE_URL -O bitcoin.tar.gz
+    wget $BTC_UPGRADE_SHA256SUM_URL -O SHA256SUMS.asc
+
+    sha256sum --ignore-missing --check SHA256SUMS.asc
+    gpg --verify SHA256SUMS.ascx
+
     tar -xvf bitcoin.tar.gz
     mv bitcoin-* bitcoin
     install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
