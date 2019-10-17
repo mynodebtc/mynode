@@ -1,4 +1,4 @@
-/* mynode #f9c132: #f9c132 */
+/* mynode orange: #f9c132 */
 /* dark grey for background: #303841 */
 /* lighter gray: #3a4750 */
 
@@ -321,6 +321,8 @@ table {
 }
 
 .settings_input {
+    color: white;
+    background: #f9c132;
     font-size: 14px;
     font-family: Arial, Helvetica, sans-serif;
 }
