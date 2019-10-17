@@ -1,3 +1,8 @@
+=== v0.1.53 ===
+ - Upgrade LND to v0.8.0 beta
+ - PGP verify LND and BTC for each upgrade
+ - Improve SSD support for Raspberry Pi 4
+
 === v0.1.52 ===
 - Fix bug with device product key check
 - Improve drive mounting on Raspis w/ SSDs
