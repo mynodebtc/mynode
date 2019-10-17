@@ -135,3 +135,13 @@ def get_device_changelog():
     except:
         changelog = "ERROR"
     return changelog
+
+def is_darkmode_enabled():
+    return os.path.isfile("/home/bitcoin/.mynode/darkmode") and \
+           os.path.isfile("/mnt/hdd/mynode/settings/darkmode")
+def enable_darkmode():
+    os.system("touch /home/bitcoin/.mynode/darkmode")
+    os.system("touch /mnt/hdd/mynode/settings/darkmode")
+def disable_darkmode():
+    os.system("rm -rf /home/bitcoin/.mynode/darkmode")
+    os.system("rm -rf /mnt/hdd/mynode/settings/darkmode")

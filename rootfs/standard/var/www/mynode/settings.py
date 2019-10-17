@@ -161,7 +161,8 @@ def page_settings():
         "is_uploader_device": is_uploader(),
         "uptime": uptime,
         "public_ip": public_ip,
-        "local_ip": local_ip
+        "local_ip": local_ip,
+        "is_darkmode_enabled": is_darkmode_enabled()
     }
     return render_template('settings.html', **templateData)
 
@@ -406,3 +407,11 @@ def toggle_quicksync_page():
 @mynode_settings.route("/settings/ping")
 def ping_page():
     return "alive"
+
+@mynode_settings.route("/settings/toggle-darkmode")
+def toggle_darkmode_page():
+    if is_darkmode_enabled():
+        disable_darkmode()
+    else:
+        enable_darkmode()
+    return redirect("/settings")

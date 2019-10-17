@@ -2,7 +2,11 @@
     <head>
         <title>{{ title }}</title>
         <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+        {% if is_darkmode_enabled %}
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode_dark.css")}}">
+        {% else %}
         <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode.css")}}">
+        {% endif %}
         <link href="{{ url_for('static', filename="jquery_ui/jquery-ui.css")}}" rel="stylesheet">
         <meta http-equiv="Content-Language" content="en">
         <meta name="google" content="notranslate">
@@ -211,7 +215,11 @@
      </head>
 
     <body>
+        {% if is_darkmode_enabled %}
+        <div class="logo_header"><a href="/"><img class="logo_image" src="{{ url_for('static', filename="images/logo_dark.png")}}"/></a></div>
+        {% else %}
         <div class="logo_header"><a href="/"><img class="logo_image" src="{{ url_for('static', filename="images/logo.png")}}"/></a></div>
+        {% endif %}
         <div class="mynode_back_div">
             <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
         </div>
@@ -279,6 +287,15 @@
                     <td style="padding-left: 20px;">{{uptime}}</td>
                 </tr>
             </table>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Toggle Dark Mode</div>
+            {% if is_darkmode_enabled %}
+            <a href="/settings/toggle-darkmode" class="ui-button ui-widget ui-corner-all settings_button">Disable Dark Mode</a>
+            {% else %}
+            <a href="/settings/toggle-darkmode" class="ui-button ui-widget ui-corner-all settings_button">Enable Dark Mode</a>
+            {% endif %}
+
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Change Log</div>
