@@ -93,6 +93,11 @@ pip install grpcio grpcio-tools googleapis-common-protos
 pip install tzupdate
 
 
+# Import Keys
+curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
+gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
+
+
 # Update python3 to 3.7.X
 PYTHON3_VERSION=$(python3 --version)
 if [[ "$PYTHON3_VERSION" != *"Python 3.7"* ]]; then
@@ -142,6 +147,7 @@ rm -rf /etc/update-motd.d/*
 
 
 # Install Bitcoin
+BTC_VERSION="0.18.1"
 ARCH="arm-linux-gnueabihf"
 if [ $IS_ROCK64 = 1 ]; then
     ARCH="aarch64-linux-gnu"
@@ -149,20 +155,28 @@ fi
 if [ $IS_X86 = 1 ]; then
     ARCH="x86_64-linux-gnu" 
 fi
-BTC_UPGRADE_URL=https://bitcoin.org/bin/bitcoin-core-0.18.1/bitcoin-0.18.1-$ARCH.tar.gz
+BTC_UPGRADE_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/bitcoin-$BTC_VERSION-$ARCH.tar.gz
 BTC_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btc_url
+BTC_UPGRADE_SHA256SUM_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/SHA256SUMS.asc
 CURRENT=""
 if [ -f $BTC_UPGRADE_URL_FILE ]; then
     CURRENT=$(cat $BTC_UPGRADE_URL_FILE)
 fi
 if [ "$CURRENT" != "$BTC_UPGRADE_URL" ]; then
+    # Download and install Bitcoin
     rm -rf /tmp/download
     mkdir -p /tmp/download
     cd /tmp/download
 
-    wget $BTC_UPGRADE_URL -O bitcoin.tar.gz
-    tar -xvf bitcoin.tar.gz
-    mv bitcoin-* bitcoin
+    wget $BTC_UPGRADE_URL
+    wget $BTC_UPGRADE_SHA256SUM_URL -O SHA256SUMS.asc
+
+    sha256sum --ignore-missing --check SHA256SUMS.asc
+    gpg --verify SHA256SUMS.asc
+
+    # Install Bitcoin
+    tar -xvf bitcoin-$BTC_VERSION-$ARCH.tar.gz
+    mv bitcoin-$BTC_VERSION bitcoin
     install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
     if [ ! -L /home/bitcoin/.bitcoin ]; then
         sudo -u bitcoin ln -s /mnt/hdd/mynode/bitcoin /home/bitcoin/.bitcoin
@@ -178,12 +192,15 @@ fi
 cd ~
 
 # Install Lightning
-LNDARCH="lnd-linux-armv7"
+LND_VERSION="v0.8.0-beta"
+LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
-    LNDARCH="lnd-linux-amd64"
+    LND_ARCH="lnd-linux-amd64"
 fi
-LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/v0.7.1-beta/$LNDARCH-v0.7.1-beta.tar.gz
+LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/$LND_ARCH-$LND_VERSION.tar.gz
 LND_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lnd_url
+LND_UPGRADE_MANIFEST_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
+LND_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt.sig
 CURRENT=""
 if [ -f $LND_UPGRADE_URL_FILE ]; then
     CURRENT=$(cat $LND_UPGRADE_URL_FILE)
@@ -193,9 +210,14 @@ if [ "$CURRENT" != "$LND_UPGRADE_URL" ]; then
     mkdir -p /tmp/download
     cd /tmp/download
 
-    wget $LND_UPGRADE_URL -O lnd.tar.gz
-    tar -xzf lnd.tar.gz
-    mv lnd-* lnd
+    wget $LND_UPGRADE_URL
+    wget $LND_UPGRADE_MANIFEST_URL
+    wget $LND_UPGRADE_MANIFEST_SIG_URL
+
+    gpg --verify manifest-*.txt.sig
+
+    tar -xzf lnd-*.tar.gz
+    mv $LND_ARCH-$LND_VERSION lnd
     install -m 0755 -o root -g root -t /usr/local/bin lnd/*
     ln -s /bin/ip /usr/bin/ip || true
 

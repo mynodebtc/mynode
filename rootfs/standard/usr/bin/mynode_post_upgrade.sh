@@ -20,7 +20,14 @@ pip install tzupdate
 # Install any pip3 software
 pip3 install python-bitcointx
 
+
+# Import Keys
+curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
+gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
+
+
 # Upgrade BTC
+BTC_VERSION="0.18.1"
 ARCH="arm-linux-gnueabihf"
 uname -a | grep aarch64
 if [ $? = 0 ]; then
@@ -29,47 +36,77 @@ fi
 if [ $IS_X86 = 1 ]; then
     ARCH="x86_64-linux-gnu" 
 fi
-BTC_UPGRADE_URL=https://bitcoin.org/bin/bitcoin-core-0.18.1/bitcoin-0.18.1-$ARCH.tar.gz
+BTC_UPGRADE_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/bitcoin-$BTC_VERSION-$ARCH.tar.gz
 BTC_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btc_url
+BTC_UPGRADE_SHA256SUM_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/SHA256SUMS.asc
 CURRENT=""
 if [ -f $BTC_UPGRADE_URL_FILE ]; then
     CURRENT=$(cat $BTC_UPGRADE_URL_FILE)
 fi
 if [ "$CURRENT" != "$BTC_UPGRADE_URL" ]; then
     # Download and install Bitcoin
-    rm -rf /tmp/bitcoin*
-    cd /tmp
-    wget $BTC_UPGRADE_URL -O bitcoin.tar.gz
-    tar -xvf bitcoin.tar.gz
-    mv bitcoin-* bitcoin
-    install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
+    rm -rf /tmp/download
+    mkdir -p /tmp/download
+    cd /tmp/download
 
-    # Mark current version
-    echo $BTC_UPGRADE_URL > $BTC_UPGRADE_URL_FILE
+    wget $BTC_UPGRADE_URL
+    wget $BTC_UPGRADE_SHA256SUM_URL -O SHA256SUMS.asc
+
+    sha256sum --ignore-missing --check SHA256SUMS.asc
+    if [ $? == 0 ]; then
+        gpg --verify SHA256SUMS.asc
+        if [ $? == 0 ]; then
+            # Install Bitcoin
+            tar -xvf bitcoin-$BTC_VERSION-$ARCH.tar.gz
+            mv bitcoin-$BTC_VERSION bitcoin
+            install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
+
+            # Mark current version
+            echo $BTC_UPGRADE_URL > $BTC_UPGRADE_URL_FILE
+        else
+            echo "ERROR UPGRADING BITCOIN - GPG FAILED"
+        fi
+    else
+        echo "ERROR UPGRADING BITCOIN - SHASUM FAILED"
+    fi
 fi
 
 # Upgrade LND
-LNDARCH="lnd-linux-armv7"
+LND_VERSION="v0.8.0-beta"
+LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
-    LNDARCH="lnd-linux-amd64"
+    LND_ARCH="lnd-linux-amd64"
 fi
-LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/v0.7.1-beta/$LNDARCH-v0.7.1-beta.tar.gz
+LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/$LND_ARCH-$LND_VERSION.tar.gz
 LND_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lnd_url
+LND_UPGRADE_MANIFEST_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
+LND_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt.sig
 CURRENT=""
 if [ -f $LND_UPGRADE_URL_FILE ]; then
     CURRENT=$(cat $LND_UPGRADE_URL_FILE)
 fi
 if [ "$CURRENT" != "$LND_UPGRADE_URL" ]; then
     # Download and install LND
-    rm -rf /tmp/lnd*
-    cd /tmp
-    wget $LND_UPGRADE_URL -O lnd.tar.gz
-    tar -xzf lnd.tar.gz
-    mv lnd-* lnd
-    install -m 0755 -o root -g root -t /usr/local/bin lnd/*
+    rm -rf /tmp/download
+    mkdir -p /tmp/download
+    cd /tmp/download
 
-    # Mark current version
-    echo $LND_UPGRADE_URL > $LND_UPGRADE_URL_FILE
+    wget $LND_UPGRADE_URL
+    wget $LND_UPGRADE_MANIFEST_URL
+    wget $LND_UPGRADE_MANIFEST_SIG_URL
+
+    gpg --verify manifest-*.txt.sig
+    if [ $? == 0 ]; then
+        # Install LND
+        tar -xzf lnd-*.tar.gz
+        mv $LND_ARCH-$LND_VERSION lnd
+        install -m 0755 -o root -g root -t /usr/local/bin lnd/*
+
+        # Mark current version
+        echo $LND_UPGRADE_URL > $LND_UPGRADE_URL_FILE
+    else
+        echo "ERROR UPGRADING LND - GPG FAILED"
+    fi
 fi
 
 # Upgrade RTL
