@@ -3,7 +3,6 @@ from flask import Blueprint, render_template, session, abort, Markup, request, r
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from pprint import pprint, pformat
 from threading import Timer
-from device_info import *
 from thread_functions import *
 import pam
 import json
@@ -176,7 +175,8 @@ def upgrade_page():
     templateData = {
         "title": "myNode Upgrade",
         "header_text": "Upgrading",
-        "subheader_text": "This may take a while..."
+        "subheader_text": "This may take a while...",
+        "is_darkmode_enabled": is_darkmode_enabled()
     }
     return render_template('reboot.html', **templateData)
 
@@ -194,7 +194,8 @@ def reset_blockchain_page():
     templateData = {
         "title": "myNode",
         "header_text": "Reset Blockchain",
-        "subheader_text": "This will take several minutes..."
+        "subheader_text": "This will take several minutes...",
+        "is_darkmode_enabled": is_darkmode_enabled()
     }
     return render_template('reboot.html', **templateData)
 
@@ -207,7 +208,8 @@ def restart_quicksync_page():
     templateData = {
         "title": "myNode",
         "header_text": "Restart Quicksync",
-        "subheader_text": "This will take several minutes..."
+        "subheader_text": "This will take several minutes...",
+        "is_darkmode_enabled": is_darkmode_enabled()
     }
     return render_template('reboot.html', **templateData)
 
@@ -221,7 +223,8 @@ def reboot_device_page():
     templateData = {
         "title": "myNode Reboot",
         "header_text": "Restarting",
-        "subheader_text": "This will take several minutes..."
+        "subheader_text": "This will take several minutes...",
+        "is_darkmode_enabled": is_darkmode_enabled()
     }
     return render_template('reboot.html', **templateData)
 
@@ -235,7 +238,8 @@ def shutdown_device_page():
     templateData = {
         "title": "myNode Shutdown",
         "header_text": "Shutting down...",
-        "subheader_text": Markup("Your myNode is shutting down.<br/><br/>You will need to power cycle the device to turn it back on.")
+        "subheader_text": Markup("Your myNode is shutting down.<br/><br/>You will need to power cycle the device to turn it back on."),
+        "is_darkmode_enabled": is_darkmode_enabled()
     }
     return render_template('shutdown.html', **templateData)
 
@@ -269,7 +273,8 @@ def factory_reset_page():
         templateData = {
             "title": "myNode Factory Reset",
             "header_text": "Factory Reset",
-            "subheader_text": "This will take several minutes..."
+            "subheader_text": "This will take several minutes...",
+            "is_darkmode_enabled": is_darkmode_enabled()
         }
         return render_template('reboot.html', **templateData)
 
@@ -334,7 +339,8 @@ def page_reset_tor():
     templateData = {
         "title": "myNode Reboot",
         "header_text": "Restarting",
-        "subheader_text": "This will take several minutes..."
+        "subheader_text": "This will take several minutes...",
+        "is_darkmode_enabled": is_darkmode_enabled()
     }
     return render_template('reboot.html', **templateData)
 
@@ -362,7 +368,8 @@ def repair_drive_page():
     templateData = {
         "title": "myNode Reboot",
         "header_text": "Restarting",
-        "subheader_text": "This will take several minutes..."
+        "subheader_text": "This will take several minutes...",
+        "is_darkmode_enabled": is_darkmode_enabled()
     }
     return render_template('reboot.html', **templateData)
 
@@ -382,7 +389,8 @@ def toggle_uploader_page():
     templateData = {
         "title": "myNode Reboot",
         "header_text": "Restarting",
-        "subheader_text": "This will take several minutes..."
+        "subheader_text": "This will take several minutes...",
+        "is_darkmode_enabled": is_darkmode_enabled()
     }
     return render_template('reboot.html', **templateData)
 
@@ -400,7 +408,8 @@ def toggle_quicksync_page():
     templateData = {
         "title": "myNode Reboot",
         "header_text": "Restarting",
-        "subheader_text": "This will take several minutes..."
+        "subheader_text": "This will take several minutes...",
+        "is_darkmode_enabled": is_darkmode_enabled()
     }
     return render_template('reboot.html', **templateData)
 

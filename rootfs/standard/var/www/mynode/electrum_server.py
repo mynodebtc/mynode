@@ -3,7 +3,7 @@ from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from pprint import pprint, pformat
 from prometheus_client.parser import text_string_to_metric_families
 from bitcoin_info import *
-from device_info import get_local_ip, skipped_product_key
+from device_info import get_local_ip, skipped_product_key, is_darkmode_enabled
 import requests
 import json
 import time
@@ -124,6 +124,7 @@ def electrum_server_page():
         "electrs_command": electrs_command,
         "electrs_onion_hostname": electrs_onion_hostname,
         "electrs_onion_password": electrs_onion_password,
-        "electrs_onion_command": electrs_onion_command
+        "electrs_onion_command": electrs_onion_command,
+        "is_darkmode_enabled": is_darkmode_enabled()
     }
     return render_template('electrum_server.html', **templateData)

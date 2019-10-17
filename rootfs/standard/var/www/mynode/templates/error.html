@@ -2,7 +2,7 @@
     <head>
         <title>{{ title }}</title>
         <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode.css")}}">
+        {% include 'includes/mynode_css.html' %}
         <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode_bitcoind.css")}}">
         <link href="{{ url_for('static', filename="jquery_ui/jquery-ui.css")}}" rel="stylesheet">
         <meta http-equiv="Content-Language" content="en">
@@ -13,7 +13,7 @@
      </head>
 
     <body>
-        <div class="logo_header"><a href="/"><img class="logo_image" src="{{ url_for('static', filename="images/logo.png")}}"/></a></div>
+        {% include 'includes/logo_header.html' %}
         <div class="mynode_back_div">
             <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
         </div>

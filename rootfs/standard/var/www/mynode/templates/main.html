@@ -2,7 +2,7 @@
     <head>
         <title>{{ title }}</title>
         <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode.css")}}">
+        {% include 'includes/mynode_css.html' %}
         <link href="{{ url_for('static', filename="jquery_ui/jquery-ui.css")}}" rel="stylesheet">
         <meta http-equiv="Content-Language" content="en">
         <meta name="google" content="notranslate">
@@ -119,7 +119,7 @@
      </head>
 
     <body>
-        <div class="logo_header"><a href="/"><img class="logo_image" src="{{ url_for('static', filename="images/logo.png")}}"/></a></div>
+        {% include 'includes/logo_header.html' %}
         
         {% if upgrade_available %}
         <div class="mynode_upgrade_div">

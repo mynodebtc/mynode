@@ -4,7 +4,7 @@ from threading import Timer
 from bitcoin_info import *
 from lightning_info import *
 from settings import reboot_device
-from device_info import is_community_edition
+from device_info import is_community_edition, is_darkmode_enabled
 import base64
 import subprocess
 import json
@@ -59,7 +59,8 @@ def page_lnd():
             "wallet_exists": wallet_exists,
             "wallet_logged_in": wallet_logged_in,
             "version": get_lnd_version(),
-            "status": status
+            "status": status,
+            "is_darkmode_enabled": is_darkmode_enabled()
         }
         return render_template('lnd.html', **templateData)
 
@@ -69,7 +70,8 @@ def page_lnd():
             "wallet_exists": wallet_exists,
             "wallet_logged_in": wallet_logged_in,
             "status": get_lnd_status(),
-            "version": get_lnd_version()
+            "version": get_lnd_version(),
+            "is_darkmode_enabled": is_darkmode_enabled()
         }
         return render_template('lnd.html', **templateData)
 
@@ -94,7 +96,8 @@ def page_lnd():
     except Exception as e:
         templateData = {
             "title": "myNode Lightning Status",
-            "message": str(e)
+            "message": str(e),
+            "is_darkmode_enabled": is_darkmode_enabled()
         }
         return render_template('lnd_error.html', **templateData)
 
@@ -113,7 +116,8 @@ def page_lnd():
         "num_inactive_channels": num_inactive_channels,
         "pubkey": pubkey,
         "uri": uri,
-        "ip": ip
+        "ip": ip,
+        "is_darkmode_enabled": is_darkmode_enabled()
     }
     return render_template('lnd.html', **templateData)
 
@@ -145,13 +149,15 @@ def page_lnd_create_wallet():
     except:
         templateData = {
             "title": "myNode Lightning Wallet",
-            "message": Markup("Waiting on lnd...<br/>Please try again in a minute.")
+            "message": Markup("Waiting on lnd...<br/>Please try again in a minute."),
+            "is_darkmode_enabled": is_darkmode_enabled()
         }
         return render_template('lnd_error.html', **templateData)
 
     templateData = {
         "title": "myNode Lightning Wallet",
-        "seed": seed
+        "seed": seed,
+        "is_darkmode_enabled": is_darkmode_enabled()
     }
     return render_template('lnd_wallet_create.html', **templateData)
 
@@ -161,6 +167,7 @@ def page_lnd_create_wallet_with_seed():
     if request.method == 'GET':
         templateData = {
             "title": "myNode Lightning Wallet",
+            "is_darkmode_enabled": is_darkmode_enabled()
         }
         return render_template('lnd_wallet_create_with_seed.html', **templateData)
 
@@ -181,6 +188,7 @@ def page_lnd_create_wallet_confirm():
     if request.method == 'GET':
         templateData = {
             "title": "myNode Lightning Wallet",
+            "is_darkmode_enabled": is_darkmode_enabled()
         }
         return render_template('lnd_wallet_create_confirm.html', **templateData)
 
@@ -245,7 +253,8 @@ def page_lnd_lndconnect():
         "lndconnect_local_grpc_img": lndconnect_local_grpc_img,
         "lndconnect_local_rest_img": lndconnect_local_rest_img,
         "lndconnect_tor_grpc_img": lndconnect_tor_grpc_img,
-        "lndconnect_tor_rest_img": lndconnect_tor_rest_img
+        "lndconnect_tor_rest_img": lndconnect_tor_rest_img,
+        "is_darkmode_enabled": is_darkmode_enabled()
     }
     return render_template('lndconnect.html', **templateData)
 
@@ -280,6 +289,7 @@ def page_lnd_change_alias():
     templateData = {
         "title": "myNode Reboot",
         "header_text": "Restarting",
-        "subheader_text": "This will take several minutes..."
+        "subheader_text": "This will take several minutes...",
+        "is_darkmode_enabled": is_darkmode_enabled()
     }
     return render_template('reboot.html', **templateData)

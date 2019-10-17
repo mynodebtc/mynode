@@ -1,0 +1,5 @@
+{% if is_darkmode_enabled %}
+<link rel="stylesheet" href="{{ url_for('static', filename="css/mynode_dark.css")}}">
+{% else %}
+<link rel="stylesheet" href="{{ url_for('static', filename="css/mynode.css")}}">
+{% endif %}

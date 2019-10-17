@@ -105,7 +105,8 @@ def index():
         templateData = {
             "title": "myNode Uploader",
             "header_text": "Uploader Device",
-            "quicksync_status": status
+            "quicksync_status": status,
+            "is_darkmode_enabled": is_darkmode_enabled()
         }
         return render_template('uploader.html', **templateData)
 
@@ -117,14 +118,16 @@ def index():
         templateData = {
             "title": "myNode Looking for Drive",
             "header_text": "Looking for Drive",
-            "subheader_text": "Please attach a drive to your myNode"
+            "subheader_text": "Please attach a drive to your myNode",
+            "is_darkmode_enabled": is_darkmode_enabled()
         }
         return render_template('state.html', **templateData)
     elif status == STATE_DRIVE_MOUNTED:
         templateData = {
             "title": "myNode Drive Mounted",
             "header_text": "Drive Mounted",
-            "subheader_text": "myNode starting soon..."
+            "subheader_text": "myNode starting soon...",
+            "is_darkmode_enabled": is_darkmode_enabled()
         }
         return render_template('state.html', **templateData)
     elif status == STATE_QUICKSYNC_COPY:
@@ -147,14 +150,16 @@ def index():
         templateData = {
             "title": "myNode QuickSync",
             "header_text": "QuickSync",
-            "subheader_text": subheader_msg
+            "subheader_text": subheader_msg,
+            "is_darkmode_enabled": is_darkmode_enabled()
         }
         return render_template('state.html', **templateData)
     elif status == STATE_QUICKSYNC_RESET:
         templateData = {
             "title": "myNode QuickSync",
             "header_text": "QuickSync",
-            "subheader_text": "Restarting QuickSync..."
+            "subheader_text": "Restarting QuickSync...",
+            "is_darkmode_enabled": is_darkmode_enabled()
         }
         return render_template('state.html', **templateData)
     elif status == STATE_QUICKSYNC_DOWNLOAD:
@@ -178,7 +183,8 @@ def index():
         templateData = {
             "title": "myNode QuickSync",
             "header_text": "QuickSync",
-            "subheader_text": subheader
+            "subheader_text": subheader,
+            "is_darkmode_enabled": is_darkmode_enabled()
         }
         return render_template('state.html', **templateData)
     elif status == STATE_STABLE:
@@ -210,7 +216,8 @@ def index():
             templateData = {
                 "title": "myNode Status",
                 "header_text": "Starting...",
-                "subheader_text": Markup("Launching myNode services...{}".format(message))
+                "subheader_text": Markup("Launching myNode services...{}".format(message)),
+                "is_darkmode_enabled": is_darkmode_enabled()
             }
             return render_template('state.html', **templateData)
 
@@ -225,7 +232,8 @@ def index():
             templateData = {
                 "title": "myNode Sync",
                 "header_text": "Bitcoin Blockchain",
-                "subheader_text": subheader
+                "subheader_text": subheader,
+                "is_darkmode_enabled": is_darkmode_enabled()
             }
             return render_template('state.html', **templateData)
 
@@ -375,14 +383,16 @@ def index():
             "ram_usage": get_ram_usage(),
             "swap_usage": get_swap_usage(),
             "device_temp": get_device_temp(),
-            "upgrade_available": upgrade_available
+            "upgrade_available": upgrade_available,
+            "is_darkmode_enabled": is_darkmode_enabled()
         }
         return render_template('main.html', **templateData)
     else:
         templateData = {
             "title": "myNode Error",
             "header_text": "Error",
-            "subheader_text": "Unknown State ("+status+"). Please restart your myNode."
+            "subheader_text": "Unknown State ("+status+"). Please restart your myNode.",
+            "is_darkmode_enabled": is_darkmode_enabled()
         }
         return render_template('state.html', **templateData)
 
@@ -392,7 +402,8 @@ def page_product_key():
     if request.method == 'GET':
         templateData = {
             "title": "myNode Product Key",
-            "header_text": "Product Key"
+            "header_text": "Product Key",
+            "is_darkmode_enabled": is_darkmode_enabled()
         }
         return render_template('product_key.html', **templateData)
     elif request.method == 'POST':
@@ -455,11 +466,13 @@ def page_toggle_vpn():
 
 @app.route("/about")
 def page_about():
-    return render_template('about.html')
+    templateData = {"is_darkmode_enabled": is_darkmode_enabled()}
+    return render_template('about.html', **templateData)
 
 @app.route("/help")
 def page_help():
-    return render_template('help.html')
+    templateData = {"is_darkmode_enabled": is_darkmode_enabled()}
+    return render_template('help.html', **templateData)
 
 # Disable browser caching
 @app.after_request
