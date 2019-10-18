@@ -8,7 +8,7 @@ from vpn import mynode_vpn
 if CONFIG["electrs_enabled"]:
     from electrum_server import *
 from lnd import mynode_lnd, lnd_wallet_exists, is_lnd_logged_in, lnd_get, get_lnd_status
-from settings import mynode_settings, read_ui_settings
+from settings import *
 from pprint import pprint
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from background_thread import BackgroundThread
@@ -18,6 +18,7 @@ from lightning_info import *
 from messages import get_message
 from thread_functions import *
 import pam
+import json
 import random
 import logging
 import logging.handlers

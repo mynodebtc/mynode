@@ -4,7 +4,6 @@ from pprint import pprint, pformat
 from prometheus_client.parser import text_string_to_metric_families
 from bitcoin_info import *
 from device_info import get_local_ip, skipped_product_key
-from settings import read_ui_settings
 import requests
 import json
 import time
@@ -126,6 +125,6 @@ def electrum_server_page():
         "electrs_onion_hostname": electrs_onion_hostname,
         "electrs_onion_password": electrs_onion_password,
         "electrs_onion_command": electrs_onion_command,
-        "ui_settings": read_ui_settings()
+        "ui_settings": {'darkmode': False}
     }
     return render_template('electrum_server.html', **templateData)

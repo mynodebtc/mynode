@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, session, abort, Markup, request, redirect
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from pprint import pprint, pformat
+from settings import read_ui_settings
 import json
 import time
 import subprocess
@@ -29,6 +30,7 @@ def runcmd_page():
 def bitcoincli():
     # Load page
     templateData = {
-        "title": "myNode Bitcoin CLI"
+        "title": "myNode Bitcoin CLI",
+        "ui_settings": read_ui_settings()
     }
     return render_template('bitcoin_cli.html', **templateData)

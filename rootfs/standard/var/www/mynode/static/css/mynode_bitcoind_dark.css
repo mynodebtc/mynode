@@ -40,16 +40,16 @@
 }
 .bitcoind_table_header {
     font-size: 16px;
-    background-color: #FFFFFF;
+    border-bottom: 2px solid gray;
     font-weight: bold;
     font-family: Arial, Helvetica, sans-serif;
 }
 
 table.bitcoind_table tbody tr:nth-child(odd) td{
-    background-color: #ffdecb;
+    background-color: #222;
 }
 table.bitcoind_table tbody tr:nth-child(even) td{
-    background-color: #fff5ef;
+    /*background-color: #fff5ef;*/
 }
 
 table.bitcoind_table td {

@@ -412,3 +412,31 @@ a:active {
     -moz-border-radius: 50%;
     -webkit-border-radius: 50%;
 }
+
+.cli_command {
+    width: 800px;
+    margin: auto;
+    display: table;
+    padding: 10px;
+    vertical-align: middle;
+}
+.cli_command_input {
+    width: 685px;
+    font-size: 20px;
+    vertical-align: middle;
+}
+.cli_enter_button {
+    width: 100px;
+    font-size: 16px;
+    vertical-align: middle;
+}
+
+.cli_contents {
+    margin: auto;
+    width: 800px;
+    max-height: 500px;
+    height: 500px;
+    overflow-y: scroll;
+    border: 2px solid #222222;
+    border-radius: 5px;
+}
