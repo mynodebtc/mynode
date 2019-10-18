@@ -80,7 +80,7 @@ a:active {
 }
 .main_header_sub_text {
     width: 600px;
-    color: #444444;
+    color: #eee;
     margin: auto;
     text-align: center;
     font-size: 14px;
@@ -380,7 +380,7 @@ table {
 }
 
 .main_page_warning_block {
-    color: #333333;
+    color: #eee;
     border: 3px solid #f9c132;
     background-color: #3a4750;
     width: 600px;
@@ -395,7 +395,7 @@ table {
 }
 
 .main_page_error_block {
-    color: #333333;
+    color: #eee;
     border: 3px solid red;
     background-color: rgb(255, 238, 238);
     width: 600px;
