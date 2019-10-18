@@ -1,5 +1,5 @@
-{% if is_darkmode_enabled %}
-<div class="logo_header"><a href="/"><img class="logo_image" src="{{ url_for('static', filename="images/logo_dark.png")}}"/></a></div>
+{% if ui_settings['darkmode'] %}
+<div class="logo_header"><a href="/"><img class="logo_image" src="{{ url_for('static', filename='images/logo_dark.png')}}"/></a></div>
 {% else %}
-<div class="logo_header"><a href="/"><img class="logo_image" src="{{ url_for('static', filename="images/logo.png")}}"/></a></div>
+<div class="logo_header"><a href="/"><img class="logo_image" src="{{ url_for('static', filename='images/logo.png')}}"/></a></div>
 {% endif %}

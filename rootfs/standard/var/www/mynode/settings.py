@@ -120,6 +120,36 @@ def upgrade_device():
     # Reboot
     reboot_device()
 
+def read_ui_settings():
+    ui_settings_file = '/mnt/hdd/mynode/settings/ui.json'
+    if not os.path.isfile(ui_settings_file):
+        # initialise UI settings
+        ui_settings = {'darkmode': False}
+        with open(ui_settings_file, 'w') as fp:
+            json.dump(ui_settings, fp)
+    else:
+        with open(ui_settings_file, 'r') as fp:
+            ui_settings = json.load(fp)
+    return ui_settings
+
+def write_ui_settings(ui_settings):
+    ui_settings_file = '/mnt/hdd/mynode/settings/ui.json'
+    with open(ui_settings_file, 'w') as fp:
+        json.dump(ui_settings, fp)
+
+def is_darkmode_enabled():
+    ui_settings = read_ui_settings()
+    return ui_settings['darkmode']
+
+def disable_darkmode():
+    ui_settings = read_ui_settings()
+    ui_settings['darkmode'] = False
+    write_ui_settings(ui_settings)
+
+def enable_darkmode():
+    ui_settings = read_ui_settings()
+    ui_settings['darkmode'] = True
+    write_ui_settings(ui_settings)
 
 # Flask Pages
 @mynode_settings.route("/settings")
@@ -161,7 +191,7 @@ def page_settings():
         "uptime": uptime,
         "public_ip": public_ip,
         "local_ip": local_ip,
-        "is_darkmode_enabled": is_darkmode_enabled()
+        "ui_settings": read_ui_settings()
     }
     return render_template('settings.html', **templateData)
 
@@ -176,7 +206,7 @@ def upgrade_page():
         "title": "myNode Upgrade",
         "header_text": "Upgrading",
         "subheader_text": "This may take a while...",
-        "is_darkmode_enabled": is_darkmode_enabled()
+        "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
 
@@ -195,7 +225,7 @@ def reset_blockchain_page():
         "title": "myNode",
         "header_text": "Reset Blockchain",
         "subheader_text": "This will take several minutes...",
-        "is_darkmode_enabled": is_darkmode_enabled()
+        "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
 
@@ -209,7 +239,7 @@ def restart_quicksync_page():
         "title": "myNode",
         "header_text": "Restart Quicksync",
         "subheader_text": "This will take several minutes...",
-        "is_darkmode_enabled": is_darkmode_enabled()
+        "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
 
@@ -224,7 +254,7 @@ def reboot_device_page():
         "title": "myNode Reboot",
         "header_text": "Restarting",
         "subheader_text": "This will take several minutes...",
-        "is_darkmode_enabled": is_darkmode_enabled()
+        "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
 
@@ -239,7 +269,7 @@ def shutdown_device_page():
         "title": "myNode Shutdown",
         "header_text": "Shutting down...",
         "subheader_text": Markup("Your myNode is shutting down.<br/><br/>You will need to power cycle the device to turn it back on."),
-        "is_darkmode_enabled": is_darkmode_enabled()
+        "ui_settings": read_ui_settings()
     }
     return render_template('shutdown.html', **templateData)
 
@@ -274,7 +304,7 @@ def factory_reset_page():
             "title": "myNode Factory Reset",
             "header_text": "Factory Reset",
             "subheader_text": "This will take several minutes...",
-            "is_darkmode_enabled": is_darkmode_enabled()
+            "ui_settings": read_ui_settings()
         }
         return render_template('reboot.html', **templateData)
 
@@ -340,7 +370,7 @@ def page_reset_tor():
         "title": "myNode Reboot",
         "header_text": "Restarting",
         "subheader_text": "This will take several minutes...",
-        "is_darkmode_enabled": is_darkmode_enabled()
+        "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
 
@@ -369,7 +399,7 @@ def repair_drive_page():
         "title": "myNode Reboot",
         "header_text": "Restarting",
         "subheader_text": "This will take several minutes...",
-        "is_darkmode_enabled": is_darkmode_enabled()
+        "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
 
@@ -390,7 +420,7 @@ def toggle_uploader_page():
         "title": "myNode Reboot",
         "header_text": "Restarting",
         "subheader_text": "This will take several minutes...",
-        "is_darkmode_enabled": is_darkmode_enabled()
+        "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
 
@@ -409,7 +439,7 @@ def toggle_quicksync_page():
         "title": "myNode Reboot",
         "header_text": "Restarting",
         "subheader_text": "This will take several minutes...",
-        "is_darkmode_enabled": is_darkmode_enabled()
+        "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
 

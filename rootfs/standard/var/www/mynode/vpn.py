@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, session, abort, Markup, request, redirect, send_from_directory, url_for, flash
 from thread_functions import get_public_ip
-from device_info import is_community_edition, is_darkmode_enabled
+from device_info import is_community_edition
+from settings import read_ui_settings
 import subprocess
 import pam
 import os
@@ -39,7 +40,7 @@ def page_vpn_info():
         "port_forwarded": port_forwarded,
         "public_ip": ip,
         "port": "51194",
-        "is_darkmode_enabled": is_darkmode_enabled()
+        "ui_settings": read_ui_settings()
     }
     return render_template('vpn_info.html', **templateData)
 

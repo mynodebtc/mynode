@@ -281,13 +281,12 @@
             </table>
             <div class="divider"></div>
 
-            <div class="settings_block_subheader">Toggle Dark Mode</div>
-            {% if is_darkmode_enabled %}
-            <a href="/settings/toggle-darkmode" class="ui-button ui-widget ui-corner-all settings_button">Disable Dark Mode</a>
+            <div class="settings_block_subheader">User Interface</div>
+            {% if ui_settings['darkmode'] %}
+                <a href="/settings/toggle-darkmode" class="ui-button ui-widget ui-corner-all settings_button">Disable Dark Mode</a>
             {% else %}
-            <a href="/settings/toggle-darkmode" class="ui-button ui-widget ui-corner-all settings_button">Enable Dark Mode</a>
+                <a href="/settings/toggle-darkmode" class="ui-button ui-widget ui-corner-all settings_button">Enable Dark Mode</a>
             {% endif %}
-
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Change Log</div>

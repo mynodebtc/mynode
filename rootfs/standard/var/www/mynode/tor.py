@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, session, abort, Markup, request, redirect
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from pprint import pprint, pformat
-from device_info import is_community_edition, is_darkmode_enabled
+from device_info import is_community_edition
+from settings import read_ui_settings
 import os
 import json
 import time
@@ -47,6 +48,6 @@ def page_tor():
         "mynode_onion_hostname": mynode_onion_hostname,
         "mynode_onion_password": mynode_onion_password,
         "services": services,
-        "is_darkmode_enabled": is_darkmode_enabled()
+        "ui_settings": read_ui_settings()
     }
     return render_template('tor.html', **templateData)

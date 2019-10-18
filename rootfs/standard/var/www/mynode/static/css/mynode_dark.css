@@ -1,6 +1,7 @@
-/* mynode orange: #f9c132 */
+/* mynode color: #f9c132 */
 /* dark grey for background: #303841 */
 /* lighter gray: #3a4750 */
+/* light gray: #eee */
 
 body {
     background: #303841;
@@ -18,7 +19,7 @@ body {
 }
 
 .footer {
-    color: #f9c132;
+    color: #eee;
     margin: auto;
     padding-top: 25px;
     text-align: center;
@@ -27,20 +28,20 @@ body {
 }
 
 a:link {
-    color: #f9c132;
-    text-decoration: underline dashed #f9c132;
+    color: #eee;
+    text-decoration: underline dashed #eee;
 }  
 a:visited {
-    color: #f9c132;
-    text-decoration: underline dashed #f9c132;
+    color: #eee;
+    text-decoration: underline dashed #eee;
 }
 a:hover {
-    color: #f9c132;
-    text-decoration: underline solid #f9c132;
+    color: #eee;
+    text-decoration: underline solid #eee;
 }
 a:active {
-    color: #f9c132;
-    text-decoration: underline dashed #f9c132;
+    color: #eee;
+    text-decoration: underline dashed #eee;
 }
 
 .mynode_back_div {
@@ -56,7 +57,7 @@ a:active {
 }
 
 .state_header {
-    color: #f9c132;
+    color: #eee;
     text-align: center;
     font-size: 56px;
     font-family: Arial, Helvetica, sans-serif;
@@ -64,14 +65,14 @@ a:active {
 }
 
 .state_subheader {
-    color: #f9c132;
+    color: #eee;
     text-align: center;
     font-size: 28px;
     font-family: Arial, Helvetica, sans-serif;
 }
 
 .main_header {
-    color: #f9c132;
+    color: #eee;
     text-align: center;
     font-size: 32px;
     font-family: Arial, Helvetica, sans-serif;
@@ -157,7 +158,7 @@ a:active {
 .yellow { background-color: yellow; }
 .red { background-color: red; }
 .gray { background-color: gray; }
-.btc#f9c132 { background-color: #f9c132; }
+.btc#eee { background-color: #eee; }
 
 .green_text {color: green;}
 .yellow_text {color: yellow;}
@@ -188,16 +189,16 @@ a:active {
     text-align: center;
     font-family: Arial, Helvetica, sans-serif;
     margin-bottom: 6px;
-    color: #f9c132;
+    color: #eee;
 }
 .app_status {
-    color: #f9c132;
+    color: #eee;
     font-size: 12px;
     font-family: Arial, Helvetica, sans-serif;
     line-height: 130%;
 }
 .app_contents {
-    color: #f9c132;
+    color: #eee;
     font-size: 12px;
     font-family: Arial, Helvetica, sans-serif;
     position: absolute;
@@ -222,12 +223,12 @@ a:active {
     font-size: 18px;
     font-family: Arial, Helvetica, sans-serif;
     color: #FFFFFF;
-    background-color: #f9c132;
+    background-color: #eee;
     padding: 5px 10px 5px 10px;
     margin-top: -2px;
 }
 .info_tile_contents {
-    color: #f9c132;
+    color: #eee;
     margin-top: 5px;
     font-size: 16px;
     font-family: Arial, Helvetica, sans-serif;
@@ -260,11 +261,11 @@ a:active {
 .drive_usage {
     margin-bottom: 25px;
     font-size: 24px;
-    color: #f9c132;
+    color: #eee;
 }
 
 .settings_block_header {
-    color: #f9c132;
+    color: #eee;
     border: 3px solid #f9c132;
     border-radius: 25px;
     text-align: center;
@@ -275,7 +276,7 @@ a:active {
     margin-bottom: 20px;
 }
 .settings_block_subheader {
-    color: #f9c132;
+    color: #eee;
     text-align: left;
     font-size: 18px;
     font-family: Arial, Helvetica, sans-serif;
@@ -283,7 +284,7 @@ a:active {
     margin-bottom: 10px;
 }
 .settings_block {
-    color: #f9c132;
+    color: #eee;
     width: 600px;
     margin: auto;
     text-align: justify;
@@ -293,7 +294,7 @@ a:active {
 }
 
 table {
-    color: #f9c132;
+    color: #eee;
 }
 
 .divider {
@@ -315,14 +316,14 @@ table {
 }
 
 .ui-button.ui-widget.ui-corner-all{
-    color: white;
-    background-color: #f9c132;
-    border-color: #f9c132;
+    color: #303841;
+    background-color: #eee;
+    border-color: #eee;
 }
 
 .settings_input {
     color: white;
-    background: #f9c132;
+    background: #eee;
     font-size: 14px;
     font-family: Arial, Helvetica, sans-serif;
 }
@@ -416,7 +417,7 @@ table {
 }
 
 .upgrade_ad_main_page {
-    color: #f9c132;
+    color: #eee;
     border: 3px solid #f9c132;
     background-color: #3a4750;
     width: 600px;
@@ -479,11 +480,11 @@ table {
 }
 
 input:checked + .slider {
-  background-color: #f9c132;
+  background-color: #eee;
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #f9c132;
+  box-shadow: 0 0 1px #eee;
 }
 
 input:checked + .slider:before {

@@ -5,7 +5,7 @@ from bitcoin_info import *
 #from bitcoin.wallet import *
 from subprocess import check_output, check_call
 from electrum_functions import *
-from device_info import is_darkmode_enabled
+from settings import read_ui_settings
 import socket
 import hashlib
 import json
@@ -156,7 +156,7 @@ def bitcoind_status_page():
         templateData = {
             "title": "myNode Bitcoin Error",
             "message": Markup("Error communicating with bitcoind. Node may be busy syncing.<br/><br/>{}".format(str(e))),
-            "is_darkmode_enabled": is_darkmode_enabled()
+            "ui_settings": read_ui_settings()
         }
         return render_template('bitcoind_status_error.html', **templateData)
 
@@ -172,7 +172,7 @@ def bitcoind_status_page():
         "mempool_tx": mempool["size"],
         "mempool_size": "{:.3} MB".format(float(mempool["bytes"]) / 1000 / 1000),
         "version": version,
-        "is_darkmode_enabled": is_darkmode_enabled()
+        "ui_settings": read_ui_settings()
     }
     return render_template('bitcoind_status.html', **templateData)
 
@@ -199,7 +199,7 @@ def bitcoind_explorer_page():
             "title": "myNode Bitcoin Error",
             "message": Markup("Error communicating with bitcoind. Node may be busy syncing.<br/><br/>{}".format(str(e))),
             "back_url": "/",
-            "is_darkmode_enabled": is_darkmode_enabled()
+            "ui_settings": read_ui_settings()
         }
         return render_template('bitcoind_error.html', **templateData)
 
@@ -213,7 +213,7 @@ def bitcoind_explorer_page():
         "disk_size": (int(info["size_on_disk"]) / 1000 / 1000 / 1000),
         "mempool_tx": mempool["size"],
         "mempool_size": "{:.3} MB".format(float(mempool["bytes"]) / 1000 / 1000),
-        "is_darkmode_enabled": is_darkmode_enabled()
+        "ui_settings": read_ui_settings()
     }
     return render_template('bitcoind_explorer.html', **templateData)
 
@@ -234,21 +234,21 @@ def search_page():
         templateData = {
             "title": "myNode BTC Bitcoin Error",
             "message": Markup("Not Found<br/>{}".format(request.form['search'])),
-            "is_darkmode_enabled": is_darkmode_enabled()
+            "ui_settings": read_ui_settings()
         }
         return render_template('bitcoind_error.html', **templateData)
     elif results["type"] == "error":
         templateData = {
             "title": "myNode Bitcoin Error",
             "message": Markup("Error<br/>{}".format(results["error_message"])),
-            "is_darkmode_enabled": is_darkmode_enabled()
+            "ui_settings": read_ui_settings()
         }
         return render_template('bitcoind_error.html', **templateData)
 
     templateData = {
         "title": "myNode Bitcoin Error",
         "message": Markup("Error - unknown return: {}".format(results["type"])),
-        "is_darkmode_enabled": is_darkmode_enabled()
+        "ui_settings": read_ui_settings()
     }
     return render_template('bitcoind_error.html', **templateData)
 
@@ -309,14 +309,14 @@ def tx_page(txid):
             "total": total,
             "inputs": inputs,
             "outputs": outputs,
-            "is_darkmode_enabled": is_darkmode_enabled()
+            "ui_settings": read_ui_settings()
         }
         return render_template('bitcoind_tx.html', **templateData)
     except Exception as e:
         templateData = {
             "title": "myNode Bitcoin Error",
             "message": Markup("Error retreiving or parsing transaction.<br/><br/>{}".format(str(e))),
-            "is_darkmode_enabled": is_darkmode_enabled()
+            "ui_settings": read_ui_settings()
         }
         return render_template('bitcoind_error.html', **templateData)
 
@@ -348,7 +348,7 @@ def block_page(block_hash):
             "size": int(block["size"] / 1000), 
             "date": tstring,
             "txs": txs,
-            "is_darkmode_enabled": is_darkmode_enabled()
+            "ui_settings": read_ui_settings()
         }
         return render_template('bitcoind_block.html', **templateData)
     except Exception as e:
@@ -356,7 +356,7 @@ def block_page(block_hash):
             "title": "myNode Bitcoin Error",
             "message": Markup("Error communicating with bitcoind. Node may be busy syncing.<br/><br/>{}".format(str(e))),
             "back_url": "/bitcoind",
-            "is_darkmode_enabled": is_darkmode_enabled()
+            "ui_settings": read_ui_settings()
         }
         return render_template('bitcoind_error.html', **templateData)
 
@@ -395,7 +395,7 @@ def address_page(addr):
             "confirmed_balance": confirmed_bal,
             "unconfirmed_balance": unconfirmed_bal,
             "txs": txs,
-            "is_darkmode_enabled": is_darkmode_enabled()
+            "ui_settings": read_ui_settings()
         }
         return render_template('bitcoind_address.html', **templateData)
     except Exception as e:
@@ -403,6 +403,6 @@ def address_page(addr):
             "title": "myNode Bitcoin Error",
             "message": Markup("Error communicating with bitcoind. Node may be busy syncing.<br/><br/>{}".format(str(e))),
             "back_url": "/bitcoind",
-            "is_darkmode_enabled": is_darkmode_enabled()
+            "ui_settings": read_ui_settings()
         }
         return render_template('bitcoind_error.html', **templateData)

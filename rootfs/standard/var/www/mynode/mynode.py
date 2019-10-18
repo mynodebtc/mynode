@@ -8,7 +8,7 @@ from vpn import mynode_vpn
 if CONFIG["electrs_enabled"]:
     from electrum_server import *
 from lnd import mynode_lnd, lnd_wallet_exists, is_lnd_logged_in, lnd_get, get_lnd_status
-from settings import mynode_settings
+from settings import mynode_settings, read_ui_settings
 from pprint import pprint
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from background_thread import BackgroundThread
@@ -106,7 +106,7 @@ def index():
             "title": "myNode Uploader",
             "header_text": "Uploader Device",
             "quicksync_status": status,
-            "is_darkmode_enabled": is_darkmode_enabled()
+            "ui_settings": read_ui_settings()
         }
         return render_template('uploader.html', **templateData)
 
@@ -119,7 +119,7 @@ def index():
             "title": "myNode Looking for Drive",
             "header_text": "Looking for Drive",
             "subheader_text": "Please attach a drive to your myNode",
-            "is_darkmode_enabled": is_darkmode_enabled()
+            "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
     elif status == STATE_DRIVE_MOUNTED:
@@ -127,7 +127,7 @@ def index():
             "title": "myNode Drive Mounted",
             "header_text": "Drive Mounted",
             "subheader_text": "myNode starting soon...",
-            "is_darkmode_enabled": is_darkmode_enabled()
+            "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
     elif status == STATE_QUICKSYNC_COPY:
@@ -151,7 +151,7 @@ def index():
             "title": "myNode QuickSync",
             "header_text": "QuickSync",
             "subheader_text": subheader_msg,
-            "is_darkmode_enabled": is_darkmode_enabled()
+            "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
     elif status == STATE_QUICKSYNC_RESET:
@@ -159,7 +159,7 @@ def index():
             "title": "myNode QuickSync",
             "header_text": "QuickSync",
             "subheader_text": "Restarting QuickSync...",
-            "is_darkmode_enabled": is_darkmode_enabled()
+            "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
     elif status == STATE_QUICKSYNC_DOWNLOAD:
@@ -184,7 +184,7 @@ def index():
             "title": "myNode QuickSync",
             "header_text": "QuickSync",
             "subheader_text": subheader,
-            "is_darkmode_enabled": is_darkmode_enabled()
+            "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
     elif status == STATE_STABLE:
@@ -217,7 +217,7 @@ def index():
                 "title": "myNode Status",
                 "header_text": "Starting...",
                 "subheader_text": Markup("Launching myNode services...{}".format(message)),
-                "is_darkmode_enabled": is_darkmode_enabled()
+                "ui_settings": read_ui_settings()
             }
             return render_template('state.html', **templateData)
 
@@ -233,7 +233,7 @@ def index():
                 "title": "myNode Sync",
                 "header_text": "Bitcoin Blockchain",
                 "subheader_text": subheader,
-                "is_darkmode_enabled": is_darkmode_enabled()
+                "ui_settings": read_ui_settings()
             }
             return render_template('state.html', **templateData)
 
@@ -384,7 +384,7 @@ def index():
             "swap_usage": get_swap_usage(),
             "device_temp": get_device_temp(),
             "upgrade_available": upgrade_available,
-            "is_darkmode_enabled": is_darkmode_enabled()
+            "ui_settings": read_ui_settings()
         }
         return render_template('main.html', **templateData)
     else:
@@ -392,7 +392,7 @@ def index():
             "title": "myNode Error",
             "header_text": "Error",
             "subheader_text": "Unknown State ("+status+"). Please restart your myNode.",
-            "is_darkmode_enabled": is_darkmode_enabled()
+            "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
 
@@ -403,7 +403,7 @@ def page_product_key():
         templateData = {
             "title": "myNode Product Key",
             "header_text": "Product Key",
-            "is_darkmode_enabled": is_darkmode_enabled()
+            "ui_settings": read_ui_settings()
         }
         return render_template('product_key.html', **templateData)
     elif request.method == 'POST':
@@ -466,12 +466,12 @@ def page_toggle_vpn():
 
 @app.route("/about")
 def page_about():
-    templateData = {"is_darkmode_enabled": is_darkmode_enabled()}
+    templateData = {"ui_settings": read_ui_settings()}
     return render_template('about.html', **templateData)
 
 @app.route("/help")
 def page_help():
-    templateData = {"is_darkmode_enabled": is_darkmode_enabled()}
+    templateData = {"ui_settings": read_ui_settings()}
     return render_template('help.html', **templateData)
 
 # Disable browser caching
