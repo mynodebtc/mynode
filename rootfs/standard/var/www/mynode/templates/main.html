@@ -114,6 +114,15 @@
                     lndconnect_dialog.dialog( "close" );
                 });
 
+                $("#https").on("click", function() {
+                    location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
+                });
+
+                // Show HTTPS button
+                if (location.protocol != 'https:') {
+                    $("#https").show();
+                }
+
             });
         </script>
      </head>
@@ -121,11 +130,13 @@
     <body>
         <div class="logo_header"><a href="/"><img class="logo_image" src="{{ url_for('static', filename="images/logo.png")}}"/></a></div>
         
-        {% if upgrade_available %}
-        <div class="mynode_upgrade_div">
+        <div class="mynode_top_right_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" id="https" style="display: none;" href="#">&nbsp;<span class="ui-icon ui-icon-locked"></span>&nbsp;</a>
+            {% if upgrade_available %}
             <a class="ui-button ui-widget ui-corner-all mynode_back" href="/settings"><span class="ui-icon ui-icon-notice"></span>upgrade available&nbsp;</a>
+            {% endif %}
         </div> 
-        {% endif %}
+        
 
         {% include 'includes/message_display.html' %}
 

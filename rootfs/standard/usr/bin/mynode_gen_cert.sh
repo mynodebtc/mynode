@@ -1,13 +1,22 @@
 #!/bin/bash
 
 # Main variables
-OUTPUT_DIR="/home/bitcoin/.mynode/electrs"
-HDD_DIR="/mnt/hdd/mynode/settings/electrs"
-domain=myNode.local
-commonname=myNode.local
+OUTPUT_DIR_BASE="/home/bitcoin/.mynode"
+HDD_DIR_BASE="/mnt/hdd/mynode/settings"
+mkdir -p $OUTPUT_DIR_BASE
+mkdir -p $HDD_DIR_BASE
+
+OUTPUT_DIR="${OUTPUT_DIR_BASE}/electrs"
+HDD_DIR="${HDD_DIR_BASE}/electrs"
+if [ ! -z "$1" ]; then
+    OUTPUT_DIR="${OUTPUT_DIR_BASE}/$1"
+    HDD_DIR="${HDD_DIR_BASE}/$1"
+fi
 
 mkdir -p $OUTPUT_DIR
 mkdir -p $HDD_DIR
+domain=myNode.local
+commonname=myNode.local
 
 # Check for files on HDD and move to SD
 if [ ! -f $OUTPUT_DIR/$domain.pem ] && [ -f $HDD_DIR/$domain.pem ]; then

@@ -400,6 +400,7 @@ systemctl enable mongodb
 #systemctl enable lndhub # DISABLED BY DEFAULT
 #systemctl enable btc_rpc_explorer # DISABLED BY DEFAULT
 systemctl enable tls_proxy
+systemctl enable tls_proxy_https
 systemctl enable rtl
 systemctl enable lnd_admin
 systemctl enable tor
