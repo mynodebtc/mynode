@@ -121,20 +121,29 @@ def upgrade_device():
     reboot_device()
 
 def read_ui_settings():
-    ui_settings_file = '/mnt/hdd/mynode/settings/ui.json'
-    if not os.path.isfile(ui_settings_file):
-        # initialise UI settings
-        ui_settings = {'darkmode': False}
-        with open(ui_settings_file, 'w') as fp:
-            json.dump(ui_settings, fp)
-    else:
-        with open(ui_settings_file, 'r') as fp:
+    ui_hdd_file = '/mnt/hdd/mynode/settings/ui.json'
+    ui_mynode_file = '/home/bitcoin/.mynode/ui.json'
+
+    # read ui.json from HDD
+    if os.path.isfile(ui_hdd_file):
+        with open(ui_hdd_file, 'r') as fp:
             ui_settings = json.load(fp)
+    # read ui.json from mynode
+    elif os.path.isfile(ui_mynode_file):
+        with open(ui_mynode_file, 'r') as fp:
+            ui_settings = json.load(fp)
+    # if ui.json is not found anywhere, use default settings
+    else:
+        ui_settings = {'darkmode': False}
+
     return ui_settings
 
 def write_ui_settings(ui_settings):
-    ui_settings_file = '/mnt/hdd/mynode/settings/ui.json'
-    with open(ui_settings_file, 'w') as fp:
+    ui_hdd_file = '/mnt/hdd/mynode/settings/ui.json'
+    ui_mynode_file = '/home/bitcoin/.mynode/ui.json'
+    with open(ui_hdd_file, 'w') as fp:
+        json.dump(ui_settings, fp)
+    with open(ui_mynode_file, 'w') as fp:
         json.dump(ui_settings, fp)
 
 def is_darkmode_enabled():
