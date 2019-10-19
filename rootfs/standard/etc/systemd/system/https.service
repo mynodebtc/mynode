@@ -1,0 +1,22 @@
+
+# myNode www service
+# /etc/systemd/system/www.service
+
+[Unit]
+Description=Proxy for HTTPS
+Wants=www.service
+After=www.service
+
+[Service]
+Type=simple
+KillMode=process
+TimeoutSec=30
+Restart=always
+RestartSec=10
+ExecStartPre=/usr/bin/mynode_gen_cert.sh https
+ExecStart=/usr/sbin/hitch -u bitcoin -g bitcoin --tls --backend=[127.0.0.1]:80 --frontend=[0.0.0.0]:443 /home/bitcoin/.mynode/https/myNode.local.pem
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
