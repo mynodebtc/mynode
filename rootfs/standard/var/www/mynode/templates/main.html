@@ -18,22 +18,22 @@
                 vpn_enabled = {% if vpn_enabled %}1{% else %}0{% endif %}
 
                 $("#lndhub").on("click", function() {
-                    url = location.protocol+'//'+location.hostname+':3000'
+                    url = 'http://'+location.hostname+':3000'
                     window.open(url,'_blank');
                 })
 
                 $("#rtl").on("click", function() {
-                    url = location.protocol+'//'+location.hostname+':3010'
+                    url = 'http://'+location.hostname+':3010'
                     window.open(url,'_blank');
                 })
 
                 $("#lnd_admin").on("click", function() {
-                    url = location.protocol+'//'+location.hostname+':3004'
+                    url = 'http://'+location.hostname+':3004'
                     window.open(url,'_blank');
                 })
 
                 $("#btcrpcexplorer").on("click", function() {
-                    url = location.protocol+'//'+location.hostname+':3002'
+                    url = 'http://'+location.hostname+':3002'
                     window.open(url,'_blank');
                 })
 
