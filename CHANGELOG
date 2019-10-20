@@ -1,3 +1,6 @@
+=== v0.1.56 ===
+- Automatically enable HTTPS service
+
 === v0.1.55 ===
 - Add HTTPS option for connecting to web GUI
 - Add Bitcoin REST API Access via Tor
