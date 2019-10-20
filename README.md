@@ -80,6 +80,8 @@ Once you are running myNode, you can easily modify and update the software yours
 5. On your device, run 'sudo mynode-local-upgrade [dev pc ip address]'
     * This will download your locally generated artifact and install it on your device
     * Your device will automatically reboot to ensure updates take effect
+    * Just sync the files and avoid reboot, run 'sudo mynode-local-upgrade [dev pc ip address] files'
+    * Just sync the files and restart web server, run 'sudo mynode-local-upgrade [dev pc ip address] www'
 6. Test your changes!
 7. Submit Pull Request to share your updates!
 
