@@ -135,3 +135,6 @@ def get_device_changelog():
     except:
         changelog = "ERROR"
     return changelog
+
+def has_changed_password():
+    return os.path.isfile("/home/bitcoin/.mynode/.hashedpw")

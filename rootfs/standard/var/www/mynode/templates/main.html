@@ -140,6 +140,12 @@
 
         {% include 'includes/message_display.html' %}
 
+        {% if not has_changed_password %}
+        <div class="upgrade_ad_main_page">
+            <p style="text-align: center;"><b>Warning!</b><br/>You appear to be using the default password! You should change it to something else on the <a href="/settings">settings</a> page.</p>
+        </div>
+        {% endif %}
+
         <div class="app_tile_row">
             <div>
                 <div class="main_header">Core Services</div>
