@@ -11,22 +11,22 @@
                 vpn_enabled = {% if vpn_enabled %}1{% else %}0{% endif %}
 
                 $("#lndhub").on("click", function() {
-                    url = location.protocol+'//'+location.hostname+':3000'
+                    url = 'http://'+location.hostname+':3000'
                     window.open(url,'_blank');
                 })
 
                 $("#rtl").on("click", function() {
-                    url = location.protocol+'//'+location.hostname+':3010'
+                    url = 'http://'+location.hostname+':3010'
                     window.open(url,'_blank');
                 })
 
                 $("#lnd_admin").on("click", function() {
-                    url = location.protocol+'//'+location.hostname+':3004'
+                    url = 'http://'+location.hostname+':3004'
                     window.open(url,'_blank');
                 })
 
                 $("#btcrpcexplorer").on("click", function() {
-                    url = location.protocol+'//'+location.hostname+':3002'
+                    url = 'http://'+location.hostname+':3002'
                     window.open(url,'_blank');
                 })
 
@@ -107,6 +107,15 @@
                     lndconnect_dialog.dialog( "close" );
                 });
 
+                $("#https").on("click", function() {
+                    location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
+                });
+
+                // Show HTTPS button
+                if (location.protocol != 'https:') {
+                    $("#https").show();
+                }
+
             });
         </script>
      </head>
@@ -114,13 +123,21 @@
     <body>
         {% include 'includes/logo_header.html' %}
         
-        {% if upgrade_available %}
-        <div class="mynode_upgrade_div">
+        <div class="mynode_top_right_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" id="https" style="display: none;" href="#">&nbsp;<span class="ui-icon ui-icon-locked"></span>&nbsp;</a>
+            {% if upgrade_available %}
             <a class="ui-button ui-widget ui-corner-all mynode_back" href="/settings"><span class="ui-icon ui-icon-notice"></span>upgrade available&nbsp;</a>
+            {% endif %}
         </div> 
-        {% endif %}
+        
 
         {% include 'includes/message_display.html' %}
+
+        {% if not has_changed_password %}
+        <div class="upgrade_ad_main_page">
+            <p style="text-align: center;"><b>Warning!</b><br/>You appear to be using the default password! You should change it to something else on the <a href="/settings">settings</a> page.</p>
+        </div>
+        {% endif %}
 
         <div class="app_tile_row">
             <div>

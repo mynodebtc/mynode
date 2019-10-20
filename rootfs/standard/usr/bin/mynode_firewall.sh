@@ -10,6 +10,7 @@ ufw default allow outgoing
 # Add firewall rules
 ufw allow 22    comment 'allow SSH'
 ufw allow 80    comment 'allow WWW'
+ufw allow 443    comment 'allow Secure WWW'
 ufw allow 1900  comment 'allow SSDP for UPnP discovery'
 ufw allow 10009 comment 'allow Lightning gRPC'
 ufw allow 10080 comment 'allow Lightning REST RPC'
@@ -42,6 +43,7 @@ ufw status
 # Reload firewall after some time to reset (fixes VPN)
 sleep 120s
 ufw reload
+ufw logging off
 
 # Success
 exit 0

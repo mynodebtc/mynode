@@ -385,6 +385,7 @@ def index():
             "swap_usage": get_swap_usage(),
             "device_temp": get_device_temp(),
             "upgrade_available": upgrade_available,
+            "has_changed_password": has_changed_password(),
             "ui_settings": read_ui_settings()
         }
         return render_template('main.html', **templateData)

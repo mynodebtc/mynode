@@ -1,5 +1,14 @@
+=== v0.1.56 / 0.1.57 ===
+- Automatically enable HTTPS service
+- Allow port 443 through firewall
+
+=== v0.1.55 ===
+- Add HTTPS option for connecting to web GUI
+- Add Bitcoin REST API Access via Tor
+- Add default password warning
+
 === v0.1.54 ===
-- Bug fix
+- Cyclic reboot bug fix for SSD driver detection
 
 === v0.1.53 ===
  - Upgrade LND to v0.8.0 beta

@@ -37,6 +37,7 @@ def page_tor():
     services.append({"service":"BTC RPC Explorer","port": "3002","guide":""})
     services.append({"service":"LND Admin","port": "3004","guide":""})
     services.append({"service":"Ride the Lightning","port": "3010","guide":""})
+    services.append({"service":"Bitcoin API (REST)","port": "8332","guide":""})
     services.append({"service":"LND API (gRPC)","port": "10009","guide":""})
     services.append({"service":"LND API (REST)","port": "10080","guide":""})
     services.append({"service":"Electrum Server","port": "50001","guide":"https://mynodebtc.com/guide/electrum_server_tor"})
