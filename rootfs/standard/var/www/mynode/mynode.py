@@ -375,6 +375,7 @@ def index():
             "ram_usage": get_ram_usage(),
             "swap_usage": get_swap_usage(),
             "device_temp": get_device_temp(),
+            "has_changed_password": has_changed_password(),
             "upgrade_available": upgrade_available
         }
         return render_template('main.html', **templateData)
