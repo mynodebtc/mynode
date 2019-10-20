@@ -192,7 +192,7 @@ fi
 systemctl enable firewall
 systemctl enable invalid_block_check
 systemctl enable usb_driver_check
-systemctl enable tls_proxy_https
+systemctl enable https
 
 # Disable any old services
 sudo systemctl disable hitch
