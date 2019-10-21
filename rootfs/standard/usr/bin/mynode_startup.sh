@@ -91,7 +91,7 @@ cp -f /home/bitcoin/.mynode/.product_key* /mnt/hdd/mynode/settings/ || true
 cp -f /mnt/hdd/mynode/settings/.product_key* home/bitcoin/.mynode/ || true
 
 # Randomize RPC password
-if [ ! -f /mnt/hdd/mynode/settings/.btcrpcpw ]; then
+if [ ! -f /mnt/hdd/mynode/settings/.btcrpcpw ] || [ ! -s /mnt/hdd/mynode/settings/.btcrpcpw ]; then
     # Write random pw to .btcrpcpw
     < /dev/urandom tr -dc A-Za-z0-9 | head -c${1:-24} > /mnt/hdd/mynode/settings/.btcrpcpw
     chown bitcoin:bitcoin /mnt/hdd/mynode/settings/.btcrpcpw
