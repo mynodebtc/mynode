@@ -31,7 +31,6 @@ def settings_disable_quicksync():
     stop_bitcoind()
     stop_quicksync()
     disable_quicksync()
-    delete_bitcoin_data()
     delete_quicksync_data()
     reboot_device()
 
@@ -39,7 +38,6 @@ def settings_enable_quicksync():
     stop_bitcoind()
     stop_quicksync()
     enable_quicksync()
-    delete_bitcoin_data()
     delete_quicksync_data()
     reboot_device()
 
@@ -82,6 +80,7 @@ def restart_quicksync():
     stop_quicksync()
     delete_bitcoin_data()
     delete_quicksync_data()
+    enable_quicksync()
     reboot_device()
 
 def reset_tor():
