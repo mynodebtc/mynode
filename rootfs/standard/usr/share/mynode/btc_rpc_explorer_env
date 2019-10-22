@@ -49,11 +49,11 @@ BTCEXP_RPC_CONCURRENCY=4
 #BTCEXP_COOKIE_SECRET=0000aaaafffffgggggg
 
 # Whether public-demo aspects of the site are active
-#BTCEXP_DEMO=true
+BTCEXP_DEMO=true
 
 # Privacy mode disables:
 # Exchange-rate queries, IP-geolocation queries
-#BTCEXP_PRIVACY_MODE=true
+BTCEXP_PRIVACY_MODE=true
 
 # Don't request currency exchange rates
 BTCEXP_NO_RATES=true
