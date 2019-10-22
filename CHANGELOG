@@ -1,3 +1,8 @@
+=== v0.1.58 ===
+- Improve Blockchain and QuickSync reset options
+- Improve BTC RPC Explorer settings
+- Bug fixes
+
 === v0.1.56 / 0.1.57 ===
 - Automatically enable HTTPS service
 - Allow port 443 through firewall
