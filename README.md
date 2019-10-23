@@ -88,7 +88,8 @@ Once you are running myNode, you can easily update the software yourself!
 
 1. Start by running myNode on your device via the instructions above in "Running myNode"
 2. Clone this git repo
-    * Run 'git clone https://github.com/mynodebtc/mynode.git
+    * Run 'git clone https://github.com/mynodebtc/mynode.git'
+    * Run 'cd mynode'
 3. Run 'make rootfs'
 4. Run 'make start_file_server'
     * This will run a local HTTP server so your device can download files
