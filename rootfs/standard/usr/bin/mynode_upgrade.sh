@@ -36,4 +36,4 @@ sync
 sleep 1
 
 # Run post upgrade script
-/bin/bash /usr/bin/mynode_post_upgrade.sh > /home/admin/upgrade_log.txt
+/bin/bash /usr/bin/mynode_post_upgrade.sh > /home/admin/upgrade_log.txt 2>&1
