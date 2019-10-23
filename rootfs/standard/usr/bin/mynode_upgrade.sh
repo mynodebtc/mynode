@@ -36,4 +36,7 @@ sync
 sleep 1
 
 # Run post upgrade script
-/bin/bash /usr/bin/mynode_post_upgrade.sh > /home/admin/upgrade_log.txt 2>&1
+mkdir /home/admin/upgrade_logs/
+VERSION=$(cat /usr/share/mynode/version)
+/bin/bash /usr/bin/mynode_post_upgrade.sh > /home/admin/upgrade_logs/upgrade_log_$VERSION.txt 2>&1
+chown admin:admin -r /home/admin/upgrade_logs

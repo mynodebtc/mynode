@@ -352,6 +352,7 @@ def download_logs_page():
     os.system("mkdir -p /tmp/mynode_info/")
     os.system("mynode-get-quicksync-status > /tmp/mynode_info/quicksync_state.txt")
     os.system("cp /usr/share/mynode/version /tmp/mynode_info/version")
+    os.system("cp -rf /home/admin/upgrade_logs /tmp/mynode_info/")
     os.system("cp /mnt/hdd/mynode/bitcoin/debug.log /tmp/mynode_info/bitcoin_debug.log")
     os.system("tar -czvf /tmp/mynode_logs.tar.gz /var/log/ /tmp/mynode_info/")
     return send_from_directory(directory="/tmp/", filename="mynode_logs.tar.gz")
