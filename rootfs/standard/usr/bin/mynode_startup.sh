@@ -79,8 +79,6 @@ useradd -m -s /bin/bash pivpn || true
 
 # Regen SSH keys (check if force regen or keys are missing / empty)
 while [ ! -f /home/bitcoin/.mynode/.gensshkeys ] || 
-      [ ! -f /mnt/hdd/mynode/settings/.btcrpcpw ] || 
-      [ ! -s /mnt/hdd/mynode/settings/.btcrpcpw ] ||
       [ ! -f /etc/ssh/ssh_host_ecdsa_key.pub ] ||
       [ ! -s /etc/ssh/ssh_host_ecdsa_key.pub ] ||
       [ ! -f /etc/ssh/ssh_host_ed25519_key.pub ] ||
@@ -94,6 +92,8 @@ do
     systemctl restart ssh
 
     touch /home/bitcoin/.mynode/.gensshkeys
+    sync
+    sleep 5s
 done
 
 # Sync product key (SD preferred)
@@ -113,6 +113,23 @@ done
 # Setup LND Node Name
 if [ ! -f /mnt/hdd/mynode/settings/.lndalias ]; then
     echo "mynodebtc.com [myNode]" > /mnt/hdd/mynode/settings/.lndalias
+fi
+
+# Default QuickSync
+if [ ! -f /mnt/hdd/mynode/settings/.setquicksyncdefault ]; then
+    rm -f /mnt/hdd/mynode/settings/quicksync_disabled
+
+    # Default x86 to no QuickSync
+    if [ $IS_X86 = 1 ]; then
+        touch /mnt/hdd/mynode/settings/quicksync_disabled
+    fi
+    # Default SSD to no QuickSync
+    DRIVE=$(cat /tmp/.mynode_drive)
+    HDD=$(lsblk $DRIVE -o ROTA | tail -n 1 | tr -d '[:space:]')
+    if [ "$HDD" = "0" ]; then
+        touch /mnt/hdd/mynode/settings/quicksync_disabled
+    fi
+    touch /mnt/hdd/mynode/settings/.setquicksyncdefault
 fi
 
 
