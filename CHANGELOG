@@ -1,3 +1,7 @@
+=== v0.1.59 ===
+- Add 443 to Tor
+- Big fix re SSH key and random PW creation
+
 === v0.1.58 ===
 - Add improved debug info
 - View Bitcoin debug log on settings page

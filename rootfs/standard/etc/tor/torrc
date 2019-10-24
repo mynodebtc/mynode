@@ -230,6 +230,7 @@ HiddenServiceDir /var/lib/tor/mynode/
 HiddenServiceVersion 2
 HiddenServiceAuthorizeClient stealth mynode
 HiddenServicePort 80 127.0.0.1:80
+HiddenServicePort 443 127.0.0.1:443
 HiddenServicePort 3000 127.0.0.1:3000
 HiddenServicePort 3002 127.0.0.1:3002
 HiddenServicePort 3004 127.0.0.1:3004
