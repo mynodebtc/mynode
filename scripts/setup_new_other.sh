@@ -8,7 +8,7 @@ echo ""
 
 clear
 echo "Step 1: "
-echo "  Install your own Linux distro: Debain, Armbian, Raspbian, etc...:"
+echo "  Install your own Linux distro: Debian, Armbian, Raspbian, etc...:"
 echo "  Setup image for use with myNode:"
 echo "    See manual instructions in setup/setup_base_image_other.txt"
 echo ""
