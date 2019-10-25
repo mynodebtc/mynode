@@ -30,7 +30,6 @@ def settings_disable_quicksync():
     stop_bitcoind()
     stop_quicksync()
     disable_quicksync()
-    delete_bitcoin_data()
     delete_quicksync_data()
     reboot_device()
 
@@ -38,7 +37,6 @@ def settings_enable_quicksync():
     stop_bitcoind()
     stop_quicksync()
     enable_quicksync()
-    delete_bitcoin_data()
     delete_quicksync_data()
     reboot_device()
 
@@ -81,6 +79,7 @@ def restart_quicksync():
     stop_quicksync()
     delete_bitcoin_data()
     delete_quicksync_data()
+    enable_quicksync()
     reboot_device()
 
 def reset_tor():
@@ -177,11 +176,19 @@ def page_settings():
     local_ip = get_local_ip()
     public_ip = get_public_ip()
 
+    # Get QuickSync Status
     quicksync_status = ""
     try:
         quicksync_status = subprocess.check_output(["mynode-get-quicksync-status"])
     except:
         quicksync_status = "ERROR"
+
+    # Get Bitcoin Status
+    bitcoin_status = ""
+    try:
+        bitcoin_status = subprocess.check_output(["tail","-n","200","/mnt/hdd/mynode/bitcoin/debug.log"])
+    except:
+        bitcoin_status = "ERROR"
 
     templateData = {
         "title": "myNode Settings",
@@ -195,6 +202,7 @@ def page_settings():
         "product_key_error": pk_error,
         "changelog": changelog,
         "quicksync_status": quicksync_status,
+        "bitcoin_status": bitcoin_status,
         "is_quicksync_disabled": not is_quicksync_enabled(),
         "is_uploader_device": is_uploader(),
         "uptime": uptime,
@@ -389,7 +397,9 @@ def download_logs_page():
     os.system("rm -rf /tmp/mynode_info/")
     os.system("mkdir -p /tmp/mynode_info/")
     os.system("mynode-get-quicksync-status > /tmp/mynode_info/quicksync_state.txt")
-    os.system("cp /usr/share/version /tmp/mynode_info/version")
+    os.system("cp /usr/share/mynode/version /tmp/mynode_info/version")
+    os.system("cp -rf /home/admin/upgrade_logs /tmp/mynode_info/")
+    os.system("cp /mnt/hdd/mynode/bitcoin/debug.log /tmp/mynode_info/bitcoin_debug.log")
     os.system("tar -czvf /tmp/mynode_logs.tar.gz /var/log/ /tmp/mynode_info/")
     return send_from_directory(directory="/tmp/", filename="mynode_logs.tar.gz")
 

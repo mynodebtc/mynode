@@ -19,7 +19,7 @@ cp -f /usr/share/quicksync/settings.json $QUICKSYNC_CONFIG_DIR/settings.json
 sleep 15s
 
 # Check if quicksync was disabled
-while [ -f /home/bitcoin/.mynode/quicksync_disabled ] || [ -f /mnt/hdd/mynode/settings/quicksync_disabled ]; do
+while [ -f /mnt/hdd/mynode/settings/quicksync_disabled ]; do
     # Pretend quicksync step is complete
     touch $QUICKSYNC_DIR/.quicksync_download_complete
     touch $QUICKSYNC_DIR/.quicksync_complete

@@ -1,3 +1,16 @@
+=== v0.1.59 ===
+- Add 443 to Tor
+- Big fix re SSH key and random PW creation
+- SSDs skip QuickSync by default
+- Custom LND Config
+
+=== v0.1.58 ===
+- Add improved debug info
+- View Bitcoin debug log on settings page
+- Improve Blockchain and QuickSync reset options
+- Improve BTC RPC Explorer settings
+- Bug fixes
+
 === v0.1.56 / 0.1.57 ===
 - Automatically enable HTTPS service
 - Allow port 443 through firewall

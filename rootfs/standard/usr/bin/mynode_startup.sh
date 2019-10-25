@@ -77,30 +77,59 @@ rm -rf /etc/motd # Remove simple motd for update-motd.d
 # Make any users we need to
 useradd -m -s /bin/bash pivpn || true
 
-# Regen SSH keys
-if [ ! -f /home/bitcoin/.mynode/.gensshkeys ]; then
+# Regen SSH keys (check if force regen or keys are missing / empty)
+while [ ! -f /home/bitcoin/.mynode/.gensshkeys ] || 
+      [ ! -f /etc/ssh/ssh_host_ecdsa_key.pub ] ||
+      [ ! -s /etc/ssh/ssh_host_ecdsa_key.pub ] ||
+      [ ! -f /etc/ssh/ssh_host_ed25519_key.pub ] ||
+      [ ! -s /etc/ssh/ssh_host_ed25519_key.pub ] ||
+      [ ! -f /etc/ssh/ssh_host_rsa_key.pub ] ||
+      [ ! -s /etc/ssh/ssh_host_rsa_key.pub ]
+do
+    sleep 10s
     rm -rf /etc/ssh/ssh_host_*
     dpkg-reconfigure openssh-server
     systemctl restart ssh
 
     touch /home/bitcoin/.mynode/.gensshkeys
-fi
+    sync
+    sleep 5s
+done
 
 # Sync product key (SD preferred)
 cp -f /home/bitcoin/.mynode/.product_key* /mnt/hdd/mynode/settings/ || true
 cp -f /mnt/hdd/mynode/settings/.product_key* home/bitcoin/.mynode/ || true
 
 # Randomize RPC password
-if [ ! -f /mnt/hdd/mynode/settings/.btcrpcpw ]; then
+while [ ! -f /mnt/hdd/mynode/settings/.btcrpcpw ] || [ ! -s /mnt/hdd/mynode/settings/.btcrpcpw ]
+do
     # Write random pw to .btcrpcpw
+    sleep 10s
     < /dev/urandom tr -dc A-Za-z0-9 | head -c${1:-24} > /mnt/hdd/mynode/settings/.btcrpcpw
     chown bitcoin:bitcoin /mnt/hdd/mynode/settings/.btcrpcpw
     chmod 600 /mnt/hdd/mynode/settings/.btcrpcpw
-fi
+done
 
 # Setup LND Node Name
 if [ ! -f /mnt/hdd/mynode/settings/.lndalias ]; then
     echo "mynodebtc.com [myNode]" > /mnt/hdd/mynode/settings/.lndalias
+fi
+
+# Default QuickSync
+if [ ! -f /mnt/hdd/mynode/settings/.setquicksyncdefault ]; then
+    rm -f /mnt/hdd/mynode/settings/quicksync_disabled
+
+    # Default x86 to no QuickSync
+    if [ $IS_X86 = 1 ]; then
+        touch /mnt/hdd/mynode/settings/quicksync_disabled
+    fi
+    # Default SSD to no QuickSync
+    DRIVE=$(cat /tmp/.mynode_drive)
+    HDD=$(lsblk $DRIVE -o ROTA | tail -n 1 | tr -d '[:space:]')
+    if [ "$HDD" = "0" ]; then
+        touch /mnt/hdd/mynode/settings/quicksync_disabled
+    fi
+    touch /mnt/hdd/mynode/settings/.setquicksyncdefault
 fi
 
 
@@ -109,7 +138,7 @@ cp -f /usr/share/mynode/bitcoin.conf /mnt/hdd/mynode/bitcoin/bitcoin.conf
 touch /mnt/hdd/mynode/settings/bitcoin_additional_config
 echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
 echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
-echo "### CUSTOM CONFIG ###" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+echo "### CUSTOM BTC CONFIG ###" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
 echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
 cat /mnt/hdd/mynode/settings/bitcoin_additional_config >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
 
@@ -125,6 +154,13 @@ chown admin:admin /home/admin/.bitcoin/bitcoin.conf
 
 # LND Config
 cp /usr/share/mynode/lnd.conf /mnt/hdd/mynode/lnd/lnd.conf
+touch /mnt/hdd/mynode/settings/lnd_additional_config
+echo "" >> /mnt/hdd/mynode/lnd/lnd.conf
+echo "" >> /mnt/hdd/mynode/lnd/lnd.conf
+echo "### CUSTOM LND CONFIG ###" >> /mnt/hdd/mynode/lnd/lnd.conf
+echo "" >> /mnt/hdd/mynode/lnd/lnd.conf
+cat /mnt/hdd/mynode/settings/lnd_additional_config >> /mnt/hdd/mynode/lnd/lnd.conf
+
 ALIAS=$(cat /mnt/hdd/mynode/settings/.lndalias)
 sed -i "s/alias=.*/alias=$ALIAS/g" /mnt/hdd/mynode/lnd/lnd.conf
 chown bitcoin:bitcoin /mnt/hdd/mynode/lnd/lnd.conf
