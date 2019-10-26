@@ -48,13 +48,16 @@ if [ "$#" -ge 2 ]; then
         systemctl restart www
     elif [ "$2" = "files" ]; then
         echo "Only updating files... Done."
+    elif [ "$2" = "reboot" ]; then
+        echo "Rebooting..."
     else
         # Service not found, reboot
-        echo "Full upgrade, running post upgrade script and rebooting device..."
-        /bin/bash /usr/bin/mynode_post_upgrade.sh
+        echo "Unknown service, rebooting"
         reboot
     fi
 else
-    echo "Rebooting device..."
+    # Default, full upgrade
+    echo "Full upgrade, running post upgrade script and rebooting device..."
+    /bin/bash /usr/bin/mynode_post_upgrade.sh
     reboot
 fi
