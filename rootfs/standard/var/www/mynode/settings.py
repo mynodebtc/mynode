@@ -375,6 +375,17 @@ def repair_drive_page():
     }
     return render_template('reboot.html', **templateData)
 
+@mynode_settings.route("/settings/regen-https-certs")
+def regen_https_certs_page():
+    # Touch files to trigger re-checking drive
+    os.system("rm -rf /home/bitcoin/.mynode/https")
+    os.system("rm -rf /mnt/hdd/mynode/settings/https")
+    os.system("sync")
+    os.system("systemctl restart https")
+    
+    flash("HTTPS Service Restarted", category="message")
+    return redirect(url_for(".page_settings"))
+
 @mynode_settings.route("/settings/toggle-uploader")
 def toggle_uploader_page():
     # Toggle uploader

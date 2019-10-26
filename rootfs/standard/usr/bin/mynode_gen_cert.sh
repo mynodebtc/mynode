@@ -12,6 +12,10 @@ if [ ! -z "$1" ]; then
     OUTPUT_DIR="${OUTPUT_DIR_BASE}/$1"
     HDD_DIR="${HDD_DIR_BASE}/$1"
 fi
+DAYS=99999
+if [ ! -z "$1" ]; then
+    DAYS=$2
+fi
 
 mkdir -p $OUTPUT_DIR
 mkdir -p $HDD_DIR
@@ -54,7 +58,7 @@ openssl req -new -key $OUTPUT_DIR/$domain.key -out $OUTPUT_DIR/$domain.csr -pass
 
 # Create Certificate
 echo "Creating Certificate"
-openssl x509 -req -days 99999 -in $OUTPUT_DIR/$domain.csr -signkey $OUTPUT_DIR/$domain.key -out $OUTPUT_DIR/$domain.crt
+openssl x509 -req -days $DAYS -in $OUTPUT_DIR/$domain.csr -signkey $OUTPUT_DIR/$domain.key -out $OUTPUT_DIR/$domain.crt
 
 echo "Creating PEM"
 cat $OUTPUT_DIR/$domain.key > $OUTPUT_DIR/$domain.pem
