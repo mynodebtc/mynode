@@ -1,9 +1,9 @@
 === v0.1.59 ===
-- Add 443 to Tor
-- Big fix re SSH key and random PW creation
+- Add HTTPS to Tor
 - SSDs skip QuickSync by default
 - Add lndmanage tool
 - Custom LND Config
+- Bug fix: SSH key and PW generation, local upgrades
 
 === v0.1.58 ===
 - Add improved debug info

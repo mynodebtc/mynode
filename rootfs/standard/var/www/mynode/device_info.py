@@ -135,3 +135,11 @@ def get_device_changelog():
 
 def has_changed_password():
     return os.path.isfile("/home/bitcoin/.mynode/.hashedpw")
+
+def get_bitcoin_rpc_password():
+    try:
+        with open("/mnt/hdd/mynode/settings/.btcrpcpw", "r") as f:
+            return f.read()
+    except:
+        return "ERROR"
+    return "ERROR"
