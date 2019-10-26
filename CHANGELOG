@@ -2,6 +2,7 @@
 - Add 443 to Tor
 - Big fix re SSH key and random PW creation
 - SSDs skip QuickSync by default
+- Add lndmanage tool
 - Custom LND Config
 
 === v0.1.58 ===

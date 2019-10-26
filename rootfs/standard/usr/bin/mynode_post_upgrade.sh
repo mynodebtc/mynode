@@ -11,7 +11,7 @@ systemctl stop quicksync
 systemctl stop bitcoind
 
 # Install any new software
-apt -y install pv sysstat network-manager unzip
+apt -y install pv sysstat network-manager unzip pkg-config libfreetype6-dev libpng-dev
 
 # Install any pip software
 pip install tzupdate
@@ -19,6 +19,7 @@ pip install tzupdate
 
 # Install any pip3 software
 pip3 install python-bitcointx
+pip3 install lndmanage==0.8.0   # Install LND Manage (keep up to date with LND)
 
 
 # Import Keys
