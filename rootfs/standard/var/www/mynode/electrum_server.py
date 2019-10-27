@@ -39,11 +39,7 @@ def get_electrs_status():
     bitcoin_block_height = get_bitcoin_block_height()
     log = ""
     try:
-        log += subprocess.check_output("tail -n 100 /var/log/electrs.log.1", shell=True)
-    except:
-        log += ""
-    try:
-        log += subprocess.check_output("tail -n 100 /var/log/electrs.log", shell=True)
+        log += subprocess.check_output("journalctl --unit=electrs --no-pager | tail -n 100", shell=True)
     except:
         log += ""
     lines = log.splitlines()
@@ -80,7 +76,7 @@ def get_electrum_server_current_block():
 @mynode_electrum_server.route("/electrum-server")
 def electrum_server_page():
     check_logged_in()
-    
+
     # Make sure data is up to date
     update_electrs_info()
 

@@ -1,3 +1,7 @@
+=== v0.1.60 ===
+- Improved electrum status
+- Bug fixes
+
 === v0.1.59 ===
 - Add HTTPS to Tor
 - SSDs skip QuickSync by default
