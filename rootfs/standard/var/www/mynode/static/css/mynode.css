@@ -412,3 +412,25 @@ a:active {
     -moz-border-radius: 50%;
     -webkit-border-radius: 50%;
 }
+
+.login_div {
+    width: 300px;
+    color: #444444;
+    margin: auto;
+    text-align: justify;
+    font-size: 18px;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-top: 10px;
+    margin-bottom: 40px;
+}
+.login_password {
+    width: 100%;
+    font-size: 18px;
+    padding: 5px 8px;
+    margin: 8px 0;
+    box-sizing: border-box;
+}
+.login_submit {
+    width: 100%;
+    margin-top: 5px;
+}

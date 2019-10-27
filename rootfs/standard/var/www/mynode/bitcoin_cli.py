@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, session, abort, Markup, request, redirect
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from pprint import pprint, pformat
+from user_management import check_logged_in
 import json
 import time
 import subprocess
@@ -18,6 +19,8 @@ def runcmd(cmd):
     
 @mynode_bitcoin_cli.route("/bitcoin-cli/run", methods=['POST'])
 def runcmd_page():
+    check_logged_in()
+    
     if not request:
         return ""
     response = runcmd(request.form['cmd'])
@@ -27,6 +30,8 @@ def runcmd_page():
 ### Page functions
 @mynode_bitcoin_cli.route("/bitcoin-cli")
 def bitcoincli():
+    check_logged_in()
+
     # Load page
     templateData = {
         "title": "myNode Bitcoin CLI"

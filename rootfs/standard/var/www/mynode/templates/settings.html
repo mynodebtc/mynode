@@ -206,6 +206,24 @@
                     }
                 });
 
+                $("#upgrade_changelog").on("click", function() {
+                    $.get("https://raw.githubusercontent.com/mynodebtc/mynode/master/CHANGELOG")
+                        .done(function( data ) {
+                            var parts = data.split("=== v{{current_version}} ===");
+                            var changes = parts[0];
+                            parts = changes.split("=== v{{latest_version}} ===")
+                            if (parts.length > 1) {
+                                changes = "=== v{{latest_version}} ===" + parts[1];
+                            }
+
+                            changes = "<pre style='font-size: 10px;'>"+changes+"</pre>";
+                            openInfoDialog("upgrade-changelog-info",
+                                    "Recent Changes",
+                                    changes);
+                        }
+                    );
+                });
+
                 {% if product_key_skipped %}
                 $( "#upgrade" ).button({
                     disabled: true
@@ -244,6 +262,7 @@
             </table>
             {% if current_version != latest_version %}
                 <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Upgrade</button>
+                <button id="upgrade_changelog" class="ui-button ui-widget ui-corner-all settings_button">See Changes</button>
                 {% if product_key_skipped %}
                     <p>Upgrade to myNode Premium to get one-click updates!</p>
                     <p>For manual upgrades, see our <a target="_blank" href="https://mynodebtc.com/guide/upgrading_your_device">upgrade guide</a>!</p>
@@ -453,6 +472,8 @@
 
 
         <div id="confirm-dialog"></div>
+
+        <div id="upgrade-changelog-info"></div>
 
         <div id="delete-lnd-wallet-dialog" title="Delete Wallet" style="display:none;">
             <form id="delete_lnd_wallet_form" name="delete_lnd_wallet_form" action="/settings/delete-lnd-wallet" method="POST">

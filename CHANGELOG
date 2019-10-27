@@ -3,7 +3,8 @@
 - SSDs skip QuickSync by default
 - Add lndmanage tool
 - Custom LND Config
-- Bug fix: SSH key and PW generation, local upgrades
+- GUI-wide password
+- Bug fixes: SSH key and PW generation, local upgrades
 
 === v0.1.58 ===
 - Add improved debug info
