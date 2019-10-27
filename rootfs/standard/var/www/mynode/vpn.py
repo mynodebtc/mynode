@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, session, abort, Markup, request, redirect, send_from_directory, url_for, flash
 from thread_functions import get_public_ip
 from device_info import is_community_edition
+from user_management import check_logged_in
 import subprocess
 import pam
 import os
@@ -14,6 +15,7 @@ mynode_vpn = Blueprint('mynode_vpn',__name__)
 # Flask Pages
 @mynode_vpn.route("/vpn-info")
 def page_vpn_info():
+    check_logged_in()
 
     # Check if we are premium
     if is_community_edition():
@@ -44,6 +46,7 @@ def page_vpn_info():
 
 @mynode_vpn.route("/regen-vpn", methods=["POST"])
 def page_regen_vpn():
+    check_logged_in()
     p = pam.pam()
     pw = request.form.get('password_regen_ovpn')
     if pw == None or p.authenticate("admin", pw) == False:
@@ -68,6 +71,7 @@ def page_regen_vpn():
 
 @mynode_vpn.route("/mynode.ovpn", methods=["POST"])
 def page_download_ovpn():
+    check_logged_in()
     p = pam.pam()
     pw = request.form.get('password_download_ovpn')
     if pw == None or p.authenticate("admin", pw) == False:

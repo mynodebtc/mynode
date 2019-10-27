@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, session, abort, Markup, request, r
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from pprint import pprint, pformat
 from device_info import is_community_edition, get_bitcoin_rpc_password
+from user_management import check_logged_in
 import os
 import json
 import time
@@ -12,6 +13,7 @@ mynode_tor = Blueprint('mynode_tor',__name__)
 ### Page functions
 @mynode_tor.route("/tor")
 def page_tor():
+    check_logged_in()
     mynode_onion_hostname = "..."
     mynode_onion_password = "..."
 

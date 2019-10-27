@@ -4,6 +4,7 @@ from pprint import pprint, pformat
 from prometheus_client.parser import text_string_to_metric_families
 from bitcoin_info import *
 from device_info import get_local_ip, skipped_product_key
+from user_management import check_logged_in
 import requests
 import json
 import time
@@ -78,6 +79,8 @@ def get_electrum_server_current_block():
 ### Page functions
 @mynode_electrum_server.route("/electrum-server")
 def electrum_server_page():
+    check_logged_in()
+    
     # Make sure data is up to date
     update_electrs_info()
 
