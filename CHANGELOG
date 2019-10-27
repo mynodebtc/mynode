@@ -4,6 +4,7 @@
 - Add lndmanage tool
 - Custom LND Config
 - GUI-wide password
+- View upgrade changes on settings page
 - Bug fixes: SSH key and PW generation, local upgrades
 
 === v0.1.58 ===
