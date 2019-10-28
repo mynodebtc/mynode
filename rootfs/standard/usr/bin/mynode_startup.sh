@@ -117,8 +117,6 @@ fi
 
 # Default QuickSync
 if [ ! -f /mnt/hdd/mynode/settings/.setquicksyncdefault ]; then
-    rm -f /mnt/hdd/mynode/settings/quicksync_disabled
-
     # Default x86 to no QuickSync
     if [ $IS_X86 = 1 ]; then
         touch /mnt/hdd/mynode/settings/quicksync_disabled
