@@ -1,5 +1,7 @@
 === v0.1.60 ===
 - Improved electrum status
+- FullyNoded integration with Tor Link
+- Improve QuickSync Torrent Transition
 - Bug fixes
 
 === v0.1.59 ===
