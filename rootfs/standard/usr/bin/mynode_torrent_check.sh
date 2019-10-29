@@ -26,7 +26,11 @@ while true; do
 
     # Download current torrent
     rm -rf /tmp/blockchain_temp.torrent
-    wget -O /tmp/blockchain_temp.torrent $QUICKSYNC_TORRENT_URL
+    if [ -f $UPLOADER_FILE ]; then
+        wget -O /tmp/blockchain_temp.torrent $QUICKSYNC_TORRENT_BETA_URL
+    else
+        wget -O /tmp/blockchain_temp.torrent $QUICKSYNC_TORRENT_URL
+    fi
     if [ -f /tmp/blockchain_temp.torrent ]; then
         NEW_TORRENT=0
         cmp --silent /tmp/blockchain_temp.torrent $QUICKSYNC_DIR/blockchain.torrent || NEW_TORRENT=1
