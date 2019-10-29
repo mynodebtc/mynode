@@ -47,7 +47,7 @@ def page_tor():
     
     # App links
     rpc_password = get_bitcoin_rpc_password()
-    fully_noded_link = "btcrpc://{}:8332?user=mynode&password={}".format(mynode_onion_hostname, rpc_password)
+    fully_noded_link = "btcrpc://mynode:{}@{}:8332?label=myNode%20Tor&v2password={}".format(rpc_password, mynode_onion_hostname, mynode_onion_password)
 
     # Load page
     templateData = {
