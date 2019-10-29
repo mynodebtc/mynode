@@ -49,8 +49,13 @@ if [ -f $QUICKSYNC_DIR/.quicksync_complete ]; then
 fi
 
 # Download torrent
-rm -rf $QUICKSYNC_DIR/blockchain_temp.torrent
-wget -O $QUICKSYNC_DIR/blockchain_temp.torrent $QUICKSYNC_TORRENT_URL
+if [ -f $UPLOADER_FILE ]; then
+    rm -rf $QUICKSYNC_DIR/blockchain_temp.torrent
+    wget -O $QUICKSYNC_DIR/blockchain_temp.torrent $QUICKSYNC_TORRENT_BETA_URL
+else
+    rm -rf $QUICKSYNC_DIR/blockchain_temp.torrent
+    wget -O $QUICKSYNC_DIR/blockchain_temp.torrent $QUICKSYNC_TORRENT_URL
+fi
 sync
 sleep 1
 

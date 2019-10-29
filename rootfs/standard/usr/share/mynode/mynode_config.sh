@@ -38,6 +38,7 @@ VPN_BACKUP_DIR=/mnt/hdd/mynode/vpn
 QUICKSYNC_DIR=/mnt/hdd/mynode/quicksync
 QUICKSYNC_CONFIG_DIR=/mnt/hdd/mynode/.config/transmission
 QUICKSYNC_TORRENT_URL="https://mynodebtc.com/device/blockchain.tar.gz.torrent"
+QUICKSYNC_TORRENT_BETA_URL="https://mynodebtc.com/device/blockchain_beta.tar.gz.torrent"
 QUICKSYNC_BANDWIDTH_FILE="/mnt/hdd/mynode/settings/bandwidth"
 LATEST_VERSION_URL="http://www.mynodebtc.com/device/latest_version"
 UPLOADER_FILE="/mnt/hdd/mynode/settings/uploader"
