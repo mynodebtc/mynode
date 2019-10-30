@@ -144,6 +144,7 @@ def page_settings():
     quicksync_status = ""
     try:
         quicksync_status = subprocess.check_output(["mynode-get-quicksync-status"])
+        quicksync_status = quicksync_status.decode("utf8")
     except:
         quicksync_status = "ERROR"
 
