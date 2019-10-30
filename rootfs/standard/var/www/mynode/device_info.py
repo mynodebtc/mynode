@@ -114,14 +114,13 @@ def delete_product_key_error():
     
 
 def get_local_ip():
-    global local_ip
-    if local_ip == "unknown" or local_ip == "error":
-        try:
-            result = subprocess.check_output('hostname -I', shell=True)
-            ips = result.split()
-            local_ip = ips[0]
-        except Exception as e:
-            local_ip = "error"
+    local_ip = "unknown"
+    try:
+        result = subprocess.check_output('hostname -I', shell=True)
+        ips = result.split()
+        local_ip = ips[0]
+    except Exception as e:
+        local_ip = "error"
 
     return local_ip
 
