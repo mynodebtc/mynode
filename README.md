@@ -83,12 +83,19 @@ Once you are running myNode, you can easily modify and update the software yours
 6. Test your changes!
 7. Submit Pull Request to share your updates!
 
+### To update a subsystem without rebooting
+Add another argument to the local upgrade script:
+- To update files only, run `sudo mynode-local-upgrade [dev pc ip address] files`
+- To update files and restart web server, run `sudo mynode-local-upgrade [dev pc ip address] www`
+
+
 ## Upgrading your myNode
 Once you are running myNode, you can easily update the software yourself!
 
 1. Start by running myNode on your device via the instructions above in "Running myNode"
 2. Clone this git repo
-    * Run 'git clone https://github.com/mynodebtc/mynode.git
+    * Run 'git clone https://github.com/mynodebtc/mynode.git'
+    * Run 'cd mynode'
 3. Run 'make rootfs'
 4. Run 'make start_file_server'
     * This will run a local HTTP server so your device can download files

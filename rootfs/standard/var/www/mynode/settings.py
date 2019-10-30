@@ -4,6 +4,7 @@ from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from pprint import pprint, pformat
 from threading import Timer
 from thread_functions import *
+from user_management import check_logged_in
 import pam
 import json
 import time
@@ -30,7 +31,6 @@ def settings_disable_quicksync():
     stop_bitcoind()
     stop_quicksync()
     disable_quicksync()
-    delete_bitcoin_data()
     delete_quicksync_data()
     reboot_device()
 
@@ -38,7 +38,6 @@ def settings_enable_quicksync():
     stop_bitcoind()
     stop_quicksync()
     enable_quicksync()
-    delete_bitcoin_data()
     delete_quicksync_data()
     reboot_device()
 
@@ -81,6 +80,7 @@ def restart_quicksync():
     stop_quicksync()
     delete_bitcoin_data()
     delete_quicksync_data()
+    enable_quicksync()
     reboot_device()
 
 def reset_tor():
@@ -163,6 +163,7 @@ def enable_darkmode():
 # Flask Pages
 @mynode_settings.route("/settings")
 def page_settings():
+    check_logged_in()
 
     current_version = get_current_version()
     latest_version = get_latest_version()
@@ -177,11 +178,19 @@ def page_settings():
     local_ip = get_local_ip()
     public_ip = get_public_ip()
 
+    # Get QuickSync Status
     quicksync_status = ""
     try:
         quicksync_status = subprocess.check_output(["mynode-get-quicksync-status"])
     except:
         quicksync_status = "ERROR"
+
+    # Get Bitcoin Status
+    bitcoin_status = ""
+    try:
+        bitcoin_status = subprocess.check_output(["tail","-n","200","/mnt/hdd/mynode/bitcoin/debug.log"])
+    except:
+        bitcoin_status = "ERROR"
 
     templateData = {
         "title": "myNode Settings",
@@ -195,6 +204,7 @@ def page_settings():
         "product_key_error": pk_error,
         "changelog": changelog,
         "quicksync_status": quicksync_status,
+        "bitcoin_status": bitcoin_status,
         "is_quicksync_disabled": not is_quicksync_enabled(),
         "is_uploader_device": is_uploader(),
         "uptime": uptime,
@@ -206,6 +216,8 @@ def page_settings():
 
 @mynode_settings.route("/settings/upgrade")
 def upgrade_page():
+    check_logged_in()
+
     # Upgrade device
     t = Timer(1.0, upgrade_device)
     t.start()
@@ -221,11 +233,13 @@ def upgrade_page():
 
 @mynode_settings.route("/settings/get-latest-version")
 def get_latest_version_page():
+    check_logged_in()
     update_latest_version()
     return redirect("/settings")
 
 @mynode_settings.route("/settings/reset-blockchain")
 def reset_blockchain_page():
+    check_logged_in()
     t = Timer(1.0, reset_blockchain)
     t.start()
     
@@ -240,6 +254,7 @@ def reset_blockchain_page():
 
 @mynode_settings.route("/settings/restart-quicksync")
 def restart_quicksync_page():
+    check_logged_in()
     t = Timer(1.0, restart_quicksync)
     t.start()
 
@@ -254,6 +269,8 @@ def restart_quicksync_page():
 
 @mynode_settings.route("/settings/reboot-device")
 def reboot_device_page():
+    check_logged_in()
+
     # Trigger reboot
     t = Timer(1.0, reboot_device)
     t.start()
@@ -269,6 +286,8 @@ def reboot_device_page():
 
 @mynode_settings.route("/settings/shutdown-device")
 def shutdown_device_page():
+    check_logged_in()
+
     # Trigger shutdown
     t = Timer(1.0, shutdown_device)
     t.start()
@@ -284,6 +303,7 @@ def shutdown_device_page():
 
 @mynode_settings.route("/settings/reindex-blockchain")
 def reindex_blockchain_page():
+    check_logged_in()
     os.system("echo 'BTCARGS=-reindex-chainstate' > "+BITCOIN_ENV_FILE)
     os.system("systemctl restart bitcoind")
     t = Timer(30.0, reset_bitcoin_env_file)
@@ -292,6 +312,7 @@ def reindex_blockchain_page():
 
 @mynode_settings.route("/settings/rescan-blockchain")
 def rescan_blockchain_page():
+    check_logged_in()
     os.system("echo 'BTCARGS=-rescan' > "+BITCOIN_ENV_FILE)
     os.system("systemctl restart bitcoind")
     t = Timer(30.0, reset_bitcoin_env_file)
@@ -300,6 +321,7 @@ def rescan_blockchain_page():
 
 @mynode_settings.route("/settings/factory-reset", methods=['POST'])
 def factory_reset_page():
+    check_logged_in()
     p = pam.pam()
     pw = request.form.get('password_factory_reset')
     if pw == None or p.authenticate("admin", pw) == False:
@@ -320,6 +342,7 @@ def factory_reset_page():
 
 @mynode_settings.route("/settings/password", methods=['POST'])
 def change_password_page():
+    check_logged_in()
     if not request:
         return redirect("/settings")
 
@@ -346,6 +369,7 @@ def change_password_page():
 
 @mynode_settings.route("/settings/delete-lnd-wallet", methods=['POST'])
 def page_lnd_delete_wallet():
+    check_logged_in()
     p = pam.pam()
     pw = request.form.get('password_lnd_delete')
     if pw == None or p.authenticate("admin", pw) == False:
@@ -361,6 +385,7 @@ def page_lnd_delete_wallet():
 
 @mynode_settings.route("/settings/reset-tor", methods=['POST'])
 def page_reset_tor():
+    check_logged_in()
     p = pam.pam()
     pw = request.form.get('password_reset_tor')
     if pw == None or p.authenticate("admin", pw) == False:
@@ -385,16 +410,21 @@ def page_reset_tor():
 
 @mynode_settings.route("/settings/mynode_logs.tar.gz")
 def download_logs_page():
+    check_logged_in()
     os.system("rm -rf /tmp/mynode_logs.tar.gz")
     os.system("rm -rf /tmp/mynode_info/")
     os.system("mkdir -p /tmp/mynode_info/")
     os.system("mynode-get-quicksync-status > /tmp/mynode_info/quicksync_state.txt")
-    os.system("cp /usr/share/version /tmp/mynode_info/version")
+    os.system("cp /usr/share/mynode/version /tmp/mynode_info/version")
+    os.system("cp -rf /home/admin/upgrade_logs /tmp/mynode_info/")
+    os.system("cp /mnt/hdd/mynode/bitcoin/debug.log /tmp/mynode_info/bitcoin_debug.log")
     os.system("tar -czvf /tmp/mynode_logs.tar.gz /var/log/ /tmp/mynode_info/")
     return send_from_directory(directory="/tmp/", filename="mynode_logs.tar.gz")
 
 @mynode_settings.route("/settings/repair-drive")
 def repair_drive_page():
+    check_logged_in()
+
     # Touch files to trigger re-checking drive
     os.system("touch /home/bitcoin/.mynode/check_drive")
     os.system("sync")
@@ -412,8 +442,22 @@ def repair_drive_page():
     }
     return render_template('reboot.html', **templateData)
 
+@mynode_settings.route("/settings/regen-https-certs")
+def regen_https_certs_page():
+    check_logged_in()
+
+    # Touch files to trigger re-checking drive
+    os.system("rm -rf /home/bitcoin/.mynode/https")
+    os.system("rm -rf /mnt/hdd/mynode/settings/https")
+    os.system("sync")
+    os.system("systemctl restart https")
+    
+    flash("HTTPS Service Restarted", category="message")
+    return redirect(url_for(".page_settings"))
+
 @mynode_settings.route("/settings/toggle-uploader")
 def toggle_uploader_page():
+    check_logged_in()
     # Toggle uploader
     if is_uploader():
         unset_uploader()
@@ -435,6 +479,7 @@ def toggle_uploader_page():
 
 @mynode_settings.route("/settings/toggle-quicksync")
 def toggle_quicksync_page():
+    check_logged_in()
     # Toggle uploader
     if is_quicksync_enabled():
         t = Timer(1.0, settings_disable_quicksync)

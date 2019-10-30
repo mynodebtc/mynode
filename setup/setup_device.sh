@@ -71,7 +71,8 @@ apt-get -y install clang hitch zlib1g-dev libffi-dev file toilet ncdu
 apt-get -y install toilet-fonts avahi-daemon figlet libsecp256k1-dev 
 apt-get -y install inotify-tools libssl-dev tor tmux screen
 apt-get -y install python-grpcio python3-grpcio
-apt-get -y install pv sysstat network-manager rsync parted unzip
+apt-get -y install pv sysstat network-manager rsync parted unzip pkg-config
+apt-get -y install libfreetype6-dev libpng-dev libatlas-base-dev
 
 
 # Install other things without recommendation
@@ -119,6 +120,7 @@ fi
 pip3 install wheel setuptools
 pip3 install bitstring lnd-grpc pycoin aiohttp connectrum python-bitcoinlib
 pip3 install python-bitcointx
+pip3 install lndmanage==0.8.0   # Install LND Manage (keep up to date with LND)
 
 
 # Install Rust

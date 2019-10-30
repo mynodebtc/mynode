@@ -82,8 +82,8 @@
                     }
                     openConfirmDialog("confirm-dialog",
                                       "Reset Bitcoin Blockchain",
-                                      "Resetting the blockchain will restart bitcoind from right after QuickSync completed. " +
-                                      "This will take several hours. "+
+                                      "Resetting the blockchain will restart bitcoind from scratch or from QuickSync, " +
+                                      "depending on your settings. This may take a long time. "+
                                       "Would you still like to reset the bitcoin blockchain?",
                                       okFunction)
                 });
@@ -97,7 +97,7 @@
                                       "Reset QuickSync",
                                       "<p>Restarting QuickSync will delete all current bitcoind blockchain data and re-download " +
                                       "the pre-synced blockchain. This will take a while.</p>"+
-                                      "<p>Would you still like to reset the bitcoin blockchain?</p>",
+                                      "<p>Would you still like to restart QuickSync?</p>",
                                       okFunction)
                 });
 
@@ -179,6 +179,11 @@
                     $("#quicksync_status").show();
                 });
 
+                $("#show_bitcoin_status").on("click", function() {
+                    $("#show_bitcoin_status").hide(0);
+                    $("#bitcoin_status").show();
+                });
+
                 $("#show_mynode_changelog").on("click", function() {
                     if (showChangelog)
                     {
@@ -192,6 +197,24 @@
                         $("#mynode_changelog").show();
                         showChangelog=1;
                     }
+                });
+
+                $("#upgrade_changelog").on("click", function() {
+                    $.get("https://raw.githubusercontent.com/mynodebtc/mynode/master/CHANGELOG")
+                        .done(function( data ) {
+                            var parts = data.split("=== v{{current_version}} ===");
+                            var changes = parts[0];
+                            parts = changes.split("=== v{{latest_version}} ===")
+                            if (parts.length > 1) {
+                                changes = "=== v{{latest_version}} ===" + parts[1];
+                            }
+
+                            changes = "<pre style='font-size: 10px;'>"+changes+"</pre>";
+                            openInfoDialog("upgrade-changelog-info",
+                                    "Recent Changes",
+                                    changes);
+                        }
+                    );
                 });
 
                 {% if product_key_skipped %}
@@ -232,6 +255,7 @@
             </table>
             {% if current_version != latest_version %}
                 <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Upgrade</button>
+                <button id="upgrade_changelog" class="ui-button ui-widget ui-corner-all settings_button">See Changes</button>
                 {% if product_key_skipped %}
                     <p>Upgrade to myNode Premium to get one-click updates!</p>
                     <p>For manual upgrades, see our <a target="_blank" href="https://mynodebtc.com/guide/upgrading_your_device">upgrade guide</a>!</p>
@@ -289,7 +313,7 @@
 
             <div class="settings_block_subheader">Change Password</div>
             {{password_message}}
-            This will change the password used to connect to your myNode via SSH.
+            This will change the password you use in the myNode GUI, the password for SSH, and the password for apps like RTL and LND Admin.
             <br/><br/>
             <form action="/settings/password" method="POST">
                 <table border="0">
@@ -310,10 +334,14 @@
             </form>
             <div class="divider"></div>
 
-
             <div class="settings_block_subheader">QuickSync Status</div>
             <button id="show_quicksync_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
             <div id="quicksync_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{quicksync_status}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Bitcoin Status</div>
+            <button id="show_bitcoin_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
+            <div id="bitcoin_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{bitcoin_status}}</pre></div>
 
         </div>
 
@@ -321,7 +349,7 @@
             <div class="settings_block_header">Bitcoin</div>
 
             <div class="settings_block_subheader">Toggle QuickSync</div>
-            Disabling QuickSync will reset blockchain data and re-download and validate the blockchain independently. This may take a long time, but you can re-enable QuickSync later.
+            Disabling QuickSync will remove the QuickSync files and stop the process. This may take a long time if Bitcoin is not already synced, but you can re-enable QuickSync later.
             <br/>
             {% if is_quicksync_disabled %}
             <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Re-enable QuickSync</a>
@@ -332,7 +360,8 @@
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Reset Blockchain</div>
-            If bitcoind is having issues, you can restart from the initial state right after QuickSync completed. This will take several hours.
+            If bitcoind is having issues, you can reset the blockchain data. If QuickSync is enabled, it will use QuickSync data as the starting point. Otherwise, Bitcoin will
+            sync from scratch. This may take a long time.
             <br/>
             <button id="reset-blockchain" class="ui-button ui-widget ui-corner-all settings_button">Reset Blockchain</button>
 
@@ -393,6 +422,13 @@
 
             <div class="divider"></div>
 
+            <div class="settings_block_subheader">Reset HTTP Certificates</div>
+            This will regenerate yur HTTPS certificates.
+            <br/>
+            <a href="/settings/regen-https-certs" class="ui-button ui-widget ui-corner-all settings_button">Regenerate</a>
+
+            <div class="divider"></div>
+
             <div class="settings_block_subheader">Re-scan Blockchain</div>
             Advanced: If you are having issues parsing the Bitcoin blockchain or blocks cannot be found, please try rescanning.
             <br/>
@@ -437,6 +473,8 @@
 
 
         <div id="confirm-dialog"></div>
+
+        <div id="upgrade-changelog-info"></div>
 
         <div id="delete-lnd-wallet-dialog" title="Delete Wallet" style="display:none;">
             <form id="delete_lnd_wallet_form" name="delete_lnd_wallet_form" action="/settings/delete-lnd-wallet" method="POST">

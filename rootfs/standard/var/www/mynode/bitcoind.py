@@ -6,6 +6,7 @@ from bitcoin_info import *
 from subprocess import check_output, check_call
 from electrum_functions import *
 from settings import read_ui_settings
+from user_management import check_logged_in
 import socket
 import hashlib
 import json
@@ -99,6 +100,8 @@ def search(search_term):
 ### Page functions
 @mynode_bitcoind.route("/bitcoind")
 def bitcoind_status_page():
+    check_logged_in()
+
     # Get current information
     try:
         info = get_bitcoin_blockchain_info()
@@ -178,6 +181,8 @@ def bitcoind_status_page():
 
 @mynode_bitcoind.route("/explorer")
 def bitcoind_explorer_page():
+    check_logged_in()
+
     # Get current information
     try:
         info = get_bitcoin_blockchain_info()
@@ -220,6 +225,8 @@ def bitcoind_explorer_page():
 
 @mynode_bitcoind.route("/explorer/search", methods=['POST'])
 def search_page():
+    check_logged_in()
+
     if not request:
         return redirect("/explorer")
 
@@ -254,6 +261,8 @@ def search_page():
 
 @mynode_bitcoind.route("/explorer/tx/<txid>")
 def tx_page(txid):
+    check_logged_in()
+
     try:
         # Get info
         electrum_data = get_from_electrum("blockchain.transaction.get", [txid, True])
@@ -323,6 +332,8 @@ def tx_page(txid):
 
 @mynode_bitcoind.route("/explorer/block/<block_hash>")
 def block_page(block_hash):
+    check_logged_in()
+
     try:
         # Get info
         rpc_user = get_bitcoin_rpc_username()
@@ -363,6 +374,8 @@ def block_page(block_hash):
 
 @mynode_bitcoind.route("/explorer/addr/<addr>")
 def address_page(addr):
+    check_logged_in()
+    
     try:
         # Get addr info
         script_hash = get_scripthash_for_address(addr)
