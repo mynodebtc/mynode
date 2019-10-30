@@ -104,6 +104,7 @@ def index():
         except:
             status = "Waiting on quicksync to start..."
 
+        status = status.decode("utf8")
         status = Markup("<div style='text-align: left; font-size: 12px; width: 800px;'><pre>"+status+"</pre></div>")
         templateData = {
             "title": "myNode Uploader",
