@@ -1,0 +1,4 @@
+#!/bin/bash
+
+source /usr/share/mynode/mynode_config.sh > /dev/null
+echo $DEVICE_TYPE

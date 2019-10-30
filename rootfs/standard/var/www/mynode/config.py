@@ -1,8 +1,5 @@
 CONFIG = {}
 
-# Basic Config
-CONFIG["device_type"] = "rock64"
-
 # Enabled Features
 CONFIG["rtl_enabled"] = True
 CONFIG["electrs_enabled"] = True
