@@ -48,7 +48,8 @@ def get_device_serial():
 
 
 def get_device_type():
-    return CONFIG["device_type"]
+    device = subprocess.check_output("mynode-get-device-type", shell=True)
+    return device
 
 
 def is_uploader():
