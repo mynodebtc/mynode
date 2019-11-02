@@ -1,3 +1,9 @@
+=== v0.1.62 ===
+- Reorganized settings page
+- Add status logs for LND and Electrum Server
+- Add QuickSync bandwidth settings
+- Fixed bug where upgrades could incorrectly appear available
+
 === v0.1.61 ===
 - Changed device detection
 - Better local IP detection
