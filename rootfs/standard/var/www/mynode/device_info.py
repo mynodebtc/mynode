@@ -26,6 +26,8 @@ def get_latest_version():
     try:
         with open("/usr/share/mynode/latest_version", "r") as f:
             latest_version = f.read().strip()
+            if latest_version == "":
+                latest_version = get_current_version()
     except:
         latest_version = get_current_version()
     return latest_version

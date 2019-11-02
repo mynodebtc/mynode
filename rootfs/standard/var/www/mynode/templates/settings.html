@@ -311,7 +311,7 @@
                     <td>&nbsp;<a href="/settings/get-latest-version" class="ui-button ui-widget ui-corner-all settings_button_small">Check for Updates</a></td>
                 </tr>
             </table>
-            {% if current_version != latest_version %}
+            {% if current_version != latest_version and latest_version != "" %}
                 <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Upgrade</button>
                 <button id="upgrade_changelog" class="ui-button ui-widget ui-corner-all settings_button">See Changes</button>
                 {% if product_key_skipped %}
