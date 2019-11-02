@@ -434,3 +434,20 @@ a:active {
     width: 100%;
     margin-top: 5px;
 }
+
+#download-handle {
+    width: 6em;
+    height: 1.6em;
+    top: 50%;
+    margin-top: -.8em;
+    text-align: center;
+    line-height: 1.6em;
+  }
+  #upload-handle {
+    width: 6em;
+    height: 1.6em;
+    top: 50%;
+    margin-top: -.8em;
+    text-align: center;
+    line-height: 1.6em;
+  }
