@@ -155,6 +155,31 @@ def page_settings():
     except:
         bitcoin_status = "ERROR"
 
+    # Get LND Status
+    lnd_status = ""
+    try:
+        lnd_status = subprocess.check_output("journalctl --unit=lnd --no-pager | tail -n 100", shell=True)
+    except:
+        lnd_status = "ERROR"
+
+    # Get Electrs Status
+    electrs_status = ""
+    try:
+        electrs_status = subprocess.check_output("journalctl --unit=electrs --no-pager | tail -n 100", shell=True)
+    except:
+        electrs_status = "ERROR"
+
+    # Get QuickSync Rates
+    upload_rate = 100
+    download_rate = 100
+    try:
+        upload_rate = subprocess.check_output(["cat","/mnt/hdd/mynode/settings/quicksync_upload_rate"])
+        download_rate = subprocess.check_output(["cat","/mnt/hdd/mynode/settings/quicksync_background_download_rate"])
+    except:
+        upload_rate = 100
+        download_rate = 100
+
+
     templateData = {
         "title": "myNode Settings",
         "password_message": "",
@@ -168,8 +193,12 @@ def page_settings():
         "changelog": changelog,
         "quicksync_status": quicksync_status,
         "bitcoin_status": bitcoin_status,
+        "lnd_status": lnd_status,
+        "electrs_status": electrs_status,
         "is_quicksync_disabled": not is_quicksync_enabled(),
         "is_uploader_device": is_uploader(),
+        "download_rate": download_rate,
+        "upload_rate": upload_rate,
         "uptime": uptime,
         "public_ip": public_ip,
         "local_ip": local_ip
@@ -320,6 +349,24 @@ def change_password_page():
         subprocess.call(['/usr/bin/mynode_chpasswd.sh', p1])
 
     flash("Password Updated!", category="message")
+    return redirect(url_for(".page_settings"))
+
+
+@mynode_settings.route("/settings/quicksync_rates", methods=['POST'])
+def change_quicksync_rates_page():
+    check_logged_in()
+    if not request:
+        return redirect("/settings")
+
+    downloadRate = request.form.get('download-rate')
+    uploadRate = request.form.get('upload-rate')
+
+    os.system("echo {} > /mnt/hdd/mynode/settings/quicksync_upload_rate".format(uploadRate))
+    os.system("echo {} > /mnt/hdd/mynode/settings/quicksync_background_download_rate".format(downloadRate))
+    os.system("sync")
+    os.system("systemctl restart bandwidth")
+
+    flash("QuickSync Rates Updated!", category="message")
     return redirect(url_for(".page_settings"))
 
 

@@ -191,6 +191,16 @@
                     $("#bitcoin_status").show();
                 });
 
+                $("#show_lnd_status").on("click", function() {
+                    $("#show_lnd_status").hide(0);
+                    $("#lnd_status").show();
+                });
+
+                $("#show_electrs_status").on("click", function() {
+                    $("#show_electrs_status").hide(0);
+                    $("#electrs_status").show();
+                });
+
                 $("#show_mynode_changelog").on("click", function() {
                     if (showChangelog)
                     {
@@ -223,6 +233,47 @@
                         }
                     );
                 });
+
+                $( function() {
+                    var downloadHandle = $( "#download-handle" );
+                    var uploadHandle = $( "#upload-handle" );
+                    $( "#download-slider" ).slider({
+                        value: {{download_rate}} / 100,
+                        orientation: "horizontal",
+                        range: "min",
+                        animate: true,
+                        create: function() {
+                            rate = parseInt($( this ).slider( "value" ) * 100)
+                            text = rate + " kbps"
+                            downloadHandle.text(text);
+                            $('#download-rate').val(rate);
+                        },
+                        slide: function( event, ui ) {
+                            rate = parseInt(ui.value * 100)
+                            text = rate + " kbps"
+                            downloadHandle.text( text );
+                            $('#download-rate').val(rate);
+                        }
+                    });
+                    $( "#upload-slider" ).slider({
+                        value: {{upload_rate}} / 100,
+                        orientation: "horizontal",
+                        range: "min",
+                        animate: true,
+                        create: function() {
+                            rate = parseInt($( this ).slider( "value" ) * 100)
+                            text = rate + " kbps"
+                            uploadHandle.text(text);
+                            $('#upload-rate').val(rate);
+                        },
+                        slide: function( event, ui ) {
+                            rate = parseInt(ui.value * 100)
+                            text = rate + " kbps"
+                            uploadHandle.text( text );
+                            $('#upload-rate').val(rate);
+                        }
+                    });
+                } );
 
                 {% if product_key_skipped %}
                 $( "#upgrade" ).button({
@@ -331,7 +382,9 @@
                 </table>
                 <input type="submit" id="password_submit" value="Change Password" class="ui-button ui-widget ui-corner-all settings_button"/>
             </form>
-            <div class="divider"></div>
+
+        <div class="settings_block">
+                <div class="settings_block_header">Status</div>
 
             <div class="settings_block_subheader">QuickSync Status</div>
             <button id="show_quicksync_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
@@ -341,62 +394,21 @@
             <div class="settings_block_subheader">Bitcoin Status</div>
             <button id="show_bitcoin_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
             <div id="bitcoin_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{bitcoin_status}}</pre></div>
-
-        </div>
-
-        <div class="settings_block">
-            <div class="settings_block_header">Bitcoin</div>
-
-            <div class="settings_block_subheader">Toggle QuickSync</div>
-            Disabling QuickSync will remove the QuickSync files and stop the process. This may take a long time if Bitcoin is not already synced, but you can re-enable QuickSync later.
-            <br/>
-            {% if is_quicksync_disabled %}
-            <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Re-enable QuickSync</a>
-            {% else %}
-            <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Disable QuickSync</a>
-            {% endif %}
-
             <div class="divider"></div>
 
-            <div class="settings_block_subheader">Reset Blockchain</div>
-            If bitcoind is having issues, you can reset the blockchain data. If QuickSync is enabled, it will use QuickSync data as the starting point. Otherwise, Bitcoin will
-            sync from scratch. This may take a long time.
-            <br/>
-            <button id="reset-blockchain" class="ui-button ui-widget ui-corner-all settings_button">Reset Blockchain</button>
-
+            <div class="settings_block_subheader">LND Status</div>
+            <button id="show_lnd_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
+            <div id="lnd_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lnd_status}}</pre></div>
             <div class="divider"></div>
 
-            <div class="settings_block_subheader">Restart QuickSync</div>
-            This will reset bitcoind and re-download the blockchain via QuickSync.
-            <br/>
-            <button id="restart-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Restart QuickSync</button>
-
-
+            <div class="settings_block_subheader">Electrum Server Status</div>
+            <button id="show_electrs_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
+            <div id="electrs_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{electrs_status}}</pre></div>
         </div>
 
-        <div class="settings_block">
-            <div class="settings_block_header">Lightning</div>
-            
-            <div class="settings_block_subheader">Delete Lightning Wallet</div>
-            {{lnd_delete_message}}
-            Advanced: This will delete your Lightning Wallet.
-            <br/>
-            <button id="delete_lnd_wallet" class="ui-button ui-widget ui-corner-all settings_button">Delete Wallet</button>
-
-        </div>
 
         <div class="settings_block">
-            <div class="settings_block_header">Tor</div>
-            
-            <div class="settings_block_subheader">Reset Tor</div>
-            This will reset all of your Tor service settings and re-generate your Onion URLs.
-            <br/>
-            <button id="reset_tor" class="ui-button ui-widget ui-corner-all settings_button">Reset Tor</button>
-
-        </div>
-
-        <div class="settings_block">
-            <div class="settings_block_header">Advanced</div>
+            <div class="settings_block_header">Device</div>
 
             <div class="settings_block_subheader">Reboot Device</div>
             This will reboot your myNode.
@@ -409,22 +421,70 @@
             This will shutdown your myNode. You will need to power cycle the device to turn it back on.
             <br/>
             <button id="shutdown-device" class="ui-button ui-widget ui-corner-all settings_button">Shutdown Device</button>
-            
+
             <div class="divider"></div>
 
-            <div class="settings_block_subheader">Download Logs</div>
+            <div class="settings_block_subheader">Download Debug Logs</div>
             This will download all recent logs from your mynode. This can be helpful for debugging issues.
             <br/>
             It may take ~60 seconds to gather and download the logs.
             <br/>
             <a href="/settings/mynode_logs.tar.gz" class="ui-button ui-widget ui-corner-all settings_button">Download Logs</a>
+        </div>
+
+
+        <div class="settings_block">
+            <div class="settings_block_header">QuickSync</div>
+
+            <div class="settings_block_subheader">Toggle QuickSync</div>
+            Disabling QuickSync will remove the QuickSync files and stop the process. This may take a long time if Bitcoin is not already synced, but you can re-enable QuickSync later.
+            <br/>
+            {% if is_quicksync_disabled %}
+            <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Re-enable QuickSync</a>
+            {% else %}
+            <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Disable QuickSync</a>
+            {% endif %}
 
             <div class="divider"></div>
 
-            <div class="settings_block_subheader">Reset HTTP Certificates</div>
-            This will regenerate your HTTPS certificates.
+            <div class="settings_block_subheader">Restart QuickSync</div>
+            This will reset bitcoind and re-download the blockchain via QuickSync.
             <br/>
-            <a href="/settings/regen-https-certs" class="ui-button ui-widget ui-corner-all settings_button">Regenerate</a>
+            <button id="restart-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Restart QuickSync</button>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">QuickSync Rates</div>
+            You can control the background upload and download rates for QuickSync. This helps the myNode network.
+            <br/>
+
+            <form action="/settings/quicksync_rates" method="POST">
+                <p><b>Download Rate</b></p>
+                <div id="download-slider">
+                    <div id="download-handle" class="quicksync-handle ui-slider-handle "></div>
+                </div>
+                <input type="hidden" id="download-rate" name="download-rate"/>
+
+                <p><b>Upload Rate</b></p>
+                <div id="upload-slider">
+                    <div id="upload-handle" class="quicksync-handle ui-slider-handle"></div>
+                </div>
+                <input type="hidden" id="upload-rate" name="upload-rate"/>
+                
+                <br/>
+                <input type="submit" id="quicksync_rates_submit" value="Save" class="ui-button ui-widget ui-corner-all settings_button"/>
+            </form>
+        </div>
+
+
+        <div class="settings_block">
+            <div class="settings_block_header">Bitcoin</div>
+
+            <div class="settings_block_subheader">Reset Blockchain</div>
+            If bitcoind is having issues, you can reset the blockchain data. If QuickSync is enabled, it will use QuickSync data as the starting point. Otherwise, Bitcoin will
+            sync from scratch. This may take a long time.
+            <br/>
+            <button id="reset-blockchain" class="ui-button ui-widget ui-corner-all settings_button">Reset Blockchain</button>
 
             <div class="divider"></div>
 
@@ -439,6 +499,37 @@
             Advanced: If you are having issues parsing the Bitcoin blockchain or blocks cannot be found, please try re-indexing. This will take a long time.
             <br/>
             <button id="reindex-blockchain" class="ui-button ui-widget ui-corner-all settings_button">Re-index Blockchain</button>
+        </div>
+
+
+        <div class="settings_block">
+            <div class="settings_block_header">Lightning</div>
+            
+            <div class="settings_block_subheader">Delete Lightning Wallet</div>
+            {{lnd_delete_message}}
+            Advanced: This will delete your Lightning Wallet.
+            <br/>
+            <button id="delete_lnd_wallet" class="ui-button ui-widget ui-corner-all settings_button">Delete Wallet</button>
+        </div>
+
+
+        <div class="settings_block">
+            <div class="settings_block_header">Tor</div>
+            
+            <div class="settings_block_subheader">Reset Tor</div>
+            This will reset all of your Tor service settings and re-generate your Onion URLs.
+            <br/>
+            <button id="reset_tor" class="ui-button ui-widget ui-corner-all settings_button">Reset Tor</button>
+
+        </div>
+
+        <div class="settings_block">
+            <div class="settings_block_header">Advanced</div>
+
+            <div class="settings_block_subheader">Reset HTTP Certificates</div>
+            This will regenerate your HTTPS certificates.
+            <br/>
+            <a href="/settings/regen-https-certs" class="ui-button ui-widget ui-corner-all settings_button">Regenerate</a>
 
             <div class="divider"></div>
 
@@ -453,8 +544,8 @@
             This will factory reset your mynode and all storage will be completely reset. Make sure you have backed up all your keys and wallets!
             <br/>
             <button id="factory-reset" class="ui-button ui-widget ui-corner-all settings_button">Factory Reset</button>
-
         </div>
+
 
         <div class="settings_block">
             <div class="settings_block_header">Developer</div>
