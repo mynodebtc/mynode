@@ -4,7 +4,7 @@ from threading import Timer
 from bitcoin_info import *
 from lightning_info import *
 from settings import reboot_device
-from device_info import is_community_edition
+from device_info import *
 from user_management import check_logged_in
 import base64
 import subprocess
@@ -299,3 +299,36 @@ def page_lnd_change_alias():
         "subheader_text": "This will take several minutes..."
     }
     return render_template('reboot.html', **templateData)
+
+
+@mynode_lnd.route("/lnd/config", methods=['GET','POST'])
+def lnd_config_page():
+    check_logged_in()
+
+    # Handle form
+    if request.method == 'POST':
+        custom_config = request.form.get('custom_config')
+        set_lnd_additional_config(custom_config)
+        
+        # Trigger reboot
+        t = Timer(1.0, reboot_device)
+        t.start()
+
+        # Wait until device is restarted
+        templateData = {
+            "title": "myNode Reboot",
+            "header_text": "Restarting",
+            "subheader_text": "This will take several minutes..."
+        }
+        return render_template('reboot.html', **templateData)
+
+    lnd_config = get_lnd_config()
+    custom_lnd_config = get_lnd_additional_config()
+
+    templateData = {
+        "title": "myNode LND Config",
+        "lnd_config": lnd_config,
+        "custom_lnd_config": custom_lnd_config
+    }
+    return render_template('lnd_config.html', **templateData)
+

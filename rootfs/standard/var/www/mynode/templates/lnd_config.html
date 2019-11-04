@@ -1,0 +1,47 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode.css")}}">
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/mynode_bitcoind.css")}}">
+        <link href="{{ url_for('static', filename="jquery_ui/jquery-ui.css")}}" rel="stylesheet">
+        <meta http-equiv="Content-Language" content="en">
+        <meta name="google" content="notranslate">
+        <script src="{{ url_for('static', filename="js/jquery-3.3.1.min.js")}}"></script>
+        <script src="{{ url_for('static', filename="jquery_ui/jquery-ui.js")}}"></script>
+        <script src="{{ url_for('static', filename="js/mynode.js")}}"></script>
+     </head>
+
+    <body>
+        <div class="logo_header"><a href="/"><img class="logo_image" src="{{ url_for('static', filename="images/logo.png")}}"/></a></div>
+        <div class="mynode_back_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/lnd"><span class="ui-icon ui-icon-arrowthick-1-w"></span>back&nbsp;</a>
+        </div>
+
+        {% include 'includes/message_display.html' %}
+
+        <div class="main_header">Lightning Config</div>
+
+        <br/>
+        <div class="centered_text_div">
+            <pre>{{ lnd_config }}</pre>
+        </div>
+
+        <br/>
+        <div class="main_header">LND Custom Config</div>
+        <div class="main_header_sub_text">
+            Custom config is appended to the bottom of the default myNode LND Config. Saving will reboot your device.
+        </div>
+        <div class="centered_text_div">
+            <form action="/lnd/config" method="POST">
+                <textarea class="config_textarea" name="custom_config" id="custom_config">{{ custom_lnd_config }}</textarea>
+                <br/><br/>
+                <input class="ui-button ui-widget ui-corner-all" type="submit" value="Save"/>
+            </form>
+        </div>
+
+
+        {% include 'includes/footer.html' %}
+     </body>
+</html>
