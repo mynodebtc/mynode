@@ -69,6 +69,7 @@ def restart_lnd_actual():
     lnd_ready = False
     os.system("systemctl restart lnd")
     os.system("systemctl restart lnd_unlock")
+    os.system("systemctl restart lnd_admin")
 
 def restart_lnd():
     t = Timer(1.0, restart_lnd_actual)
@@ -159,3 +160,36 @@ def get_lnd_version():
     if lnd_version == None:
         lnd_version = subprocess.check_output("lnd --version | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+' | head -n 1", shell=True)
     return lnd_version
+
+def get_default_lnd_config():
+    try:
+        with open("/usr/share/mynode/lnd.conf") as f:
+            return f.read()
+    except:
+        return "ERROR"
+
+def get_lnd_config():
+    try:
+        with open("/mnt/hdd/mynode/lnd/lnd.conf") as f:
+            return f.read()
+    except:
+        return "ERROR"
+
+def regenerate_lnd_config():
+    os.system("/usr/bin/mynode_gen_lnd_config.sh")
+
+def get_lnd_additional_config():
+    try:
+        with open("/mnt/hdd/mynode/settings/lnd_additional_config") as f:
+            return f.read()
+    except:
+        return "ERROR"
+
+def set_lnd_additional_config(config):
+    try:
+        with open("/mnt/hdd/mynode/settings/lnd_additional_config", "w") as f:
+            f.write(config)
+        os.system("sync")
+        return True
+    except:
+        return False

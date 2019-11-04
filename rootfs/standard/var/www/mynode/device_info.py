@@ -1,4 +1,5 @@
 from config import *
+from threading import Timer
 import os
 import subprocess
 
@@ -145,3 +146,123 @@ def get_bitcoin_rpc_password():
     except:
         return "ERROR"
     return "ERROR"
+
+def stop_bitcoind():
+    os.system("systemctl stop bitcoind")
+
+def stop_lnd():
+    os.system("systemctl stop lnd")
+
+def stop_quicksync():
+    os.system("systemctl stop quicksync")
+
+
+def settings_disable_quicksync():
+    stop_bitcoind()
+    stop_quicksync()
+    disable_quicksync()
+    delete_quicksync_data()
+    reboot_device()
+
+def settings_enable_quicksync():
+    stop_bitcoind()
+    stop_quicksync()
+    enable_quicksync()
+    delete_quicksync_data()
+    reboot_device()
+
+
+def reset_bitcoin_env_file():
+    os.system("echo 'BTCARGS=' > "+BITCOIN_ENV_FILE)
+
+
+def delete_bitcoin_data():
+    os.system("rm -rf /mnt/hdd/mynode/bitcoin")
+    os.system("rm -rf /mnt/hdd/mynode/quicksync/.quicksync_complete")
+    os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpc_environment")
+    os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpcpw")
+
+
+def delete_quicksync_data():
+    os.system("rm -rf /mnt/hdd/mynode/quicksync")
+    os.system("rm -rf /home/bitcoin/.config/transmission") # Old dir
+    os.system("rm -rf /mnt/hdd/mynode/.config/transmission")
+
+
+def delete_lnd_data():
+    #os.system("rm -f "+LND_WALLET_FILE)
+    os.system("rm -rf "+LND_DATA_FOLDER)
+    os.system("rm -rf /home/bitcoin/.lnd-admin/credentials.json")
+    os.system("rm -rf /mnt/hdd/mynode/settings/.lndpw")
+    os.system("rm -rf /home/admin/.lnd/")
+    return True
+
+
+def reboot_device():
+    stop_bitcoind()
+    stop_lnd()
+    os.system("sync")
+    os.system("reboot")
+
+
+def shutdown_device():
+    stop_bitcoind()
+    stop_lnd()
+    os.system("sync")
+    os.system("shutdown -h now")
+
+
+def reset_blockchain():
+    stop_bitcoind()
+    delete_bitcoin_data()
+    reboot_device()
+
+
+def restart_quicksync():
+    os.system('echo "quicksync_reset" > /mnt/hdd/mynode/.mynode_status')
+    stop_bitcoind()
+    stop_quicksync()
+    delete_bitcoin_data()
+    delete_quicksync_data()
+    enable_quicksync()
+    reboot_device()
+
+
+def reset_tor():
+    os.system("rm -rf /var/lib/tor/*")
+    os.system("rm -rf /mnt/hdd/mynode/bitcoin/onion_private_key")
+    os.system("rm -rf /mnt/hdd/mynode/lnd/v2_onion_private_key")
+
+
+def factory_reset():
+    # Reset subsystems that have local data
+    delete_quicksync_data()
+
+    # Delete LND data
+    delete_lnd_data()
+
+    # Delete Tor data
+    reset_tor()
+
+    # Disable services
+    os.system("systemctl disable electrs --no-pager")
+    os.system("systemctl disable lndhub --no-pager")
+    os.system("systemctl disable btc_rpc_explorer --no-pager")
+    os.system("systemctl disable vpn --no-pager")
+
+    # Trigger drive to be reformatted on reboot
+    os.system("rm -f /mnt/hdd/.mynode")
+
+    # Reset password
+    os.system("/usr/bin/mynode_chpasswd.sh bolt")
+
+    # Reboot
+    reboot_device()
+
+
+def upgrade_device():
+    # Upgrade
+    os.system("/usr/bin/mynode_upgrade.sh")
+
+    # Reboot
+    reboot_device()

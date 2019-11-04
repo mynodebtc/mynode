@@ -6,6 +6,7 @@ from threading import Timer
 from device_info import *
 from thread_functions import *
 from user_management import check_logged_in
+from lightning_info import *
 import pam
 import json
 import time
@@ -13,114 +14,6 @@ import os
 import subprocess
 
 mynode_settings = Blueprint('mynode_settings',__name__)
-
-def restart_lnd_actual():
-    os.system("systemctl restart lnd")
-    os.system("systemctl restart lnd_admin")
-
-def restart_lnd():
-    t = Timer(1.0, restart_lnd_actual)
-    t.start()
-
-def stop_bitcoind():
-    os.system("systemctl stop bitcoind")
-
-def stop_quicksync():
-    os.system("systemctl stop quicksync")
-
-def settings_disable_quicksync():
-    stop_bitcoind()
-    stop_quicksync()
-    disable_quicksync()
-    delete_quicksync_data()
-    reboot_device()
-
-def settings_enable_quicksync():
-    stop_bitcoind()
-    stop_quicksync()
-    enable_quicksync()
-    delete_quicksync_data()
-    reboot_device()
-
-def reset_bitcoin_env_file():
-    os.system("echo 'BTCARGS=' > "+BITCOIN_ENV_FILE)
-
-def delete_bitcoin_data():
-    os.system("rm -rf /mnt/hdd/mynode/bitcoin")
-    os.system("rm -rf /mnt/hdd/mynode/quicksync/.quicksync_complete")
-    os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpc_environment")
-    os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpcpw")
-
-def delete_quicksync_data():
-    os.system("rm -rf /mnt/hdd/mynode/quicksync")
-    os.system("rm -rf /home/bitcoin/.config/transmission") # Old dir
-    os.system("rm -rf /mnt/hdd/mynode/.config/transmission")
-
-def delete_lnd_data():
-    #os.system("rm -f "+LND_WALLET_FILE)
-    os.system("rm -rf "+LND_DATA_FOLDER)
-    os.system("rm -rf /home/bitcoin/.lnd-admin/credentials.json")
-    os.system("rm -rf /mnt/hdd/mynode/settings/.lndpw")
-    os.system("rm -rf /home/admin/.lnd/")
-    return True
-
-def reboot_device():
-    os.system("reboot")
-
-def shutdown_device():
-    os.system("shutdown -h now")
-
-def reset_blockchain():
-    stop_bitcoind()
-    delete_bitcoin_data()
-    reboot_device()
-
-def restart_quicksync():
-    os.system('echo "quicksync_reset" > /mnt/hdd/mynode/.mynode_status')
-    stop_bitcoind()
-    stop_quicksync()
-    delete_bitcoin_data()
-    delete_quicksync_data()
-    enable_quicksync()
-    reboot_device()
-
-def reset_tor():
-    os.system("rm -rf /var/lib/tor/*")
-    os.system("rm -rf /mnt/hdd/mynode/bitcoin/onion_private_key")
-    os.system("rm -rf /mnt/hdd/mynode/lnd/v2_onion_private_key")
-
-def factory_reset():
-    # Reset subsystems that have local data
-    delete_quicksync_data()
-
-    # Delete LND data
-    delete_lnd_data()
-
-    # Delete Tor data
-    reset_tor()
-
-    # Disable services
-    os.system("systemctl disable electrs --no-pager")
-    os.system("systemctl disable lndhub --no-pager")
-    os.system("systemctl disable btc_rpc_explorer --no-pager")
-    os.system("systemctl disable vpn --no-pager")
-
-    # Trigger drive to be reformatted on reboot
-    os.system("rm -f /mnt/hdd/.mynode")
-
-    # Reset password
-    os.system("/usr/bin/mynode_chpasswd.sh bolt")
-
-    # Reboot
-    reboot_device()
-
-def upgrade_device():
-    # Upgrade
-    os.system("/usr/bin/mynode_upgrade.sh")
-
-    # Reboot
-    reboot_device()
-
 
 # Flask Pages
 @mynode_settings.route("/settings")
@@ -378,13 +271,22 @@ def page_lnd_delete_wallet():
     if pw == None or p.authenticate("admin", pw) == False:
         flash("Invalid Password", category="error")
         return redirect(url_for(".page_settings"))
-    else:
-        # Successful Auth
-        delete_lnd_data()
-        restart_lnd()
 
-    flash("Lightning wallet deleted!", category="message")
-    return redirect(url_for(".page_settings"))
+    # Successful Auth
+    delete_lnd_data()
+    
+    # Trigger reboot
+    t = Timer(1.0, reboot_device)
+    t.start()
+
+    # Wait until device is restarted
+    templateData = {
+        "title": "myNode Reboot",
+        "header_text": "Restarting",
+        "subheader_text": "This will take several minutes..."
+    }
+    return render_template('reboot.html', **templateData)
+
 
 @mynode_settings.route("/settings/reset-tor", methods=['POST'])
 def page_reset_tor():

@@ -442,12 +442,29 @@ a:active {
     margin-top: -.8em;
     text-align: center;
     line-height: 1.6em;
-  }
-  #upload-handle {
+}
+#upload-handle {
     width: 6em;
     height: 1.6em;
     top: 50%;
     margin-top: -.8em;
     text-align: center;
     line-height: 1.6em;
-  }
+}
+
+.centered_text_div {
+    width: 600px;
+    margin: auto;
+    text-align: justify;
+    font-size: 14px;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-top: 10px;
+    margin-bottom: 40px;
+}
+
+.config_textarea {
+    width: 600px;
+    height: 200px;
+    font-size: 14px;
+    font-family: "Courier New", Courier, monospace;
+}
