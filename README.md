@@ -70,7 +70,7 @@ Once you are running myNode, you can easily modify and update the software yours
 
 1. Start by running myNode on your device via the instructions above in "Running myNode"
 2. Modify myNode files
-    * Clone the git repo - 'git clone https://github.com/mynodebtc/mynode.git'
+    * Clone this git repo on your PC or laptop - 'git clone https://github.com/mynodebtc/mynode.git'
     * Make your modifications
 3. Run 'make rootfs'
     * Or run 'make rootfs_auto' in a new console tab
@@ -93,7 +93,7 @@ Add another argument to the local upgrade script:
 Once you are running myNode, you can easily update the software yourself!
 
 1. Start by running myNode on your device via the instructions above in "Running myNode"
-2. Clone this git repo
+2. Clone this git repo on your PC or laptop
     * Run 'git clone https://github.com/mynodebtc/mynode.git'
     * Run 'cd mynode'
 3. Run 'make rootfs'
