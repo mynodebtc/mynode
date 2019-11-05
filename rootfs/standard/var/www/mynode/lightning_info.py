@@ -89,8 +89,10 @@ def create_wallet(seed):
     try:
         subprocess.check_call("create_lnd_wallet.tcl \""+seed+"\"", shell=True)
 
-        t = Timer(1.0, unlock_wallet)
-        t.start()
+        # DO NOT unlock after wallet create
+        # https://github.com/lightningnetwork/lnd/issues/3631
+        #t = Timer(1.0, unlock_wallet)
+        #t.start()
         
         # Sync FS and sleep so the success redirect understands the wallet was created
         os.system("sync")
