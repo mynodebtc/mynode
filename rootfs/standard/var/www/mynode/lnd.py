@@ -300,6 +300,23 @@ def page_lnd_change_alias():
     }
     return render_template('reboot.html', **templateData)
 
+@mynode_lnd.route("/lnd/reset_config")
+def lnd_reset_config_page():
+    check_logged_in()
+
+    delete_lnd_custom_config()
+        
+    # Trigger reboot
+    t = Timer(1.0, reboot_device)
+    t.start()
+
+    # Wait until device is restarted
+    templateData = {
+        "title": "myNode Reboot",
+        "header_text": "Restarting",
+        "subheader_text": "This will take several minutes..."
+    }
+    return render_template('reboot.html', **templateData)
 
 @mynode_lnd.route("/lnd/config", methods=['GET','POST'])
 def lnd_config_page():
@@ -308,7 +325,7 @@ def lnd_config_page():
     # Handle form
     if request.method == 'POST':
         custom_config = request.form.get('custom_config')
-        set_lnd_additional_config(custom_config)
+        set_lnd_custom_config(custom_config)
         
         # Trigger reboot
         t = Timer(1.0, reboot_device)
@@ -322,13 +339,13 @@ def lnd_config_page():
         }
         return render_template('reboot.html', **templateData)
 
-    lnd_config = get_lnd_config()
-    custom_lnd_config = get_lnd_additional_config()
+    lnd_config = get_lnd_custom_config()
+    if lnd_config == "ERROR":
+        lnd_config = get_lnd_config()
 
     templateData = {
         "title": "myNode LND Config",
-        "lnd_config": lnd_config,
-        "custom_lnd_config": custom_lnd_config
+        "lnd_config": lnd_config
     }
     return render_template('lnd_config.html', **templateData)
 

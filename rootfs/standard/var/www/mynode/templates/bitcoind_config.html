@@ -22,22 +22,15 @@
         {% include 'includes/message_display.html' %}
 
         <div class="main_header">Bitcoin Config</div>
-
-        <br/>
-        <div class="centered_text_div">
-            <pre>{{ bitcoin_config }}</pre>
-        </div>
-
-        <br/>
-        <div class="main_header">Bitcoin Custom Config</div>
         <div class="main_header_sub_text">
-            Custom config is appended to the bottom of the default myNode Bitcoin Config. Saving will reboot your device.
+            Saving will reboot your device.
         </div>
         <div class="centered_text_div">
             <form action="/bitcoind/config" method="POST">
-                <textarea class="config_textarea" name="custom_config" id="custom_config">{{ custom_bitcoin_config }}</textarea>
+                <textarea class="config_textarea" name="custom_config" id="custom_config">{{ bitcoin_config }}</textarea>
                 <br/><br/>
                 <input class="ui-button ui-widget ui-corner-all" type="submit" value="Save"/>
+                <a href="/bitcoind/reset_config" class="ui-button ui-widget ui-corner-all">Reset Config</a>
             </form>
         </div>
 

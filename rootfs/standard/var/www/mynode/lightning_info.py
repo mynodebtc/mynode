@@ -178,18 +178,21 @@ def get_lnd_config():
 def regenerate_lnd_config():
     os.system("/usr/bin/mynode_gen_lnd_config.sh")
 
-def get_lnd_additional_config():
+def get_lnd_custom_config():
     try:
-        with open("/mnt/hdd/mynode/settings/lnd_additional_config") as f:
+        with open("/mnt/hdd/mynode/settings/lnd_custom.conf") as f:
             return f.read()
     except:
         return "ERROR"
 
-def set_lnd_additional_config(config):
+def set_lnd_custom_config(config):
     try:
-        with open("/mnt/hdd/mynode/settings/lnd_additional_config", "w") as f:
+        with open("/mnt/hdd/mynode/settings/lnd_custom.conf", "w") as f:
             f.write(config)
         os.system("sync")
         return True
     except:
         return False
+
+def delete_lnd_custom_config():
+    os.system("rm -f /mnt/hdd/mynode/settings/lnd_custom.conf")
