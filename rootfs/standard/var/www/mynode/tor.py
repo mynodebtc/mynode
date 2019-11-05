@@ -57,7 +57,6 @@ def page_tor():
         "mynode_onion_password": mynode_onion_password,
         "services": services,
         "fully_noded_link": fully_noded_link,
-        "services": services,
         "ui_settings": read_ui_settings()
     }
     return render_template('tor.html', **templateData)
