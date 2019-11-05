@@ -36,29 +36,28 @@ def page_settings():
     # Get QuickSync Status
     quicksync_status = ""
     try:
-        quicksync_status = subprocess.check_output(["mynode-get-quicksync-status"])
-        quicksync_status = quicksync_status.decode("utf8")
+        quicksync_status = subprocess.check_output(["mynode-get-quicksync-status"]).decode("utf8")
     except:
         quicksync_status = "ERROR"
 
     # Get Bitcoin Status
     bitcoin_status = ""
     try:
-        bitcoin_status = subprocess.check_output(["tail","-n","200","/mnt/hdd/mynode/bitcoin/debug.log"])
+        bitcoin_status = subprocess.check_output(["tail","-n","200","/mnt/hdd/mynode/bitcoin/debug.log"]).decode("utf8")
     except:
         bitcoin_status = "ERROR"
 
     # Get LND Status
     lnd_status = ""
     try:
-        lnd_status = subprocess.check_output("journalctl --unit=lnd --no-pager | tail -n 100", shell=True)
+        lnd_status = subprocess.check_output("journalctl --unit=lnd --no-pager | tail -n 100", shell=True).decode("utf8")
     except:
         lnd_status = "ERROR"
 
     # Get Electrs Status
     electrs_status = ""
     try:
-        electrs_status = subprocess.check_output("journalctl --unit=electrs --no-pager | tail -n 100", shell=True)
+        electrs_status = subprocess.check_output("journalctl --unit=electrs --no-pager | tail -n 100", shell=True).decode("utf8")
     except:
         electrs_status = "ERROR"
 
