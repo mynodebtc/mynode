@@ -10,6 +10,9 @@ echo "Waiting on lnd files..."
 while [ ! -f $LND_TLS_CERT_FILE ]; do
     sleep 1m
 done
+# Copy cert so we can interact with LND even if wallet has not been created
+cp -f $LND_TLS_CERT_FILE /home/admin/.lnd/
+chown -R admin:admin /home/admin/.lnd/
 while [ ! -f $LND_ADMIN_MACAROON_FILE ]; do
     sleep 1m
 done

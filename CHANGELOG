@@ -1,8 +1,34 @@
+=== v0.1.63 ===
+- Fix issues related to custom BTC+LND config
+- Workaround LND deadlock after creating new wallet
+- Other minor fixes
+
+=== v0.1.62 ===
+- Add ability to customize LND and BTC config via GUI
+- Reorganized settings page
+- Add status logs for LND and Electrum Server
+- Add QuickSync bandwidth settings
+- Fixed bug where upgrades could incorrectly appear available
+
+=== v0.1.61 ===
+- Changed device detection
+- Better local IP detection
+- Bug fixes
+
+=== v0.1.60 ===
+- Improved electrum status
+- FullyNoded integration with Tor Link
+- Improve QuickSync Torrent Transition
+- Bug fixes
+
 === v0.1.59 ===
-- Add 443 to Tor
-- Big fix re SSH key and random PW creation
+- Add HTTPS to Tor
 - SSDs skip QuickSync by default
+- Add lndmanage tool
 - Custom LND Config
+- GUI-wide password
+- View upgrade changes on settings page
+- Bug fixes: SSH key and PW generation, local upgrades
 
 === v0.1.58 ===
 - Add improved debug info

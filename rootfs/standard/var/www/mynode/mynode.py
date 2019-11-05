@@ -1,6 +1,7 @@
 
 from config import *
 from flask import Flask, render_template, Markup, send_from_directory, redirect, request, url_for
+from user_management import *
 from bitcoind import mynode_bitcoind
 from bitcoin_cli import mynode_bitcoin_cli
 from tor import mynode_tor
@@ -17,6 +18,7 @@ from bitcoin_info import *
 from lightning_info import *
 from messages import get_message
 from thread_functions import *
+from datetime import timedelta
 import pam
 import json
 import random
@@ -86,6 +88,7 @@ def on_shutdown(signum, frame):
 ### Flask Page Processing
 @app.route("/")
 def index():
+    check_logged_in()
     status = get_status()
 
     bitcoin_block_height = get_bitcoin_block_height()
@@ -102,6 +105,7 @@ def index():
         except:
             status = "Waiting on quicksync to start..."
 
+        status = status.decode("utf8")
         status = Markup("<div style='text-align: left; font-size: 12px; width: 800px;'><pre>"+status+"</pre></div>")
         templateData = {
             "title": "myNode Uploader",
@@ -400,6 +404,8 @@ def index():
 
 @app.route("/product-key", methods=['GET','POST'])
 def page_product_key():
+    check_logged_in()
+
     # If get, just display page
     if request.method == 'GET':
         templateData = {
@@ -436,6 +442,7 @@ def page_product_key():
 
 @app.route("/toggle-lndhub")
 def page_toggle_lndhub():
+    check_logged_in()
     if is_lndhub_enabled():
         disable_lndhub()
     else:
@@ -444,6 +451,7 @@ def page_toggle_lndhub():
 
 @app.route("/toggle-electrs")
 def page_toggle_electrs():
+    check_logged_in()
     if is_electrs_enabled():
         disable_electrs()
     else:
@@ -452,6 +460,7 @@ def page_toggle_electrs():
 
 @app.route("/toggle-btcrpcexplorer")
 def page_toggle_btcrpcexplorer():
+    check_logged_in()
     if is_btcrpcexplorer_enabled():
         disable_btcrpcexplorer()
     else:
@@ -460,19 +469,39 @@ def page_toggle_btcrpcexplorer():
 
 @app.route("/toggle-vpn")
 def page_toggle_vpn():
+    check_logged_in()
     if is_vpn_enabled():
         disable_vpn()
     else:
         enable_vpn()
     return redirect("/")
 
+@app.route("/login", methods=["GET","POST"])
+def page_login():
+    if request.method == 'GET':
+        return render_template('login.html')
+
+    pw = request.form.get('password')
+    if login(pw):
+        return redirect("/")
+    else:
+        flash("Invalid Password", category="error")
+        return redirect("/login")
+
+@app.route("/logout")
+def page_logout():
+    logout()
+    return redirect("/")
+
 @app.route("/about")
 def page_about():
+    check_logged_in()
     templateData = {"ui_settings": read_ui_settings()}
     return render_template('about.html', **templateData)
 
 @app.route("/help")
 def page_help():
+    check_logged_in()
     templateData = {"ui_settings": read_ui_settings()}
     return render_template('help.html', **templateData)
 
@@ -506,7 +535,10 @@ if __name__ == "__main__":
     my_logger.addHandler(handler)
     app.logger.addHandler(my_logger)
 
+    app.register_error_handler(LoginError, handle_login_exception)
+
     app.secret_key = 'NoZlPx7t15foPfKpivbVrTrTy2bTQ99chJoz3LFmf5BFsh3Nz4ud0mMpGjtB4bhP'
+    app.permanent_session_lifetime = timedelta(days=90)
 
     try:
         app.run(host='0.0.0.0', port=80)

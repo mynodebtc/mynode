@@ -4,7 +4,8 @@ from threading import Timer
 from bitcoin_info import *
 from lightning_info import *
 from settings import reboot_device, read_ui_settings
-from device_info import is_community_edition
+from device_info import *
+from user_management import check_logged_in
 import base64
 import subprocess
 import json
@@ -38,6 +39,8 @@ def get_image_contents(filename):
 # Flask Pages
 @mynode_lnd.route("/lnd")
 def page_lnd():
+    check_logged_in()
+
     height = 0
     alias = "empty"
     num_peers = "0"
@@ -123,10 +126,13 @@ def page_lnd():
 
 @mynode_lnd.route("/lnd/tls.cert")
 def lnd_tls_cert():
+    check_logged_in()
     return send_from_directory(directory="/mnt/hdd/mynode/lnd/", filename="tls.cert")
 
 @mynode_lnd.route("/lnd/admin.macaroon", methods=["POST"])
 def lnd_macaroon():
+    check_logged_in()
+
     p = pam.pam()
     pw = request.form.get('password_download_macaroon')
     if pw == None or p.authenticate("admin", pw) == False:
@@ -138,10 +144,12 @@ def lnd_macaroon():
 
 @mynode_lnd.route("/lnd/channel.backup")
 def lnd_channel_backup():
+    check_logged_in()
     return send_from_directory(directory="/home/bitcoin/lnd_backup/", filename="channel.backup")
 
 @mynode_lnd.route("/lnd/create_wallet")
 def page_lnd_create_wallet():
+    check_logged_in()
 
     try:
         seed = gen_new_wallet_seed()
@@ -163,6 +171,8 @@ def page_lnd_create_wallet():
 
 @mynode_lnd.route("/lnd/create_wallet_with_seed", methods=['GET','POST'])
 def page_lnd_create_wallet_with_seed():
+    check_logged_in()
+
     # Load page
     if request.method == 'GET':
         templateData = {
@@ -184,6 +194,8 @@ def page_lnd_create_wallet_with_seed():
 
 @mynode_lnd.route("/lnd/create_wallet_confirm", methods=['GET','POST'])
 def page_lnd_create_wallet_confirm():
+    check_logged_in()
+
     # Load page
     if request.method == 'GET':
         templateData = {
@@ -212,6 +224,8 @@ def page_lnd_create_wallet_confirm():
 
 @mynode_lnd.route("/lnd/lndconnect", methods=["GET","POST"])
 def page_lnd_lndconnect():
+    check_logged_in()
+
     # Load page
     if request.method == 'GET':
         return redirect(url_for(".page_lnd"))
@@ -261,6 +275,8 @@ def page_lnd_lndconnect():
 
 @mynode_lnd.route("/lnd/change_alias", methods=["POST"])
 def page_lnd_change_alias():
+    check_logged_in()
+    
     # Load page
     p = pam.pam()
     pw = request.form.get('password_change_alias')
@@ -293,3 +309,53 @@ def page_lnd_change_alias():
         "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
+
+@mynode_lnd.route("/lnd/reset_config")
+def lnd_reset_config_page():
+    check_logged_in()
+
+    delete_lnd_custom_config()
+        
+    # Trigger reboot
+    t = Timer(1.0, reboot_device)
+    t.start()
+
+    # Wait until device is restarted
+    templateData = {
+        "title": "myNode Reboot",
+        "header_text": "Restarting",
+        "subheader_text": "This will take several minutes..."
+    }
+    return render_template('reboot.html', **templateData)
+
+@mynode_lnd.route("/lnd/config", methods=['GET','POST'])
+def lnd_config_page():
+    check_logged_in()
+
+    # Handle form
+    if request.method == 'POST':
+        custom_config = request.form.get('custom_config')
+        set_lnd_custom_config(custom_config)
+        
+        # Trigger reboot
+        t = Timer(1.0, reboot_device)
+        t.start()
+
+        # Wait until device is restarted
+        templateData = {
+            "title": "myNode Reboot",
+            "header_text": "Restarting",
+            "subheader_text": "This will take several minutes..."
+        }
+        return render_template('reboot.html', **templateData)
+
+    lnd_config = get_lnd_custom_config()
+    if lnd_config == "ERROR":
+        lnd_config = get_lnd_config()
+
+    templateData = {
+        "title": "myNode LND Config",
+        "lnd_config": lnd_config
+    }
+    return render_template('lnd_config.html', **templateData)
+

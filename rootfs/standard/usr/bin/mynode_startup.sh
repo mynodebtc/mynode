@@ -117,8 +117,6 @@ fi
 
 # Default QuickSync
 if [ ! -f /mnt/hdd/mynode/settings/.setquicksyncdefault ]; then
-    rm -f /mnt/hdd/mynode/settings/quicksync_disabled
-
     # Default x86 to no QuickSync
     if [ $IS_X86 = 1 ]; then
         touch /mnt/hdd/mynode/settings/quicksync_disabled
@@ -134,36 +132,10 @@ fi
 
 
 # BTC Config
-cp -f /usr/share/mynode/bitcoin.conf /mnt/hdd/mynode/bitcoin/bitcoin.conf
-touch /mnt/hdd/mynode/settings/bitcoin_additional_config
-echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
-echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
-echo "### CUSTOM BTC CONFIG ###" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
-echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
-cat /mnt/hdd/mynode/settings/bitcoin_additional_config >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
-
-
-PW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
-RPCAUTH=$(gen_rpcauth.py mynode $PW)
-#sed -i "s/rpcpassword=.*/rpcpassword=$PW/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
-sed -i "s/rpcauth=.*/$RPCAUTH/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
-
-cp -f /mnt/hdd/mynode/bitcoin/bitcoin.conf /home/admin/.bitcoin/bitcoin.conf
-chown bitcoin:bitcoin /mnt/hdd/mynode/bitcoin/bitcoin.conf
-chown admin:admin /home/admin/.bitcoin/bitcoin.conf
+source /usr/bin/mynode_gen_bitcoin_config.sh
 
 # LND Config
-cp /usr/share/mynode/lnd.conf /mnt/hdd/mynode/lnd/lnd.conf
-touch /mnt/hdd/mynode/settings/lnd_additional_config
-echo "" >> /mnt/hdd/mynode/lnd/lnd.conf
-echo "" >> /mnt/hdd/mynode/lnd/lnd.conf
-echo "### CUSTOM LND CONFIG ###" >> /mnt/hdd/mynode/lnd/lnd.conf
-echo "" >> /mnt/hdd/mynode/lnd/lnd.conf
-cat /mnt/hdd/mynode/settings/lnd_additional_config >> /mnt/hdd/mynode/lnd/lnd.conf
-
-ALIAS=$(cat /mnt/hdd/mynode/settings/.lndalias)
-sed -i "s/alias=.*/alias=$ALIAS/g" /mnt/hdd/mynode/lnd/lnd.conf
-chown bitcoin:bitcoin /mnt/hdd/mynode/lnd/lnd.conf
+source /usr/bin/mynode_gen_lnd_config.sh
 
 # RTL config
 cp /usr/share/mynode/RTL.conf /opt/mynode/RTL/RTL.conf

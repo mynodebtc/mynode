@@ -5,9 +5,24 @@ set -x
 
 source /usr/share/mynode/mynode_config.sh
 
-BACKGROUND_DL_RATE=2500
-if [ $IS_RASPI3 -eq 1 ]; then
-    BACKGROUND_DL_RATE=500
+if [ ! -f $QUICKSYNC_UPLOAD_RATE_FILE ]; then
+    UPLOAD_RATE=1000
+    if [ $IS_RASPI3 -eq 1 ]; then
+        UPLOAD_RATE=0
+    fi
+    echo "$UPLOAD_RATE" > $QUICKSYNC_UPLOAD_RATE_FILE
+else
+    UPLOAD_RATE=$(cat $QUICKSYNC_UPLOAD_RATE_FILE)
+fi
+
+if [ ! -f $QUICKSYNC_BACKGROUND_DOWNLOAD_RATE_FILE ]; then
+    DOWNLOAD_RATE=2500
+    if [ $IS_RASPI3 -eq 1 ]; then
+        DOWNLOAD_RATE=500
+    fi
+    echo "$DOWNLOAD_RATE" > $QUICKSYNC_BACKGROUND_DOWNLOAD_RATE_FILE
+else
+    DOWNLOAD_RATE=$(cat $QUICKSYNC_BACKGROUND_DOWNLOAD_RATE_FILE)
 fi
 
 # Let transmission startup
@@ -30,22 +45,17 @@ while true; do
         transmission-remote -U
         transmission-remote -D
     elif [ ! -f "/mnt/hdd/mynode/quicksync/.quicksync_complete" ]; then
-        echo "QuickSync not complete, stopping upload, unlimited download"
-        transmission-remote -u 0
+        echo "QuickSync not complete, limited upload, unlimited download"
+        transmission-remote -u $UPLOAD_RATE
         transmission-remote -D
     elif [ ! -f "/mnt/hdd/mynode/.mynode_bitcoind_synced" ]; then
         echo "Bitcoin not synced, stopping upload, stopping download"
         transmission-remote -u 0
         transmission-remote -d 0
     elif [[ "$PERCENT" != *"100"* ]]; then
-        echo "QuickSync is downloading (but has completed once), stopping upload, limited download"
-        transmission-remote -u 0
-        transmission-remote -d $BACKGROUND_DL_RATE
-    elif [ -f $QUICKSYNC_BANDWIDTH_FILE ]; then
-        RATE=$(cat $QUICKSYNC_BANDWIDTH_FILE)
-        echo "Setting upload rate to $RATE kbps"
-        transmission-remote -u $RATE
-        transmission-remote -d $BACKGROUND_DL_RATE
+        echo "QuickSync is downloading (but has completed once), limited upload, limited download"
+        transmission-remote -u $UPLOAD_RATE
+        transmission-remote -d $DOWNLOAD_RATE
     else
         echo "Setting upload rate to unlimited"
         transmission-remote -U

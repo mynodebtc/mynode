@@ -1,11 +1,13 @@
-from flask import Blueprint, render_template, session, abort, Markup, request, redirect
+from flask import Blueprint, render_template, session, abort, Markup, request, redirect, flash
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from pprint import pprint, pformat
 from bitcoin_info import *
+from device_info import *
 #from bitcoin.wallet import *
 from subprocess import check_output, check_call
 from electrum_functions import *
 from settings import read_ui_settings
+from user_management import check_logged_in
 import socket
 import hashlib
 import json
@@ -99,6 +101,8 @@ def search(search_term):
 ### Page functions
 @mynode_bitcoind.route("/bitcoind")
 def bitcoind_status_page():
+    check_logged_in()
+
     # Get current information
     try:
         info = get_bitcoin_blockchain_info()
@@ -176,8 +180,60 @@ def bitcoind_status_page():
     }
     return render_template('bitcoind_status.html', **templateData)
 
+@mynode_bitcoind.route("/bitcoind/reset_config")
+def bitcoin_reset_config_page():
+    check_logged_in()
+
+    delete_bitcoin_custom_config()
+        
+    # Trigger reboot
+    t = Timer(1.0, reboot_device)
+    t.start()
+
+    # Wait until device is restarted
+    templateData = {
+        "title": "myNode Reboot",
+        "header_text": "Restarting",
+        "subheader_text": "This will take several minutes..."
+    }
+    return render_template('reboot.html', **templateData)
+
+@mynode_bitcoind.route("/bitcoind/config", methods=['GET','POST'])
+def bitcoind_config_page():
+    check_logged_in()
+
+    # Handle form
+    if request.method == 'POST':
+        custom_config = request.form.get('custom_config')
+        set_bitcoin_custom_config(custom_config)
+        
+        # Trigger reboot
+        t = Timer(1.0, reboot_device)
+        t.start()
+
+        # Wait until device is restarted
+        templateData = {
+            "title": "myNode Reboot",
+            "header_text": "Restarting",
+            "subheader_text": "This will take several minutes..."
+        }
+        return render_template('reboot.html', **templateData)
+
+    bitcoin_config = get_bitcoin_custom_config()
+    if bitcoin_config == "ERROR":
+        bitcoin_config = get_bitcoin_config()
+
+    templateData = {
+        "title": "myNode Bitcoin Config",
+        "bitcoin_config": bitcoin_config
+    }
+    return render_template('bitcoind_config.html', **templateData)
+
+
 @mynode_bitcoind.route("/explorer")
 def bitcoind_explorer_page():
+    check_logged_in()
+
     # Get current information
     try:
         info = get_bitcoin_blockchain_info()
@@ -220,6 +276,8 @@ def bitcoind_explorer_page():
 
 @mynode_bitcoind.route("/explorer/search", methods=['POST'])
 def search_page():
+    check_logged_in()
+
     if not request:
         return redirect("/explorer")
 
@@ -254,6 +312,8 @@ def search_page():
 
 @mynode_bitcoind.route("/explorer/tx/<txid>")
 def tx_page(txid):
+    check_logged_in()
+
     try:
         # Get info
         electrum_data = get_from_electrum("blockchain.transaction.get", [txid, True])
@@ -323,6 +383,8 @@ def tx_page(txid):
 
 @mynode_bitcoind.route("/explorer/block/<block_hash>")
 def block_page(block_hash):
+    check_logged_in()
+
     try:
         # Get info
         rpc_user = get_bitcoin_rpc_username()
@@ -363,6 +425,8 @@ def block_page(block_hash):
 
 @mynode_bitcoind.route("/explorer/addr/<addr>")
 def address_page(addr):
+    check_logged_in()
+    
     try:
         # Get addr info
         script_hash = get_scripthash_for_address(addr)

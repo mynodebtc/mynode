@@ -1,4 +1,5 @@
 from config import *
+from threading import Timer
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 import subprocess
 import copy
@@ -120,3 +121,46 @@ def get_bitcoin_peers():
 def get_bitcoin_mempool():
     global bitcoin_mempool
     return copy.deepcopy(bitcoin_mempool)
+
+def get_default_bitcoin_config():
+    try:
+        with open("/usr/share/mynode/bitcoin.conf") as f:
+            return f.read()
+    except:
+        return "ERROR"
+
+def get_bitcoin_config():
+    try:
+        with open("/mnt/hdd/mynode/bitcoin/bitcoin.conf") as f:
+            return f.read()
+    except:
+        return "ERROR"
+
+def regenerate_bitcoin_config():
+    os.system("/usr/bin/mynode_gen_bitcoin_config.sh")
+
+def get_bitcoin_custom_config():
+    try:
+        with open("/mnt/hdd/mynode/settings/bitcoin_custom.conf") as f:
+            return f.read()
+    except:
+        return "ERROR"
+
+def set_bitcoin_custom_config(config):
+    try:
+        with open("/mnt/hdd/mynode/settings/bitcoin_custom.conf", "w") as f:
+            f.write(config)
+        os.system("sync")
+        return True
+    except:
+        return False
+
+def delete_bitcoin_custom_config():
+    os.system("rm -f /mnt/hdd/mynode/settings/bitcoin_custom.conf")
+
+def restart_bitcoin_actual():
+    os.system("systemctl restart bitcoind")
+
+def restart_bitcoin():
+    t = Timer(1.0, restart_bitcoin_actual)
+    t.start()

@@ -54,6 +54,20 @@
             </tbody>
         </table>
 
+        <br/>
+        <div class="main_header">Tor Connected Apps</div>
+        <div class="app_tile_row">
+            <div class="app_tile_short">
+                <div class="app_status_icon"></div>
+                <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/fully_noded_logo.png")}}"/></div>
+                <div class="app_title">Fully Noded</div>
+                <div class="app_status"></div>
+                <div class="app_contents">
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="{{ fully_noded_link }}" target="_blank">Connect</a>
+                </div>
+            </div>
+        </div>
+
 
         {% include 'includes/footer.html' %}
      </body>
