@@ -10,6 +10,7 @@ rm -rf /tmp/mynode_release_latest.tar.gz
 rm -rf /tmp/mynode_release.pub
 rm -rf /tmp/upgrade/
 mkdir -p /tmp/upgrade/
+mkdir -p /home/admin/upgrade_logs/
 
 # Download Latest
 wget $UPGRADE_DOWNLOAD_URL -O /tmp/mynode_release_latest.tar.gz
@@ -27,16 +28,15 @@ tar -xvf /tmp/mynode_release_latest.tar.gz -C /tmp/upgrade/
 
 # Install files
 if [ $IS_X86 = 1 ]; then
-    rsync -r -K /tmp/upgrade/out/rootfs_${DEVICE_TYPE}/* /
+    rsync -r -K /tmp/upgrade/out/rootfs_${DEVICE_TYPE}/* / > /home/admin/upgrade_logs/upgrade_log_${VERSION}_copy.txt 2>&1
 else
-    cp -rf /tmp/upgrade/out/rootfs_${DEVICE_TYPE}/* /
+    cp -rf /tmp/upgrade/out/rootfs_${DEVICE_TYPE}/* / > /home/admin/upgrade_logs/upgrade_log_${VERSION}_copy.txt 2>&1
 fi
 sleep 1
 sync
 sleep 1
 
 # Run post upgrade script
-mkdir /home/admin/upgrade_logs/
 VERSION=$(cat /usr/share/mynode/version)
-/bin/bash /usr/bin/mynode_post_upgrade.sh > /home/admin/upgrade_logs/upgrade_log_$VERSION.txt 2>&1
+/bin/bash /usr/bin/mynode_post_upgrade.sh > /home/admin/upgrade_logs/upgrade_log_${VERSION}_post.txt 2>&1
 chown admin:admin -r /home/admin/upgrade_logs
