@@ -453,7 +453,7 @@ a:active {
 }
 
 .centered_text_div {
-    width: 600px;
+    width: 800px;
     margin: auto;
     text-align: justify;
     font-size: 14px;
@@ -463,8 +463,8 @@ a:active {
 }
 
 .config_textarea {
-    width: 600px;
-    height: 200px;
+    width: 800px;
+    height: 400px;
     font-size: 14px;
     font-family: "Courier New", Courier, monospace;
 }

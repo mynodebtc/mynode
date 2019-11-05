@@ -1,13 +1,11 @@
 #!/bin/bash
 
 # Generate BTC Config
-cp -f /usr/share/mynode/bitcoin.conf /mnt/hdd/mynode/bitcoin/bitcoin.conf
-touch /mnt/hdd/mynode/settings/bitcoin_additional_config
-echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
-echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
-echo "### CUSTOM BTC CONFIG ###" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
-echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
-cat /mnt/hdd/mynode/settings/bitcoin_additional_config >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+if [ -f /mnt/hdd/mynode/settings/bitcoin_custom.conf ]; then
+    cp -f /mnt/hdd/mynode/settings/bitcoin_custom.conf /mnt/hdd/mynode/bitcoin/bitcoin.conf
+else
+    cp -f /usr/share/mynode/bitcoin.conf /mnt/hdd/mynode/bitcoin/bitcoin.conf
+fi
 
 PW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
 RPCAUTH=$(gen_rpcauth.py mynode $PW)

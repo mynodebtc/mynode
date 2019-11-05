@@ -21,23 +21,16 @@
 
         {% include 'includes/message_display.html' %}
 
-        <div class="main_header">Lightning Config</div>
-
-        <br/>
-        <div class="centered_text_div">
-            <pre>{{ lnd_config }}</pre>
-        </div>
-
-        <br/>
         <div class="main_header">LND Custom Config</div>
         <div class="main_header_sub_text">
-            Custom config is appended to the bottom of the default myNode LND Config. Saving will reboot your device.
+            Saving will reboot your device.
         </div>
         <div class="centered_text_div">
             <form action="/lnd/config" method="POST">
-                <textarea class="config_textarea" name="custom_config" id="custom_config">{{ custom_lnd_config }}</textarea>
+                <textarea class="config_textarea" name="custom_config" id="custom_config">{{ lnd_config }}</textarea>
                 <br/><br/>
                 <input class="ui-button ui-widget ui-corner-all" type="submit" value="Save"/>
+                <a href="/lnd/reset_config" class="ui-button ui-widget ui-corner-all">Reset Config</a>
             </form>
         </div>
 

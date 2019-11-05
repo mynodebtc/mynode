@@ -177,6 +177,23 @@ def bitcoind_status_page():
     }
     return render_template('bitcoind_status.html', **templateData)
 
+@mynode_bitcoind.route("/bitcoind/reset_config")
+def bitcoin_reset_config_page():
+    check_logged_in()
+
+    delete_bitcoin_custom_config()
+        
+    # Trigger reboot
+    t = Timer(1.0, reboot_device)
+    t.start()
+
+    # Wait until device is restarted
+    templateData = {
+        "title": "myNode Reboot",
+        "header_text": "Restarting",
+        "subheader_text": "This will take several minutes..."
+    }
+    return render_template('reboot.html', **templateData)
 
 @mynode_bitcoind.route("/bitcoind/config", methods=['GET','POST'])
 def bitcoind_config_page():
@@ -185,7 +202,7 @@ def bitcoind_config_page():
     # Handle form
     if request.method == 'POST':
         custom_config = request.form.get('custom_config')
-        set_bitcoin_additional_config(custom_config)
+        set_bitcoin_custom_config(custom_config)
         
         # Trigger reboot
         t = Timer(1.0, reboot_device)
@@ -199,13 +216,13 @@ def bitcoind_config_page():
         }
         return render_template('reboot.html', **templateData)
 
-    bitcoin_config = get_bitcoin_config()
-    custom_bitcoin_config = get_bitcoin_additional_config()
+    bitcoin_config = get_bitcoin_custom_config()
+    if bitcoin_config == "ERROR":
+        bitcoin_config = get_bitcoin_config()
 
     templateData = {
         "title": "myNode Bitcoin Config",
-        "bitcoin_config": bitcoin_config,
-        "custom_bitcoin_config": custom_bitcoin_config
+        "bitcoin_config": bitcoin_config
     }
     return render_template('bitcoind_config.html', **templateData)
 

@@ -1,13 +1,11 @@
 #!/bin/bash
 
 # Generate LND Config
-cp /usr/share/mynode/lnd.conf /mnt/hdd/mynode/lnd/lnd.conf
-touch /mnt/hdd/mynode/settings/lnd_additional_config
-echo "" >> /mnt/hdd/mynode/lnd/lnd.conf
-echo "" >> /mnt/hdd/mynode/lnd/lnd.conf
-echo "### CUSTOM LND CONFIG ###" >> /mnt/hdd/mynode/lnd/lnd.conf
-echo "" >> /mnt/hdd/mynode/lnd/lnd.conf
-cat /mnt/hdd/mynode/settings/lnd_additional_config >> /mnt/hdd/mynode/lnd/lnd.conf
+if [ -f /mnt/hdd/mynode/settings/lnd_custom.conf ]; then
+    cp -f /mnt/hdd/mynode/settings/lnd_custom.conf /mnt/hdd/mynode/lnd/lnd.conf
+else
+    cp -f /usr/share/mynode/lnd.conf /mnt/hdd/mynode/lnd/lnd.conf
+fi
 
 ALIAS=$(cat /mnt/hdd/mynode/settings/.lndalias)
 sed -i "s/alias=.*/alias=$ALIAS/g" /mnt/hdd/mynode/lnd/lnd.conf
