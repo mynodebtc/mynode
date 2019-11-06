@@ -7,98 +7,50 @@ body {
     background: #303841;
 }
 
-.footer {
-    color: #eee;
-}
-
-a:link {
-    color: #eee;
-    text-decoration: underline dashed #eee;
-}  
-a:visited {
-    color: #eee;
-    text-decoration: underline dashed #eee;
-}
-a:hover {
-    color: #eee;
-    text-decoration: underline solid #eee;
-}
+a:link,
+a:visited,
+a:hover,
 a:active {
     color: #eee;
     text-decoration: underline dashed #eee;
 }
 
-.state_header {
+.footer,
+.state_header,
+.state_subheader,
+.main_header,
+.main_header_sub_text,
+.app_title,
+.app_status,
+.app_contents,
+.info_tile_contents,
+.content_block,
+.drive_usage,
+.settings_block_header,
+.settings_block_subheader,
+.settings_block,
+table,
+#cli_contents {
     color: #eee;
 }
 
-.state_subheader {
-    color: #eee;
-}
-
-.main_header {
-    color: #eee;
-}
-.main_header_sub_text {
-    color: #eee;
-}
-
-.app_tile {
+.app_tile,
+.app_tile_short,
+.info_tile,
+.settings_block_header {
     border: 3px solid #f9c132;
 }
-.app_tile_short {
-    border: 3px solid #f9c132;
-}
 
-.app_title {
-    color: #eee;
-}
-.app_status {
-    color: #eee;
-}
-.app_contents {
-    color: #eee;
-}
-
-.info_tile {
-    border: 3px solid #f9c132;
-}
 .info_tile_header {
     color: #FFFFFF;
     background-color: #f9c132;
-}
-.info_tile_contents {
-    color: #eee;
-}
-
-.content_block {
-    color: #eee;
-}
-
-.drive_usage {
-    color: #eee;
-}
-
-.settings_block_header {
-    color: #eee;
-    border: 3px solid #f9c132;
-}
-.settings_block_subheader {
-    color: #eee;
-}
-.settings_block {
-    color: #eee;
-}
-
-table {
-    color: #eee;
 }
 
 .divider {
     border-bottom: 3px dashed #f9c132;
 }
 
-.ui-button.ui-widget.ui-corner-all{
+.ui-button.ui-widget.ui-corner-all {
     color: #303841;
     background-color: #eee;
     border-color: #eee;
@@ -109,7 +61,8 @@ table {
     background: #eee;
 }
 
-.main_page_warning_block {
+.main_page_warning_block,
+.upgrade_ad_main_page {
     color: #eee;
     border: 3px solid #f9c132;
     background-color: #3a4750;
@@ -119,12 +72,6 @@ table {
     color: #eee;
     border: 3px solid red;
     background-color: rgb(255, 238, 238);
-}
-
-.upgrade_ad_main_page {
-    color: #eee;
-    border: 3px solid #f9c132;
-    background-color: #3a4750;
 }
 
 .slider {
@@ -145,9 +92,6 @@ input:focus + .slider {
 
 .cli_contents {
     border: 2px solid #222222;
-}
-#cli_contents {
-    color: #eee;
 }
 .config_textarea {
 	color: #eee;
