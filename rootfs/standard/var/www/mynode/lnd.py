@@ -324,7 +324,8 @@ def lnd_reset_config_page():
     templateData = {
         "title": "myNode Reboot",
         "header_text": "Restarting",
-        "subheader_text": "This will take several minutes..."
+        "subheader_text": "This will take several minutes...",
+        "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
 
@@ -345,7 +346,8 @@ def lnd_config_page():
         templateData = {
             "title": "myNode Reboot",
             "header_text": "Restarting",
-            "subheader_text": "This will take several minutes..."
+            "subheader_text": "This will take several minutes...",
+            "ui_settings": read_ui_settings()
         }
         return render_template('reboot.html', **templateData)
 
@@ -355,7 +357,8 @@ def lnd_config_page():
 
     templateData = {
         "title": "myNode LND Config",
-        "lnd_config": lnd_config
+        "lnd_config": lnd_config,
+        "ui_settings": read_ui_settings()
     }
     return render_template('lnd_config.html', **templateData)
 

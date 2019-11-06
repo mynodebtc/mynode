@@ -478,8 +478,9 @@ def page_toggle_vpn():
 
 @app.route("/login", methods=["GET","POST"])
 def page_login():
+    templateData = {"ui_settings": read_ui_settings()}
     if request.method == 'GET':
-        return render_template('login.html')
+        return render_template('login.html', **templateData)
 
     pw = request.form.get('password')
     if login(pw):

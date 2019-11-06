@@ -215,7 +215,8 @@ def bitcoind_config_page():
         templateData = {
             "title": "myNode Reboot",
             "header_text": "Restarting",
-            "subheader_text": "This will take several minutes..."
+            "subheader_text": "This will take several minutes...",
+            "ui_settings": read_ui_settings()
         }
         return render_template('reboot.html', **templateData)
 
@@ -225,7 +226,8 @@ def bitcoind_config_page():
 
     templateData = {
         "title": "myNode Bitcoin Config",
-        "bitcoin_config": bitcoin_config
+        "bitcoin_config": bitcoin_config,
+        "ui_settings": read_ui_settings()
     }
     return render_template('bitcoind_config.html', **templateData)
 
