@@ -8,6 +8,7 @@
 
 .bitcoind_table_header {
     border-bottom: 2px solid gray;
+    background-color: unset;
 }
 
 table.bitcoind_table tbody tr:nth-child(odd) td{

@@ -149,3 +149,7 @@ input:focus + .slider {
 #cli_contents {
     color: #eee;
 }
+.config_textarea {
+	color: #eee;
+	background-color: #303841;
+}
