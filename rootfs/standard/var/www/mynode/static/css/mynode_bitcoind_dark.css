@@ -1,62 +1,18 @@
-.bitcoind_search {
-    width: 600px;
-    margin: auto;
-    display: table;
-    padding: 10px;
-    vertical-align: middle;
-}
-.bitcoind_search_input {
-    width: 480px;
-    font-size: 20px;
-    vertical-align: middle;
-}
-.bitcoind_search_button {
-    width: 100px;
-    font-size: 16px;
-    vertical-align: middle;
-}
 .bitcoind_search_text {
-    font-size: 12px;
-    font-style: italic;
     color: #888888;
 }
 
 .bitcoind_error_message {
     color: #BB4444;
-    text-align: center;
-    font-size: 28px;
-    font-family: Arial, Helvetica, sans-serif;
-    padding-top: 20px;
 }
 
-.bitcoind_table {
-    width: 800px;
-    margin: auto;
-    text-align: center;
-    vertical-align: middle;
-    font-size: 14px;
-    font-family: Arial, Helvetica, sans-serif;
-    border-collapse: collapse;
-}
 .bitcoind_table_header {
-    font-size: 16px;
     border-bottom: 2px solid gray;
-    font-weight: bold;
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 table.bitcoind_table tbody tr:nth-child(odd) td{
     background-color: #222;
 }
 table.bitcoind_table tbody tr:nth-child(even) td{
-    /*background-color: #fff5ef;*/
-}
-
-table.bitcoind_table td {
-    padding: 10px;
-    margin: 0px;
-}
-.bitcoind_dump_contents {
-    margin: auto;
-    width: 600px;
+    background-color: unset;
 }

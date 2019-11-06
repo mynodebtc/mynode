@@ -3,10 +3,9 @@
 {% if ui_settings['darkmode'] %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/mynode_dark.css')}}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/mynode_bitcoind_dark.css')}}">
-{% else %}
+{% endif %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/mynode.css')}}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/mynode_bitcoind.css')}}">
-{% endif %}
 <link href="{{ url_for('static', filename='jquery_ui/jquery-ui.css')}}" rel="stylesheet">
 <meta http-equiv="Content-Language" content="en">
 <meta name="google" content="notranslate">
