@@ -35,8 +35,13 @@ def read_ui_settings():
 def write_ui_settings(ui_settings):
     ui_hdd_file = '/mnt/hdd/mynode/settings/ui.json'
     ui_mynode_file = '/home/bitcoin/.mynode/ui.json'
-    with open(ui_hdd_file, 'w') as fp:
-        json.dump(ui_settings, fp)
+
+    try:
+        with open(ui_hdd_file, 'w') as fp:
+            json.dump(ui_settings, fp)
+    except:
+        pass
+
     with open(ui_mynode_file, 'w') as fp:
         json.dump(ui_settings, fp)
 
