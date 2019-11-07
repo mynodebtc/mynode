@@ -38,8 +38,11 @@ exit
 sudo passwd -d root
 
 # Update packages
-sudo apt-get update
+sudo apt-get -y update
 sudo apt-get -y upgrade
+
+# Install some basics
+sudo apt-get -y install tmux
 
 # Sync
 sync

@@ -16,6 +16,9 @@ sudo adduser admin sudo
 sudo apt-get update
 sudo apt-get -y upgrade
 
+# Install some basics
+sudo apt-get -y install tmux
+
 # Reboot
 sudo reboot
 

@@ -26,7 +26,7 @@ sudo apt-get update
 sudo apt-get -y upgrade
 
 # Install some necessary tools
-apt-get -y install network-manager
+apt-get -y install network-manager tmux
 
 # Regenerate MAC Address for Rock64
 . /usr/lib/armbian/armbian-common
