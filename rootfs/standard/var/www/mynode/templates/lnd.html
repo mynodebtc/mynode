@@ -8,34 +8,6 @@
             $(document).ready(function() {
 
                 alias="{{alias}}"
-    
-                function downloadMacaroon() {
-                    $("#download_macaroon_form").submit();
-                    download_macaroon_dialog.dialog( "close" );
-                }
-                download_macaroon_dialog = $( "#download-macaroon-dialog" ).dialog({
-                    autoOpen: false,
-                    resizable: false,
-                    height: "auto",
-                    width: 600,
-                    modal: true,
-                    position: { my: "center top", at: "center top", of: window, collision: "none" },
-                    buttons: {
-                        "Download": downloadMacaroon,
-                        Cancel: function() {
-                            download_macaroon_dialog.dialog( "close" );
-                        }
-                    },
-                    open: function() {
-                        $("#password_download_macaroon").val("")
-                    }
-                });
-                $("#download_macaroon").on("click", function() {
-                    download_macaroon_dialog.dialog( "open" );
-                });
-                $("#download_macaroon_form").on("submit", function() {
-                    download_macaroon_dialog.dialog( "close" );
-                });
 
                 function change_alias() {
                     $("#change_alias_form").submit();
@@ -163,7 +135,13 @@
             <div class="info_tile">
                 <div class="info_tile_header">Admin Macaroon</div>
                 <div class="info_tile_contents">
-                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="download_macaroon" style="width: 70%;" href="#">download</a>
+                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="admin_macaroon" style="width: 70%;" href="/lnd/admin.macaroon">download</a>
+                </div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">Read Only Macaroon</div>
+                <div class="info_tile_contents">
+                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="readonly_macaroon" style="width: 70%;" href="/lnd/readonly.macaroon">download</a>
                 </div>
             </div>
 {% endif %}
@@ -273,20 +251,6 @@
 
         </div>
 {% endif %}
-
-        <div id="download-macaroon-dialog" title="Download Macaroon" style="display:none;">
-            <form id="download_macaroon_form" name="download_macaroon_form" action="/lnd/admin.macaroon" method="POST">
-                <p>The macaroon is an important key for controlling your Lightning Wallet. Do not share this file with others
-                    or they will be able to control your funds.</p>
-                <p>Please enter your password to download your macaroon file.</p>
-                <b>Password:</b>
-                <br/>
-                <input type="password" name="password_download_macaroon" id="password_download_macaroon" value="" class="text ui-widget-content ui-corner-all">
-            
-                <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-            </form>
-        </div>
 
         <div id="change-alias-dialog" title="Change LND Alias" style="display:none;">
             <form id="change_alias_form" name="change_alias_form" action="/lnd/change_alias" method="POST">
