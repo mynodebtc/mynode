@@ -113,10 +113,6 @@ def index():
         }
         return render_template('uploader.html', **templateData)
 
-    # Show product key page if key not set
-    if not has_product_key() and not skipped_product_key():
-        return redirect("/product-key")
-    
     if status == STATE_DRIVE_MISSING:
         templateData = {
             "title": "myNode Looking for Drive",
@@ -131,6 +127,9 @@ def index():
             "subheader_text": "myNode starting soon..."
         }
         return render_template('state.html', **templateData)
+    elif not has_product_key() and not skipped_product_key():
+        # Show product key page if key not set
+        return redirect("/product-key")
     elif status == STATE_QUICKSYNC_COPY:
         try:
             current = subprocess.check_output(["du","-m","--max-depth=0","/mnt/hdd/mynode/bitcoin/"]).split()[0]
