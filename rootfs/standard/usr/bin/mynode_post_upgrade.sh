@@ -199,6 +199,7 @@ systemctl enable https
 # Disable any old services
 sudo systemctl disable hitch
 sudo systemctl disable mongodb
+sudo systemctl disable lnd_admin
 
 # Reload service settings
 systemctl daemon-reload
