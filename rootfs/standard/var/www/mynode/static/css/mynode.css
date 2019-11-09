@@ -495,3 +495,7 @@ a:active {
     font-size: 14px;
     font-family: "Courier New", Courier, monospace;
 }
+
+.loading_image {
+    width: 128px;
+}

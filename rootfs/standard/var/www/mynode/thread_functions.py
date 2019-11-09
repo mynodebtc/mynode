@@ -7,7 +7,7 @@ from bitcoin_info import *
 from lightning_info import *
 from device_info import *
 from enable_disable_functions import *
-from electrum_server import update_electrs_info
+from electrum_info import update_electrs_info
 from requests import get
 
 # Info to get from the update threads
