@@ -6,6 +6,7 @@ from device_info import *
 #from bitcoin.wallet import *
 from subprocess import check_output, check_call
 from electrum_functions import *
+from settings import read_ui_settings
 from user_management import check_logged_in
 import socket
 import hashlib
@@ -158,7 +159,8 @@ def bitcoind_status_page():
     except Exception as e:
         templateData = {
             "title": "myNode Bitcoin Error",
-            "message": Markup("Error communicating with bitcoind. Node may be busy syncing.<br/><br/>{}".format(str(e)))
+            "message": Markup("Error communicating with bitcoind. Node may be busy syncing.<br/><br/>{}".format(str(e))),
+            "ui_settings": read_ui_settings()
         }
         return render_template('bitcoind_status_error.html', **templateData)
 
@@ -173,7 +175,8 @@ def bitcoind_status_page():
         "disk_size": (int(info["size_on_disk"]) / 1000 / 1000 / 1000),
         "mempool_tx": mempool["size"],
         "mempool_size": "{:.3} MB".format(float(mempool["bytes"]) / 1000 / 1000),
-        "version": version
+        "version": version,
+        "ui_settings": read_ui_settings()
     }
     return render_template('bitcoind_status.html', **templateData)
 
@@ -212,7 +215,8 @@ def bitcoind_config_page():
         templateData = {
             "title": "myNode Reboot",
             "header_text": "Restarting",
-            "subheader_text": "This will take several minutes..."
+            "subheader_text": "This will take several minutes...",
+            "ui_settings": read_ui_settings()
         }
         return render_template('reboot.html', **templateData)
 
@@ -222,7 +226,8 @@ def bitcoind_config_page():
 
     templateData = {
         "title": "myNode Bitcoin Config",
-        "bitcoin_config": bitcoin_config
+        "bitcoin_config": bitcoin_config,
+        "ui_settings": read_ui_settings()
     }
     return render_template('bitcoind_config.html', **templateData)
 
@@ -251,7 +256,8 @@ def bitcoind_explorer_page():
         templateData = {
             "title": "myNode Bitcoin Error",
             "message": Markup("Error communicating with bitcoind. Node may be busy syncing.<br/><br/>{}".format(str(e))),
-            "back_url": "/"
+            "back_url": "/",
+            "ui_settings": read_ui_settings()
         }
         return render_template('bitcoind_error.html', **templateData)
 
@@ -264,7 +270,8 @@ def bitcoind_explorer_page():
         "header_num": info["headers"],
         "disk_size": (int(info["size_on_disk"]) / 1000 / 1000 / 1000),
         "mempool_tx": mempool["size"],
-        "mempool_size": "{:.3} MB".format(float(mempool["bytes"]) / 1000 / 1000)
+        "mempool_size": "{:.3} MB".format(float(mempool["bytes"]) / 1000 / 1000),
+        "ui_settings": read_ui_settings()
     }
     return render_template('bitcoind_explorer.html', **templateData)
 
@@ -286,19 +293,22 @@ def search_page():
     elif results["type"] == "not_found":
         templateData = {
             "title": "myNode BTC Bitcoin Error",
-            "message": Markup("Not Found<br/>{}".format(request.form['search']))
+            "message": Markup("Not Found<br/>{}".format(request.form['search'])),
+            "ui_settings": read_ui_settings()
         }
         return render_template('bitcoind_error.html', **templateData)
     elif results["type"] == "error":
         templateData = {
             "title": "myNode Bitcoin Error",
-            "message": Markup("Error<br/>{}".format(results["error_message"]))
+            "message": Markup("Error<br/>{}".format(results["error_message"])),
+            "ui_settings": read_ui_settings()
         }
         return render_template('bitcoind_error.html', **templateData)
 
     templateData = {
         "title": "myNode Bitcoin Error",
         "message": Markup("Error - unknown return: {}".format(results["type"])),
+        "ui_settings": read_ui_settings()
     }
     return render_template('bitcoind_error.html', **templateData)
 
@@ -360,13 +370,15 @@ def tx_page(txid):
             "block_date": block_date,
             "total": total,
             "inputs": inputs,
-            "outputs": outputs
+            "outputs": outputs,
+            "ui_settings": read_ui_settings()
         }
         return render_template('bitcoind_tx.html', **templateData)
     except Exception as e:
         templateData = {
             "title": "myNode Bitcoin Error",
-            "message": Markup("Error retreiving or parsing transaction.<br/><br/>{}".format(str(e)))
+            "message": Markup("Error retreiving or parsing transaction.<br/><br/>{}".format(str(e))),
+            "ui_settings": read_ui_settings()
         }
         return render_template('bitcoind_error.html', **templateData)
 
@@ -399,14 +411,16 @@ def block_page(block_hash):
             "difficulty": "{:.3g}".format(block["difficulty"]),
             "size": int(block["size"] / 1000), 
             "date": tstring,
-            "txs": txs
+            "txs": txs,
+            "ui_settings": read_ui_settings()
         }
         return render_template('bitcoind_block.html', **templateData)
     except Exception as e:
         templateData = {
             "title": "myNode Bitcoin Error",
             "message": Markup("Error communicating with bitcoind. Node may be busy syncing.<br/><br/>{}".format(str(e))),
-            "back_url": "/bitcoind"
+            "back_url": "/bitcoind",
+            "ui_settings": read_ui_settings()
         }
         return render_template('bitcoind_error.html', **templateData)
 
@@ -446,13 +460,15 @@ def address_page(addr):
             "address": addr,
             "confirmed_balance": confirmed_bal,
             "unconfirmed_balance": unconfirmed_bal,
-            "txs": txs
+            "txs": txs,
+            "ui_settings": read_ui_settings()
         }
         return render_template('bitcoind_address.html', **templateData)
     except Exception as e:
         templateData = {
             "title": "myNode Bitcoin Error",
             "message": Markup("Error communicating with bitcoind. Node may be busy syncing.<br/><br/>{}".format(str(e))),
-            "back_url": "/bitcoind"
+            "back_url": "/bitcoind",
+            "ui_settings": read_ui_settings()
         }
         return render_template('bitcoind_error.html', **templateData)

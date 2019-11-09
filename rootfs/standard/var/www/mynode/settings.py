@@ -3,7 +3,6 @@ from flask import Blueprint, render_template, session, abort, Markup, request, r
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from pprint import pprint, pformat
 from threading import Timer
-from device_info import *
 from thread_functions import *
 from user_management import check_logged_in
 from lightning_info import *
@@ -14,6 +13,51 @@ import os
 import subprocess
 
 mynode_settings = Blueprint('mynode_settings',__name__)
+
+def read_ui_settings():
+    ui_hdd_file = '/mnt/hdd/mynode/settings/ui.json'
+    ui_mynode_file = '/home/bitcoin/.mynode/ui.json'
+
+    # read ui.json from HDD
+    if os.path.isfile(ui_hdd_file):
+        with open(ui_hdd_file, 'r') as fp:
+            ui_settings = json.load(fp)
+    # read ui.json from mynode
+    elif os.path.isfile(ui_mynode_file):
+        with open(ui_mynode_file, 'r') as fp:
+            ui_settings = json.load(fp)
+    # if ui.json is not found anywhere, use default settings
+    else:
+        ui_settings = {'darkmode': False}
+
+    return ui_settings
+
+def write_ui_settings(ui_settings):
+    ui_hdd_file = '/mnt/hdd/mynode/settings/ui.json'
+    ui_mynode_file = '/home/bitcoin/.mynode/ui.json'
+
+    try:
+        with open(ui_hdd_file, 'w') as fp:
+            json.dump(ui_settings, fp)
+    except:
+        pass
+
+    with open(ui_mynode_file, 'w') as fp:
+        json.dump(ui_settings, fp)
+
+def is_darkmode_enabled():
+    ui_settings = read_ui_settings()
+    return ui_settings['darkmode']
+
+def disable_darkmode():
+    ui_settings = read_ui_settings()
+    ui_settings['darkmode'] = False
+    write_ui_settings(ui_settings)
+
+def enable_darkmode():
+    ui_settings = read_ui_settings()
+    ui_settings['darkmode'] = True
+    write_ui_settings(ui_settings)
 
 # Flask Pages
 @mynode_settings.route("/settings")
@@ -93,7 +137,8 @@ def page_settings():
         "upload_rate": upload_rate,
         "uptime": uptime,
         "public_ip": public_ip,
-        "local_ip": local_ip
+        "local_ip": local_ip,
+        "ui_settings": read_ui_settings()
     }
     return render_template('settings.html', **templateData)
 
@@ -109,7 +154,8 @@ def upgrade_page():
     templateData = {
         "title": "myNode Upgrade",
         "header_text": "Upgrading",
-        "subheader_text": "This may take a while..."
+        "subheader_text": "This may take a while...",
+        "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
 
@@ -129,7 +175,8 @@ def reset_blockchain_page():
     templateData = {
         "title": "myNode",
         "header_text": "Reset Blockchain",
-        "subheader_text": "This will take several minutes..."
+        "subheader_text": "This will take several minutes...",
+        "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
 
@@ -143,7 +190,8 @@ def restart_quicksync_page():
     templateData = {
         "title": "myNode",
         "header_text": "Restart Quicksync",
-        "subheader_text": "This will take several minutes..."
+        "subheader_text": "This will take several minutes...",
+        "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
 
@@ -159,7 +207,8 @@ def reboot_device_page():
     templateData = {
         "title": "myNode Reboot",
         "header_text": "Restarting",
-        "subheader_text": "This will take several minutes..."
+        "subheader_text": "This will take several minutes...",
+        "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
 
@@ -175,7 +224,8 @@ def shutdown_device_page():
     templateData = {
         "title": "myNode Shutdown",
         "header_text": "Shutting down...",
-        "subheader_text": Markup("Your myNode is shutting down.<br/><br/>You will need to power cycle the device to turn it back on.")
+        "subheader_text": Markup("Your myNode is shutting down.<br/><br/>You will need to power cycle the device to turn it back on."),
+        "ui_settings": read_ui_settings()
     }
     return render_template('shutdown.html', **templateData)
 
@@ -212,7 +262,8 @@ def factory_reset_page():
         templateData = {
             "title": "myNode Factory Reset",
             "header_text": "Factory Reset",
-            "subheader_text": "This will take several minutes..."
+            "subheader_text": "This will take several minutes...",
+            "ui_settings": read_ui_settings()
         }
         return render_template('reboot.html', **templateData)
 
@@ -307,7 +358,8 @@ def page_reset_tor():
     templateData = {
         "title": "myNode Reboot",
         "header_text": "Restarting",
-        "subheader_text": "This will take several minutes..."
+        "subheader_text": "This will take several minutes...",
+        "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
 
@@ -340,7 +392,8 @@ def repair_drive_page():
     templateData = {
         "title": "myNode Reboot",
         "header_text": "Restarting",
-        "subheader_text": "This will take several minutes..."
+        "subheader_text": "This will take several minutes...",
+        "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
 
@@ -374,7 +427,8 @@ def toggle_uploader_page():
     templateData = {
         "title": "myNode Reboot",
         "header_text": "Restarting",
-        "subheader_text": "This will take several minutes..."
+        "subheader_text": "This will take several minutes...",
+        "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
 
@@ -393,10 +447,19 @@ def toggle_quicksync_page():
     templateData = {
         "title": "myNode Reboot",
         "header_text": "Restarting",
-        "subheader_text": "This will take several minutes..."
+        "subheader_text": "This will take several minutes...",
+        "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
 
 @mynode_settings.route("/settings/ping")
 def ping_page():
     return "alive"
+
+@mynode_settings.route("/settings/toggle-darkmode")
+def toggle_darkmode_page():
+    if is_darkmode_enabled():
+        disable_darkmode()
+    else:
+        enable_darkmode()
+    return redirect("/settings")

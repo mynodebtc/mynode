@@ -8,7 +8,7 @@ from tor import mynode_tor
 from vpn import mynode_vpn
 from electrum_server import *
 from lnd import mynode_lnd, lnd_wallet_exists, is_lnd_logged_in, lnd_get, get_lnd_status
-from settings import mynode_settings
+from settings import *
 from pprint import pprint
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from background_thread import BackgroundThread
@@ -19,6 +19,7 @@ from messages import get_message
 from thread_functions import *
 from datetime import timedelta
 import pam
+import json
 import random
 import logging
 import logging.handlers
@@ -107,7 +108,8 @@ def index():
         templateData = {
             "title": "myNode Uploader",
             "header_text": "Uploader Device",
-            "quicksync_status": status
+            "quicksync_status": status,
+            "ui_settings": read_ui_settings()
         }
         return render_template('uploader.html', **templateData)
 
@@ -115,14 +117,16 @@ def index():
         templateData = {
             "title": "myNode Looking for Drive",
             "header_text": "Looking for Drive",
-            "subheader_text": "Please attach a drive to your myNode"
+            "subheader_text": "Please attach a drive to your myNode",
+            "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
     elif status == STATE_DRIVE_MOUNTED:
         templateData = {
             "title": "myNode Drive Mounted",
             "header_text": "Drive Mounted",
-            "subheader_text": "myNode starting soon..."
+            "subheader_text": "myNode starting soon...",
+            "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
     elif not has_product_key() and not skipped_product_key():
@@ -148,14 +152,16 @@ def index():
         templateData = {
             "title": "myNode QuickSync",
             "header_text": "QuickSync",
-            "subheader_text": subheader_msg
+            "subheader_text": subheader_msg,
+            "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
     elif status == STATE_QUICKSYNC_RESET:
         templateData = {
             "title": "myNode QuickSync",
             "header_text": "QuickSync",
-            "subheader_text": "Restarting QuickSync..."
+            "subheader_text": "Restarting QuickSync...",
+            "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
     elif status == STATE_QUICKSYNC_DOWNLOAD:
@@ -179,7 +185,8 @@ def index():
         templateData = {
             "title": "myNode QuickSync",
             "header_text": "QuickSync",
-            "subheader_text": subheader
+            "subheader_text": subheader,
+            "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
     elif status == STATE_STABLE:
@@ -209,7 +216,8 @@ def index():
             templateData = {
                 "title": "myNode Status",
                 "header_text": "Starting...",
-                "subheader_text": Markup("Launching myNode services...{}".format(message))
+                "subheader_text": Markup("Launching myNode services...{}".format(message)),
+                "ui_settings": read_ui_settings()
             }
             return render_template('state.html', **templateData)
 
@@ -224,7 +232,8 @@ def index():
             templateData = {
                 "title": "myNode Sync",
                 "header_text": "Bitcoin Blockchain",
-                "subheader_text": subheader
+                "subheader_text": subheader,
+                "ui_settings": read_ui_settings()
             }
             return render_template('state.html', **templateData)
 
@@ -361,15 +370,17 @@ def index():
             "ram_usage": get_ram_usage(),
             "swap_usage": get_swap_usage(),
             "device_temp": get_device_temp(),
+            "upgrade_available": upgrade_available,
             "has_changed_password": has_changed_password(),
-            "upgrade_available": upgrade_available
+            "ui_settings": read_ui_settings()
         }
         return render_template('main.html', **templateData)
     else:
         templateData = {
             "title": "myNode Error",
             "header_text": "Error",
-            "subheader_text": "Unknown State ("+status+"). Please restart your myNode."
+            "subheader_text": "Unknown State ("+status+"). Please restart your myNode.",
+            "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
 
@@ -381,7 +392,8 @@ def page_product_key():
     if request.method == 'GET':
         templateData = {
             "title": "myNode Product Key",
-            "header_text": "Product Key"
+            "header_text": "Product Key",
+            "ui_settings": read_ui_settings()
         }
         return render_template('product_key.html', **templateData)
     elif request.method == 'POST':
@@ -448,8 +460,9 @@ def page_toggle_vpn():
 
 @app.route("/login", methods=["GET","POST"])
 def page_login():
+    templateData = {"ui_settings": read_ui_settings()}
     if request.method == 'GET':
-        return render_template('login.html')
+        return render_template('login.html', **templateData)
 
     pw = request.form.get('password')
     if login(pw):
@@ -466,12 +479,14 @@ def page_logout():
 @app.route("/about")
 def page_about():
     check_logged_in()
-    return render_template('about.html')
+    templateData = {"ui_settings": read_ui_settings()}
+    return render_template('about.html', **templateData)
 
 @app.route("/help")
 def page_help():
     check_logged_in()
-    return render_template('help.html')
+    templateData = {"ui_settings": read_ui_settings()}
+    return render_template('help.html', **templateData)
 
 # Disable browser caching
 @app.after_request
