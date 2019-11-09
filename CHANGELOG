@@ -1,4 +1,10 @@
 === v0.1.63 ===
+- Improve logging for upgrades
+- Remove LND Admin
+- Improve LND Connect IP detection
+- Add NTP Servers
+
+=== v0.1.63 ===
 - Fix issues related to custom BTC+LND config
 - Workaround LND deadlock after creating new wallet
 - Other minor fixes
