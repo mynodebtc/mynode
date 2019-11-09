@@ -1,0 +1,99 @@
+/* mynode color: #f9c132 */
+/* dark grey for background: #303841 */
+/* lighter gray: #3a4750 */
+/* light gray: #eee */
+
+body {
+    background: #303841;
+}
+
+a:link,
+a:visited,
+a:hover,
+a:active {
+    color: #eee;
+    text-decoration: underline dashed #eee;
+}
+
+.footer,
+.state_header,
+.state_subheader,
+.main_header,
+.main_header_sub_text,
+.app_title,
+.app_status,
+.app_contents,
+.info_tile_contents,
+.content_block,
+.drive_usage,
+.settings_block_header,
+.settings_block_subheader,
+.settings_block,
+table,
+#cli_contents {
+    color: #eee;
+}
+
+.app_tile,
+.app_tile_short,
+.info_tile,
+.settings_block_header {
+    border: 3px solid #f9c132;
+}
+
+.info_tile_header {
+    color: #FFFFFF;
+    background-color: #f9c132;
+}
+
+.divider {
+    border-bottom: 3px dashed #f9c132;
+}
+
+.ui-button.ui-widget.ui-corner-all {
+    color: #303841;
+    background-color: #eee;
+    border-color: #eee;
+}
+
+.settings_input {
+    color: white;
+    background: #eee;
+}
+
+.main_page_warning_block,
+.upgrade_ad_main_page {
+    color: #eee;
+    border: 3px solid #f9c132;
+    background-color: #3a4750;
+}
+
+.main_page_error_block {
+    color: #eee;
+    border: 3px solid red;
+    background-color: rgb(255, 238, 238);
+}
+
+.slider {
+  background-color: #ccc;
+}
+
+.slider:before {
+  background-color: white;
+}
+
+input:checked + .slider {
+  background-color: #eee;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #eee;
+}
+
+.cli_contents {
+    border: 2px solid #222222;
+}
+.config_textarea {
+	color: #eee;
+	background-color: #303841;
+}

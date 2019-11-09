@@ -123,6 +123,7 @@ def electrum_server_page():
         "electrs_command": electrs_command,
         "electrs_onion_hostname": electrs_onion_hostname,
         "electrs_onion_password": electrs_onion_password,
-        "electrs_onion_command": electrs_onion_command
+        "electrs_onion_command": electrs_onion_command,
+        "ui_settings": {'darkmode': False}
     }
     return render_template('electrum_server.html', **templateData)

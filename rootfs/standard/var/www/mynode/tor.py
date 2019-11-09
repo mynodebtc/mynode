@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, session, abort, Markup, request, redirect
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from pprint import pprint, pformat
+from settings import read_ui_settings
 from device_info import is_community_edition, get_bitcoin_rpc_password
 from user_management import check_logged_in
 import os
@@ -54,7 +55,8 @@ def page_tor():
         "title": "myNode Tor Services",
         "mynode_onion_hostname": mynode_onion_hostname,
         "mynode_onion_password": mynode_onion_password,
+        "services": services,
         "fully_noded_link": fully_noded_link,
-        "services": services
+        "ui_settings": read_ui_settings()
     }
     return render_template('tor.html', **templateData)

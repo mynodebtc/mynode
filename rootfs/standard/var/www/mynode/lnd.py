@@ -3,7 +3,7 @@ from pprint import pprint, pformat
 from threading import Timer
 from bitcoin_info import *
 from lightning_info import *
-from settings import reboot_device
+from settings import reboot_device, read_ui_settings
 from device_info import *
 from user_management import check_logged_in
 import base64
@@ -62,7 +62,8 @@ def page_lnd():
             "wallet_exists": wallet_exists,
             "wallet_logged_in": wallet_logged_in,
             "version": get_lnd_version(),
-            "status": status
+            "status": status,
+            "ui_settings": read_ui_settings()
         }
         return render_template('lnd.html', **templateData)
 
@@ -72,7 +73,8 @@ def page_lnd():
             "wallet_exists": wallet_exists,
             "wallet_logged_in": wallet_logged_in,
             "status": get_lnd_status(),
-            "version": get_lnd_version()
+            "version": get_lnd_version(),
+            "ui_settings": read_ui_settings()
         }
         return render_template('lnd.html', **templateData)
 
@@ -97,7 +99,8 @@ def page_lnd():
     except Exception as e:
         templateData = {
             "title": "myNode Lightning Status",
-            "message": str(e)
+            "message": str(e),
+            "ui_settings": read_ui_settings()
         }
         return render_template('lnd_error.html', **templateData)
 
@@ -116,7 +119,8 @@ def page_lnd():
         "num_inactive_channels": num_inactive_channels,
         "pubkey": pubkey,
         "uri": uri,
-        "ip": ip
+        "ip": ip,
+        "ui_settings": read_ui_settings()
     }
     return render_template('lnd.html', **templateData)
 
@@ -153,13 +157,15 @@ def page_lnd_create_wallet():
     except:
         templateData = {
             "title": "myNode Lightning Wallet",
-            "message": Markup("Waiting on lnd...<br/>Please try again in a minute.")
+            "message": Markup("Waiting on lnd...<br/>Please try again in a minute."),
+            "ui_settings": read_ui_settings()
         }
         return render_template('lnd_error.html', **templateData)
 
     templateData = {
         "title": "myNode Lightning Wallet",
-        "seed": seed
+        "seed": seed,
+        "ui_settings": read_ui_settings()
     }
     return render_template('lnd_wallet_create.html', **templateData)
 
@@ -171,6 +177,7 @@ def page_lnd_create_wallet_with_seed():
     if request.method == 'GET':
         templateData = {
             "title": "myNode Lightning Wallet",
+            "ui_settings": read_ui_settings()
         }
         return render_template('lnd_wallet_create_with_seed.html', **templateData)
 
@@ -193,6 +200,7 @@ def page_lnd_create_wallet_confirm():
     if request.method == 'GET':
         templateData = {
             "title": "myNode Lightning Wallet",
+            "ui_settings": read_ui_settings()
         }
         return render_template('lnd_wallet_create_confirm.html', **templateData)
 
@@ -259,7 +267,8 @@ def page_lnd_lndconnect():
         "lndconnect_local_grpc_img": lndconnect_local_grpc_img,
         "lndconnect_local_rest_img": lndconnect_local_rest_img,
         "lndconnect_tor_grpc_img": lndconnect_tor_grpc_img,
-        "lndconnect_tor_rest_img": lndconnect_tor_rest_img
+        "lndconnect_tor_rest_img": lndconnect_tor_rest_img,
+        "ui_settings": read_ui_settings()
     }
     return render_template('lndconnect.html', **templateData)
 
@@ -296,7 +305,8 @@ def page_lnd_change_alias():
     templateData = {
         "title": "myNode Reboot",
         "header_text": "Restarting",
-        "subheader_text": "This will take several minutes..."
+        "subheader_text": "This will take several minutes...",
+        "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
 
@@ -314,7 +324,8 @@ def lnd_reset_config_page():
     templateData = {
         "title": "myNode Reboot",
         "header_text": "Restarting",
-        "subheader_text": "This will take several minutes..."
+        "subheader_text": "This will take several minutes...",
+        "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
 
@@ -335,7 +346,8 @@ def lnd_config_page():
         templateData = {
             "title": "myNode Reboot",
             "header_text": "Restarting",
-            "subheader_text": "This will take several minutes..."
+            "subheader_text": "This will take several minutes...",
+            "ui_settings": read_ui_settings()
         }
         return render_template('reboot.html', **templateData)
 
@@ -345,7 +357,8 @@ def lnd_config_page():
 
     templateData = {
         "title": "myNode LND Config",
-        "lnd_config": lnd_config
+        "lnd_config": lnd_config,
+        "ui_settings": read_ui_settings()
     }
     return render_template('lnd_config.html', **templateData)
 
