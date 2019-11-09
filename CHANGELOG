@@ -1,4 +1,4 @@
-=== v0.1.63 ===
+=== v0.1.64 ===
 - Improve logging for upgrades
 - Remove LND Admin
 - Improve LND Connect IP detection
