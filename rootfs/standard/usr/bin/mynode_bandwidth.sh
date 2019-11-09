@@ -16,7 +16,7 @@ else
 fi
 
 if [ ! -f $QUICKSYNC_BACKGROUND_DOWNLOAD_RATE_FILE ]; then
-    DOWNLOAD_RATE=2500
+    DOWNLOAD_RATE=1000
     if [ $IS_RASPI3 -eq 1 ]; then
         DOWNLOAD_RATE=500
     fi
