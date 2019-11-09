@@ -349,14 +349,6 @@
             </table>
             <div class="divider"></div>
 
-            <div class="settings_block_subheader">User Interface</div>
-            {% if ui_settings['darkmode'] %}
-                <a href="/settings/toggle-darkmode" class="ui-button ui-widget ui-corner-all settings_button">Disable Dark Mode</a>
-            {% else %}
-                <a href="/settings/toggle-darkmode" class="ui-button ui-widget ui-corner-all settings_button">Enable Dark Mode</a>
-            {% endif %}
-            <div class="divider"></div>
-
             <div class="settings_block_subheader">Change Log</div>
             <button id="show_mynode_changelog" class="ui-button ui-widget ui-corner-all settings_button">View Change Log</button>
             <div id="mynode_changelog" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{changelog}}</pre></div>
@@ -405,6 +397,20 @@
             <div class="settings_block_subheader">Electrum Server Status</div>
             <button id="show_electrs_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
             <div id="electrs_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{electrs_status}}</pre></div>
+        </div>
+
+        <div class="settings_block">
+            <div class="settings_block_header">User Interface</div>
+
+            <div class="settings_block_subheader">Dark Mode</div>
+            This will enable or disable dark mode in the user interface.
+            <br/>
+            {% if ui_settings['darkmode'] %}
+                <a href="/settings/toggle-darkmode" class="ui-button ui-widget ui-corner-all settings_button">Disable</a>
+            {% else %}
+                <a href="/settings/toggle-darkmode" class="ui-button ui-widget ui-corner-all settings_button">Enable</a>
+            {% endif %}
+
         </div>
 
 

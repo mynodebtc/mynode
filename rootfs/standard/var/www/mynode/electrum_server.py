@@ -5,6 +5,8 @@ from prometheus_client.parser import text_string_to_metric_families
 from bitcoin_info import *
 from device_info import get_local_ip, skipped_product_key
 from user_management import check_logged_in
+from settings import read_ui_settings
+from electrum_info import *
 import requests
 import json
 import time
@@ -12,65 +14,6 @@ import subprocess
 
 mynode_electrum_server = Blueprint('mynode_electrum_server',__name__)
 
-electrum_server_current_block = None
-eelctrs_active = False
-
-
-def update_electrs_info():
-    global electrum_server_current_block
-
-    try:
-        raw_data = requests.get("http://localhost:4224")
-        prom_data = text_string_to_metric_families(raw_data.text)
-        for family in prom_data:
-            for sample in family.samples:
-                if sample.name == "electrs_index_height":
-                    electrum_server_current_block = int(sample.value)
-    except:
-        pass
-
-def is_electrs_active():
-    global eelctrs_active
-    return eelctrs_active
-
-def get_electrs_status():
-    global electrum_server_current_block
-    global eelctrs_active
-    bitcoin_block_height = get_bitcoin_block_height()
-    log = ""
-    try:
-        log += subprocess.check_output("journalctl --unit=electrs --no-pager | tail -n 100", shell=True)
-    except:
-        log += ""
-    lines = log.splitlines()
-    lines.reverse()
-    for line in lines:
-        if "left to index)" in line:
-            break
-        elif "Checking if Bitcoin is synced..." in line or "NetworkInfo {" in line or "BlockchainInfo {" in line:
-            return "Starting..."
-        elif "downloading 100000 block headers" in line:
-            return "Downloading headers..."
-        elif "starting full compaction" in line:
-            return "Compressing data..."
-        elif "enabling auto-compactions" in line:
-            break
-        elif "RPC server running on" in line:
-            break
-
-    if electrum_server_current_block != None and bitcoin_block_height != None:
-        if electrum_server_current_block < bitcoin_block_height - 10:
-            percent = 100.0 * (float(electrum_server_current_block) / bitcoin_block_height)
-            return "Syncing... {:.2f}%".format(abs(percent))
-        else:
-            eelctrs_active = True
-            return "Running"
-    return ""
-
-
-def get_electrum_server_current_block():
-    global electrum_server_current_block
-    return electrum_server_current_block
 
 ### Page functions
 @mynode_electrum_server.route("/electrum-server")
@@ -124,6 +67,6 @@ def electrum_server_page():
         "electrs_onion_hostname": electrs_onion_hostname,
         "electrs_onion_password": electrs_onion_password,
         "electrs_onion_command": electrs_onion_command,
-        "ui_settings": {'darkmode': False}
+        "ui_settings": read_ui_settings()
     }
     return render_template('electrum_server.html', **templateData)
