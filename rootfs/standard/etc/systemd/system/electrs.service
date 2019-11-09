@@ -11,7 +11,7 @@ Type=simple
 KillMode=process
 EnvironmentFile=/mnt/hdd/mynode/settings/.btcrpc_environment
 ExecStartPre=/usr/bin/wait_on_bitcoin.sh
-ExecStart=/usr/bin/electrs --timestamp --db-dir /mnt/hdd/mynode/electrs --electrum-rpc-addr 0.0.0.0:50001 --cookie="mynode:${BTC_RPC_PASSWORD}" --jsonrpc-import --bulk-index-threads 3 --index-batch-size 12 --daemon-rpc-addr 127.0.0.1:8332 --txid-limit 100  --tx-cache-size 10000 -vv
+ExecStart=/usr/bin/electrs --timestamp --db-dir /mnt/hdd/mynode/electrs --electrum-rpc-addr 0.0.0.0:50001 --cookie="mynode:${BTC_RPC_PASSWORD}" --jsonrpc-import --bulk-index-threads 3 --index-batch-size 12 --daemon-rpc-addr 127.0.0.1:8332 --txid-limit 100  --tx-cache-size 10000 -vvvv 
 User=bitcoin
 Group=bitcoin
 TimeoutSec=300
