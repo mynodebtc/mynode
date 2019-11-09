@@ -129,18 +129,19 @@ def lnd_tls_cert():
     check_logged_in()
     return send_from_directory(directory="/mnt/hdd/mynode/lnd/", filename="tls.cert")
 
-@mynode_lnd.route("/lnd/admin.macaroon", methods=["POST"])
-def lnd_macaroon():
+@mynode_lnd.route("/lnd/admin.macaroon")
+def lnd_admin_macaroon():
     check_logged_in()
-
-    p = pam.pam()
-    pw = request.form.get('password_download_macaroon')
-    if pw == None or p.authenticate("admin", pw) == False:
-        flash("Invalid Password", category="error")
-        return redirect(url_for(".page_lnd"))
 
     # Download macaroon
     return send_from_directory(directory="/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/", filename="admin.macaroon")
+
+@mynode_lnd.route("/lnd/readonly.macaroon")
+def lnd_readonly_macaroon():
+    check_logged_in()
+
+    # Download macaroon
+    return send_from_directory(directory="/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/", filename="readonly.macaroon")
 
 @mynode_lnd.route("/lnd/channel.backup")
 def lnd_channel_backup():
