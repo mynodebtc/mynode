@@ -119,9 +119,8 @@ def update_bitcoin_other_info_thread():
 # Updates electrs info every 60 seconds
 def update_electrs_info_thread():
     try:
-        if CONFIG["electrs_enabled"]:
-            if is_electrs_enabled():
-                update_electrs_info()
+        if is_electrs_enabled():
+            update_electrs_info()
     except Exception as e:
         print("CAUGHT update_electrs_info_thread EXCEPTION: " + str(e))
 

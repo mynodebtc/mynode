@@ -6,8 +6,7 @@ from bitcoind import mynode_bitcoind
 from bitcoin_cli import mynode_bitcoin_cli
 from tor import mynode_tor
 from vpn import mynode_vpn
-if CONFIG["electrs_enabled"]:
-    from electrum_server import *
+from electrum_server import *
 from lnd import mynode_lnd, lnd_wallet_exists, is_lnd_logged_in, lnd_get, get_lnd_status
 from settings import mynode_settings
 from pprint import pprint
@@ -39,8 +38,7 @@ app.register_blueprint(mynode_bitcoind)
 app.register_blueprint(mynode_lnd)
 app.register_blueprint(mynode_bitcoin_cli)
 app.register_blueprint(mynode_tor)
-if CONFIG["electrs_enabled"]:
-    app.register_blueprint(mynode_electrum_server)
+app.register_blueprint(mynode_electrum_server)
 app.register_blueprint(mynode_vpn)
 app.register_blueprint(mynode_settings)
 
@@ -192,8 +190,6 @@ def index():
         lnd_ready = is_lnd_ready()
         rtl_status_color = "gray"
         rtl_status = "Lightning Wallet"
-        lnd_admin_status_color = "gray"
-        lnd_admin_status = "Lightning Wallet"
         electrs_status_color = "gray"
         lndhub_status_color = "gray"
         bitcoind_status = "Inactive"
@@ -283,47 +279,36 @@ def index():
             else:
                 rtl_status_color = "green"
 
-        # Find LND Admin Status
-        if lnd_ready:
-            status = os.system("systemctl status lnd_admin --no-pager")
-            if status != 0:
-                lnd_admin_status_color = "red"
-            else:
-                lnd_admin_status_color = "green"
-
-
         # Find electrs status
-        if CONFIG["electrs_enabled"]:
-            if is_electrs_enabled():
-                status = os.system("systemctl status electrs --no-pager")
-                if status != 0:
-                    electrs_status_color = "red"
-                else:
-                    electrs_status_color = "green"
-                    electrs_status = get_electrs_status()
+        if is_electrs_enabled():
+            status = os.system("systemctl status electrs --no-pager")
+            if status != 0:
+                electrs_status_color = "red"
+            else:
+                electrs_status_color = "green"
+                electrs_status = get_electrs_status()
 
         # Find btc-rpc-explorer status
-        if CONFIG["btcrpcexplorer_enabled"]:
-            btcrpcexplorer_status = "BTC RPC Explorer"
-            if is_btcrpcexplorer_enabled():
-                status = os.system("systemctl status btc_rpc_explorer --no-pager")
-                if status != 0:
-                    btcrpcexplorer_status_color = "red"
-                else:
-                    btcrpcexplorer_status_color = "green"
+        btcrpcexplorer_status = "BTC RPC Explorer"
+        if is_btcrpcexplorer_enabled():
+            status = os.system("systemctl status btc_rpc_explorer --no-pager")
+            if status != 0:
+                btcrpcexplorer_status_color = "red"
+            else:
+                btcrpcexplorer_status_color = "green"
 
         # Find explorer status
-        if CONFIG["explorer_enabled"]:
-            explorer_status_color = electrs_status_color
-            if is_electrs_enabled():
-                if is_electrs_active():
-                    explorer_ready = True
-                    explorer_status = "myNode BTC Explorer"
-                else:
-                    explorer_status = Markup("Bitcoin Explorer<br/><br/>Waiting on Electrum Server...")
+        explorer_status_color = electrs_status_color
+        if is_electrs_enabled():
+            if is_electrs_active():
+                explorer_ready = True
+                explorer_status = "myNode BTC Explorer"
             else:
-                explorer_status = Markup("Bitcoin Explorer<br/><br/>Requires Electrum Server")
+                explorer_status = Markup("Bitcoin Explorer<br/><br/>Waiting on Electrum Server...")
+        else:
+            explorer_status = Markup("Bitcoin Explorer<br/><br/>Requires Electrum Server")
 
+        # Find VPN status
         if is_vpn_enabled():
             status = os.system("systemctl status vpn --no-pager")
             if status != 0:
@@ -357,8 +342,6 @@ def index():
             "electrs_enabled": is_electrs_enabled(),
             "rtl_status_color": rtl_status_color,
             "rtl_status": rtl_status,
-            "lnd_admin_status_color": lnd_admin_status_color,
-            "lnd_admin_status": lnd_admin_status,
             "lndhub_status_color": lndhub_status_color,
             "lndhub_enabled": is_lndhub_enabled(),
             "explorer_ready": explorer_ready,

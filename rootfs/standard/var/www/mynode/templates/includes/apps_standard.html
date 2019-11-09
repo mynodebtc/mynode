@@ -12,17 +12,6 @@
         </div>
     </div>
     <div class="app_tile">
-        <div class="app_status_icon {{ lnd_admin_status_color }}"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lnd_admin.png")}}"/></div>
-        <div class="app_title">LND Admin</div>
-        <div class="app_status">{% if not lnd_ready %}Waiting on LND...{% else %}{{ lnd_admin_status }}{% endif %}</div>
-        <div class="app_contents">
-            {% if lnd_ready %}
-            <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lnd_admin">LND Admin</a>
-            {% endif %}
-        </div>
-    </div>
-    <div class="app_tile">
         <div class="app_status_icon {{ lnd_status_color }}"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lndconnect.png")}}"/></div>
         <div class="app_title">LND Connect</div>
