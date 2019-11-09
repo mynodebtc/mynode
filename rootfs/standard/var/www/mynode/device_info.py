@@ -122,7 +122,7 @@ def get_local_ip():
         result = subprocess.check_output('hostname -I', shell=True)
         ips = result.split()
         local_ip = ips[0]
-    except Exception as e:
+    except:
         local_ip = "error"
 
     return local_ip
@@ -262,7 +262,8 @@ def factory_reset():
 
 def upgrade_device():
     # Upgrade
-    os.system("/usr/bin/mynode_upgrade.sh")
+    os.system("mkdir -p /home/admin/upgrade_logs")
+    os.system("/usr/bin/mynode_upgrade.sh > /home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt 2>&1".format(get_current_version()))
 
     # Reboot
     reboot_device()

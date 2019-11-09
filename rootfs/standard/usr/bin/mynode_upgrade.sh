@@ -27,6 +27,7 @@ fi
 tar -xvf /tmp/mynode_release_latest.tar.gz -C /tmp/upgrade/
 
 # Install files
+VERSION=$(cat /tmp/upgrade/out/rootfs_*/usr/share/mynode/version)
 if [ $IS_X86 = 1 ]; then
     rsync -r -K /tmp/upgrade/out/rootfs_${DEVICE_TYPE}/* / > /home/admin/upgrade_logs/upgrade_log_${VERSION}_copy.txt 2>&1
 else
@@ -39,4 +40,4 @@ sleep 1
 # Run post upgrade script
 VERSION=$(cat /usr/share/mynode/version)
 /bin/bash /usr/bin/mynode_post_upgrade.sh > /home/admin/upgrade_logs/upgrade_log_${VERSION}_post.txt 2>&1
-chown admin:admin -r /home/admin/upgrade_logs
+chown -R admin:admin /home/admin/upgrade_logs
