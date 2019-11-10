@@ -2,6 +2,9 @@
 
 source /usr/share/mynode/mynode_config.sh
 
+# Wait for LND + BTC to start
+sleep 2m
+
 while true; do
 
     while [ ! -f "$LND_WALLET_FILE" ]; do

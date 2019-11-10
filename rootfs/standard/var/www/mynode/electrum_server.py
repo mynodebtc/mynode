@@ -1,16 +1,13 @@
 from flask import Blueprint, render_template, session, abort, Markup, request, redirect
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from pprint import pprint, pformat
-from prometheus_client.parser import text_string_to_metric_families
 from bitcoin_info import *
 from device_info import get_local_ip, skipped_product_key
 from user_management import check_logged_in
 from settings import read_ui_settings
 from electrum_info import *
-import requests
 import json
 import time
-import subprocess
 
 mynode_electrum_server = Blueprint('mynode_electrum_server',__name__)
 
