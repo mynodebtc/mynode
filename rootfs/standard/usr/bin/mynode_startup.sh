@@ -146,10 +146,10 @@ fi
 chown bitcoin:bitcoin /opt/mynode/RTL/RTL.conf
 
 # LND Admin Config
-if [ ! -f /home/bitcoin/.lnd-admin/credentials.json ]; then
-    cp /usr/share/mynode/lnd_admin_credentials.json /home/bitcoin/.lnd-admin/credentials.json
-    chown bitcoin:bitcoin /home/bitcoin/.lnd-admin/credentials.json
-fi
+#if [ ! -f /home/bitcoin/.lnd-admin/credentials.json ]; then
+#    cp /usr/share/mynode/lnd_admin_credentials.json /home/bitcoin/.lnd-admin/credentials.json
+#    chown bitcoin:bitcoin /home/bitcoin/.lnd-admin/credentials.json
+#fi
 
 # BTC RPC Explorer Config
 if [ ! -f /opt/mynode/btc-rpc-explorer/.env ]; then

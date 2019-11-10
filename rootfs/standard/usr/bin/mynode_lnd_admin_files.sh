@@ -19,7 +19,7 @@ done
 echo "LND files found!"
 
 while true; do
-    # Make sure lnd admin path exists
+    # Make sure lnd path exists for admin user
     mkdir -p /home/admin/.lnd/
     mkdir -p /home/admin/.lnd/data/chain/bitcoin/mainnet/
     chown -R admin:admin /home/admin/.lnd/
