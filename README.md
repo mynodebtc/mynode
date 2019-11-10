@@ -36,7 +36,6 @@ Each myNode device comes with a number of wonderful features:
 - Bitcoin Explorer
 - Electrum Server - BTC Light Wallet Server
 - Ride the Lightning - Lightning Wallet
-- LND Admin - Lightning Wallet
 - LND Hub - Lightning Wallet Server
 - Bitcoin CLI
 - QuickSync - Quickly sync Bitcoin blockchain
