@@ -1,4 +1,8 @@
 === v0.1.65 ===
+- Add UI Dark Mode
+- Improve LND Connect IP detection (again)
+- Refactor for electrum server improvements
+- Install docker and docker-compose dependency
 
 === v0.1.64 ===
 - Improve logging for upgrades
