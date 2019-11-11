@@ -12,7 +12,7 @@ systemctl stop bitcoind
 
 # Install any new software
 apt -y install pv sysstat network-manager unzip pkg-config libfreetype6-dev libpng-dev
-apt -y install libatlas-base-dev
+apt -y install libatlas-base-dev libffi-dev libssl-dev
 
 # Install any pip software
 pip install tzupdate
@@ -21,11 +21,22 @@ pip install tzupdate
 # Install any pip3 software
 pip3 install python-bitcointx
 pip3 install lndmanage==0.8.0   # Install LND Manage (keep up to date with LND)
+pip3 install docker-compose
 
 
 # Import Keys
 curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
+
+
+# Install docker
+if [ ! -f /usr/bin/docker ]; then
+    curl -sSL https://get.docker.com | sh
+fi
+groupadd docker || true
+usermod -aG docker admin
+usermod -aG docker bitcoin
+usermod -aG docker root
 
 
 # Upgrade BTC

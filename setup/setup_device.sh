@@ -73,6 +73,7 @@ apt-get -y install inotify-tools libssl-dev tor tmux screen
 apt-get -y install python-grpcio python3-grpcio
 apt-get -y install pv sysstat network-manager rsync parted unzip pkg-config
 apt-get -y install libfreetype6-dev libpng-dev libatlas-base-dev
+apt-get -y install libffi-dev libssl-dev
 
 
 # Install other things without recommendation
@@ -121,6 +122,7 @@ pip3 install wheel setuptools
 pip3 install bitstring lnd-grpc pycoin aiohttp connectrum python-bitcoinlib
 pip3 install python-bitcointx
 pip3 install lndmanage==0.8.0   # Install LND Manage (keep up to date with LND)
+pip3 install docker-compose
 
 
 # Install Rust
@@ -136,6 +138,15 @@ if [ ! -f /tmp/installed_node ]; then
     apt-get install -y nodejs
     touch /tmp/installed_node
 fi
+
+# Install docker
+if [ ! -f /usr/bin/docker ]; then
+    curl -sSL https://get.docker.com | sh
+fi
+groupadd docker || true
+usermod -aG docker admin
+usermod -aG docker bitcoin
+usermod -aG docker root
 
 # Install node packages
 npm install -g pug-cli browserify uglify-js babel-cli
