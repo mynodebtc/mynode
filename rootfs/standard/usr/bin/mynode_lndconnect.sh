@@ -17,7 +17,7 @@ while [ ! -f $LND_ADMIN_MACAROON_FILE ]; do
     sleep 15s
 done
 echo "Admin macroon found!"
-sleep 5s
+sleep 30s
 
 while true; do
     echo "Generating lndconnect QR codes..."
