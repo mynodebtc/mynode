@@ -3,6 +3,7 @@
 - Improve LND Connect IP detection (again)
 - Refactor for electrum server improvements
 - Install docker and docker-compose dependency
+- Add glances
 
 === v0.1.64 ===
 - Improve logging for upgrades
