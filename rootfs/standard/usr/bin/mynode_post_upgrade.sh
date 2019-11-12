@@ -12,7 +12,7 @@ systemctl stop bitcoind
 
 # Install any new software
 apt -y install pv sysstat network-manager unzip pkg-config libfreetype6-dev libpng-dev
-apt -y install libatlas-base-dev libffi-dev libssl-dev glances bottle
+apt -y install libatlas-base-dev libffi-dev libssl-dev glances python3-bottle
 
 # Install any pip software
 pip install tzupdate
