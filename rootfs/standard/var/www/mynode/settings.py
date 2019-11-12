@@ -6,6 +6,7 @@ from threading import Timer
 from thread_functions import *
 from user_management import check_logged_in
 from lightning_info import *
+from thread_functions import *
 import pam
 import json
 import time
@@ -138,6 +139,10 @@ def page_settings():
         "uptime": uptime,
         "public_ip": public_ip,
         "local_ip": local_ip,
+        "drive_usage": get_drive_usage(),
+        "cpu_usage": get_cpu_usage(),
+        "ram_usage": get_ram_usage(),
+        "device_temp": get_device_temp(),
         "ui_settings": read_ui_settings()
     }
     return render_template('settings.html', **templateData)

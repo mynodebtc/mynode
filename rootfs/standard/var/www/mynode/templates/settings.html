@@ -227,6 +227,11 @@
                     );
                 });
 
+                $("#glances").on("click", function() {
+                    url = 'http://'+location.hostname+':61208'
+                    window.open(url,'_blank');
+                })
+
                 $( function() {
                     var downloadHandle = $( "#download-handle" );
                     var uploadHandle = $( "#upload-handle" );
@@ -342,6 +347,32 @@
                     <td>Local IP</td>
                     <td style="padding-left: 20px;">{{local_ip}}</td>
                 </tr>
+                
+            </table>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Status</div>
+            <table border="0">
+                <tr>
+                    <td>Details</td>
+                    <td style="padding-left: 20px;"><a id="glances" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Glances</a></td>
+                </tr>
+                <tr>
+                    <td>Disk Usage</td>
+                    <td style="padding-left: 20px;">{{drive_usage}}</td>
+                </tr>
+                <tr>
+                    <td>CPU</td>
+                    <td style="padding-left: 20px;">{{cpu_usage}}</td>
+                </tr>
+                <tr>
+                    <td>RAM</td>
+                    <td style="padding-left: 20px;">{{ram_usage}}</td>
+                </tr>
+                <tr>
+                    <td>Temperature</td>
+                    <td style="padding-left: 20px;">{{device_temp}} &deg;C</td>
+                </tr>
                 <tr>
                     <td>Uptime</td>
                     <td style="padding-left: 20px;">{{uptime}}</td>
@@ -377,7 +408,7 @@
             </form>
 
         <div class="settings_block">
-                <div class="settings_block_header">Status</div>
+                <div class="settings_block_header">Service Status</div>
 
             <div class="settings_block_subheader">QuickSync Status</div>
             <button id="show_quicksync_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>

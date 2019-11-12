@@ -73,7 +73,7 @@ apt-get -y install inotify-tools libssl-dev tor tmux screen
 apt-get -y install python-grpcio python3-grpcio
 apt-get -y install pv sysstat network-manager rsync parted unzip pkg-config
 apt-get -y install libfreetype6-dev libpng-dev libatlas-base-dev
-apt-get -y install libffi-dev libssl-dev glances
+apt-get -y install libffi-dev libssl-dev glances bottle
 
 
 # Install other things without recommendation
@@ -419,6 +419,7 @@ systemctl enable rtl
 systemctl enable tor
 systemctl enable invalid_block_check
 systemctl enable usb_driver_check
+systemctl enable glances
 
 
 # Regenerate MAC Address for Rock64

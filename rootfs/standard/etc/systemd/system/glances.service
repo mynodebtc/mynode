@@ -1,0 +1,18 @@
+# myNode glances service (system monitoring)
+# /etc/systemd/system/glances.service
+
+[Unit]
+Description=Glances
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/glances -w
+User=root
+Group=root
+TimeoutSec=300
+Restart=always
+RestartSec=60
+Nice=5
+
+[Install]
+WantedBy=multi-user.target
