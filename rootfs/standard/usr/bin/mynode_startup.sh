@@ -63,6 +63,7 @@ mkdir -p /mnt/hdd/mynode/quicksync
 mkdir -p /mnt/hdd/mynode/redis
 mkdir -p /mnt/hdd/mynode/mongodb
 mkdir -p /mnt/hdd/mynode/electrs
+mkdir -p /mnt/hdd/mynode/docker
 echo "drive_mounted" > $MYNODE_DIR/.mynode_status
 chmod 777 $MYNODE_DIR/.mynode_status
 rm -rf $MYNODE_DIR/.mynode_bitcoind_synced
