@@ -30,7 +30,8 @@ a:active {
 .settings_block_subheader,
 .settings_block,
 table,
-#cli_contents {
+#cli_contents,
+#cli_small {
     color: #eee;
 }
 
