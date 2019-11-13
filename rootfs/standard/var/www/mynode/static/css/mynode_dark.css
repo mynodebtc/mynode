@@ -31,7 +31,7 @@ a:active {
 .settings_block,
 table,
 #cli_contents,
-#cli_small {
+.small_message {
     color: #eee;
 }
 
