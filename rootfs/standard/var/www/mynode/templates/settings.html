@@ -483,6 +483,7 @@
             <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Disable QuickSync</a>
             {% endif %}
 
+            {% if not is_quicksync_disabled %}
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Restart QuickSync</div>
@@ -512,6 +513,7 @@
                 <br/>
                 <input type="submit" id="quicksync_rates_submit" value="Save" class="ui-button ui-widget ui-corner-all settings_button"/>
             </form>
+            {% endif %}
         </div>
 
 
