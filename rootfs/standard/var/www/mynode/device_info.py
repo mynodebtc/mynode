@@ -1,5 +1,6 @@
 from config import *
 from threading import Timer
+import time
 import os
 import subprocess
 
@@ -264,6 +265,10 @@ def upgrade_device():
     # Upgrade
     os.system("mkdir -p /home/admin/upgrade_logs")
     os.system("/usr/bin/mynode_upgrade.sh > /home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt 2>&1".format(get_current_version()))
+
+    # Sync
+    os.system("sync")
+    time.sleep(1)
 
     # Reboot
     reboot_device()
