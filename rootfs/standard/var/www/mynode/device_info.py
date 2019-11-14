@@ -38,7 +38,7 @@ def get_public_ip():
     try:
         public_ip = get(PUBLIC_IP_API).text
     except Exception as e:
-    public_ip = 'Error:fsdfs'
+        public_ip = 'Error:'+e
     return public_ip
 
 def get_system_uptime():
