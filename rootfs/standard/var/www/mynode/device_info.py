@@ -2,6 +2,7 @@ from config import *
 from threading import Timer
 import os
 import subprocess
+from requests import get
 
 # Globals
 local_ip = "unknown"
@@ -33,6 +34,24 @@ def get_latest_version():
         latest_version = get_current_version()
     return latest_version
 
+def update_public_ip():
+    try:
+        public_ip = get(PUBLIC_IP_API).text
+    except Exception as e:
+        public_ip = "error"
+
+    with open(PUBLIC_IP_FILE, 'w') as fp:
+        fp.write(public_ip)
+
+    return True
+
+def get_public_ip():
+    try:
+        with open(PUBLIC_IP_FILE, 'r') as fp:
+            public_ip = fp.read()
+    except:
+        public_ip = 'error'
+    return public_ip
 
 def get_system_uptime():
     uptime = subprocess.check_output('awk \'{print int($1/86400)" days "int($1%86400/3600)" hour(s) "int(($1%3600)/60)" minute(s) "int($1%60)" seconds(s)"}\' /proc/uptime', shell=True)

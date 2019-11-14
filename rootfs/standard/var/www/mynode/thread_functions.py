@@ -17,8 +17,6 @@ cpu_usage = "..."
 ram_usage = "..."
 swap_usage = "..."
 device_temp = "..."
-public_ip = "not_detected"
-
 
 # Getters
 def get_has_updated_btc_info():
@@ -39,9 +37,6 @@ def get_swap_usage():
 def get_device_temp():
     global device_temp
     return device_temp
-def get_public_ip():
-    global public_ip
-    return public_ip
 
 # Updates device info every 30 seconds
 def update_device_info():
@@ -148,10 +143,7 @@ def check_in():
     }
 
     # Get public IP
-    try:
-        public_ip = get('https://mynodebtc.com/device_api/get_public_ip.php').text
-    except Exception as e:
-        public_ip = "error"
+    update_public_ip()
 
     # Check for new version
     update_latest_version()

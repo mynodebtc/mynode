@@ -11,6 +11,10 @@ CONFIG["lndhub_enabled"] = True
 LATEST_VERSION_URL = "https://www.mynodebtc.com/device/latest_version"
 CHECKIN_URL = "https://www.mynodebtc.com/device_api/check_in.php"
 
+# Public IP variables
+PUBLIC_IP_FILE = '/usr/share/mynode/public_ip'
+PUBLIC_IP_API = 'https://api.ipify.org'
+
 # Bitcoin Variables
 BITCOIN_ENV_FILE = "/mnt/hdd/mynode/bitcoin/env"
 BITCOIN_SYNCED_FILE = "/mnt/hdd/mynode/.mynode_bitcoind_synced"

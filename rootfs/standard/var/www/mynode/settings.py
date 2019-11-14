@@ -170,6 +170,12 @@ def get_latest_version_page():
     update_latest_version()
     return redirect("/settings")
 
+@mynode_settings.route("/settings/get-public-ip")
+def get_public_ip_page():
+    check_logged_in()
+    update_public_ip()
+    return redirect("/settings")
+
 @mynode_settings.route("/settings/reset-blockchain")
 def reset_blockchain_page():
     check_logged_in()
