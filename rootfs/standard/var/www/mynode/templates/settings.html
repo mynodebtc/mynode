@@ -325,7 +325,6 @@
                 <tr>
                     <td>Serial Number</td>
                     <td style="padding-left: 20px;">{{serial_number}}</td>
-                    <td></td>
                 </tr>
                 <tr>
                     <td>Product Key</td>
@@ -335,17 +334,19 @@
                             &nbsp;<a href="/product-key" class="ui-button ui-widget ui-corner-all settings_button_small">Enter Product Key</a>
                         {% endif %}
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
                     <td>Device Type</td>
                     <td style="padding-left: 20px;">{{device_type}}</td>
-                    <td></td>
                 </tr>
                 <tr>
                     <td>Public IP</td>
-                    <td style="padding-left: 20px;">{{public_ip}}</td>
-                    <td>&nbsp;<a href="/settings/get-public-ip" class="ui-button ui-widget ui-corner-all settings_button_small">Find public IP</a></td>
+                    <td style="padding-left: 20px;">
+                        {{public_ip}}
+                        {% if public_ip[:5]=='Error' %}
+                        &nbsp;<span class="error_message">Refresh the page to find public IP</span>
+                        {% endif %}
+                    </td>
                 </tr>
                 <tr>
                     <td>Local IP</td>

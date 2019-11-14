@@ -131,7 +131,6 @@ def update_lnd_info_thread():
 
 # Checkin every 24 hours
 def check_in():
-    global public_ip
 
     # Check in
     product_key = get_product_key()
@@ -141,9 +140,6 @@ def check_in():
         "version": get_current_version(),
         "product_key": product_key
     }
-
-    # Get public IP
-    update_public_ip()
 
     # Check for new version
     update_latest_version()

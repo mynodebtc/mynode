@@ -100,7 +100,9 @@
                 <div class="info_tile_header">Public IP Address</div>
                 <div class="info_tile_contents">
                     {{public_ip}}
-                    <p><a href="/vpn-info/get-public-ip" class="ui-button ui-widget ui-corner-all settings_button_small">Find public IP</a><p>
+                    {% if public_ip[:5]=='Error' %}
+                    <p class="error_message">Refresh the page to find public IP</p>
+                    {% endif %}
                 </div>
             </div>
         </div>

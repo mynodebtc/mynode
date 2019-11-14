@@ -12,8 +12,7 @@ LATEST_VERSION_URL = "https://www.mynodebtc.com/device/latest_version"
 CHECKIN_URL = "https://www.mynodebtc.com/device_api/check_in.php"
 
 # Public IP variables
-PUBLIC_IP_FILE = '/usr/share/mynode/public_ip'
-PUBLIC_IP_API = 'https://api.ipify.org'
+PUBLIC_IP_API = 'https://mynodebtc.com/device_api/get_public_ip.php'
 
 # Bitcoin Variables
 BITCOIN_ENV_FILE = "/mnt/hdd/mynode/bitcoin/env"

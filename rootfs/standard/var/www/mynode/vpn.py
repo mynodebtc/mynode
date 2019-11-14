@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, session, abort, Markup, request, redirect, send_from_directory, url_for, flash
-from device_info import is_community_edition, get_public_ip, update_public_ip
+from device_info import is_community_edition, get_public_ip
 from settings import read_ui_settings
 from user_management import check_logged_in
 import subprocess
@@ -82,9 +82,3 @@ def page_download_ovpn():
 
     # Download ovpn
     return send_from_directory(directory="/home/pivpn/ovpns/", filename="mynode_vpn.ovpn")
-
-@mynode_vpn.route("/vpn-info/get-public-ip")
-def get_public_ip_page():
-    check_logged_in()
-    update_public_ip()
-    return redirect("/vpn-info")

@@ -34,23 +34,11 @@ def get_latest_version():
         latest_version = get_current_version()
     return latest_version
 
-def update_public_ip():
+def get_public_ip():
     try:
         public_ip = get(PUBLIC_IP_API).text
     except Exception as e:
-        public_ip = "error"
-
-    with open(PUBLIC_IP_FILE, 'w') as fp:
-        fp.write(public_ip)
-
-    return True
-
-def get_public_ip():
-    try:
-        with open(PUBLIC_IP_FILE, 'r') as fp:
-            public_ip = fp.read()
-    except:
-        public_ip = 'error'
+    public_ip = 'Error:fsdfs'
     return public_ip
 
 def get_system_uptime():
