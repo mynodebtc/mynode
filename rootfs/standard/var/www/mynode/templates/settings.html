@@ -232,6 +232,11 @@
                     window.open(url,'_blank');
                 })
 
+                $("#netdata").on("click", function() {
+                    url = 'http://'+location.hostname+':19999'
+                    window.open(url,'_blank');
+                })
+
                 $( function() {
                     var downloadHandle = $( "#download-handle" );
                     var uploadHandle = $( "#upload-handle" );
@@ -355,7 +360,10 @@
             <table border="0">
                 <tr>
                     <td>Details</td>
-                    <td style="padding-left: 20px;"><a id="glances" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Glances</a></td>
+                    <td style="padding-left: 20px;">
+                        <a id="netdata" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Netdata</a>
+                        <a id="glances" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Glances</a>
+                    </td>
                 </tr>
                 <tr>
                     <td>Disk Usage</td>

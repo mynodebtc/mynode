@@ -207,6 +207,7 @@ systemctl enable invalid_block_check
 systemctl enable usb_driver_check
 systemctl enable https
 systemctl enable glances
+systemctl enable netdata
 
 # Disable any old services
 sudo systemctl disable hitch

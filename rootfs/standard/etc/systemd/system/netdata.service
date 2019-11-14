@@ -1,0 +1,24 @@
+# netdata service
+# /etc/systemd/system/netdata.service
+
+[Unit]
+Description=Netdata
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/mynode/docker
+ExecStart=/usr/local/bin/docker-compose -f netdata-compose.yml up
+
+User=bitcoin
+Group=bitcoin
+Type=simple
+KillMode=process
+TimeoutSec=240
+Restart=always
+RestartSec=60
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=netdata
+
+[Install]
+WantedBy=multi-user.target
