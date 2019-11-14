@@ -1,3 +1,7 @@
+=== v0.1.66 ===
+- Add netdata as first docker container
+- Improve QS options on settings page when QS is disabled
+
 === v0.1.65 ===
 - Add UI Dark Mode
 - Improve LND Connect IP detection (again)
