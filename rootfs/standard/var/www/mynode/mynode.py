@@ -488,6 +488,27 @@ def page_help():
     templateData = {"ui_settings": read_ui_settings()}
     return render_template('help.html', **templateData)
 
+## Error handlers
+@app.errorhandler(404)
+def not_found_error(error):
+    templateData = {
+        "title": "myNode 404",
+        "header_text": "Page not found",
+        "subheader_text": "Click on the mynode logo reach the home page",
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('state.html', **templateData), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    templateData = {
+        "title": "myNode 500",
+        "header_text": "Internal server error",
+        "subheader_text": "If you were manually upgrading myNode, redo it.",
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('state.html', **templateData), 500
+
 # Disable browser caching
 @app.after_request
 def set_response_headers(response):
