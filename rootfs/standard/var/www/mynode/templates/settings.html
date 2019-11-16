@@ -361,7 +361,9 @@
                 <tr>
                     <td>Details</td>
                     <td style="padding-left: 20px;">
+                        {% if is_netdata_enabled %}
                         <a id="netdata" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Netdata</a>
+                        {% endif %}
                         <a id="glances" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Glances</a>
                     </td>
                 </tr>
@@ -568,6 +570,20 @@
             This will reset all of your Tor service settings and re-generate your Onion URLs.
             <br/>
             <button id="reset_tor" class="ui-button ui-widget ui-corner-all settings_button">Reset Tor</button>
+
+        </div>
+
+        <div class="settings_block">
+            <div class="settings_block_header">Services</div>
+            
+            <div class="settings_block_subheader">Netdata</div>
+            This will enable or disable netdata device monitoring.
+            <br/>
+            {% if is_netdata_enabled %}
+                <a href="/settings/toggle-netdata" class="ui-button ui-widget ui-corner-all settings_button">Disable</a>
+            {% else %}
+                <a href="/settings/toggle-netdata" class="ui-button ui-widget ui-corner-all settings_button">Enable</a>
+            {% endif %}
 
         </div>
 
