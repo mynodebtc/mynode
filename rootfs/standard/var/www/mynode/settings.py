@@ -133,6 +133,7 @@ def page_settings():
         "lnd_status": lnd_status,
         "electrs_status": electrs_status,
         "is_quicksync_disabled": not is_quicksync_enabled(),
+        "is_netdata_enabled": is_netdata_enabled(),
         "is_uploader_device": is_uploader(),
         "download_rate": download_rate,
         "upload_rate": upload_rate,
@@ -467,4 +468,12 @@ def toggle_darkmode_page():
         disable_darkmode()
     else:
         enable_darkmode()
+    return redirect("/settings")
+
+@mynode_settings.route("/settings/toggle-netdata")
+def toggle_netdata_page():
+    if is_netdata_enabled():
+        disable_netdata()
+    else:
+        enable_netdata()
     return redirect("/settings")

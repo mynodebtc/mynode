@@ -3,6 +3,7 @@
 source /usr/share/mynode/mynode_config.sh
 
 set -x
+set -e
 
 # Shut down main services to save memory and CPU
 systemctl stop electrs
@@ -40,6 +41,7 @@ usermod -aG docker root
 
 
 # Upgrade BTC
+set +e
 BTC_VERSION="0.18.1"
 ARCH="arm-linux-gnueabihf"
 uname -a | grep aarch64
@@ -49,6 +51,7 @@ fi
 if [ $IS_X86 = 1 ]; then
     ARCH="x86_64-linux-gnu" 
 fi
+set -e
 BTC_UPGRADE_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/bitcoin-$BTC_VERSION-$ARCH.tar.gz
 BTC_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btc_url
 BTC_UPGRADE_SHA256SUM_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/SHA256SUMS.asc

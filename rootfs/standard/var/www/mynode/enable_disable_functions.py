@@ -1,5 +1,18 @@
 import os
+import subprocess
 from config import *
+
+
+# Generic service check
+def is_service_enabled(service):
+    cmd = "systemctl status {} --no-pager".format(service)
+    try:
+        results = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
+        if "enabled;" in results:
+            return True
+    except:
+        return False
+    return False
 
 
 # Enable disable functions on homepage
@@ -73,3 +86,15 @@ def disable_vpn():
     os.system("systemctl disable vpn --no-pager")
     os.system("systemctl stop openvpn --no-pager")
     os.system("systemctl disable openvpn --no-pager")
+
+
+def is_netdata_enabled():
+    return is_service_enabled("netdata")
+
+def enable_netdata():
+    os.system("systemctl enable netdata --no-pager")
+    os.system("systemctl start netdata --no-pager")
+
+def disable_netdata():
+    os.system("systemctl stop netdata --no-pager")
+    os.system("systemctl disable netdata --no-pager")

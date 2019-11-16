@@ -14,3 +14,4 @@ services:
       - /etc/group:/host/etc/group:ro
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
+      - /opt/mynode/netdata/netdata.conf:/etc/netdata/netdata.conf:ro

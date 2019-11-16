@@ -1,3 +1,12 @@
+=== v0.1.67 ===
+- Improve upgrade consistency
+- Improve resource usage of netdata
+- Add ability to disable netdata
+- Fix tor connection issue
+- Remove duplicate BTC Explorer
+- Handle 404 and 500 errors
+- Dark mode fixes
+
 === v0.1.66 ===
 - Add netdata as first docker container
 - Improve QS options on settings page when QS is disabled
