@@ -39,13 +39,16 @@ sleep 1
 
 # Run post upgrade script
 VERSION=$(cat /usr/share/mynode/version)
+touch $UPGRADE_ERROR_FILE
 for i in {1..5}
 do
     /bin/bash /usr/bin/mynode_post_upgrade.sh > /home/admin/upgrade_logs/upgrade_log_${VERSION}_post_${i}.txt 2>&1
     RC=$?
     if [ "${RC}" -eq "0" ]; then
+        rm -f $UPGRADE_ERROR_FILE
         break
     fi
     sleep 10s
 done
 chown -R admin:admin /home/admin/upgrade_logs
+sync

@@ -122,6 +122,7 @@ def page_settings():
         "password_message": "",
         "current_version": current_version,
         "latest_version": latest_version,
+        "upgrade_error": did_upgrade_fail(),
         "serial_number": serial_number,
         "device_type": device_type,
         "product_key": product_key,
