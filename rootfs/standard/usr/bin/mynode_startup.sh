@@ -70,6 +70,8 @@ rm -rf $MYNODE_DIR/.mynode_bitcoind_synced
 
 
 # Setup SD Card (if necessary)
+mkdir -p /run/tor
+mkdir -p /var/run/tor
 mkdir -p /home/bitcoin/.mynode/
 mkdir -p /home/admin/.bitcoin/
 chown admin:admin /home/admin/.bitcoin/
