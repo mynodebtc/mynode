@@ -39,6 +39,47 @@ usermod -aG docker admin
 usermod -aG docker bitcoin
 usermod -aG docker root
 
+## Install BTCPay and its dependencies
+#- install Postgres database
+apt -y install postgresql postgresql-contrib
+#- Download .NET binaries
+cd /opt/mynode
+sudo -u bitcoin mkdir -p dotnet-2.1 dotnet-3.0
+cd dotnet-3.0
+sudo -u bitcoin wget https://download.visualstudio.microsoft.com/download/pr/8ddb8193-f88c-4c4b-82a3-39fcced27e91/b8e0b9bf4cf77dff09ff86cc1a73960b/dotnet-sdk-3.0.100-linux-arm.tar.gz
+sudo -u bitcoin tar -xf dotnet-sdk-3.0.100-linux-arm.tar.gz
+sudo -u bitcoin rm dotnet-sdk-3.0.100-linux-arm.tar.gz
+cd ../dotnet-2.1
+sudo -u bitcoin wget https://download.visualstudio.microsoft.com/download/pr/516cf8d3-f536-4f58-a5ce-aa6f2f85d1c8/98aab0aaedd12e987310f4c2c1f327d3/dotnet-sdk-2.1.802-linux-arm.tar.gz
+sudo -u bitcoin tar -xf dotnet-sdk-2.1.802-linux-arm.tar.gz
+sudo -u bitcoin rm dotnet-sdk-2.1.802-linux-arm.tar.gz
+cd ..
+#- Install NBXplorer
+sudo -u bitcoin rm -rf NBXplorer
+sudo -u bitcoin git clone https://github.com/dgarage/NBXplorer
+cd NBXplorer
+sudo -u bitcoin rm build.sh
+export DOTNET_ROOT=/opt/mynode/dotnet-3.0
+sudo -u bitcoin /opt/mynode/dotnet-3.0/dotnet build -c Release NBXplorer/NBXplorer.csproj
+sudo -u bitcoin rm run.sh
+sudo -u bitcoin touch run.sh
+sudo -u bitcoin echo "#!/bin/bash" > run.sh
+sudo -u bitcoin echo "export DOTNET_ROOT=/opt/mynode/dotnet-3.0" >> run.sh
+sudo -u bitcoin echo '$DOTNET_ROOT/dotnet run --no-launch-profile --no-build -c Release -p "NBXplorer/NBXplorer.csproj" -- $@' >> run.sh
+sudo -u bitcoin chmod +x run.sh
+cd ..
+#- Install BTCPay server
+sudo -u bitcoin rm -rf btcpayserver
+sudo -u bitcoin git clone https://github.com/btcpayserver/btcpayserver
+cd btcpayserver
+sudo -u bitcoin /opt/mynode/dotnet-2.1/dotnet build -c Release BTCPayServer/BTCPayServer.csproj
+sudo -u bitcoin rm run.sh
+sudo -u bitcoin touch run.sh
+sudo -u bitcoin echo "#!/bin/bash" > run.sh
+sudo -u bitcoin echo '/opt/mynode/dotnet-2.1/dotnet run --no-launch-profile --no-build -c Release -p "BTCPayServer/BTCPayServer.csproj" -- $@' >> run.sh
+sudo -u bitcoin chmod +x run.sh
+cd ..
+
 
 # Upgrade BTC
 set +e
@@ -211,6 +252,8 @@ systemctl enable usb_driver_check
 systemctl enable https
 systemctl enable glances
 systemctl enable netdata
+systemctl enable nbxplorer
+systemctl enable btcpay
 
 # Disable any old services
 sudo systemctl disable hitch

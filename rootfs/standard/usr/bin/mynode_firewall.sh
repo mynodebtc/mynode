@@ -30,6 +30,7 @@ ufw allow 6771  comment 'allow myNode QuickSync (LPD)'
 ufw allow 19999 comment 'allow Netdata'
 ufw allow 51194 comment 'allow VPN'
 ufw allow 61208 comment 'allow glances'
+ufw allow 8080  comment 'allow BTCPay'
 ufw allow from 127.0.0.1 comment 'allow from localhost'
 ufw allow from ::1 comment 'allow from localhost'
 

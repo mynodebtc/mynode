@@ -30,6 +30,11 @@
                     window.open(url,'_blank');
                 })
 
+                $("#btcpay").on("click", function() {
+                    url = 'http://'+location.hostname+':8080'
+                    window.open(url,'_blank');
+                })
+
                 $("#toggle-electrs").on("click", function() {
                     if (electrs_enabled)
                     {

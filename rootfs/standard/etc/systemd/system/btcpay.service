@@ -1,0 +1,16 @@
+[Unit]
+Description=BTCPay Server
+Requires=nbxplorer.service
+After=nbxplorer.service
+
+[Service]
+WorkingDirectory=/opt/mynode/btcpayserver
+ExecStart=/opt/mynode/btcpayserver/run.sh --bind 0.0.0.0 --port 8080
+User=bitcoin
+Group=bitcoin
+Type=simple
+PIDFile=/run/btcpayserver/btcpayserver.pid
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

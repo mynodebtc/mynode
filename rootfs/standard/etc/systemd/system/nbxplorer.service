@@ -1,0 +1,16 @@
+[Unit]
+Description=NBXplorer daemon
+Requires=bitcoind.service
+After=bitcoind.service
+
+[Service]
+WorkingDirectory=/opt/mynode/NBXplorer
+ExecStart=/opt/mynode/NBXplorer/run.sh
+User=bitcoin
+Group=bitcoin
+Type=simple
+PIDFile=/run/nbxplorer/nbxplorer.pid
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
