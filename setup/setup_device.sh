@@ -74,6 +74,7 @@ apt-get -y install python-grpcio python3-grpcio
 apt-get -y install pv sysstat network-manager rsync parted unzip pkg-config
 apt-get -y install libfreetype6-dev libpng-dev libatlas-base-dev
 apt-get -y install libffi-dev libssl-dev glances python3-bottle
+apt -y -qq install apt-transport-https ca-certificates
 
 
 # Install other things without recommendation
