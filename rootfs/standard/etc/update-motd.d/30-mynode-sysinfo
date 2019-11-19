@@ -15,7 +15,9 @@ export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 THIS_SCRIPT="sysinfo"
 MOTD_DISABLE=""
 STORAGE=/dev/sda1
-SHOW_IP_PATTERN="^[ewr].*|^br.*|^lt.*|^umts.*"
+#SHOW_IP_PATTERN="^[ewr].*|^br.*|^lt.*|^umts.*"
+# myNode Customization
+SHOW_IP_PATTERN="^[ew].*|^lt.*|^umts.*"
 
 [[ -f /etc/default/armbian-motd ]] && . /etc/default/armbian-motd
 
