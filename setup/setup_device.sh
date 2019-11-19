@@ -141,9 +141,7 @@ if [ ! -f /tmp/installed_node ]; then
 fi
 
 # Install docker
-if [ ! -f /usr/bin/docker ]; then
-    curl -sSL https://get.docker.com | sh
-fi
+curl -sSL https://get.docker.com | sed 's/sleep 20/sleep 1/' | sudo sh
 groupadd docker || true
 usermod -aG docker admin
 usermod -aG docker bitcoin
