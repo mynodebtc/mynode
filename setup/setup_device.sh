@@ -289,29 +289,6 @@ if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
 fi
 
 
-# Install LND Admin # REMOVED
-# LNDADMIN_UPGRADE_URL=https://github.com/janoside/lnd-admin/archive/v0.10.12.tar.gz
-# LNDADMIN_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lndadmin_url
-# CURRENT=""
-# if [ -f $LNDADMIN_UPGRADE_URL_FILE ]; then
-#     CURRENT=$(cat $LNDADMIN_UPGRADE_URL_FILE)
-# fi
-# if [ "$CURRENT" != "$LNDADMIN_UPGRADE_URL" ]; then
-#     cd /opt/mynode
-#     rm -rf lnd-admin
-#     sudo -u bitcoin wget $LNDADMIN_UPGRADE_URL -O lnd-admin.tar.gz
-#     sudo -u bitcoin tar -xvf lnd-admin.tar.gz
-#     sudo -u bitcoin rm lnd-admin.tar.gz
-#     sudo -u bitcoin mv lnd-* lnd-admin
-#     cd lnd-admin
-#     sudo -u bitcoin npm install
-
-#     mkdir -p /home/bitcoin/.mynode/
-#     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
-#     echo $LNDADMIN_UPGRADE_URL > $LNDADMIN_UPGRADE_URL_FILE
-# fi
-
-
 # Install Bitcoin RPC Explorer
 BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v1.1.1.tar.gz
 BTCRPCEXPLORER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btcrpcexplorer_url
