@@ -32,9 +32,10 @@ gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C268459
 
 
 # Install docker
-if [ ! -f /usr/bin/docker ]; then
-    curl -sSL https://get.docker.com | sh
-fi
+#if [ ! -f /usr/bin/docker ]; then
+#    curl -sSL https://get.docker.com | sh
+#fi
+curl -sSL https://get.docker.com | sed 's/sleep 20/sleep 1/' | sudo sh
 groupadd docker || true
 usermod -aG docker admin
 usermod -aG docker bitcoin
