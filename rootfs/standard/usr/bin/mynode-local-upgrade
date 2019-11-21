@@ -59,5 +59,9 @@ else
     # Default, full upgrade
     echo "Full upgrade, running post upgrade script and rebooting device..."
     /bin/bash /usr/bin/mynode_post_upgrade.sh
+    if [ $? -ne 0 ]; then
+        echo "ERROR: Post upgrade script failed!"
+        exit 1
+    fi
     reboot
 fi

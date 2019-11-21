@@ -15,9 +15,10 @@ systemctl stop bitcoind
 apt -y install pv sysstat network-manager unzip pkg-config libfreetype6-dev libpng-dev
 apt -y install libatlas-base-dev libffi-dev libssl-dev glances python3-bottle
 apt -y -qq install apt-transport-https ca-certificates
+apt -y install libgmp-dev automake libtool libltdl-dev libltdl7
 
 # Install any pip software
-pip install tzupdate
+pip install tzupdate virtualenv
 
 
 # Install any pip3 software
@@ -28,6 +29,7 @@ pip3 install docker-compose
 
 # Import Keys
 curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
+curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
 
 
@@ -43,6 +45,7 @@ usermod -aG docker root
 
 
 # Upgrade BTC
+echo "Upgrading BTC..."
 set +e
 BTC_VERSION="0.18.1"
 ARCH="arm-linux-gnueabihf"
@@ -90,6 +93,7 @@ if [ "$CURRENT" != "$BTC_UPGRADE_URL" ]; then
 fi
 
 # Upgrade LND
+echo "Upgrading LND..."
 LND_VERSION="v0.8.0-beta"
 LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
@@ -124,6 +128,55 @@ if [ "$CURRENT" != "$LND_UPGRADE_URL" ]; then
         echo $LND_UPGRADE_URL > $LND_UPGRADE_URL_FILE
     else
         echo "ERROR UPGRADING LND - GPG FAILED"
+    fi
+fi
+
+# Install recent version of secp256k1
+echo "Installing secp256k1..."
+if [ ! -f /usr/include/secp256k1_ecdh.h ]; then
+    rm -rf /tmp/secp256k1
+    cd /tmp/
+    git clone https://github.com/bitcoin-core/secp256k1.git
+    cd secp256k1
+
+    ./autogen.sh
+    ./configure
+    make
+    make install
+    cp -f include/* /usr/include/
+fi
+
+# Upgrade Joinmarket
+echo "Upgrading JoinMarket..."
+if [ $IS_PREMIUM -eq 1 ]; then
+    JOINMARKET_VERSION=0.5.5
+    JOINMARKET_GITHUB_URL=https://github.com/JoinMarket-Org/joinmarket-clientserver.git
+    JOINMARKET_VERSION_FILE=/home/bitcoin/.mynode/.joinmarket_version
+    CURRENT=""
+    if [ -f $JOINMARKET_VERSION_FILE ]; then
+        CURRENT=$(cat $JOINMARKET_VERSION_FILE)
+    fi
+    if [ "$CURRENT" != "$JOINMARKET_VERSION" ]; then
+        # Download and build JoinMarket
+        cd /opt/mynode
+
+        if [ ! -d /opt/mynode/joinmarket-clientserver ]; then
+            git clone $JOINMARKET_GITHUB_URL
+            cd joinmarket-clientserver
+        else
+            cd joinmarket-clientserver
+            git pull origin master
+        fi
+        git reset --hard v$JOINMARKET_VERSION
+
+        # Create virtualenv and setup joinmarket
+        virtualenv -p python3 jmvenv
+        source jmvenv/bin/activate
+        python setupall.py --daemon
+        python setupall.py --client-bitcoin
+        deactivate
+
+        #echo $JOINMARKET_VERSION > $JOINMARKET_VERSION_FILE
     fi
 fi
 

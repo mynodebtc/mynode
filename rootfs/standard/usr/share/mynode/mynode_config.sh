@@ -60,9 +60,15 @@ VPN_ENABLED_FILE="/mnt/hdd/mynode/.mynode_vpn_enabled"
 BITCOIN_SYNCED_FILE="/mnt/hdd/mynode/.mynode_bitcoind_synced"
 QUICKSYNC_COMPLETE_FILE="$QUICKSYNC_DIR/.quicksync_complete"
 
+IS_PREMIUM=0
 PRODUCT_KEY="not_found"
 if [ -f $PRODUCT_KEY_FILE ]; then
     PRODUCT_KEY=$(cat $PRODUCT_KEY_FILE)
+    if [ ! -f /home/bitcoin/.mynode/.product_key_skipped ] && [ ! -f /mnt/hdd/mynode/settings/.product_key_skipped ]; then
+        if [ ! -f /home/bitcoin/.mynode/.product_key_error ] && [ ! -f /mnt/hdd/mynode/settings/.product_key_error ]; then
+            IS_PREMIUM=1
+        fi
+    fi
 fi
 
 UPGRADE_DOWNLOAD_URL="http://www.mynodebtc.com/device_api/download_latest_standard.php?type=${DEVICE_TYPE}&product_key=${PRODUCT_KEY}&serial=${SERIAL_NUM}"
