@@ -1,3 +1,9 @@
+=== v0.1.68 ===
+- Install JoinMarket
+- Fix issues with Docker installation
+- Improve LND + BTC config for privacy
+- Another Tor fix
+
 === v0.1.67 ===
 - Improve upgrade consistency
 - Improve resource usage of netdata
