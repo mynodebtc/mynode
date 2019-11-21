@@ -72,8 +72,8 @@ apt-get -y install toilet-fonts avahi-daemon figlet libsecp256k1-dev
 apt-get -y install inotify-tools libssl-dev tor tmux screen
 apt-get -y install python-grpcio python3-grpcio
 apt-get -y install pv sysstat network-manager rsync parted unzip pkg-config
-apt-get -y install libfreetype6-dev libpng-dev libatlas-base-dev
-apt-get -y install libffi-dev libssl-dev glances python3-bottle
+apt-get -y install libfreetype6-dev libpng-dev libatlas-base-dev libgmp-dev
+apt-get -y install libffi-dev libssl-dev glances python3-bottle automake libtool
 apt -y -qq install apt-transport-https ca-certificates
 
 
@@ -93,7 +93,7 @@ pip install --upgrade wheel
 pip install speedtest-cli transmissionrpc flask python-bitcoinrpc redis prometheus_client requests
 pip install python-pam python-bitcoinlib psutil
 pip install grpcio grpcio-tools googleapis-common-protos 
-pip install tzupdate
+pip install tzupdate virtualenv
 
 
 # Import Keys
