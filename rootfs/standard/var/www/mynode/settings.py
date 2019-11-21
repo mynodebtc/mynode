@@ -173,8 +173,7 @@ def get_latest_version_page():
 @mynode_settings.route("/settings/check-in")
 def check_in_page():
     check_logged_in()
-    t = Timer(10.0, check_in)
-    t.start()
+    check_in()
     return redirect("/settings")
 
 @mynode_settings.route("/settings/reset-blockchain")

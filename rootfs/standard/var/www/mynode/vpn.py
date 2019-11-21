@@ -3,7 +3,6 @@ from thread_functions import get_public_ip, check_in
 from device_info import is_community_edition
 from settings import read_ui_settings
 from user_management import check_logged_in
-from threading import Timer
 import subprocess
 import pam
 import os
@@ -88,6 +87,5 @@ def page_download_ovpn():
 @mynode_vpn.route("/vpn-info/check-in")
 def check_in_page():
     check_logged_in()
-    t = Timer(10.0, check_in)
-    t.start()
+    check_in()
     return redirect("/vpn-info")
