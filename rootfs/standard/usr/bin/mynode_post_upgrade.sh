@@ -5,6 +5,9 @@ source /usr/share/mynode/mynode_config.sh
 set -x
 set -e
 
+# Make sure time is in the log
+date
+
 # Shut down main services to save memory and CPU
 systemctl stop electrs
 systemctl stop lnd
