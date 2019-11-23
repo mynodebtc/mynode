@@ -237,6 +237,11 @@
                     window.open(url,'_blank');
                 })
 
+                $("#linux_terminal").on("click", function() {
+                    url = 'http://'+location.hostname+':2222/ssh/host/'+location.hostname
+                    window.open(url,'_blank');
+                })
+
                 $( function() {
                     var downloadHandle = $( "#download-handle" );
                     var uploadHandle = $( "#upload-handle" );
@@ -369,6 +374,12 @@
                         <a id="netdata" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Netdata</a>
                         {% endif %}
                         <a id="glances" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Glances</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Manage</td>
+                    <td style="padding-left: 20px;">
+                        <a id="linux_terminal" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Linux Terminal</a>
                     </td>
                 </tr>
                 <tr>

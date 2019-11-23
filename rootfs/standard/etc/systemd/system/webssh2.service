@@ -1,0 +1,24 @@
+# WebSSH2 service
+# /etc/systemd/system/webssh2.service
+
+[Unit]
+Description=WebSSH2
+Wants=www.service
+After=www.service
+
+[Service]
+WorkingDirectory=/opt/mynode/webssh2
+ExecStart=/usr/bin/docker run --rm --name webssh2 -p 2222:2222 webssh2
+
+User=root
+Group=root
+Type=simple
+TimeoutSec=240
+Restart=always
+RestartSec=60
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=webssh2
+
+[Install]
+WantedBy=multi-user.target
