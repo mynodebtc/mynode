@@ -20,8 +20,10 @@ apt -y install libatlas-base-dev libffi-dev libssl-dev glances python3-bottle
 apt -y -qq install apt-transport-https ca-certificates
 apt -y install libgmp-dev automake libtool libltdl-dev libltdl7
 
-# For Whirlpool
+# Install Whirlpool
 apt -y install openjdk-8-jre
+mkdir /opt/mynode/whirlpool
+wget https://github.com/Samourai-Wallet/whirlpool-runtimes/releases/download/cli-0.9.1/whirlpool-client-cli-0.9.1-run.jar /opt/mynode/whirlpool
 
 # Install any pip software
 pip install tzupdate virtualenv
