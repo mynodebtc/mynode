@@ -20,6 +20,9 @@ apt -y install libatlas-base-dev libffi-dev libssl-dev glances python3-bottle
 apt -y -qq install apt-transport-https ca-certificates
 apt -y install libgmp-dev automake libtool libltdl-dev libltdl7
 
+# For Whirlpool
+apt -y install openjdk-8-jre
+
 # Install any pip software
 pip install tzupdate virtualenv
 
@@ -45,7 +48,6 @@ groupadd docker || true
 usermod -aG docker admin
 usermod -aG docker bitcoin
 usermod -aG docker root
-
 
 # Upgrade BTC
 echo "Upgrading BTC..."
