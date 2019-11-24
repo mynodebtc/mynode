@@ -268,8 +268,9 @@ def factory_reset():
 def upgrade_device():
     # Upgrade
     os.system("mkdir -p /home/admin/upgrade_logs")
-    os.system("/usr/bin/mynode_upgrade.sh > /home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt 2>&1".format(get_current_version()))
-
+    cmd = "/usr/bin/mynode_upgrade.sh > /home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt 2>&1".format(get_current_version())
+    subprocess.call(cmd, shell=True)
+    
     # Sync
     os.system("sync")
     time.sleep(1)
