@@ -22,7 +22,7 @@ apt -y install libgmp-dev automake libtool libltdl-dev libltdl7
 
 # Install Whirlpool
 apt -y install openjdk-8-jre
-sudo -u bitcoin mkdir /opt/mynode/whirlpool
+sudo -u bitcoin mkdir -p /opt/mynode/whirlpool
 cd /opt/mynode/whirlpool
 rm -rf *.jar
 sudo -u bitcoin wget https://github.com/Samourai-Wallet/whirlpool-runtimes/releases/download/cli-0.9.1/whirlpool-client-cli-0.9.1-run.jar
