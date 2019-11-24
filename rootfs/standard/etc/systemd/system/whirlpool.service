@@ -1,0 +1,17 @@
+[Unit]
+Description=Whirlpool
+After=tor.service
+
+[Service]
+WorkingDirectory=/opt/mynode/whirlpool
+ExecStart=/usr/bin/java -jar /opt/mynode/whirlpool/whirlpool-client-cli-0.9.1-run.jar --server=mainnet --tor --auto-mix --mixs-target=3 --listen
+User=bitcoin
+Group=bitcoin
+Type=simple
+KillMode=process
+TimeoutSec=60
+Restart=always
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target
