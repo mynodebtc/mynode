@@ -14,20 +14,28 @@ systemctl stop lnd
 systemctl stop quicksync
 systemctl stop bitcoind
 
+# Check for updates (might auto-install all updates later)
+apt-get update
+
+
 # Install any new software
-apt -y install pv sysstat network-manager unzip pkg-config libfreetype6-dev libpng-dev
-apt -y install libatlas-base-dev libffi-dev libssl-dev glances python3-bottle
-apt -y -qq install apt-transport-https ca-certificates
-apt -y install libgmp-dev automake libtool libltdl-dev libltdl7
+export DEBIAN_FRONTEND=noninteractive
+apt-get -y install fonts-dejavu
+apt-get -y install pv sysstat network-manager unzip pkg-config libfreetype6-dev libpng-dev
+apt-get -y install libatlas-base-dev libffi-dev libssl-dev glances python3-bottle
+apt-get -y -qq install apt-transport-https ca-certificates
+apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
+apt-get -y install xorg chromium openbox lightdm
+
 
 # Install any pip software
-pip install tzupdate virtualenv
+pip install tzupdate virtualenv --no-cache-dir
 
 
 # Install any pip3 software
-pip3 install python-bitcointx
-pip3 install lndmanage==0.8.0   # Install LND Manage (keep up to date with LND)
-pip3 install docker-compose
+pip3 install python-bitcointx --no-cache-dir
+pip3 install lndmanage==0.8.0 --no-cache-dir   # Install LND Manage (keep up to date with LND)
+pip3 install docker-compose --no-cache-dir
 
 
 # Import Keys
@@ -37,10 +45,13 @@ gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C268459
 
 
 # Install docker
-#if [ ! -f /usr/bin/docker ]; then
-#    curl -sSL https://get.docker.com | sh
-#fi
-curl -sSL https://get.docker.com | sed 's/sleep 20/sleep 1/' | sudo sh
+if [ ! -f /usr/bin/docker ]; then
+    rm -f /tmp/docker_install.sh
+    wget https://get.docker.com -O /tmp/docker_install.sh
+    sed -i 's/sleep 20/sleep 1/' /tmp/docker_install.sh
+    /bin/bash /tmp/docker_install.sh
+fi
+
 groupadd docker || true
 usermod -aG docker admin
 usermod -aG docker bitcoin
@@ -231,7 +242,7 @@ fi
 WEBSSH2_UPGRADE_URL=https://github.com/billchurch/webssh2/archive/v0.2.10-0.tar.gz
 WEBSSH2_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.webssh2_url
 CURRENT=""
-if [ -f WEBSSH2_UPGRADE_URL_FILE ]; then
+if [ -f $WEBSSH2_UPGRADE_URL_FILE ]; then
     CURRENT=$(cat $WEBSSH2_UPGRADE_URL_FILE)
 fi
 if [ "$CURRENT" != "$WEBSSH2_UPGRADE_URL" ]; then
