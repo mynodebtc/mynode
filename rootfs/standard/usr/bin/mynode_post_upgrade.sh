@@ -39,12 +39,11 @@ if [ "$CURRENT" != "$WHIRLPOOL_UPGRADE_URL" ]; then
         fi
         sudo -u bitcoin wget $WHIRLPOOL_UPGRADE_URL
         sudo -u bitcoin mv whirlpool-client-cli* whirlpool.jar
-
+        
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $WHIRLPOOL_UPGRADE_URL > $WHIRLPOOL_UPGRADE_URL_FILE
 fi
-
 
 # Install any pip software
 pip install tzupdate virtualenv
@@ -295,6 +294,7 @@ systemctl enable https
 systemctl enable glances
 systemctl enable netdata
 systemctl enable webssh2
+systemctl enable whirlpool
 
 # Disable any old services
 sudo systemctl disable hitch
