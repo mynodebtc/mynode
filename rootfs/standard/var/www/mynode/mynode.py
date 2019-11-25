@@ -4,7 +4,7 @@ from flask import Flask, render_template, Markup, send_from_directory, redirect,
 from user_management import *
 from bitcoind import mynode_bitcoind
 from bitcoin_cli import mynode_bitcoin_cli
-from whirlpool import mynode_whirlpool
+from whirlpool import mynode_whirlpool, get_whirlpool_status
 from tor import mynode_tor
 from vpn import mynode_vpn
 from electrum_server import *
@@ -333,20 +333,7 @@ def index():
                     vpn_status = "Setting up..."
 
         # Find whirlpool status
-        whirlpool_initialized = os.path.isfile("/opt/mynode/whirlpool/whirlpool-cli-config.properties")
-        whirlpool_status_color = "gray"
-        if whirlpool_initialized:
-            whirlpool_status = "Initialized."
-            if is_whirlpool_enabled():
-                status = os.system("systemctl status whirlpool --no-pager")
-                if status != 0:
-                    whirlpool_status_color = "red"
-                    whirlpool_status = "Initialized but inactive"
-                else:
-                    whirlpool_status_color = "green"
-                    whirlpool_status = "Running"
-        else:
-            whirlpool_status = "Not initialized."
+        whirlpool_status, whirlpool_status_color, whirlpool_initialized = get_whirlpool_status()
 
         # Check for new version of software
         upgrade_available = False
@@ -381,10 +368,10 @@ def index():
             "vpn_status_color": vpn_status_color,
             "vpn_status": vpn_status,
             "vpn_enabled": is_vpn_enabled(),
-            "whirlpool_status_color": whirlpool_status_color,
             "whirlpool_status": whirlpool_status,
-            "whirlpool_initialized": whirlpool_initialized,
+            "whirlpool_status_color": whirlpool_status_color,
             "whirlpool_enabled": is_whirlpool_enabled(),
+            "whirlpool_initialized": whirlpool_initialized,
             "product_key_skipped": pk_skipped,
             "product_key_error": pk_error,
             "drive_usage": get_drive_usage(),
