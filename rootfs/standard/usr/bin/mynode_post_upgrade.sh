@@ -22,10 +22,28 @@ apt -y install libgmp-dev automake libtool libltdl-dev libltdl7
 
 # Install Whirlpool
 apt -y install openjdk-8-jre
-sudo -u bitcoin mkdir -p /opt/mynode/whirlpool
-cd /opt/mynode/whirlpool
-rm -rf *.jar
-sudo -u bitcoin wget https://github.com/Samourai-Wallet/whirlpool-runtimes/releases/download/cli-0.9.1/whirlpool-client-cli-0.9.1-run.jar
+
+WHIRLPOOL_UPGRADE_URL=https://github.com/Samourai-Wallet/whirlpool-client-cli/releases/download/0.9.1/whirlpool-client-cli-0.9.1-run.jar}
+WHIRLPOOL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.whirlpool_url
+CURRENT=""
+if [ -f $WHIRLPOOL_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $WHIRLPOOL_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$WHIRLPOOL_UPGRADE_URL" ]; then
+        if [ ! -d /opt/mynode/whirlpool ]; then
+            sudo -u bitcoin mkdir -p /opt/mynode/whirlpool
+            cd /opt/mynode/whirlpool
+        else
+            cd /opt/mynode/whirlpool
+            sudo -u bitcoin rm -rf *.jar
+        fi
+        sudo -u bitcoin wget $WHIRLPOOL_UPGRADE_URL
+        sudo -u bitcoin mv whirlpool-client-cli* whirlpool.jar
+
+    mkdir -p /home/bitcoin/.mynode/
+    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+    echo $WHIRLPOOL_UPGRADE_URL > $WHIRLPOOL_UPGRADE_URL_FILE
+fi
 
 
 # Install any pip software
