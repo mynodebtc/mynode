@@ -52,6 +52,11 @@ if [ ! -f /usr/bin/docker ]; then
     /bin/bash /tmp/docker_install.sh
 fi
 
+# Use systemd for managing docker
+rm -f /etc/init.d/docker
+rm -f /etc/systemd/system/multi-user.target.wants/docker.service
+systemctl -f enable docker.service
+
 groupadd docker || true
 usermod -aG docker admin
 usermod -aG docker bitcoin

@@ -63,6 +63,7 @@ apt-get -y update
 apt-get -y upgrade
 
 # Install other tools (run section multiple times to make sure success)
+export DEBIAN_FRONTEND=noninteractive
 apt-get -y install htop git curl bash-completion jq dphys-swapfile lsof libzmq3-dev
 apt-get -y install build-essential python-dev python-pip python3-dev python3-pip 
 apt-get -y install transmission-cli fail2ban ufw tclsh bluez python-bluez redis-server
@@ -142,6 +143,12 @@ fi
 
 # Install docker
 curl -sSL https://get.docker.com | sed 's/sleep 20/sleep 1/' | sudo sh
+
+# Use systemd for managing docker
+rm -f /etc/init.d/docker
+rm -f /etc/systemd/system/multi-user.target.wants/docker.service
+systemctl -f enable docker.service
+
 groupadd docker || true
 usermod -aG docker admin
 usermod -aG docker bitcoin
@@ -336,6 +343,27 @@ if [ "$CURRENT" != "$LNDCONNECT_UPGRADE_URL" ]; then
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $LNDCONNECT_UPGRADE_URL > $LNDCONNECT_UPGRADE_URL_FILE
+fi
+
+# Install WebSSH2
+WEBSSH2_UPGRADE_URL=https://github.com/billchurch/webssh2/archive/v0.2.10-0.tar.gz
+WEBSSH2_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.webssh2_url
+CURRENT=""
+if [ -f $WEBSSH2_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $WEBSSH2_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$WEBSSH2_UPGRADE_URL" ]; then
+    cd /opt/mynode
+    rm -rf webssh2
+    wget $WEBSSH2_UPGRADE_URL -O webssh2.tar.gz
+    tar -xvf webssh2.tar.gz
+    rm webssh2.tar.gz
+    mv webssh2-* webssh2
+    cd webssh2
+    mv app/config.json.sample app/config.json
+    docker build -t webssh2 .
+
+    echo $WEBSSH2_UPGRADE_URL > $WEBSSH2_UPGRADE_URL_FILE
 fi
 
 
