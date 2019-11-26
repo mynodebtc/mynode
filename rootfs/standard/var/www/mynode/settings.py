@@ -373,14 +373,9 @@ def page_reset_tor():
 @mynode_settings.route("/settings/mynode_logs.tar.gz")
 def download_logs_page():
     check_logged_in()
-    os.system("rm -rf /tmp/mynode_logs.tar.gz")
-    os.system("rm -rf /tmp/mynode_info/")
-    os.system("mkdir -p /tmp/mynode_info/")
-    os.system("mynode-get-quicksync-status > /tmp/mynode_info/quicksync_state.txt")
-    os.system("cp /usr/share/mynode/version /tmp/mynode_info/version")
-    os.system("cp -rf /home/admin/upgrade_logs /tmp/mynode_info/")
-    os.system("cp /mnt/hdd/mynode/bitcoin/debug.log /tmp/mynode_info/bitcoin_debug.log")
-    os.system("tar -czvf /tmp/mynode_logs.tar.gz /var/log/ /tmp/mynode_info/")
+
+    os.system("/usr/bin/mynode_gen_debug_tarball.sh")
+
     return send_from_directory(directory="/tmp/", filename="mynode_logs.tar.gz")
 
 @mynode_settings.route("/settings/repair-drive")
