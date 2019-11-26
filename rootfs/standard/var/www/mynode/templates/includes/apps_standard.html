@@ -86,7 +86,11 @@
     </div>
     <div class="app_tile">
         <div class="app_status_icon {{ whirlpool_status_color }}"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/samourai.png")}}"/></div>
+        {% if ui_settings['darkmode'] %}
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/wp-white.png")}}"/></div>
+        {% else %}
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/wp-black.png")}}"/></div>
+        {% endif %}
         <div class="app_title">Whirlpool</div>
         <div class="app_status">{{ whirlpool_status }}</div>
         <div class="app_contents">
