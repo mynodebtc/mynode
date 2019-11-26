@@ -1,3 +1,8 @@
+=== v0.1.69 ===
+- Add GUI to HDMI output
+- Add WebSSH for easier SSH access
+- Improve Upgrades
+
 === v0.1.68 ===
 - Install JoinMarket
 - Fix issues with Docker installation
