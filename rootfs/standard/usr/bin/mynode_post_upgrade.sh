@@ -27,6 +27,9 @@ apt-get -y -qq install apt-transport-https ca-certificates
 apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
 apt-get -y install xorg chromium openbox lightdm
 
+# Make sure some software is removed
+apt-get -y purge ntp # (conflicts with systemd-timedatectl)
+
 
 # Install any pip software
 pip install tzupdate virtualenv --no-cache-dir
