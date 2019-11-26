@@ -78,6 +78,10 @@ apt-get -y install libffi-dev libssl-dev glances python3-bottle automake libtool
 apt -y -qq install apt-transport-https ca-certificates
 
 
+# Make sure some software is removed
+apt-get -y purge ntp # (conflicts with systemd-timedatectl)
+
+
 # Install other things without recommendation
 apt-get -y install --no-install-recommends expect
 
