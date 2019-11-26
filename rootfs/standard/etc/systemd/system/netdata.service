@@ -8,6 +8,7 @@ After=network.target
 [Service]
 WorkingDirectory=/opt/mynode/docker
 ExecStart=/usr/local/bin/docker-compose -f netdata-compose.yml up
+ExecStop=/usr/local/bin/docker-compose -f netdata-compose.yml down
 
 User=bitcoin
 Group=bitcoin
