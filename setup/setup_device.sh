@@ -170,7 +170,7 @@ rm -rf /etc/update-motd.d/*
 
 
 # Install Bitcoin
-BTC_VERSION="0.18.1"
+BTC_VERSION="0.19.0.1"
 ARCH="arm-linux-gnueabihf"
 if [ $IS_ROCK64 = 1 ]; then
     ARCH="aarch64-linux-gnu"
@@ -215,7 +215,7 @@ fi
 cd ~
 
 # Install Lightning
-LND_VERSION="v0.8.0-beta"
+LND_VERSION="v0.8.1-beta"
 LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
