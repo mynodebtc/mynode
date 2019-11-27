@@ -14,6 +14,10 @@ systemctl stop lnd
 systemctl stop quicksync
 systemctl stop bitcoind
 
+# Check if any dpkg installs have failed and correct
+dpkg --configure -a
+
+
 # Check for updates (might auto-install all updates later)
 apt-get update
 
