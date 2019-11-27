@@ -340,7 +340,8 @@ def page_lnd_delete_wallet():
     templateData = {
         "title": "myNode Reboot",
         "header_text": "Restarting",
-        "subheader_text": "This will take several minutes..."
+        "subheader_text": "This will take several minutes...",
+        "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
 
