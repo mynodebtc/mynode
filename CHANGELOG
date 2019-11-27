@@ -1,3 +1,8 @@
+=== v0.1.70 ===
+- Update LND to v0.8.1
+- Update Bitcoin to v0.19.0.1
+- Improve Upgrades
+
 === v0.1.69 ===
 - Add GUI to HDMI output
 - Add WebSSH for easier SSH access
