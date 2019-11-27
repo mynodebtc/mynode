@@ -37,7 +37,7 @@ pip install tzupdate virtualenv --no-cache-dir
 
 # Install any pip3 software
 pip3 install python-bitcointx --no-cache-dir
-pip3 install lndmanage==0.8.0 --no-cache-dir   # Install LND Manage (keep up to date with LND)
+pip3 install lndmanage==0.8.0.1 --no-cache-dir   # Install LND Manage (keep up to date with LND)
 pip3 install docker-compose --no-cache-dir
 
 
