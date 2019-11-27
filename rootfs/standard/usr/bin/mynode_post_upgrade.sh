@@ -73,7 +73,7 @@ usermod -aG docker root
 # Upgrade BTC
 echo "Upgrading BTC..."
 set +e
-BTC_VERSION="0.18.1"
+BTC_VERSION="0.19.0.1"
 ARCH="arm-linux-gnueabihf"
 uname -a | grep aarch64
 if [ $? = 0 ]; then
@@ -120,7 +120,7 @@ fi
 
 # Upgrade LND
 echo "Upgrading LND..."
-LND_VERSION="v0.8.0-beta"
+LND_VERSION="v0.8.1-beta"
 LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"

@@ -238,7 +238,7 @@
                 })
 
                 $("#linux_terminal").on("click", function() {
-                    url = 'http://'+location.hostname+':2222/ssh/host/'+location.hostname
+                    url = 'http://'+location.hostname+':2222/ssh/host/'+"{{local_ip}}"
                     window.open(url,'_blank');
                 })
 
