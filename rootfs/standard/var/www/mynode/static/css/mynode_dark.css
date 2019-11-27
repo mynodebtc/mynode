@@ -64,10 +64,9 @@ table,
     background-color: #3a4750;
 }
 
-.main_page_error_block {
-    color: #eee;
-    border: 3px solid red;
-    background-color: rgb(255, 238, 238);
+.main_page_error_block a {
+    color: black;
+    text-decoration: underline dashed black;
 }
 
 .slider {
