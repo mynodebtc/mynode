@@ -73,9 +73,10 @@ apt-get -y install toilet-fonts avahi-daemon figlet libsecp256k1-dev
 apt-get -y install inotify-tools libssl-dev tor tmux screen
 apt-get -y install python-grpcio python3-grpcio
 apt-get -y install pv sysstat network-manager rsync parted unzip pkg-config
-apt-get -y install libfreetype6-dev libpng-dev libatlas-base-dev libgmp-dev
-apt-get -y install libffi-dev libssl-dev glances python3-bottle automake libtool
+apt-get -y install libfreetype6-dev libpng-dev libatlas-base-dev libgmp-dev libltdl-dev 
+apt-get -y install libffi-dev libssl-dev glances python3-bottle automake libtool libltdl7
 apt -y -qq install apt-transport-https ca-certificates
+apt-get -y install xorg chromium openbox lightdm
 
 
 # Make sure some software is removed
@@ -261,7 +262,7 @@ if [ ! -f /tmp/installed_lndhub ]; then
     rm -rf LndHub
     sudo -u bitcoin git clone https://github.com/BlueWallet/LndHub.git
     cd LndHub
-    sudo -u bitcoin npm install
+    sudo -u bitcoin npm install --only=production
     sudo -u bitcoin ln -s /home/bitcoin/.lnd/tls.cert tls.cert
     sudo -u bitcoin ln -s /home/bitcoin/.lnd/data/chain/bitcoin/mainnet/admin.macaroon admin.macaroon
     touch /tmp/installed_lndhub
@@ -292,7 +293,7 @@ if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
     sudo -u bitcoin rm RTL.tar.gz
     sudo -u bitcoin mv RTL-* RTL
     cd RTL
-    sudo -u bitcoin NG_CLI_ANALYTICS=false npm install
+    sudo -u bitcoin NG_CLI_ANALYTICS=false npm install --only=production
     
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
@@ -315,7 +316,7 @@ if [ "$CURRENT" != "$BTCRPCEXPLORER_UPGRADE_URL" ]; then
     sudo -u bitcoin rm btc-rpc-explorer.tar.gz
     sudo -u bitcoin mv btc-rpc-* btc-rpc-explorer
     cd btc-rpc-explorer
-    sudo -u bitcoin npm install
+    sudo -u bitcoin npm install --only=production
 
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/

@@ -221,7 +221,7 @@ if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
     sudo -u bitcoin rm RTL.tar.gz
     sudo -u bitcoin mv RTL-* RTL
     cd RTL
-    sudo -u bitcoin NG_CLI_ANALYTICS=false npm install
+    sudo -u bitcoin NG_CLI_ANALYTICS=false npm install --only=production
     
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
@@ -243,7 +243,7 @@ if [ "$CURRENT" != "$BTCRPCEXPLORER_UPGRADE_URL" ]; then
     sudo -u bitcoin rm btc-rpc-explorer.tar.gz
     sudo -u bitcoin mv btc-rpc-* btc-rpc-explorer
     cd btc-rpc-explorer
-    sudo -u bitcoin npm install
+    sudo -u bitcoin npm install --only=production
 
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
