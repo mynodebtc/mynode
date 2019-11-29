@@ -70,7 +70,7 @@ apt-get -y install transmission-cli fail2ban ufw tclsh bluez python-bluez redis-
 #apt-get -y install mongodb-org
 apt-get -y install clang hitch zlib1g-dev libffi-dev file toilet ncdu
 apt-get -y install toilet-fonts avahi-daemon figlet libsecp256k1-dev 
-apt-get -y install inotify-tools libssl-dev tor tmux screen
+apt-get -y install inotify-tools libssl-dev tor tmux screen fonts-dejavu
 apt-get -y install python-grpcio python3-grpcio
 apt-get -y install pv sysstat network-manager rsync parted unzip pkg-config
 apt-get -y install libfreetype6-dev libpng-dev libatlas-base-dev libgmp-dev libltdl-dev 
