@@ -429,6 +429,8 @@ systemctl enable tor
 systemctl enable invalid_block_check
 systemctl enable usb_driver_check
 systemctl enable glances
+systemctl enable netdata
+systemctl enable webssh2
 
 
 # Regenerate MAC Address for Rock64
