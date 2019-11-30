@@ -226,6 +226,7 @@ if [ "$USER" != "bitcoin" ]; then
 fi
 chown bitcoin:bitcoin /mnt/hdd/
 chown bitcoin:bitcoin /mnt/hdd/mynode/
+chown -R admin:admin /home/admin/.config/
 
 
 # Setup swap on new HDD
