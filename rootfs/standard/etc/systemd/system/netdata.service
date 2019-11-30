@@ -3,7 +3,8 @@
 
 [Unit]
 Description=Netdata
-After=network.target
+Wants=mynode.service
+After=mynode.service
 
 [Service]
 WorkingDirectory=/opt/mynode/docker
