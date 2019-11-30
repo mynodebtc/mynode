@@ -396,7 +396,7 @@ systemctl enable lnd_backup
 systemctl enable lnd_admin_files
 systemctl enable lndconnect
 systemctl enable redis-server
-systemctl enable mongodb
+#systemctl enable mongodb
 #systemctl enable electrs # DISABLED BY DEFAULT
 #systemctl enable lndhub # DISABLED BY DEFAULT
 #systemctl enable btc_rpc_explorer # DISABLED BY DEFAULT
