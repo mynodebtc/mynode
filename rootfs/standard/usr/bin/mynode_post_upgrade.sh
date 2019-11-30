@@ -250,27 +250,6 @@ if [ "$CURRENT" != "$BTCRPCEXPLORER_UPGRADE_URL" ]; then
     echo $BTCRPCEXPLORER_UPGRADE_URL > $BTCRPCEXPLORER_UPGRADE_URL_FILE
 fi
 
-# Upgrade WebSSH2
-WEBSSH2_UPGRADE_URL=https://github.com/billchurch/webssh2/archive/v0.2.10-0.tar.gz
-WEBSSH2_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.webssh2_url
-CURRENT=""
-if [ -f $WEBSSH2_UPGRADE_URL_FILE ]; then
-    CURRENT=$(cat $WEBSSH2_UPGRADE_URL_FILE)
-fi
-if [ "$CURRENT" != "$WEBSSH2_UPGRADE_URL" ]; then
-    cd /opt/mynode
-    rm -rf webssh2
-    wget $WEBSSH2_UPGRADE_URL -O webssh2.tar.gz
-    tar -xvf webssh2.tar.gz
-    rm webssh2.tar.gz
-    mv webssh2-* webssh2
-    cd webssh2
-    mv app/config.json.sample app/config.json
-    docker build -t webssh2 .
-
-    echo $WEBSSH2_UPGRADE_URL > $WEBSSH2_UPGRADE_URL_FILE
-fi
-
 
 # Install ngrok for debugging
 if [ ! -f /usr/bin/ngrok  ]; then
@@ -290,6 +269,7 @@ systemctl enable firewall
 systemctl enable invalid_block_check
 systemctl enable usb_driver_check
 systemctl enable https
+systemctl enable docker_images
 systemctl enable glances
 systemctl enable netdata
 systemctl enable webssh2
