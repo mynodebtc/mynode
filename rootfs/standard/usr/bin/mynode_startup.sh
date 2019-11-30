@@ -15,6 +15,11 @@ fi
 for dev in /sys/bus/usb/devices/*/power/control; do echo "on" > $dev; done 
 
 
+# Verify SD card permissions and folders are OK
+mkdir -p /home/admin/.config/
+chown -R admin:admin /home/admin/.config/
+
+
 # Expand Root FS
 mkdir -p /var/lib/mynode
 
@@ -226,7 +231,6 @@ if [ "$USER" != "bitcoin" ]; then
 fi
 chown bitcoin:bitcoin /mnt/hdd/
 chown bitcoin:bitcoin /mnt/hdd/mynode/
-chown -R admin:admin /home/admin/.config/
 
 
 # Setup swap on new HDD
