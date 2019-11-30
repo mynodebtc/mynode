@@ -13,7 +13,7 @@ while [ 1 ]; do
 
     # Upgrade WebSSH2
     WEBSSH2_UPGRADE_URL=https://github.com/billchurch/webssh2/archive/v0.2.10-0.tar.gz
-    WEBSSH2_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.webssh2_url
+    WEBSSH2_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/webssh2_url
     CURRENT=""
     if [ -f $WEBSSH2_UPGRADE_URL_FILE ]; then
         CURRENT=$(cat $WEBSSH2_UPGRADE_URL_FILE)
