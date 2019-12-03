@@ -98,3 +98,14 @@ def enable_netdata():
 def disable_netdata():
     os.system("systemctl stop netdata --no-pager")
     os.system("systemctl disable netdata --no-pager")
+
+def is_whirlpool_enabled():
+    return is_service_enabled("whirlpool")
+
+def enable_whirlpool():
+    os.system("systemctl enable whirlpool --no-pager")
+    os.system("systemctl start whirlpool --no-pager")
+
+def disable_whirlpool():
+    os.system("systemctl stop whirlpool --no-pager")
+    os.system("systemctl disable whirlpool --no-pager")

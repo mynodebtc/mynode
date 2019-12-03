@@ -4,6 +4,7 @@ from flask import Flask, render_template, Markup, send_from_directory, redirect,
 from user_management import *
 from bitcoind import mynode_bitcoind
 from bitcoin_cli import mynode_bitcoin_cli
+from whirlpool import mynode_whirlpool, get_whirlpool_status
 from tor import mynode_tor
 from vpn import mynode_vpn
 from electrum_server import *
@@ -38,6 +39,7 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.register_blueprint(mynode_bitcoind)
 app.register_blueprint(mynode_lnd)
 app.register_blueprint(mynode_bitcoin_cli)
+app.register_blueprint(mynode_whirlpool)
 app.register_blueprint(mynode_tor)
 app.register_blueprint(mynode_electrum_server)
 app.register_blueprint(mynode_vpn)
@@ -330,6 +332,9 @@ def index():
                 else:
                     vpn_status = "Setting up..."
 
+        # Find whirlpool status
+        whirlpool_status, whirlpool_status_color, whirlpool_initialized = get_whirlpool_status()
+
         # Check for new version of software
         upgrade_available = False
         current = get_current_version()
@@ -363,6 +368,10 @@ def index():
             "vpn_status_color": vpn_status_color,
             "vpn_status": vpn_status,
             "vpn_enabled": is_vpn_enabled(),
+            "whirlpool_status": whirlpool_status,
+            "whirlpool_status_color": whirlpool_status_color,
+            "whirlpool_enabled": is_whirlpool_enabled(),
+            "whirlpool_initialized": whirlpool_initialized,
             "product_key_skipped": pk_skipped,
             "product_key_error": pk_error,
             "drive_usage": get_drive_usage(),
@@ -456,6 +465,15 @@ def page_toggle_vpn():
         disable_vpn()
     else:
         enable_vpn()
+    return redirect("/")
+
+@app.route("/toggle-whirlpool")
+def page_toggle_whirlpool():
+    check_logged_in()
+    if is_whirlpool_enabled():
+        disable_whirlpool()
+    else:
+        enable_whirlpool()
     return redirect("/")
 
 @app.route("/login", methods=["GET","POST"])
