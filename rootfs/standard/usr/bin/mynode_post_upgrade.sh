@@ -14,11 +14,26 @@ systemctl stop lnd
 systemctl stop quicksync
 systemctl stop bitcoind
 
+# Check if any dpkg installs have failed and correct
+dpkg --configure -a
+
+
+# Check for updates (might auto-install all updates later)
+apt-get update
+
+
 # Install any new software
-apt -y install pv sysstat network-manager unzip pkg-config libfreetype6-dev libpng-dev
-apt -y install libatlas-base-dev libffi-dev libssl-dev glances python3-bottle
-apt -y -qq install apt-transport-https ca-certificates
-apt -y install libgmp-dev automake libtool libltdl-dev libltdl7
+export DEBIAN_FRONTEND=noninteractive
+apt-get -y install fonts-dejavu
+apt-get -y install pv sysstat network-manager unzip pkg-config libfreetype6-dev libpng-dev
+apt-get -y install libatlas-base-dev libffi-dev libssl-dev glances python3-bottle
+apt-get -y -qq install apt-transport-https ca-certificates
+apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
+apt-get -y install xorg chromium openbox lightdm
+
+# Make sure some software is removed
+apt-get -y purge ntp # (conflicts with systemd-timedatectl)
+
 
 # Install Whirlpool
 apt -y install openjdk-8-jre
@@ -46,13 +61,13 @@ if [ "$CURRENT" != "$WHIRLPOOL_UPGRADE_URL" ]; then
 fi
 
 # Install any pip software
-pip install tzupdate virtualenv
+pip install tzupdate virtualenv --no-cache-dir
 
 
 # Install any pip3 software
-pip3 install python-bitcointx
-pip3 install lndmanage==0.8.0   # Install LND Manage (keep up to date with LND)
-pip3 install docker-compose
+pip3 install python-bitcointx --no-cache-dir
+pip3 install lndmanage==0.8.0.1 --no-cache-dir   # Install LND Manage (keep up to date with LND)
+pip3 install docker-compose --no-cache-dir
 
 
 # Import Keys
@@ -62,10 +77,18 @@ gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C268459
 
 
 # Install docker
-#if [ ! -f /usr/bin/docker ]; then
-#    curl -sSL https://get.docker.com | sh
-#fi
-curl -sSL https://get.docker.com | sed 's/sleep 20/sleep 1/' | sudo sh
+if [ ! -f /usr/bin/docker ]; then
+    rm -f /tmp/docker_install.sh
+    wget https://get.docker.com -O /tmp/docker_install.sh
+    sed -i 's/sleep 20/sleep 1/' /tmp/docker_install.sh
+    /bin/bash /tmp/docker_install.sh
+fi
+
+# Use systemd for managing docker
+rm -f /etc/init.d/docker
+rm -f /etc/systemd/system/multi-user.target.wants/docker.service
+systemctl -f enable docker.service
+
 groupadd docker || true
 usermod -aG docker admin
 usermod -aG docker bitcoin
@@ -74,7 +97,7 @@ usermod -aG docker root
 # Upgrade BTC
 echo "Upgrading BTC..."
 set +e
-BTC_VERSION="0.18.1"
+BTC_VERSION="0.19.0.1"
 ARCH="arm-linux-gnueabihf"
 uname -a | grep aarch64
 if [ $? = 0 ]; then
@@ -121,7 +144,7 @@ fi
 
 # Upgrade LND
 echo "Upgrading LND..."
-LND_VERSION="v0.8.0-beta"
+LND_VERSION="v0.8.1-beta"
 LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
@@ -208,7 +231,7 @@ if [ $IS_PREMIUM -eq 1 ]; then
 fi
 
 # Upgrade RTL
-RTL_UPGRADE_URL=https://github.com/ShahanaFarooqui/RTL/archive/v0.5.1.tar.gz
+RTL_UPGRADE_URL=https://github.com/ShahanaFarooqui/RTL/archive/v0.5.4.tar.gz
 RTL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.rtl_url
 CURRENT=""
 if [ -f $RTL_UPGRADE_URL_FILE ]; then
@@ -222,7 +245,7 @@ if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
     sudo -u bitcoin rm RTL.tar.gz
     sudo -u bitcoin mv RTL-* RTL
     cd RTL
-    sudo -u bitcoin NG_CLI_ANALYTICS=false npm install
+    sudo -u bitcoin NG_CLI_ANALYTICS=false npm install --only=production
     
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
@@ -230,7 +253,7 @@ if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
 fi
 
 # Upgrade Bitcoin RPC Explorer
-BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v1.1.1.tar.gz
+BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v1.1.2.tar.gz
 BTCRPCEXPLORER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btcrpcexplorer_url
 CURRENT=""
 if [ -f $BTCRPCEXPLORER_UPGRADE_URL_FILE ]; then
@@ -244,32 +267,11 @@ if [ "$CURRENT" != "$BTCRPCEXPLORER_UPGRADE_URL" ]; then
     sudo -u bitcoin rm btc-rpc-explorer.tar.gz
     sudo -u bitcoin mv btc-rpc-* btc-rpc-explorer
     cd btc-rpc-explorer
-    sudo -u bitcoin npm install
+    sudo -u bitcoin npm install --only=production
 
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $BTCRPCEXPLORER_UPGRADE_URL > $BTCRPCEXPLORER_UPGRADE_URL_FILE
-fi
-
-# Upgrade WebSSH2
-WEBSSH2_UPGRADE_URL=https://github.com/billchurch/webssh2/archive/v0.2.10-0.tar.gz
-WEBSSH2_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.webssh2_url
-CURRENT=""
-if [ -f WEBSSH2_UPGRADE_URL_FILE ]; then
-    CURRENT=$(cat $WEBSSH2_UPGRADE_URL_FILE)
-fi
-if [ "$CURRENT" != "$WEBSSH2_UPGRADE_URL" ]; then
-    cd /opt/mynode
-    rm -rf webssh2
-    wget $WEBSSH2_UPGRADE_URL -O webssh2.tar.gz
-    tar -xvf webssh2.tar.gz
-    rm webssh2.tar.gz
-    mv webssh2-* webssh2
-    cd webssh2
-    mv app/config.json.sample app/config.json
-    docker build -t webssh2 .
-
-    echo $WEBSSH2_UPGRADE_URL > $WEBSSH2_UPGRADE_URL_FILE
 fi
 
 
@@ -291,6 +293,7 @@ systemctl enable firewall
 systemctl enable invalid_block_check
 systemctl enable usb_driver_check
 systemctl enable https
+systemctl enable docker_images
 systemctl enable glances
 systemctl enable netdata
 systemctl enable webssh2

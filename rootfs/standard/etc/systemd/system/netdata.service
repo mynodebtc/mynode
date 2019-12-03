@@ -3,11 +3,13 @@
 
 [Unit]
 Description=Netdata
-After=network.target
+Wants=mynode.service
+After=mynode.service
 
 [Service]
 WorkingDirectory=/opt/mynode/docker
 ExecStart=/usr/local/bin/docker-compose -f netdata-compose.yml up
+ExecStop=/usr/local/bin/docker-compose -f netdata-compose.yml down
 
 User=bitcoin
 Group=bitcoin

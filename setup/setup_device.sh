@@ -63,18 +63,24 @@ apt-get -y update
 apt-get -y upgrade
 
 # Install other tools (run section multiple times to make sure success)
+export DEBIAN_FRONTEND=noninteractive
 apt-get -y install htop git curl bash-completion jq dphys-swapfile lsof libzmq3-dev
 apt-get -y install build-essential python-dev python-pip python3-dev python3-pip 
 apt-get -y install transmission-cli fail2ban ufw tclsh bluez python-bluez redis-server
 #apt-get -y install mongodb-org
 apt-get -y install clang hitch zlib1g-dev libffi-dev file toilet ncdu
 apt-get -y install toilet-fonts avahi-daemon figlet libsecp256k1-dev 
-apt-get -y install inotify-tools libssl-dev tor tmux screen
+apt-get -y install inotify-tools libssl-dev tor tmux screen fonts-dejavu
 apt-get -y install python-grpcio python3-grpcio
 apt-get -y install pv sysstat network-manager rsync parted unzip pkg-config
-apt-get -y install libfreetype6-dev libpng-dev libatlas-base-dev libgmp-dev
-apt-get -y install libffi-dev libssl-dev glances python3-bottle automake libtool
+apt-get -y install libfreetype6-dev libpng-dev libatlas-base-dev libgmp-dev libltdl-dev 
+apt-get -y install libffi-dev libssl-dev glances python3-bottle automake libtool libltdl7
 apt -y -qq install apt-transport-https ca-certificates
+apt-get -y install xorg chromium openbox lightdm
+
+
+# Make sure some software is removed
+apt-get -y purge ntp # (conflicts with systemd-timedatectl)
 
 
 # Install other things without recommendation
@@ -122,7 +128,7 @@ fi
 pip3 install wheel setuptools
 pip3 install bitstring lnd-grpc pycoin aiohttp connectrum python-bitcoinlib
 pip3 install python-bitcointx
-pip3 install lndmanage==0.8.0   # Install LND Manage (keep up to date with LND)
+pip3 install lndmanage==0.8.0.1   # Install LND Manage (keep up to date with LND)
 pip3 install docker-compose
 
 
@@ -142,6 +148,12 @@ fi
 
 # Install docker
 curl -sSL https://get.docker.com | sed 's/sleep 20/sleep 1/' | sudo sh
+
+# Use systemd for managing docker
+rm -f /etc/init.d/docker
+rm -f /etc/systemd/system/multi-user.target.wants/docker.service
+systemctl -f enable docker.service
+
 groupadd docker || true
 usermod -aG docker admin
 usermod -aG docker bitcoin
@@ -159,7 +171,7 @@ rm -rf /etc/update-motd.d/*
 
 
 # Install Bitcoin
-BTC_VERSION="0.18.1"
+BTC_VERSION="0.19.0.1"
 ARCH="arm-linux-gnueabihf"
 if [ $IS_ROCK64 = 1 ]; then
     ARCH="aarch64-linux-gnu"
@@ -204,7 +216,7 @@ fi
 cd ~
 
 # Install Lightning
-LND_VERSION="v0.8.0-beta"
+LND_VERSION="v0.8.1-beta"
 LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
@@ -250,7 +262,7 @@ if [ ! -f /tmp/installed_lndhub ]; then
     rm -rf LndHub
     sudo -u bitcoin git clone https://github.com/BlueWallet/LndHub.git
     cd LndHub
-    sudo -u bitcoin npm install
+    sudo -u bitcoin npm install --only=production
     sudo -u bitcoin ln -s /home/bitcoin/.lnd/tls.cert tls.cert
     sudo -u bitcoin ln -s /home/bitcoin/.lnd/data/chain/bitcoin/mainnet/admin.macaroon admin.macaroon
     touch /tmp/installed_lndhub
@@ -267,7 +279,7 @@ fi
 
 
 # Install RTL
-RTL_UPGRADE_URL=https://github.com/ShahanaFarooqui/RTL/archive/v0.5.1.tar.gz
+RTL_UPGRADE_URL=https://github.com/ShahanaFarooqui/RTL/archive/v0.5.4.tar.gz
 RTL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.rtl_url
 CURRENT=""
 if [ -f $RTL_UPGRADE_URL_FILE ]; then
@@ -281,7 +293,7 @@ if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
     sudo -u bitcoin rm RTL.tar.gz
     sudo -u bitcoin mv RTL-* RTL
     cd RTL
-    sudo -u bitcoin NG_CLI_ANALYTICS=false npm install
+    sudo -u bitcoin NG_CLI_ANALYTICS=false npm install --only=production
     
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
@@ -290,7 +302,7 @@ fi
 
 
 # Install Bitcoin RPC Explorer
-BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v1.1.1.tar.gz
+BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v1.1.2.tar.gz
 BTCRPCEXPLORER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btcrpcexplorer_url
 CURRENT=""
 if [ -f $BTCRPCEXPLORER_UPGRADE_URL_FILE ]; then
@@ -304,7 +316,7 @@ if [ "$CURRENT" != "$BTCRPCEXPLORER_UPGRADE_URL" ]; then
     sudo -u bitcoin rm btc-rpc-explorer.tar.gz
     sudo -u bitcoin mv btc-rpc-* btc-rpc-explorer
     cd btc-rpc-explorer
-    sudo -u bitcoin npm install
+    sudo -u bitcoin npm install --only=production
 
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
@@ -384,7 +396,7 @@ systemctl enable lnd_backup
 systemctl enable lnd_admin_files
 systemctl enable lndconnect
 systemctl enable redis-server
-systemctl enable mongodb
+#systemctl enable mongodb
 #systemctl enable electrs # DISABLED BY DEFAULT
 #systemctl enable lndhub # DISABLED BY DEFAULT
 #systemctl enable btc_rpc_explorer # DISABLED BY DEFAULT
@@ -395,7 +407,10 @@ systemctl enable rtl
 systemctl enable tor
 systemctl enable invalid_block_check
 systemctl enable usb_driver_check
+systemctl enable docker_images
 systemctl enable glances
+systemctl enable netdata
+systemctl enable webssh2
 
 
 # Regenerate MAC Address for Rock64
