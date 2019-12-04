@@ -175,7 +175,7 @@ fi
 # Upgrade Joinmarket
 echo "Upgrading JoinMarket..."
 if [ $IS_PREMIUM -eq 1 ]; then
-    JOINMARKET_VERSION=0.5.5
+    JOINMARKET_VERSION=0.6.0
     JOINMARKET_GITHUB_URL=https://github.com/JoinMarket-Org/joinmarket-clientserver.git
     JOINMARKET_VERSION_FILE=/home/bitcoin/.mynode/.joinmarket_version
     CURRENT=""
