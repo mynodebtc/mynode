@@ -52,8 +52,8 @@ if [ "$CURRENT" != "$WHIRLPOOL_UPGRADE_URL" ]; then
             cd /opt/mynode/whirlpool
             sudo rm -rf *.jar
         fi
-        sudo -u bitcoin wget $WHIRLPOOL_UPGRADE_URL
-        sudo -u bitcoin mv whirlpool-client-cli-0* whirlpool.jar
+        sudo -u bitcoin wget -O whirlpool.jar $WHIRLPOOL_UPGRADE_URL
+#        sudo -u bitcoin mv whirlpool-client-cli-0* whirlpool.jar
         
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
