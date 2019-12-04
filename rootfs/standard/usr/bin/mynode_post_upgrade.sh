@@ -40,7 +40,7 @@ apt -y install openjdk-8-jre
 
 WHIRLPOOL_UPGRADE_URL=https://github.com/Samourai-Wallet/whirlpool-client-cli/releases/download/0.9.1/whirlpool-client-cli-0.9.1-run.jar
 WHIRLPOOL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.whirlpool_url
-CURRENT="
+CURRENT=""
 if [ -f $WHIRLPOOL_UPGRADE_URL_FILE ]; then
     CURRENT=$(cat $WHIRLPOOL_UPGRADE_URL_FILE)
 fi
