@@ -175,7 +175,7 @@ fi
 # Upgrade Joinmarket
 echo "Upgrading JoinMarket..."
 if [ $IS_PREMIUM -eq 1 ]; then
-    JOINMARKET_VERSION=0.5.5
+    JOINMARKET_VERSION=0.6.0
     JOINMARKET_GITHUB_URL=https://github.com/JoinMarket-Org/joinmarket-clientserver.git
     JOINMARKET_VERSION_FILE=/home/bitcoin/.mynode/.joinmarket_version
     CURRENT=""
@@ -229,7 +229,7 @@ if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
 fi
 
 # Upgrade Bitcoin RPC Explorer
-BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v1.1.2.tar.gz
+BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v1.1.4.tar.gz
 BTCRPCEXPLORER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btcrpcexplorer_url
 CURRENT=""
 if [ -f $BTCRPCEXPLORER_UPGRADE_URL_FILE ]; then
