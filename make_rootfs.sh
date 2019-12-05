@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for i in 'rock64' 'raspi3' 'raspi4' 'debian'; do
+for i in 'rock64' 'rockpro64' 'raspi3' 'raspi4' 'debian'; do
 	mkdir -p out/rootfs_$i/
 	rsync -r -u rootfs/standard/* out/rootfs_$i/
 	rsync -r -u rootfs/$i/* out/rootfs_$i/

@@ -38,40 +38,38 @@ out/base_images/raspi4_base.img.gz:
 out/base_images/rock64_base.img.gz:
 	@mkdir -p out/base_images/
 	@wget http://mynodebtc.com/device/mynode_images/rock64_base.img.gz -O out/base_images/rock64_base.img.gz
-download_base_images: download_linux_images out/base_images/raspi3_base.img.gz out/base_images/raspi4_base.img.gz out/base_images/rock64_base.img.gz
+out/base_images/rockpro64_base.img.gz:
+	@mkdir -p out/base_images/
+	@wget http://mynodebtc.com/device/mynode_images/rockpro64_base.img.gz -O out/base_images/rockpro64_base.img.gz
+out/base_images/debian_base.ova:
+	@mkdir -p out/base_images/
+	@wget http://mynodebtc.com/device/mynode_images/vm_base.ova -O out/base_images/vm_base.ova
 
-
-# Download latest nyNode images
-out/mynode_images/raspi3_final.img.gz:
-	@mkdir -p out/mynode_images/
-	@wget http://mynodebtc.com/device/mynode_images/raspi3_final.img.gz -O out/mynode_images/raspi3_final.img.gz
-out/mynode_images/raspi4_final.img.gz:
-	@mkdir -p out/mynode_images/
-	@wget http://mynodebtc.com/device/mynode_images/raspi4_final.img.gz -O out/mynode_images/raspi4_final.img.gz
-out/mynode_images/rock64_final.img.gz:
-	@mkdir -p out/mynode_images/
-	@wget http://mynodebtc.com/device/mynode_images/rock64_final.img.gz -O out/mynode_images/rock64_final.img.gz
-download_mynode_images: download_base_images out/mynode_images/raspi3_final.img.gz out/mynode_images/raspi4_final.img.gz out/mynode_images/rock64_final.img.gz
 
 
 # Setup of New Device
 .PHONY: setup_new_rock64
-setup_new_rock64: start_file_server download_base_images rootfs
+setup_new_rock64: start_file_server out/base_images/rock64_base.img.gz rootfs
 	@cp -f setup/setup_device.sh out/setup_device.sh 
 	@/bin/bash scripts/setup_new_rock64.sh
 
+.PHONY: setup_new_rockpro64
+setup_new_rockpro64: start_file_server out/base_images/rockpro64_base.img.gz rootfs
+	@cp -f setup/setup_device.sh out/setup_device.sh 
+	@/bin/bash scripts/setup_new_rockpro64.sh
+
 .PHONY: setup_new_raspi3
-setup_new_raspi3: start_file_server download_base_images rootfs 
+setup_new_raspi3: start_file_server out/base_images/raspi3_base.img.gz rootfs 
 	@cp -f setup/setup_device.sh out/setup_device.sh 
 	@/bin/bash scripts/setup_new_raspi3.sh
 
 .PHONY: setup_new_raspi4
-setup_new_raspi4: start_file_server download_base_images rootfs 
+setup_new_raspi4: start_file_server out/base_images/raspi4_base.img.gz rootfs 
 	@cp -f setup/setup_device.sh out/setup_device.sh 
 	@/bin/bash scripts/setup_new_raspi4.sh
 
 .PHONY: setup_new_debian
-setup_new_debian: start_file_server download_base_images rootfs 
+setup_new_debian: start_file_server out/base_images/debian_base.ova rootfs 
 	@cp -f setup/setup_device.sh out/setup_device.sh 
 	@/bin/bash scripts/setup_new_debian.sh
 
