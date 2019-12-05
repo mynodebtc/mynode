@@ -35,7 +35,7 @@ if [ ! -f /var/lib/mynode/.expanded_rootfs ]; then
 fi
 
 # Verify we are in a clean state (only raspi uses HDD swap)
-if [ $IS_RASPI -eq 1 ]; then
+if [ $IS_RASPI -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
     dphys-swapfile swapoff || true
     dphys-swapfile uninstall || true
 fi
@@ -234,7 +234,7 @@ chown bitcoin:bitcoin /mnt/hdd/mynode/
 
 
 # Setup swap on new HDD
-if [ $IS_RASPI -eq 1 ]; then
+if [ $IS_RASPI -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
     if [ ! -f /mnt/hdd/swapfile ]; then
         dd if=/dev/zero of=/mnt/hdd/swapfile count=1000 bs=1MiB
         chmod 600 /mnt/hdd/swapfile

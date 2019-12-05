@@ -15,8 +15,10 @@ if [[ $MODEL == *"Rock64"* ]]; then
 elif [[ $MODEL == *"RockPro64"* ]]; then 
     IS_ROCKPRO64=1
 elif [[ $MODEL == *"Raspberry Pi 3"* ]]; then
+    IS_RASPI=1
     IS_RASPI3=1
 elif [[ $MODEL == *"Raspberry Pi 4"* ]]; then
+    IS_RASPI=1
     IS_RASPI4=1
 fi
 
