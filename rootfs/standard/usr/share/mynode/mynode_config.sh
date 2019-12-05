@@ -2,21 +2,22 @@
 
 # Device info
 IS_ROCK64=0
+IS_ROCKPRO64=0
 IS_RASPI=0
 IS_RASPI3=0
 IS_RASPI4=0
 IS_X86=0
 DEVICE_TYPE="unknown"
-uname -a | grep aarch64 && IS_ROCK64=1 || IS_RASPI=1
-if [ $IS_RASPI -eq 1 ]; then
-    cat /proc/cpuinfo | grep 03111 && IS_RASPI4=1 || IS_RASPI3=1
-fi
+MODEL=$(cat /proc/device-tree/model) || MODEL="unknown"
 uname -a | grep amd64 && IS_X86=1 || true
-if [ $IS_X86 -eq 1 ]; then
-    IS_RASPI=0
-    IS_ROCK64=0
-    IS_RASPI3=0
-    IS_RASPI4=0
+if [[ $MODEL == *"Rock64"* ]]; then 
+    IS_ROCK64=1
+elif [[ $MODEL == *"RockPro64"* ]]; then 
+    IS_ROCKPRO64=1
+elif [[ $MODEL == *"Raspberry Pi 3"* ]]; then
+    IS_RASPI3=1
+elif [[ $MODEL == *"Raspberry Pi 4"* ]]; then
+    IS_RASPI4=1
 fi
 
 if [ $IS_RASPI3 -eq 1 ]; then
@@ -25,6 +26,8 @@ elif [ $IS_RASPI4 -eq 1 ]; then
     DEVICE_TYPE="raspi4"
 elif [ $IS_ROCK64 -eq 1 ]; then
     DEVICE_TYPE="rock64"
+elif [ $IS_ROCKPRO64 -eq 1 ]; then
+    DEVICE_TYPE="rockpro64"
 elif [ $IS_X86 -eq 1 ]; then
     DEVICE_TYPE="debian"
 fi

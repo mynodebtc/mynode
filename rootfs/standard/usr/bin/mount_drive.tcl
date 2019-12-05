@@ -5,7 +5,7 @@ proc checkPartitionForExistingMyNodeFs {partition} {
         puts "Cannot mount partition ${partition}"
         return 0
     }
-    if { [file exists /mnt/hdd/.mynode] || [file isdirectory /mnt/hdd/mynode] } {
+    if { [file exists /mnt/hdd/.mynode] } {
         puts "Found existing myNode FS on ${partition}"
         runCommand echo /dev/${partition} > /tmp/.mynode_drive
         return 1
