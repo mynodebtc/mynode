@@ -91,7 +91,6 @@ def index():
 
     bitcoin_block_height = get_bitcoin_block_height()
     mynode_block_height = get_mynode_block_height()
-    lnd_info = get_lightning_info()
     pk_skipped = skipped_product_key()
     pk_error = not is_valid_product_key()
 
