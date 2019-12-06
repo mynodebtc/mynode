@@ -262,6 +262,7 @@
                 <div class="app_status"></div>
                 <div class="app_contents"><div class="drive_usage">{{ram_usage}}</div></div>
             </div>
+            {% if device_temp != '...' %}
             <div class="app_tile">
                 <div class="app_status_icon"></div>
                 <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/temperature.png")}}"/></div>
@@ -269,6 +270,7 @@
                 <div class="app_status"></div>
                 <div class="app_contents"><div class="drive_usage">{{device_temp}} &deg;C</div></div>
             </div>
+            {% endif %}
             <!--
             <div class="app_tile">
                 <div class="app_status_icon"></div>
