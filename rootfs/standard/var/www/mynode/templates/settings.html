@@ -394,10 +394,12 @@
                     <td>RAM</td>
                     <td style="padding-left: 20px;">{{ram_usage}}</td>
                 </tr>
+                {% if device_temp != '...' %}
                 <tr>
                     <td>Temperature</td>
                     <td style="padding-left: 20px;">{{device_temp}} &deg;C</td>
                 </tr>
+                {% endif %}
                 <tr>
                     <td>Uptime</td>
                     <td style="padding-left: 20px;">{{uptime}}</td>
