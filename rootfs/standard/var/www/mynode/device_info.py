@@ -124,9 +124,7 @@ def delete_product_key_error():
 def get_local_ip():
     local_ip = "unknown"
     try:
-        result = subprocess.check_output('hostname -I', shell=True)
-        ips = result.split()
-        local_ip = ips[0]
+        local_ip = subprocess.check_output('/usr/bin/get_local_ip.py', shell=True)
     except:
         local_ip = "error"
 
