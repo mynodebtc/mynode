@@ -344,7 +344,7 @@ LNDCONNECTARCH="lndconnect-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LNDCONNECTARCH="lndconnect-linux-amd64"
 fi
-LNDCONNECT_UPGRADE_URL=https://github.com/LN-Zap/lndconnect/releases/download/v0.1.0/$LNDCONNECTARCH-v0.1.0.tar.gz
+LNDCONNECT_UPGRADE_URL=https://github.com/LN-Zap/lndconnect/releases/download/v0.2.0/$LNDCONNECTARCH-v0.2.0.tar.gz
 LNDCONNECT_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lndconnect_url
 CURRENT=""
 if [ -f $LNDCONNECT_UPGRADE_URL_FILE ]; then
