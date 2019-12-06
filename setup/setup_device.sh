@@ -16,22 +16,35 @@ SERVER_IP=$1
 
 # Determine Device
 IS_ROCK64=0
+IS_ROCKPRO64=0
+IS_RASPI=0
 IS_RASPI3=0
 IS_RASPI4=0
 IS_X86=0
-uname -a | grep aarch64 && IS_ROCK64=1 || IS_RASPI3=1
-if [ $IS_RASPI3 -eq 1 ]; then
-    cat /proc/cpuinfo | grep 03111 && IS_RASPI4=1 && IS_RASPI3=0 || IS_RASPI3=1
-fi
+IS_UNKNOWN=0
+DEVICE_TYPE="unknown"
+MODEL=$(cat /proc/device-tree/model) || IS_UNKNOWN=1
 uname -a | grep amd64 && IS_X86=1 || true
-if [ $IS_X86 -eq 1 ]; then
-    IS_ROCK64=0
-    IS_RASPI3=0
-    IS_RASPI4=0
+if [[ $MODEL == *"Rock64"* ]]; then 
+    IS_ROCK64=1
+elif [[ $MODEL == *"RockPro64"* ]]; then 
+    IS_ROCKPRO64=1
+elif [[ $MODEL == *"Raspberry Pi 3"* ]]; then
+    IS_RASPI=1
+    IS_RASPI3=1
+elif [[ $MODEL == *"Raspberry Pi 4"* ]]; then
+    IS_RASPI=1
+    IS_RASPI4=1
 fi
 
+if [ $IS_UNKNOWN = 1 ]; then
+    echo "UNKNOWN DEVICE TYPE"
+    exit 1
+fi
+
+
 # Make sure FS is expanded for Rock64
-if [ $IS_ROCK64 = 1 ]; then
+if [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ]; then
     /usr/lib/armbian/armbian-resize-filesystem start
 fi
 
@@ -44,6 +57,8 @@ mkdir -p /tmp/upgrade
 TARBALL=""
 if [ $IS_ROCK64 = 1 ]; then
     TARBALL="mynode_rootfs_rock64.tar.gz"
+elif [ $IS_ROCKPRO64 = 1 ]; then
+    TARBALL="mynode_rootfs_rockpro64.tar.gz"
 elif [ $IS_RASPI3 = 1 ]; then
     TARBALL="mynode_rootfs_raspi3.tar.gz"
 elif [ $IS_RASPI4 = 1 ]; then
