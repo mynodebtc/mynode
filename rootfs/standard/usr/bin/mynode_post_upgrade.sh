@@ -194,6 +194,7 @@ if [ $IS_PREMIUM -eq 1 ]; then
             cd joinmarket-clientserver
             git pull origin master
         fi
+        git fetch --tags --all
         git reset --hard v$JOINMARKET_VERSION
 
         # Create virtualenv and setup joinmarket
