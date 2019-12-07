@@ -74,7 +74,7 @@ usermod -aG docker root
 echo "Upgrading BTC..."
 BTC_VERSION="0.19.0.1"
 ARCH="UNKNOWN"
-if [ $IS_RASPI = 1]; then
+if [ $IS_RASPI = 1 ]; then
     ARCH="arm-linux-gnueabihf"
 elif [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ]; then
     ARCH="aarch64-linux-gnu"
@@ -249,6 +249,33 @@ if [ "$CURRENT" != "$BTCRPCEXPLORER_UPGRADE_URL" ]; then
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $BTCRPCEXPLORER_UPGRADE_URL > $BTCRPCEXPLORER_UPGRADE_URL_FILE
+fi
+
+
+# Install LND Connect
+LNDCONNECTARCH="lndconnect-linux-armv7"
+if [ $IS_X86 = 1 ]; then
+    LNDCONNECTARCH="lndconnect-linux-amd64"
+fi
+LNDCONNECT_UPGRADE_URL=https://github.com/LN-Zap/lndconnect/releases/download/v0.2.0/$LNDCONNECTARCH-v0.2.0.tar.gz
+LNDCONNECT_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lndconnect_url
+CURRENT=""
+if [ -f $LNDCONNECT_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $LNDCONNECT_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$LNDCONNECT_UPGRADE_URL" ]; then
+    rm -rf /tmp/download
+    mkdir -p /tmp/download
+    cd /tmp/download
+    wget $LNDCONNECT_UPGRADE_URL -O lndconnect.tar.gz
+    tar -xvf lndconnect.tar.gz
+    rm lndconnect.tar.gz
+    mv lndconnect-* lndconnect
+    install -m 0755 -o root -g root -t /usr/local/bin lndconnect/* 
+
+    mkdir -p /home/bitcoin/.mynode/
+    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+    echo $LNDCONNECT_UPGRADE_URL > $LNDCONNECT_UPGRADE_URL_FILE
 fi
 
 
