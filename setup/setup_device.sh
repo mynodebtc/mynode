@@ -187,12 +187,16 @@ rm -rf /etc/update-motd.d/*
 
 # Install Bitcoin
 BTC_VERSION="0.19.0.1"
-ARCH="arm-linux-gnueabihf"
-if [ $IS_ROCK64 = 1 ]; then
+ARCH="UNKNOWN"
+if [ $IS_RASPI = 1]; then
+    ARCH="arm-linux-gnueabihf"
+elif [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ]; then
     ARCH="aarch64-linux-gnu"
-fi
-if [ $IS_X86 = 1 ]; then
+elif [ $IS_X86 = 1 ]; then
     ARCH="x86_64-linux-gnu" 
+else
+    echo "Unknown Bitcoin Version"
+    exit 1
 fi
 BTC_UPGRADE_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/bitcoin-$BTC_VERSION-$ARCH.tar.gz
 BTC_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btc_url
