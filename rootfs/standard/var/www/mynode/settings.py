@@ -172,6 +172,12 @@ def get_latest_version_page():
     update_latest_version()
     return redirect("/settings")
 
+@mynode_settings.route("/settings/check-in")
+def check_in_page():
+    check_logged_in()
+    check_in()
+    return redirect("/settings")
+
 @mynode_settings.route("/settings/reset-blockchain")
 def reset_blockchain_page():
     check_logged_in()
