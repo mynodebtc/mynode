@@ -1,3 +1,6 @@
+=== v0.1.72 ===
+- Revert lndmanage upgrade (not available via pip)
+
 === v0.1.71 ===
 - Improve upgrades
 - IMprove networking

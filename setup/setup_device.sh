@@ -143,7 +143,7 @@ fi
 pip3 install wheel setuptools
 pip3 install bitstring lnd-grpc pycoin aiohttp connectrum python-bitcoinlib
 pip3 install python-bitcointx
-pip3 install lndmanage==0.8.1   # Install LND Manage (keep up to date with LND)
+pip3 install lndmanage==0.8.0.1   # Install LND Manage (keep up to date with LND)
 pip3 install docker-compose
 
 
