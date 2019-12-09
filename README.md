@@ -37,6 +37,7 @@ Each myNode device comes with a number of wonderful features:
 - Electrum Server - BTC Light Wallet Server
 - Ride the Lightning - Lightning Wallet
 - LND Hub - Lightning Wallet Server
+- JoinMarket
 - Bitcoin CLI
 - QuickSync - Quickly sync Bitcoin blockchain
 - LND Connect - Generate QR Codes for connecting wallets
