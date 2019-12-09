@@ -304,9 +304,10 @@ systemctl enable netdata
 systemctl enable webssh2
 
 # Disable any old services
-sudo systemctl disable hitch
-sudo systemctl disable mongodb
-sudo systemctl disable lnd_admin
+systemctl disable hitch
+systemctl disable mongodb
+systemctl disable lnd_admin
+systemctl disable dhcpcd || true
 
 # Reload service settings
 systemctl daemon-reload

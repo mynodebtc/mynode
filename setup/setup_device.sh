@@ -432,8 +432,8 @@ systemctl enable netdata
 systemctl enable webssh2
 
 
-# Regenerate MAC Address for Rock64
-if [ $IS_ROCK64 = 1 ]; then
+# Regenerate MAC Address for Armbian devices
+if [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1] ; then
     . /usr/lib/armbian/armbian-common
     CONNECTION="$(nmcli -f UUID,ACTIVE,DEVICE,TYPE connection show --active | tail -n1)"
     UUID=$(awk -F" " '/ethernet/ {print $1}' <<< "${CONNECTION}")
@@ -442,6 +442,9 @@ if [ $IS_ROCK64 = 1 ]; then
     nmcli connection modify $UUID -ethernet.mac-address ""
 fi
 
+
+# Disable services
+sudo systemctl disable hitch
 
 
 # Delete junk
