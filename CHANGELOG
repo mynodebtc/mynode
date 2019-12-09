@@ -1,3 +1,14 @@
+=== v0.1.71 ===
+- Improve upgrades
+- IMprove networking
+- Faster NPM installs
+- More RockPro64 support
+- Improve device detections
+- Upgrade lndconnect to v0.2.0
+- Upgrade lndmanage to v0.8.1
+- Performance improvements
+- General bug fixes
+
 === v0.1.70 ===
 - Update LND to v0.8.1
 - Update Bitcoin to v0.19.0.1
