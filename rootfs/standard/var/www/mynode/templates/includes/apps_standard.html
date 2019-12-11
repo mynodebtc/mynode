@@ -59,9 +59,13 @@
         <div class="app_status">{{ btcrpcexplorer_status }}</div>
         <div class="app_contents">
             {% if btcrpcexplorer_enabled %}
-            <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="btcrpcexplorer">Explorer</a>
+                {% if btcrpcexplorer_ready %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="btcrpcexplorer">Explorer</a>
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-btcrpcexplorer">Disable</a>
+                {% endif %}
+            {% else %}
+                <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-btcrpcexplorer">Enable</a>
             {% endif %}
-            <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-btcrpcexplorer">{% if btcrpcexplorer_enabled %}Disable{% else %}Enable{% endif %}</a>
         </div>
     </div>
     <div class="app_tile">
