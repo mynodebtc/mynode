@@ -1,20 +1,23 @@
 === v0.1.73 ===
 - Add button to regenerate lnd tls certificate
 - BTC RPC Explorer starts once electrs is ready
-- JoinMarket updated to 6.1.0
-- Improve RAM usage for Bitcoin 19.0
+- JoinMarket updated to v0.6.1
+- Improve RAM usage for Bitcoin 0.19.0
 
 === v0.1.72 ===
 - Revert lndmanage upgrade (not available via pip)
 
 === v0.1.71 ===
 - Improve upgrades
-- IMprove networking
+- Improve networking
 - Faster NPM installs
 - More RockPro64 support
 - Improve device detections
 - Upgrade lndconnect to v0.2.0
 - Upgrade lndmanage to v0.8.1
+- Upgrade btc-rpc-explorer to v1.1.4
+- Update JoinMarket to v0.6.0
+- Upgrade RTL to v0.5.4
 - Performance improvements
 - General bug fixes
 
