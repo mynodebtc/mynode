@@ -4,6 +4,7 @@ import subprocess
 import requests
 import socket
 import json
+import os
 
 
 electrum_server_current_block = None
@@ -15,6 +16,7 @@ def get_electrum_server_current_block():
 
 def update_electrs_info():
     global electrum_server_current_block
+    global electrs_active
 
     try:
         raw_data = requests.get("http://localhost:4224")
@@ -23,6 +25,12 @@ def update_electrs_info():
             for sample in family.samples:
                 if sample.name == "electrs_index_height":
                     electrum_server_current_block = int(sample.value)
+
+        bitcoin_block_height = get_bitcoin_block_height()
+        if electrum_server_current_block != None and bitcoin_block_height != None:
+            if electrum_server_current_block > bitcoin_block_height - 2:
+                os.system("touch /tmp/electrs_up_to_date")
+                electrs_active = True
     except:
         pass
 

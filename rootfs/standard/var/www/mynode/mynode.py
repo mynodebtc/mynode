@@ -299,11 +299,16 @@ def index():
         # Find btc-rpc-explorer status
         btcrpcexplorer_status = "BTC RPC Explorer"
         if is_btcrpcexplorer_enabled():
-            status = os.system("systemctl status btc_rpc_explorer --no-pager")
-            if status != 0:
-                btcrpcexplorer_status_color = "red"
+            if is_electrs_active():
+                status = os.system("systemctl status btc_rpc_explorer --no-pager")
+                if status != 0:
+                    btcrpcexplorer_status_color = "red"
+                else:
+                    btcrpcexplorer_status_color = "green"
+                    btcrpcexplorer_ready = True
             else:
                 btcrpcexplorer_status_color = "green"
+                btcrpcexplorer_status = "Waiting on electrs..."
 
         # Find explorer status
         explorer_status_color = electrs_status_color
