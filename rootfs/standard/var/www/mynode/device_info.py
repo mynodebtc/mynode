@@ -156,6 +156,9 @@ def stop_bitcoind():
 def stop_lnd():
     os.system("systemctl stop lnd")
 
+def restart_lnd():
+    os.system("systemctl restart lnd")
+
 def stop_quicksync():
     os.system("systemctl stop quicksync")
 

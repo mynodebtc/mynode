@@ -124,6 +124,19 @@ def page_lnd():
     }
     return render_template('lnd.html', **templateData)
 
+@mynode_lnd.route("/lnd/regen_tls_cert")
+def lnd_regen_tls_cert():
+    check_logged_in()
+
+    os.system("rm /mnt/hdd/mynode/lnd/tls.cert")
+    os.system("rm /mnt/hdd/mynode/lnd/tls.key")
+
+    t = Timer(1.0, restart_lnd)
+    t.start()
+
+    flash("TLS Certificate Regenerated!", category="message")
+    return redirect(url_for(".page_lnd"))
+
 @mynode_lnd.route("/lnd/tls.cert")
 def lnd_tls_cert():
     check_logged_in()
