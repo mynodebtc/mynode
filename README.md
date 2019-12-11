@@ -43,7 +43,7 @@ Each myNode device comes with a number of wonderful features:
 - LND Connect - Generate QR Codes for connecting wallets
 - LN Channel Backup
 - Tor
-- Docker Support
+- Docker support
 - Netdata Monitor
 - Glances
 - Web Linux Terminal (WebSSH2)
@@ -52,7 +52,7 @@ Each myNode device comes with a number of wonderful features:
 - Virtual Machine support (OVA file, VirtualBox)
 - And more!
 
-## Suported Devices
+## Supported Devices
 We currently support images for the following devices:
  - Raspberry Pi 3
  - Raspberry Pi 4
