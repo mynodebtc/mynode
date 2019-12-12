@@ -41,14 +41,17 @@ if [ $IS_RASPI -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
 fi
 umount /mnt/hdd || true
 
-# Check for drive-repair
-if [ -f /home/bitcoin/.mynode/check_drive ]; then
-    for d in /dev/sd*1; do
-        echo "Repairing drive $d ...";
-        fsck -y $d
-    done
-    rm /home/bitcoin/.mynode/check_drive
-fi
+# Check drive
+set +e
+for d in /dev/sd*1; do
+    echo "Repairing drive $d ...";
+    RC=$(fsck -y $d > /tmp/fsck_results 2>&1)
+    if [ $RC -ne 0 ]; then
+        touch /tmp/fsck_error
+    fi
+done
+set -e
+
 
 # Mount HDD (format if necessary)
 while [ ! -f /mnt/hdd/.mynode ]

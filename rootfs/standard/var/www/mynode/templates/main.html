@@ -133,6 +133,15 @@
 
         {% include 'includes/message_display.html' %}
 
+        {% if fsck_error %}
+        <div class="main_page_error_block">
+            <center>
+            <p>There may be an error with the filesystem on your drive.</p>
+            <p>{{ fsck_results }}</p>
+            </center>
+        </div>
+        {% endif %}
+
         {% if not has_changed_password %}
         <div class="upgrade_ad_main_page">
             <p style="text-align: center;"><b>Warning!</b><br/>You appear to be using the default password! You should change it to something else on the <a href="/settings">settings</a> page.</p>

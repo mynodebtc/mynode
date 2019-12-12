@@ -120,6 +120,15 @@ def delete_product_key_error():
     os.system("rm -rf /home/bitcoin/.mynode/.product_key_error")
     os.system("rm -rf /mnt/hdd/mynode/settings/.product_key_error")
     
+def has_fsck_error():
+    return os.path.isfile("/tmp/fsck_error")
+def get_fsck_results():
+    try:
+        with open("/tmp/fsck_results", "r") as f:
+            return f.read()
+    except:
+        return "ERROR"
+    return "ERROR"
 
 def get_local_ip():
     local_ip = "unknown"
