@@ -36,6 +36,9 @@ fi
 
 
 SERIAL_NUM=$(cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2)
+if [[ "$SERIAL_NUM" == "" ]]; then
+    SERIAL_NUM=$(sudo dmidecode | grep UUID | cut -d ' ' -f 2)
+fi
 
 # Set all default / standard bash config settings
 MYNODE_DIR=/mnt/hdd/mynode
