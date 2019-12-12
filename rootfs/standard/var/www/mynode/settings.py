@@ -385,27 +385,6 @@ def download_logs_page():
 
     return send_from_directory(directory="/tmp/", filename="mynode_logs.tar.gz")
 
-@mynode_settings.route("/settings/repair-drive")
-def repair_drive_page():
-    check_logged_in()
-
-    # Touch files to trigger re-checking drive
-    os.system("touch /home/bitcoin/.mynode/check_drive")
-    os.system("sync")
-    
-    # Trigger reboot
-    t = Timer(1.0, reboot_device)
-    t.start()
-
-    # Wait until device is restarted
-    templateData = {
-        "title": "myNode Reboot",
-        "header_text": "Restarting",
-        "subheader_text": "This will take several minutes...",
-        "ui_settings": read_ui_settings()
-    }
-    return render_template('reboot.html', **templateData)
-
 @mynode_settings.route("/settings/regen-https-certs")
 def regen_https_certs_page():
     check_logged_in()
