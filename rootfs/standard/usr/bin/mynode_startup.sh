@@ -28,7 +28,7 @@ if [ ! -f /var/lib/mynode/.expanded_rootfs ]; then
         raspi-config --expand-rootfs
         touch /var/lib/mynode/.expanded_rootfs 
     fi
-    if [ $IS_ROCK64 = 1 ]; then
+    if [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ]; then
         /usr/lib/armbian/armbian-resize-filesystem start
         touch /var/lib/mynode/.expanded_rootfs 
     fi
