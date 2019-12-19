@@ -134,9 +134,19 @@ def update_lnd_info_thread():
         print("CAUGHT update_lnd_info_thread EXCEPTION: " + str(e))
 
 
+# Check every 3 hours
+def find_public_ip():
+    global public_ip
+
+    # Get public IP
+    try:
+        public_ip = get('https://mynodebtc.com/device_api/get_public_ip.php').text
+    except Exception as e:
+        public_ip = "Failed to find public IP. Click on the refresh button above."
+
+
 # Checkin every 24 hours
 def check_in():
-    global public_ip
 
     # Check in
     product_key = get_product_key()
@@ -146,12 +156,6 @@ def check_in():
         "version": get_current_version(),
         "product_key": product_key
     }
-
-    # Get public IP
-    try:
-        public_ip = get('https://mynodebtc.com/device_api/get_public_ip.php').text
-    except Exception as e:
-        public_ip = "Failed to find public IP. Click on the refresh button above."
 
     # Check for new version
     update_latest_version()

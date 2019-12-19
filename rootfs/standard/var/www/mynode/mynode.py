@@ -518,9 +518,9 @@ def internal_error(error):
 # Disable browser caching
 @app.after_request
 def set_response_headers(response):
-    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '0'
+    #response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    #response.headers['Pragma'] = 'no-cache'
+    #response.headers['Expires'] = '0'
     return response
 
 if __name__ == "__main__":
@@ -536,6 +536,8 @@ if __name__ == "__main__":
     lnd_thread.start()
     drive_thread = BackgroundThread(update_device_info, 60)
     drive_thread.start()
+    public_ip_thread = BackgroundThread(find_public_ip, 60*60*3) # 3-hour repeat
+    public_ip_thread.start()
     checkin_thread = BackgroundThread(check_in, 60*60*24) # Per-day checkin
     checkin_thread.start()
 
