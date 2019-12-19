@@ -5,32 +5,7 @@
 
         <script>
             $(document).ready(function() {
-                hasShutdown = 0
-
-                function redirectHome() {
-                    window.location.replace("/");
-                }
-
-                function checkStatus() {
-                    var jqxhr = $.get("/settings/ping", function() {
-                        if (hasShutdown) {
-                            // Redirect to home
-                            setTimeout(redirectHome, 2500)
-                        }
-                    })
-                    .done(function() {
-                        if (hasShutdown) {
-                            // Redirect to home
-                            setTimeout(redirectHome, 2500)
-                        }
-                    })
-                    .fail(function() {
-                        hasShutdown = 1
-                    })
-                }
-                
-                checkStatus()
-                setInterval(checkStatus, 2500);
+                setInterval(checkStatus, 30000);
             });
         </script>
 
