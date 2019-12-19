@@ -214,16 +214,14 @@ def delete_lnd_data():
 
 
 def reboot_device():
-    stop_bitcoind()
-    stop_lnd()
     os.system("sync")
+    os.system("/usr/bin/mynode_stop_critical_services.sh")
     os.system("reboot")
 
 
 def shutdown_device():
-    stop_bitcoind()
-    stop_lnd()
     os.system("sync")
+    os.system("/usr/bin/mynode_stop_critical_services.sh")
     os.system("shutdown -h now")
 
 
