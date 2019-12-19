@@ -9,10 +9,7 @@ set -e
 date
 
 # Shut down main services to save memory and CPU
-systemctl stop electrs
-systemctl stop lnd
-systemctl stop quicksync
-systemctl stop bitcoind
+/usr/bin/mynode_stop_critical_services.sh
 
 # Check if any dpkg installs have failed and correct
 dpkg --configure -a
