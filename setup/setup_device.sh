@@ -96,6 +96,7 @@ apt-get -y install xorg chromium openbox lightdm
 
 # Make sure some software is removed
 apt-get -y purge ntp # (conflicts with systemd-timedatectl)
+apt-get -y purge chrony # (conflicts with systemd-timedatectl)
 
 
 # Install other things without recommendation
