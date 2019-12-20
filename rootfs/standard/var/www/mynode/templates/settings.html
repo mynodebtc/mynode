@@ -336,7 +336,6 @@
 
             <div class="settings_block_subheader">
                 Info
-                <a href="/settings/check-in" class="ui-button ui-widget ui-corner-all settings_button_small">Refresh</a>
             </div>
             <table border="0">
                 <tr>
@@ -358,7 +357,12 @@
                 </tr>
                 <tr>
                     <td>Public IP</td>
-                    <td style="padding-left: 20px;">{{public_ip}}</td>
+                    <td style="padding-left: 20px;">
+                        {{public_ip}}
+                        {% if 'Failed to find' in public_ip %}
+                            <a href="/settings/check-in" class="ui-button ui-widget ui-corner-all settings_button_small">Refresh</a>
+                        {% endif %}
+                    </td>
                 </tr>
                 <tr>
                     <td>Local IP</td>
