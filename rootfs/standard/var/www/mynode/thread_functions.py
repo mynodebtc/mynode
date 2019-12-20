@@ -142,7 +142,7 @@ def find_public_ip():
     try:
         public_ip = get('https://mynodebtc.com/device_api/get_public_ip.php').text
     except Exception as e:
-        public_ip = "Failed to find public IP. Click on the refresh button above."
+        public_ip = "Failed to find public IP. "
 
 
 # Checkin every 24 hours
