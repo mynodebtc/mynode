@@ -12,7 +12,7 @@
         </div>
     </div>
     <div class="app_tile">
-        <div class="app_status_icon {{ lnd_status_color }}"></div>
+        <div class="app_status_icon {{ lndconnect_status_color }}"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lndconnect.png")}}"/></div>
         <div class="app_title">LND Connect</div>
         <div class="app_status">{% if not lnd_ready %}Waiting on LND...{% else %}Lightning Tool{% endif %}</div>
