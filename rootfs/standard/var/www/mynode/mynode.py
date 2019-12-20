@@ -204,6 +204,7 @@ def index():
         explorer_status = ""
         explorer_ready = False
         explorer_status_color = "red"
+        lndconnect_status_color = "gray"
         btcrpcexplorer_status = ""
         btcrpcexplorer_ready = False
         btcrpcexplorer_status_color = "gray"
@@ -310,6 +311,10 @@ def index():
                 btcrpcexplorer_status_color = "green"
                 btcrpcexplorer_status = "Waiting on electrs..."
 
+        # Find lndconnect status
+        if lnd_ready:
+            lndconnect_status_color = "green"
+
         # Find explorer status
         explorer_status_color = electrs_status_color
         if is_electrs_enabled():
@@ -364,6 +369,7 @@ def index():
             "btcrpcexplorer_status_color": btcrpcexplorer_status_color,
             "btcrpcexplorer_status": btcrpcexplorer_status,
             "btcrpcexplorer_enabled": is_btcrpcexplorer_enabled(),
+            "lndconnect_status_color": lndconnect_status_color,
             "vpn_status_color": vpn_status_color,
             "vpn_status": vpn_status,
             "vpn_enabled": is_vpn_enabled(),
