@@ -35,6 +35,8 @@ import time
 app = Flask(__name__)
 app.config['DEBUG'] = False
 app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024     # 32 MB upload file max
+app.config['UPLOAD_FOLDER'] = "/tmp/flask_uploads"
 app.register_blueprint(mynode_bitcoind)
 app.register_blueprint(mynode_lnd)
 app.register_blueprint(mynode_bitcoin_cli)

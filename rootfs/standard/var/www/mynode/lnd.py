@@ -6,6 +6,7 @@ from lightning_info import *
 from settings import reboot_device, read_ui_settings
 from device_info import *
 from user_management import check_logged_in
+from werkzeug.utils import secure_filename
 import base64
 import subprocess
 import json
@@ -195,8 +196,18 @@ def page_lnd_create_wallet_with_seed():
         }
         return render_template('lnd_wallet_create_with_seed.html', **templateData)
 
-    # Create wallet!
+    # Get seed
     seed = request.form.get('seed').strip()
+
+    # Check for channel backup
+    channel_backup_filename = "/tmp/lnd_channel_backup"
+    os.system("rm -f " + channel_backup_filename)
+
+    if 'channel_backup' in request.files and request.files['channel_backup'] != "":
+        f = request.files['channel_backup']
+        if f.filename != "":
+            f.save( channel_backup_filename )
+
     if create_wallet(seed):
         flash("Wallet Created!", category="message")
         return redirect(url_for(".page_lnd"))
