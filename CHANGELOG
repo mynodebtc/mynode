@@ -1,3 +1,12 @@
+=== v0.1.74 ===
+- Add option to restore channel backup when creating Lightning wallet
+- Ugrade LND to 0.8.2
+- Improved rockpro64 support
+- Improve public IP detection
+- Improve drive health monitoring
+- Fix VM Serial number calulation
+- Bug fixes
+
 === v0.1.73 ===
 - Add button to regenerate lnd tls certificate
 - BTC RPC Explorer starts once electrs is ready
