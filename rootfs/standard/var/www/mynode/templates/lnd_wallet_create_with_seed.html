@@ -26,10 +26,17 @@
 
         <br/>
         <div class="content_block">
-            <form action="/lnd/create_wallet_with_seed" method="POST">
+            <form action="/lnd/create_wallet_with_seed" method="POST" enctype="multipart/form-data">
                 <p><b>Wallet Seed</b></p>
                 <p>Enter your 24 word wallet seed.</p>
                 <textarea id="seed" name="seed" class="seed_textbox"></textarea>
+                <p>
+                    <b>Channel Backup File</b>
+                    <br/>
+                    <small>optional</small>
+                </p>
+                <input type="file" name="channel_backup">
+                <br/>
                 <input type="submit" class="ui-button ui-widget ui-corner-all" style="float: right;" value="Create">
             </form>
         </div>

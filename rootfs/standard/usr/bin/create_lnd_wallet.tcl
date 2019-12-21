@@ -4,14 +4,23 @@ set timeout 5
 
 set f [open "/mnt/hdd/mynode/settings/.lndpw"]
 set pw [read $f]
-set seed [lindex $argv 0];
 close $f
+
+set seed [lindex $argv 0];
+set backup_args ""
+if { [file exists "/tmp/lnd_channel_backup"] == 1} {      
+    set backup_args "--multi_file=/tmp/lnd_channel_backup"
+}
 
 set tls_cert "/home/bitcoin/.lnd/tls.cert" 
 set macaroon "/home/bitcoin/.lnd/data/chain/mainnet/admin.macaroon"
 
-spawn lncli --tlscertpath $tls_cert --macaroonpath $macaroon create
+spawn lncli --tlscertpath $tls_cert --macaroonpath $macaroon create $backup_args
 expect {
+        "recover funds from a static channel backup? (Enter y/n):" {
+                send -- "y\n"
+                exp_continue
+        }
         "Input wallet password:" {
                 send -- "$pw\n"
         }
