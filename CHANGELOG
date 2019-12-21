@@ -4,7 +4,7 @@
 - Improved rockpro64 support
 - Improve public IP detection
 - Improve drive health monitoring
-- Fix VM Serial number calulation
+- Fix VM Serial number calculation
 - Bug fixes
 
 === v0.1.73 ===
