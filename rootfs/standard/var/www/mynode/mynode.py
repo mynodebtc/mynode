@@ -18,6 +18,7 @@ from lightning_info import *
 from messages import get_message
 from thread_functions import *
 from datetime import timedelta
+from device_info import *
 import pam
 import json
 import random
@@ -115,6 +116,17 @@ def index():
         return render_template('uploader.html', **templateData)
 
     if status == STATE_DRIVE_MISSING:
+
+        # Drive may be getting repaired
+        if is_drive_being_repaired():
+            templateData = {
+                "title": "myNode Repairing Drive",
+                "header_text": "Repairing Drive",
+                "subheader_text": Markup("Drive is being checked and repaired...<br/><br/>This will take several hours."),
+                "ui_settings": read_ui_settings()
+            }
+            return render_template('state.html', **templateData)
+
         templateData = {
             "title": "myNode Looking for Drive",
             "header_text": "Looking for Drive",

@@ -43,6 +43,7 @@ umount /mnt/hdd || true
 
 # Check drive
 set +e
+touch /tmp/repairing_drive
 for d in /dev/sd*1; do
     echo "Repairing drive $d ...";
     RC=$(fsck -y $d > /tmp/fsck_results 2>&1)
@@ -50,6 +51,7 @@ for d in /dev/sd*1; do
         touch /tmp/fsck_error
     fi
 done
+rm -f /tmp/repairing_drive
 set -e
 
 

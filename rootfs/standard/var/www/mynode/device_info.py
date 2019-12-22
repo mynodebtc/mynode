@@ -120,6 +120,8 @@ def delete_product_key_error():
     os.system("rm -rf /home/bitcoin/.mynode/.product_key_error")
     os.system("rm -rf /mnt/hdd/mynode/settings/.product_key_error")
     
+def is_drive_being_repaired():
+    return os.path.isfile("/tmp/repairing_drive")
 def has_fsck_error():
     return os.path.isfile("/tmp/fsck_error")
 def get_fsck_results():
