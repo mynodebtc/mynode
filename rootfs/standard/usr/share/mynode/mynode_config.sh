@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Device info
+IS_ARMBIAN=0
 IS_ROCK64=0
 IS_ROCKPRO64=0
 IS_RASPI=0
@@ -11,8 +12,10 @@ DEVICE_TYPE="unknown"
 MODEL=$(cat /proc/device-tree/model) || MODEL="unknown"
 uname -a | grep amd64 && IS_X86=1 || true
 if [[ $MODEL == *"Rock64"* ]]; then 
+    IS_ARMBIAN=1
     IS_ROCK64=1
 elif [[ $MODEL == *"RockPro64"* ]]; then 
+    IS_ARMBIAN=1
     IS_ROCKPRO64=1
 elif [[ $MODEL == *"Raspberry Pi 3"* ]]; then
     IS_RASPI=1
