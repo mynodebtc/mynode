@@ -15,6 +15,7 @@ fi
 SERVER_IP=$1
 
 # Determine Device
+IS_ARMBIAN=0
 IS_ROCK64=0
 IS_ROCKPRO64=0
 IS_RASPI=0
@@ -25,9 +26,11 @@ IS_UNKNOWN=0
 DEVICE_TYPE="unknown"
 MODEL=$(cat /proc/device-tree/model) || IS_UNKNOWN=1
 uname -a | grep amd64 && IS_X86=1 || true
-if [[ $MODEL == *"Rock64"* ]]; then 
+if [[ $MODEL == *"Rock64"* ]]; then
+    IS_ARMBIAN=1
     IS_ROCK64=1
-elif [[ $MODEL == *"RockPro64"* ]]; then 
+elif [[ $MODEL == *"RockPro64"* ]]; then
+    IS_ARMBIAN=1
     IS_ROCKPRO64=1
 elif [[ $MODEL == *"Raspberry Pi 3"* ]]; then
     IS_RASPI=1
@@ -43,8 +46,8 @@ if [ $IS_UNKNOWN = 1 ]; then
 fi
 
 
-# Make sure FS is expanded for Rock64
-if [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ]; then
+# Make sure FS is expanded for armbian
+if [ $IS_ARMBIAN = 1 ] ; then
     /usr/lib/armbian/armbian-resize-filesystem start
 fi
 
@@ -189,7 +192,7 @@ rm -rf /etc/update-motd.d/*
 # Install Bitcoin
 BTC_VERSION="0.19.0.1"
 ARCH="UNKNOWN"
-if [ $IS_RASPI = 1]; then
+if [ $IS_RASPI = 1 ]; then
     ARCH="arm-linux-gnueabihf"
 elif [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ]; then
     ARCH="aarch64-linux-gnu"
@@ -434,9 +437,9 @@ systemctl enable webssh2
 
 
 # Regenerate MAC Address for Armbian devices
-if [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1] ; then
+if [ $IS_ARMBIAN = 1 ]; then
     . /usr/lib/armbian/armbian-common
-    CONNECTION="$(nmcli -f UUID,ACTIVE,DEVICE,TYPE connection show --active | tail -n1)"
+    CONNECTION="$(nmcli -f UUID,ACTIVE,DEVICE,TYPE connection show --active | grep ethernet | tail -n1)"
     UUID=$(awk -F" " '/ethernet/ {print $1}' <<< "${CONNECTION}")
     get_random_mac
     nmcli connection modify $UUID ethernet.cloned-mac-address $MACADDR
@@ -445,7 +448,10 @@ fi
 
 
 # Disable services
-sudo systemctl disable hitch
+systemctl disable hitch
+systemctl disable mongodb
+systemctl disable lnd_admin
+systemctl disable dhcpcd || true
 
 
 # Delete junk
