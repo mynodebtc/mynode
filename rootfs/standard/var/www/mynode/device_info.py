@@ -119,7 +119,8 @@ def save_product_key(product_key):
 def delete_product_key_error():
     os.system("rm -rf /home/bitcoin/.mynode/.product_key_error")
     os.system("rm -rf /mnt/hdd/mynode/settings/.product_key_error")
-    
+
+
 def is_drive_being_repaired():
     return os.path.isfile("/tmp/repairing_drive")
 def has_fsck_error():
@@ -131,6 +132,11 @@ def get_fsck_results():
     except:
         return "ERROR"
     return "ERROR"
+
+
+def is_installing_docker_images():
+    return os.path.isfile("/tmp/installing_docker_images")
+
 
 def get_local_ip():
     local_ip = "unknown"

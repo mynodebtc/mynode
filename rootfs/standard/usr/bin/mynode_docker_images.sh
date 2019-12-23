@@ -11,6 +11,8 @@ sleep 60s
 # Loop and check every 1 day
 while [ 1 ]; do
 
+    touch /tmp/installing_docker_images
+
     # Upgrade WebSSH2
     WEBSSH2_UPGRADE_URL=https://github.com/billchurch/webssh2/archive/v0.2.10-0.tar.gz
     WEBSSH2_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/webssh2_url
@@ -54,6 +56,7 @@ while [ 1 ]; do
         fi
     fi
 
+    rm -f /tmp/installing_docker_images
 
     # Check again in a day
     sleep 24h
