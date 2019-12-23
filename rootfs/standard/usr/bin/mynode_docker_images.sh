@@ -32,6 +32,29 @@ while [ 1 ]; do
         echo $WEBSSH2_UPGRADE_URL > $WEBSSH2_UPGRADE_URL_FILE
     fi
 
+    # Upgrade mempool.space
+    if [ $IS_PREMIUM -eq 1 ]; then
+        MEMPOOLSPACE_UPGRADE_URL=https://github.com/mempool-space/mempool.space/archive/master.zip
+        MEMPOOLSPACE_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/mempoolspace_url
+        CURRENT=""
+        if [ -f $MEMPOOLSPACE_UPGRADE_URL_FILE ]; then
+            CURRENT=$(cat $MEMPOOLSPACE_UPGRADE_URL_FILE)
+        fi
+        if [ "$CURRENT" != "$MEMPOOLSPACE_UPGRADE_URL" ]; then
+            cd /opt/mynode
+            rm -rf mempoolspace
+            wget $MEMPOOLSPACE_UPGRADE_URL -O mempool.zip
+            unzip -o mempool.zip
+            rm mempool.zip
+            mv mempool* mempoolspace
+            cd mempoolspace
+            docker build -t mempoolspace .
+
+            echo $MEMPOOLSPACE_UPGRADE_URL > $MEMPOOLSPACE_UPGRADE_URL_FILE
+        fi
+    fi
+
+
     # Check again in a day
     sleep 24h
 done

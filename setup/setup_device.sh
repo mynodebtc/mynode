@@ -301,6 +301,22 @@ fi
 #cd ~
 
 
+# Install recent version of secp256k1
+echo "Installing secp256k1..."
+if [ ! -f /usr/include/secp256k1_ecdh.h ]; then
+    rm -rf /tmp/secp256k1
+    cd /tmp/
+    git clone https://github.com/bitcoin-core/secp256k1.git
+    cd secp256k1
+
+    ./autogen.sh
+    ./configure
+    make
+    make install
+    cp -f include/* /usr/include/
+fi
+
+
 # Install RTL
 RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/v0.5.4.tar.gz
 RTL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.rtl_url
