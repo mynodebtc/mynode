@@ -9,6 +9,7 @@
                 electrs_enabled = {% if electrs_enabled %}1{% else %}0{% endif %}
                 lndhub_enabled = {% if lndhub_enabled %}1{% else %}0{% endif %}
                 vpn_enabled = {% if vpn_enabled %}1{% else %}0{% endif %}
+                mempoolspace_enabled = {% if mempoolspace_enabled %}1{% else %}0{% endif %}
 
                 $("#lndhub").on("click", function() {
                     url = 'http://'+location.hostname+':3000'
@@ -27,6 +28,11 @@
 
                 $("#btcrpcexplorer").on("click", function() {
                     url = 'http://'+location.hostname+':3002'
+                    window.open(url,'_blank');
+                })
+
+                $("#mempoolspace").on("click", function() {
+                    url = 'http://'+location.hostname+':4080'
                     window.open(url,'_blank');
                 })
 
@@ -76,6 +82,10 @@
 
                 $("#toggle-btcrpcexplorer").on("click", function() {
                         window.location.href="/toggle-btcrpcexplorer"
+                });
+
+                $("#toggle-mempoolspace").on("click", function() {
+                        window.location.href="/toggle-mempoolspace"
                 });
 
                 function lndconnect() {

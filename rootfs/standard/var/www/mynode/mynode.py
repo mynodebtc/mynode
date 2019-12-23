@@ -222,6 +222,7 @@ def index():
         btcrpcexplorer_status = ""
         btcrpcexplorer_ready = False
         btcrpcexplorer_status_color = "gray"
+        mempoolspace_status_color = "gray"
         vpn_status_color = "gray"
         vpn_status = ""
 
@@ -325,6 +326,14 @@ def index():
                 btcrpcexplorer_status_color = "green"
                 btcrpcexplorer_status = "Waiting on electrs..."
 
+        # Find mempool space status
+        if is_mempoolspace_enabled():
+            status = os.system("systemctl status mempoolspace --no-pager")
+            if status != 0:
+                mempoolspace_status_color = "red"
+            else:
+                mempoolspace_status_color = "green"
+
         # Find lndconnect status
         if lnd_ready:
             lndconnect_status_color = "green"
@@ -383,6 +392,8 @@ def index():
             "btcrpcexplorer_status_color": btcrpcexplorer_status_color,
             "btcrpcexplorer_status": btcrpcexplorer_status,
             "btcrpcexplorer_enabled": is_btcrpcexplorer_enabled(),
+            "mempoolspace_status_color": mempoolspace_status_color,
+            "mempoolspace_enabled": is_mempoolspace_enabled(),
             "lndconnect_status_color": lndconnect_status_color,
             "vpn_status_color": vpn_status_color,
             "vpn_status": vpn_status,
@@ -473,6 +484,15 @@ def page_toggle_btcrpcexplorer():
         disable_btcrpcexplorer()
     else:
         enable_btcrpcexplorer()
+    return redirect("/")
+
+@app.route("/toggle-mempoolspace")
+def page_toggle_mempoolspace():
+    check_logged_in()
+    if is_mempoolspace_enabled():
+        disable_mempoolspace()
+    else:
+        enable_mempoolspace()
     return redirect("/")
 
 @app.route("/toggle-vpn")
