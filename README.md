@@ -50,6 +50,7 @@ Each myNode device comes with a number of wonderful features:
 - Dark Mode interface
 - Dedicated hardware keeps you constantly and securely connected!
 - Virtual Machine support (OVA file, VirtualBox)
+- Mempool.space local full node integration
 - And more!
 
 ## Supported Devices
