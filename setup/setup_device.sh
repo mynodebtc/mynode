@@ -15,23 +15,39 @@ fi
 SERVER_IP=$1
 
 # Determine Device
+IS_ARMBIAN=0
 IS_ROCK64=0
+IS_ROCKPRO64=0
+IS_RASPI=0
 IS_RASPI3=0
 IS_RASPI4=0
 IS_X86=0
-uname -a | grep aarch64 && IS_ROCK64=1 || IS_RASPI3=1
-if [ $IS_RASPI3 -eq 1 ]; then
-    cat /proc/cpuinfo | grep 03111 && IS_RASPI4=1 && IS_RASPI3=0 || IS_RASPI3=1
-fi
+IS_UNKNOWN=0
+DEVICE_TYPE="unknown"
+MODEL=$(cat /proc/device-tree/model) || IS_UNKNOWN=1
 uname -a | grep amd64 && IS_X86=1 || true
-if [ $IS_X86 -eq 1 ]; then
-    IS_ROCK64=0
-    IS_RASPI3=0
-    IS_RASPI4=0
+if [[ $MODEL == *"Rock64"* ]]; then
+    IS_ARMBIAN=1
+    IS_ROCK64=1
+elif [[ $MODEL == *"RockPro64"* ]]; then
+    IS_ARMBIAN=1
+    IS_ROCKPRO64=1
+elif [[ $MODEL == *"Raspberry Pi 3"* ]]; then
+    IS_RASPI=1
+    IS_RASPI3=1
+elif [[ $MODEL == *"Raspberry Pi 4"* ]]; then
+    IS_RASPI=1
+    IS_RASPI4=1
 fi
 
-# Make sure FS is expanded for Rock64
-if [ $IS_ROCK64 = 1 ]; then
+if [ $IS_UNKNOWN = 1 ]; then
+    echo "UNKNOWN DEVICE TYPE"
+    exit 1
+fi
+
+
+# Make sure FS is expanded for armbian
+if [ $IS_ARMBIAN = 1 ] ; then
     /usr/lib/armbian/armbian-resize-filesystem start
 fi
 
@@ -44,6 +60,8 @@ mkdir -p /tmp/upgrade
 TARBALL=""
 if [ $IS_ROCK64 = 1 ]; then
     TARBALL="mynode_rootfs_rock64.tar.gz"
+elif [ $IS_ROCKPRO64 = 1 ]; then
+    TARBALL="mynode_rootfs_rockpro64.tar.gz"
 elif [ $IS_RASPI3 = 1 ]; then
     TARBALL="mynode_rootfs_raspi3.tar.gz"
 elif [ $IS_RASPI4 = 1 ]; then
@@ -81,6 +99,7 @@ apt-get -y install xorg chromium openbox lightdm
 
 # Make sure some software is removed
 apt-get -y purge ntp # (conflicts with systemd-timedatectl)
+apt-get -y purge chrony # (conflicts with systemd-timedatectl)
 
 
 # Install other things without recommendation
@@ -172,12 +191,16 @@ rm -rf /etc/update-motd.d/*
 
 # Install Bitcoin
 BTC_VERSION="0.19.0.1"
-ARCH="arm-linux-gnueabihf"
-if [ $IS_ROCK64 = 1 ]; then
+ARCH="UNKNOWN"
+if [ $IS_RASPI = 1 ]; then
+    ARCH="arm-linux-gnueabihf"
+elif [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ]; then
     ARCH="aarch64-linux-gnu"
-fi
-if [ $IS_X86 = 1 ]; then
+elif [ $IS_X86 = 1 ]; then
     ARCH="x86_64-linux-gnu" 
+else
+    echo "Unknown Bitcoin Version"
+    exit 1
 fi
 BTC_UPGRADE_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/bitcoin-$BTC_VERSION-$ARCH.tar.gz
 BTC_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btc_url
@@ -216,7 +239,7 @@ fi
 cd ~
 
 # Install Lightning
-LND_VERSION="v0.8.1-beta"
+LND_VERSION="v0.8.2-beta"
 LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
@@ -278,8 +301,24 @@ fi
 #cd ~
 
 
+# Install recent version of secp256k1
+echo "Installing secp256k1..."
+if [ ! -f /usr/include/secp256k1_ecdh.h ]; then
+    rm -rf /tmp/secp256k1
+    cd /tmp/
+    git clone https://github.com/bitcoin-core/secp256k1.git
+    cd secp256k1
+
+    ./autogen.sh
+    ./configure
+    make
+    make install
+    cp -f include/* /usr/include/
+fi
+
+
 # Install RTL
-RTL_UPGRADE_URL=https://github.com/ShahanaFarooqui/RTL/archive/v0.5.4.tar.gz
+RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/v0.5.4.tar.gz
 RTL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.rtl_url
 CURRENT=""
 if [ -f $RTL_UPGRADE_URL_FILE ]; then
@@ -302,7 +341,7 @@ fi
 
 
 # Install Bitcoin RPC Explorer
-BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v1.1.2.tar.gz
+BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v1.1.5.tar.gz
 BTCRPCEXPLORER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btcrpcexplorer_url
 CURRENT=""
 if [ -f $BTCRPCEXPLORER_UPGRADE_URL_FILE ]; then
@@ -329,7 +368,7 @@ LNDCONNECTARCH="lndconnect-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LNDCONNECTARCH="lndconnect-linux-amd64"
 fi
-LNDCONNECT_UPGRADE_URL=https://github.com/LN-Zap/lndconnect/releases/download/v0.1.0/$LNDCONNECTARCH-v0.1.0.tar.gz
+LNDCONNECT_UPGRADE_URL=https://github.com/LN-Zap/lndconnect/releases/download/v0.2.0/$LNDCONNECTARCH-v0.2.0.tar.gz
 LNDCONNECT_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lndconnect_url
 CURRENT=""
 if [ -f $LNDCONNECT_UPGRADE_URL_FILE ]; then
@@ -413,16 +452,22 @@ systemctl enable netdata
 systemctl enable webssh2
 
 
-# Regenerate MAC Address for Rock64
-if [ $IS_ROCK64 = 1 ]; then
+# Regenerate MAC Address for Armbian devices
+if [ $IS_ARMBIAN = 1 ]; then
     . /usr/lib/armbian/armbian-common
-    CONNECTION="$(nmcli -f UUID,ACTIVE,DEVICE,TYPE connection show --active | tail -n1)"
+    CONNECTION="$(nmcli -f UUID,ACTIVE,DEVICE,TYPE connection show --active | grep ethernet | tail -n1)"
     UUID=$(awk -F" " '/ethernet/ {print $1}' <<< "${CONNECTION}")
     get_random_mac
     nmcli connection modify $UUID ethernet.cloned-mac-address $MACADDR
     nmcli connection modify $UUID -ethernet.mac-address ""
 fi
 
+
+# Disable services
+systemctl disable hitch
+systemctl disable mongodb
+systemctl disable lnd_admin
+systemctl disable dhcpcd || true
 
 
 # Delete junk

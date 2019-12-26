@@ -73,7 +73,9 @@
 
         {% include 'includes/message_display.html' %}
 
-        <div class="main_header">VPN Status</div>
+        <div class="main_header">
+            VPN Status
+        </div>
         <br/>
         
         <div class="app_tile_row">
@@ -98,7 +100,13 @@
             </div>
             <div class="info_tile">
                 <div class="info_tile_header">Public IP Address</div>
-                <div class="info_tile_contents">{{public_ip}}</div>
+                <div class="info_tile_contents">
+                    {{public_ip}}
+                    {% if 'Failed to find' in public_ip %}
+                        <br/>
+                        <a href="/settings/check-in" class="ui-button ui-widget ui-corner-all settings_button_small">Refresh</a>
+                    {% endif %}
+                </div>
             </div>
         </div>
 

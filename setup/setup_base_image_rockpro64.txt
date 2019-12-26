@@ -1,0 +1,41 @@
+###
+### Setup Base OS
+###
+
+# After Armbian Flash
+#  - Login with root / 1234
+#  - Change root password to something longish like boltbolt
+#  - Create admin user with password bolt
+
+# Login as admin
+
+# Delete root password
+sudo passwd -d root
+
+# Set hostname
+echo "myNode" | sudo tee /etc/hostname
+sudo sed -i 's/rockpro64/myNode/g' /etc/hosts
+# OR armbian-config -> Personal -> Hostname
+
+# Update packages
+sudo apt-get update
+sudo apt-get -y upgrade
+
+# Install some necessary tools
+sudo apt-get -y install network-manager tmux
+
+# Regenerate MAC Address for RockPro64
+. /usr/lib/armbian/armbian-common
+CONNECTION="$(nmcli -f UUID,ACTIVE,DEVICE,TYPE connection show --active | tail -n1)"
+UUID=$(awk -F" " '/ethernet/ {print $1}' <<< "${CONNECTION}")
+get_random_mac
+nmcli connection modify $UUID ethernet.cloned-mac-address $MACADDR
+nmcli connection modify $UUID -ethernet.mac-address ""
+
+
+# Sync
+sync
+
+######################
+### MAKE IMAGE NOW ###
+######################

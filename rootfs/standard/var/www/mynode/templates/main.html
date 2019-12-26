@@ -9,6 +9,7 @@
                 electrs_enabled = {% if electrs_enabled %}1{% else %}0{% endif %}
                 lndhub_enabled = {% if lndhub_enabled %}1{% else %}0{% endif %}
                 vpn_enabled = {% if vpn_enabled %}1{% else %}0{% endif %}
+                mempoolspace_enabled = {% if mempoolspace_enabled %}1{% else %}0{% endif %}
 
                 $("#lndhub").on("click", function() {
                     url = 'http://'+location.hostname+':3000'
@@ -27,6 +28,11 @@
 
                 $("#btcrpcexplorer").on("click", function() {
                     url = 'http://'+location.hostname+':3002'
+                    window.open(url,'_blank');
+                })
+
+                $("#mempoolspace").on("click", function() {
+                    url = 'http://'+location.hostname+':4080'
                     window.open(url,'_blank');
                 })
 
@@ -76,6 +82,10 @@
 
                 $("#toggle-btcrpcexplorer").on("click", function() {
                         window.location.href="/toggle-btcrpcexplorer"
+                });
+
+                $("#toggle-mempoolspace").on("click", function() {
+                        window.location.href="/toggle-mempoolspace"
                 });
 
                 function lndconnect() {
@@ -132,6 +142,15 @@
         
 
         {% include 'includes/message_display.html' %}
+
+        {% if fsck_error %}
+        <div class="main_page_error_block">
+            <center>
+            <p>There may be an error with the filesystem on your drive.</p>
+            <p>{{ fsck_results }}</p>
+            </center>
+        </div>
+        {% endif %}
 
         {% if not has_changed_password %}
         <div class="upgrade_ad_main_page">
@@ -224,6 +243,8 @@
                     <li>Premium Support</li>
                     <li>One Click Upgrades!</li>
                     <li>VPN for Remote Access</li>
+                    <li>Tor for Remote Access</li>
+                    <li>JoinMarket</li>
                     <li>Supports the Open Source Bitcoin Community</li>
                     <li>And more!</li>
                 </ul>
@@ -262,6 +283,7 @@
                 <div class="app_status"></div>
                 <div class="app_contents"><div class="drive_usage">{{ram_usage}}</div></div>
             </div>
+            {% if device_temp != '...' %}
             <div class="app_tile">
                 <div class="app_status_icon"></div>
                 <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/temperature.png")}}"/></div>
@@ -269,6 +291,7 @@
                 <div class="app_status"></div>
                 <div class="app_contents"><div class="drive_usage">{{device_temp}} &deg;C</div></div>
             </div>
+            {% endif %}
             <!--
             <div class="app_tile">
                 <div class="app_status_icon"></div>

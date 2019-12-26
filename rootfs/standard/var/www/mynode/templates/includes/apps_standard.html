@@ -12,7 +12,7 @@
         </div>
     </div>
     <div class="app_tile">
-        <div class="app_status_icon {{ lnd_status_color }}"></div>
+        <div class="app_status_icon {{ lndconnect_status_color }}"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lndconnect.png")}}"/></div>
         <div class="app_title">LND Connect</div>
         <div class="app_status">{% if not lnd_ready %}Waiting on LND...{% else %}Lightning Tool{% endif %}</div>
@@ -59,9 +59,31 @@
         <div class="app_status">{{ btcrpcexplorer_status }}</div>
         <div class="app_contents">
             {% if btcrpcexplorer_enabled %}
-            <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="btcrpcexplorer">Explorer</a>
+                {% if btcrpcexplorer_ready %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="btcrpcexplorer">Explorer</a>
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-btcrpcexplorer">Disable</a>
+                {% endif %}
+            {% else %}
+                <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-btcrpcexplorer">Enable</a>
             {% endif %}
-            <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-btcrpcexplorer">{% if btcrpcexplorer_enabled %}Disable{% else %}Enable{% endif %}</a>
+        </div>
+    </div>
+    <div class="app_tile">
+        <div class="app_status_icon {% if product_key_skipped %}gray{% else %} {{mempoolspace_status_color}} {% endif %}"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/mempoolspace.png")}}"/></div>
+        <div class="app_title">Mempool.Space</div>
+        <div class="app_status">Mempool Viewer</div>
+        <div class="app_contents">
+            {% if product_key_skipped %}
+                Premium Feature
+            {% else %}
+                {% if mempoolspace_enabled %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="mempoolspace">View</a>
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-mempoolspace">Disable</a>
+                {% else %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-mempoolspace">Enable</a>
+                {% endif %}
+            {% endif %}
         </div>
     </div>
     <div class="app_tile">

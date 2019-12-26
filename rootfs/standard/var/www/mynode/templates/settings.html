@@ -334,7 +334,9 @@
             <div class="divider"></div>
 
 
-            <div class="settings_block_subheader">Info</div>
+            <div class="settings_block_subheader">
+                Info
+            </div>
             <table border="0">
                 <tr>
                     <td>Serial Number</td>
@@ -355,7 +357,12 @@
                 </tr>
                 <tr>
                     <td>Public IP</td>
-                    <td style="padding-left: 20px;">{{public_ip}}</td>
+                    <td style="padding-left: 20px;">
+                        {{public_ip}}
+                        {% if 'Failed to find' in public_ip %}
+                            <a href="/settings/check-in" class="ui-button ui-widget ui-corner-all settings_button_small">Refresh</a>
+                        {% endif %}
+                    </td>
                 </tr>
                 <tr>
                     <td>Local IP</td>
@@ -394,10 +401,12 @@
                     <td>RAM</td>
                     <td style="padding-left: 20px;">{{ram_usage}}</td>
                 </tr>
+                {% if device_temp != '...' %}
                 <tr>
                     <td>Temperature</td>
                     <td style="padding-left: 20px;">{{device_temp}} &deg;C</td>
                 </tr>
+                {% endif %}
                 <tr>
                     <td>Uptime</td>
                     <td style="padding-left: 20px;">{{uptime}}</td>
@@ -609,13 +618,6 @@
             This will regenerate your HTTPS certificates.
             <br/>
             <a href="/settings/regen-https-certs" class="ui-button ui-widget ui-corner-all settings_button">Regenerate</a>
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Repair Drive</div>
-            This will attempt to repair and block errors on your external drive. Please make a backup before running. This will reboot the device.
-            <br/>
-            <a href="/settings/repair-drive" class="ui-button ui-widget ui-corner-all settings_button">Repair Drive</a>
 
             <div class="divider"></div>
 

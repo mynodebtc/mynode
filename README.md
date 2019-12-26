@@ -37,19 +37,28 @@ Each myNode device comes with a number of wonderful features:
 - Electrum Server - BTC Light Wallet Server
 - Ride the Lightning - Lightning Wallet
 - LND Hub - Lightning Wallet Server
+- JoinMarket
 - Bitcoin CLI
 - QuickSync - Quickly sync Bitcoin blockchain
 - LND Connect - Generate QR Codes for connecting wallets
 - LN Channel Backup
 - Tor
+- Docker support
+- Netdata Monitor
+- Glances
+- Web Linux Terminal (WebSSH2)
+- Dark Mode interface
 - Dedicated hardware keeps you constantly and securely connected!
+- Virtual Machine support (OVA file, VirtualBox)
+- Mempool.space local full node integration
 - And more!
 
-## Suported Devices
+## Supported Devices
 We currently support images for the following devices:
  - Raspberry Pi 3
  - Raspberry Pi 4
  - Rock64
+ - RockPro64
 
 ## Running myNode
 You can run myNode on your own device in just a few easy steps!
@@ -106,6 +115,7 @@ Once you are running myNode, you can easily update the software yourself!
 ## Convert new device to run myNode
 1. Run make command for your device. Ex:
     * make setup_new_rock64
+    * make setup_new_rockpro64
     * make setup_new_raspi3
     * make setup_new_raspi4
     * make setup_new_debian

@@ -28,27 +28,32 @@ if [ ! -f /var/lib/mynode/.expanded_rootfs ]; then
         raspi-config --expand-rootfs
         touch /var/lib/mynode/.expanded_rootfs 
     fi
-    if [ $IS_ROCK64 = 1 ]; then
+    if [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ]; then
         /usr/lib/armbian/armbian-resize-filesystem start
         touch /var/lib/mynode/.expanded_rootfs 
     fi
 fi
 
 # Verify we are in a clean state (only raspi uses HDD swap)
-if [ $IS_RASPI -eq 1 ]; then
+if [ $IS_RASPI -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
     dphys-swapfile swapoff || true
     dphys-swapfile uninstall || true
 fi
 umount /mnt/hdd || true
 
-# Check for drive-repair
-if [ -f /home/bitcoin/.mynode/check_drive ]; then
-    for d in /dev/sd*1; do
-        echo "Repairing drive $d ...";
-        fsck -y $d
-    done
-    rm /home/bitcoin/.mynode/check_drive
-fi
+# Check drive
+set +e
+touch /tmp/repairing_drive
+for d in /dev/sd*1; do
+    echo "Repairing drive $d ...";
+    RC=$(fsck -y $d > /tmp/fsck_results 2>&1)
+    if [ $RC -ne 0 ]; then
+        touch /tmp/fsck_error
+    fi
+done
+rm -f /tmp/repairing_drive
+set -e
+
 
 # Mount HDD (format if necessary)
 while [ ! -f /mnt/hdd/.mynode ]
@@ -69,6 +74,7 @@ mkdir -p /mnt/hdd/mynode/redis
 mkdir -p /mnt/hdd/mynode/mongodb
 mkdir -p /mnt/hdd/mynode/electrs
 mkdir -p /mnt/hdd/mynode/docker
+mkdir -p /tmp/flask_uploads
 echo "drive_mounted" > $MYNODE_DIR/.mynode_status
 chmod 777 $MYNODE_DIR/.mynode_status
 rm -rf $MYNODE_DIR/.mynode_bitcoind_synced
@@ -234,7 +240,7 @@ chown bitcoin:bitcoin /mnt/hdd/mynode/
 
 
 # Setup swap on new HDD
-if [ $IS_RASPI -eq 1 ]; then
+if [ $IS_RASPI -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
     if [ ! -f /mnt/hdd/swapfile ]; then
         dd if=/dev/zero of=/mnt/hdd/swapfile count=1000 bs=1MiB
         chmod 600 /mnt/hdd/swapfile

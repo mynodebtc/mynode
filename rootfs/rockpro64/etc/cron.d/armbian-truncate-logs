@@ -1,0 +1,4 @@
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# No reason to truncate, we use log rotate
+# */15 * * * * root /usr/lib/armbian/armbian-truncate-logs

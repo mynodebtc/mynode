@@ -172,6 +172,13 @@ def get_latest_version_page():
     update_latest_version()
     return redirect("/settings")
 
+@mynode_settings.route("/settings/check-in")
+def check_in_page():
+    check_logged_in()
+    check_in()
+    find_public_ip()
+    return redirect("/settings")
+
 @mynode_settings.route("/settings/reset-blockchain")
 def reset_blockchain_page():
     check_logged_in()
@@ -378,27 +385,6 @@ def download_logs_page():
     os.system("/usr/bin/mynode_gen_debug_tarball.sh")
 
     return send_from_directory(directory="/tmp/", filename="mynode_logs.tar.gz")
-
-@mynode_settings.route("/settings/repair-drive")
-def repair_drive_page():
-    check_logged_in()
-
-    # Touch files to trigger re-checking drive
-    os.system("touch /home/bitcoin/.mynode/check_drive")
-    os.system("sync")
-    
-    # Trigger reboot
-    t = Timer(1.0, reboot_device)
-    t.start()
-
-    # Wait until device is restarted
-    templateData = {
-        "title": "myNode Reboot",
-        "header_text": "Restarting",
-        "subheader_text": "This will take several minutes...",
-        "ui_settings": read_ui_settings()
-    }
-    return render_template('reboot.html', **templateData)
 
 @mynode_settings.route("/settings/regen-https-certs")
 def regen_https_certs_page():

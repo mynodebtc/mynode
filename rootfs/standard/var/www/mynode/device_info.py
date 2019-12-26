@@ -119,14 +119,29 @@ def save_product_key(product_key):
 def delete_product_key_error():
     os.system("rm -rf /home/bitcoin/.mynode/.product_key_error")
     os.system("rm -rf /mnt/hdd/mynode/settings/.product_key_error")
-    
+
+
+def is_drive_being_repaired():
+    return os.path.isfile("/tmp/repairing_drive")
+def has_fsck_error():
+    return os.path.isfile("/tmp/fsck_error")
+def get_fsck_results():
+    try:
+        with open("/tmp/fsck_results", "r") as f:
+            return f.read()
+    except:
+        return "ERROR"
+    return "ERROR"
+
+
+def is_installing_docker_images():
+    return os.path.isfile("/tmp/installing_docker_images")
+
 
 def get_local_ip():
     local_ip = "unknown"
     try:
-        result = subprocess.check_output('hostname -I', shell=True)
-        ips = result.split()
-        local_ip = ips[0]
+        local_ip = subprocess.check_output('/usr/bin/get_local_ip.py', shell=True).strip()
     except:
         local_ip = "error"
 
@@ -157,6 +172,9 @@ def stop_bitcoind():
 
 def stop_lnd():
     os.system("systemctl stop lnd")
+
+def restart_lnd():
+    os.system("systemctl restart lnd")
 
 def stop_quicksync():
     os.system("systemctl stop quicksync")
@@ -204,16 +222,14 @@ def delete_lnd_data():
 
 
 def reboot_device():
-    stop_bitcoind()
-    stop_lnd()
     os.system("sync")
+    os.system("/usr/bin/mynode_stop_critical_services.sh")
     os.system("reboot")
 
 
 def shutdown_device():
-    stop_bitcoind()
-    stop_lnd()
     os.system("sync")
+    os.system("/usr/bin/mynode_stop_critical_services.sh")
     os.system("shutdown -h now")
 
 

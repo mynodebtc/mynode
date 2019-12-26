@@ -19,6 +19,7 @@ from lightning_info import *
 from messages import get_message
 from thread_functions import *
 from datetime import timedelta
+from device_info import *
 import pam
 import json
 import random
@@ -36,6 +37,8 @@ import time
 app = Flask(__name__)
 app.config['DEBUG'] = False
 app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024     # 32 MB upload file max
+app.config['UPLOAD_FOLDER'] = "/tmp/flask_uploads"
 app.register_blueprint(mynode_bitcoind)
 app.register_blueprint(mynode_lnd)
 app.register_blueprint(mynode_bitcoin_cli)
@@ -93,7 +96,6 @@ def index():
 
     bitcoin_block_height = get_bitcoin_block_height()
     mynode_block_height = get_mynode_block_height()
-    lnd_info = get_lightning_info()
     pk_skipped = skipped_product_key()
     pk_error = not is_valid_product_key()
 
@@ -116,6 +118,17 @@ def index():
         return render_template('uploader.html', **templateData)
 
     if status == STATE_DRIVE_MISSING:
+
+        # Drive may be getting repaired
+        if is_drive_being_repaired():
+            templateData = {
+                "title": "myNode Repairing Drive",
+                "header_text": "Repairing Drive",
+                "subheader_text": Markup("Drive is being checked and repaired...<br/><br/>This will take several hours."),
+                "ui_settings": read_ui_settings()
+            }
+            return render_template('state.html', **templateData)
+
         templateData = {
             "title": "myNode Looking for Drive",
             "header_text": "Looking for Drive",
@@ -207,9 +220,11 @@ def index():
         explorer_status = ""
         explorer_ready = False
         explorer_status_color = "red"
+        lndconnect_status_color = "gray"
         btcrpcexplorer_status = ""
         btcrpcexplorer_ready = False
         btcrpcexplorer_status_color = "gray"
+        mempoolspace_status_color = "gray"
         vpn_status_color = "gray"
         vpn_status = ""
 
@@ -219,6 +234,16 @@ def index():
                 "title": "myNode Status",
                 "header_text": "Starting...",
                 "subheader_text": Markup("Launching myNode services...{}".format(message)),
+                "ui_settings": read_ui_settings()
+            }
+            return render_template('state.html', **templateData)
+
+        if is_installing_docker_images():
+            message = "<div class='small_message'>{}</<div>".format( get_message(include_funny=True) )
+            templateData = {
+                "title": "myNode Status",
+                "header_text": "Starting...",
+                "subheader_text": Markup("Building Docker Images...{}".format(message)),
                 "ui_settings": read_ui_settings()
             }
             return render_template('state.html', **templateData)
@@ -302,11 +327,28 @@ def index():
         # Find btc-rpc-explorer status
         btcrpcexplorer_status = "BTC RPC Explorer"
         if is_btcrpcexplorer_enabled():
-            status = os.system("systemctl status btc_rpc_explorer --no-pager")
-            if status != 0:
-                btcrpcexplorer_status_color = "red"
+            if is_electrs_active():
+                status = os.system("systemctl status btc_rpc_explorer --no-pager")
+                if status != 0:
+                    btcrpcexplorer_status_color = "red"
+                else:
+                    btcrpcexplorer_status_color = "green"
+                    btcrpcexplorer_ready = True
             else:
                 btcrpcexplorer_status_color = "green"
+                btcrpcexplorer_status = "Waiting on electrs..."
+
+        # Find mempool space status
+        if is_mempoolspace_enabled():
+            status = os.system("systemctl status mempoolspace --no-pager")
+            if status != 0:
+                mempoolspace_status_color = "red"
+            else:
+                mempoolspace_status_color = "green"
+
+        # Find lndconnect status
+        if lnd_ready:
+            lndconnect_status_color = "green"
 
         # Find explorer status
         explorer_status_color = electrs_status_color
@@ -365,6 +407,9 @@ def index():
             "btcrpcexplorer_status_color": btcrpcexplorer_status_color,
             "btcrpcexplorer_status": btcrpcexplorer_status,
             "btcrpcexplorer_enabled": is_btcrpcexplorer_enabled(),
+            "mempoolspace_status_color": mempoolspace_status_color,
+            "mempoolspace_enabled": is_mempoolspace_enabled(),
+            "lndconnect_status_color": lndconnect_status_color,
             "vpn_status_color": vpn_status_color,
             "vpn_status": vpn_status,
             "vpn_enabled": is_vpn_enabled(),
@@ -374,6 +419,8 @@ def index():
             "whirlpool_initialized": whirlpool_initialized,
             "product_key_skipped": pk_skipped,
             "product_key_error": pk_error,
+            "fsck_error": has_fsck_error(),
+            "fsck_results": get_fsck_results(),
             "drive_usage": get_drive_usage(),
             "cpu_usage": get_cpu_usage(),
             "ram_usage": get_ram_usage(),
@@ -458,6 +505,15 @@ def page_toggle_btcrpcexplorer():
         enable_btcrpcexplorer()
     return redirect("/")
 
+@app.route("/toggle-mempoolspace")
+def page_toggle_mempoolspace():
+    check_logged_in()
+    if is_mempoolspace_enabled():
+        disable_mempoolspace()
+    else:
+        enable_mempoolspace()
+    return redirect("/")
+
 @app.route("/toggle-vpn")
 def page_toggle_vpn():
     check_logged_in()
@@ -530,9 +586,9 @@ def internal_error(error):
 # Disable browser caching
 @app.after_request
 def set_response_headers(response):
-    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '0'
+    #response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    #response.headers['Pragma'] = 'no-cache'
+    #response.headers['Expires'] = '0'
     return response
 
 if __name__ == "__main__":
@@ -548,6 +604,8 @@ if __name__ == "__main__":
     lnd_thread.start()
     drive_thread = BackgroundThread(update_device_info, 60)
     drive_thread.start()
+    public_ip_thread = BackgroundThread(find_public_ip, 60*60*3) # 3-hour repeat
+    public_ip_thread.start()
     checkin_thread = BackgroundThread(check_in, 60*60*24) # Per-day checkin
     checkin_thread.start()
 

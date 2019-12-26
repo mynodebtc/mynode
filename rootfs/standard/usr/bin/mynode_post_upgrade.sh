@@ -9,10 +9,7 @@ set -e
 date
 
 # Shut down main services to save memory and CPU
-systemctl stop electrs
-systemctl stop lnd
-systemctl stop quicksync
-systemctl stop bitcoind
+/usr/bin/mynode_stop_critical_services.sh
 
 # Check if any dpkg installs have failed and correct
 dpkg --configure -a
@@ -33,6 +30,7 @@ apt-get -y install xorg chromium openbox lightdm
 
 # Make sure some software is removed
 apt-get -y purge ntp # (conflicts with systemd-timedatectl)
+apt-get -y purge chrony # (conflicts with systemd-timedatectl)
 
 
 # Install Whirlpool
@@ -95,17 +93,18 @@ usermod -aG docker root
 
 # Upgrade BTC
 echo "Upgrading BTC..."
-set +e
 BTC_VERSION="0.19.0.1"
-ARCH="arm-linux-gnueabihf"
-uname -a | grep aarch64
-if [ $? = 0 ]; then
+ARCH="UNKNOWN"
+if [ $IS_RASPI = 1 ]; then
+    ARCH="arm-linux-gnueabihf"
+elif [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ]; then
     ARCH="aarch64-linux-gnu"
-fi
-if [ $IS_X86 = 1 ]; then
+elif [ $IS_X86 = 1 ]; then
     ARCH="x86_64-linux-gnu" 
+else
+    echo "Unknown Bitcoin Version"
+    exit 1
 fi
-set -e
 BTC_UPGRADE_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/bitcoin-$BTC_VERSION-$ARCH.tar.gz
 BTC_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btc_url
 BTC_UPGRADE_SHA256SUM_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/SHA256SUMS.asc
@@ -143,7 +142,7 @@ fi
 
 # Upgrade LND
 echo "Upgrading LND..."
-LND_VERSION="v0.8.1-beta"
+LND_VERSION="v0.8.2-beta"
 LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
@@ -198,7 +197,7 @@ fi
 # Upgrade Joinmarket
 echo "Upgrading JoinMarket..."
 if [ $IS_PREMIUM -eq 1 ]; then
-    JOINMARKET_VERSION=0.5.5
+    JOINMARKET_VERSION=0.6.1
     JOINMARKET_GITHUB_URL=https://github.com/JoinMarket-Org/joinmarket-clientserver.git
     JOINMARKET_VERSION_FILE=/home/bitcoin/.mynode/.joinmarket_version
     CURRENT=""
@@ -216,6 +215,7 @@ if [ $IS_PREMIUM -eq 1 ]; then
             cd joinmarket-clientserver
             git pull origin master
         fi
+        git fetch --tags --all
         git reset --hard v$JOINMARKET_VERSION
 
         # Create virtualenv and setup joinmarket
@@ -230,7 +230,7 @@ if [ $IS_PREMIUM -eq 1 ]; then
 fi
 
 # Upgrade RTL
-RTL_UPGRADE_URL=https://github.com/ShahanaFarooqui/RTL/archive/v0.5.4.tar.gz
+RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/v0.5.4.tar.gz
 RTL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.rtl_url
 CURRENT=""
 if [ -f $RTL_UPGRADE_URL_FILE ]; then
@@ -252,7 +252,7 @@ if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
 fi
 
 # Upgrade Bitcoin RPC Explorer
-BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v1.1.2.tar.gz
+BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v1.1.5.tar.gz
 BTCRPCEXPLORER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btcrpcexplorer_url
 CURRENT=""
 if [ -f $BTCRPCEXPLORER_UPGRADE_URL_FILE ]; then
@@ -271,6 +271,33 @@ if [ "$CURRENT" != "$BTCRPCEXPLORER_UPGRADE_URL" ]; then
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $BTCRPCEXPLORER_UPGRADE_URL > $BTCRPCEXPLORER_UPGRADE_URL_FILE
+fi
+
+
+# Install LND Connect
+LNDCONNECTARCH="lndconnect-linux-armv7"
+if [ $IS_X86 = 1 ]; then
+    LNDCONNECTARCH="lndconnect-linux-amd64"
+fi
+LNDCONNECT_UPGRADE_URL=https://github.com/LN-Zap/lndconnect/releases/download/v0.2.0/$LNDCONNECTARCH-v0.2.0.tar.gz
+LNDCONNECT_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lndconnect_url
+CURRENT=""
+if [ -f $LNDCONNECT_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $LNDCONNECT_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$LNDCONNECT_UPGRADE_URL" ]; then
+    rm -rf /tmp/download
+    mkdir -p /tmp/download
+    cd /tmp/download
+    wget $LNDCONNECT_UPGRADE_URL -O lndconnect.tar.gz
+    tar -xvf lndconnect.tar.gz
+    rm lndconnect.tar.gz
+    mv lndconnect-* lndconnect
+    install -m 0755 -o root -g root -t /usr/local/bin lndconnect/* 
+
+    mkdir -p /home/bitcoin/.mynode/
+    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+    echo $LNDCONNECT_UPGRADE_URL > $LNDCONNECT_UPGRADE_URL_FILE
 fi
 
 
@@ -299,9 +326,10 @@ systemctl enable webssh2
 systemctl enable whirlpool
 
 # Disable any old services
-sudo systemctl disable hitch
-sudo systemctl disable mongodb
-sudo systemctl disable lnd_admin
+systemctl disable hitch
+systemctl disable mongodb
+systemctl disable lnd_admin
+systemctl disable dhcpcd || true
 
 # Reload service settings
 systemctl daemon-reload

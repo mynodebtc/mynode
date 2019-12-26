@@ -5,11 +5,10 @@ from config import *
 
 # Generic service check
 def is_service_enabled(service):
-    cmd = "systemctl status {} --no-pager".format(service)
+    cmd = "systemctl is-enabled {}".format(service)
     try:
-        results = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
-        if "enabled;" in results:
-            return True
+        subprocess.check_call(cmd, shell=True)
+        return True
     except:
         return False
     return False
@@ -67,6 +66,18 @@ def disable_btcrpcexplorer():
     #os.system("killall -9 electrs") # Hard kill since we are disabing
     os.system("systemctl stop btc_rpc_explorer --no-pager")
     os.system("systemctl disable btc_rpc_explorer --no-pager")
+
+
+def is_mempoolspace_enabled():
+    return is_service_enabled("mempoolspace")
+
+def enable_mempoolspace():
+    os.system("systemctl enable mempoolspace --no-pager")
+    os.system("systemctl start mempoolspace --no-pager")
+
+def disable_mempoolspace():
+    os.system("systemctl stop mempoolspace --no-pager")
+    os.system("systemctl disable mempoolspace --no-pager")
 
 
 def is_vpn_enabled():

@@ -53,6 +53,7 @@ if [ "$#" -ge 2 ]; then
     else
         # Service not found, reboot
         echo "Unknown service, rebooting"
+        /usr/bin/mynode_stop_critical_services.sh
         reboot
     fi
 else
