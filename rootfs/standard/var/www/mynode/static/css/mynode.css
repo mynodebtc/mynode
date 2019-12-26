@@ -231,6 +231,34 @@ a:active {
     margin-bottom: 40px;
 }
 
+.instructions {
+    width: 75%;
+    color: #444444;
+    margin: auto;
+    text-align: left;
+    font-size: 18px;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-bottom: 40px;
+    margin-top: 40px;
+}
+
+.instructions-header {
+    font-size: 18px;
+    text-align: center;
+}
+
+.instructions-steps li {
+    padding: 0.25em;
+}
+
+.instructions-terminal {
+    font-family: "Courier New", Courier, monospace;
+}
+
+.instructions-keyboard {
+    font-weight: bold;
+}
+
 .mynode_button {
     width: 80%;
     font-size: 14px;

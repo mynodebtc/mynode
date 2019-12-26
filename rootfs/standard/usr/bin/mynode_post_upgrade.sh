@@ -33,6 +33,30 @@ apt-get -y purge ntp # (conflicts with systemd-timedatectl)
 apt-get -y purge chrony # (conflicts with systemd-timedatectl)
 
 
+# Install Whirlpool
+apt -y install openjdk-8-jre
+
+WHIRLPOOL_UPGRADE_URL=https://github.com/Samourai-Wallet/whirlpool-client-cli/releases/download/0.9.3/whirlpool-client-cli-0.9.3-run.jar
+WHIRLPOOL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.whirlpool_url
+CURRENT=""
+if [ -f $WHIRLPOOL_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $WHIRLPOOL_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$WHIRLPOOL_UPGRADE_URL" ]; then
+        if [ ! -d /opt/mynode/whirlpool ]; then
+            sudo -u bitcoin mkdir -p /opt/mynode/whirlpool
+            cd /opt/mynode/whirlpool
+        else
+            cd /opt/mynode/whirlpool
+            sudo rm -rf *.jar
+        fi
+        sudo -u bitcoin wget -O whirlpool.jar $WHIRLPOOL_UPGRADE_URL
+        
+    mkdir -p /home/bitcoin/.mynode/
+    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+    echo $WHIRLPOOL_UPGRADE_URL > $WHIRLPOOL_UPGRADE_URL_FILE
+fi
+
 # Install any pip software
 pip install tzupdate virtualenv --no-cache-dir
 
@@ -66,7 +90,6 @@ groupadd docker || true
 usermod -aG docker admin
 usermod -aG docker bitcoin
 usermod -aG docker root
-
 
 # Upgrade BTC
 echo "Upgrading BTC..."
@@ -300,6 +323,7 @@ systemctl enable docker_images
 systemctl enable glances
 systemctl enable netdata
 systemctl enable webssh2
+systemctl enable whirlpool
 
 # Disable any old services
 systemctl disable hitch
