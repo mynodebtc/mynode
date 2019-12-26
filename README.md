@@ -30,7 +30,7 @@ https://mynodebtc.com/order_now
 Each myNode device comes with a number of wonderful features:
 
 - Bitcoin Node
-- Lightning Wallet
+- Lightning Node (LND)
 - Simple UI / Web Interface
 - VPN for Remote Access
 - Bitcoin Explorer
@@ -51,6 +51,7 @@ Each myNode device comes with a number of wonderful features:
 - Dedicated hardware keeps you constantly and securely connected!
 - Virtual Machine support (OVA file, VirtualBox)
 - Mempool.space local full node integration
+- Samourai Whirlpool
 - And more!
 
 ## Supported Devices
