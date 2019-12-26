@@ -69,6 +69,28 @@
         </div>
     </div>
     <div class="app_tile">
+        <div class="app_status_icon {{ whirlpool_status_color }}"></div>
+        {% if ui_settings['darkmode'] %}
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/wp-white.png")}}"/></div>
+        {% else %}
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/wp-black.png")}}"/></div>
+        {% endif %}
+        <div class="app_title">Whirlpool</div>
+        <div class="app_status">{% if not product_key_skipped %} {{ whirlpool_status }} {% endif %}</div>
+        <div class="app_contents">
+            {% if product_key_skipped %}
+                Premium Feature
+            {% else %}
+                <a class="ui-button ui-widget ui-corner-all mynode_button" href="/whirlpool">
+                    {% if whirlpool_initialized %}Info{% else %}Setup{% endif %}
+                </a>
+                <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-whirlpool">
+                    {% if whirlpool_enabled %}Disable{% else %}Enable{% endif %}
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="app_tile">
         <div class="app_status_icon {% if product_key_skipped %}gray{% else %} {{mempoolspace_status_color}} {% endif %}"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/mempoolspace.png")}}"/></div>
         <div class="app_title">Mempool.Space</div>
@@ -87,41 +109,10 @@
         </div>
     </div>
     <div class="app_tile">
-        <div class="app_status_icon {% if product_key_skipped %}gray{% else %}green{% endif %}"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/tor.png")}}"/></div>
-        <div class="app_title">Tor Services</div>
-        <div class="app_status">Remote Access</div>
-        <div class="app_contents">
-            {% if product_key_skipped %}
-                Premium Feature
-            {% else %}
-                <a class="ui-button ui-widget ui-corner-all mynode_button" href="/tor">Tor Services</a>
-            {% endif %}
-        </div>
-    </div>
-    <div class="app_tile">
         <div class="app_status_icon"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/cli.png")}}"/></div>
         <div class="app_title">BTC CLI</div>
         <div class="app_status"></div>
         <div class="app_contents"><a class="ui-button ui-widget ui-corner-all mynode_button" href="/bitcoin-cli">CLI</a></div>
-    </div>
-    <div class="app_tile">
-        <div class="app_status_icon {{ whirlpool_status_color }}"></div>
-        {% if ui_settings['darkmode'] %}
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/wp-white.png")}}"/></div>
-        {% else %}
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/wp-black.png")}}"/></div>
-        {% endif %}
-        <div class="app_title">Whirlpool</div>
-        <div class="app_status">{{ whirlpool_status }}</div>
-        <div class="app_contents">
-            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/whirlpool">
-                {% if whirlpool_initialized %}Info{% else %}Setup{% endif %}
-            </a>
-            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-whirlpool">
-                {% if whirlpool_enabled %}Disable{% else %}Enable{% endif %}
-            </a>
-        </div>
     </div>
 </div>
