@@ -7,6 +7,7 @@ systemctl stop netdata
 systemctl stop glances
 systemctl stop rtl
 systemctl stop webssh2
+systemctl stop whirlpool
 
 # Stop core services
 systemctl stop electrs

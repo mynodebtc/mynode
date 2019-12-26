@@ -25,6 +25,7 @@ ufw allow 3002  comment 'allow BTC RPC Explorer'
 ufw allow 3010  comment 'allow RTL'
 ufw allow 4080  comment 'allow mempool.space'
 ufw allow 5353  comment 'allow Avahi'
+ufw allow 8899  comment 'allow Whirlpool'
 ufw allow 50001 comment 'allow Electrum Server'
 ufw allow 50002 comment 'allow Electrum Server'
 ufw allow 56881 comment 'allow myNode QuickSync'
@@ -35,7 +36,7 @@ ufw allow 51194 comment 'allow VPN'
 ufw allow 61208 comment 'allow glances'
 ufw allow from 127.0.0.1 comment 'allow from localhost'
 ufw allow from ::1 comment 'allow from localhost'
-ufw allow 8899 comment 'allow Whirlpool'
+
 # Enable UFW
 ufw --force enable
 

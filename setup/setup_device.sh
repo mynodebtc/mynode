@@ -94,7 +94,7 @@ apt-get -y install pv sysstat network-manager rsync parted unzip pkg-config
 apt-get -y install libfreetype6-dev libpng-dev libatlas-base-dev libgmp-dev libltdl-dev 
 apt-get -y install libffi-dev libssl-dev glances python3-bottle automake libtool libltdl7
 apt -y -qq install apt-transport-https ca-certificates
-apt-get -y install xorg chromium openbox lightdm
+apt-get -y install xorg chromium openbox lightdm openjdk-8-jre
 
 
 # Make sure some software is removed
@@ -314,6 +314,23 @@ if [ ! -f /usr/include/secp256k1_ecdh.h ]; then
     make
     make install
     cp -f include/* /usr/include/
+fi
+
+
+# Install Whirlpool
+WHIRLPOOL_UPGRADE_URL=https://github.com/Samourai-Wallet/whirlpool-client-cli/releases/download/0.9.3/whirlpool-client-cli-0.9.3-run.jar
+WHIRLPOOL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.whirlpool_url
+CURRENT=""
+if [ -f $WHIRLPOOL_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $WHIRLPOOL_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$WHIRLPOOL_UPGRADE_URL" ]; then
+    sudo -u bitcoin mkdir -p /opt/mynode/whirlpool
+    cd /opt/mynode/whirlpool
+    sudo rm -rf *.jar
+    sudo -u bitcoin wget -O whirlpool.jar $WHIRLPOOL_UPGRADE_URL
+    
+    echo $WHIRLPOOL_UPGRADE_URL > $WHIRLPOOL_UPGRADE_URL_FILE
 fi
 
 

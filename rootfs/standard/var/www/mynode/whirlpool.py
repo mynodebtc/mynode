@@ -23,7 +23,7 @@ def get_whirlpool_status():
                 whirlpool_status = "Running"
                 whirlpool_status_color = "green"
             else:
-                whirlpool_status = "Waiting for initialization."
+                whirlpool_status = "Waiting for initialization..."
                 whirlpool_status_color = "yellow"
     return whirlpool_status, whirlpool_status_color, whirlpool_initialized
 
@@ -55,6 +55,5 @@ def whirlpool_page():
 @mynode_whirlpool.route("/restart-whirlpool")
 def page_toggle_whirlpool():
     check_logged_in()
-    disable_whirlpool()
-    enable_whirlpool()
+    os.system("systemctl restart whirlpool --no-pager")
     return redirect("/whirlpool")
