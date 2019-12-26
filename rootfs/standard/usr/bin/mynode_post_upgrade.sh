@@ -26,36 +26,12 @@ apt-get -y install pv sysstat network-manager unzip pkg-config libfreetype6-dev 
 apt-get -y install libatlas-base-dev libffi-dev libssl-dev glances python3-bottle
 apt-get -y -qq install apt-transport-https ca-certificates
 apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
-apt-get -y install xorg chromium openbox lightdm
+apt-get -y install xorg chromium openbox lightdm openjdk-8-jre
 
 # Make sure some software is removed
 apt-get -y purge ntp # (conflicts with systemd-timedatectl)
 apt-get -y purge chrony # (conflicts with systemd-timedatectl)
 
-
-# Install Whirlpool
-apt -y install openjdk-8-jre
-
-WHIRLPOOL_UPGRADE_URL=https://github.com/Samourai-Wallet/whirlpool-client-cli/releases/download/0.9.3/whirlpool-client-cli-0.9.3-run.jar
-WHIRLPOOL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.whirlpool_url
-CURRENT=""
-if [ -f $WHIRLPOOL_UPGRADE_URL_FILE ]; then
-    CURRENT=$(cat $WHIRLPOOL_UPGRADE_URL_FILE)
-fi
-if [ "$CURRENT" != "$WHIRLPOOL_UPGRADE_URL" ]; then
-        if [ ! -d /opt/mynode/whirlpool ]; then
-            sudo -u bitcoin mkdir -p /opt/mynode/whirlpool
-            cd /opt/mynode/whirlpool
-        else
-            cd /opt/mynode/whirlpool
-            sudo rm -rf *.jar
-        fi
-        sudo -u bitcoin wget -O whirlpool.jar $WHIRLPOOL_UPGRADE_URL
-        
-    mkdir -p /home/bitcoin/.mynode/
-    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
-    echo $WHIRLPOOL_UPGRADE_URL > $WHIRLPOOL_UPGRADE_URL_FILE
-fi
 
 # Install any pip software
 pip install tzupdate virtualenv --no-cache-dir
@@ -229,6 +205,22 @@ if [ $IS_PREMIUM -eq 1 ]; then
     fi
 fi
 
+# Install Whirlpool
+WHIRLPOOL_UPGRADE_URL=https://github.com/Samourai-Wallet/whirlpool-client-cli/releases/download/0.9.3/whirlpool-client-cli-0.9.3-run.jar
+WHIRLPOOL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.whirlpool_url
+CURRENT=""
+if [ -f $WHIRLPOOL_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $WHIRLPOOL_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$WHIRLPOOL_UPGRADE_URL" ]; then
+    sudo -u bitcoin mkdir -p /opt/mynode/whirlpool
+    cd /opt/mynode/whirlpool
+    sudo rm -rf *.jar
+    sudo -u bitcoin wget -O whirlpool.jar $WHIRLPOOL_UPGRADE_URL
+    
+    echo $WHIRLPOOL_UPGRADE_URL > $WHIRLPOOL_UPGRADE_URL_FILE
+fi
+
 # Upgrade RTL
 RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/v0.5.4.tar.gz
 RTL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.rtl_url
@@ -323,7 +315,6 @@ systemctl enable docker_images
 systemctl enable glances
 systemctl enable netdata
 systemctl enable webssh2
-systemctl enable whirlpool
 
 # Disable any old services
 systemctl disable hitch
