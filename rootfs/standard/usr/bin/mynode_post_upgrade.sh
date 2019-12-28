@@ -26,7 +26,7 @@ apt-get -y install pv sysstat network-manager unzip pkg-config libfreetype6-dev 
 apt-get -y install libatlas-base-dev libffi-dev libssl-dev glances python3-bottle
 apt-get -y -qq install apt-transport-https ca-certificates
 apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
-apt-get -y install xorg chromium openbox lightdm openjdk-8-jre
+apt-get -y install xorg chromium openbox lightdm openjdk-11-jre
 
 # Make sure some software is removed
 apt-get -y purge ntp # (conflicts with systemd-timedatectl)
