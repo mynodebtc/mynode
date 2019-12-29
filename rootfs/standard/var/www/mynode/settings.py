@@ -99,6 +99,13 @@ def page_settings():
     except:
         lnd_status = "ERROR"
 
+    # Get Tor Status
+    tor_status = ""
+    try:
+        tor_status = subprocess.check_output("journalctl --unit=tor@default --no-pager | tail -n 100", shell=True).decode("utf8")
+    except:
+        tor_status = "ERROR"
+
     # Get Electrs Status
     electrs_status = ""
     try:
@@ -132,6 +139,7 @@ def page_settings():
         "quicksync_status": quicksync_status,
         "bitcoin_status": bitcoin_status,
         "lnd_status": lnd_status,
+        "tor_status": tor_status,
         "electrs_status": electrs_status,
         "is_quicksync_disabled": not is_quicksync_enabled(),
         "is_netdata_enabled": is_netdata_enabled(),

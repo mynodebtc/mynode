@@ -189,6 +189,11 @@
                     $("#lnd_status").show();
                 });
 
+                $("#show_tor_status").on("click", function() {
+                    $("#show_tor_status").hide(0);
+                    $("#tor_status").show();
+                });
+
                 $("#show_electrs_status").on("click", function() {
                     $("#show_electrs_status").hide(0);
                     $("#electrs_status").show();
@@ -457,6 +462,11 @@
             <div class="settings_block_subheader">LND Status</div>
             <button id="show_lnd_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
             <div id="lnd_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lnd_status}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Tor Status</div>
+            <button id="show_tor_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
+            <div id="tor_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{tor_status}}</pre></div>
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Electrum Server Status</div>
