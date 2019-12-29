@@ -207,6 +207,7 @@ def index():
     elif status == STATE_STABLE:
         bitcoind_status_code = os.system("systemctl status bitcoind --no-pager")
         lnd_status_code = os.system("systemctl status lnd --no-pager")
+        tor_status_color = "gray"
         bitcoind_status_color = "red"
         lnd_status_color = "red"
         lnd_ready = is_lnd_ready()
@@ -263,6 +264,13 @@ def index():
                 "ui_settings": read_ui_settings()
             }
             return render_template('state.html', **templateData)
+
+        # Find tor status
+        status = os.system("systemctl status tor@default --no-pager")
+        if status != 0:
+            tor_status_color = "red"
+        else:
+            tor_status_color = "green"
 
         # Find bitcoind status
         if bitcoind_status_code != 0:
@@ -393,6 +401,7 @@ def index():
             "lnd_status_color": lnd_status_color,
             "lnd_status": Markup(lnd_status),
             "lnd_ready": lnd_ready,
+            "tor_status_color": tor_status_color,
             "electrs_status_color": electrs_status_color,
             "electrs_status": Markup(electrs_status),
             "electrs_enabled": is_electrs_enabled(),
