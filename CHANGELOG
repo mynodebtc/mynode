@@ -1,3 +1,10 @@
+=== v0.1.75 ===
+- Basic whirlpool support
+- Add Mempool.Space mempool viewer
+- BTC RPC Explorer v1.1.5
+- Improve tor status reporting
+- Automatically check drive on each boot
+
 === v0.1.74 ===
 - Add option to restore channel backup when creating Lightning wallet
 - Ugrade LND to 0.8.2
