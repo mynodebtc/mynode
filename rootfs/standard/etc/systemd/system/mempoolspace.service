@@ -3,8 +3,8 @@
 
 [Unit]
 Description=MempoolSpace
-Wants=www.service
-After=www.service
+Wants=www.service mynode_docker_images.service
+After=www.service mynode_docker_images.service
 
 [Service]
 WorkingDirectory=/opt/mynode/mempoolspace
