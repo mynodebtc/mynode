@@ -16,6 +16,11 @@
                 <input type="password" id="password" name="password" class="ui-corner-all login_password"/>
                 <br/>
                 <input type="submit" id="login_submit" value="Login" class="ui-button ui-widget ui-corner-all login_submit"/>
+
+                {% if not has_changed_password %}
+                <br/><br/>
+                <p style="text-align: center;"><i>The default password is bolt</i></p>
+                {% endif %}
             </form>
         </div>
 
