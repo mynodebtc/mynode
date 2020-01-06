@@ -134,10 +134,11 @@
         {% include 'includes/logo_header.html' %}
         
         <div class="mynode_top_right_div">
-            <a class="ui-button ui-widget ui-corner-all mynode_back" id="https" style="display: none;" href="#">&nbsp;<span class="ui-icon ui-icon-locked"></span>&nbsp;</a>
             {% if upgrade_available %}
             <a class="ui-button ui-widget ui-corner-all mynode_back" href="/settings"><span class="ui-icon ui-icon-notice"></span>upgrade available&nbsp;</a>
             {% endif %}
+            <a class="ui-button ui-widget ui-corner-all mynode_back" id="https" style="display: none;" href="#">&nbsp;<span class="ui-icon ui-icon-locked"></span>&nbsp;</a>
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/logout"><span class="ui-icon ui-icon-close"></span>&nbsp;</a>
         </div> 
         
 
