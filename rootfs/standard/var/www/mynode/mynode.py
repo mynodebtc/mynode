@@ -543,7 +543,10 @@ def page_toggle_whirlpool():
 
 @app.route("/login", methods=["GET","POST"])
 def page_login():
-    templateData = {"ui_settings": read_ui_settings()}
+    templateData = {
+        "has_changed_password": has_changed_password(),
+        "ui_settings": read_ui_settings()
+    }
     if request.method == 'GET':
         return render_template('login.html', **templateData)
 
