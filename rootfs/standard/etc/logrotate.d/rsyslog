@@ -12,6 +12,7 @@
 /var/log/www.log
 /var/log/bitcoind.log
 /var/log/unlock_lnd.log
+/var/log/mynode_docker_images.log
 {
 	rotate 2
 	daily

@@ -95,23 +95,30 @@ def page_settings():
     # Get LND Status
     lnd_status = ""
     try:
-        lnd_status = subprocess.check_output("journalctl --unit=lnd --no-pager | tail -n 100", shell=True).decode("utf8")
+        lnd_status = subprocess.check_output("journalctl --unit=lnd --no-pager | tail -n 200", shell=True).decode("utf8")
     except:
         lnd_status = "ERROR"
 
     # Get Tor Status
     tor_status = ""
     try:
-        tor_status = subprocess.check_output("journalctl --unit=tor@default --no-pager | tail -n 100", shell=True).decode("utf8")
+        tor_status = subprocess.check_output("journalctl --unit=tor@default --no-pager | tail -n 200", shell=True).decode("utf8")
     except:
         tor_status = "ERROR"
 
     # Get Electrs Status
     electrs_status = ""
     try:
-        electrs_status = subprocess.check_output("journalctl --unit=electrs --no-pager | tail -n 100", shell=True).decode("utf8")
+        electrs_status = subprocess.check_output("journalctl --unit=electrs --no-pager | tail -n 200", shell=True).decode("utf8")
     except:
         electrs_status = "ERROR"
+
+    # Get Docker Image Build Status
+    docker_image_build_status = ""
+    try:
+        docker_image_build_status = subprocess.check_output("journalctl --unit=docker_images --no-pager | tail -n 200", shell=True).decode("utf8")
+    except:
+        docker_image_build_status = "ERROR"
 
     # Get QuickSync Rates
     upload_rate = 100
@@ -141,6 +148,7 @@ def page_settings():
         "lnd_status": lnd_status,
         "tor_status": tor_status,
         "electrs_status": electrs_status,
+        "docker_image_build_status": docker_image_build_status,
         "is_quicksync_disabled": not is_quicksync_enabled(),
         "is_netdata_enabled": is_netdata_enabled(),
         "is_uploader_device": is_uploader(),
