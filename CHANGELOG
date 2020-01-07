@@ -1,3 +1,9 @@
+=== v0.1.76 ===
+- Upgrade whirlpool cli to 0.10.1
+- Fix issue with building docker images
+- Add logout button
+- Add default password hint
+
 === v0.1.75 ===
 - Basic whirlpool support
 - Add Mempool.Space mempool viewer
