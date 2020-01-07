@@ -5,15 +5,19 @@ set -x
 
 source /usr/share/mynode/mynode_config.sh
 
+echo "Starting mynode_docker_images.sh ..."
+
 # Drive should be mounted, let's still wait a bit
 sleep 60s
 
 # Loop and check every 1 day
 while [ 1 ]; do
 
+    echo "Checking for building new docker images..."
     touch /tmp/installing_docker_images
 
     # Upgrade WebSSH2
+    echo "Checking for new webssh2..."
     WEBSSH2_UPGRADE_URL=https://github.com/billchurch/webssh2/archive/v0.2.10-0.tar.gz
     WEBSSH2_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/webssh2_url
     CURRENT=""
@@ -35,6 +39,7 @@ while [ 1 ]; do
     fi
 
     # Upgrade mempool.space
+    echo "Checking for new mempool.space..."
     if [ $IS_PREMIUM -eq 1 ]; then
         MEMPOOLSPACE_UPGRADE_URL=https://github.com/mempool-space/mempool.space/archive/master.zip
         MEMPOOLSPACE_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/mempoolspace_url
@@ -59,5 +64,6 @@ while [ 1 ]; do
     rm -f /tmp/installing_docker_images
 
     # Check again in a day
+    echo "Waiting a day..."
     sleep 24h
 done

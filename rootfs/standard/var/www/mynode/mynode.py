@@ -239,15 +239,15 @@ def index():
             }
             return render_template('state.html', **templateData)
 
-        if is_installing_docker_images():
-            message = "<div class='small_message'>{}</<div>".format( get_message(include_funny=True) )
-            templateData = {
-                "title": "myNode Status",
-                "header_text": "Starting...",
-                "subheader_text": Markup("Building Docker Images...{}".format(message)),
-                "ui_settings": read_ui_settings()
-            }
-            return render_template('state.html', **templateData)
+        # if is_installing_docker_images():
+        #     message = "<div class='small_message'>{}</<div>".format( get_message(include_funny=True) )
+        #     templateData = {
+        #         "title": "myNode Status",
+        #         "header_text": "Starting...",
+        #         "subheader_text": Markup("Building Docker Images...{}".format(message)),
+        #         "ui_settings": read_ui_settings()
+        #     }
+        #     return render_template('state.html', **templateData)
 
         # Display sync info if not synced
         if not is_bitcoind_synced():

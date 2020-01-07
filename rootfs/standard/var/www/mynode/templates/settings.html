@@ -199,6 +199,11 @@
                     $("#electrs_status").show();
                 });
 
+                $("#show_docker_image_build_status").on("click", function() {
+                    $("#show_docker_image_build_status").hide(0);
+                    $("#docker_image_build_status").show();
+                });
+
                 $("#show_mynode_changelog").on("click", function() {
                     if (showChangelog)
                     {
@@ -472,6 +477,11 @@
             <div class="settings_block_subheader">Electrum Server Status</div>
             <button id="show_electrs_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
             <div id="electrs_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{electrs_status}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Docker Image Build Status</div>
+            <button id="show_docker_image_build_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
+            <div id="docker_image_build_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_image_build_status}}</pre></div>
         </div>
 
         <div class="settings_block">
