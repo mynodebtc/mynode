@@ -206,7 +206,7 @@ if [ $IS_PREMIUM -eq 1 ]; then
 fi
 
 # Install Whirlpool
-WHIRLPOOL_UPGRADE_URL=https://github.com/Samourai-Wallet/whirlpool-client-cli/releases/download/0.10.0/whirlpool-client-cli-0.10.0-run.jar
+WHIRLPOOL_UPGRADE_URL=https://github.com/Samourai-Wallet/whirlpool-client-cli/releases/download/0.10.1/whirlpool-client-cli-0.10.1-run.jar
 WHIRLPOOL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.whirlpool_url
 CURRENT=""
 if [ -f $WHIRLPOOL_UPGRADE_URL_FILE ]; then
