@@ -335,7 +335,7 @@ fi
 
 
 # Install RTL
-RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/v0.5.4.tar.gz
+RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/v0.6.0.tar.gz
 RTL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.rtl_url
 CURRENT=""
 if [ -f $RTL_UPGRADE_URL_FILE ]; then
