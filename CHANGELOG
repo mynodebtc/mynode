@@ -1,5 +1,7 @@
 === v0.1.77 ===
 - Upgrade whirlpool cli to 0.10.2
+- Upgrade RTL cli to 0.6.0
+- Improve settings page layout and info
 
 === v0.1.76 ===
 - Upgrade whirlpool cli to 0.10.1
