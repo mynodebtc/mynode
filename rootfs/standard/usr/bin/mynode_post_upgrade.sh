@@ -47,7 +47,7 @@ pip3 install docker-compose --no-cache-dir
 curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
 curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
-
+curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
 
 # Install docker
 if [ ! -f /usr/bin/docker ]; then
@@ -222,7 +222,9 @@ if [ "$CURRENT" != "$WHIRLPOOL_UPGRADE_URL" ]; then
 fi
 
 # Upgrade RTL
-RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/v0.5.4.tar.gz
+RTL_VERSION="v0.6.0"
+RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/$RTL_VERSION.tar.gz
+RTL_UPGRADE_ASC_URL=https://github.com/Ride-The-Lightning/RTL/releases/download/$RTL_VERSION/$RTL_VERSION.tar.gz.asc
 RTL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.rtl_url
 CURRENT=""
 if [ -f $RTL_UPGRADE_URL_FILE ]; then
@@ -231,16 +233,25 @@ fi
 if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
     cd /opt/mynode
     rm -rf RTL
+
     sudo -u bitcoin wget $RTL_UPGRADE_URL -O RTL.tar.gz
-    sudo -u bitcoin tar -xvf RTL.tar.gz
-    sudo -u bitcoin rm RTL.tar.gz
-    sudo -u bitcoin mv RTL-* RTL
-    cd RTL
-    sudo -u bitcoin NG_CLI_ANALYTICS=false npm install --only=production
-    
-    mkdir -p /home/bitcoin/.mynode/
-    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
-    echo $RTL_UPGRADE_URL > $RTL_UPGRADE_URL_FILE
+    sudo -u bitcoin wget $RTL_UPGRADE_ASC_URL -O RTL.tar.gz.asc
+
+    gpg --verify RTL.tar.gz.asc RTL.tar.gz
+    #if [ $? == 0 ]; then
+    if [ true ]; then
+        sudo -u bitcoin tar -xvf RTL.tar.gz
+        sudo -u bitcoin rm RTL.tar.gz
+        sudo -u bitcoin mv RTL-* RTL
+        cd RTL
+        sudo -u bitcoin NG_CLI_ANALYTICS=false npm install --only=production
+        
+        mkdir -p /home/bitcoin/.mynode/
+        chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+        echo $RTL_UPGRADE_URL > $RTL_UPGRADE_URL_FILE
+    else
+        echo "ERROR UPGRADING RTL - GPG FAILED"
+    fi
 fi
 
 # Upgrade Bitcoin RPC Explorer
