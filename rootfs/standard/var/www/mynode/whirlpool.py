@@ -15,8 +15,8 @@ def get_whirlpool_status():
     whirlpool_status_color = "gray"
     whirlpool_initialized = os.path.isfile("/opt/mynode/whirlpool/whirlpool-cli-config.properties")
     if is_whirlpool_enabled():
-        get_service_status_code("whirlpool")
-        if status != 0:
+        status_code = get_service_status_code("whirlpool")
+        if status_code != 0:
             whirlpool_status = "Inactive"
             whirlpool_status_color = "red"
         else:
