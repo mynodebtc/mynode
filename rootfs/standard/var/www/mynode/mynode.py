@@ -205,8 +205,8 @@ def index():
         }
         return render_template('state.html', **templateData)
     elif status == STATE_STABLE:
-        bitcoind_status_code = os.system("systemctl status bitcoind --no-pager")
-        lnd_status_code = os.system("systemctl status lnd --no-pager")
+        bitcoind_status_code = get_service_status_code("bitcoind")
+        lnd_status_code = get_service_status_code("lnd")
         tor_status_color = "gray"
         bitcoind_status_color = "red"
         lnd_status_color = "red"
@@ -266,11 +266,7 @@ def index():
             return render_template('state.html', **templateData)
 
         # Find tor status
-        status = os.system("systemctl status tor@default --no-pager")
-        if status != 0:
-            tor_status_color = "red"
-        else:
-            tor_status_color = "green"
+        tor_status_color = get_service_status_color("tor@default")
 
         # Find bitcoind status
         if bitcoind_status_code != 0:
@@ -307,40 +303,32 @@ def index():
         # Find lndhub status
         if is_lndhub_enabled():
             if lnd_ready:
-                status = os.system("systemctl status lndhub --no-pager")
-                if status != 0:
-                    lndhub_status_color = "red"
-                else:
-                    lndhub_status_color = "green"
+                lndhub_status_color = get_service_status_color("lndhub")
             else:
                 lndhub_status_color = "green"
 
         # Find RTL status
         if lnd_ready:
-            status = os.system("systemctl status rtl --no-pager")
-            if status != 0:
+            status_code = get_service_status_code("rtl")
+            if status_code != 0:
                 rtl_status_color = "red"
             else:
                 rtl_status_color = "green"
 
         # Find electrs status
         if is_electrs_enabled():
-            status = os.system("systemctl status electrs --no-pager")
-            if status != 0:
-                electrs_status_color = "red"
-            else:
-                electrs_status_color = "green"
+            status_code = get_service_status_code("electrs")
+            electrs_status_color = get_service_status_color("electrs")
+            if status_code == 0:
                 electrs_status = get_electrs_status()
 
         # Find btc-rpc-explorer status
         btcrpcexplorer_status = "BTC RPC Explorer"
         if is_btcrpcexplorer_enabled():
             if is_electrs_active():
-                status = os.system("systemctl status btc_rpc_explorer --no-pager")
-                if status != 0:
-                    btcrpcexplorer_status_color = "red"
-                else:
-                    btcrpcexplorer_status_color = "green"
+                btcrpcexplorer_status_color = get_service_status_color("btc_rpc_explorer")
+                status_code = get_service_status_code("btc_rpc_explorer")
+                if status_code == 0:
                     btcrpcexplorer_ready = True
             else:
                 btcrpcexplorer_status_color = "green"
@@ -348,11 +336,8 @@ def index():
 
         # Find mempool space status
         if is_mempoolspace_enabled():
-            status = os.system("systemctl status mempoolspace --no-pager")
-            if status != 0:
-                mempoolspace_status_color = "red"
-            else:
-                mempoolspace_status_color = "green"
+            status_code = get_service_status_code("mempoolspace")
+            mempoolspace_status_color = get_service_status_color("mempoolspace")
 
         # Find lndconnect status
         if lnd_ready:
@@ -371,12 +356,11 @@ def index():
 
         # Find VPN status
         if is_vpn_enabled():
-            status = os.system("systemctl status vpn --no-pager")
-            if status != 0:
-                vpn_status_color = "red"
+            vpn_status_color = get_service_status_color("vpn")
+            status_code = get_service_status_code("vpn")
+            if status_code != 0:
                 vpn_status = "Unknown"
             else:
-                vpn_status_color = "green"
                 if os.path.isfile("/home/pivpn/ovpns/mynode_vpn.ovpn"):
                      vpn_status = "Running"
                 else:
