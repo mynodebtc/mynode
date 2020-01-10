@@ -286,7 +286,7 @@ a:active {
     font-size: 24px;
     font-family: Arial, Helvetica, sans-serif;
     padding: 5px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 .settings_block_subheader {
     color: #333333;
@@ -294,16 +294,35 @@ a:active {
     font-size: 18px;
     font-family: Arial, Helvetica, sans-serif;
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
+}
+.settings_block_subheader_status {
+    color: #333333;
+    height: 18px;
+    text-align: left;
+    font-size: 14px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-style: italic;
+    vertical-align: middle;
+    margin-bottom: 2px;
+}
+.settings_block_subheader_status_icon {
+    width: 10px;
+    height: 10px;
+    margin-right: 5px;
+    display: inline-block;
+    border-radius: 50%;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
 }
 .settings_block {
-    width: 600px;
+    width: 800px;
     color: #444444;
     margin: auto;
     text-align: justify;
     font-size: 14px;
     font-family: Arial, Helvetica, sans-serif;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
 }
 .divider {
     width: 100%;

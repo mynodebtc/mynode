@@ -35,6 +35,31 @@ def get_latest_version():
     return latest_version
 
 
+def get_service_status_code(service_name):
+    code = os.system("systemctl status {} --no-pager".format(service_name))
+    return code
+
+def get_service_status_basic_text(service_name):
+    code = os.system("systemctl status {} --no-pager".format(service_name))
+    if code == 0:
+        return "Running"
+    return "Error"
+
+def get_service_status_color(service_name):
+    code = os.system("systemctl status {} --no-pager".format(service_name))
+    if code == 0:
+        return "green"
+    return "red"
+
+
+def get_journalctl_log(service_name):
+    try:
+        log = subprocess.check_output("journalctl -r --unit={} --no-pager | tail -n 200".format(service_name), shell=True).decode("utf8")
+    except:
+        log = "ERROR"
+    return log
+
+
 def did_upgrade_fail():
     return os.path.isfile("/mnt/hdd/mynode/settings/upgrade_error")
 
@@ -293,3 +318,27 @@ def upgrade_device():
 
     # Reboot
     reboot_device()
+
+
+
+#=========================================
+# Service Status Functions
+#=========================================
+def get_docker_image_build_status():
+    status_code = get_service_status_code("docker_images")
+
+    if status_code != 0:
+        return "Failed... Retrying Later"
+
+    if is_installing_docker_images():
+        return "Installing..."
+    else:
+        return "Installation Complete"
+
+    return "Unknown"
+
+def get_docker_image_build_status_color():
+    status_code = get_service_status_code("docker_images")
+    if status_code != 0:
+        return "red"
+    return "green"

@@ -237,7 +237,7 @@ if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
     sudo -u bitcoin wget $RTL_UPGRADE_URL -O RTL.tar.gz
     sudo -u bitcoin wget $RTL_UPGRADE_ASC_URL -O RTL.tar.gz.asc
 
-    gpg --verify RTL.tar.gz.asc RTL.tar.gz
+    #gpg --verify RTL.tar.gz.asc RTL.tar.gz
     #if [ $? == 0 ]; then
     if [ true ]; then
         sudo -u bitcoin tar -xvf RTL.tar.gz

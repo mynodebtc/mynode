@@ -455,33 +455,57 @@
                 <div class="settings_block_header">Service Status</div>
 
             <div class="settings_block_subheader">QuickSync Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ quicksync_status_color }}"></div>
+                {{ quicksync_status }}
+            </div>
             <button id="show_quicksync_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
-            <div id="quicksync_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{quicksync_status}}</pre></div>
+            <div id="quicksync_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{quicksync_status_log}}</pre></div>
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Bitcoin Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ bitcoin_status_color }}"></div>
+                {{ bitcoin_status }}
+            </div>
             <button id="show_bitcoin_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
-            <div id="bitcoin_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{bitcoin_status}}</pre></div>
+            <div id="bitcoin_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{bitcoin_status_log}}</pre></div>
             <div class="divider"></div>
 
             <div class="settings_block_subheader">LND Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ lnd_status_color }}"></div>
+                {{ lnd_status }}
+            </div>
             <button id="show_lnd_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
-            <div id="lnd_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lnd_status}}</pre></div>
+            <div id="lnd_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lnd_status_log}}</pre></div>
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Tor Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ tor_status_color }}"></div>
+                {{ tor_status }}
+            </div>
             <button id="show_tor_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
-            <div id="tor_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{tor_status}}</pre></div>
+            <div id="tor_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{tor_status_log}}</pre></div>
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Electrum Server Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ electrs_status_color }}"></div>
+                {{ electrs_status }}
+            </div>
             <button id="show_electrs_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
-            <div id="electrs_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{electrs_status}}</pre></div>
+            <div id="electrs_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{electrs_status_log}}</pre></div>
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Docker Image Build Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ docker_image_build_status_color }}"></div>
+                {{ docker_image_build_status }}
+            </div>
             <button id="show_docker_image_build_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
-            <div id="docker_image_build_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_image_build_status}}</pre></div>
+            <div id="docker_image_build_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_image_build_status_log}}</pre></div>
         </div>
 
         <div class="settings_block">

@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect
 from settings import read_ui_settings
 from user_management import check_logged_in
 from enable_disable_functions import is_whirlpool_enabled, enable_whirlpool, disable_whirlpool
+from device_info import get_service_status_code
 import subprocess
 import os
 
@@ -14,7 +15,7 @@ def get_whirlpool_status():
     whirlpool_status_color = "gray"
     whirlpool_initialized = os.path.isfile("/opt/mynode/whirlpool/whirlpool-cli-config.properties")
     if is_whirlpool_enabled():
-        status = os.system("systemctl status whirlpool --no-pager")
+        get_service_status_code("whirlpool")
         if status != 0:
             whirlpool_status = "Inactive"
             whirlpool_status_color = "red"

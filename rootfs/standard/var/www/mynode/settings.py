@@ -78,47 +78,39 @@ def page_settings():
     local_ip = get_local_ip()
     public_ip = get_public_ip()
 
+
     # Get QuickSync Status
-    quicksync_status = ""
+    quicksync_enabled = is_quicksync_enabled()
+    quicksync_status = "Disabled"
+    quicksync_status_color = "gray"
+    if quicksync_enabled:
+        quicksync_status = get_service_status_basic_text("quicksync")
+        quicksync_status_color = get_service_status_color("quicksync")
+
+    quicksync_status_log = ""
     try:
-        quicksync_status = subprocess.check_output(["mynode-get-quicksync-status"]).decode("utf8")
+        quicksync_status_log = subprocess.check_output(["mynode-get-quicksync-status"]).decode("utf8")
     except:
-        quicksync_status = "ERROR"
+        quicksync_status_log = "ERROR"
 
     # Get Bitcoin Status
-    bitcoin_status = ""
+    bitcoin_status_log = ""
     try:
-        bitcoin_status = subprocess.check_output(["tail","-n","200","/mnt/hdd/mynode/bitcoin/debug.log"]).decode("utf8")
+        bitcoin_status_log = subprocess.check_output(["tail","-n","200","/mnt/hdd/mynode/bitcoin/debug.log"]).decode("utf8")
     except:
-        bitcoin_status = "ERROR"
+        bitcoin_status_log = "ERROR"
 
     # Get LND Status
-    lnd_status = ""
-    try:
-        lnd_status = subprocess.check_output("journalctl -r --unit=lnd --no-pager | tail -n 200", shell=True).decode("utf8")
-    except:
-        lnd_status = "ERROR"
+    lnd_status_log = get_journalctl_log("lnd")
 
     # Get Tor Status
-    tor_status = ""
-    try:
-        tor_status = subprocess.check_output("journalctl -r --unit=tor@default --no-pager | tail -n 200", shell=True).decode("utf8")
-    except:
-        tor_status = "ERROR"
+    tor_status_log = get_journalctl_log("tor@default")
 
     # Get Electrs Status
-    electrs_status = ""
-    try:
-        electrs_status = subprocess.check_output("journalctl -r --unit=electrs --no-pager | tail -n 200", shell=True).decode("utf8")
-    except:
-        electrs_status = "ERROR"
+    electrs_status_log = get_journalctl_log("electrs")
 
     # Get Docker Image Build Status
-    docker_image_build_status = ""
-    try:
-        docker_image_build_status = subprocess.check_output("journalctl -r --unit=docker_images --no-pager | tail -n 200", shell=True).decode("utf8")
-    except:
-        docker_image_build_status = "ERROR"
+    docker_image_build_status_log = get_journalctl_log("docker_images")
 
     # Get QuickSync Rates
     upload_rate = 100
@@ -143,13 +135,25 @@ def page_settings():
         "product_key_skipped": pk_skipped,
         "product_key_error": pk_error,
         "changelog": changelog,
+        "quicksync_status_log": quicksync_status_log,
         "quicksync_status": quicksync_status,
-        "bitcoin_status": bitcoin_status,
-        "lnd_status": lnd_status,
-        "tor_status": tor_status,
-        "electrs_status": electrs_status,
-        "docker_image_build_status": docker_image_build_status,
-        "is_quicksync_disabled": not is_quicksync_enabled(),
+        "quicksync_status_color": quicksync_status_color,
+        "bitcoin_status_log": bitcoin_status_log,
+        "bitcoin_status": get_service_status_basic_text("bitcoind"),
+        "bitcoin_status_color": get_service_status_color("bitcoind"),
+        "lnd_status_log": lnd_status_log,
+        "lnd_status": get_service_status_basic_text("lnd"),
+        "lnd_status_color": get_service_status_color("lnd"),
+        "tor_status_log": tor_status_log,
+        "tor_status": get_service_status_basic_text("tor@default"),
+        "tor_status_color": get_service_status_color("tor@default"),
+        "electrs_status_log": electrs_status_log,
+        "electrs_status": get_service_status_basic_text("electrs"),
+        "electrs_status_color": get_service_status_color("electrs"),
+        "docker_image_build_status_log": docker_image_build_status_log,
+        "docker_image_build_status": get_docker_image_build_status(),
+        "docker_image_build_status_color": get_docker_image_build_status_color(),
+        "is_quicksync_disabled": not quicksync_enabled,
         "is_netdata_enabled": is_netdata_enabled(),
         "is_uploader_device": is_uploader(),
         "download_rate": download_rate,
