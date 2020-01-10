@@ -123,8 +123,9 @@ pip install tzupdate virtualenv
 
 # Import Keys
 curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
+curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
-
+curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
 
 # Update python3 to 3.7.X
 PYTHON3_VERSION=$(python3 --version)
@@ -335,7 +336,9 @@ fi
 
 
 # Install RTL
-RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/v0.5.4.tar.gz
+RTL_VERSION="v0.6.0"
+RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/$RTL_VERSION.tar.gz
+RTL_UPGRADE_ASC_URL=https://github.com/Ride-The-Lightning/RTL/releases/download/$RTL_VERSION/$RTL_VERSION.tar.gz.asc
 RTL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.rtl_url
 CURRENT=""
 if [ -f $RTL_UPGRADE_URL_FILE ]; then
@@ -344,7 +347,12 @@ fi
 if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
     cd /opt/mynode
     rm -rf RTL
+    
     sudo -u bitcoin wget $RTL_UPGRADE_URL -O RTL.tar.gz
+    sudo -u bitcoin wget $RTL_UPGRADE_ASC_URL -O RTL.tar.gz.asc
+
+    #gpg --verify RTL.tar.gz.asc RTL.tar.gz
+
     sudo -u bitcoin tar -xvf RTL.tar.gz
     sudo -u bitcoin rm RTL.tar.gz
     sudo -u bitcoin mv RTL-* RTL
