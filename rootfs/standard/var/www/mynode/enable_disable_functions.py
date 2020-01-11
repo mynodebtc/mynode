@@ -1,17 +1,8 @@
 import os
 import subprocess
 from config import *
+from device_info import is_service_enabled
 
-
-# Generic service check
-def is_service_enabled(service):
-    cmd = "systemctl is-enabled {}".format(service)
-    try:
-        subprocess.check_call(cmd, shell=True)
-        return True
-    except:
-        return False
-    return False
 
 
 # Enable disable functions on homepage
