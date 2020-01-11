@@ -1,6 +1,7 @@
 === v0.1.79 ===
 - Upgrade BTC RPC Explorer to v1.1.8
 - Fix issue hidden sidebar on RTL
+- Add disabled status for services on settings page
 
 === v0.1.78 ===
 - Fix issue displaying main page
