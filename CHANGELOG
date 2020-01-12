@@ -1,3 +1,8 @@
+=== v0.1.80 ===
+- Upgrade RTL to v0.6.1
+- Disable Wifi MAC Randomization
+- Add Mempool.Space port to tor access
+
 === v0.1.79 ===
 - Upgrade BTC RPC Explorer to v1.1.8
 - Fix issue hidden sidebar on RTL
