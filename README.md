@@ -60,6 +60,7 @@ We currently support images for the following devices:
  - Raspberry Pi 4
  - Rock64
  - RockPro64
+ - Virtual Machine Support (VirtualBox hosting Windows/OS X/Linux/Solaris)
 
 ## Running myNode
 You can run myNode on your own device in just a few easy steps!
