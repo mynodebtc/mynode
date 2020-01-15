@@ -10,6 +10,9 @@ echo "Starting mynode_docker_images.sh ..."
 # Drive should be mounted, let's still wait a bit
 sleep 60s
 
+echo "Waiting on bitcoin to sync so drive usage is lower..."
+/usr/bin/wait_on_bitcoin.sh
+
 # Loop and check every 1 day
 while [ 1 ]; do
 
