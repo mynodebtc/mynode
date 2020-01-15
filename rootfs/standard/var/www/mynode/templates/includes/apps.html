@@ -12,16 +12,23 @@
         </div>
     </div>
     <div class="app_tile">
-        <div class="app_status_icon {{ lndconnect_status_color }}"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lndconnect.png")}}"/></div>
-        <div class="app_title">LND Connect</div>
-        <div class="app_status">{% if not lnd_ready %}Waiting on LND...{% else %}Lightning Tool{% endif %}</div>
-        <div class="app_contents">
-            {% if lnd_ready %}
-            <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lndconnect">LND Connect</a>
-            {% endif %}
+            <div class="app_status_icon {{ btcpayserver_status_color }}"></div>
+            <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/btcpayserver.png")}}"/></div>
+            <div class="app_title">BTCPay Server</div>
+            <div class="app_status">{% if not lnd_ready %}Waiting on LND...{% else %}Merchant Tool{% endif %}</div>
+            <div class="app_contents">
+                {% if product_key_skipped %}
+                    Premium Feature
+                {% else %}
+                    {% if lnd_ready %}
+                    {% if btcpayserver_enabled %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="btcpayserver">BTCPay Server</a>
+                    {% endif %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-btcpayserver" id="toggle-btcpayserver">{% if btcpayserver_enabled %}Disable{% else %}Enable{% endif %}</a>
+                    {% endif %}
+                {% endif %}
+            </div>
         </div>
-    </div>
     <div class="app_tile">
         <div class="app_status_icon {{ lndhub_status_color }}"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lndhub.png")}}"/></div>
@@ -33,6 +40,17 @@
             <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lndhub">LND Hub</a>
             {% endif %}
             <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-lndhub" id="toggle-lndhub">{% if lndhub_enabled %}Disable{% else %}Enable{% endif %}</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="app_tile">
+        <div class="app_status_icon {{ lndconnect_status_color }}"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lndconnect.png")}}"/></div>
+        <div class="app_title">LND Connect</div>
+        <div class="app_status">{% if not lnd_ready %}Waiting on LND...{% else %}Lightning Tool{% endif %}</div>
+        <div class="app_contents">
+            {% if lnd_ready %}
+            <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lndconnect">LND Connect</a>
             {% endif %}
         </div>
     </div>
