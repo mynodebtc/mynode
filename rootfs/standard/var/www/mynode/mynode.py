@@ -222,6 +222,7 @@ def index():
         explorer_ready = False
         explorer_status_color = "red"
         lndconnect_status_color = "gray"
+        btcpayserver_status_color = "gray"
         btcrpcexplorer_status = ""
         btcrpcexplorer_ready = False
         btcrpcexplorer_status_color = "gray"
@@ -325,14 +326,18 @@ def index():
         # Find btc-rpc-explorer status
         btcrpcexplorer_status = "BTC RPC Explorer"
         if is_btcrpcexplorer_enabled():
-            if is_electrs_active():
-                btcrpcexplorer_status_color = get_service_status_color("btc_rpc_explorer")
-                status_code = get_service_status_code("btc_rpc_explorer")
-                if status_code == 0:
-                    btcrpcexplorer_ready = True
+            if is_bitcoind_synced():
+                if is_electrs_active():
+                    btcrpcexplorer_status_color = get_service_status_color("btc_rpc_explorer")
+                    status_code = get_service_status_code("btc_rpc_explorer")
+                    if status_code == 0:
+                        btcrpcexplorer_ready = True
+                else:
+                    btcrpcexplorer_status_color = "green"
+                    btcrpcexplorer_status = "Waiting on electrs..."
             else:
-                btcrpcexplorer_status_color = "green"
-                btcrpcexplorer_status = "Waiting on electrs..."
+                btcrpcexplorer_status_color = "gray"
+                btcrpcexplorer_status = "Waiting on bitcoin..."
 
         # Find mempool space status
         if is_mempoolspace_enabled():
@@ -342,6 +347,10 @@ def index():
         # Find lndconnect status
         if lnd_ready:
             lndconnect_status_color = "green"
+
+        # Find btcpayserver status
+        if lnd_ready:
+            btcpayserver_status_color = get_service_status_color("btcpayserver")
 
         # Find explorer status
         explorer_status_color = electrs_status_color
@@ -402,6 +411,8 @@ def index():
             "btcrpcexplorer_enabled": is_btcrpcexplorer_enabled(),
             "mempoolspace_status_color": mempoolspace_status_color,
             "mempoolspace_enabled": is_mempoolspace_enabled(),
+            "btcpayserver_enabled": is_btcpayserver_enabled(),
+            "btcpayserver_status_color": btcpayserver_status_color,
             "lndconnect_status_color": lndconnect_status_color,
             "vpn_status_color": vpn_status_color,
             "vpn_status": vpn_status,
@@ -505,6 +516,15 @@ def page_toggle_mempoolspace():
         disable_mempoolspace()
     else:
         enable_mempoolspace()
+    return redirect("/")
+
+@app.route("/toggle-btcpayserver")
+def page_toggle_btcpayserver():
+    check_logged_in()
+    if is_btcpayserver_enabled():
+        disable_btcpayserver()
+    else:
+        enable_btcpayserver()
     return redirect("/")
 
 @app.route("/toggle-vpn")

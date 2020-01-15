@@ -36,6 +36,11 @@
                     window.open(url,'_blank');
                 })
 
+                $("#btcpayserver").on("click", function() {
+                    url = 'http://'+location.hostname+':49392'
+                    window.open(url,'_blank');
+                })
+
                 $("#toggle-electrs").on("click", function() {
                     if (electrs_enabled)
                     {
@@ -86,6 +91,10 @@
 
                 $("#toggle-mempoolspace").on("click", function() {
                         window.location.href="/toggle-mempoolspace"
+                });
+
+                $("#toggle-btcpayserver").on("click", function() {
+                        window.location.href="/toggle-btcpayserver"
                 });
 
                 function lndconnect() {

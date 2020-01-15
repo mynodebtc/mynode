@@ -71,6 +71,18 @@ def disable_mempoolspace():
     os.system("systemctl disable mempoolspace --no-pager")
 
 
+def is_btcpayserver_enabled():
+    return is_service_enabled("btcpayserver")
+
+def enable_btcpayserver():
+    os.system("systemctl enable btcpayserver --no-pager")
+    os.system("systemctl start btcpayserver --no-pager")
+
+def disable_btcpayserver():
+    os.system("systemctl stop btcpayserver --no-pager")
+    os.system("systemctl disable btcpayserver --no-pager")
+
+
 def is_vpn_enabled():
     if os.path.isfile(VPN_ENABLED_FILE):
         return True
