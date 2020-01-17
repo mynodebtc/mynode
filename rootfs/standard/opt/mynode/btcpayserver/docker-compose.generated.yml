@@ -33,7 +33,6 @@ services:
     volumes:
     - "btcpay_datadir:/datadir"
     - "nbxplorer_datadir:/root/.nbxplorer"
-    - "/root/.ssh/authorized_keys:${BTCPAY_SSHAUTHORIZEDKEYS}"
     - "/mnt/hdd/mynode/lnd:/etc/lnd_bitcoin"
   nbxplorer:
     restart: unless-stopped
