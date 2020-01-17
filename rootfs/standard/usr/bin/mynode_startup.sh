@@ -15,7 +15,7 @@ if [ ! -h /etc/resolv.conf ]; then
     rm -f /etc/resolv.conf
     touch /etc/resolvconf/run/resolv.conf
     ln -s /etc/resolvconf/run/resolv.conf /etc/resolv.conf
-    
+
     sync
     reboot
     sleep 10s
@@ -45,7 +45,7 @@ if [ ! -f /var/lib/mynode/.expanded_rootfs ]; then
     fi
 fi
 
-# Verify we are in a clean state (only raspi uses HDD swap)
+# Verify we are in a clean state
 if [ $IS_RASPI -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
     dphys-swapfile swapoff || true
     dphys-swapfile uninstall || true
@@ -287,6 +287,18 @@ fi
 if [ -f $BTCRPCEXPLORER_ENABLED_FILE ]; then
     if systemctl status btc_rpc_explorer | grep "disabled;"; then
         systemctl enable btc_rpc_explorer
+        STARTUP_MODIFIED=1
+    fi
+fi
+if [ -f $MEMPOOLSPACE_ENABLED_FILE ]; then
+    if systemctl status mempoolspace | grep "disabled;"; then
+        systemctl enable mempoolspace
+        STARTUP_MODIFIED=1
+    fi
+fi
+if [ -f $BTCPAYSERVER_ENABLED_FILE ]; then
+    if systemctl status btcpayserver | grep "disabled;"; then
+        systemctl enable btcpayserver
         STARTUP_MODIFIED=1
     fi
 fi
