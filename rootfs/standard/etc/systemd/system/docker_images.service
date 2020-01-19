@@ -9,6 +9,7 @@ After=mynode.service
 [Service]
 Type=simple
 KillMode=control-group
+ExecStartPre=/usr/bin/wait_on_bitcoin.sh
 ExecStart=/usr/bin/mynode_docker_images.sh
 User=root
 Group=root
