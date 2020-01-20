@@ -161,3 +161,8 @@ By using myNode for your Lightning Wallet,  Bitcoin Wallet, and Block Explorer, 
 Please note, we are not responsible for any lost funds while using your myNode device. We have taken significant measures to protect your assets by securing myNode devices, but lightning wallets are meant to be online and used for spending where risks are greater. Please do your own research into Bitcoin and the Lightning Network before investing in cryptocurrency.
 
 For long term storage of cryptocurrency assets, please consider using a hardware wallet, like a Ledger or Trezor.
+
+## Community
+myNode has a wonderful, helpful community that assists with development and support. It would be impossible to run this project without their involvement and support! I truly appreciate the time and effort everyone puts in to make this a success.
+
+In order to maintain high quality premium support for myNode customers, community contribtions may be included as part of the Premium software package so that the additional features can be maintained and supported long-term. Community members are welcome to contact myNode and be included in an upcoming list of community contributors that will highlight their contributions and, optionally, solicit donations. Additionally, any donations to myNode will be shared with the community developers and downstream projects at the discretion of the myNode team.
