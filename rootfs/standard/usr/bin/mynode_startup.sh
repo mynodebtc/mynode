@@ -11,16 +11,22 @@ if [ ! -w / ]; then
 fi
 
 # Make sure resolv.conf is a symlink to so resolvconf works
-if [ ! -h /etc/resolv.conf ]; then
-    rm -f /etc/resolv.conf
-    touch /etc/resolvconf/run/resolv.conf
-    ln -s /etc/resolvconf/run/resolv.conf /etc/resolv.conf
+# if [ ! -h /etc/resolv.conf ]; then
+#     rm -f /etc/resolv.conf
+#     touch /etc/resolvconf/run/resolv.conf
+#     ln -s /etc/resolvconf/run/resolv.conf /etc/resolv.conf
 
-    sync
-    reboot
-    sleep 10s
-    exit 1
-fi
+#     sync
+#     reboot
+#     sleep 10s
+#     exit 1
+# fi
+# Add some DNS servers to make domain lookup more likely
+echo '' >> /etc/resolv.conf
+echo '# Added at myNode startup' >> /etc/resolv.conf
+echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
+echo 'nameserver 8.8.4.4' >> /etc/resolv.conf
+echo 'nameserver 1.1.1.1' >> /etc/resolv.conf
 
 # Disable autosuspend for USB drives
 for dev in /sys/bus/usb/devices/*/power/control; do echo "on" > $dev; done 
@@ -260,13 +266,6 @@ if [ $IS_RASPI -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
     dphys-swapfile setup
     dphys-swapfile swapon
 fi
-
-# Add some DNS servers to make domain lookup more likely
-#echo '' >> /etc/resolv.conf
-#echo '# Added at myNode startup' >> /etc/resolv.conf
-#echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
-#echo 'nameserver 8.8.4.4' >> /etc/resolv.conf
-#echo 'nameserver 1.1.1.1' >> /etc/resolv.conf
 
 
 # Make sure every enabled service is really enabled
