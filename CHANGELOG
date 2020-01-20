@@ -1,3 +1,10 @@
+=== v0.1.80 ===
+- Add BTCPay Server (Docker support)
+- Upgrade RTL to v0.6.1
+- Disable Wifi MAC Randomization
+- Add Mempool.Space port to Tor access
+- Bug fixes
+
 === v0.1.79 ===
 - Upgrade BTC RPC Explorer to v1.1.8
 - Fix issue hidden sidebar on RTL
