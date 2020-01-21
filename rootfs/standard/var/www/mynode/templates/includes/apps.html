@@ -36,8 +36,23 @@
             {% endif %}
         </div>
     </div>
-</div>
-
+    <div class="app_tile">
+        <div class="app_status_icon {{ btcrpcexplorer_status_color }}"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/btc_rpc_explorer.png")}}"/></div>
+        <div class="app_title">Explorer</div>
+        <div class="app_status">{{ btcrpcexplorer_status }}</div>
+        <div class="app_contents">
+                {% if btcrpcexplorer_enabled %}
+                    {% if btcrpcexplorer_ready %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="btcrpcexplorer">Explorer</a>
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-btcrpcexplorer">Disable</a>
+                    {% endif %}
+                {% else %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-btcrpcexplorer">Enable</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 <div class="app_tile_row">
     <!--
     <div class="app_tile">
@@ -53,19 +68,17 @@
     </div>
     -->
     <div class="app_tile">
-        <div class="app_status_icon {{ btcrpcexplorer_status_color }}"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/btc_rpc_explorer.png")}}"/></div>
-        <div class="app_title">Explorer</div>
-        <div class="app_status">{{ btcrpcexplorer_status }}</div>
+        <div class="app_status_icon {{ dojo_status_color }}"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/samourai.png")}}"/></div>
+        <div class="app_title">Dojo</div>
+        <div class="app_status">{{ dojo_status }}</div>
         <div class="app_contents">
-            {% if btcrpcexplorer_enabled %}
-                {% if btcrpcexplorer_ready %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="btcrpcexplorer">Explorer</a>
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-btcrpcexplorer">Disable</a>
-                {% endif %}
-            {% else %}
-                <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-btcrpcexplorer">Enable</a>
-            {% endif %}
+               <a class="ui-button ui-widget ui-corner-all mynode_button" href="/dojo">
+                   {% if dojo_initialized %}Info{% else %}Info{% endif %}
+               </a>
+               <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-dojo">
+                   {% if dojo_enabled %}Disable{% else %}Enable{% endif %}
+               </a>
         </div>
     </div>
     <div class="app_tile">

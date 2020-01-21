@@ -111,3 +111,14 @@ def enable_whirlpool():
 def disable_whirlpool():
     os.system("systemctl stop whirlpool --no-pager")
     os.system("systemctl disable whirlpool --no-pager")
+
+def is_dojo_enabled():
+    return is_service_enabled("dojo")
+
+def enable_dojo():
+    os.system("systemctl enable dojo --no-pager")
+    os.system("systemctl start dojo --no-pager")
+
+def disable_dojo():
+    os.system("systemctl stop dojo --no-pager")
+    os.system("systemctl disable dojo --no-pager")
