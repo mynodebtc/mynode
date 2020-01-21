@@ -16,20 +16,22 @@ if [ $? -eq 0 ]; then
     #echo $DEVID
 
     if [ $IS_RASPI -eq 1 ]; then
-        QUIRK="${DEVID}:u"
-        CMDLINE=$(head -n 1 /boot/cmdline.txt)
-        cat /boot/cmdline.txt | grep "usb-storage.quirks"
-        if [ $? -eq 0 ]; then
-            sed -i "s/usb-storage.quirks=.*/usb-storage.quirks=${QUIRK}/g" /boot/cmdline.txt
-            sync
-            exit 0
-        else
-            echo "${CMDLINE} usb-storage.quirks=${QUIRK}" > /boot/cmdline.txt
-        fi
+        if [ -f /boot/cmdline.txt ]; then
+            QUIRK="${DEVID}:u"
+            CMDLINE=$(head -n 1 /boot/cmdline.txt)
+            cat /boot/cmdline.txt | grep "usb-storage.quirks"
+            if [ $? -eq 0 ]; then
+                sed -i "s/usb-storage.quirks=.*/usb-storage.quirks=${QUIRK}/g" /boot/cmdline.txt
+                sync
+                exit 0
+            else
+                echo "${CMDLINE} usb-storage.quirks=${QUIRK}" > /boot/cmdline.txt
+            fi
 
-        sync
-        sleep 5s
-        reboot
+            sync
+            sleep 5s
+            reboot
+        fi
     fi
 else
     echo "No UAS devices found"
