@@ -2,7 +2,7 @@ version: "3"
 services:
   btcpayserver:
     restart: unless-stopped
-    image: ${BTCPAY_IMAGE:-btcpayserver/btcpayserver:1.0.3.147}
+    image: btcpayserver/btcpayserver:${BTCPAY_VERSION}
     network_mode: host
 #    expose:
 #    - "49392"
@@ -36,7 +36,7 @@ services:
     - "/mnt/hdd/mynode/lnd:/etc/lnd_bitcoin"
   nbxplorer:
     restart: unless-stopped
-    image: nicolasdorier/nbxplorer:2.1.2
+    image: nicolasdorier/nbxplorer:${NBXPLORER_VERSION}
     network_mode: host
 #    expose:
 #    - "32838"
@@ -52,7 +52,7 @@ services:
     - "/mnt/hdd/mynode/bitcoin:/root/.bitcoin"
   postgres:
     restart: unless-stopped
-    image: postgres:9.6.5
+    image: postgres:${POSTGRES_VERSION}
     network_mode: host
     volumes:
     - "postgres_datadir:/var/lib/postgresql/data"
