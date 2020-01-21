@@ -13,6 +13,7 @@ fi
 # Make sure resolv.conf is a symlink to so resolvconf works
 # if [ ! -h /etc/resolv.conf ]; then
 #     rm -f /etc/resolv.conf
+#     mkdir -p /etc/resolvconf/run/
 #     touch /etc/resolvconf/run/resolv.conf
 #     ln -s /etc/resolvconf/run/resolv.conf /etc/resolv.conf
 
@@ -263,7 +264,6 @@ if [ $IS_RASPI -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
         chmod 600 /mnt/hdd/swapfile
     fi
     mkswap /mnt/hdd/swapfile
-    dphys-swapfile setup
     dphys-swapfile swapon
 fi
 
