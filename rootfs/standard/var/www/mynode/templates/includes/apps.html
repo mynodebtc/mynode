@@ -94,18 +94,14 @@
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/wp-black.png")}}"/></div>
         {% endif %}
         <div class="app_title">Whirlpool</div>
-        <div class="app_status">{% if not product_key_skipped %} {{ whirlpool_status }} {% endif %}</div>
+        <div class="app_status">{{ whirlpool_status }}</div>
         <div class="app_contents">
-            {% if product_key_skipped %}
-                Premium Feature
-            {% else %}
-                <a class="ui-button ui-widget ui-corner-all mynode_button" href="/whirlpool">
-                    {% if whirlpool_initialized %}Info{% else %}Setup{% endif %}
-                </a>
-                <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-whirlpool">
-                    {% if whirlpool_enabled %}Disable{% else %}Enable{% endif %}
-                </a>
-            {% endif %}
+            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/whirlpool">
+                {% if whirlpool_initialized %}Info{% else %}Setup{% endif %}
+            </a>
+            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-whirlpool">
+                {% if whirlpool_enabled %}Disable{% else %}Enable{% endif %}
+            </a>
         </div>
     </div>
     <div class="app_tile">
