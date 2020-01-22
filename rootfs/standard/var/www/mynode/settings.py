@@ -111,7 +111,7 @@ def page_settings():
 
     # Get Docker Image Build Status
     docker_image_build_status_log = get_journalctl_log("docker_images")
-
+    
     # Get QuickSync Rates
     upload_rate = 100
     download_rate = 100
@@ -153,6 +153,12 @@ def page_settings():
         "docker_image_build_status_log": docker_image_build_status_log,
         "docker_image_build_status": get_docker_image_build_status(),
         "docker_image_build_status_color": get_docker_image_build_status_color(),
+        "btcpayserver_status_log": get_journalctl_log("btcpayserver"),
+        "btcpayserver_status": get_service_status_basic_text("btcpayserver"),
+        "btcpayserver_status_color": get_service_status_color("btcpayserver"),
+        "mempoolspace_status_log": get_journalctl_log("mempoolspace"),
+        "mempoolspace_status": get_service_status_basic_text("mempoolspace"),
+        "mempoolspace_status_color": get_service_status_color("mempoolspace"),
         "is_quicksync_disabled": not quicksync_enabled,
         "is_netdata_enabled": is_netdata_enabled(),
         "is_uploader_device": is_uploader(),
