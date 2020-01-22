@@ -1,6 +1,8 @@
+=== v0.1.81 ===
+- Upgrade RTL to v0.6.3
+
 === v0.1.80 ===
 - Add BTCPay Server
-- Upgrade RTL to v0.6.3
 - Whirlpool is part of community edition
 - Disable Wifi MAC Randomization
 - Add Mempool.Space port to Tor access

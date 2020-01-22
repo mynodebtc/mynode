@@ -170,18 +170,13 @@ source /usr/bin/mynode_gen_bitcoin_config.sh
 source /usr/bin/mynode_gen_lnd_config.sh
 
 # RTL config
+sudo -u bitcoin mkdir -p /opt/mynode/RTL/
 cp /usr/share/mynode/RTL.conf /opt/mynode/RTL/RTL.conf
 if [ -f /home/bitcoin/.mynode/.hashedpw ]; then
     HASH=$(cat /home/bitcoin/.mynode/.hashedpw)
     sed -i "s/rtlPassHashed=.*/rtlPassHashed=$HASH/g" /opt/mynode/RTL/RTL.conf
 fi
 chown bitcoin:bitcoin /opt/mynode/RTL/RTL.conf
-
-# LND Admin Config
-#if [ ! -f /home/bitcoin/.lnd-admin/credentials.json ]; then
-#    cp /usr/share/mynode/lnd_admin_credentials.json /home/bitcoin/.lnd-admin/credentials.json
-#    chown bitcoin:bitcoin /home/bitcoin/.lnd-admin/credentials.json
-#fi
 
 # BTC RPC Explorer Config
 if [ ! -f /opt/mynode/btc-rpc-explorer/.env ]; then
