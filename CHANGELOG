@@ -1,4 +1,5 @@
 === v0.1.81 ===
+- Upgrade LND to 0.9.0
 - Upgrade RTL to v0.6.3
 
 === v0.1.80 ===
@@ -36,7 +37,7 @@
 
 === v0.1.74 ===
 - Add option to restore channel backup when creating Lightning wallet
-- Ugrade LND to 0.8.2
+- Upgrade LND to 0.8.2
 - Improved rockpro64 support
 - Improve public IP detection
 - Improve drive health monitoring
