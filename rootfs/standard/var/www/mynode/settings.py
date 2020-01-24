@@ -128,6 +128,7 @@ def page_settings():
         "current_version": current_version,
         "latest_version": latest_version,
         "upgrade_error": did_upgrade_fail(),
+        "upgrade_logs": get_recent_upgrade_logs(),
         "serial_number": serial_number,
         "device_type": device_type,
         "product_key": product_key,

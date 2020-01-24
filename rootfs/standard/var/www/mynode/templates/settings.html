@@ -214,6 +214,11 @@
                     $("#mempoolspace_status").show();
                 });
 
+                $("#show_upgrade_status").on("click", function() {
+                    $("#show_upgrade_status").hide(0);
+                    $("#upgrade_status").show();
+                });
+
                 $("#show_mynode_changelog").on("click", function() {
                     if (showChangelog)
                     {
@@ -349,6 +354,8 @@
             {% elif not product_key_skipped and upgrade_error %}
                 <p style="color: red;">It appears a recent upgrade may not have fully completed.</p>
                 <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Retry Upgrade</button>
+                <button id="show_upgrade_status" class="ui-button ui-widget ui-corner-all settings_button">Show Upgrade Logs</button>
+                <div id="upgrade_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{upgrade_logs}}</pre></div>
             {% endif %}
 
             <div class="divider"></div>
