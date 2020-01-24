@@ -14,6 +14,18 @@ date
 # Check if any dpkg installs have failed and correct
 dpkg --configure -a
 
+# Add Sources
+add-apt-repository "deb https://deb.torproject.org/torproject.org buster main"
+
+# Import Keys
+set +e
+curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
+curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
+gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
+curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
+wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import
+gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | apt-key add -
+set -e
 
 # Check for updates (might auto-install all updates later)
 apt-get update
@@ -27,6 +39,7 @@ apt-get -y install libatlas-base-dev libffi-dev libssl-dev glances python3-bottl
 apt-get -y -qq install apt-transport-https ca-certificates
 apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
 apt-get -y install xorg chromium openbox lightdm openjdk-11-jre
+apt-get -y install tor deb.torproject.org-keyring
 
 # Make sure some software is removed
 apt-get -y purge ntp # (conflicts with systemd-timedatectl)
@@ -41,15 +54,6 @@ pip install tzupdate virtualenv --no-cache-dir
 pip3 install python-bitcointx --no-cache-dir
 pip3 install lndmanage==0.8.0.1 --no-cache-dir   # Install LND Manage (keep up to date with LND)
 pip3 install docker-compose --no-cache-dir
-
-
-# Import Keys
-set +e
-curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
-curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
-gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
-curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
-set -e
 
 # Install docker
 if [ ! -f /usr/bin/docker ]; then
