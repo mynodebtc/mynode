@@ -91,6 +91,21 @@ def upgrade_device():
 def did_upgrade_fail():
     return os.path.isfile("/mnt/hdd/mynode/settings/upgrade_error")
 
+def get_recent_upgrade_logs():
+    logs=""
+    current_version = get_current_version()
+    for i in range(1,6):
+        filename = "/home/admin/upgrade_logs/upgrade_log_{}_post_{}.txt".format(current_version, i)
+        try:
+            with open(filename, "r") as f:
+                logs = logs + "===========================================================\n"
+                logs = logs + "=== Upgrade Attempt #{}\n".format(i)
+                logs = logs + "===========================================================\n\n\n"
+                logs = logs + f.read().decode("utf8")
+        except:
+            pass
+    return logs
+
 
 #==================================
 # Device Info
