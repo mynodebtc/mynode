@@ -83,15 +83,14 @@ def page_settings():
     quicksync_enabled = is_quicksync_enabled()
     quicksync_status = "Disabled"
     quicksync_status_color = "gray"
+    quicksync_status_log = "DISABLED"
     if quicksync_enabled:
         quicksync_status = get_service_status_basic_text("quicksync")
         quicksync_status_color = get_service_status_color("quicksync")
-
-    quicksync_status_log = ""
-    try:
-        quicksync_status_log = subprocess.check_output(["mynode-get-quicksync-status"]).decode("utf8")
-    except:
-        quicksync_status_log = "ERROR"
+        try:
+            quicksync_status_log = subprocess.check_output(["mynode-get-quicksync-status"]).decode("utf8")
+        except:
+            quicksync_status_log = "ERROR"
 
     # Get Bitcoin Status
     bitcoin_status_log = ""
@@ -111,7 +110,7 @@ def page_settings():
 
     # Get Docker Image Build Status
     docker_image_build_status_log = get_journalctl_log("docker_images")
-    
+
     # Get QuickSync Rates
     upload_rate = 100
     download_rate = 100
