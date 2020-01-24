@@ -71,9 +71,16 @@ elif [ $IS_X86 = 1 ]; then
 fi
 wget http://${SERVER_IP}:8000/${TARBALL} -O /tmp/rootfs.tar.gz
 
+# Add Sources
+add-apt-repository "deb https://deb.torproject.org/torproject.org buster main"
 
-# Add sources
-
+# Import Keys
+curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
+curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
+gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
+curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
+wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import
+gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | apt-key add -
 
 # Update OS
 apt -y update # Needed to accept new repos
@@ -95,7 +102,7 @@ apt-get -y install libfreetype6-dev libpng-dev libatlas-base-dev libgmp-dev libl
 apt-get -y install libffi-dev libssl-dev glances python3-bottle automake libtool libltdl7
 apt -y -qq install apt-transport-https ca-certificates
 apt-get -y install xorg chromium openbox lightdm openjdk-11-jre
-
+apt-get -y install tor deb.torproject.org-keyring
 
 # Make sure some software is removed
 apt-get -y purge ntp # (conflicts with systemd-timedatectl)
@@ -119,13 +126,6 @@ pip install speedtest-cli transmissionrpc flask python-bitcoinrpc redis promethe
 pip install python-pam python-bitcoinlib psutil
 pip install grpcio grpcio-tools googleapis-common-protos 
 pip install tzupdate virtualenv
-
-
-# Import Keys
-curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
-curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
-gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
-curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
 
 # Update python3 to 3.7.X
 PYTHON3_VERSION=$(python3 --version)
