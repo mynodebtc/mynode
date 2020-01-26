@@ -31,18 +31,21 @@ Each myNode device comes with a number of wonderful features:
 
 - Bitcoin Node
 - Lightning Node (LND)
+- Electrum Server - BTC Light Wallet Server
+- BTCPay Server
+- Samourai Whirlpool
+- Mempool.space local full node integration
+- JoinMarket CLI
 - Simple UI / Web Interface
 - VPN for Remote Access
+- Tor
 - Bitcoin Explorer
-- Electrum Server - BTC Light Wallet Server
 - Ride the Lightning - Lightning Wallet
 - LND Hub - Lightning Wallet Server
-- JoinMarket CLI
 - Bitcoin CLI
 - QuickSync - Quickly sync Bitcoin blockchain
 - LND Connect - Generate QR Codes for connecting wallets
 - LN Channel Backup
-- Tor
 - Docker support
 - Netdata Monitor
 - Glances
@@ -50,8 +53,6 @@ Each myNode device comes with a number of wonderful features:
 - Dark Mode interface
 - Dedicated hardware keeps you constantly and securely connected!
 - Virtual Machine support (OVA file, VirtualBox)
-- Mempool.space local full node integration
-- Samourai Whirlpool
 - And more!
 
 ## Supported Devices
