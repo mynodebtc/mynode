@@ -95,7 +95,7 @@
                     }
                     openConfirmDialog("confirm-dialog",
                                       "Reset QuickSync",
-                                      "<p>Restarting QuickSync will delete all current bitcoind blockchain data and download again " +
+                                      "<p>Restarting QuickSync will delete all current bitcoind blockchain data and redownload " +
                                       "the pre-synced blockchain. This will take a while.</p>"+
                                       "<p>Would you still like to restart QuickSync?</p>",
                                       okFunction)
@@ -590,10 +590,10 @@
             <div class="settings_block_header">QuickSync</div>
 
             <div class="settings_block_subheader">Toggle QuickSync</div>
-            Disabling QuickSync will remove the QuickSync files and stop the process. This may take a long time if Bitcoin is not already synced, but later you can enable again QuickSync.
+            Disabling QuickSync will remove the QuickSync files and stop the process. This may take a long time if Bitcoin is not already synced, but you can reenable QuickSync later.
             <br/>
             {% if is_quicksync_disabled %}
-            <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Enable again QuickSync</a>
+            <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Enable QuickSync</a>
             {% else %}
             <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Disable QuickSync</a>
             {% endif %}
@@ -602,7 +602,7 @@
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Restart QuickSync</div>
-            This will reset bitcoind and download again the blockchain via QuickSync.
+            This will reset bitcoind and redownload the blockchain via QuickSync.
             <br/>
             <button id="restart-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Restart QuickSync</button>
 
@@ -706,25 +706,25 @@
             If you are having issues with a specific application, you can try to reinstall them via the buttons below. Reinstalling
             an app will trigger a reboot of your device.
             <br/>
-            <a href="/settings/reinstall-app?app=bitcoin" class="ui-button ui-widget ui-corner-all settings_button">Bitcoin</a>
+            <a href="/settings/reinstall-app?app=bitcoin" style="width: 200px;" class="ui-button ui-widget ui-corner-all settings_button">Bitcoin</a>
             <br/>
-            <a href="/settings/reinstall-app?app=lnd" class="ui-button ui-widget ui-corner-all settings_button">LND</a>
+            <a href="/settings/reinstall-app?app=lnd" style="width: 200px;" class="ui-button ui-widget ui-corner-all settings_button">LND</a>
             <br/>
-            <a href="/settings/reinstall-app?app=lndhub" class="ui-button ui-widget ui-corner-all settings_button">LndHub</a>
+            <a href="/settings/reinstall-app?app=lndhub" style="width: 200px;" class="ui-button ui-widget ui-corner-all settings_button">LndHub</a>
             <br/>
-            <a href="/settings/reinstall-app?app=rtl" class="ui-button ui-widget ui-corner-all settings_button">RTL</a>
+            <a href="/settings/reinstall-app?app=rtl" style="width: 200px;" class="ui-button ui-widget ui-corner-all settings_button">RTL</a>
             <br/>
-            <a href="/settings/reinstall-app?app=mempoolspace" class="ui-button ui-widget ui-corner-all settings_button">Mempool.Space</a>
+            <a href="/settings/reinstall-app?app=mempoolspace" style="width: 200px;" class="ui-button ui-widget ui-corner-all settings_button">Mempool.Space</a>
             <br/>
-            <a href="/settings/reinstall-app?app=joinmarket" class="ui-button ui-widget ui-corner-all settings_button">JoinMarket</a>
+            <a href="/settings/reinstall-app?app=joinmarket" style="width: 200px;" class="ui-button ui-widget ui-corner-all settings_button">JoinMarket</a>
             <br/>
-            <a href="/settings/reinstall-app?app=whirlpool" class="ui-button ui-widget ui-corner-all settings_button">Whirlpool</a>
+            <a href="/settings/reinstall-app?app=whirlpool" style="width: 200px;" class="ui-button ui-widget ui-corner-all settings_button">Whirlpool</a>
             <br/>
-            <a href="/settings/reinstall-app?app=btcrpcexplorer" class="ui-button ui-widget ui-corner-all settings_button">BTC RPC Explorer</a>
+            <a href="/settings/reinstall-app?app=btcrpcexplorer" style="width: 200px;" class="ui-button ui-widget ui-corner-all settings_button">BTC RPC Explorer</a>
             <br/>
-            <a href="/settings/reinstall-app?app=lndconnect" class="ui-button ui-widget ui-corner-all settings_button">LNDConnect</a>
+            <a href="/settings/reinstall-app?app=lndconnect" style="width: 200px;" class="ui-button ui-widget ui-corner-all settings_button">LNDConnect</a>
             <br/>
-            <a href="/settings/reinstall-app?app=webssh2" class="ui-button ui-widget ui-corner-all settings_button">WebSSH2</a>
+            <a href="/settings/reinstall-app?app=webssh2" style="width: 200px;" class="ui-button ui-widget ui-corner-all settings_button">WebSSH2</a>
             
             <div class="divider"></div>
 
