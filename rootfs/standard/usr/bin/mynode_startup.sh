@@ -92,6 +92,7 @@ mkdir -p /mnt/hdd/mynode/redis
 mkdir -p /mnt/hdd/mynode/mongodb
 mkdir -p /mnt/hdd/mynode/electrs
 mkdir -p /mnt/hdd/mynode/docker
+mkdir -p /mnt/hdd/mynode/rtl_backup
 mkdir -p /tmp/flask_uploads
 echo "drive_mounted" > $MYNODE_DIR/.mynode_status
 chmod 777 $MYNODE_DIR/.mynode_status
@@ -194,6 +195,7 @@ source /usr/bin/mynode_gen_lnd_config.sh
 
 # RTL config
 sudo -u bitcoin mkdir -p /opt/mynode/RTL/
+chown -R bitcoin:bitcoin /mnt/hdd/mynode/rtl_backup/
 cp /usr/share/mynode/RTL.conf /opt/mynode/RTL/RTL.conf
 if [ -f /home/bitcoin/.mynode/.hashedpw ]; then
     HASH=$(cat /home/bitcoin/.mynode/.hashedpw)
