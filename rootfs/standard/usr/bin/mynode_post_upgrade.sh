@@ -157,6 +157,32 @@ if [ "$CURRENT" != "$LND_UPGRADE_URL" ]; then
     fi
 fi
 
+# Install LndHub
+LNDHUB_VERSION="v1.1.3"
+LNDHUB_UPGRADE_URL=https://github.com/BlueWallet/LndHub/archive/${LNDHUB_VERSION}.tar.gz
+LNDHUB_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lndhub_url
+CURRENT=""
+if [ -f $LNDHUB_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $LNDHUB_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$LNDHUB_UPGRADE_URL" ]; then
+    cd /opt/mynode
+    rm -rf LndHub
+
+    wget $LNDHUB_UPGRADE_URL
+    tar -xzf ${LNDHUB_VERSION}.tar.gz
+    rm -f ${LNDHUB_VERSION}.tar.gz
+    mv LndHub-* LndHub
+    chown -R bitcoin:bitcoin LndHub
+
+    cd LndHub
+    sudo -u bitcoin npm install --only=production
+    sudo -u bitcoin ln -s /home/bitcoin/.lnd/tls.cert tls.cert
+    sudo -u bitcoin ln -s /home/bitcoin/.lnd/data/chain/bitcoin/mainnet/admin.macaroon admin.macaroon
+    echo $LNDHUB_UPGRADE_URL > $LNDHUB_UPGRADE_URL_FILE
+fi
+cd ~
+
 # Install recent version of secp256k1
 echo "Installing secp256k1..."
 if [ ! -f /usr/include/secp256k1_ecdh.h ]; then

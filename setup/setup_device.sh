@@ -281,16 +281,30 @@ chown -R bitcoin:bitcoin /opt/mynode
 
 
 # Install LND Hub
-if [ ! -f /tmp/installed_lndhub ]; then
+LNDHUB_VERSION="v1.1.3"
+LNDHUB_UPGRADE_URL=https://github.com/BlueWallet/LndHub/archive/${LNDHUB_VERSION}.tar.gz
+LNDHUB_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lndhub_url
+CURRENT=""
+if [ -f $LNDHUB_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $LNDHUB_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$LNDHUB_UPGRADE_URL" ]; then
     cd /opt/mynode
     rm -rf LndHub
-    sudo -u bitcoin git clone https://github.com/BlueWallet/LndHub.git
+
+    wget $LNDHUB_UPGRADE_URL
+    tar -xzf ${LNDHUB_VERSION}.tar.gz
+    rm -f ${LNDHUB_VERSION}.tar.gz
+    mv LndHub-* LndHub
+    chown -R bitcoin:bitcoin LndHub
+
     cd LndHub
     sudo -u bitcoin npm install --only=production
     sudo -u bitcoin ln -s /home/bitcoin/.lnd/tls.cert tls.cert
     sudo -u bitcoin ln -s /home/bitcoin/.lnd/data/chain/bitcoin/mainnet/admin.macaroon admin.macaroon
-    touch /tmp/installed_lndhub
+    echo $LNDHUB_UPGRADE_URL > $LNDHUB_UPGRADE_URL_FILE
 fi
+cd ~
 
 # Install electrs (only build to save new version, now included in overlay)
 #cd /home/admin/download

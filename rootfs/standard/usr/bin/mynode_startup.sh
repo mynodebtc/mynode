@@ -207,7 +207,9 @@ fi
 # Update files that need RPC password (needed if upgrades overwrite files)
 PW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
 if [ -f /opt/mynode/LndHub/config.js ]; then
+    cp -f /usr/share/mynode/lndhub-config.js /opt/mynode/LndHub/config.js
     sed -i "s/mynode:.*@/mynode:$PW@/g" /opt/mynode/LndHub/config.js
+    chown bitcoin:bitcoin /opt/mynode/LndHub/config.js
 fi
 if [ -f /opt/mynode/btc-rpc-explorer/.env ]; then
     sed -i "s/BTCEXP_BITCOIND_PASS=.*/BTCEXP_BITCOIND_PASS=$PW/g" /opt/mynode/btc-rpc-explorer/.env

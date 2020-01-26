@@ -17,6 +17,8 @@ if [ "$APP" = "bitcoin" ]; then
     rm -f /home/bitcoin/.mynode/.btc_url
 elif [ "$APP" = "lnd" ]; then
     rm -f /home/bitcoin/.mynode/.lnd_url
+elif [ "$APP" = "lndhub" ]; then
+    rm -f /home/bitcoin/.mynode/.lndhub_url
 elif [ "$APP" = "rtl" ]; then
     rm -f /home/bitcoin/.mynode/.rtl_url
 elif [ "$APP" = "mempoolspace" ]; then
