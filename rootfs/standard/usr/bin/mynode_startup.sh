@@ -129,9 +129,12 @@ do
 done
 
 # Gen RSA keys
+sudo -u admin mkdir -p /home/admin/.ssh
+chown -R admin:admin /home/admin/.ssh
 if [ ! -f /home/admin/.ssh/id_rsa ]; then
     sudo -u admin ssh-keygen -t rsa -f /home/admin/.ssh/id_rsa -N ""
 fi
+
 sudo -u admin touch /home/admin/.ssh/authorized_keys
 if [ ! -f /root/.ssh/id_rsa_btcpay ]; then
     ssh-keygen -t rsa -f /root/.ssh/id_rsa_btcpay -q -P "" -m PEM
@@ -207,7 +210,9 @@ fi
 # Update files that need RPC password (needed if upgrades overwrite files)
 PW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
 if [ -f /opt/mynode/LndHub/config.js ]; then
+    cp -f /usr/share/mynode/lndhub-config.js /opt/mynode/LndHub/config.js
     sed -i "s/mynode:.*@/mynode:$PW@/g" /opt/mynode/LndHub/config.js
+    chown bitcoin:bitcoin /opt/mynode/LndHub/config.js
 fi
 if [ -f /opt/mynode/btc-rpc-explorer/.env ]; then
     sed -i "s/BTCEXP_BITCOIND_PASS=.*/BTCEXP_BITCOIND_PASS=$PW/g" /opt/mynode/btc-rpc-explorer/.env

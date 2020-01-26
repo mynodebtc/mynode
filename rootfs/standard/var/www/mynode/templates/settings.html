@@ -95,7 +95,7 @@
                     }
                     openConfirmDialog("confirm-dialog",
                                       "Reset QuickSync",
-                                      "<p>Restarting QuickSync will delete all current bitcoind blockchain data and re-download " +
+                                      "<p>Restarting QuickSync will delete all current bitcoind blockchain data and download again " +
                                       "the pre-synced blockchain. This will take a while.</p>"+
                                       "<p>Would you still like to restart QuickSync?</p>",
                                       okFunction)
@@ -129,7 +129,7 @@
                         window.location.href="/settings/reindex-blockchain"
                     }
                     openConfirmDialog("confirm-dialog",
-                                      "Re-index Bitcoin Blockchain",
+                                      "Reindex Bitcoin Blockchain",
                                       "Reindexing may take a VERY LONG time. "+
                                       "Would you still like to reindex the bitcoin blockchain?",
                                       okFunction)
@@ -590,10 +590,10 @@
             <div class="settings_block_header">QuickSync</div>
 
             <div class="settings_block_subheader">Toggle QuickSync</div>
-            Disabling QuickSync will remove the QuickSync files and stop the process. This may take a long time if Bitcoin is not already synced, but you can re-enable QuickSync later.
+            Disabling QuickSync will remove the QuickSync files and stop the process. This may take a long time if Bitcoin is not already synced, but later you can enable again QuickSync.
             <br/>
             {% if is_quicksync_disabled %}
-            <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Re-enable QuickSync</a>
+            <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Enable again QuickSync</a>
             {% else %}
             <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Disable QuickSync</a>
             {% endif %}
@@ -602,7 +602,7 @@
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Restart QuickSync</div>
-            This will reset bitcoind and re-download the blockchain via QuickSync.
+            This will reset bitcoind and download again the blockchain via QuickSync.
             <br/>
             <button id="restart-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Restart QuickSync</button>
 
@@ -650,10 +650,10 @@
 
             <div class="divider"></div>
 
-            <div class="settings_block_subheader">Re-index Blockchain</div>
-            Advanced: If you are having issues parsing the Bitcoin blockchain or blocks cannot be found, please try re-indexing. This will take a long time.
+            <div class="settings_block_subheader">Reindex Blockchain</div>
+            Advanced: If you are having issues parsing the Bitcoin blockchain or blocks cannot be found, please try reindexing. This will take a long time.
             <br/>
-            <button id="reindex-blockchain" class="ui-button ui-widget ui-corner-all settings_button">Re-index Blockchain</button>
+            <button id="reindex-blockchain" class="ui-button ui-widget ui-corner-all settings_button">Reindex Blockchain</button>
         </div>
 
 
@@ -672,7 +672,7 @@
             <div class="settings_block_header">Tor</div>
             
             <div class="settings_block_subheader">Reset Tor</div>
-            This will reset all of your Tor service settings and re-generate your Onion URLs.
+            This will reset all of your Tor service settings and regenerate your Onion URLs.
             <br/>
             <button id="reset_tor" class="ui-button ui-widget ui-corner-all settings_button">Reset Tor</button>
 
@@ -702,13 +702,15 @@
 
             <div class="divider"></div>
 
-            <div class="settings_block_subheader">Re-Install Applications</div>
-            If you are having issues with a specific application, you can try to re-install them via the buttons below. Reinstalling
+            <div class="settings_block_subheader">Reinstall Applications</div>
+            If you are having issues with a specific application, you can try to reinstall them via the buttons below. Reinstalling
             an app will trigger a reboot of your device.
             <br/>
             <a href="/settings/reinstall-app?app=bitcoin" class="ui-button ui-widget ui-corner-all settings_button">Bitcoin</a>
             <br/>
             <a href="/settings/reinstall-app?app=lnd" class="ui-button ui-widget ui-corner-all settings_button">LND</a>
+            <br/>
+            <a href="/settings/reinstall-app?app=lndhub" class="ui-button ui-widget ui-corner-all settings_button">LndHub</a>
             <br/>
             <a href="/settings/reinstall-app?app=rtl" class="ui-button ui-widget ui-corner-all settings_button">RTL</a>
             <br/>

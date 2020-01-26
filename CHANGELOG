@@ -1,3 +1,9 @@
+=== v0.1.84 ===
+- Fix issue copying files after an upgrade
+- Add button to reset Whirlpool config
+- Enable LndHub upgrades
+- Fix issue getting stuck at "Drive Mounted"
+
 === v0.1.83 ===
 - Revert 0.1.82
 
