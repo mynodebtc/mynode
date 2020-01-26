@@ -31,7 +31,7 @@ VERSION=$(cat /opt/upgrade/out/rootfs_*/usr/share/mynode/version)
 if [ $IS_X86 = 1 ]; then
     rsync -r -K /opt/upgrade/out/rootfs_${DEVICE_TYPE}/* / 2>&1
 else
-    cp -rf /opt/upgrade/out/rootfs_${DEVICE_TYPE}/* / > 2>&1
+    cp -rf /opt/upgrade/out/rootfs_${DEVICE_TYPE}/* / 2>&1
 fi
 sleep 1
 sync
