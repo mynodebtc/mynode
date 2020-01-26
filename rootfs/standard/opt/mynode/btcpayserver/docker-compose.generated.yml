@@ -11,7 +11,7 @@ services:
       BTCPAY_NETWORK: ${NBITCOIN_NETWORK:-regtest}
       BTCPAY_BIND: 0.0.0.0:49392
       BTCPAY_ROOTPATH: ${BTCPAY_ROOTPATH:-/}
-      BTCPAY_SSHCONNECTION: "root@host.docker.internal"
+      BTCPAY_SSHCONNECTION: "root@localhost"
       BTCPAY_SSHTRUSTEDFINGERPRINTS: ${BTCPAY_SSHTRUSTEDFINGERPRINTS}
       BTCPAY_SSHKEYFILE: ${BTCPAY_SSHKEYFILE}
       BTCPAY_SSHAUTHORIZEDKEYS: ${BTCPAY_SSHAUTHORIZEDKEYS}
@@ -34,6 +34,8 @@ services:
     - "btcpay_datadir:/datadir"
     - "nbxplorer_datadir:/root/.nbxplorer"
     - "/mnt/hdd/mynode/lnd:/etc/lnd_bitcoin"
+    - "/root/.ssh/authorized_keys:${BTCPAY_SSHAUTHORIZEDKEYS}"
+    - "/root/.ssh/id_rsa_btcpay:${BTCPAY_SSHKEYFILE}"
   nbxplorer:
     restart: unless-stopped
     image: nicolasdorier/nbxplorer:${NBXPLORER_VERSION}
