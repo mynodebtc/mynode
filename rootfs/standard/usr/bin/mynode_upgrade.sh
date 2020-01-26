@@ -28,11 +28,12 @@ tar -xvf /tmp/mynode_release_latest.tar.gz -C /tmp/upgrade/
 
 # Install files
 VERSION=$(cat /tmp/upgrade/out/rootfs_*/usr/share/mynode/version)
-if [ $IS_X86 = 1 ]; then
-    rsync -r -K /tmp/upgrade/out/rootfs_${DEVICE_TYPE}/* / 2>&1
-else
-    cp -rf /tmp/upgrade/out/rootfs_${DEVICE_TYPE}/* / > 2>&1
-fi
+rsync -r -K /tmp/upgrade/out/rootfs_${DEVICE_TYPE}/* / 2>&1
+#if [ $IS_X86 = 1 ]; then
+#    rsync -r -K /tmp/upgrade/out/rootfs_${DEVICE_TYPE}/* / 2>&1
+#else
+#    cp -rf /tmp/upgrade/out/rootfs_${DEVICE_TYPE}/* / > 2>&1
+#fi
 sleep 1
 sync
 sleep 1

@@ -1,3 +1,6 @@
+=== v0.1.82 ===
+- Improve upgrade consistency
+
 === v0.1.81 ===
 - Upgrade LND to 0.9.0
 - Upgrade RTL to v0.6.3
