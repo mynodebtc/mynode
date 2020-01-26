@@ -58,3 +58,10 @@ def page_toggle_whirlpool():
     check_logged_in()
     os.system("systemctl restart whirlpool --no-pager")
     return redirect("/whirlpool")
+
+@mynode_whirlpool.route("/reset-whirlpool")
+def page_reset_whirlpool():
+    check_logged_in()
+    os.system("rm -f /opt/mynode/whirlpool/whirlpool-cli-config.properties")
+    os.system("systemctl restart whirlpool --no-pager")
+    return redirect("/whirlpool")
