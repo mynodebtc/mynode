@@ -425,6 +425,25 @@ def regen_https_certs_page():
     flash("HTTPS Service Restarted", category="message")
     return redirect(url_for(".page_settings"))
 
+@mynode_settings.route("/settings/reinstall-app")
+def reinstall_app_page():
+    check_logged_in()
+
+    app = request.args.get('app')
+
+    # Re-install app
+    t = Timer(1.0, reinstall_app, [app])
+    t.start()
+
+    # Display wait page
+    templateData = {
+        "title": "myNode Install",
+        "header_text": "Installing",
+        "subheader_text": "This may take a while...",
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('reboot.html', **templateData)
+
 @mynode_settings.route("/settings/toggle-uploader")
 def toggle_uploader_page():
     check_logged_in()

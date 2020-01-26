@@ -75,6 +75,19 @@ def get_latest_version():
         latest_version = get_current_version()
     return latest_version
 
+def reinstall_app(app):
+    # Upgrade
+    os.system("mkdir -p /home/admin/upgrade_logs")
+    cmd = "/usr/bin/mynode_reinstall_app.sh {} 2>&1".format(app)
+    subprocess.call(cmd, shell=True)
+    
+    # Sync
+    os.system("sync")
+    time.sleep(1)
+
+    # Reboot
+    reboot_device()
+
 def upgrade_device():
     # Upgrade
     os.system("mkdir -p /home/admin/upgrade_logs")
