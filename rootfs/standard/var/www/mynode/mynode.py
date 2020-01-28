@@ -305,8 +305,6 @@ def index():
         if is_lndhub_enabled():
             if lnd_ready:
                 lndhub_status_color = get_service_status_color("lndhub")
-            else:
-                lndhub_status_color = "green"
 
         # Find RTL status
         if lnd_ready:
