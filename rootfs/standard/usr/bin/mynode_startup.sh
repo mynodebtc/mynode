@@ -137,6 +137,7 @@ if [ ! -f /home/admin/.ssh/id_rsa ]; then
 fi
 sudo -u admin touch /home/admin/.ssh/authorized_keys || true
 if [ ! -f /root/.ssh/id_rsa_btcpay ]; then
+    sudo rm -rf /root/.ssh/id_rsa_btcpay
     ssh-keygen -t rsa -f /root/.ssh/id_rsa_btcpay -q -P "" -m PEM
     echo "# Key used by BTCPay Server" >> /root/.ssh/authorized_keys
     cat /root/.ssh/id_rsa_btcpay.pub >> /root/.ssh/authorized_keys
