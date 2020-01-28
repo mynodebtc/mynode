@@ -614,7 +614,7 @@
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Download Debug Logs</div>
-            This will download all recent logs from your mynode. This can be helpful for debugging issues.
+            This will download all recent logs from your myNode. This can be helpful for debugging issues.
             <br/>
             It may take ~60 seconds to gather and download the logs.
             <br/>
@@ -626,7 +626,9 @@
             <div class="settings_block_header">QuickSync</div>
 
             <div class="settings_block_subheader">Toggle QuickSync</div>
-            Disabling QuickSync will remove the QuickSync files and stop the process. This may take a long time if Bitcoin is not already synced, but you can reenable QuickSync later.
+            Disabling QuickSync will remove the QuickSync files and stop the process. 
+            <br/>
+            This may take a long time if Bitcoin is not already synced, but you can reenable QuickSync later.
             <br/>
             {% if is_quicksync_disabled %}
             <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Enable QuickSync</a>
@@ -672,8 +674,11 @@
             <div class="settings_block_header">Bitcoin</div>
 
             <div class="settings_block_subheader">Reset Blockchain</div>
-            If bitcoind is having issues, you can reset the blockchain data. If QuickSync is enabled, it will use QuickSync data as the starting point. Otherwise, Bitcoin will
-            sync from scratch. This may take a long time.
+            If bitcoind is having issues, you can reset the blockchain data.
+            <br/>
+            If QuickSync is enabled, it will use QuickSync data as the starting point.
+            <br/>
+            Otherwise, Bitcoin will sync from scratch. This may take a long time.
             <br/>
             <button id="reset-blockchain" class="ui-button ui-widget ui-corner-all settings_button">Reset Blockchain</button>
 
@@ -687,7 +692,9 @@
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Reindex Blockchain</div>
-            Advanced: If you are having issues parsing the Bitcoin blockchain or blocks cannot be found, please try reindexing. This will take a long time.
+            Advanced: If you are having issues parsing the Bitcoin blockchain or blocks cannot be found, please try reindexing. 
+            <br/>
+            This will take a long time.
             <br/>
             <button id="reindex-blockchain" class="ui-button ui-widget ui-corner-all settings_button">Reindex Blockchain</button>
         </div>
@@ -718,7 +725,7 @@
             <div class="settings_block_header">Services</div>
             
             <div class="settings_block_subheader">Netdata</div>
-            This will enable or disable netdata device monitoring.
+            This will enable or disable Netdata device monitoring.
             <br/>
             {% if is_netdata_enabled %}
                 <a href="/settings/toggle-netdata" class="ui-button ui-widget ui-corner-all settings_button">Disable</a>
@@ -739,8 +746,9 @@
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Reinstall Applications</div>
-            If you are having issues with a specific application, you can try to reinstall them via the list below. Reinstalling
-            an app will trigger a reboot of your device.
+            If you are having issues with a specific application, you can try to reinstall them via the list below.
+            <br/>
+            Reinstalling an app will trigger a reboot of your device.
             <br/><br/>
 
             <select name="reinstall_app" id="reinstall_app">
@@ -749,7 +757,7 @@
                 <option value="lnd">LND</option>
                 <option value="lndhub">LndHub</option>
                 <option value="rtl">RTL</option>
-                <option value="mempoolspace">Mempool Space</option>
+                <option value="mempoolspace">Mempool.Space</option>
                 <option value="joinmarket">JoinMarket</option>
                 <option value="whirlpool">Whirlpool</option>
                 <option value="btcrpcexplorer">BTC RPC Explorer</option>
@@ -761,7 +769,9 @@
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Factory Reset</div>
-            This will factory reset your mynode and all storage will be completely reset. Make sure you have backed up all your keys and wallets!
+            This will factory reset your mynode and all storage will be completely reset.
+            <br/>
+            Make sure you have backed up all your keys and wallets!
             <br/>
             <button id="factory-reset" class="ui-button ui-widget ui-corner-all settings_button">Factory Reset</button>
         </div>
@@ -788,8 +798,8 @@
 
         <div id="delete-lnd-wallet-dialog" title="Delete Wallet" style="display:none;">
             <form id="delete_lnd_wallet_form" name="delete_lnd_wallet_form" action="/settings/delete-lnd-wallet" method="POST">
-                <p class="red_text">Attention! This will delete your wallet and all remaining Bitcoin!</p>
-                <p>Please ensure you have closed all channels and withdrawn all Bitcoin. If you still want to delete your wallet,
+                <p class="red_text">Attention! This will delete your wallet and all remaining bitcoin!</p>
+                <p>Please ensure you have closed all channels and withdrawn all bitcoin. If you still want to delete your wallet,
                     enter the admin password for your myNode.</p>
                 <p>This will restart your device.</p>
                 <p>myNode is not responsible for any lost assets.</p>
