@@ -34,8 +34,9 @@ Each myNode device comes with a number of wonderful features:
 - Electrum Server - BTC Light Wallet Server
 - BTCPay Server
 - Samourai Whirlpool
-- Mempool.space local full node integration
+- Mempool.Space local full node integration
 - JoinMarket CLI
+- Virtual Machine support (OVA file, VirtualBox)
 - Simple UI / Web Interface
 - VPN for Remote Access
 - Tor
@@ -52,7 +53,6 @@ Each myNode device comes with a number of wonderful features:
 - Web Linux Terminal (WebSSH2)
 - Dark Mode interface
 - Dedicated hardware keeps you constantly and securely connected!
-- Virtual Machine support (OVA file, VirtualBox)
 - And more!
 
 ## Supported Devices
