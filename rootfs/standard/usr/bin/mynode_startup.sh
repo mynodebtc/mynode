@@ -135,8 +135,7 @@ chown -R admin:admin /home/admin/.ssh
 if [ ! -f /home/admin/.ssh/id_rsa ]; then
     sudo -u admin ssh-keygen -t rsa -f /home/admin/.ssh/id_rsa -N ""
 fi
-
-sudo -u admin touch /home/admin/.ssh/authorized_keys
+sudo -u admin touch /home/admin/.ssh/authorized_keys || true
 if [ ! -f /root/.ssh/id_rsa_btcpay ]; then
     ssh-keygen -t rsa -f /root/.ssh/id_rsa_btcpay -q -P "" -m PEM
     echo "# Key used by BTCPay Server" >> /root/.ssh/authorized_keys
