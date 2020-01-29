@@ -582,7 +582,7 @@ def not_found_error(error):
     templateData = {
         "title": "myNode 404",
         "header_text": "Page not found",
-        "subheader_text": "Click on the mynode logo reach the home page",
+        "subheader_text": "Click on the myNode logo to reach the home page",
         "ui_settings": read_ui_settings()
     }
     return render_template('state.html', **templateData), 404

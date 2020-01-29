@@ -340,6 +340,21 @@
                 $("#reinstall_button").on("click", function() {
                     window.location.href='/settings/reinstall-app?app='+reinstall_app_choice
                 });
+
+                $('#btc_lnd_tor_checkbox').change(function () {
+                    $("#btc_lnd_tor").show();
+                });
+                $("#btc_lnd_tor").on("click", function() {
+                    enabled=$('#btc_lnd_tor_checkbox').is(":checked")
+                    if (enabled)
+                    {
+                        window.location.href='/settings/enable_btc_lnd_tor?enable=1'
+                    }
+                    else
+                    {
+                        window.location.href='/settings/enable_btc_lnd_tor?enable=0'
+                    }
+                });
             });
         </script>
      </head>
@@ -713,6 +728,21 @@
 
         <div class="settings_block">
             <div class="settings_block_header">Tor</div>
+
+            <div class="settings_block_subheader">Bitcoin and Lightning Tor</div>
+            You can use Tor for Bitcoin and Lightning to increase privacy. However, it can slow down block download, 
+            especially during IBD. If you have customized your Bitcoin or LND config, this setting has no effect.
+            <br/><br/>
+            Saving will trigger a reboot.
+            <br/><br/>
+            <label class="switch">
+                <input type="checkbox" id="btc_lnd_tor_checkbox" {% if is_btc_lnd_tor_enabled %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <br/><br/>
+            <button id="btc_lnd_tor" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+
+            <div class="divider"></div>
             
             <div class="settings_block_subheader">Reset Tor</div>
             This will reset all of your Tor service settings and regenerate your Onion URLs.

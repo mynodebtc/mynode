@@ -170,6 +170,7 @@ def page_settings():
         "is_uploader_device": is_uploader(),
         "download_rate": download_rate,
         "upload_rate": upload_rate,
+        "is_btc_lnd_tor_enabled": is_btc_lnd_tor_enabled(),
         "uptime": uptime,
         "public_ip": public_ip,
         "local_ip": local_ip,
@@ -400,6 +401,29 @@ def page_reset_tor():
         # Trigger reboot
         t = Timer(1.0, reboot_device)
         t.start()
+
+    # Wait until device is restarted
+    templateData = {
+        "title": "myNode Reboot",
+        "header_text": "Restarting",
+        "subheader_text": "This will take several minutes...",
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('reboot.html', **templateData)
+
+@mynode_settings.route("/settings/enable_btc_lnd_tor")
+def page_enable_btc_lnd_tor():
+    check_logged_in()
+    
+    enable = request.args.get('enable')
+    if enable == "1":
+        enable_btc_lnd_tor()
+    else:
+        disable_btc_lnd_tor()
+
+    # Trigger reboot
+    t = Timer(1.0, reboot_device)
+    t.start()
 
     # Wait until device is restarted
     templateData = {
