@@ -400,3 +400,14 @@ def reset_tor():
     os.system("rm -rf /var/lib/tor/*")
     os.system("rm -rf /mnt/hdd/mynode/bitcoin/onion_private_key")
     os.system("rm -rf /mnt/hdd/mynode/lnd/v2_onion_private_key")
+
+def is_btc_lnd_tor_enabled():
+    return os.path.isfile("/mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
+
+def enable_btc_lnd_tor():
+    os.system("touch mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
+    os.system("sync")
+
+def disable_btc_lnd_tor():
+    os.system("rm -f mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
+    os.system("sync")
