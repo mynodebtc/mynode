@@ -52,6 +52,10 @@ def page_lnd():
     uri = ""
     ip = ""
     status = "Starting..."
+    channel_balance = "N/A"
+    channel_pending = "0"
+    wallet_balance = "N/A"
+    wallet_pending = "0"
 
     wallet_exists = lnd_wallet_exists()
     wallet_logged_in = is_lnd_logged_in()
@@ -97,6 +101,49 @@ def page_lnd():
         else:
             uri = "..."
             ip = "..."
+
+        peerdata = get_lightning_peers()
+        peers = []
+        if peerdata != None and "peers" in peerdata:
+            for p in peerdata["peers"]:
+                peer = p
+                if "bytes_recv" in p:
+                    peer["bytes_recv"] = "{:.2f}".format(float(p["bytes_recv"]) / 1000 / 1000)
+                else:
+                    peer["bytes_recv"] = "N/A"
+                if "bytes_sent" in p:
+                    peer["bytes_sent"] = "{:.2f}".format(float(p["bytes_sent"]) / 1000 / 1000)
+                else:
+                    peer["bytes_sent"] = "N/A"
+                if "ping_time" not in p:
+                    peer["ping_time"] = "N/A"
+                peers.append(peer)
+
+        channeldata = get_lightning_channels()
+        channels = []
+        if channeldata != None and "channels" in channeldata:
+            for c in channeldata["channels"]:
+                channel = c
+                if "local_balance" not in channel:
+                    channel["local_balance"] = "0"
+                if "remote_balance" not in channel:
+                    channel["remote_balance"] = "0"
+                channels.append(channel)
+
+
+        channel_balance_data = get_lightning_channel_balance()
+        if channel_balance_data != None and "balance" in channel_balance_data:
+            channel_balance = channel_balance_data["balance"]
+        if channel_balance_data != None and "pending_open_balance" in channel_balance_data:
+            channel_pending = channel_balance_data["pending_open_balance"]
+        
+        wallet_balance_data = get_lightning_wallet_balance()
+        if wallet_balance_data != None and "confirmed_balance" in wallet_balance_data:
+            wallet_balance = wallet_balance_data["confirmed_balance"]
+        if wallet_balance_data != None and "unconfirmed_balance" in wallet_balance_data:
+            wallet_pending = wallet_balance_data["unconfirmed_balance"]
+
+            
     except Exception as e:
         templateData = {
             "title": "myNode Lightning Status",
@@ -121,6 +168,12 @@ def page_lnd():
         "pubkey": pubkey,
         "uri": uri,
         "ip": ip,
+        "channel_balance": channel_balance,
+        "channel_pending": channel_pending,
+        "wallet_balance": wallet_balance,
+        "wallet_pending": wallet_pending,
+        "peers": peers,
+        "channels": channels,
         "ui_settings": read_ui_settings()
     }
     return render_template('lnd.html', **templateData)
@@ -387,3 +440,13 @@ def lnd_config_page():
     }
     return render_template('lnd_config.html', **templateData)
 
+
+##############################################
+## LND API Calls
+##############################################
+@mynode_lnd.route("/lnd/api/get_new_deposit_address", methods=['GET'])
+def lnd_api_get_new_deposit_address_page():
+    check_logged_in()
+
+    address = get_new_deposit_address()
+    return address
