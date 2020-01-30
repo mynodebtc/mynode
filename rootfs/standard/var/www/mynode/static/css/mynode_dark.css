@@ -94,3 +94,10 @@ input:focus + .slider {
 	color: #eee;
 	background-color: #303841;
 }
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+}
