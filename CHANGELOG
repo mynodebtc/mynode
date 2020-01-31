@@ -1,3 +1,11 @@
+=== v0.1.85 ===
+- Update RTL to v0.6.4
+- Add WebSSH2, glances, Netdata, and Whirlpool to Tor
+- Improve lograte to limit disk/RAM usage
+- Add Tor/IP toggle for Bitcoin and LND
+- Improve key generation
+- Bug fixes
+
 === v0.1.84 ===
 - Fix issue copying files after an upgrade
 - Add button to reset Whirlpool config
