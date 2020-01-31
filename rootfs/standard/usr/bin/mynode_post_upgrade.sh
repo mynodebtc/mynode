@@ -250,7 +250,7 @@ if [ "$CURRENT" != "$WHIRLPOOL_UPGRADE_URL" ]; then
 fi
 
 # Upgrade RTL
-RTL_VERSION="v0.6.3"
+RTL_VERSION="v0.6.4"
 RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/$RTL_VERSION.tar.gz
 RTL_UPGRADE_ASC_URL=https://github.com/Ride-The-Lightning/RTL/releases/download/$RTL_VERSION/$RTL_VERSION.tar.gz.asc
 RTL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.rtl_url
@@ -344,6 +344,33 @@ if [ ! -f /usr/bin/ngrok  ]; then
     unzip ngrok-*.zip
     cp ngrok /usr/bin/
 fi
+
+# TODO: Make sure to setup new service and stop installing the repo's tor
+# Install recent version of tor
+# echo "Installing tor..."
+# TOR_UPGRADE_URL=https://dist.torproject.org/tor-0.4.2.5.tar.gz
+# TOR_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.tor_url
+# CURRENT=""
+# if [ -f $TOR_UPGRADE_URL_FILE ]; then
+#     CURRENT=$(cat $TOR_UPGRADE_URL_FILE)
+# fi
+# if [ "$CURRENT" != "$TOR_UPGRADE_URL" ]; then
+#     rm -rf /tmp/download
+#     mkdir -p /tmp/download
+#     cd /tmp/download
+#     wget $TOR_UPGRADE_URL -O tor.tar.gz
+#     tar -xvf tor.tar.gz
+#     rm tor.tar.gz
+#     mv tor-* tor
+    
+#     cd tor
+#     ./configure
+#     make
+#     make install
+
+#     echo $TOR_UPGRADE_URL > $TOR_UPGRADE_URL_FILE
+# fi
+
 
 # Enable any new/required services
 systemctl enable firewall
