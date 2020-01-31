@@ -1,5 +1,6 @@
 === v0.1.85 ===
 - Update RTL to v0.6.4
+- Add deposit address, balance, channel, and peer info to Lightning Page
 - Add WebSSH2, glances, Netdata, and Whirlpool to Tor
 - Improve lograte to limit disk/RAM usage
 - Add Tor/IP toggle for Bitcoin and LND
