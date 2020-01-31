@@ -264,6 +264,29 @@
     </div>
 
     <br/>
+    <div class="main_header">Channels</div>
+    <div class="app_tile_row">
+        <table class="bitcoind_table">
+            <thead class="bitcoind_table_header">
+                <td>Chan ID</td>
+                <td>Capacity</td>
+                <td>Local Capaity</td>
+                <td>Remote Capacity</td>
+            </thead>
+            <tbody>
+                {% for channel in channels %}
+                    <tr>
+                        <td>{{ channel.chan_id }}</td>
+                        <td>{{ channel.capacity }}</td>
+                        <td>{{ channel.local_balance }}</td>
+                        <td>{{ channel.remote_balance }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <br/>
     <div class="main_header">Peers</div>
     <div class="app_tile_row">
         <table class="bitcoind_table">
@@ -284,30 +307,6 @@
                         <td>{{ peer.bytes_recv }}</td>
                         <td>{{ peer.ping_time }}</td>
                         <td>{{ peer.sync_type }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <br/>
-    
-    <div class="main_header">Channels</div>
-    <div class="app_tile_row">
-        <table class="bitcoind_table">
-            <thead class="bitcoind_table_header">
-                <td>Chan ID</td>
-                <td>Capacity</td>
-                <td>Local Capaity</td>
-                <td>Remote Capacity</td>
-            </thead>
-            <tbody>
-                {% for channel in channels %}
-                    <tr>
-                        <td>{{ channel.chan_id }}</td>
-                        <td>{{ channel.capacity }}</td>
-                        <td>{{ channel.local_balance }}</td>
-                        <td>{{ channel.remote_balance }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
