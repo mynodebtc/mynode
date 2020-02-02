@@ -23,6 +23,8 @@ elif [ "$APP" = "rtl" ]; then
     rm -f /home/bitcoin/.mynode/.rtl_url
 elif [ "$APP" = "mempoolspace" ]; then
     rm -f /mnt/hdd/mynode/settings/mempoolspace_url
+    systemctl stop mempoolspace
+    docker rmi mempoolspace
 elif [ "$APP" = "joinmarket" ]; then
     rm -f /home/bitcoin/.mynode/.joinmarket_url
 elif [ "$APP" = "whirlpool" ]; then
