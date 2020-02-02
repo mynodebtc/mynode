@@ -51,6 +51,8 @@ while [ 1 ]; do
             CURRENT=$(cat $MEMPOOLSPACE_UPGRADE_URL_FILE)
         fi
         if [ "$CURRENT" != "$MEMPOOLSPACE_UPGRADE_URL" ]; then
+            docker rmi mempoolspace || true
+
             cd /opt/mynode
             rm -rf mempoolspace
             wget $MEMPOOLSPACE_UPGRADE_URL -O mempool.zip
