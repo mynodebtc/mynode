@@ -1,0 +1,15 @@
+# This service is actually a systemd target,
+# but we are using a service since targets cannot be reloaded.
+
+[Unit]
+Description=Anonymizing overlay network for TCP (multi-instance-master)
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/true
+ExecReload=/bin/true
+
+[Install]
+WantedBy=multi-user.target
+
