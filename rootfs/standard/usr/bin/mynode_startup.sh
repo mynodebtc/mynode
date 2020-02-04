@@ -30,8 +30,9 @@ echo 'nameserver 8.8.4.4' >> /etc/resolv.conf
 echo 'nameserver 1.1.1.1' >> /etc/resolv.conf
 
 # Disable autosuspend for USB drives
-for dev in /sys/bus/usb/devices/*/power/control; do echo "on" > $dev; done 
-
+if [ -d /sys/bus/usb/devices/ ]; then 
+    for dev in /sys/bus/usb/devices/*/power/control; do echo "on" > $dev; done 
+fi
 
 # Verify SD card permissions and folders are OK
 mkdir -p /home/admin/.config/
