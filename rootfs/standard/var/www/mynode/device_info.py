@@ -128,6 +128,11 @@ def get_system_uptime():
     uptime = uptime.strip()
     return uptime
 
+def get_system_date():
+    date = subprocess.check_output('date', shell=True)
+    date = date.strip()
+    return date
+
 def get_device_serial():
     serial = subprocess.check_output("cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2", shell=True)
     serial = serial.strip()
