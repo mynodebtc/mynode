@@ -26,7 +26,7 @@ apt-get -y install pv sysstat network-manager unzip pkg-config libfreetype6-dev 
 apt-get -y install libatlas-base-dev libffi-dev libssl-dev glances python3-bottle
 apt-get -y -qq install apt-transport-https ca-certificates
 apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
-apt-get -y install xorg chromium openbox lightdm openjdk-11-jre
+apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev
 
 # Make sure some software is removed
 apt-get -y purge ntp # (conflicts with systemd-timedatectl)
@@ -92,9 +92,9 @@ if [ -f $BTC_UPGRADE_URL_FILE ]; then
 fi
 if [ "$CURRENT" != "$BTC_UPGRADE_URL" ]; then
     # Download and install Bitcoin
-    rm -rf /tmp/download
-    mkdir -p /tmp/download
-    cd /tmp/download
+    rm -rf /opt/download
+    mkdir -p /opt/download
+    cd /opt/download
 
     wget $BTC_UPGRADE_URL
     wget $BTC_UPGRADE_SHA256SUM_URL -O SHA256SUMS.asc
@@ -135,9 +135,9 @@ if [ -f $LND_UPGRADE_URL_FILE ]; then
 fi
 if [ "$CURRENT" != "$LND_UPGRADE_URL" ]; then
     # Download and install LND
-    rm -rf /tmp/download
-    mkdir -p /tmp/download
-    cd /tmp/download
+    rm -rf /opt/download
+    mkdir -p /opt/download
+    cd /opt/download
 
     wget $LND_UPGRADE_URL
     wget $LND_UPGRADE_MANIFEST_URL
@@ -317,9 +317,9 @@ if [ -f $LNDCONNECT_UPGRADE_URL_FILE ]; then
     CURRENT=$(cat $LNDCONNECT_UPGRADE_URL_FILE)
 fi
 if [ "$CURRENT" != "$LNDCONNECT_UPGRADE_URL" ]; then
-    rm -rf /tmp/download
-    mkdir -p /tmp/download
-    cd /tmp/download
+    rm -rf /opt/download
+    mkdir -p /opt/download
+    cd /opt/download
     wget $LNDCONNECT_UPGRADE_URL -O lndconnect.tar.gz
     tar -xvf lndconnect.tar.gz
     rm lndconnect.tar.gz
@@ -345,31 +345,30 @@ if [ ! -f /usr/bin/ngrok  ]; then
     cp ngrok /usr/bin/
 fi
 
-# TODO: Make sure to setup new service and stop installing the repo's tor
 # Install recent version of tor
-# echo "Installing tor..."
-# TOR_UPGRADE_URL=https://dist.torproject.org/tor-0.4.2.5.tar.gz
-# TOR_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.tor_url
-# CURRENT=""
-# if [ -f $TOR_UPGRADE_URL_FILE ]; then
-#     CURRENT=$(cat $TOR_UPGRADE_URL_FILE)
-# fi
-# if [ "$CURRENT" != "$TOR_UPGRADE_URL" ]; then
-#     rm -rf /tmp/download
-#     mkdir -p /tmp/download
-#     cd /tmp/download
-#     wget $TOR_UPGRADE_URL -O tor.tar.gz
-#     tar -xvf tor.tar.gz
-#     rm tor.tar.gz
-#     mv tor-* tor
+echo "Installing tor..."
+TOR_UPGRADE_URL=https://dist.torproject.org/tor-0.4.2.5.tar.gz
+TOR_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.tor_url
+CURRENT=""
+if [ -f $TOR_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $TOR_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$TOR_UPGRADE_URL" ]; then
+    rm -rf /opt/download
+    mkdir -p /opt/download
+    cd /opt/download
+    wget $TOR_UPGRADE_URL -O tor.tar.gz
+    tar -xvf tor.tar.gz
+    rm tor.tar.gz
+    mv tor-* tor
     
-#     cd tor
-#     ./configure
-#     make
-#     make install
+    cd tor
+    ./configure
+    make
+    make install
 
-#     echo $TOR_UPGRADE_URL > $TOR_UPGRADE_URL_FILE
-# fi
+    echo $TOR_UPGRADE_URL > $TOR_UPGRADE_URL_FILE
+fi
 
 
 # Enable any new/required services
@@ -381,6 +380,7 @@ systemctl enable docker_images
 systemctl enable glances
 systemctl enable netdata
 systemctl enable webssh2
+systemctl enable tor
 
 # Disable any old services
 systemctl disable hitch

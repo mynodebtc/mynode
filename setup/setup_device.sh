@@ -94,7 +94,7 @@ apt-get -y install pv sysstat network-manager rsync parted unzip pkg-config
 apt-get -y install libfreetype6-dev libpng-dev libatlas-base-dev libgmp-dev libltdl-dev 
 apt-get -y install libffi-dev libssl-dev glances python3-bottle automake libtool libltdl7
 apt -y -qq install apt-transport-https ca-certificates
-apt-get -y install xorg chromium openbox lightdm openjdk-11-jre
+apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev
 
 
 # Make sure some software is removed
@@ -130,8 +130,8 @@ curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
 # Update python3 to 3.7.X
 PYTHON3_VERSION=$(python3 --version)
 if [[ "$PYTHON3_VERSION" != *"Python 3.7"* ]]; then
-    mkdir -p /tmp/download
-    cd /tmp/download
+    mkdir -p /opt/download
+    cd /opt/download
     wget https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tar.xz
     tar xf Python-3.7.2.tar.xz
     cd Python-3.7.2
@@ -212,9 +212,9 @@ if [ -f $BTC_UPGRADE_URL_FILE ]; then
 fi
 if [ "$CURRENT" != "$BTC_UPGRADE_URL" ]; then
     # Download and install Bitcoin
-    rm -rf /tmp/download
-    mkdir -p /tmp/download
-    cd /tmp/download
+    rm -rf /opt/download
+    mkdir -p /opt/download
+    cd /opt/download
 
     wget $BTC_UPGRADE_URL
     wget $BTC_UPGRADE_SHA256SUM_URL -O SHA256SUMS.asc
@@ -254,9 +254,9 @@ if [ -f $LND_UPGRADE_URL_FILE ]; then
     CURRENT=$(cat $LND_UPGRADE_URL_FILE)
 fi
 if [ "$CURRENT" != "$LND_UPGRADE_URL" ]; then
-    rm -rf /tmp/download
-    mkdir -p /tmp/download
-    cd /tmp/download
+    rm -rf /opt/download
+    mkdir -p /opt/download
+    cd /opt/download
 
     wget $LND_UPGRADE_URL
     wget $LND_UPGRADE_MANIFEST_URL
@@ -414,9 +414,9 @@ if [ -f $LNDCONNECT_UPGRADE_URL_FILE ]; then
     CURRENT=$(cat $LNDCONNECT_UPGRADE_URL_FILE)
 fi
 if [ "$CURRENT" != "$LNDCONNECT_UPGRADE_URL" ]; then
-    rm -rf /tmp/download
-    mkdir -p /tmp/download
-    cd /tmp/download
+    rm -rf /opt/download
+    mkdir -p /opt/download
+    cd /opt/download
     wget $LNDCONNECT_UPGRADE_URL -O lndconnect.tar.gz
     tar -xvf lndconnect.tar.gz
     rm lndconnect.tar.gz
@@ -439,6 +439,31 @@ if [ ! -f /usr/bin/ngrok  ]; then
     wget $NGROK_URL
     unzip ngrok-*.zip
     cp ngrok /usr/bin/
+fi
+
+# Install recent version of tor
+echo "Installing tor..."
+TOR_UPGRADE_URL=https://dist.torproject.org/tor-0.4.2.5.tar.gz
+TOR_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.tor_url
+CURRENT=""
+if [ -f $TOR_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $TOR_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$TOR_UPGRADE_URL" ]; then
+    rm -rf /opt/download
+    mkdir -p /opt/download
+    cd /opt/download
+    wget $TOR_UPGRADE_URL -O tor.tar.gz
+    tar -xvf tor.tar.gz
+    rm tor.tar.gz
+    mv tor-* tor
+    
+    cd tor
+    ./configure
+    make
+    make install
+
+    echo $TOR_UPGRADE_URL > $TOR_UPGRADE_URL_FILE
 fi
 
 #########################################################
@@ -481,7 +506,6 @@ systemctl enable redis-server
 systemctl enable tls_proxy
 systemctl enable https
 systemctl enable rtl
-#systemctl enable lnd_admin # REMOVED
 systemctl enable tor
 systemctl enable invalid_block_check
 systemctl enable usb_driver_check
