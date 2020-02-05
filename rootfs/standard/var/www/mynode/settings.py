@@ -75,6 +75,7 @@ def page_settings():
     pk_skipped = skipped_product_key()
     pk_error = not is_valid_product_key()
     uptime = get_system_uptime()
+    date = get_system_date()
     local_ip = get_local_ip()
     public_ip = get_public_ip()
 
@@ -96,6 +97,9 @@ def page_settings():
     bitcoin_status_log = ""
     try:
         bitcoin_status_log = subprocess.check_output(["tail","-n","200","/mnt/hdd/mynode/bitcoin/debug.log"]).decode("utf8")
+        lines = bitcoin_status_log.split('\n')
+        lines.reverse()
+        bitcoin_status_log = '\n'.join(lines)
     except:
         bitcoin_status_log = "ERROR"
 
@@ -172,6 +176,7 @@ def page_settings():
         "upload_rate": upload_rate,
         "is_btc_lnd_tor_enabled": is_btc_lnd_tor_enabled(),
         "uptime": uptime,
+        "date": date,
         "public_ip": public_ip,
         "local_ip": local_ip,
         "drive_usage": get_drive_usage(),
