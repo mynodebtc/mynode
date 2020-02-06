@@ -1,3 +1,12 @@
+=== v0.1.86 ===
+- Upgrade tor to v4.2.5
+- Fix boot issue for VMs that don't have USB
+- Fix VPN issue by checking out specific rev of pivpn
+- Update lndmanage to 0.9.0
+- Add startup status to settings page
+- Add electrum server reset option
+- Bug fixes
+
 === v0.1.85 ===
 - Update RTL to v0.6.4
 - Add deposit address, balance, channel, and peer info to Lightning Page
