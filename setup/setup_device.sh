@@ -148,7 +148,7 @@ fi
 pip3 install wheel setuptools
 pip3 install bitstring lnd-grpc pycoin aiohttp connectrum python-bitcoinlib
 pip3 install python-bitcointx
-pip3 install lndmanage==0.8.0.1   # Install LND Manage (keep up to date with LND)
+pip3 install lndmanage==0.9.0   # Install LND Manage (keep up to date with LND)
 pip3 install docker-compose
 
 
@@ -181,6 +181,7 @@ usermod -aG docker root
 
 # Install node packages
 npm install -g pug-cli browserify uglify-js babel-cli
+sudo -u admin npm install balanceofsatoshis
 
 # Remove existing MOTD login info
 rm -rf /etc/motd
