@@ -80,6 +80,9 @@ def page_settings():
     public_ip = get_public_ip()
 
 
+    # Get Startup Status
+    startup_status_log = get_journalctl_log("mynode")
+
     # Get QuickSync Status
     quicksync_enabled = is_quicksync_enabled()
     quicksync_status = "Disabled"
@@ -142,6 +145,9 @@ def page_settings():
         "product_key_skipped": pk_skipped,
         "product_key_error": pk_error,
         "changelog": changelog,
+        "startup_status_log": startup_status_log,
+        "startup_status": get_service_status_basic_text("mynode"),
+        "startup_status_color": get_service_status_color("mynode"),
         "quicksync_status_log": quicksync_status_log,
         "quicksync_status": quicksync_status,
         "quicksync_status_color": quicksync_status_color,
