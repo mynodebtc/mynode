@@ -94,7 +94,7 @@ apt-get -y install pv sysstat network-manager rsync parted unzip pkg-config
 apt-get -y install libfreetype6-dev libpng-dev libatlas-base-dev libgmp-dev libltdl-dev 
 apt-get -y install libffi-dev libssl-dev glances python3-bottle automake libtool libltdl7
 apt -y -qq install apt-transport-https ca-certificates
-apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev
+apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
 
 
 # Make sure some software is removed
@@ -148,6 +148,7 @@ fi
 pip3 install wheel setuptools
 pip3 install bitstring lnd-grpc pycoin aiohttp connectrum python-bitcoinlib
 pip3 install python-bitcointx
+pip3 install gnureadline
 pip3 install lndmanage==0.9.0   # Install LND Manage (keep up to date with LND)
 pip3 install docker-compose
 
@@ -181,7 +182,6 @@ usermod -aG docker root
 
 # Install node packages
 npm install -g pug-cli browserify uglify-js babel-cli
-sudo -u admin npm install balanceofsatoshis
 
 # Remove existing MOTD login info
 rm -rf /etc/motd

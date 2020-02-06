@@ -399,6 +399,22 @@ def delete_lnd_data():
 
 
 #==================================
+# Electrum Server Functions
+#==================================
+def stop_electrs():
+    os.system("systemctl stop electrs")
+
+def delete_electrs_data():
+    os.system("rm -rf /mnt/hdd/mynode/electrs")
+
+def reset_electrs():
+    stop_electrs()
+    delete_electrs_data()
+    reboot_device()
+
+
+
+#==================================
 # Tor Functions
 #==================================
 def reset_tor():
