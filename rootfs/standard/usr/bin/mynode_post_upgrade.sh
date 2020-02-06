@@ -26,7 +26,7 @@ apt-get -y install pv sysstat network-manager unzip pkg-config libfreetype6-dev 
 apt-get -y install libatlas-base-dev libffi-dev libssl-dev glances python3-bottle
 apt-get -y -qq install apt-transport-https ca-certificates
 apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
-apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev
+apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
 
 # Make sure some software is removed
 apt-get -y purge ntp # (conflicts with systemd-timedatectl)
@@ -39,6 +39,7 @@ pip install tzupdate virtualenv --no-cache-dir
 
 # Install any pip3 software
 pip3 install python-bitcointx --no-cache-dir
+pip3 install gnureadline --no-cache-dir
 pip3 install lndmanage==0.9.0 --no-cache-dir   # Install LND Manage (keep up to date with LND)
 pip3 install docker-compose --no-cache-dir
 
@@ -71,7 +72,6 @@ usermod -aG docker root
 
 
 # Install node packages
-sudo -u admin npm install balanceofsatoshis
 
 
 # Upgrade BTC
