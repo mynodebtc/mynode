@@ -351,29 +351,31 @@ if [ ! -f /usr/bin/ngrok  ]; then
 fi
 
 # Install recent version of tor
-echo "Installing tor..."
-TOR_UPGRADE_URL=https://dist.torproject.org/tor-0.4.2.5.tar.gz
-TOR_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.tor_url
-CURRENT=""
-if [ -f $TOR_UPGRADE_URL_FILE ]; then
-    CURRENT=$(cat $TOR_UPGRADE_URL_FILE)
-fi
-if [ "$CURRENT" != "$TOR_UPGRADE_URL" ]; then
-    rm -rf /opt/download
-    mkdir -p /opt/download
-    cd /opt/download
-    wget $TOR_UPGRADE_URL -O tor.tar.gz
-    tar -xvf tor.tar.gz
-    rm tor.tar.gz
-    mv tor-* tor
+# echo "Installing tor..."
+# TOR_UPGRADE_URL=https://dist.torproject.org/tor-0.4.2.5.tar.gz
+# TOR_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.tor_url
+# CURRENT=""
+# if [ -f $TOR_UPGRADE_URL_FILE ]; then
+#     CURRENT=$(cat $TOR_UPGRADE_URL_FILE)
+# fi
+# if [ "$CURRENT" != "$TOR_UPGRADE_URL" ]; then
+#     rm -rf /opt/download
+#     mkdir -p /opt/download
+#     cd /opt/download
+#     wget $TOR_UPGRADE_URL -O tor.tar.gz
+#     tar -xvf tor.tar.gz
+#     rm tor.tar.gz
+#     mv tor-* tor
     
-    cd tor
-    ./configure
-    make
-    make install
+#     cd tor
+#     ./configure
+#     make
+#     make install
 
-    echo $TOR_UPGRADE_URL > $TOR_UPGRADE_URL_FILE
-fi
+#     echo $TOR_UPGRADE_URL > $TOR_UPGRADE_URL_FILE
+# fi
+apt-get remove -y tor
+apt-get install -y tor
 
 
 # Enable any new/required services
