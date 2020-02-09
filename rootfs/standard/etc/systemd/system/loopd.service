@@ -8,7 +8,7 @@ After=lnd.service
 
 [Service]
 ExecStartPre=/usr/bin/wait_on_lnd.sh
-ExecStart=loopd
+ExecStart=/usr/local/bin/loopd
 
 User=bitcoin
 Group=bitcoin
