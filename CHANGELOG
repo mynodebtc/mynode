@@ -1,3 +1,7 @@
+=== v0.1.88 ===
+- mempoolspace big fix
+- Update loopd service file
+
 === v0.1.87 ===
 - Roll back tor update
 - Add Lightning Loop v0.4.0
