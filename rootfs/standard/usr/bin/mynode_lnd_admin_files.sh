@@ -26,12 +26,12 @@ while true; do
 
     # Copy LND files to admin folder
     cp -f $LND_TLS_CERT_FILE /home/admin/.lnd/
-    cp -f $LND_ADMIN_MACAROON_FILE /home/admin/.lnd/data/chain/bitcoin/mainnet/admin.macaroon
+    cp -f /mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/*.macaroon /home/admin/.lnd/data/chain/bitcoin/mainnet/
     chown -R admin:admin /home/admin/.lnd/
     echo "Updated admin copy of LND files!"
 
     # Wait for changes
-    inotifywait -e modify -e create -e delete $LND_TLS_CERT_FILE $LND_ADMIN_MACAROON_FILE
+    inotifywait -e modify -e create -e delete $LND_TLS_CERT_FILE /mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/*.macaroon
 done
 
 # Should never exit

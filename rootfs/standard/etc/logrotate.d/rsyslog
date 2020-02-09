@@ -3,6 +3,7 @@
 /var/log/flask
 /var/log/lndhub.log
 /var/log/lnd.log
+/var/log/loopd.log
 /var/log/lnd_backup.log
 /var/log/lnd_admin.log
 /var/log/mynode.log

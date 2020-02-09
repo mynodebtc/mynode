@@ -28,6 +28,8 @@ while [ 1 ]; do
         CURRENT=$(cat $WEBSSH2_UPGRADE_URL_FILE)
     fi
     if [ "$CURRENT" != "$WEBSSH2_UPGRADE_URL" ]; then
+        docker rmi webssh2 || true
+
         cd /opt/mynode
         rm -rf webssh2
         wget $WEBSSH2_UPGRADE_URL -O webssh2.tar.gz
