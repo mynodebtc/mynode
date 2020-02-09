@@ -84,9 +84,8 @@ def page_download_ovpn():
     # Download ovpn
     return send_from_directory(directory="/home/pivpn/ovpns/", filename="mynode_vpn.ovpn")
 
-@mynode_vpn.route("/vpn-info/check-in")
+@mynode_vpn.route("/vpn-info/find-public-ip")
 def check_in_page():
     check_logged_in()
-    check_in()
     find_public_ip()
     return redirect("/vpn-info")

@@ -220,7 +220,6 @@ def get_latest_version_page():
 def check_in_page():
     check_logged_in()
     check_in()
-    find_public_ip()
     return redirect("/settings")
 
 @mynode_settings.route("/settings/reset-blockchain")
