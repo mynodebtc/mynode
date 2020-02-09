@@ -1,26 +1,26 @@
-# LND Admin service
-# /etc/systemd/system/admin_admin.service
+# loopd service
+# /etc/systemd/system/loopd.service
 
 [Unit]
-Description=LND Admin
-Wants=bitcoind.service
-After=bitcoind.service
+Description=loopd
+Wants=lnd.service
+After=lnd.service
 
 [Service]
 ExecStartPre=/usr/bin/wait_on_lnd.sh
-WorkingDirectory=/opt/mynode/lnd-admin
-ExecStart=/usr/bin/npm start
+ExecStart=loopd
 
 User=bitcoin
 Group=bitcoin
 Type=simple
+KillMode=process
 LimitNOFILE=128000
 TimeoutSec=240
 Restart=always
 RestartSec=60
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=lnd_admin
+SyslogIdentifier=loopd
 
 [Install]
 WantedBy=multi-user.target

@@ -50,6 +50,7 @@ curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
 curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
 curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
+gpg  --keyserver hkps://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E #loopd
 set -e
 
 # Install docker
@@ -157,6 +158,45 @@ if [ "$CURRENT" != "$LND_UPGRADE_URL" ]; then
 
         # Mark current version
         echo $LND_UPGRADE_URL > $LND_UPGRADE_URL_FILE
+    else
+        echo "ERROR UPGRADING LND - GPG FAILED"
+    fi
+fi
+
+# Upgrade Loopd
+echo "Upgrading loopd..."
+LOOP_VERSION="v0.4.0-beta"
+LOOP_ARCH="loop-linux-armv7"
+if [ $IS_X86 = 1 ]; then
+    LOOP_ARCH="loop-linux-amd64"
+fi
+LOOP_UPGRADE_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/$LOOP_ARCH-$LOOP_VERSION.tar.gz
+LOOP_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.loop_url
+LOOP_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt
+LOOP_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt.sig
+CURRENT=""
+if [ -f $LOOP_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $LOOP_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$LOOP_UPGRADE_URL" ]; then
+    # Download and install Loop
+    rm -rf /opt/download
+    mkdir -p /opt/download
+    cd /opt/download
+
+    wget $LOOP_UPGRADE_URL
+    wget $LOOP_UPGRADE_MANIFEST_URL
+    wget $LOOP_UPGRADE_MANIFEST_SIG_URL
+
+    gpg --verify manifest-*.txt.sig
+    if [ $? == 0 ]; then
+        # Install Loop
+        tar -xzf loop-*.tar.gz
+        mv $LOOP_ARCH-$LOOP_VERSION loop
+        install -m 0755 -o root -g root -t /usr/local/bin loop/*
+
+        # Mark current version
+        echo $LOOP_UPGRADE_URL > $LOOP_UPGRADE_URL_FILE
     else
         echo "ERROR UPGRADING LND - GPG FAILED"
     fi
@@ -388,6 +428,7 @@ systemctl enable glances
 systemctl enable netdata
 systemctl enable webssh2
 systemctl enable tor
+systemctl enable loopd
 
 # Disable any old services
 systemctl disable hitch

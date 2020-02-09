@@ -17,6 +17,8 @@ if [ "$APP" = "bitcoin" ]; then
     rm -f /home/bitcoin/.mynode/.btc_url
 elif [ "$APP" = "lnd" ]; then
     rm -f /home/bitcoin/.mynode/.lnd_url
+elif [ "$APP" = "loopd" ]; then
+    rm -f /home/bitcoin/.mynode/.loop_url
 elif [ "$APP" = "lndhub" ]; then
     rm -f /home/bitcoin/.mynode/.lndhub_url
 elif [ "$APP" = "rtl" ]; then
@@ -35,6 +37,8 @@ elif [ "$APP" = "lndconnect" ]; then
     rm -f  /home/bitcoin/.mynode/.lndconnect_url
 elif [ "$APP" = "webssh2" ]; then
     rm -f /mnt/hdd/mynode/settings/webssh2_url
+    systemctl stop webssh2
+    docker rmi webssh2
 else
     echo "UNKNOWN APP: $APP"
     exit 1

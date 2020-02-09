@@ -1,3 +1,8 @@
+=== v0.1.87 ===
+- Roll back tor update
+- Add Lightning Loop v0.4.0
+- Improve mempoolspace consistency
+
 === v0.1.86 ===
 - Upgrade tor to v4.2.5
 - Fix boot issue for VMs that don't have USB
