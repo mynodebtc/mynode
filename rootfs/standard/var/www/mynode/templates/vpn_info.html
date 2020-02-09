@@ -102,9 +102,9 @@
                 <div class="info_tile_header">Public IP Address</div>
                 <div class="info_tile_contents">
                     {{public_ip}}
-                    {% if 'Failed to find' in public_ip %}
+                    {% if 'Failed to find' in public_ip or 'not_detected' in public_ip %}
                         <br/>
-                        <a href="/settings/check-in" class="ui-button ui-widget ui-corner-all settings_button_small">Refresh</a>
+                        <a href="/vpn-info/find-public-ip" class="ui-button ui-widget ui-corner-all settings_button_small">Refresh</a>
                     {% endif %}
                 </div>
             </div>
