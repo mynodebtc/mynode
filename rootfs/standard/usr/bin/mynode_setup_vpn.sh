@@ -375,8 +375,8 @@ make_repo() {
     echo -n ":::    Cloning $2 into $1..."
     $SUDO rm -rf "${1}"
     sync
-    $SUDO git clone -q --depth 1 --no-single-branch "${2}" "${1}"
-    $SUDO git checkout ${pivpnVersionHash}
+    $SUDO git clone -q "${2}" "${1}"
+    $SUDO git -C "${1}" checkout ${pivpnVersionHash}
     sync
     if [ -z "${TESTING+x}" ]; then
         :
