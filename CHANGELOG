@@ -1,5 +1,10 @@
+=== v0.1.89 ===
+- Add fan controller for RockPro64
+- Reduce space used for logs
+- Bug fixes
+
 === v0.1.88 ===
-- mempoolspace big fix
+- mempoolspace bug fix
 - Update loopd service file
 
 === v0.1.87 ===
