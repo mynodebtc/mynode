@@ -25,14 +25,6 @@ sudo apt-get -y upgrade
 sudo apt-get -y install network-manager tmux
 sudo apt-get -y install lua5.3 lua5.3-dev gcc make git
 
-# Install fan controller
-git clone https://github.com/tuxd3v/ats.git
-cd ats
-make
-sudo make install
-cd ../
-rm -rf ats
-
 # Regenerate MAC Address for RockPro64
 . /usr/lib/armbian/armbian-common
 CONNECTION="$(nmcli -f UUID,ACTIVE,DEVICE,TYPE connection show --active | tail -n1)"
