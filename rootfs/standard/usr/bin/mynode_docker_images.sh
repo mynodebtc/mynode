@@ -45,27 +45,25 @@ while [ 1 ]; do
 
     # Upgrade mempool.space
     echo "Checking for new mempool.space..."
-    if [ $IS_PREMIUM -eq 1 ]; then
-        MEMPOOLSPACE_UPGRADE_URL=https://github.com/mempool-space/mempool.space/archive/master.zip
-        MEMPOOLSPACE_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/mempoolspace_url
-        CURRENT=""
-        if [ -f $MEMPOOLSPACE_UPGRADE_URL_FILE ]; then
-            CURRENT=$(cat $MEMPOOLSPACE_UPGRADE_URL_FILE)
-        fi
-        if [ "$CURRENT" != "$MEMPOOLSPACE_UPGRADE_URL" ]; then
-            docker rmi mempoolspace || true
+    MEMPOOLSPACE_UPGRADE_URL=https://github.com/mempool-space/mempool.space/archive/master.zip
+    MEMPOOLSPACE_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/mempoolspace_url
+    CURRENT=""
+    if [ -f $MEMPOOLSPACE_UPGRADE_URL_FILE ]; then
+        CURRENT=$(cat $MEMPOOLSPACE_UPGRADE_URL_FILE)
+    fi
+    if [ "$CURRENT" != "$MEMPOOLSPACE_UPGRADE_URL" ]; then
+        docker rmi mempoolspace || true
 
-            cd /opt/mynode
-            rm -rf mempoolspace
-            wget $MEMPOOLSPACE_UPGRADE_URL -O mempool.zip
-            unzip -o mempool.zip
-            rm mempool.zip
-            mv mempool* mempoolspace
-            cd mempoolspace
-            docker build -t mempoolspace .
+        cd /opt/mynode
+        rm -rf mempoolspace
+        wget $MEMPOOLSPACE_UPGRADE_URL -O mempool.zip
+        unzip -o mempool.zip
+        rm mempool.zip
+        mv mempool* mempoolspace
+        cd mempoolspace
+        docker build -t mempoolspace .
 
-            echo $MEMPOOLSPACE_UPGRADE_URL > $MEMPOOLSPACE_UPGRADE_URL_FILE
-        fi
+        echo $MEMPOOLSPACE_UPGRADE_URL > $MEMPOOLSPACE_UPGRADE_URL_FILE
     fi
 
     rm -f /tmp/installing_docker_images
