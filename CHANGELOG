@@ -1,3 +1,7 @@
+=== v0.1.90 ===
+- Setup proper RTL config for v0.6.4+
+- Use working version of PiVPN
+
 === v0.1.89 ===
 - Add fan controller for RockPro64
 - Reduce space used for logs
