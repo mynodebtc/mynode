@@ -1,0 +1,30 @@
+{
+    "multiPassHashed": "d0b3cba71f725563d316ea3516099328042095d10f4571be25c07f9ce31985a5",
+    "port": "3010",
+    "defaultNodeIndex": 1,
+    "SSO": {
+        "rtlSSO": 0,
+        "rtlCookiePath": "",
+        "logoutRedirectLink": ""
+    },
+    "nodes": [
+        {
+            "index": 1,
+            "lnNode": "myNode",
+            "lnImplementation": "LND",
+            "Authentication": {
+                "macaroonPath": "/home/bitcoin/.lnd/data/chain/bitcoin/mainnet",
+                "configPath": "/home/bitcoin/.lnd/lnd.conf"
+            },
+            "Settings": {
+                "userPersona": "MERCHANT",
+                "themeMode": "DAY",
+                "themeColor": "PURPLE",
+                "channelBackupPath": "/mnt/hdd/mynode/rtl_backup/",
+                "enableLogging": true,
+                "lnServerUrl": "https://localhost:10080/v1",
+                "fiatConversion": false
+            }
+        }
+    ]
+}
