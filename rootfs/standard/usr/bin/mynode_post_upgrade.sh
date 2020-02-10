@@ -418,6 +418,12 @@ apt-get remove -y tor
 apt-get install -y tor
 
 
+# Enable fan control
+if [ $IS_ROCKPRO64 = 1 ]; then
+    systemctl enable fan_control
+fi
+
+
 # Enable any new/required services
 systemctl enable firewall
 systemctl enable invalid_block_check

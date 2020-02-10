@@ -1,0 +1,20 @@
+# myNode Fan Control (RockPro64)
+# /etc/systemd/system/fan_control.service
+
+[Unit]
+Description=myNode Fan Control
+
+[Service]
+Type=simple
+KillMode=control-group
+ExecStart=/usr/bin/fan_control.py
+User=root
+Group=root
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=mynode_fan
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

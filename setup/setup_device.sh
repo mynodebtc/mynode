@@ -525,6 +525,12 @@ sync
 sleep 1
 
 
+# Enable fan control
+if [ $IS_ROCKPRO64 = 1 ]; then
+    systemctl enable fan_control
+fi
+
+
 # Setup myNode Startup Script
 systemctl daemon-reload
 systemctl enable mynode
