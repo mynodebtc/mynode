@@ -1,0 +1,20 @@
+# myNode Rotate Logs
+# /etc/systemd/system/rotate_logs.service
+
+[Unit]
+Description=myNode Rotate Logs
+
+[Service]
+Type=simple
+KillMode=control-group
+ExecStart=/usr/bin/mynode_logrotate.sh
+User=root
+Group=root
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=mynode_logrotate
+Restart=always
+RestartSec=120
+
+[Install]
+WantedBy=multi-user.target

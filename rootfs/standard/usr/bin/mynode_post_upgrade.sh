@@ -435,6 +435,7 @@ systemctl enable netdata
 systemctl enable webssh2
 systemctl enable tor
 systemctl enable loopd
+systemctl enable rotate_logs
 
 # Disable any old services
 systemctl disable hitch

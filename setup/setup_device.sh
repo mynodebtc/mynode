@@ -562,6 +562,7 @@ systemctl enable docker_images
 systemctl enable glances
 systemctl enable netdata
 systemctl enable webssh2
+systemctl enable rotate_logs
 
 
 # Regenerate MAC Address for Armbian devices
