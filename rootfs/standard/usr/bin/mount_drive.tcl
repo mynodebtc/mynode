@@ -40,7 +40,7 @@ proc findBlockDevices {hardDrivesName} {
     set hardDrives {}
 
     foreach dev $devs {
-        if [regexp "sd.*|hd.*|vd.*" $dev] {
+        if [regexp "sd.*|hd.*|vd.*|nvme.*" $dev] {
             lappend hardDrives $dev
         }
     }
@@ -71,12 +71,18 @@ proc createMyNodeFsOnBlockDevice {blockDevice} {
         runCommand /usr/bin/format_drive.sh ${blockDevice}
         after 5000
 
-        puts "Formatting new partition ${blockDevice}1"
-        runCommand mkfs.ext4 -F -L myNode /dev/${blockDevice}1
+        if [regexp "nvme.*" $blockDevice] {
+            set blockPartition ${blockDevice}p1
+        } else {
+            set blockPartition ${blockDevice}1
+        }
 
-        runCommand mount /dev/${blockDevice}1 /mnt/hdd -o errors=continue
+        puts "Formatting new partition ${blockPartition}"
+        runCommand mkfs.ext4 -F -L myNode /dev/${blockPartition}
+
+        runCommand mount /dev/${blockPartition} /mnt/hdd -o errors=continue
         runCommand date >/mnt/hdd/.mynode
-        runCommand echo /dev/${blockDevice}1 > /tmp/.mynode_drive
+        runCommand echo /dev/${blockPartition} > /tmp/.mynode_drive
     }] {
         puts "Formatting on ${blockDevice} failed: $::errorInfo"
         return 0
