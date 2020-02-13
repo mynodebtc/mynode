@@ -2,6 +2,18 @@
     <head>
         <title>{{ title }}</title>
         {% include 'includes/head.html' %}
+
+
+        <script>
+            $(document).ready(function() {
+
+                $("#show_rpc_password").on("click", function() {
+                    $("#show_rpc_password").hide(0);
+                    $("#rpc_password").show();
+                });
+
+            });
+        </script>
      </head>
 
     <body>
@@ -44,6 +56,13 @@
             <div class="info_tile">
                 <div class="info_tile_header">Mempool Size</div>
                 <div class="info_tile_contents">{{mempool_size}}</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">RPC Password</div>
+                <div class="info_tile_contents">
+                    <span id="rpc_password" style="display: none;">{{rpc_password}}</span>
+                    <a id="show_rpc_password" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;">show</a>
+                </div>
             </div>
             <div class="info_tile">
                 <div class="info_tile_header">Bitcoin Config</div>
