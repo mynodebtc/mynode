@@ -19,26 +19,29 @@ elif [ "$APP" = "lnd" ]; then
     rm -f /home/bitcoin/.mynode/.lnd_url
 elif [ "$APP" = "loopd" ]; then
     rm -f /home/bitcoin/.mynode/.loop_url
+elif [ "$APP" = "btcrpcexplorer" ]; then
+    rm -f /home/bitcoin/.mynode/.btcrpcexplorer_url
+elif [ "$APP" = "joinmarket" ]; then
+    rm -f /home/bitcoin/.mynode/.joinmarket_url
+elif [ "$APP" = "lndconnect" ]; then
+    rm -f  /home/bitcoin/.mynode/.lndconnect_url
 elif [ "$APP" = "lndhub" ]; then
     rm -f /home/bitcoin/.mynode/.lndhub_url
-elif [ "$APP" = "rtl" ]; then
-    rm -f /home/bitcoin/.mynode/.rtl_url
 elif [ "$APP" = "mempoolspace" ]; then
     rm -f /mnt/hdd/mynode/settings/mempoolspace_url
     systemctl stop mempoolspace
     docker rmi mempoolspace
-elif [ "$APP" = "joinmarket" ]; then
-    rm -f /home/bitcoin/.mynode/.joinmarket_url
-elif [ "$APP" = "whirlpool" ]; then
-    rm -f /home/bitcoin/.mynode/.whirlpool_url
-elif [ "$APP" = "btcrpcexplorer" ]; then
-    rm -f /home/bitcoin/.mynode/.btcrpcexplorer_url
-elif [ "$APP" = "lndconnect" ]; then
-    rm -f  /home/bitcoin/.mynode/.lndconnect_url
+elif [ "$APP" = "rtl" ]; then
+    rm -f /home/bitcoin/.mynode/.rtl_url
+elif [ "$APP" = "tor" ]; then
+    apt-get remove -y tor
+    apt-get install -y tor
 elif [ "$APP" = "webssh2" ]; then
     rm -f /mnt/hdd/mynode/settings/webssh2_url
     systemctl stop webssh2
     docker rmi webssh2
+elif [ "$APP" = "whirlpool" ]; then
+    rm -f /home/bitcoin/.mynode/.whirlpool_url
 else
     echo "UNKNOWN APP: $APP"
     exit 1
