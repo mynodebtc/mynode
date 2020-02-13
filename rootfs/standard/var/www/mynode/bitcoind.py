@@ -110,6 +110,7 @@ def bitcoind_status_page():
         peerdata  = get_bitcoin_peers()
         mempooldata = get_bitcoin_mempool()
         version = get_bitcoin_version()
+        rpc_password = get_bitcoin_rpc_password()
 
         # Mempool info
         mempool = {}
@@ -172,6 +173,7 @@ def bitcoind_status_page():
         "difficulty": "{:.3g}".format(info["difficulty"]),
         "block_num": info["blocks"],
         "header_num": info["headers"],
+        "rpc_password": rpc_password,
         "disk_size": (int(info["size_on_disk"]) / 1000 / 1000 / 1000),
         "mempool_tx": mempool["size"],
         "mempool_size": "{:.3} MB".format(float(mempool["bytes"]) / 1000 / 1000),
