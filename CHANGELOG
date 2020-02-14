@@ -1,3 +1,10 @@
+=== v0.1.91 ===
+- Add PCIe NVME Support for RockPro64
+- Update web logo images
+- Add firewall info to settings page
+- Add Tor re-install option
+- Improve QuickSync bandwidth
+
 === v0.1.90 ===
 - Setup proper RTL config for v0.6.4+
 - Use working version of PiVPN
