@@ -414,7 +414,8 @@ fi
 
 #     echo $TOR_UPGRADE_URL > $TOR_UPGRADE_URL_FILE
 # fi
-
+apt-get remove -y tor	
+apt-get install -y tor
 
 # Enable fan control
 if [ $IS_ROCKPRO64 = 1 ]; then
