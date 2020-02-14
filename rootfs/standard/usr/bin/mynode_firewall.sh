@@ -50,7 +50,6 @@ ufw status
 # Reload firewall after some time to reset (fixes VPN)
 sleep 120s
 ufw reload
-ufw logging off
 
 # Success
 exit 0

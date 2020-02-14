@@ -131,6 +131,9 @@ def page_settings():
         upload_rate = 100
         download_rate = 100
 
+    # Get Firewall Status
+    firewall_status_log = get_journalctl_log("ufw")
+
 
     templateData = {
         "title": "myNode Settings",
@@ -175,6 +178,10 @@ def page_settings():
         "mempoolspace_status_log": get_journalctl_log("mempoolspace"),
         "mempoolspace_status": get_service_status_basic_text("mempoolspace"),
         "mempoolspace_status_color": get_service_status_color("mempoolspace"),
+        "firewall_status_log": get_journalctl_log("ufw"),
+        "firewall_status": get_service_status_basic_text("ufw"),
+        "firewall_status_color": get_service_status_color("ufw"),
+        "firewall_rules": get_firewall_rules(),
         "is_quicksync_disabled": not quicksync_enabled,
         "is_netdata_enabled": is_netdata_enabled(),
         "is_uploader_device": is_uploader(),
@@ -318,6 +325,14 @@ def reset_electrs_page():
         "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
+
+@mynode_settings.route("/settings/reset-firewall")
+def reset_firewall_page():
+    check_logged_in()
+    t = Timer(3.0, reload_firewall)
+    t.start()
+    flash("Firewall Reset", category="message")
+    return redirect("/settings")
 
 @mynode_settings.route("/settings/factory-reset", methods=['POST'])
 def factory_reset_page():
