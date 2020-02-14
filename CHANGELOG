@@ -17,7 +17,7 @@
 - Improve mempoolspace consistency
 
 === v0.1.86 ===
-- Upgrade tor to v4.2.5
+- Upgrade Tor to v0.4.2.5
 - Fix boot issue for VMs that don't have USB
 - Fix VPN issue by checking out specific rev of pivpn
 - Update lndmanage to 0.9.0
