@@ -9,6 +9,11 @@ rootfs:
 rootfs_auto:
 	@./make_rootfs_auto.sh
 
+.PHONY: clean_rootfs
+clean_rootfs:
+	@rm -rf out/mynode_rootfs_*
+	@rm -rf out/rootfs_*
+
 # Start file server to allow downloads to devices
 .PHONY: start_file_server
 start_file_server:
@@ -82,7 +87,7 @@ release.sh:
 
 # Release package to server
 .PHONY: release
-release: rootfs release.sh
+release: clean_rootfs rootfs release.sh
 	@sh release.sh
 
 
