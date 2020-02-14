@@ -229,6 +229,16 @@
                     $("#upgrade_status").show();
                 });
 
+                $("#show_firewall_status").on("click", function() {
+                    $("#show_firewall_status").hide(0);
+                    $("#firewall_status").show();
+                });
+
+                $("#show_firewall_rules").on("click", function() {
+                    $("#show_firewall_rules").hide(0);
+                    $("#firewall_rules").show();
+                });
+
                 $("#show_mynode_changelog").on("click", function() {
                     if (showChangelog)
                     {
@@ -529,7 +539,7 @@
                 <div class="settings_block_subheader_status_icon {{ startup_status_color }}"></div>
                 {{ startup_status }}
             </div>
-            <button id="show_startup_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
+            <button id="show_startup_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
             <div id="startup_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{startup_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -538,7 +548,7 @@
                 <div class="settings_block_subheader_status_icon {{ quicksync_status_color }}"></div>
                 {{ quicksync_status }}
             </div>
-            <button id="show_quicksync_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
+            <button id="show_quicksync_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
             <div id="quicksync_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{quicksync_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -547,7 +557,7 @@
                 <div class="settings_block_subheader_status_icon {{ bitcoin_status_color }}"></div>
                 {{ bitcoin_status }}
             </div>
-            <button id="show_bitcoin_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
+            <button id="show_bitcoin_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
             <div id="bitcoin_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{bitcoin_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -556,7 +566,7 @@
                 <div class="settings_block_subheader_status_icon {{ lnd_status_color }}"></div>
                 {{ lnd_status }}
             </div>
-            <button id="show_lnd_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
+            <button id="show_lnd_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
             <div id="lnd_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lnd_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -565,7 +575,7 @@
                 <div class="settings_block_subheader_status_icon {{ tor_status_color }}"></div>
                 {{ tor_status }}
             </div>
-            <button id="show_tor_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
+            <button id="show_tor_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
             <div id="tor_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{tor_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -574,7 +584,7 @@
                 <div class="settings_block_subheader_status_icon {{ electrs_status_color }}"></div>
                 {{ electrs_status }}
             </div>
-            <button id="show_electrs_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
+            <button id="show_electrs_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
             <div id="electrs_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{electrs_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -583,7 +593,7 @@
                 <div class="settings_block_subheader_status_icon {{ rtl_status_color }}"></div>
                 {{ rtl_status }}
             </div>
-            <button id="show_rtl_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
+            <button id="show_rtl_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
             <div id="rtl_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{rtl_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -592,7 +602,7 @@
                 <div class="settings_block_subheader_status_icon {{ docker_image_build_status_color }}"></div>
                 {{ docker_image_build_status }}
             </div>
-            <button id="show_docker_image_build_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
+            <button id="show_docker_image_build_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
             <div id="docker_image_build_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_image_build_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -601,7 +611,7 @@
                 <div class="settings_block_subheader_status_icon {{ btcpayserver_status_color }}"></div>
                 {{ btcpayserver_status }}
             </div>
-            <button id="show_btcpayserver_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
+            <button id="show_btcpayserver_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
             <div id="btcpayserver_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{btcpayserver_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -610,8 +620,17 @@
                 <div class="settings_block_subheader_status_icon {{ mempoolspace_status_color }}"></div>
                 {{ mempoolspace_status }}
             </div>
-            <button id="show_mempoolspace_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
+            <button id="show_mempoolspace_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
             <div id="mempoolspace_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{mempoolspace_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Firewall Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ firewall_status_color }}"></div>
+                {{ firewall_status }}
+            </div>
+            <button id="show_firewall_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="firewall_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{firewall_status_log}}</pre></div>
 
 
         </div>
@@ -656,6 +675,25 @@
             Do not share these logs in a public place. They may contain sensitive information.
             <br/>
             <a href="/settings/mynode_logs.tar.gz" class="ui-button ui-widget ui-corner-all settings_button">Download Logs</a>
+        </div>
+
+
+        <div class="settings_block">
+            <div class="settings_block_header">Firewall</div>
+
+            <div class="settings_block_subheader">Rules</div>
+            Show the current firewall configuration.
+            <br/>
+            <button id="show_firewall_rules" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
+            <div id="firewall_rules" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{firewall_rules}}</pre></div>
+            
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Reset</div>
+            Resetting the firewall will disable and re-enable the firewall and then reboot the device.
+            <br/>
+            <a href="/settings/reset-firewall" class="ui-button ui-widget ui-corner-all settings_button">Reset Firewall</a>
+
         </div>
 
 

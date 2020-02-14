@@ -432,3 +432,17 @@ def enable_btc_lnd_tor():
 def disable_btc_lnd_tor():
     os.system("rm -f mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
     os.system("sync")
+
+
+#==================================
+# Firewall Functions
+#==================================
+def reload_firewall():
+    os.system("ufw reload")
+
+def get_firewall_rules():
+    try:
+        rules = subprocess.check_output("ufw status", shell=True).decode("utf8")
+    except:
+        rules = "ERROR"
+    return rules
