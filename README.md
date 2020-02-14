@@ -29,14 +29,14 @@ https://mynodebtc.com/order_now
 ## Features
 Each myNode device comes with a number of wonderful features:
 
-- Bitcoin Node
-- Lightning Node (LND)
-- Electrum Server - BTC Light Wallet Server
-- BTCPay Server
+- Bitcoin Node (Bitcoin Core v0.19.0.1)
+- Lightning Node (LND v0.9.0-beta)
+- Electrum Server (Electrum Rust Server 0.7.0)
+- BTCPay Server (v1.0.3.153)
 - Samourai Whirlpool
 - Mempool.Space local full node integration
 - JoinMarket CLI
-- Virtual Machine support (OVA file, VirtualBox)
+- Virtual Machine support (OVA file: VirtualBox, VMWare)
 - Simple UI / Web Interface
 - VPN for Remote Access
 - Tor
@@ -61,7 +61,7 @@ We currently support images for the following devices:
  - Raspberry Pi 4
  - Rock64
  - RockPro64
- - Virtual Machine Support (VirtualBox hosting Windows/OS X/Linux/Solaris)
+ - Virtual Machine Support (VirtualBox hosting Windows/OS X/Linux/Solaris, VMWare hosting Windows/OS X/Linux)
 
 ## Running myNode
 You can run myNode on your own device in just a few easy steps!
