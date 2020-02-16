@@ -2,7 +2,7 @@
 - Update RTL to v0.6.5
 - Readd auto Tor reinstall
 - Clean rootfs before release
-- Mempool.Space docker improvements
+- Fix rendering glitches and improved performance on Mempool.Space
 
 === v0.1.91 ===
 - Add PCIe NVME Support for RockPro64
