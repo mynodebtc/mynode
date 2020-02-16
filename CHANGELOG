@@ -1,5 +1,5 @@
 === v0.1.92 ===
-- Update RTL to v0.6.5
+- Update RTL to v0.6.7
 - Readd auto Tor reinstall
 - Clean rootfs before release
 - Fix rendering glitches and improved performance on Mempool.Space
