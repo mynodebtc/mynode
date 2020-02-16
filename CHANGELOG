@@ -1,8 +1,13 @@
+=== v0.1.92 ===
+- Update RTL to v0.6.5
+- Readd auto Tor reinstall
+- Clean rootfs before release
+
 === v0.1.91 ===
 - Add PCIe NVME Support for RockPro64
 - Update web logo images
 - Add firewall info to settings page
-- Add Tor re-install option
+- Add Tor reinstall option
 - Improve QuickSync bandwidth
 
 === v0.1.90 ===
@@ -15,27 +20,27 @@
 - Bug fixes
 
 === v0.1.88 ===
-- mempoolspace bug fix
+- Mempool.Space bug fix
 - Update loopd service file
 
 === v0.1.87 ===
-- Roll back tor update
+- Rollback Tor update
 - Add Lightning Loop v0.4.0
-- Improve mempoolspace consistency
+- Improve Mempool.Space consistency
 
 === v0.1.86 ===
 - Upgrade Tor to v0.4.2.5
 - Fix boot issue for VMs that don't have USB
-- Fix VPN issue by checking out specific rev of pivpn
+- Fix VPN issue by checking out specific rev of PiVPN
 - Update lndmanage to 0.9.0
 - Add startup status to settings page
-- Add electrum server reset option
+- Add Electrum Server reset option
 - Bug fixes
 
 === v0.1.85 ===
 - Update RTL to v0.6.4
 - Add deposit address, balance, channel, and peer info to Lightning Page
-- Add WebSSH2, glances, Netdata, and Whirlpool to Tor
+- Add WebSSH2, Glances, Netdata and Whirlpool to Tor
 - Improve lograte to limit disk/RAM usage
 - Add Tor/IP toggle for Bitcoin and LND
 - Improve key generation
