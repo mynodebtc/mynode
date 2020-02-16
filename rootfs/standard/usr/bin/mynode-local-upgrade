@@ -25,7 +25,9 @@ wget http://${ip_address}:8000/mynode_rootfs_${DEVICE_TYPE}.tar.gz -O /tmp/mynod
 # Extract on top of mynode fs
 rm -rf /tmp/rootfs/
 mkdir -p /tmp/rootfs/
-tar -xvf /tmp/mynode_rootfs_${DEVICE_TYPE}.tar.gz -C /tmp/rootfs/
+echo -n Extracting rootfs TAR for ${DEVICE_TYPE} ...
+tar -xf /tmp/mynode_rootfs_${DEVICE_TYPE}.tar.gz -C /tmp/rootfs/
+echo Done!
 
 # Install files
 if [ $IS_X86 = 1 ]; then
