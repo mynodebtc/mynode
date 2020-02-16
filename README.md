@@ -39,7 +39,7 @@ Each myNode device comes with a number of wonderful features:
 - Mempool.Space - Mempool local visualizer for the Bitcoin blockchain
 - LND Hub - Lightning Wallet Server (v1.1.3)
 - loopd - A Non-Custodial Off/On Chain Bridge (v0.4.0-beta)
-- Tor (v0.4.2.5)
+- Tor
 - JoinMarket CLI (v0.6.1)
 - LND Connect - Generate QR Codes for connecting wallets (v0.2.0)
 - Virtual Machine support (OVA file: VirtualBox, VMWare)
