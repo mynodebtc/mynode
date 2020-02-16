@@ -131,9 +131,6 @@ def page_settings():
         upload_rate = 100
         download_rate = 100
 
-    # Get Firewall Status
-    firewall_status_log = get_journalctl_log("ufw")
-
 
     templateData = {
         "title": "myNode Settings",
