@@ -9,7 +9,7 @@ IS_RASPI3=0
 IS_RASPI4=0
 IS_X86=0
 DEVICE_TYPE="unknown"
-MODEL=$(cat /proc/device-tree/model) || MODEL="unknown"
+MODEL=$(tr -d '\0' < /proc/device-tree/model) || MODEL="unknown"
 uname -a | grep amd64 && IS_X86=1 || true
 if [[ $MODEL == *"Rock64"* ]]; then 
     IS_ARMBIAN=1
