@@ -12,6 +12,7 @@ mynode_block_height = 566000
 bitcoin_blockchain_info = None
 bitcoin_recent_blocks = None
 bitcoin_peers = []
+bitcoin_wallet_info = None
 bitcoin_mempool = None
 bitcoin_version = None
 
@@ -65,6 +66,7 @@ def update_bitcoin_other_info():
     global bitcoin_recent_blocks
     global bitcoin_peers
     global bitcoin_mempool
+    global bitcoin_wallet_info
 
     if bitcoin_blockchain_info == None:
         # We still havent gotten the important info... wait 1 minute and return
@@ -89,6 +91,9 @@ def update_bitcoin_other_info():
 
             # Get mempool
             bitcoin_mempool = rpc_connection.getmempoolinfo()
+
+            # Get wallet info
+            bitcoin_wallet_info = rpc_connection.getwalletinfo()
         except:
             pass
 
@@ -121,6 +126,10 @@ def get_bitcoin_peers():
 def get_bitcoin_mempool():
     global bitcoin_mempool
     return copy.deepcopy(bitcoin_mempool)
+
+def get_bitcoin_wallet_info():
+    global bitcoin_wallet_info
+    return copy.deepcopy(bitcoin_wallet_info)
 
 def get_default_bitcoin_config():
     try:
