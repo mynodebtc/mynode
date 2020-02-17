@@ -11,6 +11,9 @@ date
 # Shut down main services to save memory and CPU
 /usr/bin/mynode_stop_critical_services.sh
 
+# Delete ramlog to prevent ram issues
+rm -rf /var/log/*
+
 # Check if any dpkg installs have failed and correct
 dpkg --configure -a
 
