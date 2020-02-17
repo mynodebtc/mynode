@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, abort, Markup, request, redirect, flash
+from flask import Blueprint, render_template, session, send_from_directory, abort, Markup, request, redirect, flash
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from pprint import pprint, pformat
 from bitcoin_info import *
@@ -109,6 +109,7 @@ def bitcoind_status_page():
         blockdata = get_bitcoin_recent_blocks()
         peerdata  = get_bitcoin_peers()
         mempooldata = get_bitcoin_mempool()
+        walletdata = get_bitcoin_wallet_info()
         version = get_bitcoin_version()
         rpc_password = get_bitcoin_rpc_password()
 
@@ -157,6 +158,16 @@ def bitcoind_status_page():
 
                 peers.append(peer)
 
+        # Balance
+        walletinfo = {}
+        walletinfo["balance"] = 0.0
+        walletinfo["unconfirmed_balance"] = 0.0
+        if walletdata != None:
+            if "balance" in walletdata:
+                walletinfo["balance"] = walletdata["balance"]
+            if "unconfirmed_balance" in walletdata:
+                walletinfo["unconfirmed_balance"] = walletdata["unconfirmed_balance"]
+
     except Exception as e:
         templateData = {
             "title": "myNode Bitcoin Error",
@@ -177,10 +188,17 @@ def bitcoind_status_page():
         "disk_size": (int(info["size_on_disk"]) / 1000 / 1000 / 1000),
         "mempool_tx": mempool["size"],
         "mempool_size": "{:.3} MB".format(float(mempool["bytes"]) / 1000 / 1000),
+        "confirmed_balance": walletinfo["balance"],
+        "unconfirmed_balance": walletinfo["unconfirmed_balance"],
         "version": version,
         "ui_settings": read_ui_settings()
     }
     return render_template('bitcoind_status.html', **templateData)
+
+@mynode_bitcoind.route("/bitcoind/wallet.dat")
+def lnd_tls_cert():
+    check_logged_in()
+    return send_from_directory(directory="/mnt/hdd/mynode/bitcoin/", filename="wallet.dat")
 
 @mynode_bitcoind.route("/bitcoind/reset_config")
 def bitcoin_reset_config_page():
