@@ -484,7 +484,7 @@ if [ ! -f /usr/bin/ngrok  ]; then
 fi
 
 # Install recent version of Tor
-echo "Installing tor..."
+echo "Installing Tor..."
 TOR_UPGRADE_URL=https://dist.torproject.org/tor-0.4.2.5.tar.gz
 TOR_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.tor_url
 CURRENT=""
