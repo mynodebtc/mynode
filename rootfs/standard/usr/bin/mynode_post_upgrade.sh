@@ -8,7 +8,7 @@ set -e
 # Make sure time is in the log
 date
 
-# Shut down main services to save memory and CPU
+# Shutdown main services to save memory and CPU
 /usr/bin/mynode_stop_critical_services.sh
 
 # Delete ramlog to prevent ram issues
@@ -56,7 +56,7 @@ curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
 gpg  --keyserver hkps://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E #loopd
 set -e
 
-# Install docker
+# Install Docker
 if [ ! -f /usr/bin/docker ]; then
     rm -f /tmp/docker_install.sh
     wget https://get.docker.com -O /tmp/docker_install.sh
@@ -64,7 +64,7 @@ if [ ! -f /usr/bin/docker ]; then
     /bin/bash /tmp/docker_install.sh
 fi
 
-# Use systemd for managing docker
+# Use systemd for managing Docker
 rm -f /etc/init.d/docker
 rm -f /etc/systemd/system/multi-user.target.wants/docker.service
 systemctl -f enable docker.service
@@ -182,7 +182,7 @@ if [ -f $LOOP_UPGRADE_URL_FILE ]; then
     CURRENT=$(cat $LOOP_UPGRADE_URL_FILE)
 fi
 if [ "$CURRENT" != "$LOOP_UPGRADE_URL" ]; then
-    # Download and install Loop
+    # Download and install Loopd
     rm -rf /opt/download
     mkdir -p /opt/download
     cd /opt/download
@@ -270,7 +270,7 @@ if [ $IS_PREMIUM -eq 1 ]; then
         git fetch --tags --all
         git reset --hard v$JOINMARKET_VERSION
 
-        # Create virtualenv and setup joinmarket
+        # Create virtualenv and setup Joinmarket
         virtualenv -p python3 jmvenv
         source jmvenv/bin/activate
         python setupall.py --daemon
@@ -394,7 +394,7 @@ if [ ! -f /usr/bin/ngrok  ]; then
 fi
 
 # Install recent version of tor
-# echo "Installing tor..."
+# echo "Installing Tor..."
 # TOR_UPGRADE_URL=https://dist.torproject.org/tor-0.4.2.5.tar.gz
 # TOR_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.tor_url
 # CURRENT=""
