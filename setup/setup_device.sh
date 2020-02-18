@@ -128,7 +128,7 @@ gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C268459
 curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
 gpg  --keyserver hkps://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E #loopd
 
-# Update python3 to 3.7.X
+# Update Python3 to 3.7.X
 PYTHON3_VERSION=$(python3 --version)
 if [[ "$PYTHON3_VERSION" != *"Python 3.7"* ]]; then
     mkdir -p /opt/download
@@ -145,7 +145,7 @@ else
 fi
 
 
-# Install python3 specific tools (run multiple times to make sure success)
+# Install Python3 specific tools (run multiple times to make sure success)
 pip3 install wheel setuptools
 pip3 install bitstring lnd-grpc pycoin aiohttp connectrum python-bitcoinlib
 pip3 install python-bitcointx
@@ -348,7 +348,7 @@ if [ "$CURRENT" != "$LNDHUB_UPGRADE_URL" ]; then
 fi
 cd ~
 
-# Install electrs (only build to save new version, now included in overlay)
+# Install Electrs (only build to save new version, now included in overlay)
 #cd /home/admin/download
 #wget https://github.com/romanz/electrs/archive/v0.7.0.tar.gz
 #tar -xvf v0.7.0.tar.gz 
@@ -483,7 +483,7 @@ if [ ! -f /usr/bin/ngrok  ]; then
     cp ngrok /usr/bin/
 fi
 
-# Install recent version of tor
+# Install recent version of Tor
 echo "Installing tor..."
 TOR_UPGRADE_URL=https://dist.torproject.org/tor-0.4.2.5.tar.gz
 TOR_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.tor_url
