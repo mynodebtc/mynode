@@ -24,7 +24,7 @@ BTCEXP_ADDRESS_API=electrumx
 # Optional ElectrumX Servers. See BTCEXP_ADDRESS_API. This value is only
 # used if BTCEXP_ADDRESS_API=electrumx
 #BTCEXP_ELECTRUMX_SERVERS=tls://electrumx.server.com:50002,tcp://127.0.0.1:50001,...
-BTCEXP_ELECTRUMX_SERVERS=tls://127.0.0.1:50002
+BTCEXP_ELECTRUMX_SERVERS=tcp://127.0.0.1:50001
 
 # Optional InfluxDB Credentials (URI -OR- HOST/PORT/DBNAME/USER/PASS)
 #BTCEXP_ENABLE_INFLUXDB=true
