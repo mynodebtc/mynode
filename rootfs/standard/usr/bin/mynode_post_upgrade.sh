@@ -18,12 +18,32 @@ rm -rf /var/log/*
 dpkg --configure -a
 
 
+# Add sources
+apt-get -y install apt-transport-https
+DEBIAN_VERSION=$(lsb_release -c | awk '{ print $2 }')
+grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+
+
+# Import Keys
+set +e
+curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
+curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
+gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
+curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
+gpg  --keyserver hkps://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E #loopd
+curl https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import  # tor
+gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | apt-key add -                                       # tor
+set -e
+
+
 # Check for updates (might auto-install all updates later)
 apt-get update
 
 
 # Install any new software
 export DEBIAN_FRONTEND=noninteractive
+apt-get -y install apt-transport-https
 apt-get -y install fonts-dejavu
 apt-get -y install pv sysstat network-manager unzip pkg-config libfreetype6-dev libpng-dev
 apt-get -y install libatlas-base-dev libffi-dev libssl-dev glances python3-bottle
@@ -46,15 +66,6 @@ pip3 install gnureadline --no-cache-dir
 pip3 install lndmanage==0.9.0 --no-cache-dir   # Install LND Manage (keep up to date with LND)
 pip3 install docker-compose --no-cache-dir
 
-
-# Import Keys
-set +e
-curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
-curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
-gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
-curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
-gpg  --keyserver hkps://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E #loopd
-set -e
 
 # Install docker
 if [ ! -f /usr/bin/docker ]; then
@@ -417,6 +428,7 @@ fi
 
 #     echo $TOR_UPGRADE_URL > $TOR_UPGRADE_URL_FILE
 # fi
+rm -f /usr/local/bin/tor || true
 apt-get remove -y tor	
 apt-get install -y tor
 

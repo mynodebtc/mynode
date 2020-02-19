@@ -73,6 +73,20 @@ wget http://${SERVER_IP}:8000/${TARBALL} -O /tmp/rootfs.tar.gz
 
 
 # Add sources
+apt-get -y install apt-transport-https
+DEBIAN_VERSION=$(lsb_release -c | awk '{ print $2 }')
+grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.lis
+grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.lis
+
+
+# Import Keys
+curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
+curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
+gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
+curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
+gpg  --keyserver hkps://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E #loopd
+curl https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import  # tor
+gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | apt-key add -                                       # tor
 
 
 # Update OS
@@ -82,6 +96,7 @@ apt-get -y upgrade
 
 # Install other tools (run section multiple times to make sure success)
 export DEBIAN_FRONTEND=noninteractive
+apt-get -y install apt-transport-https
 apt-get -y install htop git curl bash-completion jq dphys-swapfile lsof libzmq3-dev
 apt-get -y install build-essential python-dev python-pip python3-dev python3-pip 
 apt-get -y install transmission-cli fail2ban ufw tclsh bluez python-bluez redis-server
@@ -120,13 +135,6 @@ pip install python-pam python-bitcoinlib psutil
 pip install grpcio grpcio-tools googleapis-common-protos 
 pip install tzupdate virtualenv
 
-
-# Import Keys
-curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
-curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
-gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
-curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
-gpg  --keyserver hkps://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E #loopd
 
 # Update python3 to 3.7.X
 PYTHON3_VERSION=$(python3 --version)
@@ -483,30 +491,6 @@ if [ ! -f /usr/bin/ngrok  ]; then
     cp ngrok /usr/bin/
 fi
 
-# Install recent version of tor
-echo "Installing tor..."
-TOR_UPGRADE_URL=https://dist.torproject.org/tor-0.4.2.5.tar.gz
-TOR_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.tor_url
-CURRENT=""
-if [ -f $TOR_UPGRADE_URL_FILE ]; then
-    CURRENT=$(cat $TOR_UPGRADE_URL_FILE)
-fi
-if [ "$CURRENT" != "$TOR_UPGRADE_URL" ]; then
-    rm -rf /opt/download
-    mkdir -p /opt/download
-    cd /opt/download
-    wget $TOR_UPGRADE_URL -O tor.tar.gz
-    tar -xvf tor.tar.gz
-    rm tor.tar.gz
-    mv tor-* tor
-    
-    cd tor
-    ./configure
-    make
-    make install
-
-    echo $TOR_UPGRADE_URL > $TOR_UPGRADE_URL_FILE
-fi
 
 #########################################################
 
