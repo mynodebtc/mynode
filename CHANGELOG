@@ -1,8 +1,8 @@
 === v0.1.92 ===
 - Update RTL to v0.6.7
-- Readd auto Tor reinstall
 - Clean rootfs before release
-- Fix rendering glitches and improved performance on Mempool.Space
+- Add and tor repos with up to date packages
+- Bug fixes
 
 === v0.1.91 ===
 - Add PCIe NVME Support for RockPro64
