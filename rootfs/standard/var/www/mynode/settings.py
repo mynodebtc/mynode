@@ -494,6 +494,19 @@ def regen_https_certs_page():
     flash("HTTPS Service Restarted", category="message")
     return redirect(url_for(".page_settings"))
 
+@mynode_settings.route("/settings/regen-electrs-certs")
+def regen_electrs_certs_page():
+    check_logged_in()
+
+    # Touch files to trigger re-checking drive
+    os.system("rm -rf /home/bitcoin/.mynode/electrs")
+    os.system("rm -rf /mnt/hdd/mynode/settings/electrs")
+    os.system("sync")
+    os.system("systemctl restart tls_proxy")
+    
+    flash("Electrum Server Service Restarted", category="message")
+    return redirect(url_for(".page_settings"))
+
 @mynode_settings.route("/settings/reinstall-app")
 def reinstall_app_page():
     check_logged_in()
