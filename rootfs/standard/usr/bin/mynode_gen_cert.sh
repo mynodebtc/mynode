@@ -13,7 +13,7 @@ if [ ! -z "$1" ]; then
     HDD_DIR="${HDD_DIR_BASE}/$1"
 fi
 DAYS=99999
-if [ ! -z "$1" ]; then
+if [ ! -z "$2" ]; then
     DAYS=$2
 fi
 
