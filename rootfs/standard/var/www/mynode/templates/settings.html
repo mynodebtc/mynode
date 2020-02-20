@@ -6,8 +6,6 @@
         <script>
             $(document).ready(function() {
 
-                var showChangelog=0;
-
                 $("#upgrade").on("click", function() {
                     // Enable electrs
                     var okFunction = function() {
@@ -237,21 +235,6 @@
                 $("#show_firewall_rules").on("click", function() {
                     $("#show_firewall_rules").hide(0);
                     $("#firewall_rules").show();
-                });
-
-                $("#show_mynode_changelog").on("click", function() {
-                    if (showChangelog)
-                    {
-                        $("#show_mynode_changelog").text("Show Change Log");
-                        $("#mynode_changelog").hide();
-                        showChangelog=0;
-                    }
-                    else
-                    {
-                        $("#show_mynode_changelog").text("Hide Change Log");
-                        $("#mynode_changelog").show();
-                        showChangelog=1;
-                    }
                 });
 
                 $("#upgrade_changelog").on("click", function() {
@@ -502,10 +485,7 @@
               </table>
             </div>
             <div class="tab-pane fade" id="nav-changelog" role="tabpanel" aria-labelledby="nav-changelog-tab">
-              <button id="show_mynode_changelog" class="ui-button ui-widget ui-corner-all settings_button">
-                View Change Log
-              </button>
-              <div id="mynode_changelog" style='text-align: left; font-size: 12px; width: 800px; display: none;'>
+              <div id="mynode_changelog">
                 <pre>{{changelog}}</pre>
               </div>
             </div>
