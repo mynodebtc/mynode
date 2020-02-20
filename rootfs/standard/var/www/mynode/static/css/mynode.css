@@ -601,3 +601,21 @@ input:checked + .slider:before {
 .slider.round:before {
     border-radius: 50%;
 }
+
+/* Customizing Bootstrap */
+*, ::after, ::before {
+    box-sizing: content-box;
+}
+
+.tab-pane {
+    padding: 1em;
+}
+
+.nav-tabs {
+    border-bottom-color: #f9c132;
+}
+
+.nav-tabs .nav-link:hover,
+.nav-tabs .nav-link.active {
+    border-color: #f9c132;
+}
