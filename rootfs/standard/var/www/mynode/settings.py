@@ -1,6 +1,7 @@
 from config import *
 from flask import Blueprint, render_template, session, abort, Markup, request, redirect, send_from_directory, url_for, flash
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
+from bitcoind import is_bitcoind_synced
 from pprint import pprint, pformat
 from threading import Timer
 from thread_functions import *
@@ -151,6 +152,7 @@ def page_settings():
         "quicksync_status_log": quicksync_status_log,
         "quicksync_status": quicksync_status,
         "quicksync_status_color": quicksync_status_color,
+        "is_bitcoin_synced": is_bitcoind_synced(),
         "bitcoin_status_log": bitcoin_status_log,
         "bitcoin_status": get_service_status_basic_text("bitcoind"),
         "bitcoin_status_color": get_service_status_color("bitcoind"),
@@ -490,6 +492,19 @@ def regen_https_certs_page():
     os.system("systemctl restart https")
     
     flash("HTTPS Service Restarted", category="message")
+    return redirect(url_for(".page_settings"))
+
+@mynode_settings.route("/settings/regen-electrs-certs")
+def regen_electrs_certs_page():
+    check_logged_in()
+
+    # Touch files to trigger re-checking drive
+    os.system("rm -rf /home/bitcoin/.mynode/electrs")
+    os.system("rm -rf /mnt/hdd/mynode/settings/electrs")
+    os.system("sync")
+    os.system("systemctl restart tls_proxy")
+    
+    flash("Electrum Server Service Restarted", category="message")
     return redirect(url_for(".page_settings"))
 
 @mynode_settings.route("/settings/reinstall-app")
