@@ -610,6 +610,8 @@ input:checked + .slider:before {
 
 .tab-pane {
     padding: 1em;
+    height: 210px;
+    overflow: auto;
 }
 
 .nav-tabs {
@@ -619,9 +621,4 @@ input:checked + .slider:before {
 .nav-tabs .nav-link:hover,
 .nav-tabs .nav-link.active {
     border-color: #f9c132;
-}
-
-.tab-pane {
-    height: 300px;
-    overflow: auto;
 }
