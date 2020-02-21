@@ -43,18 +43,14 @@ Each myNode device comes with a number of wonderful features:
 - JoinMarket CLI (v0.6.1)
 - LND Connect - Generate QR Codes for connecting wallets (v0.2.0)
 - Virtual Machine support (OVA file: VirtualBox, VMWare)
-- Simple UI / Web Interface
 - VPN for Remote Access (OpenVPN 2.4.7)
 - Bitcoin CLI
 - QuickSync - Quickly sync Bitcoin blockchain
 - LN Channel Backup
-- Docker (v19.03.6)
-- Netdata Monitor
-- Glances
-- Web Linux Terminal (WebSSH2)
+- Docker (v19.03.6) (following containers: Netdata Monitor, Glances, WebSSH2 (Linux Terminal), BTCPay Server)
+- Simple UI / Web Interface
 - Dark Mode interface
 - Dedicated hardware keeps you constantly and securely connected!
-- And more!
 
 ## Supported Devices
 We currently support images for the following devices:
