@@ -64,7 +64,7 @@ We currently support images for the following devices:
  - Virtual Machine Support (VirtualBox hosting Windows/OS X/Linux/Solaris, VMWare hosting Windows/OS X/Linux)
 
 ## Devices no longer supported
-Due to the addition of features that requires more RAM and CPU power, following devices are no longer suggested for current builds:
+Due to the addition of features that requires more RAM and CPU power, following devices are no longer supported:
 - Raspberry Pi 3
 
 ## Running myNode
