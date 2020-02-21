@@ -47,7 +47,7 @@ Each myNode device comes with a number of wonderful features:
 - Bitcoin CLI
 - QuickSync - Quickly sync Bitcoin blockchain
 - LN Channel Backup
-- Docker (v19.03.6) (following containers: Netdata Monitor, Glances, WebSSH2 (Linux Terminal), BTCPay Server)
+- Docker (v19.03.6) (containers inside: Netdata Monitor, Glances, WebSSH2 (Linux Terminal), BTCPay Server)
 - Simple UI / Web Interface
 - Dark Mode interface
 - Dedicated hardware keeps you constantly and securely connected!
