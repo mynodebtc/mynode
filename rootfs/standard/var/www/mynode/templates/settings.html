@@ -239,6 +239,11 @@
                     $("#firewall_rules").show();
                 });
 
+                $("#show_product_key").on("click", function() {
+                    $("#show_product_key").hide(0);
+                    $("#product_key").show();
+                });
+
                 $("#show_mynode_changelog").on("click", function() {
                     if (showChangelog)
                     {
@@ -429,9 +434,12 @@
                 <tr>
                     <td>Product Key</td>
                     <td style="padding-left: 20px;">
-                        {{product_key}}
                         {% if product_key_skipped %}
+                            {{product_key}}
                             &nbsp;<a href="/product-key" class="ui-button ui-widget ui-corner-all settings_button_small">Enter Product Key</a>
+                        {% else %}
+                            <button id="show_product_key" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+                            <div id="product_key" style="display: none;">{{product_key}}</div>
                         {% endif %}
                     </td>
                 </tr>
