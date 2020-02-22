@@ -69,6 +69,7 @@ for d in /dev/sd*1; do
     if [ -n "$RC" ]; then
         touch /tmp/fsck_error
     fi
+    cat /tmp/tsck_results
 done
 rm -f /tmp/repairing_drive
 set -e
