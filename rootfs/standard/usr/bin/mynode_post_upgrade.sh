@@ -452,9 +452,9 @@ systemctl enable loopd
 systemctl enable rotate_logs
 
 # Disable any old services
-systemctl disable hitch
-systemctl disable mongodb
-systemctl disable lnd_admin
+systemctl disable hitch || true
+systemctl disable mongodb || true
+systemctl disable lnd_admin || true
 systemctl disable dhcpcd || true
 
 # Reload service settings
