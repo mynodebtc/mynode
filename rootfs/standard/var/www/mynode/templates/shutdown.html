@@ -4,8 +4,12 @@
         {% include 'includes/head.html' %}
 
         <script>
+            function redirectHome() {
+                window.location.replace("/");
+            }
+
             $(document).ready(function() {
-                setInterval(checkStatus, 30000);
+                setInterval(redirectHome, 30000);
             });
         </script>
 
