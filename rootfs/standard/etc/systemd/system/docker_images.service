@@ -7,7 +7,8 @@ Wants=mynode.service
 After=mynode.service
 
 [Service]
-Type=oneshot
+Type=simple
+KillMode=control-group
 ExecStart=/usr/bin/mynode_docker_images.sh
 User=root
 Group=root
@@ -15,8 +16,7 @@ StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=mynode_docker_images
 
-RestartSec=30
-RemainAfterExit=yes
+RestartSec=60
 
 [Install]
 WantedBy=multi-user.target
