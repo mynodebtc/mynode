@@ -52,6 +52,10 @@ Each myNode device comes with a number of wonderful features:
 - Dark Mode interface
 - Dedicated hardware keeps you constantly and securely connected!
 
+## Features (Work in Progress)
+- Samourai Dojo (waiting for waiver, check "Pull Requests" tab for more technical infos)
+- Blockstream Liquid Sidechain (for now only some test by developers, will be added if there will be high request by community)
+
 ## Supported Devices
 We currently support images for the following devices:
  - Raspberry Pi 4
