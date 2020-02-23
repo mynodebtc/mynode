@@ -136,7 +136,7 @@ pip install grpcio grpcio-tools googleapis-common-protos
 pip install tzupdate virtualenv
 
 
-# Update python3 to 3.7.X
+# Update Python3 to 3.7.X
 PYTHON3_VERSION=$(python3 --version)
 if [[ "$PYTHON3_VERSION" != *"Python 3.7"* ]]; then
     mkdir -p /opt/download
@@ -153,7 +153,7 @@ else
 fi
 
 
-# Install python3 specific tools (run multiple times to make sure success)
+# Install Python3 specific tools (run multiple times to make sure success)
 pip3 install wheel setuptools
 pip3 install bitstring lnd-grpc pycoin aiohttp connectrum python-bitcoinlib
 pip3 install python-bitcointx
@@ -356,7 +356,7 @@ if [ "$CURRENT" != "$LNDHUB_UPGRADE_URL" ]; then
 fi
 cd ~
 
-# Install electrs (only build to save new version, now included in overlay)
+# Install Electrs (only build to save new version, now included in overlay)
 #cd /home/admin/download
 #wget https://github.com/romanz/electrs/archive/v0.7.0.tar.gz
 #tar -xvf v0.7.0.tar.gz 
@@ -561,9 +561,8 @@ fi
 
 
 # Disable services
-systemctl disable hitch
-systemctl disable mongodb
-systemctl disable lnd_admin
+systemctl disable hitch || true
+systemctl disable mongodb || true
 systemctl disable dhcpcd || true
 
 
