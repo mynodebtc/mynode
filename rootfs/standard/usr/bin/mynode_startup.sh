@@ -65,8 +65,9 @@ set +e
 touch /tmp/repairing_drive
 for d in /dev/sd*1; do
     echo "Repairing drive $d ...";
-    RC=$(fsck -y $d > /tmp/fsck_results 2>&1)
-    if [ $RC -ne 0 ]; then
+    fsck -y $d > /tmp/fsck_results 2>&1
+    RC=$?
+    if [ "$RC" -ne 0 ]; then
         touch /tmp/fsck_error
     fi
 done
