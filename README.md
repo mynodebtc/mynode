@@ -31,9 +31,9 @@ Each myNode device comes with a number of wonderful features:
 
 - Bitcoin Node (Bitcoin Core v0.19.0.1)
 - Lightning Node (LND v0.9.0-beta)
-- Electrum Server (Electrum Rust Server 0.7.0)
+- Electrum Server (Electrum Rust Server aka Electrs 0.7.0)
 - BTCPay Server (v1.0.3.153)
-- RTL (Ride the Lightning) - Lightning Wallet (v0.6.5)
+- RTL (Ride the Lightning) - Lightning Wallet (v0.6.7)
 - Samourai Whirlpool (whirlpool-client-cli v0.10.2)
 - Bitcoin RPC Explorer (v1.1.8)
 - Mempool.Space - Mempool local visualizer for the Bitcoin blockchain
@@ -43,18 +43,14 @@ Each myNode device comes with a number of wonderful features:
 - JoinMarket CLI (v0.6.1)
 - LND Connect - Generate QR Codes for connecting wallets (v0.2.0)
 - Virtual Machine support (OVA file: VirtualBox, VMWare)
-- Simple UI / Web Interface
-- VPN for Remote Access
+- VPN for Remote Access (OpenVPN 2.4.7)
 - Bitcoin CLI
 - QuickSync - Quickly sync Bitcoin blockchain
 - LN Channel Backup
-- Docker support
-- Netdata Monitor
-- Glances
-- Web Linux Terminal (WebSSH2)
+- Docker support (v19.03.6) (containers inside: Netdata Monitor, Glances, WebSSH2 (Linux Terminal), BTCPay Server)
+- Simple UI / Web Interface
 - Dark Mode interface
 - Dedicated hardware keeps you constantly and securely connected!
-- And more!
 
 ## Supported Devices
 We currently support images for the following devices:
