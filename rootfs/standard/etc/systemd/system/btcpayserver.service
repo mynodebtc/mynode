@@ -9,7 +9,6 @@ Requires=docker.service network-online.target bitcoind.service
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStartPre=/usr/bin/wait_on_bitcoin.sh
 ExecStart=/bin/bash -c  '. "/opt/mynode/btcpayserver/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY" && . helpers.sh && btcpay_up'
 ExecStop=/bin/bash -c   '. "/opt/mynode/btcpayserver/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY" && . helpers.sh && btcpay_down'
 ExecReload=/bin/bash -c '. "/opt/mynode/btcpayserver/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY" && . helpers.sh && btcpay_restart'
