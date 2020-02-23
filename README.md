@@ -54,7 +54,7 @@ Each myNode device comes with a number of wonderful features:
 
 ## Features (Work in Progress)
 - Samourai Dojo (waiting for waiver, check "Pull Requests" tab for more technical infos)
-- Blockstream Liquid Sidechain (for now only some test by developers, will be added if there will be high request by community)
+- Blockstream Liquid Sidechain (test ongoing by some developers, will be added if highly request by community)
 
 ## Supported Devices
 We currently support images for the following devices:
