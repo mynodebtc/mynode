@@ -495,7 +495,7 @@ fi
 #########################################################
 
 
-# Copy myNode rootfs (downlaoded earlier)
+# Copy myNode rootfs (downloaded earlier)
 tar -xvf /tmp/rootfs.tar.gz -C /tmp/upgrade/
 
 # Install files
