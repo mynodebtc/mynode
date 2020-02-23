@@ -3,8 +3,8 @@
 
 [Unit]
 Description=Netdata
-Wants=mynode.service
-After=mynode.service
+Wants=mynode.service docker_images.service
+After=mynode.service docker_images.service
 
 [Service]
 WorkingDirectory=/opt/mynode/docker
