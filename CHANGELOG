@@ -1,3 +1,7 @@
+=== v0.1.94 ===
+- Upgrade Bitcoin RPC Explorer to v1.1.9
+- Upgrade Lightning Loop to v0.4.1-beta
+
 === v0.1.93 ===
 - Improve docker container consistency
 - Improve SSD detection re QuickSync
