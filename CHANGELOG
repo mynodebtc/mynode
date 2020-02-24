@@ -1,3 +1,10 @@
+=== v0.1.93 ===
+- Improve docker container consistency
+- Improve SSD detection re QuickSync
+- Hide product key on settings page
+- Early beta upgrade support
+- Bug fixes
+
 === v0.1.92 ===
 - Update RTL to v0.6.7
 - Clean rootfs before release
