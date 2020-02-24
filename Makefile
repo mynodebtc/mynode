@@ -91,7 +91,7 @@ release: clean_rootfs rootfs release.sh
 	@sh release.sh
 
 .PHONY: beta
-beta: clean_rootfs rootfs release.sh
+beta: clean_rootfs release.sh
 	@sh release.sh beta
 
 

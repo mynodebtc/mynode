@@ -901,6 +901,47 @@
         <div class="settings_block">
             <div class="settings_block_header">Developer</div>
 
+            {% if not product_key_skipped %}
+                <div class="settings_block_subheader">Reinstall Latest Version</div>
+                If you are running a beta or are having issues, it may be helpful to reinstall the latest official release.
+                <br/>
+                <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Install Latest Version</button>
+
+                <div class="divider"></div>
+            {% endif %}
+
+            {% if not product_key_skipped %}
+                <div class="settings_block_subheader">Install Beta</div>
+                You can install beta releases of myNode software to help test. These may be less stable.
+                <br/><br/>
+                <table border="0">
+                    <tr>
+                        <td>Current Beta Version</td>
+                        <td>{{current_beta_version}}</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Latest Beta Version</td>
+                        <td>{{latest_beta_version}}</td>
+                        <td>&nbsp;<a href="/settings/get-latest-version" class="ui-button ui-widget ui-corner-all settings_button_small">Check for Updates</a></td>
+                    </tr>
+                </table>
+                {% if current_beta_version != latest_beta_version and latest_beta_version != "" %}
+                    <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Install Beta</button>
+                    {% if product_key_skipped %}
+                        <p>Upgrade to myNode Premium to get one-click updates!</p>
+                        <p>For manual upgrades, see our <a target="_blank" href="https://mynodebtc.com/guide/upgrading_your_device">upgrade guide</a>!</p>
+                    {% endif %}
+                {% elif upgrade_error %}
+                    <p style="color: red;">It appears a recent upgrade may not have fully completed.</p>
+                    <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Retry Upgrade</button>
+                    <button id="show_upgrade_status" class="ui-button ui-widget ui-corner-all settings_button">Show Upgrade Logs</button>
+                    <div id="upgrade_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{upgrade_logs}}</pre></div>
+                {% endif %}
+
+                <div class="divider"></div>
+            {% endif %}
+
             <div class="settings_block_subheader">Uploader Device</div>
             This disables most features and prioritize sharing QuickSync files. It can be reversed later.
             <br/>

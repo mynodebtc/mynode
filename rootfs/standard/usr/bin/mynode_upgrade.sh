@@ -5,6 +5,20 @@ set -x
 
 source /usr/share/mynode/mynode_config.sh
 
+BETA=0
+while test $# -gt 0
+do
+    case "$1" in
+        beta) echo "found beta"
+            BETA=1
+            ;;
+        *) echo "Unknown Argument: $1"
+            exit 1
+            ;;
+    esac
+    shift
+done
+
 # Setup
 rm -rf /opt/mynode_release_latest.tar.gz
 rm -rf /opt/mynode_release.pub
@@ -13,8 +27,13 @@ mkdir -p /opt/upgrade/
 mkdir -p /home/admin/upgrade_logs/
 
 # Download Latest
-wget $UPGRADE_DOWNLOAD_URL -O /opt/mynode_release_latest.tar.gz
-wget $UPGRADE_DOWNLOAD_SIGNATURE_URL -O /opt/mynode_release_latest.sha256
+if [ $BETA = 0 ]; then
+    wget $UPGRADE_DOWNLOAD_URL -O /opt/mynode_release_latest.tar.gz
+    wget $UPGRADE_DOWNLOAD_SIGNATURE_URL -O /opt/mynode_release_latest.sha256
+else
+    wget $UPGRADE_BETA_DOWNLOAD_URL -O /opt/mynode_release_latest.tar.gz
+    wget $UPGRADE_BETA_DOWNLOAD_SIGNATURE_URL -O /opt/mynode_release_latest.sha256
+fi
 wget $UPGRADE_PUBKEY_URL -O /opt/mynode_release.pub
 
 openssl dgst -sha256 -verify /opt/mynode_release.pub -signature /opt/mynode_release_latest.sha256 /opt/mynode_release_latest.tar.gz
