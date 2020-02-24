@@ -64,7 +64,7 @@ def get_current_beta_version():
         with open("/usr/share/mynode/beta_version", "r") as f:
             current_beta_version = f.read().strip()
     except:
-        current_beta_version = "not_installed"
+        current_beta_version = "beta_not_installed"
     return current_beta_version
 
 def update_latest_version():
