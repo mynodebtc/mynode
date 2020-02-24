@@ -59,8 +59,8 @@ Each myNode device comes with a number of wonderful features:
 ## Supported Devices
 We currently support images for the following devices:
  - Raspberry Pi 4
- - RockPro64
- - Rock64
+ - ROCKPro64
+ - ROCK64
  - Virtual Machine Support (VirtualBox hosting Windows/OS X/Linux/Solaris, VMWare hosting Windows/OS X/Linux)
 
 ## Deprecated Devices
