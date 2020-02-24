@@ -350,6 +350,7 @@ chmod +x /usr/bin/electrs || true # Once, a device didn't have the execute bit s
 
 # Check for new versions
 wget $LATEST_VERSION_URL -O /usr/share/mynode/latest_version || true
+wget $LATEST_BETA_VERSION_URL -O /usr/share/mynode/latest_beta_version || true
 
 # Update current state
 if [ -f $QUICKSYNC_DIR/.quicksync_complete ]; then

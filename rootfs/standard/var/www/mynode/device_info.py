@@ -58,11 +58,19 @@ def get_current_version():
         current_version = "error"
     return current_version
 
+def get_current_beta_version():
+    current_beta_version = "0.0"
+    try:
+        with open("/usr/share/mynode/beta_version", "r") as f:
+            current_beta_version = f.read().strip()
+    except:
+        current_beta_version = "not_installed"
+    return current_beta_version
 
 def update_latest_version():
     os.system("wget "+LATEST_VERSION_URL+" -O /usr/share/mynode/latest_version")
+    os.system("wget "+LATEST_BETA_VERSION_URL+" -O /usr/share/mynode/latest_beta_version")
     return True
-
 
 def get_latest_version():
     latest_version = "0.0"
@@ -74,6 +82,15 @@ def get_latest_version():
     except:
         latest_version = get_current_version()
     return latest_version
+
+def get_latest_beta_version():
+    beta_version = ""
+    try:
+        with open("/usr/share/mynode/latest_beta_version", "r") as f:
+            beta_version = f.read().strip()
+    except:
+        beta_version = ""
+    return beta_version
 
 def reinstall_app(app):
     # Upgrade
@@ -92,6 +109,19 @@ def upgrade_device():
     # Upgrade
     os.system("mkdir -p /home/admin/upgrade_logs")
     cmd = "/usr/bin/mynode_upgrade.sh > /home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt 2>&1".format(get_current_version())
+    subprocess.call(cmd, shell=True)
+    
+    # Sync
+    os.system("sync")
+    time.sleep(1)
+
+    # Reboot
+    reboot_device()
+
+def upgrade_device_beta():
+    # Upgrade
+    os.system("mkdir -p /home/admin/upgrade_logs")
+    cmd = "/usr/bin/mynode_upgrade.sh beta > /home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt 2>&1".format(get_current_version())
     subprocess.call(cmd, shell=True)
     
     # Sync
