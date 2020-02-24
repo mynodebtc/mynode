@@ -9,7 +9,7 @@ BETA=0
 while test $# -gt 0
 do
     case "$1" in
-        beta) echo "found beta"
+        beta) echo "Installing a beta..."
             BETA=1
             ;;
         *) echo "Unknown Argument: $1"
@@ -41,6 +41,9 @@ if [ $? -ne 0 ]; then
     echo "UPGRADE FAILED! Hash did not match!" >> /var/log/upgrade.log
     exit 1
 fi
+
+# Clear beta install marking
+rm -f /usr/share/mynode/beta_version
 
 # Extract to temp location
 tar -xvf /opt/mynode_release_latest.tar.gz -C /opt/upgrade/
