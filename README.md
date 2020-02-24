@@ -38,18 +38,17 @@ Each myNode device comes with a number of wonderful features:
 - Bitcoin RPC Explorer (v1.1.8)
 - Mempool.Space - Mempool local visualizer for the Bitcoin blockchain
 - LND Hub - Lightning Wallet Server (v1.1.3)
-- loopd - A Non-Custodial Off/On Chain Bridge (v0.4.0-beta)
-- Tor
+- Loopd - A Non-Custodial Off/On Chain Bridge (v0.4.0-beta)
+- Tor / VPN for Remote Access (OpenVPN 2.4.7)
 - JoinMarket CLI (v0.6.1)
 - LND Connect - Generate QR Codes for connecting wallets (v0.2.0)
 - Virtual Machine support (OVA file: VirtualBox, VMWare)
-- VPN for Remote Access (OpenVPN 2.4.7)
 - Bitcoin CLI
 - QuickSync - Quickly sync Bitcoin blockchain
 - LN Channel Backup
 - Docker support (v19.03.6) (containers inside: Netdata Monitor, Glances, WebSSH2 (Linux Terminal), BTCPay Server)
-- Simple UI / Web Interface
-- Dark Mode interface
+- Simple UI / Web Interface / Dark Mode interface
+- Beta version support
 - Dedicated hardware keeps you constantly and securely connected!
 
 ## Features (Work in Progress)
@@ -58,9 +57,9 @@ Each myNode device comes with a number of wonderful features:
 
 ## Supported Devices
 We currently support images for the following devices:
- - Raspberry Pi 4
- - ROCKPro64
- - ROCK64
+ - Raspberry Pi 4 (4GB version suggested)
+ - ROCKPro64 (4GB version suggested)
+ - ROCK64 (4GB version suggested)
  - Virtual Machine Support (VirtualBox hosting Windows/OS X/Linux/Solaris, VMWare hosting Windows/OS X/Linux)
 
 ## Deprecated Devices
