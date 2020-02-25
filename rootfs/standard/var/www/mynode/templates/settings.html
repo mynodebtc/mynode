@@ -209,6 +209,11 @@
                     $("#rtl_status").show();
                 });
 
+                $("#show_docker_status").on("click", function() {
+                    $("#show_docker_status").hide(0);
+                    $("#docker_status").show();
+                });
+
                 $("#show_docker_image_build_status").on("click", function() {
                     $("#show_docker_image_build_status").hide(0);
                     $("#docker_image_build_status").show();
@@ -604,6 +609,15 @@
             </div>
             <button id="show_rtl_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
             <div id="rtl_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{rtl_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Docker Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ docker_status_color }}"></div>
+                {{ docker_status }}
+            </div>
+            <button id="show_docker_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="docker_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_status_log}}</pre></div>
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Docker Image Build Status</div>

@@ -121,6 +121,9 @@ def page_settings():
     # Get RTL Status
     rtl_status_log = get_journalctl_log("rtl")
 
+    # Get Docker Status
+    docker_status_log = get_journalctl_log("docker")
+
     # Get Docker Image Build Status
     docker_image_build_status_log = get_journalctl_log("docker_images")
 
@@ -172,6 +175,9 @@ def page_settings():
         "rtl_status_log": rtl_status_log,
         "rtl_status": get_service_status_basic_text("rtl"),
         "rtl_status_color": get_service_status_color("rtl"),
+        "docker_status_log": docker_status_log,
+        "docker_status": get_service_status_basic_text("docker"),
+        "docker_status_color": get_service_status_color("docker"),
         "docker_image_build_status_log": docker_image_build_status_log,
         "docker_image_build_status": get_docker_image_build_status(),
         "docker_image_build_status_color": get_docker_image_build_status_color(),
