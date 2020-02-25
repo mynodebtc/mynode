@@ -602,14 +602,10 @@ input:checked + .slider:before {
     border-radius: 50%;
 }
 
-/* Customizing Bootstrap */
-/**, ::after, ::before {
-    box-sizing: content-box;
-}*/
-
-.tab-pane {
-    padding: 1em;
-    height: 210px;
+.log {
+    font-size: 12px;
+    margin-top: 1em;
+    max-height: 300px;
     overflow: auto;
 }
 
