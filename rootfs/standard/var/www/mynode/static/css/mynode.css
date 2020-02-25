@@ -507,7 +507,6 @@ a:active {
 .login_submit {
     width: 100%;
     margin-top: 5px;
-    box-sizing: border-box;
 }
 
 #download-handle {
@@ -604,9 +603,9 @@ input:checked + .slider:before {
 }
 
 /* Customizing Bootstrap */
-*, ::after, ::before {
+/**, ::after, ::before {
     box-sizing: content-box;
-}
+}*/
 
 .tab-pane {
     padding: 1em;

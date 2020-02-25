@@ -3,8 +3,8 @@
 
 [Unit]
 Description=MempoolSpace
-Wants=www.service mynode_docker_images.service
-After=www.service mynode_docker_images.service
+Wants=www.service docker_images.service
+After=www.service docker_images.service
 
 [Service]
 EnvironmentFile=/mnt/hdd/mynode/settings/.btcrpc_environment
@@ -17,7 +17,7 @@ Group=root
 Type=simple
 TimeoutSec=240
 Restart=always
-RestartSec=30
+RestartSec=120
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=mempoolspace

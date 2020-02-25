@@ -1,6 +1,8 @@
 <!DOCTYPE html lang="en">
     <head>
         <title>{{ title }}</title>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         {% include 'includes/head.html' %}
 
         <script>
@@ -207,6 +209,11 @@
                     $("#rtl_status").show();
                 });
 
+                $("#show_docker_status").on("click", function() {
+                    $("#show_docker_status").hide(0);
+                    $("#docker_status").show();
+                });
+
                 $("#show_docker_image_build_status").on("click", function() {
                     $("#show_docker_image_build_status").hide(0);
                     $("#docker_image_build_status").show();
@@ -235,6 +242,11 @@
                 $("#show_firewall_rules").on("click", function() {
                     $("#show_firewall_rules").hide(0);
                     $("#firewall_rules").show();
+                });
+
+                $("#show_product_key").on("click", function() {
+                    $("#show_product_key").hide(0);
+                    $("#product_key").show();
                 });
 
                 $("#upgrade_changelog").on("click", function() {
@@ -369,10 +381,37 @@
 
         <br/>
         <div class="settings_block">
-          <div class="settings_block_header">myNode</div>
+            <div class="settings_block_header">myNode</div>
+            <div class="settings_block_subheader">Info</div>
+            <table class="table table-borderless table-sm">
+                <tr>
+                    <td>Serial Number</td>
+                    <td style="padding-left: 20px;">{{serial_number}}</td>
+                </tr>
+                <tr>
+                    <td>Product Key</td>
+                    <td style="padding-left: 20px;">
+                    {% if product_key_skipped %}
+                    {{product_key}}
+                    &nbsp;<a href="/product-key" class="ui-button ui-widget ui-corner-all settings_button_small">Enter Product Key</a>
+                    {% else %}
+                    <button id="show_product_key" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+                    <div id="product_key" style="display: none;">{{product_key}}</div>
+                    {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Device Type</td>
+                    <td style="padding-left: 20px;">{{device_type}}</td>
+                </tr>
+                <tr>
+                    <td>Local IP</td>
+                    <td style="padding-left: 20px;">{{local_ip}}</td>
+                </tr>
+            </table>
+
           <nav><div class="nav nav-tabs" id="nav-tab" role="tablist">
             <a class="nav-item nav-link active" id="nav-version-tab" data-toggle="tab" href="#nav-version" role="tab" aria-controls="nav-version" aria-selected="true">Version</a>
-            <a class="nav-item nav-link" id="nav-info-tab" data-toggle="tab" href="#nav-info" role="tab" aria-controls="nav-info" aria-selected="false">Info</a>
             <a class="nav-item nav-link" id="nav-status-tab" data-toggle="tab" href="#nav-status" role="tab" aria-controls="nav-status" aria-selected="false">Status</a>
             <a class="nav-item nav-link" id="nav-changelog-tab" data-toggle="tab" href="#nav-changelog" role="tab" aria-controls="nav-changelog" aria-selected="false">Change log</a>
             <a class="nav-item nav-link" id="nav-changepasswd-tab" data-toggle="tab" href="#nav-changepasswd" role="tab" aria-controls="nav-changepasswd" aria-selected="false">Change password</a>
@@ -406,38 +445,7 @@
               {% endif %}
             </div>
             <div class="tab-pane fade" id="nav-info" role="tabpanel" aria-labelledby="nav-info-tab">
-              <table class="table table-borderless table-sm">
-                <tr>
-                  <td>Serial Number</td>
-                  <td style="padding-left: 20px;">{{serial_number}}</td>
-                </tr>
-                <tr>
-                  <td>Product Key</td>
-                  <td style="padding-left: 20px;">
-                  {{product_key}}
-                  {% if product_key_skipped %}
-                  &nbsp;<a href="/product-key" class="ui-button ui-widget ui-corner-all settings_button_small">Enter Product Key</a>
-                  {% endif %}
-                  </td>
-                </tr>
-                <tr>
-                  <td>Device Type</td>
-                  <td style="padding-left: 20px;">{{device_type}}</td>
-                </tr>
-                <!-- <tr>
-                <td>Public IP</td>
-                <td style="padding-left: 20px;">
-                {{public_ip}}
-                {% if 'Failed to find' in public_ip %}
-                <a href="/settings/check-in" class="ui-button ui-widget ui-corner-all settings_button_small">Refresh</a>
-                {% endif %}
-                </td>
-                </tr> -->
-                <tr>
-                  <td>Local IP</td>
-                  <td style="padding-left: 20px;">{{local_ip}}</td>
-                </tr>
-              </table>
+              
             </div>
             <div class="tab-pane fade" id="nav-status" role="tabpanel" aria-labelledby="nav-status-tab">
               <table class="table table-borderless table-sm">
@@ -579,6 +587,15 @@
             </div>
             <button id="show_rtl_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
             <div id="rtl_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{rtl_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Docker Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ docker_status_color }}"></div>
+                {{ docker_status }}
+            </div>
+            <button id="show_docker_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="docker_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_status_log}}</pre></div>
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Docker Image Build Status</div>
@@ -876,6 +893,47 @@
         <div class="settings_block">
             <div class="settings_block_header">Developer</div>
 
+            {% if not product_key_skipped %}
+                <div class="settings_block_subheader">Reinstall Latest Version</div>
+                If you are running a beta or are having issues, it may be helpful to reinstall the latest official release.
+                <br/>
+                <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Install Latest Version</button>
+
+                <div class="divider"></div>
+            {% endif %}
+
+            {% if not product_key_skipped %}
+                <div class="settings_block_subheader">Install Beta</div>
+                You can install beta releases of myNode software to help test. These may be less stable.
+                <br/><br/>
+                <table border="0">
+                    <tr>
+                        <td>Current Beta Version</td>
+                        <td>{{current_beta_version}}</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Latest Beta Version</td>
+                        <td>{{latest_beta_version}}</td>
+                        <td>&nbsp;<a href="/settings/get-latest-version" class="ui-button ui-widget ui-corner-all settings_button_small">Check for Updates</a></td>
+                    </tr>
+                </table>
+                {% if current_beta_version != latest_beta_version and latest_beta_version != "" %}
+                    <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Install Beta</button>
+                    {% if product_key_skipped %}
+                        <p>Upgrade to myNode Premium to get one-click updates!</p>
+                        <p>For manual upgrades, see our <a target="_blank" href="https://mynodebtc.com/guide/upgrading_your_device">upgrade guide</a>!</p>
+                    {% endif %}
+                {% elif upgrade_error %}
+                    <p style="color: red;">It appears a recent upgrade may not have fully completed.</p>
+                    <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Retry Upgrade</button>
+                    <button id="show_upgrade_status" class="ui-button ui-widget ui-corner-all settings_button">Show Upgrade Logs</button>
+                    <div id="upgrade_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{upgrade_logs}}</pre></div>
+                {% endif %}
+
+                <div class="divider"></div>
+            {% endif %}
+
             <div class="settings_block_subheader">Uploader Device</div>
             This disables most features and prioritize sharing QuickSync files. It can be reversed later.
             <br/>
@@ -937,5 +995,9 @@
         </div>
 
         {% include 'includes/footer.html' %}
+        <!-- Bootstrap JS -->
+        <!-- <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script> -->
+        <!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script> -->
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
      </body>
 </html>

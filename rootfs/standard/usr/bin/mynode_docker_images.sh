@@ -13,11 +13,12 @@ sleep 60s
 echo "Waiting on bitcoin to sync so drive usage is lower..."
 /usr/bin/wait_on_bitcoin.sh
 
-# Loop and check every 1 day
-while [ 1 ]; do
-
+while true; do
     echo "Checking for building new docker images..."
     touch /tmp/installing_docker_images
+
+    # Pull images that don't need to be built
+    docker pull netdata/netdata
 
     # Upgrade WebSSH2
     echo "Checking for new webssh2..."
@@ -30,14 +31,13 @@ while [ 1 ]; do
     if [ "$CURRENT" != "$WEBSSH2_UPGRADE_URL" ]; then
         docker rmi webssh2 || true
 
-        cd /opt/mynode
+        cd /tmp/
         rm -rf webssh2
         wget $WEBSSH2_UPGRADE_URL -O webssh2.tar.gz
         tar -xvf webssh2.tar.gz
         rm webssh2.tar.gz
         mv webssh2-* webssh2
         cd webssh2
-        mv app/config.json.sample app/config.json
         docker build -t webssh2 .
 
         echo $WEBSSH2_UPGRADE_URL > $WEBSSH2_UPGRADE_URL_FILE
@@ -45,7 +45,7 @@ while [ 1 ]; do
 
     # Upgrade mempool.space
     echo "Checking for new mempool.space..."
-    MEMPOOLSPACE_UPGRADE_URL=https://github.com/mempool-space/mempool.space/archive/master.zip
+    MEMPOOLSPACE_UPGRADE_URL=https://github.com/mempool-space/mempool.space/archive/8835c399e9b00c2579ed0bbd72f8cca4c5823dad.zip
     MEMPOOLSPACE_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/mempoolspace_url
     CURRENT=""
     if [ -f $MEMPOOLSPACE_UPGRADE_URL_FILE ]; then
@@ -61,6 +61,8 @@ while [ 1 ]; do
         rm mempool.zip
         mv mempool* mempoolspace
         cd mempoolspace
+        sync
+        sleep 3s
         docker build -t mempoolspace .
 
         echo $MEMPOOLSPACE_UPGRADE_URL > $MEMPOOLSPACE_UPGRADE_URL_FILE
@@ -68,7 +70,9 @@ while [ 1 ]; do
 
     rm -f /tmp/installing_docker_images
 
-    # Check again in a day
-    echo "Waiting a day..."
-    sleep 24h
+    # Wait a day
+    sleep 1d
 done
+
+# We should not exit
+exit 1

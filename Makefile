@@ -90,6 +90,10 @@ release.sh:
 release: clean_rootfs rootfs release.sh
 	@sh release.sh
 
+.PHONY: beta
+beta: clean_rootfs release.sh
+	@sh release.sh beta
+
 
 # Clean build files
 .PHONY: clean

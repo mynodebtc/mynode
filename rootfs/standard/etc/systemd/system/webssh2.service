@@ -3,12 +3,11 @@
 
 [Unit]
 Description=WebSSH2
-Wants=www.service mynode_docker_images.service
-After=www.service mynode_docker_images.service
+Wants=www.service docker_images.service
+After=www.service docker_images.service
 
 [Service]
-WorkingDirectory=/opt/mynode/webssh2
-ExecStart=/usr/bin/docker run --rm --name webssh2 -p 2222:2222 webssh2
+ExecStart=/usr/bin/docker run --rm --name webssh2 -p 2222:2222 -v /opt/mynode/webssh2/config.json:/usr/src/config.json webssh2
 ExecStop=/usr/bin/docker stop -t 2 webssh2
 
 User=root

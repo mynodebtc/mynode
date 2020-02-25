@@ -68,6 +68,8 @@ def page_settings():
 
     current_version = get_current_version()
     latest_version = get_latest_version()
+    current_beta_version = get_current_beta_version()
+    latest_beta_version = get_latest_beta_version()
 
     changelog = get_device_changelog()
     serial_number = get_device_serial()
@@ -119,6 +121,9 @@ def page_settings():
     # Get RTL Status
     rtl_status_log = get_journalctl_log("rtl")
 
+    # Get Docker Status
+    docker_status_log = get_journalctl_log("docker")
+
     # Get Docker Image Build Status
     docker_image_build_status_log = get_journalctl_log("docker_images")
 
@@ -138,6 +143,8 @@ def page_settings():
         "password_message": "",
         "current_version": current_version,
         "latest_version": latest_version,
+        "current_beta_version": current_beta_version,
+        "latest_beta_version": latest_beta_version,
         "upgrade_error": did_upgrade_fail(),
         "upgrade_logs": get_recent_upgrade_logs(),
         "serial_number": serial_number,
@@ -168,6 +175,9 @@ def page_settings():
         "rtl_status_log": rtl_status_log,
         "rtl_status": get_service_status_basic_text("rtl"),
         "rtl_status_color": get_service_status_color("rtl"),
+        "docker_status_log": docker_status_log,
+        "docker_status": get_service_status_basic_text("docker"),
+        "docker_status_color": get_service_status_color("docker"),
         "docker_image_build_status_log": docker_image_build_status_log,
         "docker_image_build_status": get_docker_image_build_status(),
         "docker_image_build_status_color": get_docker_image_build_status_color(),
@@ -205,6 +215,23 @@ def upgrade_page():
 
     # Upgrade device
     t = Timer(1.0, upgrade_device)
+    t.start()
+
+    # Display wait page
+    templateData = {
+        "title": "myNode Upgrade",
+        "header_text": "Upgrading",
+        "subheader_text": "This may take a while...",
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('reboot.html', **templateData)
+
+@mynode_settings.route("/settings/upgrade-beta")
+def upgrade_beta_page():
+    check_logged_in()
+
+    # Upgrade device
+    t = Timer(1.0, upgrade_device_beta)
     t.start()
 
     # Display wait page

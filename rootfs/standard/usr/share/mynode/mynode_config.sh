@@ -53,6 +53,7 @@ QUICKSYNC_TORRENT_BETA_URL="https://mynodebtc.com/device/blockchain_beta.tar.gz.
 QUICKSYNC_UPLOAD_RATE_FILE="/mnt/hdd/mynode/settings/quicksync_upload_rate"
 QUICKSYNC_BACKGROUND_DOWNLOAD_RATE_FILE="/mnt/hdd/mynode/settings/quicksync_background_download_rate"
 LATEST_VERSION_URL="http://www.mynodebtc.com/device/latest_version"
+LATEST_BETA_VERSION_URL="http://www.mynodebtc.com/device/latest_beta_version"
 UPLOADER_FILE="/mnt/hdd/mynode/settings/uploader"
 UPGRADE_ERROR_FILE="/mnt/hdd/mynode/settings/upgrade_error"
 LND_BACKUP_FOLDER="/home/bitcoin/lnd_backup/"
@@ -86,6 +87,8 @@ fi
 
 UPGRADE_DOWNLOAD_URL="http://www.mynodebtc.com/device_api/download_latest_standard.php?type=${DEVICE_TYPE}&product_key=${PRODUCT_KEY}&serial=${SERIAL_NUM}"
 UPGRADE_DOWNLOAD_SIGNATURE_URL="http://www.mynodebtc.com/device/hashes/mynode_release_latest_${DEVICE_TYPE}.sha256"
+UPGRADE_BETA_DOWNLOAD_URL="http://www.mynodebtc.com/device_api/download_latest_standard.php?beta=1&type=${DEVICE_TYPE}&product_key=${PRODUCT_KEY}&serial=${SERIAL_NUM}"
+UPGRADE_BETA_DOWNLOAD_SIGNATURE_URL="http://www.mynodebtc.com/device/hashes/mynode_release_latest_beta_${DEVICE_TYPE}.sha256"
 UPGRADE_PUBKEY_URL="https://raw.githubusercontent.com/mynodebtc/pubkey/master/mynode_release.pub"
 
 # Update settings for other devices

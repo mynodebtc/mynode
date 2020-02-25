@@ -65,8 +65,9 @@ set +e
 touch /tmp/repairing_drive
 for d in /dev/sd*1; do
     echo "Repairing drive $d ...";
-    RC=$(fsck -y $d > /tmp/fsck_results 2>&1)
-    if [ $RC -ne 0 ]; then
+    fsck -y $d > /tmp/fsck_results 2>&1
+    RC=$?
+    if [ "$RC" -ne 0 ]; then
         touch /tmp/fsck_error
     fi
 done
@@ -177,6 +178,12 @@ if [ ! -f /mnt/hdd/mynode/settings/.setquicksyncdefault ]; then
     DRIVE=$(cat /tmp/.mynode_drive)
     HDD=$(lsblk $DRIVE -o ROTA | tail -n 1 | tr -d '[:space:]')
     if [ "$HDD" = "0" ]; then
+        touch /mnt/hdd/mynode/settings/quicksync_disabled
+    fi
+    # If there is a USB->SATA adapter, assume we have an SSD and default to no QS
+    lsusb | grep "SATA 6Gb/s bridge"
+    RC=$?
+    if [ "$RC" = "0" ]; then
         touch /mnt/hdd/mynode/settings/quicksync_disabled
     fi
     # Default small drives to no QuickSync
@@ -343,6 +350,7 @@ chmod +x /usr/bin/electrs || true # Once, a device didn't have the execute bit s
 
 # Check for new versions
 wget $LATEST_VERSION_URL -O /usr/share/mynode/latest_version || true
+wget $LATEST_BETA_VERSION_URL -O /usr/share/mynode/latest_beta_version || true
 
 # Update current state
 if [ -f $QUICKSYNC_DIR/.quicksync_complete ]; then
