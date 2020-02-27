@@ -181,8 +181,10 @@ if [ ! -f /mnt/hdd/mynode/settings/.setquicksyncdefault ]; then
         touch /mnt/hdd/mynode/settings/quicksync_disabled
     fi
     # If there is a USB->SATA adapter, assume we have an SSD and default to no QS
+    set +e
     lsusb | grep "SATA 6Gb/s bridge"
     RC=$?
+    set -e
     if [ "$RC" = "0" ]; then
         touch /mnt/hdd/mynode/settings/quicksync_disabled
     fi
