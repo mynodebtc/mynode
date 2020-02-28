@@ -1,0 +1,22 @@
+# samourai dojo service
+# /etc/systemd/system/dojo.service
+
+[Unit]
+Description=Dojo
+After=network.target mynode.service
+
+[Service]
+Type=forking
+RemainAfterExit=yes
+WorkingDirectory=/opt/mynode/dojo/docker/my-dojo
+ExecStart=/opt/mynode/dojo/docker/my-dojo/dojo.sh start
+ExecStop=/opt/mynode/dojo/docker/my-dojo/dojo.sh stop
+User=root
+Group=root
+KillMode=process
+TimeoutSec=420
+Restart=always
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target
