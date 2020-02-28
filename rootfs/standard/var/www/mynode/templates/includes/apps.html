@@ -15,7 +15,7 @@
             <div class="app_status_icon {{ btcpayserver_status_color }}"></div>
             <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/btcpayserver.png")}}"/></div>
             <div class="app_title">BTCPay Server</div>
-            <div class="app_status">{% if not lnd_ready %}Waiting on LND...{% else %}Merchant Tool{% endif %}</div>
+            <div class="app_status">{{ btcpayserver_status }}</div>
             <div class="app_contents">
                 {% if product_key_skipped %}
                     Premium Feature
@@ -108,7 +108,7 @@
         <div class="app_status_icon {% if product_key_skipped %}gray{% else %} {{mempoolspace_status_color}} {% endif %}"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/mempoolspace.png")}}"/></div>
         <div class="app_title">Mempool.Space</div>
-        <div class="app_status">Mempool Viewer</div>
+        <div class="app_status">{{ mempoolspace_status }}</div>
         <div class="app_contents">
             {% if product_key_skipped %}
                 Premium Feature
