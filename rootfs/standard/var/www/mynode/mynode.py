@@ -3,7 +3,6 @@ from config import *
 from flask import Flask, render_template, Markup, send_from_directory, redirect, request, url_for
 from user_management import *
 from bitcoind import mynode_bitcoind
-from bitcoin_cli import mynode_bitcoin_cli
 from whirlpool import mynode_whirlpool, get_whirlpool_status
 from dojo import mynode_dojo, get_dojo_status
 from tor import mynode_tor
@@ -42,7 +41,6 @@ app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024     # 32 MB upload file max
 app.config['UPLOAD_FOLDER'] = "/tmp/flask_uploads"
 app.register_blueprint(mynode_bitcoind)
 app.register_blueprint(mynode_lnd)
-app.register_blueprint(mynode_bitcoin_cli)
 app.register_blueprint(mynode_whirlpool)
 app.register_blueprint(mynode_dojo)
 app.register_blueprint(mynode_tor)
