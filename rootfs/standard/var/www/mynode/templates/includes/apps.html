@@ -12,23 +12,23 @@
         </div>
     </div>
     <div class="app_tile">
-            <div class="app_status_icon {{ btcpayserver_status_color }}"></div>
-            <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/btcpayserver.png")}}"/></div>
-            <div class="app_title">BTCPay Server</div>
-            <div class="app_status">{{ btcpayserver_status }}</div>
-            <div class="app_contents">
-                {% if product_key_skipped %}
-                    Premium Feature
-                {% else %}
-                    {% if lnd_ready %}
+        <div class="app_status_icon {{ btcpayserver_status_color }}"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/btcpayserver.png")}}"/></div>
+        <div class="app_title">BTCPay Server</div>
+        <div class="app_status">{{ btcpayserver_status }}</div>
+        <div class="app_contents">
+            {% if product_key_skipped %}
+                Premium Feature
+            {% else %}
+                {% if lnd_ready %}
                     {% if btcpayserver_enabled %}
                     <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="btcpayserver">BTCPay Server</a>
                     {% endif %}
                     <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-btcpayserver" id="toggle-btcpayserver">{% if btcpayserver_enabled %}Disable{% else %}Enable{% endif %}</a>
                     {% endif %}
-                {% endif %}
-            </div>
+            {% endif %}
         </div>
+    </div>
     <div class="app_tile">
         <div class="app_status_icon {{ lndhub_status_color }}"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lndhub.png")}}"/></div>
@@ -36,28 +36,11 @@
         <div class="app_status">{% if not lnd_ready %}Waiting on LND...{% endif %}</div>
         <div class="app_contents">
             {% if lnd_ready %}
-            {% if lndhub_enabled %}
-            <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lndhub">LND Hub</a>
-            {% endif %}
-            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-lndhub" id="toggle-lndhub">{% if lndhub_enabled %}Disable{% else %}Enable{% endif %}</a>
-            {% endif %}
-        </div>
-    </div>
-    <div class="app_tile">
-        <div class="app_status_icon {{ btcrpcexplorer_status_color }}"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/btc_rpc_explorer.png")}}"/></div>
-        <div class="app_title">Explorer</div>
-        <div class="app_status">{{ btcrpcexplorer_status }}</div>
-        <div class="app_contents">
-                {% if btcrpcexplorer_enabled %}
-                    {% if btcrpcexplorer_ready %}
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="btcrpcexplorer">Explorer</a>
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-btcrpcexplorer">Disable</a>
-                    {% endif %}
-                {% else %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-btcrpcexplorer">Enable</a>
+                {% if lndhub_enabled %}
+                <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lndhub">LND Hub</a>
                 {% endif %}
-            </div>
+                <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-lndhub" id="toggle-lndhub">{% if lndhub_enabled %}Disable{% else %}Enable{% endif %}</a>
+            {% endif %}
         </div>
     </div>
     <div class="app_tile">
@@ -74,19 +57,22 @@
 </div>
 
 <div class="app_tile_row">
-    <!--
     <div class="app_tile">
-        <div class="app_status_icon {{ bitcoind_status_color }}"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/bitcoin.png")}}"/></div>
+        <div class="app_status_icon {{ btcrpcexplorer_status_color }}"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/btc_rpc_explorer.png")}}"/></div>
         <div class="app_title">Explorer</div>
-        <div class="app_status">{{ explorer_status }}</div>
+        <div class="app_status">{{ btcrpcexplorer_status }}</div>
         <div class="app_contents">
-            {% if explorer_ready %}
-            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/explorer">Explorer</a>
+            {% if btcrpcexplorer_enabled %}
+                {% if btcrpcexplorer_ready %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="btcrpcexplorer">Explorer</a>
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-btcrpcexplorer">Disable</a>
+                {% endif %}
+            {% else %}
+                <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-btcrpcexplorer">Enable</a>
             {% endif %}
         </div>
     </div>
-    -->
     <div class="app_tile">
         <div class="app_status_icon {{ dojo_status_color }}"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/samourai.png")}}"/></div>
@@ -136,12 +122,5 @@
                 {% endif %}
             {% endif %}
         </div>
-    </div>
-    <div class="app_tile">
-        <div class="app_status_icon"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/cli.png")}}"/></div>
-        <div class="app_title">BTC CLI</div>
-        <div class="app_status"></div>
-        <div class="app_contents"><a class="ui-button ui-widget ui-corner-all mynode_button" href="/bitcoin-cli">CLI</a></div>
     </div>
 </div>

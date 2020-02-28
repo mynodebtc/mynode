@@ -98,6 +98,15 @@ def search(search_term):
     return results
     
 
+def runcmd(cmd):
+    cmd = "bitcoin-cli --conf=/home/admin/.bitcoin/bitcoin.conf --datadir=/mnt/hdd/mynode/bitcoin "+cmd+"; exit 0"
+    try:
+        results = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
+    except Exception as e:
+        results = str(e)
+    return results
+
+
 ### Page functions
 @mynode_bitcoind.route("/bitcoind")
 def bitcoind_status_page():
@@ -493,3 +502,24 @@ def address_page(addr):
             "ui_settings": read_ui_settings()
         }
         return render_template('bitcoind_error.html', **templateData)
+
+
+@mynode_bitcoind.route("/bitcoind/cli")
+def bitcoincli():
+    check_logged_in()
+
+    # Load page
+    templateData = {
+        "title": "myNode Bitcoin CLI",
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('bitcoin_cli.html', **templateData)
+
+@mynode_bitcoind.route("/bitcoind/cli-run", methods=['POST'])
+def runcmd_page():
+    check_logged_in()
+    
+    if not request:
+        return ""
+    response = runcmd(request.form['cmd'])
+    return response
