@@ -1,6 +1,7 @@
 from config import *
 from flask import Blueprint, render_template, session, abort, Markup, request, redirect, send_from_directory, url_for, flash
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
+from bitcoind import is_bitcoind_synced
 from pprint import pprint, pformat
 from threading import Timer
 from thread_functions import *
@@ -67,6 +68,8 @@ def page_settings():
 
     current_version = get_current_version()
     latest_version = get_latest_version()
+    current_beta_version = get_current_beta_version()
+    latest_beta_version = get_latest_beta_version()
 
     changelog = get_device_changelog()
     serial_number = get_device_serial()
@@ -75,28 +78,34 @@ def page_settings():
     pk_skipped = skipped_product_key()
     pk_error = not is_valid_product_key()
     uptime = get_system_uptime()
+    date = get_system_date()
     local_ip = get_local_ip()
     public_ip = get_public_ip()
 
+
+    # Get Startup Status
+    startup_status_log = get_journalctl_log("mynode")
 
     # Get QuickSync Status
     quicksync_enabled = is_quicksync_enabled()
     quicksync_status = "Disabled"
     quicksync_status_color = "gray"
+    quicksync_status_log = "DISABLED"
     if quicksync_enabled:
         quicksync_status = get_service_status_basic_text("quicksync")
         quicksync_status_color = get_service_status_color("quicksync")
-
-    quicksync_status_log = ""
-    try:
-        quicksync_status_log = subprocess.check_output(["mynode-get-quicksync-status"]).decode("utf8")
-    except:
-        quicksync_status_log = "ERROR"
+        try:
+            quicksync_status_log = subprocess.check_output(["mynode-get-quicksync-status"]).decode("utf8")
+        except:
+            quicksync_status_log = "ERROR"
 
     # Get Bitcoin Status
     bitcoin_status_log = ""
     try:
         bitcoin_status_log = subprocess.check_output(["tail","-n","200","/mnt/hdd/mynode/bitcoin/debug.log"]).decode("utf8")
+        lines = bitcoin_status_log.split('\n')
+        lines.reverse()
+        bitcoin_status_log = '\n'.join(lines)
     except:
         bitcoin_status_log = "ERROR"
 
@@ -108,6 +117,12 @@ def page_settings():
 
     # Get Electrs Status
     electrs_status_log = get_journalctl_log("electrs")
+
+    # Get RTL Status
+    rtl_status_log = get_journalctl_log("rtl")
+
+    # Get Docker Status
+    docker_status_log = get_journalctl_log("docker")
 
     # Get Docker Image Build Status
     docker_image_build_status_log = get_journalctl_log("docker_images")
@@ -128,16 +143,23 @@ def page_settings():
         "password_message": "",
         "current_version": current_version,
         "latest_version": latest_version,
+        "current_beta_version": current_beta_version,
+        "latest_beta_version": latest_beta_version,
         "upgrade_error": did_upgrade_fail(),
+        "upgrade_logs": get_recent_upgrade_logs(),
         "serial_number": serial_number,
         "device_type": device_type,
         "product_key": product_key,
         "product_key_skipped": pk_skipped,
         "product_key_error": pk_error,
         "changelog": changelog,
+        "startup_status_log": startup_status_log,
+        "startup_status": get_service_status_basic_text("mynode"),
+        "startup_status_color": get_service_status_color("mynode"),
         "quicksync_status_log": quicksync_status_log,
         "quicksync_status": quicksync_status,
         "quicksync_status_color": quicksync_status_color,
+        "is_bitcoin_synced": is_bitcoind_synced(),
         "bitcoin_status_log": bitcoin_status_log,
         "bitcoin_status": get_service_status_basic_text("bitcoind"),
         "bitcoin_status_color": get_service_status_color("bitcoind"),
@@ -150,15 +172,33 @@ def page_settings():
         "electrs_status_log": electrs_status_log,
         "electrs_status": get_service_status_basic_text("electrs"),
         "electrs_status_color": get_service_status_color("electrs"),
+        "rtl_status_log": rtl_status_log,
+        "rtl_status": get_service_status_basic_text("rtl"),
+        "rtl_status_color": get_service_status_color("rtl"),
+        "docker_status_log": docker_status_log,
+        "docker_status": get_service_status_basic_text("docker"),
+        "docker_status_color": get_service_status_color("docker"),
         "docker_image_build_status_log": docker_image_build_status_log,
         "docker_image_build_status": get_docker_image_build_status(),
         "docker_image_build_status_color": get_docker_image_build_status_color(),
+        "btcpayserver_status_log": get_journalctl_log("btcpayserver"),
+        "btcpayserver_status": get_service_status_basic_text("btcpayserver"),
+        "btcpayserver_status_color": get_service_status_color("btcpayserver"),
+        "mempoolspace_status_log": get_journalctl_log("mempoolspace"),
+        "mempoolspace_status": get_service_status_basic_text("mempoolspace"),
+        "mempoolspace_status_color": get_service_status_color("mempoolspace"),
+        "firewall_status_log": get_journalctl_log("ufw"),
+        "firewall_status": get_service_status_basic_text("ufw"),
+        "firewall_status_color": get_service_status_color("ufw"),
+        "firewall_rules": get_firewall_rules(),
         "is_quicksync_disabled": not quicksync_enabled,
         "is_netdata_enabled": is_netdata_enabled(),
         "is_uploader_device": is_uploader(),
         "download_rate": download_rate,
         "upload_rate": upload_rate,
+        "is_btc_lnd_tor_enabled": is_btc_lnd_tor_enabled(),
         "uptime": uptime,
+        "date": date,
         "public_ip": public_ip,
         "local_ip": local_ip,
         "drive_usage": get_drive_usage(),
@@ -186,6 +226,23 @@ def upgrade_page():
     }
     return render_template('reboot.html', **templateData)
 
+@mynode_settings.route("/settings/upgrade-beta")
+def upgrade_beta_page():
+    check_logged_in()
+
+    # Upgrade device
+    t = Timer(1.0, upgrade_device_beta)
+    t.start()
+
+    # Display wait page
+    templateData = {
+        "title": "myNode Upgrade",
+        "header_text": "Upgrading",
+        "subheader_text": "This may take a while...",
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('reboot.html', **templateData)
+
 @mynode_settings.route("/settings/get-latest-version")
 def get_latest_version_page():
     check_logged_in()
@@ -196,7 +253,6 @@ def get_latest_version_page():
 def check_in_page():
     check_logged_in()
     check_in()
-    find_public_ip()
     return redirect("/settings")
 
 @mynode_settings.route("/settings/reset-blockchain")
@@ -279,6 +335,29 @@ def rescan_blockchain_page():
     os.system("systemctl restart bitcoind")
     t = Timer(30.0, reset_bitcoin_env_file)
     t.start()
+    return redirect("/settings")
+
+@mynode_settings.route("/settings/reset-electrs")
+def reset_electrs_page():
+    check_logged_in()
+    t = Timer(1.0, reset_electrs)
+    t.start()
+
+    # Display wait page
+    templateData = {
+        "title": "myNode",
+        "header_text": "Resetting Electrum Data",
+        "subheader_text": "This will take several minutes...",
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('reboot.html', **templateData)
+
+@mynode_settings.route("/settings/reset-firewall")
+def reset_firewall_page():
+    check_logged_in()
+    t = Timer(3.0, reload_firewall)
+    t.start()
+    flash("Firewall Reset", category="message")
     return redirect("/settings")
 
 @mynode_settings.route("/settings/factory-reset", methods=['POST'])
@@ -398,6 +477,29 @@ def page_reset_tor():
     }
     return render_template('reboot.html', **templateData)
 
+@mynode_settings.route("/settings/enable_btc_lnd_tor")
+def page_enable_btc_lnd_tor():
+    check_logged_in()
+    
+    enable = request.args.get('enable')
+    if enable == "1":
+        enable_btc_lnd_tor()
+    else:
+        disable_btc_lnd_tor()
+
+    # Trigger reboot
+    t = Timer(1.0, reboot_device)
+    t.start()
+
+    # Wait until device is restarted
+    templateData = {
+        "title": "myNode Reboot",
+        "header_text": "Restarting",
+        "subheader_text": "This will take several minutes...",
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('reboot.html', **templateData)
+
 @mynode_settings.route("/settings/mynode_logs.tar.gz")
 def download_logs_page():
     check_logged_in()
@@ -418,6 +520,38 @@ def regen_https_certs_page():
     
     flash("HTTPS Service Restarted", category="message")
     return redirect(url_for(".page_settings"))
+
+@mynode_settings.route("/settings/regen-electrs-certs")
+def regen_electrs_certs_page():
+    check_logged_in()
+
+    # Touch files to trigger re-checking drive
+    os.system("rm -rf /home/bitcoin/.mynode/electrs")
+    os.system("rm -rf /mnt/hdd/mynode/settings/electrs")
+    os.system("sync")
+    os.system("systemctl restart tls_proxy")
+    
+    flash("Electrum Server Service Restarted", category="message")
+    return redirect(url_for(".page_settings"))
+
+@mynode_settings.route("/settings/reinstall-app")
+def reinstall_app_page():
+    check_logged_in()
+
+    app = request.args.get('app')
+
+    # Re-install app
+    t = Timer(1.0, reinstall_app, [app])
+    t.start()
+
+    # Display wait page
+    templateData = {
+        "title": "myNode Install",
+        "header_text": "Installing",
+        "subheader_text": "This may take a while...",
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('reboot.html', **templateData)
 
 @mynode_settings.route("/settings/toggle-uploader")
 def toggle_uploader_page():

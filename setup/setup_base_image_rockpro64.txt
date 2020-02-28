@@ -23,6 +23,7 @@ sudo apt-get -y upgrade
 
 # Install some necessary tools
 sudo apt-get -y install network-manager tmux
+sudo apt-get -y install lua5.3 lua5.3-dev gcc make git
 
 # Regenerate MAC Address for RockPro64
 . /usr/lib/armbian/armbian-common

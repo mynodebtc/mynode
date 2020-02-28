@@ -73,6 +73,20 @@ wget http://${SERVER_IP}:8000/${TARBALL} -O /tmp/rootfs.tar.gz
 
 
 # Add sources
+apt-get -y install apt-transport-https
+DEBIAN_VERSION=$(lsb_release -c | awk '{ print $2 }')
+grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.lis
+grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.lis
+
+
+# Import Keys
+curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
+curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
+gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
+curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
+gpg  --keyserver hkps://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E #loopd
+curl https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import  # tor
+gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | apt-key add -                                       # tor
 
 
 # Update OS
@@ -82,6 +96,7 @@ apt-get -y upgrade
 
 # Install other tools (run section multiple times to make sure success)
 export DEBIAN_FRONTEND=noninteractive
+apt-get -y install apt-transport-https
 apt-get -y install htop git curl bash-completion jq dphys-swapfile lsof libzmq3-dev
 apt-get -y install build-essential python-dev python-pip python3-dev python3-pip 
 apt-get -y install transmission-cli fail2ban ufw tclsh bluez python-bluez redis-server
@@ -94,7 +109,7 @@ apt-get -y install pv sysstat network-manager rsync parted unzip pkg-config
 apt-get -y install libfreetype6-dev libpng-dev libatlas-base-dev libgmp-dev libltdl-dev 
 apt-get -y install libffi-dev libssl-dev glances python3-bottle automake libtool libltdl7
 apt -y -qq install apt-transport-https ca-certificates
-apt-get -y install xorg chromium openbox lightdm openjdk-11-jre
+apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
 
 
 # Make sure some software is removed
@@ -121,17 +136,11 @@ pip install grpcio grpcio-tools googleapis-common-protos
 pip install tzupdate virtualenv
 
 
-# Import Keys
-curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
-curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
-gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
-curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
-
-# Update python3 to 3.7.X
+# Update Python3 to 3.7.X
 PYTHON3_VERSION=$(python3 --version)
 if [[ "$PYTHON3_VERSION" != *"Python 3.7"* ]]; then
-    mkdir -p /tmp/download
-    cd /tmp/download
+    mkdir -p /opt/download
+    cd /opt/download
     wget https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tar.xz
     tar xf Python-3.7.2.tar.xz
     cd Python-3.7.2
@@ -144,11 +153,12 @@ else
 fi
 
 
-# Install python3 specific tools (run multiple times to make sure success)
+# Install Python3 specific tools (run multiple times to make sure success)
 pip3 install wheel setuptools
 pip3 install bitstring lnd-grpc pycoin aiohttp connectrum python-bitcoinlib
 pip3 install python-bitcointx
-pip3 install lndmanage==0.8.0.1   # Install LND Manage (keep up to date with LND)
+pip3 install gnureadline
+pip3 install lndmanage==0.9.0   # Install LND Manage (keep up to date with LND)
 pip3 install docker-compose
 
 
@@ -212,9 +222,9 @@ if [ -f $BTC_UPGRADE_URL_FILE ]; then
 fi
 if [ "$CURRENT" != "$BTC_UPGRADE_URL" ]; then
     # Download and install Bitcoin
-    rm -rf /tmp/download
-    mkdir -p /tmp/download
-    cd /tmp/download
+    rm -rf /opt/download
+    mkdir -p /opt/download
+    cd /opt/download
 
     wget $BTC_UPGRADE_URL
     wget $BTC_UPGRADE_SHA256SUM_URL -O SHA256SUMS.asc
@@ -240,7 +250,7 @@ fi
 cd ~
 
 # Install Lightning
-LND_VERSION="v0.8.2-beta"
+LND_VERSION="v0.9.0-beta"
 LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
@@ -254,9 +264,9 @@ if [ -f $LND_UPGRADE_URL_FILE ]; then
     CURRENT=$(cat $LND_UPGRADE_URL_FILE)
 fi
 if [ "$CURRENT" != "$LND_UPGRADE_URL" ]; then
-    rm -rf /tmp/download
-    mkdir -p /tmp/download
-    cd /tmp/download
+    rm -rf /opt/download
+    mkdir -p /opt/download
+    cd /opt/download
 
     wget $LND_UPGRADE_URL
     wget $LND_UPGRADE_MANIFEST_URL
@@ -275,24 +285,78 @@ if [ "$CURRENT" != "$LND_UPGRADE_URL" ]; then
 fi
 cd ~
 
+# Install Loopd
+echo "Upgrading loopd..."
+LOOP_VERSION="v0.4.0-beta"
+LOOP_ARCH="loop-linux-armv7"
+if [ $IS_X86 = 1 ]; then
+    LOOP_ARCH="loop-linux-amd64"
+fi
+LOOP_UPGRADE_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/$LOOP_ARCH-$LOOP_VERSION.tar.gz
+LOOP_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.loop_url
+LOOP_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt
+LOOP_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt.sig
+CURRENT=""
+if [ -f $LOOP_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $LOOP_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$LOOP_UPGRADE_URL" ]; then
+    # Download and install Loop
+    rm -rf /opt/download
+    mkdir -p /opt/download
+    cd /opt/download
+
+    wget $LOOP_UPGRADE_URL
+    wget $LOOP_UPGRADE_MANIFEST_URL
+    wget $LOOP_UPGRADE_MANIFEST_SIG_URL
+
+    gpg --verify manifest-*.txt.sig
+    if [ $? == 0 ]; then
+        # Install Loop
+        tar -xzf loop-*.tar.gz
+        mv $LOOP_ARCH-$LOOP_VERSION loop
+        install -m 0755 -o root -g root -t /usr/local/bin loop/*
+
+        # Mark current version
+        echo $LOOP_UPGRADE_URL > $LOOP_UPGRADE_URL_FILE
+    else
+        echo "ERROR UPGRADING LND - GPG FAILED"
+    fi
+fi
+
+
 # Setup "install" location for some apps
 mkdir -p /opt/mynode
 chown -R bitcoin:bitcoin /opt/mynode
 
 
 # Install LND Hub
-if [ ! -f /tmp/installed_lndhub ]; then
+LNDHUB_VERSION="v1.1.3"
+LNDHUB_UPGRADE_URL=https://github.com/BlueWallet/LndHub/archive/${LNDHUB_VERSION}.tar.gz
+LNDHUB_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lndhub_url
+CURRENT=""
+if [ -f $LNDHUB_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $LNDHUB_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$LNDHUB_UPGRADE_URL" ]; then
     cd /opt/mynode
     rm -rf LndHub
-    sudo -u bitcoin git clone https://github.com/BlueWallet/LndHub.git
+
+    wget $LNDHUB_UPGRADE_URL
+    tar -xzf ${LNDHUB_VERSION}.tar.gz
+    rm -f ${LNDHUB_VERSION}.tar.gz
+    mv LndHub-* LndHub
+    chown -R bitcoin:bitcoin LndHub
+
     cd LndHub
     sudo -u bitcoin npm install --only=production
     sudo -u bitcoin ln -s /home/bitcoin/.lnd/tls.cert tls.cert
     sudo -u bitcoin ln -s /home/bitcoin/.lnd/data/chain/bitcoin/mainnet/admin.macaroon admin.macaroon
-    touch /tmp/installed_lndhub
+    echo $LNDHUB_UPGRADE_URL > $LNDHUB_UPGRADE_URL_FILE
 fi
+cd ~
 
-# Install electrs (only build to save new version, now included in overlay)
+# Install Electrs (only build to save new version, now included in overlay)
 #cd /home/admin/download
 #wget https://github.com/romanz/electrs/archive/v0.7.0.tar.gz
 #tar -xvf v0.7.0.tar.gz 
@@ -336,7 +400,7 @@ fi
 
 
 # Install RTL
-RTL_VERSION="v0.6.0"
+RTL_VERSION="v0.6.7"
 RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/$RTL_VERSION.tar.gz
 RTL_UPGRADE_ASC_URL=https://github.com/Ride-The-Lightning/RTL/releases/download/$RTL_VERSION/$RTL_VERSION.tar.gz.asc
 RTL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.rtl_url
@@ -349,7 +413,7 @@ if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
     rm -rf RTL
     
     sudo -u bitcoin wget $RTL_UPGRADE_URL -O RTL.tar.gz
-    sudo -u bitcoin wget $RTL_UPGRADE_ASC_URL -O RTL.tar.gz.asc
+    #sudo -u bitcoin wget $RTL_UPGRADE_ASC_URL -O RTL.tar.gz.asc
 
     #gpg --verify RTL.tar.gz.asc RTL.tar.gz
 
@@ -400,9 +464,9 @@ if [ -f $LNDCONNECT_UPGRADE_URL_FILE ]; then
     CURRENT=$(cat $LNDCONNECT_UPGRADE_URL_FILE)
 fi
 if [ "$CURRENT" != "$LNDCONNECT_UPGRADE_URL" ]; then
-    rm -rf /tmp/download
-    mkdir -p /tmp/download
-    cd /tmp/download
+    rm -rf /opt/download
+    mkdir -p /opt/download
+    cd /opt/download
     wget $LNDCONNECT_UPGRADE_URL -O lndconnect.tar.gz
     tar -xvf lndconnect.tar.gz
     rm lndconnect.tar.gz
@@ -427,10 +491,11 @@ if [ ! -f /usr/bin/ngrok  ]; then
     cp ngrok /usr/bin/
 fi
 
+
 #########################################################
 
 
-# Copy myNode rootfs (downlaoded earlier)
+# Copy myNode rootfs (downloaded earlier)
 tar -xvf /tmp/rootfs.tar.gz -C /tmp/upgrade/
 
 # Install files
@@ -444,6 +509,12 @@ sync
 sleep 1
 
 
+# Enable fan control
+if [ $IS_ROCKPRO64 = 1 ]; then
+    systemctl enable fan_control
+fi
+
+
 # Setup myNode Startup Script
 systemctl daemon-reload
 systemctl enable mynode
@@ -455,6 +526,7 @@ systemctl enable www
 systemctl enable drive_check
 systemctl enable bitcoind
 systemctl enable lnd
+systemctl enable loopd
 systemctl enable lnd_unlock
 systemctl enable lnd_backup
 systemctl enable lnd_admin_files
@@ -467,7 +539,6 @@ systemctl enable redis-server
 systemctl enable tls_proxy
 systemctl enable https
 systemctl enable rtl
-#systemctl enable lnd_admin # REMOVED
 systemctl enable tor
 systemctl enable invalid_block_check
 systemctl enable usb_driver_check
@@ -475,6 +546,7 @@ systemctl enable docker_images
 systemctl enable glances
 systemctl enable netdata
 systemctl enable webssh2
+systemctl enable rotate_logs
 
 
 # Regenerate MAC Address for Armbian devices
@@ -489,9 +561,8 @@ fi
 
 
 # Disable services
-systemctl disable hitch
-systemctl disable mongodb
-systemctl disable lnd_admin
+systemctl disable hitch || true
+systemctl disable mongodb || true
 systemctl disable dhcpcd || true
 
 

@@ -29,37 +29,39 @@ https://mynodebtc.com/order_now
 ## Features
 Each myNode device comes with a number of wonderful features:
 
-- Bitcoin Node
-- Lightning Node (LND)
-- Simple UI / Web Interface
-- VPN for Remote Access
-- Bitcoin Explorer
-- Electrum Server - BTC Light Wallet Server
-- Ride the Lightning - Lightning Wallet
-- LND Hub - Lightning Wallet Server
-- JoinMarket
+- Bitcoin Node (Bitcoin Core v0.19.0.1)
+- Lightning Node (LND v0.9.0-beta)
+- Electrum Server (Electrum Rust Server aka Electrs 0.7.0)
+- BTCPay Server (v1.0.3.153)
+- RTL (Ride the Lightning) - Lightning Wallet (v0.6.7)
+- Samourai Whirlpool (whirlpool-client-cli v0.10.2)
+- Bitcoin RPC Explorer (v1.1.8)
+- Mempool.Space - Mempool local visualizer for the Bitcoin blockchain
+- LND Hub - Lightning Wallet Server (v1.1.3)
+- loopd - A Non-Custodial Off/On Chain Bridge (v0.4.0-beta)
+- Tor
+- JoinMarket CLI (v0.6.1)
+- LND Connect - Generate QR Codes for connecting wallets (v0.2.0)
+- Virtual Machine support (OVA file: VirtualBox, VMWare)
+- VPN for Remote Access (OpenVPN 2.4.7)
 - Bitcoin CLI
 - QuickSync - Quickly sync Bitcoin blockchain
-- LND Connect - Generate QR Codes for connecting wallets
 - LN Channel Backup
-- Tor
-- Docker support
-- Netdata Monitor
-- Glances
-- Web Linux Terminal (WebSSH2)
+- Docker support (v19.03.6) (containers inside: Netdata Monitor, Glances, WebSSH2 (Linux Terminal), BTCPay Server)
+- Simple UI / Web Interface
 - Dark Mode interface
 - Dedicated hardware keeps you constantly and securely connected!
-- Virtual Machine support (OVA file, VirtualBox)
-- Mempool.space local full node integration
-- Samourai Whirlpool
-- And more!
 
 ## Supported Devices
 We currently support images for the following devices:
- - Raspberry Pi 3
  - Raspberry Pi 4
- - Rock64
  - RockPro64
+ - Rock64
+ - Virtual Machine Support (VirtualBox hosting Windows/OS X/Linux/Solaris, VMWare hosting Windows/OS X/Linux)
+
+## Deprecated Devices
+Due to limited RAM and CPU power, following devices are no longer recommended for use. Performance may be poor.
+- Raspberry Pi 3
 
 ## Running myNode
 You can run myNode on your own device in just a few easy steps!
@@ -160,3 +162,8 @@ By using myNode for your Lightning Wallet,  Bitcoin Wallet, and Block Explorer, 
 Please note, we are not responsible for any lost funds while using your myNode device. We have taken significant measures to protect your assets by securing myNode devices, but lightning wallets are meant to be online and used for spending where risks are greater. Please do your own research into Bitcoin and the Lightning Network before investing in cryptocurrency.
 
 For long term storage of cryptocurrency assets, please consider using a hardware wallet, like a Ledger or Trezor.
+
+## Community
+myNode has a wonderful, helpful community that assists with development and support. It would be impossible to run this project without their involvement and support! I truly appreciate the time and effort everyone puts in to make this a success.
+
+In order to maintain high quality premium support for myNode customers, community contributions may be included as part of the Premium software package so that the additional features can be maintained and supported long-term. Community members are welcome to contact myNode and be included in an upcoming list of community contributors that will highlight their contributions and, optionally, solicit donations. Additionally, any donations to myNode will be shared with the community developers and downstream projects at the discretion of the myNode team.

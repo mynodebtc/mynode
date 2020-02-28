@@ -1,3 +1,88 @@
+=== v0.1.93 ===
+- Improve docker container consistency
+- Improve SSD detection re QuickSync
+- Hide product key on settings page
+- Early beta upgrade support
+- Bug fixes
+
+=== v0.1.92 ===
+- Update RTL to v0.6.7
+- Clean rootfs before release
+- Add and tor repos with up to date packages
+- Bug fixes
+
+=== v0.1.91 ===
+- Add PCIe NVME Support for RockPro64
+- Update web logo images
+- Add firewall info to settings page
+- Add Tor reinstall option
+- Improve QuickSync bandwidth
+
+=== v0.1.90 ===
+- Setup proper RTL config for v0.6.4+
+- Use working version of PiVPN
+
+=== v0.1.89 ===
+- Add fan controller for RockPro64
+- Reduce space used for logs
+- Bug fixes
+
+=== v0.1.88 ===
+- Mempool.Space bug fix
+- Update loopd service file
+
+=== v0.1.87 ===
+- Rollback Tor update
+- Add Lightning Loop v0.4.0
+- Improve Mempool.Space consistency
+
+=== v0.1.86 ===
+- Upgrade Tor to v0.4.2.5
+- Fix boot issue for VMs that don't have USB
+- Fix VPN issue by checking out specific rev of PiVPN
+- Update lndmanage to 0.9.0
+- Add startup status to settings page
+- Add Electrum Server reset option
+- Bug fixes
+
+=== v0.1.85 ===
+- Update RTL to v0.6.4
+- Add deposit address, balance, channel, and peer info to Lightning Page
+- Add WebSSH2, Glances, Netdata and Whirlpool to Tor
+- Improve lograte to limit disk/RAM usage
+- Add Tor/IP toggle for Bitcoin and LND
+- Improve key generation
+- Bug fixes
+
+=== v0.1.84 ===
+- Fix issue copying files after an upgrade
+- Add button to reset Whirlpool config
+- Enable LndHub upgrades
+- Improve UI for app reinstallation
+- Fix issue getting stuck at "Drive Mounted"
+
+=== v0.1.83 ===
+- Revert 0.1.82
+
+=== v0.1.82 ===
+- Improve upgrade consistency
+
+=== v0.1.81 ===
+- Upgrade LND to 0.9.0
+- Upgrade RTL to v0.6.3
+- Small drives will skip QuickSync
+- Improve upgrade consistency
+- Improve LND login consistency
+- Add option to reinstall applications
+- Add host SSH capability to BTCPay server
+
+=== v0.1.80 ===
+- Add BTCPay Server
+- Whirlpool is part of community edition
+- Disable Wifi MAC Randomization
+- Add Mempool.Space port to Tor access
+- Bug fixes
+
 === v0.1.79 ===
 - Upgrade BTC RPC Explorer to v1.1.8
 - Fix issue hidden sidebar on RTL
@@ -26,7 +111,7 @@
 
 === v0.1.74 ===
 - Add option to restore channel backup when creating Lightning wallet
-- Ugrade LND to 0.8.2
+- Upgrade LND to 0.8.2
 - Improved rockpro64 support
 - Improve public IP detection
 - Improve drive health monitoring

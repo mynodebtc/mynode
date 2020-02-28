@@ -58,11 +58,19 @@ def get_current_version():
         current_version = "error"
     return current_version
 
+def get_current_beta_version():
+    current_beta_version = "0.0"
+    try:
+        with open("/usr/share/mynode/beta_version", "r") as f:
+            current_beta_version = f.read().strip()
+    except:
+        current_beta_version = "beta_not_installed"
+    return current_beta_version
 
 def update_latest_version():
     os.system("wget "+LATEST_VERSION_URL+" -O /usr/share/mynode/latest_version")
+    os.system("wget "+LATEST_BETA_VERSION_URL+" -O /usr/share/mynode/latest_beta_version")
     return True
-
 
 def get_latest_version():
     latest_version = "0.0"
@@ -74,6 +82,28 @@ def get_latest_version():
     except:
         latest_version = get_current_version()
     return latest_version
+
+def get_latest_beta_version():
+    beta_version = ""
+    try:
+        with open("/usr/share/mynode/latest_beta_version", "r") as f:
+            beta_version = f.read().strip()
+    except:
+        beta_version = ""
+    return beta_version
+
+def reinstall_app(app):
+    # Upgrade
+    os.system("mkdir -p /home/admin/upgrade_logs")
+    cmd = "/usr/bin/mynode_reinstall_app.sh {} 2>&1".format(app)
+    subprocess.call(cmd, shell=True)
+    
+    # Sync
+    os.system("sync")
+    time.sleep(1)
+
+    # Reboot
+    reboot_device()
 
 def upgrade_device():
     # Upgrade
@@ -88,8 +118,36 @@ def upgrade_device():
     # Reboot
     reboot_device()
 
+def upgrade_device_beta():
+    # Upgrade
+    os.system("mkdir -p /home/admin/upgrade_logs")
+    cmd = "/usr/bin/mynode_upgrade.sh beta > /home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt 2>&1".format(get_current_version())
+    subprocess.call(cmd, shell=True)
+    
+    # Sync
+    os.system("sync")
+    time.sleep(1)
+
+    # Reboot
+    reboot_device()
+
 def did_upgrade_fail():
     return os.path.isfile("/mnt/hdd/mynode/settings/upgrade_error")
+
+def get_recent_upgrade_logs():
+    logs=""
+    current_version = get_current_version()
+    for i in range(1,6):
+        filename = "/home/admin/upgrade_logs/upgrade_log_{}_post_{}.txt".format(current_version, i)
+        try:
+            with open(filename, "r") as f:
+                logs = logs + "===========================================================\n"
+                logs = logs + "=== Upgrade Attempt #{}\n".format(i)
+                logs = logs + "===========================================================\n\n\n"
+                logs = logs + f.read().decode("utf8")
+        except:
+            pass
+    return logs
 
 
 #==================================
@@ -99,6 +157,11 @@ def get_system_uptime():
     uptime = subprocess.check_output('awk \'{print int($1/86400)" days "int($1%86400/3600)" hour(s) "int(($1%3600)/60)" minute(s) "int($1%60)" seconds(s)"}\' /proc/uptime', shell=True)
     uptime = uptime.strip()
     return uptime
+
+def get_system_date():
+    date = subprocess.check_output('date', shell=True)
+    date = date.strip()
+    return date
 
 def get_device_serial():
     serial = subprocess.check_output("cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2", shell=True)
@@ -170,7 +233,7 @@ def get_service_status_color(service_name):
 
 def get_journalctl_log(service_name):
     try:
-        log = subprocess.check_output("journalctl -r --unit={} --no-pager | tail -n 200".format(service_name), shell=True).decode("utf8")
+        log = subprocess.check_output("journalctl -r --unit={} --no-pager | head -n 200".format(service_name), shell=True).decode("utf8")
     except:
         log = "ERROR"
     return log
@@ -366,9 +429,50 @@ def delete_lnd_data():
 
 
 #==================================
+# Electrum Server Functions
+#==================================
+def stop_electrs():
+    os.system("systemctl stop electrs")
+
+def delete_electrs_data():
+    os.system("rm -rf /mnt/hdd/mynode/electrs")
+
+def reset_electrs():
+    stop_electrs()
+    delete_electrs_data()
+    reboot_device()
+
+
+
+#==================================
 # Tor Functions
 #==================================
 def reset_tor():
     os.system("rm -rf /var/lib/tor/*")
     os.system("rm -rf /mnt/hdd/mynode/bitcoin/onion_private_key")
     os.system("rm -rf /mnt/hdd/mynode/lnd/v2_onion_private_key")
+
+def is_btc_lnd_tor_enabled():
+    return os.path.isfile("/mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
+
+def enable_btc_lnd_tor():
+    os.system("touch mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
+    os.system("sync")
+
+def disable_btc_lnd_tor():
+    os.system("rm -f mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
+    os.system("sync")
+
+
+#==================================
+# Firewall Functions
+#==================================
+def reload_firewall():
+    os.system("ufw reload")
+
+def get_firewall_rules():
+    try:
+        rules = subprocess.check_output("ufw status", shell=True).decode("utf8")
+    except:
+        rules = "ERROR"
+    return rules

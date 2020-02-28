@@ -25,6 +25,7 @@ PIVPN_DEPS=(openvpn git tar wget grep iptables-persistent dnsutils expect whipta
 ###          ###
 
 pivpnGitUrl="https://github.com/pivpn/pivpn.git"
+pivpnVersionHash="8e3a95152412a9d35b67d51bfc80379350815252"
 pivpnFilesDir="/etc/.pivpn"
 easyrsaVer="3.0.6"
 easyrsaRel="https://github.com/OpenVPN/easy-rsa/releases/download/v${easyrsaVer}/EasyRSA-unix-v${easyrsaVer}.tgz"
@@ -374,7 +375,8 @@ make_repo() {
     echo -n ":::    Cloning $2 into $1..."
     $SUDO rm -rf "${1}"
     sync
-    $SUDO git clone -q --depth 1 --no-single-branch "${2}" "${1}"
+    $SUDO git clone -q "${2}" "${1}"
+    $SUDO git -C "${1}" checkout ${pivpnVersionHash}
     sync
     if [ -z "${TESTING+x}" ]; then
         :

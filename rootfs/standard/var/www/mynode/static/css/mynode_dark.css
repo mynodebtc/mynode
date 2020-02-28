@@ -29,6 +29,7 @@ a:active {
 .drive_usage,
 .settings_block_header,
 .settings_block_subheader,
+.settings_block_subheader_status,
 .settings_block,
 table,
 #cli_contents,
@@ -92,4 +93,11 @@ input:focus + .slider {
 .config_textarea {
 	color: #eee;
 	background-color: #303841;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
 }

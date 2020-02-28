@@ -9,6 +9,7 @@ CONFIG["lndhub_enabled"] = True
 
 # myNode variables
 LATEST_VERSION_URL = "https://www.mynodebtc.com/device/latest_version"
+LATEST_BETA_VERSION_URL = "https://www.mynodebtc.com/device/latest_beta_version"
 CHECKIN_URL = "https://www.mynodebtc.com/device_api/check_in.php"
 
 # Bitcoin Variables
@@ -25,3 +26,5 @@ LNDHUB_ENABLED_FILE =   "/mnt/hdd/mynode/.mynode_lndhub_enabled"
 BTCRPCEXPLORER_ENABLED_FILE = "/mnt/hdd/mynode/.mynode_btcrpceplorer_enabled"
 VPN_ENABLED_FILE = "/mnt/hdd/mynode/.mynode_vpn_enabled"
 NETDATA_ENABLED_FILE = "/mnt/hdd/mynode/.mynode_netdata_enabled"
+MEMPOOLSPACE_ENABLED_FILE = "/mnt/hdd/mynode/.mynode_mempoolspace_enabled"
+BTCPAYSERVER_ENABLED_FILE = "/mnt/hdd/mynode/.mynode_btcpayserver_enabled"

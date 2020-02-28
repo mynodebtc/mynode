@@ -1,0 +1,17 @@
+# myNode btcpayserver service
+# /etc/systemd/system/btcpayserver.service
+
+[Unit]
+Description=BTCPayServer service
+After=docker.service network-online.target bitcoind.service
+Requires=docker.service network-online.target bitcoind.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash -c  '. "/opt/mynode/btcpayserver/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY" && . helpers.sh && btcpay_up'
+ExecStop=/bin/bash -c   '. "/opt/mynode/btcpayserver/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY" && . helpers.sh && btcpay_down'
+ExecReload=/bin/bash -c '. "/opt/mynode/btcpayserver/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY" && . helpers.sh && btcpay_restart'
+
+[Install]
+WantedBy=multi-user.target

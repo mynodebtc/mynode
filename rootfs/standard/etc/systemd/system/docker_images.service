@@ -15,8 +15,8 @@ Group=root
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=mynode_docker_images
-Restart=always
-RestartSec=86400
+
+RestartSec=60
 
 [Install]
 WantedBy=multi-user.target

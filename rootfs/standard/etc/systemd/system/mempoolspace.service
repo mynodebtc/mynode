@@ -3,11 +3,10 @@
 
 [Unit]
 Description=MempoolSpace
-Wants=www.service mynode_docker_images.service
-After=www.service mynode_docker_images.service
+Wants=www.service docker_images.service
+After=www.service docker_images.service
 
 [Service]
-WorkingDirectory=/opt/mynode/mempoolspace
 EnvironmentFile=/mnt/hdd/mynode/settings/.btcrpc_environment
 ExecStartPre=/usr/bin/wait_on_bitcoin.sh
 ExecStart=/usr/bin/docker run --rm --name mempoolspace -p 4080:80 -e BITCOIN_NODE_HOST=172.17.0.1 -e BITCOIN_NODE_USER=mynode -e BITCOIN_NODE_PASS=${BTC_RPC_PASSWORD} -e MEMPOOL_REFRESH_RATE_MS=5000 mempoolspace
@@ -18,7 +17,7 @@ Group=root
 Type=simple
 TimeoutSec=240
 Restart=always
-RestartSec=30
+RestartSec=120
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=mempoolspace

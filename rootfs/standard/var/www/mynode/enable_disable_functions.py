@@ -65,10 +65,28 @@ def is_mempoolspace_enabled():
 def enable_mempoolspace():
     os.system("systemctl enable mempoolspace --no-pager")
     os.system("systemctl start mempoolspace --no-pager")
+    open(MEMPOOLSPACE_ENABLED_FILE, 'a').close() # touch file
 
 def disable_mempoolspace():
+    if os.path.isfile(MEMPOOLSPACE_ENABLED_FILE):
+        os.remove(MEMPOOLSPACE_ENABLED_FILE)
     os.system("systemctl stop mempoolspace --no-pager")
     os.system("systemctl disable mempoolspace --no-pager")
+
+
+def is_btcpayserver_enabled():
+    return is_service_enabled("btcpayserver")
+
+def enable_btcpayserver():
+    os.system("systemctl enable btcpayserver --no-pager")
+    os.system("systemctl start btcpayserver --no-pager")
+    open(BTCPAYSERVER_ENABLED_FILE, 'a').close() # touch file
+
+def disable_btcpayserver():
+    if os.path.isfile(BTCPAYSERVER_ENABLED_FILE):
+        os.remove(BTCPAYSERVER_ENABLED_FILE)
+    os.system("systemctl stop btcpayserver --no-pager")
+    os.system("systemctl disable btcpayserver --no-pager")
 
 
 def is_vpn_enabled():

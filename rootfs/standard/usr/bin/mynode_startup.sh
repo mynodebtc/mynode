@@ -10,10 +10,29 @@ if [ ! -w / ]; then
     mount -o remount,rw /;
 fi
 
+# Make sure resolv.conf is a symlink to so resolvconf works
+# if [ ! -h /etc/resolv.conf ]; then
+#     rm -f /etc/resolv.conf
+#     mkdir -p /etc/resolvconf/run/
+#     touch /etc/resolvconf/run/resolv.conf
+#     ln -s /etc/resolvconf/run/resolv.conf /etc/resolv.conf
+
+#     sync
+#     reboot
+#     sleep 10s
+#     exit 1
+# fi
+# Add some DNS servers to make domain lookup more likely
+echo '' >> /etc/resolv.conf
+echo '# Added at myNode startup' >> /etc/resolv.conf
+echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
+echo 'nameserver 8.8.4.4' >> /etc/resolv.conf
+echo 'nameserver 1.1.1.1' >> /etc/resolv.conf
 
 # Disable autosuspend for USB drives
-for dev in /sys/bus/usb/devices/*/power/control; do echo "on" > $dev; done 
-
+if [ -d /sys/bus/usb/devices/ ]; then 
+    for dev in /sys/bus/usb/devices/*/power/control; do echo "on" > $dev; done 
+fi
 
 # Verify SD card permissions and folders are OK
 mkdir -p /home/admin/.config/
@@ -34,7 +53,7 @@ if [ ! -f /var/lib/mynode/.expanded_rootfs ]; then
     fi
 fi
 
-# Verify we are in a clean state (only raspi uses HDD swap)
+# Verify we are in a clean state
 if [ $IS_RASPI -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
     dphys-swapfile swapoff || true
     dphys-swapfile uninstall || true
@@ -46,8 +65,9 @@ set +e
 touch /tmp/repairing_drive
 for d in /dev/sd*1; do
     echo "Repairing drive $d ...";
-    RC=$(fsck -y $d > /tmp/fsck_results 2>&1)
-    if [ $RC -ne 0 ]; then
+    fsck -y $d > /tmp/fsck_results 2>&1
+    RC=$?
+    if [ "$RC" -ne 0 ]; then
         touch /tmp/fsck_error
     fi
 done
@@ -74,6 +94,7 @@ mkdir -p /mnt/hdd/mynode/redis
 mkdir -p /mnt/hdd/mynode/mongodb
 mkdir -p /mnt/hdd/mynode/electrs
 mkdir -p /mnt/hdd/mynode/docker
+mkdir -p /mnt/hdd/mynode/rtl_backup
 mkdir -p /tmp/flask_uploads
 echo "drive_mounted" > $MYNODE_DIR/.mynode_status
 chmod 777 $MYNODE_DIR/.mynode_status
@@ -110,6 +131,20 @@ do
     sleep 5s
 done
 
+# Gen RSA keys
+sudo -u admin mkdir -p /home/admin/.ssh
+chown -R admin:admin /home/admin/.ssh
+if [ ! -f /home/admin/.ssh/id_rsa ]; then
+    sudo -u admin ssh-keygen -t rsa -f /home/admin/.ssh/id_rsa -N ""
+fi
+sudo -u admin touch /home/admin/.ssh/authorized_keys || true
+if [ ! -f /root/.ssh/id_rsa_btcpay ]; then
+    sudo rm -rf /root/.ssh/id_rsa_btcpay
+    ssh-keygen -t rsa -f /root/.ssh/id_rsa_btcpay -q -P "" -m PEM
+    echo "# Key used by BTCPay Server" >> /root/.ssh/authorized_keys
+    cat /root/.ssh/id_rsa_btcpay.pub >> /root/.ssh/authorized_keys
+fi
+
 # Sync product key (SD preferred)
 cp -f /home/bitcoin/.mynode/.product_key* /mnt/hdd/mynode/settings/ || true
 cp -f /mnt/hdd/mynode/settings/.product_key* home/bitcoin/.mynode/ || true
@@ -135,10 +170,27 @@ if [ ! -f /mnt/hdd/mynode/settings/.setquicksyncdefault ]; then
     if [ $IS_X86 = 1 ]; then
         touch /mnt/hdd/mynode/settings/quicksync_disabled
     fi
+    # Default RockPro64 to no QuickSync
+    if [ $IS_ROCKPRO64 = 1 ]; then
+        touch /mnt/hdd/mynode/settings/quicksync_disabled
+    fi
     # Default SSD to no QuickSync
     DRIVE=$(cat /tmp/.mynode_drive)
     HDD=$(lsblk $DRIVE -o ROTA | tail -n 1 | tr -d '[:space:]')
     if [ "$HDD" = "0" ]; then
+        touch /mnt/hdd/mynode/settings/quicksync_disabled
+    fi
+    # If there is a USB->SATA adapter, assume we have an SSD and default to no QS
+    set +e
+    lsusb | grep "SATA 6Gb/s bridge"
+    RC=$?
+    set -e
+    if [ "$RC" = "0" ]; then
+        touch /mnt/hdd/mynode/settings/quicksync_disabled
+    fi
+    # Default small drives to no QuickSync
+    DRIVE_SIZE=$(df /mnt/hdd | grep /dev | awk '{print $2}')
+    if (( ${DRIVE_SIZE} <= 800000000 )); then
         touch /mnt/hdd/mynode/settings/quicksync_disabled
     fi
     touch /mnt/hdd/mynode/settings/.setquicksyncdefault
@@ -152,29 +204,26 @@ source /usr/bin/mynode_gen_bitcoin_config.sh
 source /usr/bin/mynode_gen_lnd_config.sh
 
 # RTL config
-cp /usr/share/mynode/RTL.conf /opt/mynode/RTL/RTL.conf
+sudo -u bitcoin mkdir -p /opt/mynode/RTL/
+chown -R bitcoin:bitcoin /mnt/hdd/mynode/rtl_backup/
+cp /usr/share/mynode/RTL-Config.json /opt/mynode/RTL/RTL-Config.json
 if [ -f /home/bitcoin/.mynode/.hashedpw ]; then
     HASH=$(cat /home/bitcoin/.mynode/.hashedpw)
-    sed -i "s/rtlPassHashed=.*/rtlPassHashed=$HASH/g" /opt/mynode/RTL/RTL.conf
+    sed -i "s/\"multiPassHashed\":.*/\"multiPassHashed\": \"$HASH\",/g" /opt/mynode/RTL/RTL-Config.json
 fi
-chown bitcoin:bitcoin /opt/mynode/RTL/RTL.conf
-
-# LND Admin Config
-#if [ ! -f /home/bitcoin/.lnd-admin/credentials.json ]; then
-#    cp /usr/share/mynode/lnd_admin_credentials.json /home/bitcoin/.lnd-admin/credentials.json
-#    chown bitcoin:bitcoin /home/bitcoin/.lnd-admin/credentials.json
-#fi
+chown bitcoin:bitcoin /opt/mynode/RTL/RTL-Config.json
 
 # BTC RPC Explorer Config
-if [ ! -f /opt/mynode/btc-rpc-explorer/.env ]; then
-    cp /usr/share/mynode/btc_rpc_explorer_env /opt/mynode/btc-rpc-explorer/.env
-    chown bitcoin:bitcoin /opt/mynode/btc-rpc-explorer/.env
-fi
+cp /usr/share/mynode/btc_rpc_explorer_env /opt/mynode/btc-rpc-explorer/.env
+chown bitcoin:bitcoin /opt/mynode/btc-rpc-explorer/.env
+
 
 # Update files that need RPC password (needed if upgrades overwrite files)
 PW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
 if [ -f /opt/mynode/LndHub/config.js ]; then
+    cp -f /usr/share/mynode/lndhub-config.js /opt/mynode/LndHub/config.js
     sed -i "s/mynode:.*@/mynode:$PW@/g" /opt/mynode/LndHub/config.js
+    chown bitcoin:bitcoin /opt/mynode/LndHub/config.js
 fi
 if [ -f /opt/mynode/btc-rpc-explorer/.env ]; then
     sed -i "s/BTCEXP_BITCOIND_PASS=.*/BTCEXP_BITCOIND_PASS=$PW/g" /opt/mynode/btc-rpc-explorer/.env
@@ -246,16 +295,8 @@ if [ $IS_RASPI -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
         chmod 600 /mnt/hdd/swapfile
     fi
     mkswap /mnt/hdd/swapfile
-    dphys-swapfile setup
     dphys-swapfile swapon
 fi
-
-# Add some DNS servers to make domain lookup more likely
-echo '' >> /etc/resolv.conf
-echo '# Added at myNode startup' >> /etc/resolv.conf
-echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
-echo 'nameserver 8.8.4.4' >> /etc/resolv.conf
-echo 'nameserver 1.1.1.1' >> /etc/resolv.conf
 
 
 # Make sure every enabled service is really enabled
@@ -279,6 +320,18 @@ if [ -f $BTCRPCEXPLORER_ENABLED_FILE ]; then
         STARTUP_MODIFIED=1
     fi
 fi
+if [ -f $MEMPOOLSPACE_ENABLED_FILE ]; then
+    if systemctl status mempoolspace | grep "disabled;"; then
+        systemctl enable mempoolspace
+        STARTUP_MODIFIED=1
+    fi
+fi
+if [ -f $BTCPAYSERVER_ENABLED_FILE ]; then
+    if systemctl status btcpayserver | grep "disabled;"; then
+        systemctl enable btcpayserver
+        STARTUP_MODIFIED=1
+    fi
+fi
 if [ -f $VPN_ENABLED_FILE ]; then
     if systemctl status vpn | grep "disabled;"; then
         systemctl enable vpn
@@ -299,6 +352,7 @@ chmod +x /usr/bin/electrs || true # Once, a device didn't have the execute bit s
 
 # Check for new versions
 wget $LATEST_VERSION_URL -O /usr/share/mynode/latest_version || true
+wget $LATEST_BETA_VERSION_URL -O /usr/share/mynode/latest_beta_version || true
 
 # Update current state
 if [ -f $QUICKSYNC_DIR/.quicksync_complete ]; then

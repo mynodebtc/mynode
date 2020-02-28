@@ -9,7 +9,7 @@ IS_RASPI3=0
 IS_RASPI4=0
 IS_X86=0
 DEVICE_TYPE="unknown"
-MODEL=$(cat /proc/device-tree/model) || MODEL="unknown"
+MODEL=$(tr -d '\0' < /proc/device-tree/model) || MODEL="unknown"
 uname -a | grep amd64 && IS_X86=1 || true
 if [[ $MODEL == *"Rock64"* ]]; then 
     IS_ARMBIAN=1
@@ -53,6 +53,7 @@ QUICKSYNC_TORRENT_BETA_URL="https://mynodebtc.com/device/blockchain_beta.tar.gz.
 QUICKSYNC_UPLOAD_RATE_FILE="/mnt/hdd/mynode/settings/quicksync_upload_rate"
 QUICKSYNC_BACKGROUND_DOWNLOAD_RATE_FILE="/mnt/hdd/mynode/settings/quicksync_background_download_rate"
 LATEST_VERSION_URL="http://www.mynodebtc.com/device/latest_version"
+LATEST_BETA_VERSION_URL="http://www.mynodebtc.com/device/latest_beta_version"
 UPLOADER_FILE="/mnt/hdd/mynode/settings/uploader"
 UPGRADE_ERROR_FILE="/mnt/hdd/mynode/settings/upgrade_error"
 LND_BACKUP_FOLDER="/home/bitcoin/lnd_backup/"
@@ -67,6 +68,8 @@ ELECTRS_ENABLED_FILE="/mnt/hdd/mynode/.mynode_electrs_enabled"
 LNDHUB_ENABLED_FILE="/mnt/hdd/mynode/.mynode_lndhub_enabled"
 BTCRPCEXPLORER_ENABLED_FILE="/mnt/hdd/mynode/.mynode_btcrpceplorer_enabled"
 VPN_ENABLED_FILE="/mnt/hdd/mynode/.mynode_vpn_enabled"
+MEMPOOLSPACE_ENABLED_FILE="/mnt/hdd/mynode/.mynode_mempoolspace_enabled"
+BTCPAYSERVER_ENABLED_FILE="/mnt/hdd/mynode/.mynode_btcpayserver_enabled"
 
 BITCOIN_SYNCED_FILE="/mnt/hdd/mynode/.mynode_bitcoind_synced"
 QUICKSYNC_COMPLETE_FILE="$QUICKSYNC_DIR/.quicksync_complete"
@@ -84,6 +87,8 @@ fi
 
 UPGRADE_DOWNLOAD_URL="http://www.mynodebtc.com/device_api/download_latest_standard.php?type=${DEVICE_TYPE}&product_key=${PRODUCT_KEY}&serial=${SERIAL_NUM}"
 UPGRADE_DOWNLOAD_SIGNATURE_URL="http://www.mynodebtc.com/device/hashes/mynode_release_latest_${DEVICE_TYPE}.sha256"
+UPGRADE_BETA_DOWNLOAD_URL="http://www.mynodebtc.com/device_api/download_latest_standard.php?beta=1&type=${DEVICE_TYPE}&product_key=${PRODUCT_KEY}&serial=${SERIAL_NUM}"
+UPGRADE_BETA_DOWNLOAD_SIGNATURE_URL="http://www.mynodebtc.com/device/hashes/mynode_release_latest_beta_${DEVICE_TYPE}.sha256"
 UPGRADE_PUBKEY_URL="https://raw.githubusercontent.com/mynodebtc/pubkey/master/mynode_release.pub"
 
 # Update settings for other devices

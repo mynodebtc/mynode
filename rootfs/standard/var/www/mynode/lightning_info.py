@@ -11,6 +11,10 @@ from bitcoin_info import *
 lightning_info = None
 lnd_ready = False
 lnd_version = None
+lightning_peers = None
+lightning_channels = None
+lightning_channel_balance = None
+lightning_wallet_balance = None
 
 LND_FOLDER = "/mnt/hdd/mynode/lnd/"
 MACAROON_FILE = "/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon"
@@ -22,6 +26,10 @@ LND_REST_PORT = "10080"
 # Functions
 def update_lightning_info():
     global lightning_info
+    global lightning_peers
+    global lightning_channels
+    global lightning_channel_balance
+    global lightning_wallet_balance
     global lnd_ready
 
     # Get latest LN info
@@ -39,13 +47,46 @@ def update_lightning_info():
         os.system("echo 'LND De-sync!!!' >> /tmp/lnd_failures")
         os.system("uptime >> /tmp/lnd_failures")
         restart_lnd()
+        return True
+
+    if lnd_ready:
+        lightning_peers = lnd_get("/peers")
+        lightning_channels = lnd_get("/channels")
+        lightning_channel_balance = lnd_get("/balance/channels")
+        lightning_wallet_balance = lnd_get("/balance/blockchain")
 
     return True
+
+
+def get_new_deposit_address():
+    address = "NEW_ADDR"
+    try:
+        addressdata = lnd_get("/newaddress")
+        address = addressdata["address"]
+    except:
+        address = "ERROR"
+    return address
 
 
 def get_lightning_info():
     global lightning_info
     return copy.deepcopy(lightning_info)
+
+def get_lightning_peers():
+    global lightning_peers
+    return copy.deepcopy(lightning_peers)
+
+def get_lightning_channels():
+    global lightning_channels
+    return copy.deepcopy(lightning_channels)
+
+def get_lightning_channel_balance():
+    global lightning_channel_balance
+    return copy.deepcopy(lightning_channel_balance)
+
+def get_lightning_wallet_balance():
+    global lightning_wallet_balance
+    return copy.deepcopy(lightning_wallet_balance)
 
 def is_lnd_ready():
     global lnd_ready

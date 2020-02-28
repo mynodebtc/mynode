@@ -95,7 +95,7 @@
                     }
                     openConfirmDialog("confirm-dialog",
                                       "Reset QuickSync",
-                                      "<p>Restarting QuickSync will delete all current bitcoind blockchain data and re-download " +
+                                      "<p>Restarting QuickSync will delete all current bitcoind blockchain data and redownload " +
                                       "the pre-synced blockchain. This will take a while.</p>"+
                                       "<p>Would you still like to restart QuickSync?</p>",
                                       okFunction)
@@ -129,7 +129,7 @@
                         window.location.href="/settings/reindex-blockchain"
                     }
                     openConfirmDialog("confirm-dialog",
-                                      "Re-index Bitcoin Blockchain",
+                                      "Reindex Bitcoin Blockchain",
                                       "Reindexing may take a VERY LONG time. "+
                                       "Would you still like to reindex the bitcoin blockchain?",
                                       okFunction)
@@ -174,6 +174,11 @@
                     factory_reset_dialog.dialog( "open" );
                 });
 
+                $("#show_startup_status").on("click", function() {
+                    $("#show_startup_status").hide(0);
+                    $("#startup_status").show();
+                });
+
                 $("#show_quicksync_status").on("click", function() {
                     $("#show_quicksync_status").hide(0);
                     $("#quicksync_status").show();
@@ -199,9 +204,49 @@
                     $("#electrs_status").show();
                 });
 
+                $("#show_rtl_status").on("click", function() {
+                    $("#show_rtl_status").hide(0);
+                    $("#rtl_status").show();
+                });
+
+                $("#show_docker_status").on("click", function() {
+                    $("#show_docker_status").hide(0);
+                    $("#docker_status").show();
+                });
+
                 $("#show_docker_image_build_status").on("click", function() {
                     $("#show_docker_image_build_status").hide(0);
                     $("#docker_image_build_status").show();
+                });
+
+                $("#show_btcpayserver_status").on("click", function() {
+                    $("#show_btcpayserver_status").hide(0);
+                    $("#btcpayserver_status").show();
+                });
+
+                $("#show_mempoolspace_status").on("click", function() {
+                    $("#show_mempoolspace_status").hide(0);
+                    $("#mempoolspace_status").show();
+                });
+
+                $("#show_upgrade_status").on("click", function() {
+                    $("#show_upgrade_status").hide(0);
+                    $("#upgrade_status").show();
+                });
+
+                $("#show_firewall_status").on("click", function() {
+                    $("#show_firewall_status").hide(0);
+                    $("#firewall_status").show();
+                });
+
+                $("#show_firewall_rules").on("click", function() {
+                    $("#show_firewall_rules").hide(0);
+                    $("#firewall_rules").show();
+                });
+
+                $("#show_product_key").on("click", function() {
+                    $("#show_product_key").hide(0);
+                    $("#product_key").show();
                 });
 
                 $("#show_mynode_changelog").on("click", function() {
@@ -298,6 +343,43 @@
                     disabled: true
                 });
                 {% endif %}
+
+                var reinstall_app_choice="";
+                $("#reinstall_app").selectmenu( {
+                    change: function( event, data ) {
+                        reinstall_app_choice = data.item.value;
+                        if (data.item.value == "none")
+                        {
+                            $("#reinstall_button").button("disable");
+                        }
+                        else
+                        {
+                            $("#reinstall_button").button("enable");
+                        }
+                    }
+                });
+                
+                $("#reinstall_button").button({
+                    disabled: true
+                });
+                $("#reinstall_button").on("click", function() {
+                    window.location.href='/settings/reinstall-app?app='+reinstall_app_choice
+                });
+
+                $('#btc_lnd_tor_checkbox').change(function () {
+                    $("#btc_lnd_tor").show();
+                });
+                $("#btc_lnd_tor").on("click", function() {
+                    enabled=$('#btc_lnd_tor_checkbox').is(":checked")
+                    if (enabled)
+                    {
+                        window.location.href='/settings/enable_btc_lnd_tor?enable=1'
+                    }
+                    else
+                    {
+                        window.location.href='/settings/enable_btc_lnd_tor?enable=0'
+                    }
+                });
             });
         </script>
      </head>
@@ -339,6 +421,8 @@
             {% elif not product_key_skipped and upgrade_error %}
                 <p style="color: red;">It appears a recent upgrade may not have fully completed.</p>
                 <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Retry Upgrade</button>
+                <button id="show_upgrade_status" class="ui-button ui-widget ui-corner-all settings_button">Show Upgrade Logs</button>
+                <div id="upgrade_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{upgrade_logs}}</pre></div>
             {% endif %}
 
             <div class="divider"></div>
@@ -355,9 +439,12 @@
                 <tr>
                     <td>Product Key</td>
                     <td style="padding-left: 20px;">
-                        {{product_key}}
                         {% if product_key_skipped %}
+                            {{product_key}}
                             &nbsp;<a href="/product-key" class="ui-button ui-widget ui-corner-all settings_button_small">Enter Product Key</a>
+                        {% else %}
+                            <button id="show_product_key" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+                            <div id="product_key" style="display: none;">{{product_key}}</div>
                         {% endif %}
                     </td>
                 </tr>
@@ -365,6 +452,7 @@
                     <td>Device Type</td>
                     <td style="padding-left: 20px;">{{device_type}}</td>
                 </tr>
+                <!--
                 <tr>
                     <td>Public IP</td>
                     <td style="padding-left: 20px;">
@@ -374,6 +462,7 @@
                         {% endif %}
                     </td>
                 </tr>
+                -->
                 <tr>
                     <td>Local IP</td>
                     <td style="padding-left: 20px;">{{local_ip}}</td>
@@ -421,6 +510,10 @@
                     <td>Uptime</td>
                     <td style="padding-left: 20px;">{{uptime}}</td>
                 </tr>
+                <tr>
+                    <td>Date</td>
+                    <td style="padding-left: 20px;">{{date}}</td>
+                </tr>
             </table>
             <div class="divider"></div>
 
@@ -452,33 +545,24 @@
             </form>
 
         <div class="settings_block">
-                <div class="settings_block_header">Service Status</div>
+            <div class="settings_block_header">Service Status</div>
+
+            <div class="settings_block_subheader">myNode Startup Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ startup_status_color }}"></div>
+                {{ startup_status }}
+            </div>
+            <button id="show_startup_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="startup_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{startup_status_log}}</pre></div>
+            <div class="divider"></div>
 
             <div class="settings_block_subheader">QuickSync Status</div>
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ quicksync_status_color }}"></div>
                 {{ quicksync_status }}
             </div>
-            <button id="show_quicksync_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
+            <button id="show_quicksync_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
             <div id="quicksync_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{quicksync_status_log}}</pre></div>
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Bitcoin Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ bitcoin_status_color }}"></div>
-                {{ bitcoin_status }}
-            </div>
-            <button id="show_bitcoin_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
-            <div id="bitcoin_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{bitcoin_status_log}}</pre></div>
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">LND Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ lnd_status_color }}"></div>
-                {{ lnd_status }}
-            </div>
-            <button id="show_lnd_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
-            <div id="lnd_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lnd_status_log}}</pre></div>
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Tor Status</div>
@@ -486,8 +570,27 @@
                 <div class="settings_block_subheader_status_icon {{ tor_status_color }}"></div>
                 {{ tor_status }}
             </div>
-            <button id="show_tor_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
+            <button id="show_tor_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
             <div id="tor_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{tor_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Bitcoin Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ bitcoin_status_color }}"></div>
+                {{ bitcoin_status }}
+            </div>
+            <button id="show_bitcoin_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="bitcoin_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{bitcoin_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            {% if is_bitcoin_synced %}
+            <div class="settings_block_subheader">LND Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ lnd_status_color }}"></div>
+                {{ lnd_status }}
+            </div>
+            <button id="show_lnd_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="lnd_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lnd_status_log}}</pre></div>
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Electrum Server Status</div>
@@ -495,8 +598,26 @@
                 <div class="settings_block_subheader_status_icon {{ electrs_status_color }}"></div>
                 {{ electrs_status }}
             </div>
-            <button id="show_electrs_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
+            <button id="show_electrs_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
             <div id="electrs_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{electrs_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">RTL Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ rtl_status_color }}"></div>
+                {{ rtl_status }}
+            </div>
+            <button id="show_rtl_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="rtl_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{rtl_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Docker Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ docker_status_color }}"></div>
+                {{ docker_status }}
+            </div>
+            <button id="show_docker_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="docker_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_status_log}}</pre></div>
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Docker Image Build Status</div>
@@ -504,8 +625,39 @@
                 <div class="settings_block_subheader_status_icon {{ docker_image_build_status_color }}"></div>
                 {{ docker_image_build_status }}
             </div>
-            <button id="show_docker_image_build_status" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
+            <button id="show_docker_image_build_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
             <div id="docker_image_build_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_image_build_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">BTCPay Server Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ btcpayserver_status_color }}"></div>
+                {{ btcpayserver_status }}
+            </div>
+            <button id="show_btcpayserver_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="btcpayserver_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{btcpayserver_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Mempool.Space Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ mempoolspace_status_color }}"></div>
+                {{ mempoolspace_status }}
+            </div>
+            <button id="show_mempoolspace_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="mempoolspace_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{mempoolspace_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            {% endif %}
+
+            <div class="settings_block_subheader">Firewall Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ firewall_status_color }}"></div>
+                {{ firewall_status }}
+            </div>
+            <button id="show_firewall_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="firewall_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{firewall_status_log}}</pre></div>
+
+
         </div>
 
         <div class="settings_block">
@@ -541,11 +693,32 @@
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Download Debug Logs</div>
-            This will download all recent logs from your mynode. This can be helpful for debugging issues.
+            This will download all recent logs from your myNode. This can be helpful for debugging issues.
             <br/>
             It may take ~60 seconds to gather and download the logs.
             <br/>
+            Do not share these logs in a public place. They may contain sensitive information.
+            <br/>
             <a href="/settings/mynode_logs.tar.gz" class="ui-button ui-widget ui-corner-all settings_button">Download Logs</a>
+        </div>
+
+
+        <div class="settings_block">
+            <div class="settings_block_header">Firewall</div>
+
+            <div class="settings_block_subheader">Rules</div>
+            Show the current firewall configuration.
+            <br/>
+            <button id="show_firewall_rules" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
+            <div id="firewall_rules" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{firewall_rules}}</pre></div>
+            
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Reset</div>
+            Resetting the firewall will disable and re-enable the firewall and then reboot the device.
+            <br/>
+            <a href="/settings/reset-firewall" class="ui-button ui-widget ui-corner-all settings_button">Reset Firewall</a>
+
         </div>
 
 
@@ -553,10 +726,12 @@
             <div class="settings_block_header">QuickSync</div>
 
             <div class="settings_block_subheader">Toggle QuickSync</div>
-            Disabling QuickSync will remove the QuickSync files and stop the process. This may take a long time if Bitcoin is not already synced, but you can re-enable QuickSync later.
+            Disabling QuickSync will remove the QuickSync files and stop the process. 
+            <br/>
+            This may take a long time if Bitcoin is not already synced, but you can reenable QuickSync later.
             <br/>
             {% if is_quicksync_disabled %}
-            <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Re-enable QuickSync</a>
+            <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Enable QuickSync</a>
             {% else %}
             <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Disable QuickSync</a>
             {% endif %}
@@ -565,7 +740,7 @@
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Restart QuickSync</div>
-            This will reset bitcoind and re-download the blockchain via QuickSync.
+            This will reset bitcoind and redownload the blockchain via QuickSync.
             <br/>
             <button id="restart-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Restart QuickSync</button>
 
@@ -599,8 +774,11 @@
             <div class="settings_block_header">Bitcoin</div>
 
             <div class="settings_block_subheader">Reset Blockchain</div>
-            If bitcoind is having issues, you can reset the blockchain data. If QuickSync is enabled, it will use QuickSync data as the starting point. Otherwise, Bitcoin will
-            sync from scratch. This may take a long time.
+            If bitcoind is having issues, you can reset the blockchain data.
+            <br/>
+            If QuickSync is enabled, it will use QuickSync data as the starting point.
+            <br/>
+            Otherwise, Bitcoin will sync from scratch. This may take a long time.
             <br/>
             <button id="reset-blockchain" class="ui-button ui-widget ui-corner-all settings_button">Reset Blockchain</button>
 
@@ -613,10 +791,12 @@
 
             <div class="divider"></div>
 
-            <div class="settings_block_subheader">Re-index Blockchain</div>
-            Advanced: If you are having issues parsing the Bitcoin blockchain or blocks cannot be found, please try re-indexing. This will take a long time.
+            <div class="settings_block_subheader">Reindex Blockchain</div>
+            Advanced: If you are having issues parsing the Bitcoin blockchain or blocks cannot be found, please try reindexing. 
             <br/>
-            <button id="reindex-blockchain" class="ui-button ui-widget ui-corner-all settings_button">Re-index Blockchain</button>
+            This will take a long time.
+            <br/>
+            <button id="reindex-blockchain" class="ui-button ui-widget ui-corner-all settings_button">Reindex Blockchain</button>
         </div>
 
 
@@ -632,10 +812,43 @@
 
 
         <div class="settings_block">
+            <div class="settings_block_header">Electrum Server</div>
+            
+            <div class="settings_block_subheader">Reset Electrum Server</div>
+            Advanced: This will delete your Electrum Server data and reboot your device.
+            <br/>
+            <a href="/settings/reset-electrs" class="ui-button ui-widget ui-corner-all settings_button">Reset Data</a>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Reset Electrum Server Certificates</div>
+            This will regenerate your Electrum Server certificates.
+            <br/>
+            <a href="/settings/regen-electrs-certs" class="ui-button ui-widget ui-corner-all settings_button">Regenerate</a>
+
+        </div>
+
+
+        <div class="settings_block">
             <div class="settings_block_header">Tor</div>
+
+            <div class="settings_block_subheader">Bitcoin and Lightning Tor</div>
+            You can use Tor for Bitcoin and Lightning to increase privacy. However, it can slow down block download, 
+            especially during IBD. If you have customized your Bitcoin or LND config, this setting has no effect.
+            <br/><br/>
+            Saving will trigger a reboot.
+            <br/><br/>
+            <label class="switch">
+                <input type="checkbox" id="btc_lnd_tor_checkbox" {% if is_btc_lnd_tor_enabled %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <br/><br/>
+            <button id="btc_lnd_tor" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+
+            <div class="divider"></div>
             
             <div class="settings_block_subheader">Reset Tor</div>
-            This will reset all of your Tor service settings and re-generate your Onion URLs.
+            This will reset all of your Tor service settings and regenerate your Onion URLs.
             <br/>
             <button id="reset_tor" class="ui-button ui-widget ui-corner-all settings_button">Reset Tor</button>
 
@@ -645,7 +858,7 @@
             <div class="settings_block_header">Services</div>
             
             <div class="settings_block_subheader">Netdata</div>
-            This will enable or disable netdata device monitoring.
+            This will enable or disable Netdata device monitoring.
             <br/>
             {% if is_netdata_enabled %}
                 <a href="/settings/toggle-netdata" class="ui-button ui-widget ui-corner-all settings_button">Disable</a>
@@ -665,8 +878,35 @@
 
             <div class="divider"></div>
 
+            <div class="settings_block_subheader">Reinstall Applications</div>
+            If you are having issues with a specific application, you can try to reinstall them via the list below.
+            <br/>
+            Reinstalling an app will trigger a reboot of your device.
+            <br/><br/>
+
+            <select name="reinstall_app" id="reinstall_app">
+                <option value="none" selected="selected">Choose...</option>
+                <option value="bitcoin">Bitcoin</option>
+                <option value="lnd">LND</option>
+                <option value="loopd">Loop</option>
+                <option value="btcrpcexplorer">BTC RPC Explorer</option>
+                <option value="joinmarket">JoinMarket</option>
+                <option value="lndconnect">LND Connect</option>				
+                <option value="lndhub">LNDHub</option>
+                <option value="mempoolspace">Mempool.Space</option>				
+                <option value="rtl">RTL</option>
+                <option value="tor">Tor</option>
+                <option value="webssh2">WebSSH2</option>
+                <option value="whirlpool">Whirlpool</option>
+            </select>
+            <button id="reinstall_button">Reinstall</button>
+            
+            <div class="divider"></div>
+
             <div class="settings_block_subheader">Factory Reset</div>
-            This will factory reset your mynode and all storage will be completely reset. Make sure you have backed up all your keys and wallets!
+            This will factory reset your mynode and all storage will be completely reset.
+            <br/>
+            Make sure you have backed up all your keys and wallets!
             <br/>
             <button id="factory-reset" class="ui-button ui-widget ui-corner-all settings_button">Factory Reset</button>
         </div>
@@ -674,6 +914,47 @@
 
         <div class="settings_block">
             <div class="settings_block_header">Developer</div>
+
+            {% if not product_key_skipped %}
+                <div class="settings_block_subheader">Reinstall Latest Version</div>
+                If you are running a beta or are having issues, it may be helpful to reinstall the latest official release.
+                <br/>
+                <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Install Latest Version</button>
+
+                <div class="divider"></div>
+            {% endif %}
+
+            {% if not product_key_skipped %}
+                <div class="settings_block_subheader">Install Beta</div>
+                You can install beta releases of myNode software to help test. These may be less stable.
+                <br/><br/>
+                <table border="0">
+                    <tr>
+                        <td>Current Beta Version</td>
+                        <td>{{current_beta_version}}</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Latest Beta Version</td>
+                        <td>{{latest_beta_version}}</td>
+                        <td>&nbsp;<a href="/settings/get-latest-version" class="ui-button ui-widget ui-corner-all settings_button_small">Check for Updates</a></td>
+                    </tr>
+                </table>
+                {% if current_beta_version != latest_beta_version and latest_beta_version != "" %}
+                    <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Install Beta</button>
+                    {% if product_key_skipped %}
+                        <p>Upgrade to myNode Premium to get one-click updates!</p>
+                        <p>For manual upgrades, see our <a target="_blank" href="https://mynodebtc.com/guide/upgrading_your_device">upgrade guide</a>!</p>
+                    {% endif %}
+                {% elif upgrade_error %}
+                    <p style="color: red;">It appears a recent upgrade may not have fully completed.</p>
+                    <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Retry Upgrade</button>
+                    <button id="show_upgrade_status" class="ui-button ui-widget ui-corner-all settings_button">Show Upgrade Logs</button>
+                    <div id="upgrade_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{upgrade_logs}}</pre></div>
+                {% endif %}
+
+                <div class="divider"></div>
+            {% endif %}
 
             <div class="settings_block_subheader">Uploader Device</div>
             This disables most features and prioritize sharing QuickSync files. It can be reversed later.
@@ -693,8 +974,8 @@
 
         <div id="delete-lnd-wallet-dialog" title="Delete Wallet" style="display:none;">
             <form id="delete_lnd_wallet_form" name="delete_lnd_wallet_form" action="/settings/delete-lnd-wallet" method="POST">
-                <p class="red_text">Attention! This will delete your wallet and all remaining Bitcoin!</p>
-                <p>Please ensure you have closed all channels and withdrawn all Bitcoin. If you still want to delete your wallet,
+                <p class="red_text">Attention! This will delete your wallet and all remaining bitcoin!</p>
+                <p>Please ensure you have closed all channels and withdrawn all bitcoin. If you still want to delete your wallet,
                     enter the admin password for your myNode.</p>
                 <p>This will restart your device.</p>
                 <p>myNode is not responsible for any lost assets.</p>

@@ -5,33 +5,55 @@ set -x
 
 source /usr/share/mynode/mynode_config.sh
 
+BETA=0
+while test $# -gt 0
+do
+    case "$1" in
+        beta) echo "Installing a beta..."
+            BETA=1
+            ;;
+        *) echo "Unknown Argument: $1"
+            exit 1
+            ;;
+    esac
+    shift
+done
+
 # Setup
-rm -rf /tmp/mynode_release_latest.tar.gz
-rm -rf /tmp/mynode_release.pub
-rm -rf /tmp/upgrade/
-mkdir -p /tmp/upgrade/
+rm -rf /opt/mynode_release_latest.tar.gz
+rm -rf /opt/mynode_release.pub
+rm -rf /opt/upgrade/
+mkdir -p /opt/upgrade/
 mkdir -p /home/admin/upgrade_logs/
 
 # Download Latest
-wget $UPGRADE_DOWNLOAD_URL -O /tmp/mynode_release_latest.tar.gz
-wget $UPGRADE_DOWNLOAD_SIGNATURE_URL -O /tmp/mynode_release_latest.sha256
-wget $UPGRADE_PUBKEY_URL -O /tmp/mynode_release.pub
+if [ $BETA = 0 ]; then
+    wget $UPGRADE_DOWNLOAD_URL -O /opt/mynode_release_latest.tar.gz
+    wget $UPGRADE_DOWNLOAD_SIGNATURE_URL -O /opt/mynode_release_latest.sha256
+else
+    wget $UPGRADE_BETA_DOWNLOAD_URL -O /opt/mynode_release_latest.tar.gz
+    wget $UPGRADE_BETA_DOWNLOAD_SIGNATURE_URL -O /opt/mynode_release_latest.sha256
+fi
+wget $UPGRADE_PUBKEY_URL -O /opt/mynode_release.pub
 
-openssl dgst -sha256 -verify /tmp/mynode_release.pub -signature /tmp/mynode_release_latest.sha256 /tmp/mynode_release_latest.tar.gz
+openssl dgst -sha256 -verify /opt/mynode_release.pub -signature /opt/mynode_release_latest.sha256 /opt/mynode_release_latest.tar.gz
 if [ $? -ne 0 ]; then
     echo "UPGRADE FAILED! Hash did not match!" >> /var/log/upgrade.log
     exit 1
 fi
 
+# Clear beta install marking
+rm -f /usr/share/mynode/beta_version
+
 # Extract to temp location
-tar -xvf /tmp/mynode_release_latest.tar.gz -C /tmp/upgrade/
+tar -xvf /opt/mynode_release_latest.tar.gz -C /opt/upgrade/
 
 # Install files
-VERSION=$(cat /tmp/upgrade/out/rootfs_*/usr/share/mynode/version)
+VERSION=$(cat /opt/upgrade/out/rootfs_*/usr/share/mynode/version)
 if [ $IS_X86 = 1 ]; then
-    rsync -r -K /tmp/upgrade/out/rootfs_${DEVICE_TYPE}/* / > /home/admin/upgrade_logs/upgrade_log_${VERSION}_copy.txt 2>&1
+    rsync -r -K /opt/upgrade/out/rootfs_${DEVICE_TYPE}/* / 2>&1
 else
-    cp -rf /tmp/upgrade/out/rootfs_${DEVICE_TYPE}/* / > /home/admin/upgrade_logs/upgrade_log_${VERSION}_copy.txt 2>&1
+    cp -rf /opt/upgrade/out/rootfs_${DEVICE_TYPE}/* / 2>&1
 fi
 sleep 1
 sync
