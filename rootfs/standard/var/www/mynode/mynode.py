@@ -5,6 +5,7 @@ from user_management import *
 from bitcoind import mynode_bitcoind
 from bitcoin_cli import mynode_bitcoin_cli
 from whirlpool import mynode_whirlpool, get_whirlpool_status
+from dojo import mynode_dojo, get_dojo_status
 from tor import mynode_tor
 from vpn import mynode_vpn
 from electrum_server import *
@@ -43,6 +44,7 @@ app.register_blueprint(mynode_bitcoind)
 app.register_blueprint(mynode_lnd)
 app.register_blueprint(mynode_bitcoin_cli)
 app.register_blueprint(mynode_whirlpool)
+app.register_blueprint(mynode_dojo)
 app.register_blueprint(mynode_tor)
 app.register_blueprint(mynode_electrum_server)
 app.register_blueprint(mynode_vpn)
@@ -387,6 +389,9 @@ def index():
         # Find whirlpool status
         whirlpool_status, whirlpool_status_color, whirlpool_initialized = get_whirlpool_status()
 
+        # Find dojo status
+        dojo_status, dojo_status_color, dojo_initialized = get_dojo_status()
+
         # Check for new version of software
         upgrade_available = False
         current = get_current_version()
@@ -432,6 +437,10 @@ def index():
             "whirlpool_status_color": whirlpool_status_color,
             "whirlpool_enabled": is_whirlpool_enabled(),
             "whirlpool_initialized": whirlpool_initialized,
+            "dojo_status": dojo_status,
+            "dojo_status_color": dojo_status_color,
+            "dojo_enabled": is_dojo_enabled(),
+            "dojo_initialized": dojo_initialized,
             "product_key_skipped": pk_skipped,
             "product_key_error": pk_error,
             "fsck_error": has_fsck_error(),
@@ -554,6 +563,15 @@ def page_toggle_whirlpool():
         disable_whirlpool()
     else:
         enable_whirlpool()
+    return redirect("/")
+
+@app.route("/toggle-dojo")
+def page_toggle_dojo():
+    check_logged_in()
+    if is_dojo_enabled():
+        disable_dojo()
+    else:
+        enable_dojo()
     return redirect("/")
 
 @app.route("/login", methods=["GET","POST"])
