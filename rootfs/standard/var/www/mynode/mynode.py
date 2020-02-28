@@ -338,17 +338,28 @@ def index():
                 btcrpcexplorer_status = "Waiting on bitcoin..."
 
         # Find mempool space status
+        mempoolspace_status = "Mempool Viewer"
         if is_mempoolspace_enabled():
-            status_code = get_service_status_code("mempoolspace")
-            mempoolspace_status_color = get_service_status_color("mempoolspace")
+            if is_installing_docker_images():
+                mempoolspace_status_color = "yellow"
+                mempoolspace_status = "Installing..."
+            else:
+                mempoolspace_status_color = get_service_status_color("mempoolspace")
 
         # Find lndconnect status
         if lnd_ready:
             lndconnect_status_color = "green"
 
         # Find btcpayserver status
+        btcpayserver_status = "Merchant Tool"
         if lnd_ready:
-            btcpayserver_status_color = get_service_status_color("btcpayserver")
+            if is_installing_docker_images():
+                btcpayserver_status_color = "yellow"
+                btcpayserver_status = "Installing..."
+            else:
+                btcpayserver_status_color = get_service_status_color("btcpayserver")
+        else:
+            btcpayserver_status = "Waiting on LND..."
 
         # Find explorer status
         explorer_status_color = electrs_status_color
@@ -408,9 +419,11 @@ def index():
             "btcrpcexplorer_status": btcrpcexplorer_status,
             "btcrpcexplorer_enabled": is_btcrpcexplorer_enabled(),
             "mempoolspace_status_color": mempoolspace_status_color,
+            "mempoolspace_status": mempoolspace_status,
             "mempoolspace_enabled": is_mempoolspace_enabled(),
             "btcpayserver_enabled": is_btcpayserver_enabled(),
             "btcpayserver_status_color": btcpayserver_status_color,
+            "btcpayserver_status": btcpayserver_status,
             "lndconnect_status_color": lndconnect_status_color,
             "vpn_status_color": vpn_status_color,
             "vpn_status": vpn_status,
