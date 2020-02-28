@@ -8,7 +8,9 @@ systemctl stop glances
 systemctl stop rtl
 systemctl stop webssh2
 systemctl stop whirlpool
+systemctl stop dojo
 systemctl stop btcpayserver
+
 
 # Stop core services
 systemctl stop electrs
