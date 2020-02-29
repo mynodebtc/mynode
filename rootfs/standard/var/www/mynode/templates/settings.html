@@ -19,6 +19,17 @@
                                       "<p>Would you still like to upgrade your device?</p>",
                                       okFunction)
                 });
+                $("#upgrade-beta").on("click", function() {
+                    // Enable electrs
+                    var okFunction = function() {
+                        window.location.href="/settings/upgrade-beta"
+                    }
+                    openConfirmDialog("confirm-dialog", 
+                                      "Upgrade myNode",
+                                      "<p>This will upgrade your myNode to the latest beta version and reboot your device.</p>" +
+                                      "<p>Would you still like to upgrade your device?</p>",
+                                      okFunction)
+                });
 
                 function deleteLndWallet() {
                     $("#delete_lnd_wallet_form").submit();
@@ -941,7 +952,7 @@
                     </tr>
                 </table>
                 {% if current_beta_version != latest_beta_version and latest_beta_version != "" %}
-                    <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Install Beta</button>
+                    <button id="upgrade-beta" class="ui-button ui-widget ui-corner-all settings_button">Install Beta</button>
                     {% if product_key_skipped %}
                         <p>Upgrade to myNode Premium to get one-click updates!</p>
                         <p>For manual upgrades, see our <a target="_blank" href="https://mynodebtc.com/guide/upgrading_your_device">upgrade guide</a>!</p>
