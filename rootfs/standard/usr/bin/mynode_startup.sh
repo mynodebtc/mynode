@@ -109,6 +109,10 @@ mkdir -p /home/admin/.bitcoin/
 chown admin:admin /home/admin/.bitcoin/
 rm -rf /etc/motd # Remove simple motd for update-motd.d
 
+# Sync product key (SD preferred)
+cp -f /home/bitcoin/.mynode/.product_key* /mnt/hdd/mynode/settings/ || true
+cp -f /mnt/hdd/mynode/settings/.product_key* home/bitcoin/.mynode/ || true
+
 # Make any users we need to
 useradd -m -s /bin/bash pivpn || true
 
@@ -144,10 +148,6 @@ if [ ! -f /root/.ssh/id_rsa_btcpay ]; then
     echo "# Key used by BTCPay Server" >> /root/.ssh/authorized_keys
     cat /root/.ssh/id_rsa_btcpay.pub >> /root/.ssh/authorized_keys
 fi
-
-# Sync product key (SD preferred)
-cp -f /home/bitcoin/.mynode/.product_key* /mnt/hdd/mynode/settings/ || true
-cp -f /mnt/hdd/mynode/settings/.product_key* home/bitcoin/.mynode/ || true
 
 # Randomize RPC password
 while [ ! -f /mnt/hdd/mynode/settings/.btcrpcpw ] || [ ! -s /mnt/hdd/mynode/settings/.btcrpcpw ]
