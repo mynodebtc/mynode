@@ -2,8 +2,6 @@
 ### Setup Base OS
 ###
 
-# TODO: MAY NEED UPDATES - NEED TO TEST
-
 # MANUAL: After Raspi Flash
 #  - Touch ssh file on rootfs
 
