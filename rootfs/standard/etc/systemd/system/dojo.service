@@ -3,11 +3,13 @@
 
 [Unit]
 Description=Dojo
-After=network.target mynode.service
+After=network.target mynode.service docker_images.service
 
 [Service]
 Type=forking
 RemainAfterExit=yes
+ExecStartPre=/usr/bin/wait_on_bitcoin.sh
+ExecStartPre=/usr/bin/wait_on_docker_image_install.sh
 WorkingDirectory=/opt/mynode/dojo/docker/my-dojo
 ExecStart=/opt/mynode/dojo/docker/my-dojo/dojo.sh start
 ExecStop=/opt/mynode/dojo/docker/my-dojo/dojo.sh stop

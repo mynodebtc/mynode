@@ -6,7 +6,7 @@ sleep 10s #dojo needs time to start before passing next line
 
 # initalize mysql db (REQUIRED TO START MYSQL)
 counter=0
-target=50
+target=100
 isRunning=""
 MYSQL_DATABASE=samourai-main
 
