@@ -18,7 +18,7 @@ do
 
   # Check if dojo mysql db is running (check the db container)
   isRunning=$(docker inspect --format="{{.State.Running}}" db)
-  if [ $isRunning == "true" ]; then
+  if [ "$isRunning" == "true" ]; then
     sleep 20s
     docker exec -i db bash -c "mysql -h db -u root -p$MYSQL_ROOT_PASSWORD $MYSQL_DATABASE" </opt/mynode/dojo/db-scripts/1_db.sql
     echo "dojo mysql db initalized"

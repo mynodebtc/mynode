@@ -389,6 +389,9 @@ def index():
 
         # Find dojo status
         dojo_status, dojo_status_color, dojo_initialized = get_dojo_status()
+        if is_installing_docker_images():
+            dojo_status_color = "yellow"
+            dojo_status = "Installing..."
 
         # Check for new version of software
         upgrade_available = False
@@ -407,6 +410,7 @@ def index():
             "lnd_status": Markup(lnd_status),
             "lnd_ready": lnd_ready,
             "tor_status_color": tor_status_color,
+            "is_installing_docker_images": is_installing_docker_images(),
             "electrs_status_color": electrs_status_color,
             "electrs_status": Markup(electrs_status),
             "electrs_enabled": is_electrs_enabled(),
