@@ -42,6 +42,10 @@ elif [ "$APP" = "webssh2" ]; then
     docker rmi webssh2
 elif [ "$APP" = "whirlpool" ]; then
     rm -f /home/bitcoin/.mynode/.whirlpool_url
+elif [ "$APP" = "dojo" ]; then
+    rm -f /mnt/hdd/mynode/settings/dojo_url
+    cd /opt/mynode/dojo/docker/my-dojo/
+    echo "y" | ./dojo.sh uninstall
 else
     echo "UNKNOWN APP: $APP"
     exit 1

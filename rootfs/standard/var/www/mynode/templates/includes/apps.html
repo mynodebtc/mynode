@@ -79,12 +79,14 @@
         <div class="app_title">Dojo</div>
         <div class="app_status">{{ dojo_status }}</div>
         <div class="app_contents">
+            {% if not is_installing_docker_images %}
                <a class="ui-button ui-widget ui-corner-all mynode_button" href="/dojo">
                    {% if dojo_initialized %}Info{% else %}Info{% endif %}
                </a>
                <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-dojo">
                    {% if dojo_enabled %}Disable{% else %}Enable{% endif %}
                </a>
+            {% endif %}
         </div>
     </div>
     <div class="app_tile">
@@ -114,11 +116,13 @@
             {% if product_key_skipped %}
                 Premium Feature
             {% else %}
-                {% if mempoolspace_enabled %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="mempoolspace">View</a>
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-mempoolspace">Disable</a>
-                {% else %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-mempoolspace">Enable</a>
+                {% if not is_installing_docker_images %}
+                    {% if mempoolspace_enabled %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="mempoolspace">View</a>
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-mempoolspace">Disable</a>
+                    {% else %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-mempoolspace">Enable</a>
+                    {% endif %}
                 {% endif %}
             {% endif %}
         </div>
