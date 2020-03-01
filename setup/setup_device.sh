@@ -410,7 +410,6 @@ if [ -f $DOJO_UPGRADE_URL_FILE ]; then
     CURRENT=$(cat $DOJO_UPGRADE_URL_FILE)
 fi
 if [ "$CURRENT" != "$DOJO_UPGRADE_URL" ]; then
-    sudo systemctl stop bitcoind
     sudo mkdir -p /opt/mynode/.dojo
     sudo mkdir -p /opt/mynode/dojo
     sudo rm -rf /opt/mynode/.dojo/*
