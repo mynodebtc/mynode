@@ -6,6 +6,7 @@ set -x
 source /usr/share/mynode/mynode_config.sh
 
 echo "Starting mynode_docker_images.sh ..."
+touch /tmp/installing_docker_images
 
 # Drive should be mounted, let's still wait a bit
 sleep 10s

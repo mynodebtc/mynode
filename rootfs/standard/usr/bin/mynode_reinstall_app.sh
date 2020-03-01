@@ -45,6 +45,8 @@ elif [ "$APP" = "whirlpool" ]; then
 elif [ "$APP" = "dojo" ]; then
     rm -f /mnt/hdd/mynode/settings/dojo_url
     cd /opt/mynode/dojo/docker/my-dojo/
+    rm -f ./conf/docker-node.conf
+    rm -f ./conf/docker-mysql.conf
     echo "y" | ./dojo.sh uninstall
 else
     echo "UNKNOWN APP: $APP"
