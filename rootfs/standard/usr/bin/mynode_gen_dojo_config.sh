@@ -85,13 +85,13 @@ if [ -f /opt/mynode/dojo/docker/my-dojo/conf/docker-node.conf ]; then
   echo "File present - skip docker-node.conf"
 else
   # Modify node.conf to enter random generated passwords
-  NODE_API_KEY=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 64 | head -n 1)
+  NODE_API_KEY=$(< /dev/urandom tr -dc 'a-zA-Z0-9' | head -c${1:-64})
   sed -i 's|NODE_API_KEY=.*|NODE_API_KEY='$NODE_API_KEY'|' /opt/mynode/dojo/docker/my-dojo/conf/docker-node.conf.tpl
 
-  NODE_ADMIN_KEY=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 48 | head -n 1)
+  NODE_ADMIN_KEY=$(< /dev/urandom tr -dc 'a-zA-Z0-9' | head -c${1:-48})
   sed -i 's|NODE_ADMIN_KEY=.*|NODE_ADMIN_KEY='$NODE_ADMIN_KEY'|' /opt/mynode/dojo/docker/my-dojo/conf/docker-node.conf.tpl
 
-  NODE_JWT_SECRET=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 64 | head -n 1)
+  NODE_JWT_SECRET=$(< /dev/urandom tr -dc 'a-zA-Z0-9' | head -c${1:-48})
   sed -i 's|NODE_JWT_SECRET=.*|NODE_JWT_SECRET='$NODE_JWT_SECRET'|' /opt/mynode/dojo/docker/my-dojo/conf/docker-node.conf.tpl
 fi
 
@@ -100,13 +100,13 @@ if [ -f /opt/mynode/dojo/docker/my-dojo/conf/docker-mysql.conf ]; then
   echo "File present - skip docker-mysql.conf"
 else
   # Modify mysql.conf to enter random generated passwords
-  MYSQL_ROOT_PASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 64 | head -n 1)
+  MYSQL_ROOT_PASSWORD=$(< /dev/urandom tr -dc 'a-zA-Z0-9' | head -c${1:-64})
   sed -i 's|MYSQL_ROOT_PASSWORD=.*|MYSQL_ROOT_PASSWORD='$MYSQL_ROOT_PASSWORD'|' /opt/mynode/dojo/docker/my-dojo/conf/docker-mysql.conf.tpl
 
   MYSQL_USER=mynode
   sed -i 's|MYSQL_USER=.*|MYSQL_USER='$MYSQL_USER'|' /opt/mynode/dojo/docker/my-dojo/conf/docker-mysql.conf.tpl
 
-  MYSQL_PASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 64 | head -n 1)
+  MYSQL_PASSWORD=$(< /dev/urandom tr -dc 'a-zA-Z0-9' | head -c${1:-64})
   sed -i 's|MYSQL_PASSWORD=.*|MYSQL_PASSWORD='$MYSQL_PASSWORD'|' /opt/mynode/dojo/docker/my-dojo/conf/docker-mysql.conf.tpl
 fi
 
