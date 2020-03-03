@@ -36,6 +36,9 @@ elif [ "$APP" = "rtl" ]; then
 elif [ "$APP" = "tor" ]; then
     apt-get remove -y tor
     apt-get install -y tor
+elif [ "$APP" = "ufw" ]; then
+    apt-get purge -y ufw
+    apt-get install -y ufw
 elif [ "$APP" = "webssh2" ]; then
     rm -f /mnt/hdd/mynode/settings/webssh2_url
     systemctl stop webssh2
