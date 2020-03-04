@@ -10,7 +10,10 @@ if [ "$#" -ne 1 ]; then
     echo "Usage: mynode_reinstall_app.sh <app_name>"
     exit 1
 fi
-APP="$1" 
+APP="$1"
+
+# Shut down main services to save memory and CPU and stop app being reinstalled
+/usr/bin/mynode_stop_critical_services.sh
 
 # Delete the app's version file so it will be re-installed
 if [ "$APP" = "bitcoin" ]; then
