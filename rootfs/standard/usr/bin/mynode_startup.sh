@@ -62,15 +62,17 @@ umount /mnt/hdd || true
 
 # Check drive
 set +e
-touch /tmp/repairing_drive
-for d in /dev/sd*1; do
-    echo "Repairing drive $d ...";
-    fsck -y $d > /tmp/fsck_results 2>&1
-    RC=$?
-    if [ "$RC" -ne 0 ]; then
-        touch /tmp/fsck_error
-    fi
-done
+if [ $IS_X86 = 0 ]; then
+    touch /tmp/repairing_drive
+    for d in /dev/sd*1; do
+        echo "Repairing drive $d ...";
+        fsck -y $d > /tmp/fsck_results 2>&1
+        RC=$?
+        if [ "$RC" -ne 0 ]; then
+            touch /tmp/fsck_error
+        fi
+    done
+fi
 rm -f /tmp/repairing_drive
 set -e
 
