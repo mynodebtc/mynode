@@ -350,7 +350,7 @@ fi
 
 # Weird hacks
 chmod +x /usr/bin/electrs || true # Once, a device didn't have the execute bit set for electrs
-
+timedatectl set-ntp True || true # Make sure NTP is enabled for Tor and Bitcoin
 
 # Check for new versions
 wget $LATEST_VERSION_URL -O /usr/share/mynode/latest_version || true
