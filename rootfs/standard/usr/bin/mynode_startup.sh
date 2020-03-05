@@ -161,11 +161,6 @@ do
     chmod 600 /mnt/hdd/mynode/settings/.btcrpcpw
 done
 
-# Setup LND Node Name
-if [ ! -f /mnt/hdd/mynode/settings/.lndalias ]; then
-    echo "mynodebtc.com [myNode]" > /mnt/hdd/mynode/settings/.lndalias
-fi
-
 # Default QuickSync
 if [ ! -f /mnt/hdd/mynode/settings/.setquicksyncdefault ]; then
     # Default x86 to no QuickSync
