@@ -95,6 +95,11 @@ input:focus + .slider {
 	background-color: #303841;
 }
 
+.config_readonly {
+    background-color: #CFC7BE;
+    color:black;
+}
+
 input:checked + .slider {
     background-color: #2196F3;
 }

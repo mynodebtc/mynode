@@ -38,7 +38,7 @@ def update_lightning_info():
     # Set is LND ready
     if lightning_info != None and "synced_to_chain" in lightning_info and lightning_info['synced_to_chain']:
         lnd_ready = True
-    
+
     # Check for LND de-sync (this can happen unfortunately)
     #   See https://github.com/lightningnetwork/lnd/issues/1909
     #   See https://github.com/bitcoin/bitcoin/pull/14687
@@ -134,7 +134,7 @@ def create_wallet(seed):
         # https://github.com/lightningnetwork/lnd/issues/3631
         #t = Timer(1.0, unlock_wallet)
         #t.start()
-        
+
         # Sync FS and sleep so the success redirect understands the wallet was created
         os.system("sync")
         time.sleep(2)
@@ -239,3 +239,17 @@ def set_lnd_custom_config(config):
 
 def delete_lnd_custom_config():
     os.system("rm -f /mnt/hdd/mynode/settings/lnd_custom.conf")
+
+def get_lnd_readonly_config():
+    if os.path.exists("/mnt/hdd/mynode/settings/.btc_lnd_tor_enabled"):
+        try:
+            with open("/usr/share/mynode/lnd_tor.conf") as f:
+                return f.read()
+        except:
+            return "ERROR"
+    else:
+        try:
+            with open("/usr/share/mynode/lnd_ipv4.conf") as f:
+                return f.read()
+        except:
+            return "ERROR"

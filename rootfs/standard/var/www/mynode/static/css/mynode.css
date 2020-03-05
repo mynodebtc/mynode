@@ -20,7 +20,7 @@
 a:link {
     color: black;
     text-decoration: underline dashed orange;
-}  
+}
 a:visited {
     color: black;
     text-decoration: underline dashed orange;
@@ -384,7 +384,7 @@ a:active {
     width: 100%;
     font-size: 24px;
     font-family: Arial, Helvetica, sans-serif;
-    text-align: center; 
+    text-align: center;
 }
 .product_key_save_button {
     width: 100%;
@@ -541,6 +541,10 @@ a:active {
     height: 400px;
     font-size: 14px;
     font-family: "Courier New", Courier, monospace;
+}
+
+.config_readonly {
+    background-color: #EFF0F1;
 }
 
 .loading_image {

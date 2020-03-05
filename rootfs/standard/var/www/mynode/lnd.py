@@ -438,9 +438,12 @@ def lnd_config_page():
     if lnd_config == "ERROR":
         lnd_config = get_default_lnd_config()
 
+    lnd_readonly_config = get_lnd_readonly_config()
+
     templateData = {
         "title": "myNode LND Config",
         "lnd_config": lnd_config,
+        "lnd_readonly_config": lnd_readonly_config,
         "ui_settings": read_ui_settings()
     }
     return render_template('lnd_config.html', **templateData)
