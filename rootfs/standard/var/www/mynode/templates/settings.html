@@ -372,41 +372,17 @@
             </table>
 
             <nav><div class="nav nav-tabs" id="nav-tab" role="tablist">
-                <a class="nav-item nav-link active" id="nav-version-tab" data-toggle="tab" href="#nav-version" role="tab" aria-controls="nav-version" aria-selected="true">Version</a>
-                <a class="nav-item nav-link" id="nav-status-tab" data-toggle="tab" href="#nav-status" role="tab" aria-controls="nav-status" aria-selected="false">Status</a>
+                <a class="nav-item nav-link active" id="nav-status-tab" data-toggle="tab" href="#nav-status" role="tab" aria-controls="nav-status" aria-selected="true">Status</a>
+                <a class="nav-item nav-link" id="nav-version-tab" data-toggle="tab" href="#nav-version" role="tab" aria-controls="nav-version" aria-selected="false">Version</a>
                 <a class="nav-item nav-link" id="nav-changelog-tab" data-toggle="tab" href="#nav-changelog" role="tab" aria-controls="nav-changelog" aria-selected="false">Change log</a>
                 <a class="nav-item nav-link" id="nav-changepasswd-tab" data-toggle="tab" href="#nav-changepasswd" role="tab" aria-controls="nav-changepasswd" aria-selected="false">Change password</a>
+                <a class="nav-item nav-link" id="nav-debuglog-tab" data-toggle="tab" href="#nav-debuglog" role="tab" aria-controls="nav-debuglog" aria-selected="false">Debug log</a>
+                <a class="nav-item nav-link" id="nav-darkmode-tab" data-toggle="tab" href="#nav-darkmode" role="tab" aria-controls="nav-darkmode" aria-selected="false">Dark mode</a>
+                <a class="nav-item nav-link" id="nav-power-tab" data-toggle="tab" href="#nav-power" role="tab" aria-controls="nav-power" aria-selected="false">Power</a>
             </div></nav>
             
             <div class="tab-content" id="nav-tabContent">
-                <div class="tab-pane fade show active" id="nav-version" role="tabpanel" aria-labelledby="nav-version-tab">
-                    <table class="table table-borderless table-sm">
-                        <tr>
-                            <td>Current Version</td>
-                            <td>{{current_version}}</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>Latest Version</td>
-                            <td>{{latest_version}}</td>
-                            <td>&nbsp;<a href="/settings/get-latest-version" class="ui-button ui-widget ui-corner-all settings_button_small">Check for Updates</a></td>
-                        </tr>
-                    </table>
-                    {% if current_version != latest_version and latest_version != "" %}
-                    <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Upgrade</button>
-                    <button id="upgrade_changelog" class="ui-button ui-widget ui-corner-all settings_button">See Changes</button>
-                        {% if product_key_skipped %}
-                        <p>Upgrade to myNode Premium to get one-click updates!</p>
-                        <p>For manual upgrades, see our <a target="_blank" href="https://mynodebtc.com/guide/upgrading_your_device">upgrade guide</a>!</p>
-                        {% endif %}
-                    {% elif not product_key_skipped and upgrade_error %}
-                    <p style="color: red;">It appears a recent upgrade may not have fully completed.</p>
-                    <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Retry Upgrade</button>
-                    <button id="show_upgrade_status" class="ui-button ui-widget ui-corner-all settings_button">Show Upgrade Logs</button>
-                    <div id="upgrade_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{upgrade_logs}}</pre></div>
-                    {% endif %}
-                </div>
-                <div class="tab-pane fade" id="nav-status" role="tabpanel" aria-labelledby="nav-status-tab">
+                <div class="tab-pane fade show active" id="nav-status" role="tabpanel" aria-labelledby="nav-status-tab">
                     <table class="table table-borderless table-sm">
                         <tr>
                             <td>Details</td>
@@ -451,6 +427,33 @@
                         </tr>
                     </table>
                 </div>
+                <div class="tab-pane fade" id="nav-version" role="tabpanel" aria-labelledby="nav-version-tab">
+                    <table class="table table-borderless table-sm">
+                        <tr>
+                            <td>Current Version</td>
+                            <td>{{current_version}}</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Latest Version</td>
+                            <td>{{latest_version}}</td>
+                            <td>&nbsp;<a href="/settings/get-latest-version" class="ui-button ui-widget ui-corner-all settings_button_small">Check for Updates</a></td>
+                        </tr>
+                    </table>
+                    {% if current_version != latest_version and latest_version != "" %}
+                    <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Upgrade</button>
+                    <button id="upgrade_changelog" class="ui-button ui-widget ui-corner-all settings_button">See Changes</button>
+                        {% if product_key_skipped %}
+                        <p>Upgrade to myNode Premium to get one-click updates!</p>
+                        <p>For manual upgrades, see our <a target="_blank" href="https://mynodebtc.com/guide/upgrading_your_device">upgrade guide</a>!</p>
+                        {% endif %}
+                    {% elif not product_key_skipped and upgrade_error %}
+                    <p style="color: red;">It appears a recent upgrade may not have fully completed.</p>
+                    <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Retry Upgrade</button>
+                    <button id="show_upgrade_status" class="ui-button ui-widget ui-corner-all settings_button">Show Upgrade Logs</button>
+                    <div id="upgrade_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{upgrade_logs}}</pre></div>
+                    {% endif %}
+                </div>
                 <div class="tab-pane fade" id="nav-changelog" role="tabpanel" aria-labelledby="nav-changelog-tab">
                     <div class="log"><pre>{{changelog}}</pre></div>
                 </div>
@@ -475,6 +478,35 @@
                         </table>
                         <input type="submit" id="password_submit" value="Change Password" class="ui-button ui-widget ui-corner-all settings_button"/>
                     </form>
+                </div>
+                <div class="tab-pane fade" id="nav-power" role="tabpanel" aria-labelledby="nav-power-tab">
+                    <p>
+                        This will reboot your myNode.
+                        <button id="reboot-device" class="btn btn-outline-warning btn-sm">Reboot Device</button>
+                    </p>
+                    <p>
+                        This will shutdown your myNode. You will need to power cycle the device to turn it back on.
+                        <button id="shutdown-device" class="btn btn-outline-danger btn-sm">Shutdown</button>
+                    </p>
+                </div>
+                <div class="tab-pane fade" id="nav-debuglog" role="tabpanel" aria-labelledby="nav-debuglog-tab">
+                    This will download all recent logs from your myNode. This can be helpful for debugging issues.
+                    <br/>
+                    It may take ~60 seconds to gather and download the logs.
+                    <br/>
+                    Do not share these logs in a public place. They may contain sensitive information.
+                    <br/>
+                    <a href="/settings/mynode_logs.tar.gz" class="ui-button ui-widget ui-corner-all settings_button">Download Logs</a>
+                </div>
+                <div class="tab-pane fade" id="nav-darkmode" role="tabpanel" aria-labelledby="nav-darkmode-tab">
+                    <!-- <div class="settings_block_subheader">Dark Mode</div> -->
+                    This will enable or disable dark mode in the user interface.
+                    <br/>
+                    {% if ui_settings['darkmode'] %}
+                        <a href="/settings/toggle-darkmode" class="ui-button ui-widget ui-corner-all settings_button">Disable</a>
+                    {% else %}
+                        <a href="/settings/toggle-darkmode" class="ui-button ui-widget ui-corner-all settings_button">Enable</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -589,49 +621,6 @@
                 </div>
             </div>
         </div>
-
-        <div class="settings_block">
-            <div class="settings_block_header">User Interface</div>
-
-            <div class="settings_block_subheader">Dark Mode</div>
-            This will enable or disable dark mode in the user interface.
-            <br/>
-            {% if ui_settings['darkmode'] %}
-                <a href="/settings/toggle-darkmode" class="ui-button ui-widget ui-corner-all settings_button">Disable</a>
-            {% else %}
-                <a href="/settings/toggle-darkmode" class="ui-button ui-widget ui-corner-all settings_button">Enable</a>
-            {% endif %}
-
-        </div>
-
-
-        <div class="settings_block">
-            <div class="settings_block_header">Device</div>
-
-            <div class="settings_block_subheader">Reboot Device</div>
-            This will reboot your myNode.
-            <br/>
-            <button id="reboot-device" class="ui-button ui-widget ui-corner-all settings_button">Reboot Device</button>
-            
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Shutdown Device</div>
-            This will shutdown your myNode. You will need to power cycle the device to turn it back on.
-            <br/>
-            <button id="shutdown-device" class="ui-button ui-widget ui-corner-all settings_button">Shutdown Device</button>
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Download Debug Logs</div>
-            This will download all recent logs from your myNode. This can be helpful for debugging issues.
-            <br/>
-            It may take ~60 seconds to gather and download the logs.
-            <br/>
-            Do not share these logs in a public place. They may contain sensitive information.
-            <br/>
-            <a href="/settings/mynode_logs.tar.gz" class="ui-button ui-widget ui-corner-all settings_button">Download Logs</a>
-        </div>
-
 
         <div class="settings_block">
             <div class="settings_block_header">Firewall</div>
