@@ -620,3 +620,15 @@ input:checked + .slider:before {
 .tab-content>.active {
     padding: 1em;
 }
+
+#advanced-block .tab-content {
+    height: 300px;
+    overflow: auto;
+}
+
+#upgrade,
+#regenerate,
+#uploader,
+#factory-reset {
+    float: right;
+}

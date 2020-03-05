@@ -341,8 +341,8 @@
         {% include 'includes/message_display.html' %}
 
         <br/>
-        <div class="settings_block">
-            <div class="settings_block_header">myNode</div>
+        <div class="settings_block" id="overview-block">
+            <div class="settings_block_header">Overview</div>
             <div class="settings_block_subheader">Info</div>
             <table class="table table-borderless table-sm">
                 <tr>
@@ -511,8 +511,8 @@
             </div>
         </div>
 
-        <div class="settings_block">
-            <div class="settings_block_header">Core apps</div>
+        <div class="settings_block" id="core-block">
+            <div class="settings_block_header">Core Apps</div>
             
             <nav><div class="nav nav-tabs" id="nav-tab" role="tablist">
                 <a class="nav-item nav-link active" id="nav-mynode-tab" data-toggle="tab" href="#nav-mynode" role="tab" aria-controls="nav-mynode" aria-selected="true">
@@ -709,8 +709,8 @@
         </div>
 
         {% if is_bitcoin_synced %}
-        <div class="settings_block">
-            <div class="settings_block_header">Other apps</div>
+        <div class="settings_block" id="others-block">
+            <div class="settings_block_header">Other Apps</div>
 
             <nav><div class="nav nav-tabs" id="nav-tab" role="tablist">
                 <a class="nav-item nav-link active" id="nav-docker-tab" data-toggle="tab" href="#nav-docker" role="tab" aria-controls="nav-docker" aria-selected="true">
@@ -744,6 +744,7 @@
                         <div class="settings_block_subheader_status_icon {{ docker_status_color }}"></div>
                     </div>
                     <div class="log"><pre>{{docker_status_log}}</pre></div>
+                    <div class="divider"></div>
 
                     <div class="settings_block_subheader">
                         Docker Image Build Status
@@ -777,20 +778,20 @@
         </div>
         {% endif %}
 
-        <div class="settings_block">
+        <div class="settings_block" id="advanced-block">
             <div class="settings_block_header">Advanced &amp; Developer</div>
 
             <nav><div class="nav nav-tabs" id="nav-tab" role="tablist">
-                <a class="nav-item nav-link active" id="nav-reinstall-tab" data-toggle="tab" href="#nav-reinstall" role="tab" aria-controls="nav-reinstall" aria-selected="true">Reinstall apps</a>
-                <a class="nav-item nav-link" id="nav-beta-tab" data-toggle="tab" href="#nav-beta" role="tab" aria-controls="nav-beta" aria-selected="false">Beta release</a>
+                <a class="nav-item nav-link active" id="nav-reinstall-tab" data-toggle="tab" href="#nav-reinstall" role="tab" aria-controls="nav-reinstall" aria-selected="true">Reinstall Apps</a>
+                <a class="nav-item nav-link" id="nav-beta-tab" data-toggle="tab" href="#nav-beta" role="tab" aria-controls="nav-beta" aria-selected="false">Beta Release</a>
                 <a class="nav-item nav-link" id="nav-http-tab" data-toggle="tab" href="#nav-http" role="tab" aria-controls="nav-http" aria-selected="false">Reset HTTP</a>
                 <a class="nav-item nav-link" id="nav-uploader-tab" data-toggle="tab" href="#nav-uploader" role="tab" aria-controls="nav-uploader" aria-selected="false">Uploader</a>
-                <a class="nav-item nav-link" id="nav-factory-tab" data-toggle="tab" href="#nav-factory" role="tab" aria-controls="nav-factory" aria-selected="false">Factory reset</a>
+                <a class="nav-item nav-link" id="nav-factory-tab" data-toggle="tab" href="#nav-factory" role="tab" aria-controls="nav-factory" aria-selected="false">Factory Reset</a>
             </div></nav>
 
             <div class="tab-content" id="nav-tabContent">
                 <div class="tab-pane fade show active" id="nav-reinstall" role="tabpanel" aria-labelledby="nav-reinstall-tab">
-                    <div class="settings_block_subheader">Reinstall Applications</div>
+                    <!-- <div class="settings_block_subheader">Reinstall Applications</div> -->
                     If you are having issues with a specific application, you can try to reinstall them via the list below.
                     <br/>
                     Reinstalling an app will trigger a reboot of your device.
@@ -813,16 +814,14 @@
                         <option value="whirlpool">Whirlpool</option>
                         <option value="dojo">Dojo</option>
                     </select>
-                    <button class="btn btn-light btn-sm" id="reinstall_button">Reinstall</button>
+                    <button class="btn btn-outline-warning btn-sm" id="reinstall_button">Reinstall</button>
                 </div>
 
                 <div class="tab-pane fade" id="nav-beta" role="tabpanel" aria-labelledby="nav-beta-tab">
                     {% if not product_key_skipped %}
                         <div class="settings_block_subheader">Reinstall Latest Version</div>
-                        If you are running a beta or are having issues, it may be helpful to reinstall the latest official release.
-                        <br/>
-                        <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Install Latest Version</button>
-
+                        <button id="upgrade" class="btn btn-light btn-sm">Install Latest Version</button>
+                        <p>If you are running a beta or are having issues, it may be helpful to reinstall the latest official release.</p>
                         <div class="divider"></div>
                     {% endif %}
 
@@ -843,44 +842,43 @@
                             </tr>
                         </table>
                         {% if current_beta_version != latest_beta_version and latest_beta_version != "" %}
-                            <button id="upgrade-beta" class="ui-button ui-widget ui-corner-all settings_button">Install Beta</button>
+                            <button id="upgrade-beta" class="btn btn-light btn-sm">Install Beta</button>
                             {% if product_key_skipped %}
                                 <p>Upgrade to myNode Premium to get one-click updates!</p>
                                 <p>For manual upgrades, see our <a target="_blank" href="https://mynodebtc.com/guide/upgrading_your_device">upgrade guide</a>!</p>
                             {% endif %}
                         {% elif upgrade_error %}
                             <p style="color: red;">It appears a recent upgrade may not have fully completed.</p>
-                            <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Retry Upgrade</button>
-                            <button id="show_upgrade_status_beta" class="ui-button ui-widget ui-corner-all settings_button">Show Upgrade Logs</button>
+                            <button id="upgrade" class="btn btn-light btn-sm">Retry Upgrade</button>
+                            <button id="show_upgrade_status_beta" class="btn btn-light btn-sm">Show Upgrade Logs</button>
                             <div id="upgrade_status_beta" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{upgrade_logs}}</pre></div>
                         {% endif %}
                     {% endif %}
                 </div>
 
                 <div class="tab-pane fade" id="nav-http" role="tabpanel" aria-labelledby="nav-http-tab">
-                    <div class="settings_block_subheader">Reset HTTP Certificates</div>
-                    This will regenerate your HTTPS certificates.
-                    <br/>
-                    <a href="/settings/regen-https-certs" class="ui-button ui-widget ui-corner-all settings_button">Regenerate</a>
+                    <!-- <div class="settings_block_subheader">Reset HTTP Certificates</div> -->
+                    <a id="regenerate" href="/settings/regen-https-certs" class="ui-button ui-widget ui-corner-all settings_button">Regenerate</a>
+                    <p>This will regenerate your HTTPS certificates.</p>
                 </div>
 
                 <div class="tab-pane fade" id="nav-uploader" role="tabpanel" aria-labelledby="nav-uploader-tab">
-                    <div class="settings_block_subheader">Uploader Device</div>
-                    This disables most features and prioritize sharing QuickSync files. It can be reversed later.
-                    <br/>
+                    <!-- <div class="settings_block_subheader">Uploader Device</div> -->
                     {% if is_uploader_device %}
-                    <a href="/settings/toggle-uploader" class="ui-button ui-widget ui-corner-all settings_button">Disable Uploader Device</a>
+                    <a href="/settings/toggle-uploader" class="ui-button ui-widget ui-corner-all settings_button" id="uploader">Disable Uploader Device</a>
                     {% else %}
-                    <a href="/settings/toggle-uploader" class="ui-button ui-widget ui-corner-all settings_button">Enable Uploader Device</a>
+                    <a href="/settings/toggle-uploader" class="ui-button ui-widget ui-corner-all settings_button" id="uploader">Enable Uploader Device</a>
                     {% endif %}
+                    <p>This disables most features and prioritize sharing QuickSync files. It can be reversed later.</p>
                 </div>
                 <div class="tab-pane fade" id="nav-factory" role="tabpanel" aria-labelledby="nav-factory-tab">
-                    <div class="settings_block_subheader">Factory Reset</div>
-                    This will factory reset your mynode and all storage will be completely reset.
-                    <br/>
-                    Make sure you have backed up all your keys and wallets!
-                    <br/>
-                    <button id="factory-reset" class="ui-button ui-widget ui-corner-all settings_button">Factory Reset</button>
+                    <!-- <div class="settings_block_subheader">Factory Reset</div> -->
+                    <button id="factory-reset" class="btn btn-outline-danger btn-sm">Factory Reset</button>
+                    <p>
+                        This will factory reset your mynode and all storage will be completely reset.
+                        <br/>
+                        Make sure you have backed up all your keys and wallets!
+                    </p>
                 </div>
             </div>
         </div>
