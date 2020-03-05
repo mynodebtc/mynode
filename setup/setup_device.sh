@@ -110,6 +110,7 @@ apt-get -y install libfreetype6-dev libpng-dev libatlas-base-dev libgmp-dev libl
 apt-get -y install libffi-dev libssl-dev glances python3-bottle automake libtool libltdl7
 apt -y -qq install apt-transport-https ca-certificates
 apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
+apt-get -y install zlib1g-dev
 
 
 # Make sure some software is removed
