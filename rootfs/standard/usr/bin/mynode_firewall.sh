@@ -3,6 +3,10 @@
 set -e
 set -x
 
+# Make sure we are using legacy iptables
+update-alternatives --set iptables /usr/sbin/iptables-legacy || true
+update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy || true
+
 # Add default rules
 ufw default deny incoming
 ufw default allow outgoing
