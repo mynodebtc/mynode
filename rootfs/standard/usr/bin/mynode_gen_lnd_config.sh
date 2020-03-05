@@ -7,13 +7,13 @@ if [ -f /mnt/hdd/mynode/settings/lnd_custom.conf ]; then
 else
     # Generate a default config
     cp -f /usr/share/mynode/lnd.conf /mnt/hdd/mynode/lnd/lnd.conf
+fi
 
-    # Append other sections
-    if [ -f /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled ]; then
-        cat /usr/share/mynode/lnd_tor.conf >> /mnt/hdd/mynode/lnd/lnd.conf
-    else
-        cat /usr/share/mynode/lnd_ipv4.conf >> /mnt/hdd/mynode/lnd/lnd.conf
-    fi
+# Append other sections
+if [ -f /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled ]; then
+    cat /usr/share/mynode/lnd_tor.conf >> /mnt/hdd/mynode/lnd/lnd.conf
+else
+    cat /usr/share/mynode/lnd_ipv4.conf >> /mnt/hdd/mynode/lnd/lnd.conf
 fi
 
 ALIAS=$(cat /mnt/hdd/mynode/settings/.lndalias)
