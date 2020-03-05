@@ -347,11 +347,11 @@
             <table class="table table-borderless table-sm">
                 <tr>
                     <td>Serial Number</td>
-                    <td style="padding-left: 20px;">{{serial_number}}</td>
+                    <td>{{serial_number}}</td>
                 </tr>
                 <tr>
                     <td>Product Key</td>
-                    <td style="padding-left: 20px;">
+                    <td>
                     {% if product_key_skipped %}
                     {{product_key}}
                     &nbsp;<a href="/product-key" class="ui-button ui-widget ui-corner-all settings_button_small">Enter Product Key</a>
@@ -363,11 +363,11 @@
                 </tr>
                 <tr>
                     <td>Device Type</td>
-                    <td style="padding-left: 20px;">{{device_type}}</td>
+                    <td>{{device_type}}</td>
                 </tr>
                 <tr>
                     <td>Local IP</td>
-                    <td style="padding-left: 20px;">{{local_ip}}</td>
+                    <td>{{local_ip}}</td>
                 </tr>
             </table>
 
@@ -410,7 +410,7 @@
                     <table class="table table-borderless table-sm">
                         <tr>
                             <td>Details</td>
-                            <td style="padding-left: 20px;">
+                            <td>
                                 {% if is_netdata_enabled %}
                                 <a id="netdata" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Netdata</a>
                                 {% endif %}
@@ -419,35 +419,35 @@
                         </tr>
                         <tr>
                             <td>Manage</td>
-                            <td style="padding-left: 20px;">
+                            <td>
                                 <a id="linux_terminal" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Linux Terminal</a>
                             </td>
                         </tr>
                         <tr>
                             <td>Disk Usage</td>
-                            <td style="padding-left: 20px;">{{drive_usage}}</td>
+                            <td>{{drive_usage}}</td>
                         </tr>
                         <tr>
                             <td>CPU</td>
-                            <td style="padding-left: 20px;">{{cpu_usage}}</td>
+                            <td>{{cpu_usage}}</td>
                         </tr>
                         <tr>
                             <td>RAM</td>
-                            <td style="padding-left: 20px;">{{ram_usage}}</td>
+                            <td>{{ram_usage}}</td>
                         </tr>
                         {% if device_temp != '...' %}
                         <tr>
                             <td>Temperature</td>
-                            <td style="padding-left: 20px;">{{device_temp}} &deg;C</td>
+                            <td>{{device_temp}} &deg;C</td>
                         </tr>
                         {% endif %}
                         <tr>
                             <td>Uptime</td>
-                            <td style="padding-left: 20px;">{{uptime}}</td>
+                            <td>{{uptime}}</td>
                         </tr>
                         <tr>
                             <td>Date</td>
-                            <td style="padding-left: 20px;">{{date}}</td>
+                            <td>{{date}}</td>
                         </tr>
                     </table>
                 </div>
