@@ -3,8 +3,8 @@ from config import *
 from flask import Flask, render_template, Markup, send_from_directory, redirect, request, url_for
 from user_management import *
 from bitcoind import mynode_bitcoind
-from bitcoin_cli import mynode_bitcoin_cli
 from whirlpool import mynode_whirlpool, get_whirlpool_status
+from dojo import mynode_dojo, get_dojo_status
 from tor import mynode_tor
 from vpn import mynode_vpn
 from electrum_server import *
@@ -41,8 +41,8 @@ app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024     # 32 MB upload file max
 app.config['UPLOAD_FOLDER'] = "/tmp/flask_uploads"
 app.register_blueprint(mynode_bitcoind)
 app.register_blueprint(mynode_lnd)
-app.register_blueprint(mynode_bitcoin_cli)
 app.register_blueprint(mynode_whirlpool)
+app.register_blueprint(mynode_dojo)
 app.register_blueprint(mynode_tor)
 app.register_blueprint(mynode_electrum_server)
 app.register_blueprint(mynode_vpn)
@@ -338,17 +338,28 @@ def index():
                 btcrpcexplorer_status = "Waiting on bitcoin..."
 
         # Find mempool space status
+        mempoolspace_status = "Mempool Viewer"
         if is_mempoolspace_enabled():
-            status_code = get_service_status_code("mempoolspace")
-            mempoolspace_status_color = get_service_status_color("mempoolspace")
+            if is_installing_docker_images():
+                mempoolspace_status_color = "yellow"
+                mempoolspace_status = "Installing..."
+            else:
+                mempoolspace_status_color = get_service_status_color("mempoolspace")
 
         # Find lndconnect status
         if lnd_ready:
             lndconnect_status_color = "green"
 
         # Find btcpayserver status
+        btcpayserver_status = "Merchant Tool"
         if lnd_ready:
-            btcpayserver_status_color = get_service_status_color("btcpayserver")
+            if is_installing_docker_images():
+                btcpayserver_status_color = "yellow"
+                btcpayserver_status = "Installing..."
+            else:
+                btcpayserver_status_color = get_service_status_color("btcpayserver")
+        else:
+            btcpayserver_status = "Waiting on LND..."
 
         # Find explorer status
         explorer_status_color = electrs_status_color
@@ -376,6 +387,12 @@ def index():
         # Find whirlpool status
         whirlpool_status, whirlpool_status_color, whirlpool_initialized = get_whirlpool_status()
 
+        # Find dojo status
+        dojo_status, dojo_status_color, dojo_initialized = get_dojo_status()
+        if is_installing_docker_images():
+            dojo_status_color = "yellow"
+            dojo_status = "Installing..."
+
         # Check for new version of software
         upgrade_available = False
         current = get_current_version()
@@ -393,6 +410,7 @@ def index():
             "lnd_status": Markup(lnd_status),
             "lnd_ready": lnd_ready,
             "tor_status_color": tor_status_color,
+            "is_installing_docker_images": is_installing_docker_images(),
             "electrs_status_color": electrs_status_color,
             "electrs_status": Markup(electrs_status),
             "electrs_enabled": is_electrs_enabled(),
@@ -408,9 +426,11 @@ def index():
             "btcrpcexplorer_status": btcrpcexplorer_status,
             "btcrpcexplorer_enabled": is_btcrpcexplorer_enabled(),
             "mempoolspace_status_color": mempoolspace_status_color,
+            "mempoolspace_status": mempoolspace_status,
             "mempoolspace_enabled": is_mempoolspace_enabled(),
             "btcpayserver_enabled": is_btcpayserver_enabled(),
             "btcpayserver_status_color": btcpayserver_status_color,
+            "btcpayserver_status": btcpayserver_status,
             "lndconnect_status_color": lndconnect_status_color,
             "vpn_status_color": vpn_status_color,
             "vpn_status": vpn_status,
@@ -419,6 +439,10 @@ def index():
             "whirlpool_status_color": whirlpool_status_color,
             "whirlpool_enabled": is_whirlpool_enabled(),
             "whirlpool_initialized": whirlpool_initialized,
+            "dojo_status": dojo_status,
+            "dojo_status_color": dojo_status_color,
+            "dojo_enabled": is_dojo_enabled(),
+            "dojo_initialized": dojo_initialized,
             "product_key_skipped": pk_skipped,
             "product_key_error": pk_error,
             "fsck_error": has_fsck_error(),
@@ -541,6 +565,15 @@ def page_toggle_whirlpool():
         disable_whirlpool()
     else:
         enable_whirlpool()
+    return redirect("/")
+
+@app.route("/toggle-dojo")
+def page_toggle_dojo():
+    check_logged_in()
+    if is_dojo_enabled():
+        disable_dojo()
+    else:
+        enable_dojo()
     return redirect("/")
 
 @app.route("/login", methods=["GET","POST"])

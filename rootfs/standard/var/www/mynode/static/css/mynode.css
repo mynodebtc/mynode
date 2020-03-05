@@ -604,7 +604,6 @@ input:checked + .slider:before {
 
 .log {
     font-size: 12px;
-    margin-top: 1em;
     max-height: 300px;
     overflow: auto;
 }
@@ -616,4 +615,8 @@ input:checked + .slider:before {
 .nav-tabs .nav-link:hover,
 .nav-tabs .nav-link.active {
     border-color: #f9c132;
+}
+
+.tab-content>.active {
+    padding: 1em;
 }

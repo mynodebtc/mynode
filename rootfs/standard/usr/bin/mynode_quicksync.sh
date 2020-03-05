@@ -68,8 +68,8 @@ fi
 if [ ! -f $QUICKSYNC_DIR/blockchain.torrent ]; then
     cp $QUICKSYNC_DIR/blockchain_temp.torrent $QUICKSYNC_DIR/blockchain.torrent
 else
-    if [ $IS_RASPI3 -eq 1 ] && [ ! -f $UPLOADER_FILE ]; then
-        # Don't help with uploads during normal operation.... too slow
+    if [ ! -f $UPLOADER_FILE ]; then
+        # Don't update torrent for normal operations.... too slow
         sleep 1s
     else
         # Run commands as long as torrents are different (last command updates torrent file)

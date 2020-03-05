@@ -1,3 +1,12 @@
+=== v0.1.95 ===
+- Improve upgrade success
+
+=== v0.1.94 ===
+- Samourai Dojo
+- Improved beta release support
+- Show more status logs on settings page
+- Bug fixes
+
 === v0.1.93 ===
 - Improve docker container consistency
 - Improve SSD detection re QuickSync
