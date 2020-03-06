@@ -606,6 +606,7 @@ input:checked + .slider:before {
     font-size: 12px;
     max-height: 300px;
     overflow: auto;
+    margin-top: 1em;
 }
 
 .nav-tabs {
@@ -621,14 +622,23 @@ input:checked + .slider:before {
     padding: 1em;
 }
 
-#advanced-block .tab-content {
-    height: 300px;
+#overview-block .tab-content {
+    height: 340px;
     overflow: auto;
 }
 
-#upgrade,
-#regenerate,
-#uploader,
-#factory-reset {
-    float: right;
+#core-block .tab-content {
+    height: 500px;
+    overflow: auto;
+}
+
+#others-block .tab-content {
+    min-height: 190px;
+    max-height: 700px;
+    overflow: auto;
+}
+
+#advanced-block .tab-content {
+    height: 300px;
+    overflow: auto;
 }
