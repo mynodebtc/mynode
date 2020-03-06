@@ -137,14 +137,14 @@ pip install grpcio grpcio-tools googleapis-common-protos
 pip install tzupdate virtualenv
 
 
-# Update Python3 to 3.8.X
+# Update Python3 to 3.7.X
 PYTHON3_VERSION=$(python3 --version)
-if [[ "$PYTHON3_VERSION" != *"Python 3.8"* ]]; then
+if [[ "$PYTHON3_VERSION" != *"Python 3.7.6"* ]]; then
     mkdir -p /opt/download
     cd /opt/download
-    wget https://www.python.org/ftp/python/3.8.2/Python-3.8.2.tar.xz
-    tar xf Python-3.8.2.tar.xz
-    cd Python-3.8.2
+    wget https://www.python.org/ftp/python/3.7.6/Python-3.7.6.tar.xz
+    tar xf Python-3.7.6.tar.xz
+    cd Python-3.7.6
     ./configure
     make -j4
     make install
