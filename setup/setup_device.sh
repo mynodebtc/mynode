@@ -582,6 +582,16 @@ rm -rf /tmp/*
 rm -rf ~/setup_device.sh
 rm -rf /etc/motd # Remove simple motd for update-motd.d
 
+# Reset MAC address for Armbian devices
+if [ $IS_ARMBIAN = 1 ] ; then
+    . /usr/lib/armbian/armbian-common
+    CONNECTION="$(nmcli -f UUID,ACTIVE,DEVICE,TYPE connection show --active | tail -n1)"
+    UUID=$(awk -F" " '/ethernet/ {print $1}' <<< "${CONNECTION}")
+    get_random_mac
+    nmcli connection modify $UUID ethernet.cloned-mac-address $MACADDR
+    nmcli connection modify $UUID -ethernet.mac-address ""
+fi
+
 sync
 
 set +x
