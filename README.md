@@ -114,7 +114,7 @@ Once you are running myNode, you can easily update the software yourself!
 5. On your device, run 'sudo mynode-local-upgrade [dev pc ip address]'
     * This will download your locally generated artifact and install it on your device
     * Your device will automatically reboot to ensure updates take effect
-6. Run 'make stop_file_server'
+6. Optional: Run 'make stop_file_server'
     * This will stop the local HTTP server
 7. You are now running the latest version of myNode software!
 
