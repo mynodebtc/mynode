@@ -137,17 +137,17 @@ pip install grpcio grpcio-tools googleapis-common-protos
 pip install tzupdate virtualenv
 
 
-# Update Python3 to 3.7.X
+# Update Python3 to 3.8.X
 PYTHON3_VERSION=$(python3 --version)
-if [[ "$PYTHON3_VERSION" != *"Python 3.7"* ]]; then
+if [[ "$PYTHON3_VERSION" != *"Python 3.8"* ]]; then
     mkdir -p /opt/download
     cd /opt/download
-    wget https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tar.xz
-    tar xf Python-3.7.2.tar.xz
-    cd Python-3.7.2
+    wget https://www.python.org/ftp/python/3.8.2/Python-3.8.2.tar.xz
+    tar xf Python-3.8.2.tar.xz
+    cd Python-3.8.2
     ./configure
     make -j4
-    sudo make install
+    make install
     cd ~
 else
     echo "Python up to date"
@@ -491,6 +491,10 @@ if [ ! -f /usr/bin/ngrok  ]; then
     unzip ngrok-*.zip
     cp ngrok /usr/bin/
 fi
+
+# Make sure we are using legacy iptables
+update-alternatives --set iptables /usr/sbin/iptables-legacy || true
+update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy || true
 
 
 #########################################################
