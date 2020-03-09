@@ -28,7 +28,7 @@ while true; do
     done
 
     # Find URLs
-    LND_TOR_ADDR=$(cat /var/lib/tor/mynode/hostname | awk '{print $1}')
+    LND_TOR_ADDR=$(cat /var/lib/tor/mynode_lnd/hostname)
     LOCAL_IP_ADDR=$(hostname -I | head -n 1)
 
     # Generate QR Codes

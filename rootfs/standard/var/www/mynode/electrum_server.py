@@ -36,17 +36,14 @@ def electrum_server_page():
 
     # Get Onion URLs
     electrs_onion_hostname = "..."
-    electrs_onion_password = "..."
     electrs_onion_command = "..."
     if os.path.isfile("/var/lib/tor/mynode/hostname"):
         with open("/var/lib/tor/mynode/hostname") as f:
             contents = f.read().split()
-            electrs_onion_hostname = contents[0]
-            electrs_onion_password = contents[1]
+            electrs_onion_hostname = contents
             electrs_onion_command = "./electrum -1 -s {}:50002:s -p socks5:localhost:9050".format(electrs_onion_hostname)
     else:
         electrs_onion_hostname = "disabled"
-        electrs_onion_password = "disabled"
         electrs_onion_command = "disabled"
 
     # Load page
@@ -62,7 +59,6 @@ def electrum_server_page():
         "server_secure_port": server_secure_port,
         "electrs_command": electrs_command,
         "electrs_onion_hostname": electrs_onion_hostname,
-        "electrs_onion_password": electrs_onion_password,
         "electrs_onion_command": electrs_onion_command,
         "ui_settings": read_ui_settings()
     }

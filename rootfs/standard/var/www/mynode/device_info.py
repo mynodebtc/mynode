@@ -463,6 +463,33 @@ def disable_btc_lnd_tor():
     os.system("rm -f mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
     os.system("sync")
 
+def get_onion_url_general():
+    try:
+        if os.path.isfile("/var/lib/tor/mynode/hostname"):
+            with open("/var/lib/tor/mynode/hostname") as f:
+                return f.read()
+    except:
+        pass
+    return "error"
+
+def get_onion_url_btc():
+    try:
+        if os.path.isfile("/var/lib/tor/mynode_btc/hostname"):
+            with open("/var/lib/tor/mynode_btc/hostname") as f:
+                return f.read()
+    except:
+        pass
+    return "error"
+
+def get_onion_url_lnd():
+    try:
+        if os.path.isfile("/var/lib/tor/mynode_lnd/hostname"):
+            with open("/var/lib/tor/mynode_lnd/hostname") as f:
+                return f.read()
+    except:
+        pass
+    return "error"
+
 
 #==================================
 # Firewall Functions
