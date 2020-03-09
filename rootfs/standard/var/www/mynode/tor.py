@@ -30,7 +30,6 @@ def page_tor():
     services.append({"service": "myNode Web", "url": general_onion_url, "port": "80","guide":""})
     services.append({"service": "LND Hub", "url": general_onion_url,"port": "3000","guide":""})
     services.append({"service": "BTC RPC Explorer", "url": general_onion_url,"port": "3002","guide":""})
-    services.append({"service": "LND Admin", "url": general_onion_url,"port": "3004","guide":""})
     services.append({"service": "Ride the Lightning", "url": general_onion_url,"port": "3010","guide":""})
     services.append({"service": "Bitcoin API (REST)", "url": btc_onion_url,"port": "8332","guide":""})
     services.append({"service": "LND API (gRPC)", "url": lnd_onion_url,"port": "10009","guide":""})
