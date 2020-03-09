@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, session, abort, Markup, request, r
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from pprint import pprint, pformat
 from bitcoin_info import *
-from device_info import get_local_ip, skipped_product_key
+from device_info import get_local_ip, skipped_product_key, get_onion_url_general
 from user_management import check_logged_in
 from settings import read_ui_settings
 from electrum_info import *
@@ -35,16 +35,9 @@ def electrum_server_page():
     electrs_command = "./electrum -1 -s {}:50002:s".format(server_ip)
 
     # Get Onion URLs
-    electrs_onion_hostname = "..."
-    electrs_onion_command = "..."
-    if os.path.isfile("/var/lib/tor/mynode/hostname"):
-        with open("/var/lib/tor/mynode/hostname") as f:
-            contents = f.read().split()
-            electrs_onion_hostname = contents
-            electrs_onion_command = "./electrum -1 -s {}:50002:s -p socks5:localhost:9050".format(electrs_onion_hostname)
-    else:
-        electrs_onion_hostname = "disabled"
-        electrs_onion_command = "disabled"
+    electrs_onion_hostname = get_onion_url_general()
+    electrs_onion_command = "./electrum -1 -s {}:50002:s -p socks5:localhost:9050".format(electrs_onion_hostname)
+
 
     # Load page
     templateData = {
