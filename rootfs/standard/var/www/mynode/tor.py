@@ -21,9 +21,11 @@ def page_tor():
         return redirect("/")
 
     # Get Onion URLs
+    ssh_onion_url = get_onion_url_ssh()
     general_onion_url = get_onion_url_general()
     btc_onion_url = get_onion_url_btc()
     lnd_onion_url = get_onion_url_lnd()
+    electrs_onion_url = get_onion_url_electrs()
 
     # Services
     services = []
@@ -34,8 +36,9 @@ def page_tor():
     services.append({"service": "Bitcoin API (REST)", "url": btc_onion_url,"port": "8332","guide":""})
     services.append({"service": "LND API (gRPC)", "url": lnd_onion_url,"port": "10009","guide":""})
     services.append({"service": "LND API (REST)", "url": lnd_onion_url,"port": "10080","guide":""})
-    services.append({"service": "Electrum Server", "url": general_onion_url,"port": "50001","guide":"https://mynodebtc.com/guide/electrum_server_tor"})
-    services.append({"service": "Electrum Server", "url": general_onion_url,"port": "50002","guide":"https://mynodebtc.com/guide/electrum_server_tor"})
+    services.append({"service": "SSH", "url": ssh_onion_url, "port": "22022","guide":""})
+    services.append({"service": "Electrum Server", "url": electrs_onion_url,"port": "50001","guide":"https://mynodebtc.com/guide/electrum_server_tor"})
+    services.append({"service": "Electrum Server", "url": electrs_onion_url,"port": "50002","guide":"https://mynodebtc.com/guide/electrum_server_tor"})
     
     # App links
     rpc_password = get_bitcoin_rpc_password()

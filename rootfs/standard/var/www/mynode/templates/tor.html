@@ -5,10 +5,19 @@
 
         <script>
             $(document).ready(function() {
+                hidden=1
                 $("#show_onion_urls").on("click", function() {
-                    //$("#show_onion_urls").hide(0);
-                    $(".onion_url_placeholder").hide(0)
-                    $(".onion_url").show();
+                    if (hidden == 1) {
+                        $("#show_onion_urls").html('Hide Onion URLs');
+                        $(".onion_url_placeholder").hide(0)
+                        $(".onion_url").show();
+                        hidden=0;
+                    } else {
+                        $("#show_onion_urls").html('Show Onion URLs');
+                        $(".onion_url_placeholder").show()
+                        $(".onion_url").hide(0);
+                        hidden=1;
+                    }
                 });
             });
         </script>
@@ -61,7 +70,7 @@
                         <td><b>{{ service.service }}</b></td>
                         <td>
                             <span class="onion_url">{{ service.url }}</span>
-                            <span class="onion_url_placeholder">.....................................</span>
+                            <span class="onion_url_placeholder">..................................................</span>
                         </td>
                         <td>{{ service.port }}</td>
                         <td>
