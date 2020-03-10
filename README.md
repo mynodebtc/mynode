@@ -29,7 +29,7 @@ https://mynodebtc.com/order_now
 ## Features
 Each myNode device comes with a number of wonderful features:
 
-- Bitcoin Node (Bitcoin Core v0.19.0.1)
+- Bitcoin Node (Bitcoin Core v0.19.1)
 - Lightning Node (LND v0.9.0-beta)
 - Electrum Server (Electrum Rust Server aka Electrs 0.7.0)
 - BTCPay Server (v1.0.3.153)

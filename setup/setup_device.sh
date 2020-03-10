@@ -202,7 +202,7 @@ rm -rf /etc/update-motd.d/*
 
 
 # Install Bitcoin
-BTC_VERSION="0.19.0.1"
+BTC_VERSION="0.19.1"
 ARCH="UNKNOWN"
 if [ $IS_RASPI = 1 ]; then
     ARCH="arm-linux-gnueabihf"
