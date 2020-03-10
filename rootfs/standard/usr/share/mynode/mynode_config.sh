@@ -43,6 +43,13 @@ if [[ "$SERIAL_NUM" == "" ]]; then
     SERIAL_NUM=$(sudo dmidecode | grep UUID | cut -d ' ' -f 2)
 fi
 
+# Appplication versions
+readonly BITCOIND_VERSION="0.19.1"
+readonly LND_VERSION="v0.9.2-beta"
+readonly LNDHUB_VERSION="v1.1.3"
+readonly LOOP_VERSION="v0.5.1-beta"
+readonly RTL_VERSION="v0.6.8"
+
 # Set all default / standard bash config settings
 MYNODE_DIR=/mnt/hdd/mynode
 VPN_BACKUP_DIR=/mnt/hdd/mynode/vpn

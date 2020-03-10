@@ -5,6 +5,8 @@
 ### Run with "sudo"
 ###
 
+source ~/mynode_config.sh
+
 set -x
 set -e
 
@@ -202,7 +204,6 @@ rm -rf /etc/update-motd.d/*
 
 
 # Install Bitcoin
-BTC_VERSION="0.19.1"
 ARCH="UNKNOWN"
 if [ $IS_RASPI = 1 ]; then
     ARCH="arm-linux-gnueabihf"
@@ -214,9 +215,9 @@ else
     echo "Unknown Bitcoin Version"
     exit 1
 fi
-BTC_UPGRADE_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/bitcoin-$BTC_VERSION-$ARCH.tar.gz
+BTC_UPGRADE_URL=https://bitcoincore.org/bin/bitcoin-core-$BITCOIND_VERSION/bitcoin-$BITCOIND_VERSION-$ARCH.tar.gz
 BTC_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btc_url
-BTC_UPGRADE_SHA256SUM_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/SHA256SUMS.asc
+BTC_UPGRADE_SHA256SUM_URL=https://bitcoincore.org/bin/bitcoin-core-$BITCOIND_VERSION/SHA256SUMS.asc
 CURRENT=""
 if [ -f $BTC_UPGRADE_URL_FILE ]; then
     CURRENT=$(cat $BTC_UPGRADE_URL_FILE)
@@ -234,8 +235,8 @@ if [ "$CURRENT" != "$BTC_UPGRADE_URL" ]; then
     gpg --verify SHA256SUMS.asc
 
     # Install Bitcoin
-    tar -xvf bitcoin-$BTC_VERSION-$ARCH.tar.gz
-    mv bitcoin-$BTC_VERSION bitcoin
+    tar -xvf bitcoin-$BITCOIND_VERSION-$ARCH.tar.gz
+    mv bitcoin-$BITCOIND_VERSION bitcoin
     install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
     if [ ! -L /home/bitcoin/.bitcoin ]; then
         sudo -u bitcoin ln -s /mnt/hdd/mynode/bitcoin /home/bitcoin/.bitcoin
@@ -251,7 +252,6 @@ fi
 cd ~
 
 # Install Lightning
-LND_VERSION="v0.9.2-beta"
 LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
@@ -288,7 +288,6 @@ cd ~
 
 # Install Loopd
 echo "Upgrading loopd..."
-LOOP_VERSION="v0.5.1-beta"
 LOOP_ARCH="loop-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LOOP_ARCH="loop-linux-amd64"
@@ -332,7 +331,6 @@ chown -R bitcoin:bitcoin /opt/mynode
 
 
 # Install LND Hub
-LNDHUB_VERSION="v1.1.3"
 LNDHUB_UPGRADE_URL=https://github.com/BlueWallet/LndHub/archive/${LNDHUB_VERSION}.tar.gz
 LNDHUB_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lndhub_url
 CURRENT=""
@@ -401,7 +399,6 @@ fi
 
 
 # Install RTL
-RTL_VERSION="v0.6.8"
 RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/$RTL_VERSION.tar.gz
 RTL_UPGRADE_ASC_URL=https://github.com/Ride-The-Lightning/RTL/releases/download/$RTL_VERSION/$RTL_VERSION.tar.gz.asc
 RTL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.rtl_url
@@ -580,6 +577,7 @@ rm -rf /root/.ssh/known_hosts
 rm -rf /etc/resolv.conf
 rm -rf /tmp/*
 rm -rf ~/setup_device.sh
+rm -rf ~/mynode_config.sh
 rm -rf /etc/motd # Remove simple motd for update-motd.d
 
 # Reset MAC address for Armbian devices
@@ -607,5 +605,3 @@ echo ""
 ### MAKE IMAGE NOW ###
 # This prevents auto gen files like certs to be part of the base image
 # Must make sure image can boot after this point and fully come up
-
-
