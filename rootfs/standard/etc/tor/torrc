@@ -225,8 +225,6 @@ HiddenServicePort 4080 127.0.0.1:4080
 HiddenServicePort 8899 127.0.0.1:8899
 HiddenServicePort 19999 127.0.0.1:19999
 HiddenServicePort 49392 127.0.0.1:49392
-HiddenServicePort 50001 127.0.0.1:50001
-HiddenServicePort 50002 127.0.0.1:50002
 HiddenServicePort 61208 127.0.0.1:61208
 
 # Hidden Service for myNode (BTC)
@@ -239,3 +237,14 @@ HiddenServiceDir /var/lib/tor/mynode_lnd/
 HiddenServiceVersion 3
 HiddenServicePort 10009 127.0.0.1:10009
 HiddenServicePort 10080 127.0.0.1:10080
+
+# Hidden Service for myNode (Electrum Server)
+HiddenServiceDir /var/lib/tor/mynode_electrs/
+HiddenServiceVersion 3
+HiddenServicePort 50001 127.0.0.1:50001
+HiddenServicePort 50002 127.0.0.1:50002
+
+# Hidden Service for myNode (SSH)
+HiddenServiceDir /var/lib/tor/mynode_ssh/
+HiddenServiceVersion 3
+HiddenServicePort 22022 127.0.0.1:22
