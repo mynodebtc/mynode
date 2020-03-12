@@ -1,3 +1,11 @@
+=== v0.1.96 ===
+- Add Dojo re-install option
+- Add UFW re-install option
+- Disable IPv6 in UFW and other firewall improvements
+- Improved MAC address initialization
+- New images get Python 3.7.6
+- Bug fixes
+
 === v0.1.95 ===
 - Improve upgrade success
 

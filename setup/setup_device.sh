@@ -110,6 +110,7 @@ apt-get -y install libfreetype6-dev libpng-dev libatlas-base-dev libgmp-dev libl
 apt-get -y install libffi-dev libssl-dev glances python3-bottle automake libtool libltdl7
 apt -y -qq install apt-transport-https ca-certificates
 apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
+apt-get -y install zlib1g-dev
 
 
 # Make sure some software is removed
@@ -138,15 +139,15 @@ pip install tzupdate virtualenv
 
 # Update Python3 to 3.7.X
 PYTHON3_VERSION=$(python3 --version)
-if [[ "$PYTHON3_VERSION" != *"Python 3.7"* ]]; then
+if [[ "$PYTHON3_VERSION" != *"Python 3.7.6"* ]]; then
     mkdir -p /opt/download
     cd /opt/download
-    wget https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tar.xz
-    tar xf Python-3.7.2.tar.xz
-    cd Python-3.7.2
+    wget https://www.python.org/ftp/python/3.7.6/Python-3.7.6.tar.xz
+    tar xf Python-3.7.6.tar.xz
+    cd Python-3.7.6
     ./configure
     make -j4
-    sudo make install
+    make install
     cd ~
 else
     echo "Python up to date"
@@ -201,7 +202,7 @@ rm -rf /etc/update-motd.d/*
 
 
 # Install Bitcoin
-BTC_VERSION="0.19.0.1"
+BTC_VERSION="0.19.1"
 ARCH="UNKNOWN"
 if [ $IS_RASPI = 1 ]; then
     ARCH="arm-linux-gnueabihf"
@@ -287,7 +288,7 @@ cd ~
 
 # Install Loopd
 echo "Upgrading loopd..."
-LOOP_VERSION="v0.4.0-beta"
+LOOP_VERSION="v0.5.0-beta"
 LOOP_ARCH="loop-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LOOP_ARCH="loop-linux-amd64"
@@ -491,6 +492,10 @@ if [ ! -f /usr/bin/ngrok  ]; then
     cp ngrok /usr/bin/
 fi
 
+# Make sure we are using legacy iptables
+update-alternatives --set iptables /usr/sbin/iptables-legacy || true
+update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy || true
+
 
 #########################################################
 
@@ -576,6 +581,16 @@ rm -rf /etc/resolv.conf
 rm -rf /tmp/*
 rm -rf ~/setup_device.sh
 rm -rf /etc/motd # Remove simple motd for update-motd.d
+
+# Reset MAC address for Armbian devices
+if [ $IS_ARMBIAN = 1 ] ; then
+    . /usr/lib/armbian/armbian-common
+    CONNECTION="$(nmcli -f UUID,ACTIVE,DEVICE,TYPE connection show --active | tail -n1)"
+    UUID=$(awk -F" " '/ethernet/ {print $1}' <<< "${CONNECTION}")
+    get_random_mac
+    nmcli connection modify $UUID ethernet.cloned-mac-address $MACADDR
+    nmcli connection modify $UUID -ethernet.mac-address ""
+fi
 
 sync
 

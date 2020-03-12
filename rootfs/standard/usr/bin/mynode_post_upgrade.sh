@@ -91,7 +91,7 @@ usermod -aG docker root
 
 # Upgrade BTC
 echo "Upgrading BTC..."
-BTC_VERSION="0.19.0.1"
+BTC_VERSION="0.19.1"
 ARCH="UNKNOWN"
 if [ $IS_RASPI = 1 ]; then
     ARCH="arm-linux-gnueabihf"
@@ -179,7 +179,7 @@ fi
 
 # Upgrade Loopd
 echo "Upgrading loopd..."
-LOOP_VERSION="v0.4.0-beta"
+LOOP_VERSION="v0.5.0-beta"
 LOOP_ARCH="loop-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LOOP_ARCH="loop-linux-amd64"

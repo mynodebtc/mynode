@@ -3,6 +3,10 @@
 set -e
 set -x
 
+# Make sure we are using legacy iptables
+update-alternatives --set iptables /usr/sbin/iptables-legacy || true
+update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy || true
+
 # Add default rules
 ufw default deny incoming
 ufw default allow outgoing
@@ -42,7 +46,7 @@ ufw allow 49392 comment 'allow BTCPay Server-direct'
 ufw allow 51194 comment 'allow VPN'
 ufw allow 61208 comment 'allow Glances'
 ufw allow from 127.0.0.1 comment 'allow from localhost'
-ufw allow from ::1 comment 'allow from localhost'
+#ufw allow from ::1 comment 'allow from localhost'
 
 # Enable UFW
 ufw --force enable
