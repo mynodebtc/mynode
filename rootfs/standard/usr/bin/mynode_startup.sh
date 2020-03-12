@@ -62,14 +62,17 @@ umount /mnt/hdd || true
 
 # Check drive
 set +e
-touch /tmp/repairing_drive
-for d in /dev/sd*1; do
-    echo "Repairing drive $d ...";
-    RC=$(fsck -y $d > /tmp/fsck_results 2>&1)
-    if [ $RC -ne 0 ]; then
-        touch /tmp/fsck_error
-    fi
-done
+if [ $IS_X86 = 0 ]; then
+    touch /tmp/repairing_drive
+    for d in /dev/sd*1; do
+        echo "Repairing drive $d ...";
+        fsck -y $d > /tmp/fsck_results 2>&1
+        RC=$?
+        if [ "$RC" -ne 0 ]; then
+            touch /tmp/fsck_error
+        fi
+    done
+fi
 rm -f /tmp/repairing_drive
 set -e
 
@@ -108,6 +111,10 @@ mkdir -p /home/admin/.bitcoin/
 chown admin:admin /home/admin/.bitcoin/
 rm -rf /etc/motd # Remove simple motd for update-motd.d
 
+# Sync product key (SD preferred)
+cp -f /home/bitcoin/.mynode/.product_key* /mnt/hdd/mynode/settings/ || true
+cp -f /mnt/hdd/mynode/settings/.product_key* home/bitcoin/.mynode/ || true
+
 # Make any users we need to
 useradd -m -s /bin/bash pivpn || true
 
@@ -144,10 +151,6 @@ if [ ! -f /root/.ssh/id_rsa_btcpay ]; then
     cat /root/.ssh/id_rsa_btcpay.pub >> /root/.ssh/authorized_keys
 fi
 
-# Sync product key (SD preferred)
-cp -f /home/bitcoin/.mynode/.product_key* /mnt/hdd/mynode/settings/ || true
-cp -f /mnt/hdd/mynode/settings/.product_key* home/bitcoin/.mynode/ || true
-
 # Randomize RPC password
 while [ ! -f /mnt/hdd/mynode/settings/.btcrpcpw ] || [ ! -s /mnt/hdd/mynode/settings/.btcrpcpw ]
 do
@@ -177,6 +180,14 @@ if [ ! -f /mnt/hdd/mynode/settings/.setquicksyncdefault ]; then
     DRIVE=$(cat /tmp/.mynode_drive)
     HDD=$(lsblk $DRIVE -o ROTA | tail -n 1 | tr -d '[:space:]')
     if [ "$HDD" = "0" ]; then
+        touch /mnt/hdd/mynode/settings/quicksync_disabled
+    fi
+    # If there is a USB->SATA adapter, assume we have an SSD and default to no QS
+    set +e
+    lsusb | grep "SATA 6Gb/s bridge"
+    RC=$?
+    set -e
+    if [ "$RC" = "0" ]; then
         touch /mnt/hdd/mynode/settings/quicksync_disabled
     fi
     # Default small drives to no QuickSync
@@ -339,10 +350,11 @@ fi
 
 # Weird hacks
 chmod +x /usr/bin/electrs || true # Once, a device didn't have the execute bit set for electrs
-
+timedatectl set-ntp True || true # Make sure NTP is enabled for Tor and Bitcoin
 
 # Check for new versions
 wget $LATEST_VERSION_URL -O /usr/share/mynode/latest_version || true
+wget $LATEST_BETA_VERSION_URL -O /usr/share/mynode/latest_beta_version || true
 
 # Update current state
 if [ -f $QUICKSYNC_DIR/.quicksync_complete ]; then

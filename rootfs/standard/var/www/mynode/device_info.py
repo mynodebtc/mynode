@@ -58,11 +58,19 @@ def get_current_version():
         current_version = "error"
     return current_version
 
+def get_current_beta_version():
+    current_beta_version = "0.0"
+    try:
+        with open("/usr/share/mynode/beta_version", "r") as f:
+            current_beta_version = f.read().strip()
+    except:
+        current_beta_version = "beta_not_installed"
+    return current_beta_version
 
 def update_latest_version():
     os.system("wget "+LATEST_VERSION_URL+" -O /usr/share/mynode/latest_version")
+    os.system("wget "+LATEST_BETA_VERSION_URL+" -O /usr/share/mynode/latest_beta_version")
     return True
-
 
 def get_latest_version():
     latest_version = "0.0"
@@ -74,6 +82,15 @@ def get_latest_version():
     except:
         latest_version = get_current_version()
     return latest_version
+
+def get_latest_beta_version():
+    beta_version = ""
+    try:
+        with open("/usr/share/mynode/latest_beta_version", "r") as f:
+            beta_version = f.read().strip()
+    except:
+        beta_version = ""
+    return beta_version
 
 def reinstall_app(app):
     # Upgrade
@@ -92,6 +109,19 @@ def upgrade_device():
     # Upgrade
     os.system("mkdir -p /home/admin/upgrade_logs")
     cmd = "/usr/bin/mynode_upgrade.sh > /home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt 2>&1".format(get_current_version())
+    subprocess.call(cmd, shell=True)
+    
+    # Sync
+    os.system("sync")
+    time.sleep(1)
+
+    # Reboot
+    reboot_device()
+
+def upgrade_device_beta():
+    # Upgrade
+    os.system("mkdir -p /home/admin/upgrade_logs")
+    cmd = "/usr/bin/mynode_upgrade.sh beta > /home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt 2>&1".format(get_current_version())
     subprocess.call(cmd, shell=True)
     
     # Sync
@@ -203,7 +233,7 @@ def get_service_status_color(service_name):
 
 def get_journalctl_log(service_name):
     try:
-        log = subprocess.check_output("journalctl -r --unit={} --no-pager | tail -n 200".format(service_name), shell=True).decode("utf8")
+        log = subprocess.check_output("journalctl -r --unit={} --no-pager | head -n 200".format(service_name), shell=True).decode("utf8")
     except:
         log = "ERROR"
     return log
@@ -421,6 +451,7 @@ def reset_tor():
     os.system("rm -rf /var/lib/tor/*")
     os.system("rm -rf /mnt/hdd/mynode/bitcoin/onion_private_key")
     os.system("rm -rf /mnt/hdd/mynode/lnd/v2_onion_private_key")
+    os.system("rm -rf /mnt/hdd/mynode/lnd/v3_onion_private_key")
 
 def is_btc_lnd_tor_enabled():
     return os.path.isfile("/mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
@@ -432,6 +463,51 @@ def enable_btc_lnd_tor():
 def disable_btc_lnd_tor():
     os.system("rm -f mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
     os.system("sync")
+
+def get_onion_url_ssh():
+    try:
+        if os.path.isfile("/var/lib/tor/mynode_ssh/hostname"):
+            with open("/var/lib/tor/mynode_ssh/hostname") as f:
+                return f.read()
+    except:
+        pass
+    return "error"
+
+def get_onion_url_general():
+    try:
+        if os.path.isfile("/var/lib/tor/mynode/hostname"):
+            with open("/var/lib/tor/mynode/hostname") as f:
+                return f.read()
+    except:
+        pass
+    return "error"
+
+def get_onion_url_btc():
+    try:
+        if os.path.isfile("/var/lib/tor/mynode_btc/hostname"):
+            with open("/var/lib/tor/mynode_btc/hostname") as f:
+                return f.read()
+    except:
+        pass
+    return "error"
+
+def get_onion_url_lnd():
+    try:
+        if os.path.isfile("/var/lib/tor/mynode_lnd/hostname"):
+            with open("/var/lib/tor/mynode_lnd/hostname") as f:
+                return f.read()
+    except:
+        pass
+    return "error"
+
+def get_onion_url_electrs():
+    try:
+        if os.path.isfile("/var/lib/tor/mynode_electrs/hostname"):
+            with open("/var/lib/tor/mynode_electrs/hostname") as f:
+                return f.read()
+    except:
+        pass
+    return "error"
 
 
 #==================================

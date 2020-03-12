@@ -10,7 +10,10 @@ if [ "$#" -ne 1 ]; then
     echo "Usage: mynode_reinstall_app.sh <app_name>"
     exit 1
 fi
-APP="$1" 
+APP="$1"
+
+# Shut down main services to save memory and CPU and stop app being reinstalled
+/usr/bin/mynode_stop_critical_services.sh
 
 # Delete the app's version file so it will be re-installed
 if [ "$APP" = "bitcoin" ]; then
@@ -36,12 +39,21 @@ elif [ "$APP" = "rtl" ]; then
 elif [ "$APP" = "tor" ]; then
     apt-get remove -y tor
     apt-get install -y tor
+elif [ "$APP" = "ufw" ]; then
+    apt-get purge -y ufw
+    apt-get install -y ufw
 elif [ "$APP" = "webssh2" ]; then
     rm -f /mnt/hdd/mynode/settings/webssh2_url
     systemctl stop webssh2
     docker rmi webssh2
 elif [ "$APP" = "whirlpool" ]; then
     rm -f /home/bitcoin/.mynode/.whirlpool_url
+elif [ "$APP" = "dojo" ]; then
+    rm -f /mnt/hdd/mynode/settings/dojo_url
+    cd /opt/mynode/dojo/docker/my-dojo/
+    rm -f ./conf/docker-node.conf
+    rm -f ./conf/docker-mysql.conf
+    echo "y" | ./dojo.sh uninstall
 else
     echo "UNKNOWN APP: $APP"
     exit 1

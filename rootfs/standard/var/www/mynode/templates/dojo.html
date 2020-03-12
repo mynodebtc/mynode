@@ -1,0 +1,71 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        {% include 'includes/head.html' %}
+    </head>
+    <body>
+        {% include 'includes/logo_header.html' %}
+        <div class="mynode_back_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        </div>
+
+        <div class="main_header">Samourai Dojo</div>
+        </br>
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Status</div>
+                <div class="info_tile_contents">{{dojo_status}}</div>
+            </div>
+            {% if dojo_enabled %}
+            <div class="info_tile">
+                <div class="info_tile_header">Restart</div>
+                <div class="info_tile_contents">
+                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;" href="/restart-dojo">Restart</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        </br>
+        <div class="app_tile_row">
+        {% if dojo_enabled and dojo_initialized %}
+            <div class="info_tile">
+                <div class="info_tile_header">Dojo V3 Onion Address</div>
+                <div class="info_tile_contents">{{DOJO_V3_ADDR}}</div>
+            </div>
+        </div>
+        </br>
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">NODE_ADMIN_KEY</div>
+                <div class="info_tile_contents">{{NODE_ADMIN_KEY}}</div>
+            </div>
+        {% endif %}
+        </div>
+        <div class="instructions">
+            <div class="instructions-header"><u><strong>Instructions to CONNECT Samourai Wallet to Dojo</u></strong></div>
+            </br>
+            <ol class="instructions-steps">
+                <li>To complete the next steps, Samourai Dojo's Status must be "Running".</li>
+                <li>You will also need Tor Browser, Dojo's V3 Onion Address and your NODE_ADMIN_KEY to access the Dojo Maintenance Tool.</li>
+                <li>Open Tor Browser and copy & paste the V3 Onion Address provided above into the Tor Browser's address bar.</li>
+                <li>You should now be on the login page of the Dojo Maintenance Tool.</li>
+                <li>Copy your NODE_ADMIN_KEY into the input box and press enter.</li>
+                <li>Once authenticated, you will be brought to the "Pairing" tab.</li>
+                <li>In Samourai Wallet, go to the main wallet creation screen and select "Connect to existing Dojo" to connect to your Dojo back-end.</li>
+                <li>Now scan the "PAIR YOUR WALLET WITH YOUR DOJO" QR Code.</li>
+                <li><em>**NOTE**</em> - Currently, you must create a new wallet to pair to your Dojo. To do this, you must first delete your current wallet.<em>**See Instructions Below**</em></li>
+                <li>Check your setup by going to "Networking" in your Samourai Wallet, you should see "Dojo Full Node" enabled with a green dot next to it.</li>
+                <li>Congratulations, you are now your own bank!!</li>
+            </ol>
+        </br>
+        <div class="instructions-header"><u><strong>Instructions to DELETE Samourai Wallet</u></strong></div>
+        </br>
+            <ol class="instructions-steps">
+                <li><em>**NOTE**</em> - If you are going to delete your wallet, make sure you have your seed phrase and passphrase handy so you can restore your wallet after pairing.</li>
+                <li>To delete your wallet, go to Settings -> Wallet -> "Secure erase wallet".</li>
+                <li>On the main screen, to create a new wallet select "Connect to existing Dojo" and scan your QR Code.</li>
+                <li>Once connected, press back and now go to the option "Import external wallet" and restore your wallet using your seed phrase.</li>
+            </ol>
+        </div>
+     </body>
+</html>

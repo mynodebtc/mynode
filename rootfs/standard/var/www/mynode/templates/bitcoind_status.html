@@ -66,6 +66,10 @@
             </div>
             {% endif %}
             <div class="info_tile">
+                <div class="info_tile_header">RPC Username</div>
+                <div class="info_tile_contents">mynode</div>
+            </div>
+            <div class="info_tile">
                 <div class="info_tile_header">RPC Password</div>
                 <div class="info_tile_contents">
                     <span id="rpc_password" style="display: none;">{{rpc_password}}</span>
@@ -76,6 +80,12 @@
                 <div class="info_tile_header">Bitcoin Config</div>
                 <div class="info_tile_contents">
                     <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;" href="/bitcoind/config">view / edit</a>
+                </div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">CLI</div>
+                <div class="info_tile_contents">
+                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;" href="/bitcoind/cli">CLI</a>
                 </div>
             </div>
         </div>

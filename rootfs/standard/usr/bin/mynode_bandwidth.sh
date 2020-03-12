@@ -44,10 +44,12 @@ while true; do
         echo "Marked as uploader, unlimited upload, unlimited download"
         transmission-remote -U
         transmission-remote -D
+        transmission-remote -t 1 --peers 5
     elif [ ! -f "/mnt/hdd/mynode/quicksync/.quicksync_complete" ]; then
         echo "QuickSync not complete, limited upload, unlimited download"
         transmission-remote -u $UPLOAD_RATE
         transmission-remote -D
+        transmission-remote -t 1 --peers 10
     elif [ ! -f "/mnt/hdd/mynode/.mynode_bitcoind_synced" ]; then
         echo "Bitcoin not synced, stopping upload, stopping download"
         transmission-remote -u 0
@@ -57,9 +59,10 @@ while true; do
         transmission-remote -u $UPLOAD_RATE
         transmission-remote -d $DOWNLOAD_RATE
     else
-        echo "Setting upload rate to unlimited"
-        transmission-remote -U
-        transmission-remote -D
+        echo "Setting upload rate for stable state"
+        transmission-remote -u $UPLOAD_RATE
+        transmission-remote -d $DOWNLOAD_RATE
+        transmission-remote -t 1 --peers 5
     fi
     sleep 10m
 done

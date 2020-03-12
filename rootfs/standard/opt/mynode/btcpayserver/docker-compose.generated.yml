@@ -59,10 +59,6 @@ services:
     volumes:
     - "postgres_datadir:/var/lib/postgresql/data"
 volumes:
-  nginx_conf: 
-  nginx_vhost: 
-  nginx_html: 
-  nginx_certs: 
   btcpay_datadir: 
   postgres_datadir: 
   nbxplorer_datadir: 

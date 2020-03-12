@@ -3,6 +3,29 @@
         <title>{{ title }}</title>
         {% include 'includes/head.html' %}
 
+        <script>
+            $(document).ready(function() {
+                hidden=1
+                $("#show_onion_urls").on("click", function() {
+                    if (hidden == 1) {
+                        $("#show_onion_urls").html('Hide Onion URLs');
+                        $(".onion_url_placeholder").hide(0)
+                        $(".onion_url").show();
+                        hidden=0;
+                    } else {
+                        $("#show_onion_urls").html('Show Onion URLs');
+                        $(".onion_url_placeholder").show()
+                        $(".onion_url").hide(0);
+                        hidden=1;
+                    }
+                });
+            });
+        </script>
+        <style>
+            .onion_url {
+                display: none;
+            }
+        </style>
     </head>
 
     <body>
@@ -29,21 +52,27 @@
 
         <br/>
         <div class="main_header">Tor Onion Addresses</div>
+        <div class="main_header_sub_text">
+            Sharing these Onion URLs will allow others to access your device. Keep them private unless there is someone you specifically want to share access with.
+            <br/><br/>
+            <button id="show_onion_urls" class="ui-button ui-widget ui-corner-all">Show Onion URLs</button>
+        </div>
         <table class="bitcoind_table">
             <thead class="bitcoind_table_header">
                 <td>Service</td>
                 <td>Address</td>
                 <td>Port</td>
-                <td>Password</td>
                 <td>Guide</td>
             </thead>
             <tbody>
                 {% for service in services %}
                     <tr>
                         <td><b>{{ service.service }}</b></td>
-                        <td>{{ mynode_onion_hostname }}</td>
+                        <td>
+                            <span class="onion_url">{{ service.url }}</span>
+                            <span class="onion_url_placeholder">..................................................</span>
+                        </td>
                         <td>{{ service.port }}</td>
-                        <td>{{ mynode_onion_password }}</td>
                         <td>
                             {% if service.guide|length %}
                                 <a href="{{ service.guide }}" target="_blank">Guide</a>

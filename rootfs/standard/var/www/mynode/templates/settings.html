@@ -19,6 +19,17 @@
                                       "<p>Would you still like to upgrade your device?</p>",
                                       okFunction)
                 });
+                $("#upgrade-beta").on("click", function() {
+                    // Enable electrs
+                    var okFunction = function() {
+                        window.location.href="/settings/upgrade-beta"
+                    }
+                    openConfirmDialog("confirm-dialog", 
+                                      "Upgrade myNode",
+                                      "<p>This will upgrade your myNode to the latest beta version and reboot your device.</p>" +
+                                      "<p>Would you still like to upgrade your device?</p>",
+                                      okFunction)
+                });
 
                 function deleteLndWallet() {
                     $("#delete_lnd_wallet_form").submit();
@@ -209,9 +220,19 @@
                     $("#rtl_status").show();
                 });
 
+                $("#show_docker_status").on("click", function() {
+                    $("#show_docker_status").hide(0);
+                    $("#docker_status").show();
+                });
+
                 $("#show_docker_image_build_status").on("click", function() {
                     $("#show_docker_image_build_status").hide(0);
                     $("#docker_image_build_status").show();
+                });
+
+                $("#show_dojo_status").on("click", function() {
+                    $("#show_dojo_status").hide(0);
+                    $("#dojo_status").show();
                 });
 
                 $("#show_btcpayserver_status").on("click", function() {
@@ -229,6 +250,11 @@
                     $("#upgrade_status").show();
                 });
 
+                $("#show_upgrade_status_beta").on("click", function() {
+                    $("#show_upgrade_status_beta").hide(0);
+                    $("#upgrade_status_beta").show();
+                });
+
                 $("#show_firewall_status").on("click", function() {
                     $("#show_firewall_status").hide(0);
                     $("#firewall_status").show();
@@ -237,6 +263,11 @@
                 $("#show_firewall_rules").on("click", function() {
                     $("#show_firewall_rules").hide(0);
                     $("#firewall_rules").show();
+                });
+
+                $("#show_product_key").on("click", function() {
+                    $("#show_product_key").hide(0);
+                    $("#product_key").show();
                 });
 
                 $("#show_mynode_changelog").on("click", function() {
@@ -429,9 +460,12 @@
                 <tr>
                     <td>Product Key</td>
                     <td style="padding-left: 20px;">
-                        {{product_key}}
                         {% if product_key_skipped %}
+                            {{product_key}}
                             &nbsp;<a href="/product-key" class="ui-button ui-widget ui-corner-all settings_button_small">Enter Product Key</a>
+                        {% else %}
+                            <button id="show_product_key" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+                            <div id="product_key" style="display: none;">{{product_key}}</div>
                         {% endif %}
                     </td>
                 </tr>
@@ -598,6 +632,15 @@
             <div id="rtl_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{rtl_status_log}}</pre></div>
             <div class="divider"></div>
 
+            <div class="settings_block_subheader">Docker Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ docker_status_color }}"></div>
+                {{ docker_status }}
+            </div>
+            <button id="show_docker_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="docker_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_status_log}}</pre></div>
+            <div class="divider"></div>
+
             <div class="settings_block_subheader">Docker Image Build Status</div>
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ docker_image_build_status_color }}"></div>
@@ -605,6 +648,15 @@
             </div>
             <button id="show_docker_image_build_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
             <div id="docker_image_build_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_image_build_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Dojo Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ dojo_status_color }}"></div>
+                {{ dojo_status }}
+            </div>
+            <button id="show_dojo_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="dojo_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{dojo_status_log}}</pre></div>
             <div class="divider"></div>
 
             <div class="settings_block_subheader">BTCPay Server Status</div>
@@ -718,7 +770,7 @@
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Restart QuickSync</div>
-            This will reset bitcoind and redownload the blockchain via QuickSync.
+            This will reset Bitcoin and redownload the blockchain via QuickSync.
             <br/>
             <button id="restart-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Restart QuickSync</button>
 
@@ -752,7 +804,7 @@
             <div class="settings_block_header">Bitcoin</div>
 
             <div class="settings_block_subheader">Reset Blockchain</div>
-            If bitcoind is having issues, you can reset the blockchain data.
+            If Bitcoin is having issues, you can reset the blockchain data.
             <br/>
             If QuickSync is enabled, it will use QuickSync data as the starting point.
             <br/>
@@ -874,8 +926,10 @@
                 <option value="mempoolspace">Mempool.Space</option>				
                 <option value="rtl">RTL</option>
                 <option value="tor">Tor</option>
+                <option value="ufw">UFW</option>
                 <option value="webssh2">WebSSH2</option>
                 <option value="whirlpool">Whirlpool</option>
+                <option value="dojo">Dojo</option>
             </select>
             <button id="reinstall_button">Reinstall</button>
             
@@ -892,6 +946,47 @@
 
         <div class="settings_block">
             <div class="settings_block_header">Developer</div>
+
+            {% if not product_key_skipped %}
+                <div class="settings_block_subheader">Reinstall Latest Version</div>
+                If you are running a beta or are having issues, it may be helpful to reinstall the latest official release.
+                <br/>
+                <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Install Latest Version</button>
+
+                <div class="divider"></div>
+            {% endif %}
+
+            {% if not product_key_skipped %}
+                <div class="settings_block_subheader">Install Beta</div>
+                You can install beta releases of myNode software to help test. These may be less stable.
+                <br/><br/>
+                <table border="0">
+                    <tr>
+                        <td>Current Beta Version</td>
+                        <td>{{current_beta_version}}</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Latest Beta Version</td>
+                        <td>{{latest_beta_version}}</td>
+                        <td>&nbsp;<a href="/settings/get-latest-version" class="ui-button ui-widget ui-corner-all settings_button_small">Check for Updates</a></td>
+                    </tr>
+                </table>
+                {% if current_beta_version != latest_beta_version and latest_beta_version != "" %}
+                    <button id="upgrade-beta" class="ui-button ui-widget ui-corner-all settings_button">Install Beta</button>
+                    {% if product_key_skipped %}
+                        <p>Upgrade to myNode Premium to get one-click updates!</p>
+                        <p>For manual upgrades, see our <a target="_blank" href="https://mynodebtc.com/guide/upgrading_your_device">upgrade guide</a>!</p>
+                    {% endif %}
+                {% elif upgrade_error %}
+                    <p style="color: red;">It appears a recent upgrade may not have fully completed.</p>
+                    <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Retry Upgrade</button>
+                    <button id="show_upgrade_status_beta" class="ui-button ui-widget ui-corner-all settings_button">Show Upgrade Logs</button>
+                    <div id="upgrade_status_beta" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{upgrade_logs}}</pre></div>
+                {% endif %}
+
+                <div class="divider"></div>
+            {% endif %}
 
             <div class="settings_block_subheader">Uploader Device</div>
             This disables most features and prioritize sharing QuickSync files. It can be reversed later.

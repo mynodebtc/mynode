@@ -29,40 +29,40 @@ https://mynodebtc.com/order_now
 ## Features
 Each myNode device comes with a number of wonderful features:
 
-- Bitcoin Node (Bitcoin Core v0.19.0.1)
+- Bitcoin Node (Bitcoin Core v0.19.1)
 - Lightning Node (LND v0.9.0-beta)
-- Electrum Server (Electrum Rust Server 0.7.0)
+- Electrum Server (Electrum Rust Server aka Electrs 0.7.0)
 - BTCPay Server (v1.0.3.153)
-- RTL (Ride the Lightning) - Lightning Wallet (v0.6.5)
+- RTL (Ride the Lightning) - Lightning Wallet (v0.6.7)
+- Samourai Dojo (v1.4.1)
 - Samourai Whirlpool (whirlpool-client-cli v0.10.2)
-- Bitcoin RPC Explorer (v1.1.8)
+- Bitcoin RPC Explorer (v1.1.9)
 - Mempool.Space - Mempool local visualizer for the Bitcoin blockchain
 - LND Hub - Lightning Wallet Server (v1.1.3)
-- loopd - A Non-Custodial Off/On Chain Bridge (v0.4.0-beta)
+- loopd - A Non-Custodial Off/On Chain Bridge (v0.5.0-beta)
 - Tor
 - JoinMarket CLI (v0.6.1)
 - LND Connect - Generate QR Codes for connecting wallets (v0.2.0)
 - Virtual Machine support (OVA file: VirtualBox, VMWare)
-- Simple UI / Web Interface
-- VPN for Remote Access
+- VPN for Remote Access (OpenVPN 2.4.7)
 - Bitcoin CLI
 - QuickSync - Quickly sync Bitcoin blockchain
 - LN Channel Backup
-- Docker support
-- Netdata Monitor
-- Glances
-- Web Linux Terminal (WebSSH2)
+- Docker support (v19.03.6) (containers inside: Netdata Monitor, Glances, WebSSH2 (Linux Terminal), BTCPay Server)
+- Simple UI / Web Interface
 - Dark Mode interface
 - Dedicated hardware keeps you constantly and securely connected!
-- And more!
 
 ## Supported Devices
 We currently support images for the following devices:
- - Raspberry Pi 3
  - Raspberry Pi 4
- - Rock64
  - RockPro64
+ - Rock64
  - Virtual Machine Support (VirtualBox hosting Windows/OS X/Linux/Solaris, VMWare hosting Windows/OS X/Linux)
+
+## Deprecated Devices
+Due to limited RAM and CPU power, following devices are no longer recommended for use. Performance may be poor.
+- Raspberry Pi 3
 
 ## Running myNode
 You can run myNode on your own device in just a few easy steps!
@@ -105,8 +105,8 @@ Add another argument to the local upgrade script:
 Once you are running myNode, you can easily update the software yourself!
 
 1. Start by running myNode on your device via the instructions above in "Running myNode"
-2. Clone this git repo on your PC or laptop
-    * Run 'git clone https://github.com/mynodebtc/mynode.git'
+2. Clone the latest release from the git repo on your PC or laptop
+    * Run 'git clone https://github.com/mynodebtc/mynode.git --branch latest_release'
     * Run 'cd mynode'
 3. Run 'make rootfs'
 4. Run 'make start_file_server'
@@ -114,7 +114,9 @@ Once you are running myNode, you can easily update the software yourself!
 5. On your device, run 'sudo mynode-local-upgrade [dev pc ip address]'
     * This will download your locally generated artifact and install it on your device
     * Your device will automatically reboot to ensure updates take effect
-6. You are now running the latest version of myNode software!
+6. Optional: Run 'make stop_file_server'
+    * This will stop the local HTTP server
+7. You are now running the latest version of myNode software!
 
 ## Convert new device to run myNode
 1. Run make command for your device. Ex:

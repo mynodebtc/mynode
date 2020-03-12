@@ -91,7 +91,7 @@ usermod -aG docker root
 
 # Upgrade BTC
 echo "Upgrading BTC..."
-BTC_VERSION="0.19.0.1"
+BTC_VERSION="0.19.1"
 ARCH="UNKNOWN"
 if [ $IS_RASPI = 1 ]; then
     ARCH="arm-linux-gnueabihf"
@@ -179,7 +179,7 @@ fi
 
 # Upgrade Loopd
 echo "Upgrading loopd..."
-LOOP_VERSION="v0.4.0-beta"
+LOOP_VERSION="v0.5.0-beta"
 LOOP_ARCH="loop-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LOOP_ARCH="loop-linux-amd64"
@@ -308,6 +308,7 @@ if [ "$CURRENT" != "$WHIRLPOOL_UPGRADE_URL" ]; then
     echo $WHIRLPOOL_UPGRADE_URL > $WHIRLPOOL_UPGRADE_URL_FILE
 fi
 
+
 # Upgrade RTL
 RTL_VERSION="v0.6.7"
 RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/$RTL_VERSION.tar.gz
@@ -342,7 +343,7 @@ if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
 fi
 
 # Upgrade Bitcoin RPC Explorer
-BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v1.1.8.tar.gz
+BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v1.1.9.tar.gz
 BTCRPCEXPLORER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btcrpcexplorer_url
 CURRENT=""
 if [ -f $BTCRPCEXPLORER_UPGRADE_URL_FILE ]; then
@@ -452,9 +453,9 @@ systemctl enable loopd
 systemctl enable rotate_logs
 
 # Disable any old services
-systemctl disable hitch
-systemctl disable mongodb
-systemctl disable lnd_admin
+systemctl disable hitch || true
+systemctl disable mongodb || true
+systemctl disable lnd_admin || true
 systemctl disable dhcpcd || true
 
 # Reload service settings
