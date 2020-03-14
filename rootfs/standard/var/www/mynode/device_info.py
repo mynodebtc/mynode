@@ -243,13 +243,10 @@ def get_journalctl_log(service_name):
 # Uploader Functions
 #==================================
 def is_uploader():
-    return os.path.isfile("/home/bitcoin/.mynode/uploader") or \
-           os.path.isfile("/mnt/hdd/mynode/settings/uploader")
+    return os.path.isfile("/mnt/hdd/mynode/settings/uploader")
 def set_uploader():
-    os.system("touch /home/bitcoin/.mynode/uploader")
     os.system("touch /mnt/hdd/mynode/settings/uploader")
 def unset_uploader():
-    os.system("rm -rf /home/bitcoin/.mynode/uploader")
     os.system("rm -rf /mnt/hdd/mynode/settings/uploader")
 
 
