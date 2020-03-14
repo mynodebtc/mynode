@@ -18,6 +18,11 @@ cp -f /usr/share/quicksync/settings.json $QUICKSYNC_CONFIG_DIR/settings.json
 # Wait a bit for boot to complete
 sleep 15s
 
+# If marked as uploader, make sure QuickSync is enabled
+if [ -f $UPLOADER_FILE ]; then
+    rm /mnt/hdd/mynode/settings/quicksync_disabled || true
+fi
+
 # Check if quicksync was disabled
 while [ -f /mnt/hdd/mynode/settings/quicksync_disabled ]; do
     # Pretend quicksync step is complete
