@@ -67,7 +67,7 @@ pip3 install lndmanage==0.9.0 --no-cache-dir   # Install LND Manage (keep up to 
 pip3 install docker-compose --no-cache-dir
 
 
-# Install docker
+# Install Docker
 if [ ! -f /usr/bin/docker ]; then
     rm -f /tmp/docker_install.sh
     wget https://get.docker.com -O /tmp/docker_install.sh
@@ -75,7 +75,7 @@ if [ ! -f /usr/bin/docker ]; then
     /bin/bash /tmp/docker_install.sh
 fi
 
-# Use systemd for managing docker
+# Use systemd for managing Docker
 rm -f /etc/init.d/docker
 rm -f /etc/systemd/system/multi-user.target.wants/docker.service
 systemctl -f enable docker.service
@@ -177,7 +177,7 @@ if [ "$CURRENT" != "$LND_UPGRADE_URL" ]; then
     fi
 fi
 
-# Upgrade Loopd
+# Upgrade Loop
 echo "Upgrading loopd..."
 LOOP_VERSION="v0.5.0-beta"
 LOOP_ARCH="loop-linux-armv7"
@@ -257,7 +257,7 @@ if [ ! -f /usr/include/secp256k1_ecdh.h ]; then
     cp -f include/* /usr/include/
 fi
 
-# Upgrade Joinmarket
+# Upgrade JoinMarket
 echo "Upgrading JoinMarket..."
 if [ $IS_PREMIUM -eq 1 ]; then
     JOINMARKET_VERSION=0.6.1
@@ -281,7 +281,7 @@ if [ $IS_PREMIUM -eq 1 ]; then
         git fetch --tags --all
         git reset --hard v$JOINMARKET_VERSION
 
-        # Create virtualenv and setup joinmarket
+        # Create virtualenv and setup JoinMarket
         virtualenv -p python3 jmvenv
         source jmvenv/bin/activate
         python setupall.py --daemon
