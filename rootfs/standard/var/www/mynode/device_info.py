@@ -94,8 +94,8 @@ def get_latest_beta_version():
 
 def reinstall_app(app):
     # Upgrade
-    os.system("mkdir -p /home/admin/upgrade_logs")
-    cmd = "/usr/bin/mynode_reinstall_app.sh {} 2>&1".format(app)
+    os.system("mkdir -p /home/admin/reinstall_logs")
+    cmd = "/usr/bin/mynode_reinstall_app.sh {} > /home/admin/reinstall_logs/reinstall_{}.txt 2>&1".format(app,app)
     subprocess.call(cmd, shell=True)
     
     # Sync
