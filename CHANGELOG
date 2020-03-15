@@ -1,3 +1,11 @@
+=== v0.1.97 ===
+- Use v3 Onion addresses for remote access
+- Upgrade BTC to v0.19.1
+- Upgrade LND to v0.9.2
+- Upgrade Loop to v0.5.0
+- Improve Dojo installation
+- Bug fixes
+
 === v0.1.96 ===
 - Add Dojo re-install option
 - Add UFW re-install option
