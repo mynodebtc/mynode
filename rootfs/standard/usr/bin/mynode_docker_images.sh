@@ -44,8 +44,8 @@ while true; do
         echo $WEBSSH2_UPGRADE_URL > $WEBSSH2_UPGRADE_URL_FILE
     fi
 
-    # Upgrade mempool.space
-    echo "Checking for new mempool.space..."
+    # Upgrade mempool
+    echo "Checking for new mempool..."
     MEMPOOLSPACE_UPGRADE_URL=https://github.com/mempool-space/mempool.space/archive/8835c399e9b00c2579ed0bbd72f8cca4c5823dad.zip
     MEMPOOLSPACE_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/mempoolspace_url
     CURRENT=""

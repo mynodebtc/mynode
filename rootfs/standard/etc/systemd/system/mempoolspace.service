@@ -1,8 +1,8 @@
-# MempoolSpace service
+# Mempool service
 # /etc/systemd/system/mempoolspace.service
 
 [Unit]
-Description=MempoolSpace
+Description=Mempool
 Wants=www.service docker_images.service
 After=www.service docker_images.service
 
