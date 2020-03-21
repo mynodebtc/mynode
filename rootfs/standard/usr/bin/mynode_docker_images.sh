@@ -19,7 +19,7 @@ while true; do
     touch /tmp/installing_docker_images
 
     # Pull images that don't need to be built
-    docker pull netdata/netdata
+    # ???
 
     # Upgrade WebSSH2
     echo "Checking for new webssh2..."

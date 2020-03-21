@@ -30,6 +30,9 @@ elif [ "$APP" = "lndconnect" ]; then
     rm -f  /home/bitcoin/.mynode/.lndconnect_url
 elif [ "$APP" = "lndhub" ]; then
     rm -f /home/bitcoin/.mynode/.lndhub_url
+elif [ "$APP" = "netdata" ]; then
+    systemctl stop netdata
+    docker rmi netdata/netdata || true
 elif [ "$APP" = "mempoolspace" ]; then
     rm -f /mnt/hdd/mynode/settings/mempoolspace_url
     systemctl stop mempoolspace
