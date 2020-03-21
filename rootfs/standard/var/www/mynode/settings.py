@@ -109,22 +109,14 @@ def page_settings():
     except:
         bitcoin_status_log = "ERROR"
 
-    # Get LND Status
+    # Get Status
     lnd_status_log = get_journalctl_log("lnd")
-
-    # Get Tor Status
+    lndhub_status_log = get_journalctl_log("lndhub")
     tor_status_log = get_journalctl_log("tor@default")
-
-    # Get Electrs Status
     electrs_status_log = get_journalctl_log("electrs")
-
-    # Get RTL Status
+    netdata_status_log = get_journalctl_log("netdata")
     rtl_status_log = get_journalctl_log("rtl")
-
-    # Get Docker Status
     docker_status_log = get_journalctl_log("docker")
-
-    # Get Docker Image Build Status
     docker_image_build_status_log = get_journalctl_log("docker_images")
 
     # Get QuickSync Rates
@@ -169,6 +161,12 @@ def page_settings():
         "tor_status_log": tor_status_log,
         "tor_status": get_service_status_basic_text("tor@default"),
         "tor_status_color": get_service_status_color("tor@default"),
+        "lndhub_status_log": lndhub_status_log,
+        "lndhub_status": get_service_status_basic_text("lndhub"),
+        "lndhub_status_color": get_service_status_color("lndhub"),
+        "netdata_status_log": netdata_status_log,
+        "netdata_status": get_service_status_basic_text("netdata"),
+        "netdata_status_color": get_service_status_color("netdata"),
         "electrs_status_log": electrs_status_log,
         "electrs_status": get_service_status_basic_text("electrs"),
         "electrs_status_color": get_service_status_color("electrs"),

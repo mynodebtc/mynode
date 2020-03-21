@@ -205,6 +205,11 @@
                     $("#lnd_status").show();
                 });
 
+                $("#show_lndhub_status").on("click", function() {
+                    $("#show_lndhub_status").hide(0);
+                    $("#lndhub_status").show();
+                });
+
                 $("#show_tor_status").on("click", function() {
                     $("#show_tor_status").hide(0);
                     $("#tor_status").show();
@@ -228,6 +233,11 @@
                 $("#show_docker_image_build_status").on("click", function() {
                     $("#show_docker_image_build_status").hide(0);
                     $("#docker_image_build_status").show();
+                });
+
+                $("#show_netdata_status").on("click", function() {
+                    $("#show_netdata_status").hide(0);
+                    $("#netdata_status").show();
                 });
 
                 $("#show_dojo_status").on("click", function() {
@@ -604,6 +614,15 @@
             <div id="bitcoin_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{bitcoin_status_log}}</pre></div>
             <div class="divider"></div>
 
+            <div class="settings_block_subheader">Netdata Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ netdata_status_color }}"></div>
+                {{ netdata_status }}
+            </div>
+            <button id="show_netdata_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="netdata_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{netdata_status_log}}</pre></div>
+            <div class="divider"></div>
+
             {% if is_bitcoin_synced %}
             <div class="settings_block_subheader">LND Status</div>
             <div class="settings_block_subheader_status">
@@ -621,6 +640,15 @@
             </div>
             <button id="show_electrs_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
             <div id="electrs_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{electrs_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">LNDHub Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ lndhub_status_color }}"></div>
+                {{ lndhub_status }}
+            </div>
+            <button id="show_lndhub_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="lndhub_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lndhub_status_log}}</pre></div>
             <div class="divider"></div>
 
             <div class="settings_block_subheader">RTL Status</div>
