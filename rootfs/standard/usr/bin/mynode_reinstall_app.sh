@@ -20,16 +20,29 @@ if [ "$APP" = "bitcoin" ]; then
     rm -f /home/bitcoin/.mynode/.btc_url
 elif [ "$APP" = "lnd" ]; then
     rm -f /home/bitcoin/.mynode/.lnd_url
-elif [ "$APP" = "loopd" ]; then
-    rm -f /home/bitcoin/.mynode/.loop_url
 elif [ "$APP" = "btcrpcexplorer" ]; then
     rm -f /home/bitcoin/.mynode/.btcrpcexplorer_url
+elif [ "$APP" = "dojo" ]; then
+    rm -f /mnt/hdd/mynode/settings/dojo_url
+    cd /opt/mynode/dojo/docker/my-dojo/
+
+    # Stop and uninstall
+    yes | ./dojo.sh uninstall
+
+    # Reset config files
+    rm -f ./conf/docker-node.conf
+    rm -f ./conf/docker-mysql.conf
+else
+    echo "UNKNOWN APP: $APP"
+    exit 1
 elif [ "$APP" = "joinmarket" ]; then
     rm -f /home/bitcoin/.mynode/.joinmarket_url
 elif [ "$APP" = "lndconnect" ]; then
     rm -f  /home/bitcoin/.mynode/.lndconnect_url
 elif [ "$APP" = "lndhub" ]; then
     rm -f /home/bitcoin/.mynode/.lndhub_url
+elif [ "$APP" = "loopd" ]; then
+    rm -f /home/bitcoin/.mynode/.loop_url
 elif [ "$APP" = "netdata" ]; then
     systemctl stop netdata
     docker rmi netdata/netdata || true
@@ -51,19 +64,6 @@ elif [ "$APP" = "webssh2" ]; then
     docker rmi webssh2
 elif [ "$APP" = "whirlpool" ]; then
     rm -f /home/bitcoin/.mynode/.whirlpool_url
-elif [ "$APP" = "dojo" ]; then
-    rm -f /mnt/hdd/mynode/settings/dojo_url
-    cd /opt/mynode/dojo/docker/my-dojo/
-
-    # Stop and uninstall
-    yes | ./dojo.sh uninstall
-
-    # Reset config files
-    rm -f ./conf/docker-node.conf
-    rm -f ./conf/docker-mysql.conf
-else
-    echo "UNKNOWN APP: $APP"
-    exit 1
 fi
 
 # Run post upgrade script
