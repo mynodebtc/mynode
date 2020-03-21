@@ -7,7 +7,7 @@ Wants=mynode.service docker_images.service
 After=mynode.service docker_images.service
 
 [Service]
-WorkingDirectory=/opt/mynode/docker
+WorkingDirectory=/opt/mynode/netdata
 ExecStart=/usr/local/bin/docker-compose -f netdata-compose.yml up
 ExecStop=/usr/local/bin/docker-compose -f netdata-compose.yml down
 
