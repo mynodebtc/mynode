@@ -446,7 +446,6 @@ systemctl enable usb_driver_check
 systemctl enable https
 systemctl enable docker_images
 systemctl enable glances
-systemctl enable netdata
 systemctl enable webssh2
 systemctl enable tor
 systemctl enable loopd
