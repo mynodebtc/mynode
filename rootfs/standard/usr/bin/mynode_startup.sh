@@ -85,6 +85,17 @@ do
 done
 
 
+# Check for docker reset
+if [ -f /home/bitcoin/reset_docker ]; then
+    rm -rf /mnt/hdd/mynode/docker
+    rm /home/bitcoin/reset_docker
+    sync
+    reboot
+    sleep 60s
+    exit 0
+fi
+
+
 # Setup Drive
 mkdir -p /mnt/hdd/mynode
 mkdir -p /mnt/hdd/mynode/settings

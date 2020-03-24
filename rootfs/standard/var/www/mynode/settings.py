@@ -338,6 +338,22 @@ def rescan_blockchain_page():
     t.start()
     return redirect("/settings")
 
+@mynode_settings.route("/settings/reset-docker")
+def reset_docker_page():
+    check_logged_in()
+    t = Timer(1.0, reset_docker)
+    t.start()
+
+    # Display wait page
+    templateData = {
+        "title": "myNode",
+        "header_text": "Resetting Docker Data",
+        "subheader_text": "This will take several minutes...",
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('reboot.html', **templateData)
+
+
 @mynode_settings.route("/settings/reset-electrs")
 def reset_electrs_page():
     check_logged_in()

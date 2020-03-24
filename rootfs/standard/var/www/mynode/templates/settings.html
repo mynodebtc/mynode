@@ -185,6 +185,13 @@
                     factory_reset_dialog.dialog( "open" );
                 });
 
+                $("#reset_docker_button").button();
+                $("#reset_docker_button").on("click", function() {
+                    if (confirm("Are you sure you want to reset docker?")) {
+                        window.location.href='/settings/reset-docker';
+                    }
+                });
+
                 $("#show_startup_status").on("click", function() {
                     $("#show_startup_status").hide(0);
                     $("#startup_status").show();
@@ -924,6 +931,15 @@
                 <a href="/settings/toggle-netdata" class="ui-button ui-widget ui-corner-all settings_button">Enable</a>
             {% endif %}
 
+        </div>
+
+        <div class="settings_block">
+            <div class="settings_block_header">Docker</div>
+            
+            <div class="settings_block_subheader">Reset Docker</div>
+            This erases all docker state and state. Docker apps like BTC Pay Server and Dojo will lose all data.
+            <br/>
+            <button id="reset_docker_button">Reset Docker</button>
         </div>
 
         <div class="settings_block">
