@@ -378,6 +378,18 @@ def get_docker_image_build_status_color():
         return "red"
     return "green"
 
+def reset_docker():
+    # Delete docker data
+    os.system("touch /home/bitcoin/reset_docker")
+
+    # Reset marker files
+    os.system("rm -f /mnt/hdd/mynode/settings/webssh2_url")
+    os.system("rm -f /mnt/hdd/mynode/settings/mempoolspace_url")
+    os.system("rm -f /mnt/hdd/mynode/settings/dojo_url")
+
+    os.system("sync")
+    reboot_device()
+
 #==================================
 # Bitcoin Functions
 #==================================
