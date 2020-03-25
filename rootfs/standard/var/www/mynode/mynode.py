@@ -50,10 +50,11 @@ app.register_blueprint(mynode_settings)
 
 ### Definitions
 STATE_DRIVE_MISSING =       "drive_missing"
+STATE_DRIVE_FORMATTING =    "drive_formatting"
 STATE_DRIVE_MOUNTED =       "drive_mounted"
 STATE_QUICKSYNC_DOWNLOAD =  "quicksync_download"
 STATE_QUICKSYNC_COPY =      "quicksync_copy"
-STATE_QUICKSYNC_RESET =      "quicksync_reset"
+STATE_QUICKSYNC_RESET =     "quicksync_reset"
 STATE_STABLE =              "stable"
 
 MYNODE_DIR =    "/mnt/hdd/mynode"
@@ -133,6 +134,14 @@ def index():
             "title": "myNode Looking for Drive",
             "header_text": "Looking for Drive",
             "subheader_text": "Please attach a drive to your myNode",
+            "ui_settings": read_ui_settings()
+        }
+        return render_template('state.html', **templateData)
+    elif status == STATE_DRIVE_FORMATTING:
+        templateData = {
+            "title": "myNode Drive Formatting",
+            "header_text": "Drive Formatting",
+            "subheader_text": "myNode is preparing the drive for use...",
             "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
@@ -353,11 +362,7 @@ def index():
         # Find btcpayserver status
         btcpayserver_status = "Merchant Tool"
         if lnd_ready:
-            if is_installing_docker_images():
-                btcpayserver_status_color = "yellow"
-                btcpayserver_status = "Installing..."
-            else:
-                btcpayserver_status_color = get_service_status_color("btcpayserver")
+            btcpayserver_status_color = get_service_status_color("btcpayserver")
         else:
             btcpayserver_status = "Waiting on LND..."
 

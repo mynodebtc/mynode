@@ -68,6 +68,7 @@ proc createMyNodeFsOnBlockDevice {blockDevice} {
 
     if [catch {
         puts "Creating new partition table on ${blockDevice}"
+        runCommand echo "drive_formatting" > /mnt/hdd/mynode/.mynode_status
         runCommand /usr/bin/format_drive.sh ${blockDevice}
         after 5000
 

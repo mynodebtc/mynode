@@ -80,6 +80,8 @@ set -e
 # Mount HDD (format if necessary)
 while [ ! -f /mnt/hdd/.mynode ]
 do
+    # Clear status
+    rm -f $MYNODE_DIR/.mynode_status
     mount_drive.tcl || true
     sleep 10
 done
