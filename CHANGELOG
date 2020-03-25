@@ -1,3 +1,13 @@
+=== v0.1.98 ===
+- Update RTL v0.7.0
+- Update Loop to v0.5.1
+- Add Docker reset option
+- Add Netdata reinstall option
+- Add more app logs on settings page
+- Fix Electrum Server Onion URL Link
+- Rename Mempool.Space to Mempool
+- Bug fixes
+
 === v0.1.97 ===
 - Use v3 Onion addresses for remote access
 - Upgrade BTC to v0.19.1
