@@ -394,6 +394,10 @@ def reset_docker():
     os.system("rm -f /mnt/hdd/mynode/settings/mempoolspace_url")
     os.system("rm -f /mnt/hdd/mynode/settings/dojo_url")
 
+    # Delete Dojo files
+    os.system("rm -rf /opt/mynode/.dojo")
+    os.system("rm -rf /opt/mynode/dojo")
+
     os.system("sync")
     reboot_device()
 
