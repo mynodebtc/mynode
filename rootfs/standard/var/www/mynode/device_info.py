@@ -194,7 +194,14 @@ def get_device_changelog():
     return changelog
 
 def has_changed_password():
-    return os.path.isfile("/home/bitcoin/.mynode/.hashedpw")
+    try:
+        with open("/home/bitcoin/.mynode/.hashedpw", "r") as f:
+            hashedpw = f.read().strip()
+            if hashedpw != "d0b3cba71f725563d316ea3516099328042095d10f4571be25c07f9ce31985a5":
+                return True
+    except:
+        return False
+    return False
 
 
 #==================================
