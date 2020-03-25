@@ -59,8 +59,9 @@ elif [ "$APP" = "dojo" ]; then
     yes | ./dojo.sh uninstall
 
     # Reset config files
-    rm -f ./conf/docker-node.conf
-    rm -f ./conf/docker-mysql.conf
+    cd ~
+    rm -rf /opt/mynode/.dojo
+    rm -rf /opt/mynode/dojo
 else
     echo "UNKNOWN APP: $APP"
     exit 1
