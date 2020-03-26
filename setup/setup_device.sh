@@ -430,8 +430,8 @@ if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
 fi
 
 
-# Install Bitcoin RPC Explorer
-BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v1.1.9.tar.gz
+# Install BTC RPC Explorer
+BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v2.0.0.tar.gz
 BTCRPCEXPLORER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btcrpcexplorer_url
 CURRENT=""
 if [ -f $BTCRPCEXPLORER_UPGRADE_URL_FILE ]; then
