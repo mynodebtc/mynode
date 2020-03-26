@@ -791,14 +791,16 @@
             <div class="settings_block_header">QuickSync</div>
 
             <div class="settings_block_subheader">Toggle QuickSync</div>
-            Disabling QuickSync will remove the QuickSync files and stop the process. 
-            <br/>
-            This may take a long time if Bitcoin is not already synced, but you can reenable QuickSync later.
-            <br/>
             {% if is_quicksync_disabled %}
-            <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Enable QuickSync</a>
+                Enabling QuickSync will help speed up syncing only during the initial block download period. It will also take additional drive space and is not recommeded if using an SSD.
+                <br/>
+                <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Enable QuickSync</a>
             {% else %}
-            <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Disable QuickSync</a>
+                Disabling QuickSync will remove the QuickSync files and stop the process.
+                <br/>
+                This may take a long time if Bitcoin is not already synced, but you can re-enable QuickSync later.
+                <br/>
+                <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Disable QuickSync</a>
             {% endif %}
 
             {% if not is_quicksync_disabled %}
