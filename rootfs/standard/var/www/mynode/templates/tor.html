@@ -3,6 +3,8 @@
         <title>{{ title }}</title>
         {% include 'includes/head.html' %}
 
+        <script src="{{ url_for('static', filename='js/qrcode.js')}}"></script>
+
         <script>
             $(document).ready(function() {
                 hidden=1
@@ -18,6 +20,25 @@
                         $(".onion_url").hide(0);
                         hidden=1;
                     }
+                });
+
+                fully_noded_qr_dialog = $( "#fully-noded-qr-dialog" ).dialog({
+                    autoOpen: false,
+                    resizable: false,
+                    height: "auto",
+                    width: 600,
+                    modal: true,
+                    position: { my: "center top", at: "center top", of: window, collision: "none" },
+                });
+                $("#fully_noded_show_qr_button").on("click", function() {
+                    fully_noded_qr_dialog.dialog( "open" );
+                });
+
+                var qrcode = new QRCode("fully_noded_qr_code", {
+                    text: "{{ fully_noded_link }}",
+                    width: 400,
+                    height: 400,
+                    correctLevel : QRCode.CorrectLevel.H
                 });
             });
         </script>
@@ -92,9 +113,25 @@
                 <div class="app_title">Fully Noded</div>
                 <div class="app_status"></div>
                 <div class="app_contents">
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="{{ fully_noded_link }}" target="_blank">Connect</a>
+                    <button id="fully_noded_show_qr_button" class="ui-button ui-widget ui-corner-all mynode_button">Show QR</button>
                 </div>
             </div>
+        </div>
+
+
+        <div id="fully-noded-qr-dialog" title="Fully Noded QR Code" style="display:none; width: 600px;">
+            <p>Scan this QR code in Fully Noded to pair your myNode.</p>
+            <div id="fully_noded_qr_code" style="height:400px; width: 400px; margin: auto;"></div>
+            <br/><br/>
+            <center>
+            <span style="font-size: 8px;">{{fully_noded_link}}</span>
+            <br/><br/>
+            <a class="ui-button ui-widget ui-corner-all mynode_button" style="margin:auto;" href="{{ fully_noded_link }}" target="_blank">Link</a>
+            <br/>
+            </center>
+        </div>
+    </div>
+
         </div>
 
 

@@ -42,7 +42,7 @@ def page_tor():
     
     # App links
     rpc_password = get_bitcoin_rpc_password()
-    fully_noded_link = "btcrpc://mynode:{}@{}:8332?label=myNode%20Tor".format(rpc_password, btc_onion_url)
+    fully_noded_link = "btcstandup://mynode:{}@{}:8332?label=myNode%20Tor".format(rpc_password, btc_onion_url)
 
     # Load page
     templateData = {
