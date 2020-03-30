@@ -6,16 +6,16 @@ Description=myNode Firewall
 After=network.target
 
 [Service]
-Type=oneshot
+Type=simple
+KillMode=control-group
 ExecStart=/usr/bin/mynode_firewall.sh
 User=root
 Group=root
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=mynode
-
+Restart=always
 RestartSec=30
-RemainAfterExit=yes
 
 [Install]
 WantedBy=multi-user.target

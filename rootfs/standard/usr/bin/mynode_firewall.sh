@@ -14,7 +14,7 @@ ufw default allow outgoing
 # Add firewall rules
 ufw allow 22    comment 'allow SSH'
 ufw allow 80    comment 'allow WWW'
-ufw allow 443    comment 'allow Secure WWW'
+ufw allow 443   comment 'allow Secure WWW'
 ufw allow 1900  comment 'allow SSDP for UPnP discovery'
 ufw allow 10009 comment 'allow Lightning gRPC'
 ufw allow 10080 comment 'allow Lightning REST RPC'
@@ -61,5 +61,6 @@ ufw status
 sleep 120s
 ufw reload
 
-# Success
+# We don't really want to exit
+sleep 999d
 exit 0
