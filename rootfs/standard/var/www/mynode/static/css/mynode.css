@@ -509,6 +509,21 @@ a:active {
     margin-top: 5px;
 }
 
+.format_div {
+    width: 800px;
+    color: #444444;
+    margin: auto;
+    text-align: center;
+    font-size: 18px;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-top: 10px;
+    margin-bottom: 40px;
+}
+.format_button {
+    width: 500px;
+    margin-top: 5px;
+}
+
 #download-handle {
     width: 6em;
     height: 1.6em;
