@@ -1,5 +1,9 @@
-=== v0.1.99 ===
+=== v0.2.01 ===
+- Add confirmation screen before drive format / setup
+- Add Fully Noded QR Code
 - Update Whirlpool to v0.10.3
+- Update BTC RPC Explorer to v2.0.0
+- Bug fixes
 
 === v0.1.98 ===
 - Update RTL v0.7.0
