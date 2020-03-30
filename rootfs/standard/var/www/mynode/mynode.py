@@ -49,13 +49,14 @@ app.register_blueprint(mynode_vpn)
 app.register_blueprint(mynode_settings)
 
 ### Definitions
-STATE_DRIVE_MISSING =       "drive_missing"
-STATE_DRIVE_FORMATTING =    "drive_formatting"
-STATE_DRIVE_MOUNTED =       "drive_mounted"
-STATE_QUICKSYNC_DOWNLOAD =  "quicksync_download"
-STATE_QUICKSYNC_COPY =      "quicksync_copy"
-STATE_QUICKSYNC_RESET =     "quicksync_reset"
-STATE_STABLE =              "stable"
+STATE_DRIVE_MISSING =         "drive_missing"
+STATE_DRIVE_CONFIRM_FORMAT =  "drive_format_confirm"
+STATE_DRIVE_FORMATTING =      "drive_formatting"
+STATE_DRIVE_MOUNTED =         "drive_mounted"
+STATE_QUICKSYNC_DOWNLOAD =    "quicksync_download"
+STATE_QUICKSYNC_COPY =        "quicksync_copy"
+STATE_QUICKSYNC_RESET =       "quicksync_reset"
+STATE_STABLE =                "stable"
 
 MYNODE_DIR =    "/mnt/hdd/mynode"
 BITCOIN_DIR =   "/mnt/hdd/mynode/bitcoin"
@@ -137,6 +138,17 @@ def index():
             "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
+    elif status == STATE_DRIVE_CONFIRM_FORMAT:
+        if request.args.get('format'):
+            os.system("touch /tmp/format_ok")
+            time.sleep(1)
+            return redirect("/")
+
+        templateData = {
+            "title": "myNode Confirm Drive Format",
+            "ui_settings": read_ui_settings()
+        }
+        return render_template('confirm_drive_format.html', **templateData)
     elif status == STATE_DRIVE_FORMATTING:
         templateData = {
             "title": "myNode Drive Formatting",

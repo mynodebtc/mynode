@@ -83,7 +83,7 @@ do
     # Clear status
     rm -f $MYNODE_DIR/.mynode_status
     mount_drive.tcl || true
-    sleep 10
+    sleep 5
 done
 
 
