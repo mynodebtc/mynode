@@ -45,6 +45,11 @@ if [ $IS_UNKNOWN = 1 ]; then
     exit 1
 fi
 
+# Set kernel settings
+sysctl -w net.ipv6.conf.all.disable_ipv6=1
+sysctl -w net.ipv6.conf.default.disable_ipv6=1
+sysctl -w net.ipv6.conf.lo.disable_ipv6=1
+
 
 # Make sure FS is expanded for armbian
 if [ $IS_ARMBIAN = 1 ] ; then
