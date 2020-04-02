@@ -429,13 +429,21 @@ def lnd_config_page():
         }
         return render_template('reboot.html', **templateData)
 
+    # First attempt to get the custom LND config, if this fails fetch the
+    # default LND config (this is without the lnd_(tor|ipv4).conf
+    # appended to the file). We don't want to fetch the full lnd.conf with
+    # lnd_(tor|ipv4).conf appended because this would make these config options
+    # permanent in the custom_config() breaking the Tor toggle in Settings.
     lnd_config = get_lnd_custom_config()
     if lnd_config == "ERROR":
-        lnd_config = get_lnd_config()
+        lnd_config = get_default_lnd_config()
+
+    lnd_readonly_config = get_lnd_readonly_config()
 
     templateData = {
         "title": "myNode LND Config",
         "lnd_config": lnd_config,
+        "lnd_readonly_config": lnd_readonly_config,
         "ui_settings": read_ui_settings()
     }
     return render_template('lnd_config.html', **templateData)
