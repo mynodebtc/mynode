@@ -554,7 +554,7 @@ systemctl enable invalid_block_check
 systemctl enable usb_driver_check
 systemctl enable docker_images
 systemctl enable glances
-systemctl enable netdata
+#systemctl enable netdata # DISABLED BY DEFAULT
 systemctl enable webssh2
 systemctl enable rotate_logs
 
