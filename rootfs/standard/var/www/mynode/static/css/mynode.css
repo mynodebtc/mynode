@@ -61,6 +61,10 @@ a:active {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+.shutoff_warning {
+    font-size: 12px;
+}
+
 .main_header {
     color: #555555;
     text-align: center;
