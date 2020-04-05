@@ -1,3 +1,6 @@
+=== v0.2.01 ===
+- Update Whirlpool to v0.10.4
+
 === v0.2.00 ===
 - Add confirmation screen before drive format / setup
 - Add Fully Noded QR Code
