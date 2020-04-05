@@ -158,6 +158,11 @@ def get_system_uptime():
     uptime = uptime.strip()
     return uptime
 
+def get_system_uptime_in_seconds():
+    uptime = subprocess.check_output('awk \'{print $1}\' /proc/uptime', shell=True)
+    uptime = int(float(uptime.strip()))
+    return uptime
+
 def get_system_date():
     date = subprocess.check_output('date', shell=True)
     date = date.strip()
