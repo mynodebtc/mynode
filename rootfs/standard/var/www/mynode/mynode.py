@@ -98,6 +98,7 @@ def index():
 
     bitcoin_block_height = get_bitcoin_block_height()
     mynode_block_height = get_mynode_block_height()
+    uptime_in_seconds = get_system_uptime_in_seconds()
     pk_skipped = skipped_product_key()
     pk_error = not is_valid_product_key()
 
@@ -251,12 +252,16 @@ def index():
         vpn_status_color = "gray"
         vpn_status = ""
 
-        if not get_has_updated_btc_info():
+        if not get_has_updated_btc_info() or uptime_in_seconds < 150:
+            error_message = ""
+            if bitcoind_status_code != 0 and uptime_in_seconds > 300:
+                error_message = "Bitcoin has experienced an error. Please check the logs."
             message = "<div class='small_message'>{}</<div>".format( get_message(include_funny=True) )
             templateData = {
                 "title": "myNode Status",
                 "header_text": "Starting...",
                 "subheader_text": Markup("Launching myNode services...{}".format(message)),
+                "error_message": error_message,
                 "ui_settings": read_ui_settings()
             }
             return render_template('state.html', **templateData)
