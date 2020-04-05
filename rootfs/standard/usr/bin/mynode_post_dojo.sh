@@ -2,11 +2,11 @@
 
 set -e
 
-sleep 10s #dojo needs time to start before passing next line
+sleep 30s #dojo needs time to start before passing next line
 
 # initalize mysql db (REQUIRED TO START MYSQL)
 counter=0
-target=100
+target=200
 isRunning=""
 MYSQL_DATABASE=samourai-main
 
@@ -19,11 +19,11 @@ do
   # Check if dojo mysql db is running (check the db container)
   isRunning=$(docker inspect --format="{{.State.Running}}" db)
   if [ "$isRunning" == "true" ]; then
-    sleep 20s
+    sleep 60s
     docker exec -i db bash -c "mysql -h db -u root -p$MYSQL_ROOT_PASSWORD $MYSQL_DATABASE" </opt/mynode/dojo/db-scripts/1_db.sql
     echo "dojo mysql db initalized"
     sleep 5s
-    #Stop dojo after install/update and initalization is complete
+    # Stop dojo after install/update and initalization is complete
     cd /opt/mynode/dojo/docker/my-dojo
     sudo ./dojo.sh stop
     counter=$target
