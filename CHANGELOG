@@ -1,5 +1,8 @@
 === v0.2.01 ===
 - Update Whirlpool to v0.10.4
+- Add "do not unplug" warning
+- Explicitly add Onion URL to LND TLS cert
+- Bug fixes and minor improvements
 
 === v0.2.00 ===
 - Add confirmation screen before drive format / setup
