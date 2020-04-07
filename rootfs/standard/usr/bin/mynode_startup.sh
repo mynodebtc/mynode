@@ -7,6 +7,7 @@ source /usr/share/mynode/mynode_config.sh
 
 # Verify FS is mounted as R/W
 if [ ! -w / ]; then
+    touch /tmp/rw_error
     mount -o remount,rw /;
 fi
 

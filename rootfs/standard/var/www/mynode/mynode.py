@@ -469,6 +469,7 @@ def index():
             "product_key_error": pk_error,
             "fsck_error": has_fsck_error(),
             "fsck_results": get_fsck_results(),
+            "sd_rw_error": has_sd_rw_error(),
             "drive_usage": get_drive_usage(),
             "cpu_usage": get_cpu_usage(),
             "ram_usage": get_ram_usage(),
