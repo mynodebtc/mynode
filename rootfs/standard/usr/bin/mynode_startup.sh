@@ -10,6 +10,9 @@ if [ ! -w / ]; then
     mount -o remount,rw /;
 fi
 
+# Set sticky bit on /tmp
+chmod +t /tmp
+
 # Make sure resolv.conf is a symlink to so resolvconf works
 # if [ ! -h /etc/resolv.conf ]; then
 #     rm -f /etc/resolv.conf
@@ -22,6 +25,7 @@ fi
 #     sleep 10s
 #     exit 1
 # fi
+
 # Add some DNS servers to make domain lookup more likely
 echo '' >> /etc/resolv.conf
 echo '# Added at myNode startup' >> /etc/resolv.conf
