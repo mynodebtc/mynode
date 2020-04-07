@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -e
-set -x 
+set -x
 
 source /usr/share/mynode/mynode_config.sh
 
@@ -70,7 +70,7 @@ while true; do
     fi
 
     # Install Dojo
-    DOJO_VERSION="v1.4.1"
+    DOJO_VERSION="v1.5.0"
     DOJO_UPGRADE_URL=https://github.com/Samourai-Wallet/samourai-dojo/archive/$DOJO_VERSION.tar.gz
     DOJO_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/dojo_url
     CURRENT=""
