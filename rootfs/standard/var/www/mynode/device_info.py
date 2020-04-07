@@ -364,6 +364,9 @@ def get_fsck_results():
         return "ERROR"
     return "ERROR"
 
+def has_sd_rw_error():
+    return os.path.isfile("/tmp/sd_rw_error")
+
 
 #==================================
 # Docker Functions
