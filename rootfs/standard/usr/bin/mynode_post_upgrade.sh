@@ -39,7 +39,7 @@ set -e
 
 # Check for updates (might auto-install all updates later)
 apt-get update
-
+apt-get upgrade
 
 # Install any new software
 export DEBIAN_FRONTEND=noninteractive
