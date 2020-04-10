@@ -38,11 +38,11 @@ set -e
 
 
 # Check for updates (might auto-install all updates later)
+export DEBIAN_FRONTEND=noninteractive
 apt-get update
-apt-get upgrade
+apt-get -y upgrade
 
 # Install any new software
-export DEBIAN_FRONTEND=noninteractive
 apt-get -y install apt-transport-https
 apt-get -y install fonts-dejavu
 apt-get -y install pv sysstat network-manager unzip pkg-config libfreetype6-dev libpng-dev
