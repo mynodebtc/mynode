@@ -22,7 +22,7 @@ do
   isRunning=$(docker inspect --format="{{.State.Running}}" db)
   if [ "$isRunning" == "true" ]; then
     sleep 60s
-    if [ $IS_RASPI = 1 ]; then
+    if [ $IS_RASPI == 1 ]; then
         docker exec -i db bash -c "mysql -h db -u root -p$MYSQL_ROOT_PASSWORD $MYSQL_DATABASE" </opt/mynode/dojo/db-scripts/1_db.sql
     fi
     echo "dojo mysql db initalized"
