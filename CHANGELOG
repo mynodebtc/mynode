@@ -1,3 +1,9 @@
+=== v0.2.02 ===
+- Update Dojo to 1.5.0
+- Add tracker status to Dojo page
+- Updates now upgrade system packages
+- Bug Fixes
+
 === v0.2.01 ===
 - Update Whirlpool to v0.10.4
 - Add "do not unplug" warning
