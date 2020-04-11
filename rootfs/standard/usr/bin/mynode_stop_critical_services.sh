@@ -12,6 +12,10 @@ systemctl stop dojo
 systemctl stop btcpayserver
 
 
+# Manually stop services (backup)
+/opt/mynode/dojo/docker/my-dojo/dojo.sh stop || true
+
+
 # Stop core services
 systemctl stop electrs
 systemctl stop lnd

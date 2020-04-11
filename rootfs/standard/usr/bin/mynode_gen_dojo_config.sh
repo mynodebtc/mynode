@@ -80,6 +80,9 @@ BITCOIND_ZMQ_BLK_HASH=28334
 # Turn off explorer for MyNode
 sed -i 's|EXPLORER_INSTALL=on|EXPLORER_INSTALL=off|' /opt/mynode/dojo/docker/my-dojo/conf/docker-explorer.conf.tpl
 
+# Enable electrs
+sed -i 's|INDEXER_IP=.*|INDEXER_IP=172.28.0.1|' /opt/mynode/dojo/docker/my-dojo/conf/docker-indexer.conf.tpl
+
 # check if configuration files have been previously created and skip if yes
 if [ -f /opt/mynode/dojo/docker/my-dojo/conf/docker-node.conf ]; then
   echo "File present - skip docker-node.conf"
@@ -127,3 +130,6 @@ if [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ]; then
   sed -i 's|ENV     GOLANG_ARCHIVE.*|ENV     GOLANG_ARCHIVE      go1.13.6.linux-arm64.tar.gz|' /opt/mynode/dojo/docker/my-dojo/tor/Dockerfile
   sed -i 's|ENV     GOLANG_SHA256.*|ENV     GOLANG_SHA256       0a18125c4ed80f9c3045cf92384670907c4796b43ed63c4307210fe93e5bbca5|' /opt/mynode/dojo/docker/my-dojo/tor/Dockerfile
 fi
+
+# Modify restart policy
+sed -i 's|restart:.*|restart: on-failure|' /opt/mynode/dojo/docker/my-dojo/docker-compose.yaml 

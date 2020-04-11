@@ -2,6 +2,8 @@
 
 set -e
 
+source /usr/share/mynode/mynode_config.sh
+
 sleep 30s #dojo needs time to start before passing next line
 
 # initalize mysql db (REQUIRED TO START MYSQL)
@@ -20,7 +22,9 @@ do
   isRunning=$(docker inspect --format="{{.State.Running}}" db)
   if [ "$isRunning" == "true" ]; then
     sleep 60s
-    docker exec -i db bash -c "mysql -h db -u root -p$MYSQL_ROOT_PASSWORD $MYSQL_DATABASE" </opt/mynode/dojo/db-scripts/1_db.sql
+    if [ $IS_RASPI = 1 ]; then
+        docker exec -i db bash -c "mysql -h db -u root -p$MYSQL_ROOT_PASSWORD $MYSQL_DATABASE" </opt/mynode/dojo/db-scripts/1_db.sql
+    fi
     echo "dojo mysql db initalized"
     sleep 5s
     # Stop dojo after install/update and initalization is complete
