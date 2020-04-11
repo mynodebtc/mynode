@@ -18,6 +18,10 @@
             </div>
             {% if dojo_enabled %}
             <div class="info_tile">
+                <div class="info_tile_header">Tracker Status</div>
+                <div class="info_tile_contents">{{dojo_tracker_status}}</div>
+            </div>
+            <div class="info_tile">
                 <div class="info_tile_header">Restart</div>
                 <div class="info_tile_contents">
                     <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;" href="/restart-dojo">Restart</a>
