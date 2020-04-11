@@ -96,9 +96,9 @@ while true; do
         # Run Dojo Install or Upgrade
         cd /opt/mynode/dojo/docker/my-dojo
         if [ "$INSTALL" = "true" ]; then
-            echo 'y' | sudo ./dojo.sh install &
+            yes | sudo ./dojo.sh install &
         else
-            echo 'y' | sudo ./dojo.sh upgrade &
+            yes | sudo ./dojo.sh upgrade &
         fi
 
         #Check for install/upgrade to finish to initialize Dojo mysql db
