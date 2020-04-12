@@ -13,11 +13,15 @@
                         $("#show_onion_urls").html('Hide Onion URLs');
                         $(".onion_url_placeholder").hide(0)
                         $(".onion_url").show();
+                        $(".onion_password_placeholder").hide(0)
+                        $(".onion_password").show();
                         hidden=0;
                     } else {
                         $("#show_onion_urls").html('Show Onion URLs');
                         $(".onion_url_placeholder").show()
                         $(".onion_url").hide(0);
+                        $(".onion_password_placeholder").show()
+                        $(".onion_password").hide(0);
                         hidden=1;
                     }
                 });
@@ -44,6 +48,9 @@
         </script>
         <style>
             .onion_url {
+                display: none;
+            }
+            .onion_password {
                 display: none;
             }
         </style>
@@ -78,6 +85,8 @@
             <br/><br/>
             <button id="show_onion_urls" class="ui-button ui-widget ui-corner-all">Show Onion URLs</button>
         </div>
+
+        <div class="sub_header">v3 Addresses</div>
         <table class="bitcoind_table">
             <thead class="bitcoind_table_header">
                 <td>Service</td>
@@ -86,12 +95,44 @@
                 <td>Guide</td>
             </thead>
             <tbody>
-                {% for service in services %}
+                {% for service in v3_services %}
                     <tr>
                         <td><b>{{ service.service }}</b></td>
                         <td>
                             <span class="onion_url">{{ service.url }}</span>
                             <span class="onion_url_placeholder">..................................................</span>
+                        </td>
+                        <td>{{ service.port }}</td>
+                        <td>
+                            {% if service.guide|length %}
+                                <a href="{{ service.guide }}" target="_blank">Guide</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="sub_header">v2 Addresses</div>
+        <table class="bitcoind_table">
+            <thead class="bitcoind_table_header">
+                <td>Service</td>
+                <td>Address</td>
+                <td>Password</td>
+                <td>Port</td>
+                <td>Guide</td>
+            </thead>
+            <tbody>
+                {% for service in v2_services %}
+                    <tr>
+                        <td><b>{{ service.service }}</b></td>
+                        <td>
+                            <span class="onion_url">{{ service.url }}</span>
+                            <span class="onion_url_placeholder">..........................................</span>
+                        </td>
+                        <td>
+                            <span class="onion_password">{{ service.password }}</span>
+                            <span class="onion_password_placeholder">..........................................</span>
                         </td>
                         <td>{{ service.port }}</td>
                         <td>
