@@ -537,6 +537,22 @@ def get_onion_url_electrs():
         pass
     return "error"
 
+def get_onion_info_btc_v2():
+    info = {}
+    info["url"] = "unknown"
+    info["pass"] = "unknown"
+    try:
+        if os.path.isfile("/var/lib/tor/mynode_btc_v2/hostname"):
+            with open("/var/lib/tor/mynode_btc_v2/hostname") as f:
+                content = f.read().strip()
+                parts = content.split(" ")
+                info["url"] = parts[0]
+                info["pass"] = parts[1]
+                return info
+    except:
+        pass
+    return info
+
 
 #==================================
 # Firewall Functions

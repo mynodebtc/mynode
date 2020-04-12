@@ -89,6 +89,24 @@ a:active {
     margin-bottom: 10px;
 }
 
+.sub_header {
+    color: #555555;
+    text-align: center;
+    font-size: 24px;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+.sub_header_sub_text {
+    width: 600px;
+    color: #444444;
+    margin: auto;
+    text-align: center;
+    font-size: 14px;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-bottom: 10px;
+}
+
 .error_message {
     color: red;
     font-size: 16px;
