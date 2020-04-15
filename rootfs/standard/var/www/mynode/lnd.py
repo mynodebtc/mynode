@@ -213,7 +213,12 @@ def lnd_readonly_macaroon():
 @mynode_lnd.route("/lnd/channel.backup")
 def lnd_channel_backup():
     check_logged_in()
-    return send_from_directory(directory="/home/bitcoin/lnd_backup/", filename="channel.backup")
+
+    # First, check for lnd file
+    if os.path.isfile('/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/channel.backup'):
+        return send_from_directory(directory="/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/", filename="channel.backup")
+    else:
+        return send_from_directory(directory="/home/bitcoin/lnd_backup/", filename="channel.backup")
 
 @mynode_lnd.route("/lnd/create_wallet")
 def page_lnd_create_wallet():
