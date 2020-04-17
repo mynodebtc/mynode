@@ -181,6 +181,10 @@ def get_device_type():
     device = subprocess.check_output("mynode-get-device-type", shell=True)
     return device
 
+def get_device_ram():
+    ram = subprocess.check_output("free --giga | grep Mem | awk '{print $2}'", shell=True)
+    return ram
+
 def get_local_ip():
     local_ip = "unknown"
     try:
