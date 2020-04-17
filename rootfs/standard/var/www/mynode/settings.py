@@ -74,6 +74,7 @@ def page_settings():
     changelog = get_device_changelog()
     serial_number = get_device_serial()
     device_type = get_device_type()
+    device_ram = get_device_ram()
     product_key = get_product_key()
     pk_skipped = skipped_product_key()
     pk_error = not is_valid_product_key()
@@ -141,6 +142,7 @@ def page_settings():
         "upgrade_logs": get_recent_upgrade_logs(),
         "serial_number": serial_number,
         "device_type": device_type,
+        "device_ram": device_ram,
         "product_key": product_key,
         "product_key_skipped": pk_skipped,
         "product_key_error": pk_error,
