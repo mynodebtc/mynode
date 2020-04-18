@@ -92,44 +92,60 @@ def get_latest_beta_version():
         beta_version = ""
     return beta_version
 
-def reinstall_app(app):
-    # Upgrade
-    os.system("mkdir -p /home/admin/reinstall_logs")
-    cmd = "/usr/bin/mynode_reinstall_app.sh {} > /home/admin/reinstall_logs/reinstall_{}.txt 2>&1".format(app,app)
-    subprocess.call(cmd, shell=True)
-    
-    # Sync
+def mark_upgrade_started():
+    os.system("touch /tmp/upgrade_started")
     os.system("sync")
-    time.sleep(1)
 
-    # Reboot
-    reboot_device()
+def is_upgrade_running():
+    return os.path.isfile("/tmp/upgrade_started") 
+
+def reinstall_app(app):
+    if not is_upgrade_running():
+        mark_upgrade_started()
+
+        # Upgrade
+        os.system("mkdir -p /home/admin/reinstall_logs")
+        cmd = "/usr/bin/mynode_reinstall_app.sh {} > /home/admin/reinstall_logs/reinstall_{}.txt 2>&1".format(app,app)
+        subprocess.call(cmd, shell=True)
+        
+        # Sync
+        os.system("sync")
+        time.sleep(1)
+
+        # Reboot
+        reboot_device()
 
 def upgrade_device():
-    # Upgrade
-    os.system("mkdir -p /home/admin/upgrade_logs")
-    cmd = "/usr/bin/mynode_upgrade.sh > /home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt 2>&1".format(get_current_version())
-    subprocess.call(cmd, shell=True)
-    
-    # Sync
-    os.system("sync")
-    time.sleep(1)
+    if not is_upgrade_running():
+        mark_upgrade_started()
 
-    # Reboot
-    reboot_device()
+        # Upgrade
+        os.system("mkdir -p /home/admin/upgrade_logs")
+        cmd = "/usr/bin/mynode_upgrade.sh > /home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt 2>&1".format(get_current_version())
+        subprocess.call(cmd, shell=True)
+        
+        # Sync
+        os.system("sync")
+        time.sleep(1)
+
+        # Reboot
+        reboot_device()
 
 def upgrade_device_beta():
-    # Upgrade
-    os.system("mkdir -p /home/admin/upgrade_logs")
-    cmd = "/usr/bin/mynode_upgrade.sh beta > /home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt 2>&1".format(get_current_version())
-    subprocess.call(cmd, shell=True)
-    
-    # Sync
-    os.system("sync")
-    time.sleep(1)
+    if not is_upgrade_running():
+        mark_upgrade_started()
 
-    # Reboot
-    reboot_device()
+        # Upgrade
+        os.system("mkdir -p /home/admin/upgrade_logs")
+        cmd = "/usr/bin/mynode_upgrade.sh beta > /home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt 2>&1".format(get_current_version())
+        subprocess.call(cmd, shell=True)
+        
+        # Sync
+        os.system("sync")
+        time.sleep(1)
+
+        # Reboot
+        reboot_device()
 
 def did_upgrade_fail():
     return os.path.isfile("/mnt/hdd/mynode/settings/upgrade_error")

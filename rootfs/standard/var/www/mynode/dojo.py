@@ -4,6 +4,7 @@ from settings import read_ui_settings
 from user_management import check_logged_in
 from enable_disable_functions import is_dojo_enabled, enable_dojo, disable_dojo
 from bitcoin_info import get_mynode_block_height
+from electrum_info import get_electrs_status
 import subprocess
 import re
 import os
@@ -86,6 +87,7 @@ def dojo_page():
         "dojo_enabled": is_dojo_enabled(),
         "dojo_initialized": dojo_initialized,
         "dojo_tracker_status": get_dojo_tracker_status(),
+        "electrs_status": get_electrs_status(),
         "NODE_ADMIN_KEY": NODE_ADMIN_KEY,
         "DOJO_V3_ADDR": DOJO_V3_ADDR
     }

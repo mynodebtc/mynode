@@ -1,5 +1,6 @@
 from bitcoin_info import get_bitcoin_block_height
 from prometheus_client.parser import text_string_to_metric_families
+from enable_disable_functions import is_electrs_enabled
 import subprocess
 import requests
 import socket
@@ -41,6 +42,10 @@ def is_electrs_active():
 def get_electrs_status():
     global electrum_server_current_block
     global electrs_active
+
+    if not is_electrs_enabled():
+        return "Disabled"
+
     bitcoin_block_height = get_bitcoin_block_height()
     log = ""
     try:
@@ -53,6 +58,8 @@ def get_electrs_status():
         if "left to index)" in line:
             break
         elif "Checking if Bitcoin is synced..." in line or "NetworkInfo {" in line or "BlockchainInfo {" in line:
+            return "Starting..."
+        elif "opening DB at" in line or "enabling auto-compactions" in line:
             return "Starting..."
         elif "downloading 100000 block headers" in line:
             return "Downloading headers..."
