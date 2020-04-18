@@ -22,6 +22,10 @@
                 <div class="info_tile_contents">{{dojo_tracker_status}}</div>
             </div>
             <div class="info_tile">
+                <div class="info_tile_header">Electrum Server Status</div>
+                <div class="info_tile_contents">{{electrs_status}}</div>
+            </div>
+            <div class="info_tile">
                 <div class="info_tile_header">Restart</div>
                 <div class="info_tile_contents">
                     <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;" href="/restart-dojo">Restart</a>
@@ -30,21 +34,29 @@
             {% endif %}
         </div>
         </br>
-        <div class="app_tile_row">
-        {% if dojo_enabled and dojo_initialized %}
-            <div class="info_tile">
-                <div class="info_tile_header">Dojo V3 Onion Address</div>
-                <div class="info_tile_contents">{{DOJO_V3_ADDR}}</div>
+        {% if dojo_enabled and dojo_initialized and dojo_tracker_status == "Active" and electrs_status == "Running" %}
+            <div class="app_tile_row">
+                <div class="info_tile">
+                    <div class="info_tile_header">Dojo V3 Onion Address</div>
+                    <div class="info_tile_contents">{{DOJO_V3_ADDR}}</div>
+                </div>
             </div>
-        </div>
-        </br>
-        <div class="app_tile_row">
-            <div class="info_tile">
-                <div class="info_tile_header">NODE_ADMIN_KEY</div>
-                <div class="info_tile_contents">{{NODE_ADMIN_KEY}}</div>
+            </br>
+            <div class="app_tile_row">
+                <div class="info_tile">
+                    <div class="info_tile_header">NODE_ADMIN_KEY</div>
+                    <div class="info_tile_contents">{{NODE_ADMIN_KEY}}</div>
+                </div>
+            
+            </div>
+        {% elif electrs_status != "Running" %}
+            <div class="app_tile_row">
+                <div class="info_tile">
+                    <div class="info_tile_header">Note</div>
+                    <div class="info_tile_contents">Please enable electrum server...</div>
+                </div>
             </div>
         {% endif %}
-        </div>
         <div class="instructions">
             <div class="instructions-header"><u><strong>Instructions to CONNECT Samourai Wallet to Dojo</u></strong></div>
             </br>
