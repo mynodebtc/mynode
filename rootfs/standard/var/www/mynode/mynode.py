@@ -236,6 +236,7 @@ def index():
         rtl_status_color = "gray"
         rtl_status = "Lightning Wallet"
         electrs_status_color = "gray"
+        electrs_active = is_electrs_active()
         lndhub_status_color = "gray"
         bitcoind_status = "Inactive"
         lnd_status = "Inactive"
@@ -351,7 +352,7 @@ def index():
         btcrpcexplorer_status = "BTC RPC Explorer"
         if is_btcrpcexplorer_enabled():
             if is_bitcoind_synced():
-                if is_electrs_active():
+                if electrs_active:
                     btcrpcexplorer_status_color = get_service_status_color("btc_rpc_explorer")
                     status_code = get_service_status_code("btc_rpc_explorer")
                     if status_code == 0:
@@ -386,7 +387,7 @@ def index():
         # Find explorer status
         explorer_status_color = electrs_status_color
         if is_electrs_enabled():
-            if is_electrs_active():
+            if electrs_active:
                 explorer_ready = True
                 explorer_status = "myNode BTC Explorer"
             else:
@@ -436,6 +437,7 @@ def index():
             "electrs_status_color": electrs_status_color,
             "electrs_status": Markup(electrs_status),
             "electrs_enabled": is_electrs_enabled(),
+            "electrs_active": electrs_active,
             "rtl_status_color": rtl_status_color,
             "rtl_status": rtl_status,
             "lndhub_status_color": lndhub_status_color,

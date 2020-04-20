@@ -37,6 +37,8 @@ def update_electrs_info():
 
 def is_electrs_active():
     global electrs_active
+    if not is_electrs_enabled():
+        return False
     return electrs_active
 
 def get_electrs_status():
