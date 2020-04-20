@@ -4,7 +4,7 @@ from settings import read_ui_settings
 from user_management import check_logged_in
 from enable_disable_functions import is_dojo_enabled, enable_dojo, disable_dojo
 from bitcoin_info import get_mynode_block_height
-from electrum_info import get_electrs_status
+from electrum_info import get_electrs_status, is_electrs_active
 import subprocess
 import re
 import os
@@ -23,12 +23,17 @@ def get_dojo_status():
         dojo_initialized = ""
     if is_dojo_enabled():
         if dojo_initialized != "false":
-            dojo_status = "Running"
-            dojo_status_color = "green"
+            if is_electrs_active():
+                dojo_status = "Running"
+                dojo_status_color = "green"
+            else:
+                dojo_status = "Waiting on electrs..."
+                dojo_status_color = "yellow"
         else:
             dojo_status = "Issue Starting"
             dojo_status_color = "red"
             dojo_initialized = ""
+        
     return dojo_status, dojo_status_color, dojo_initialized
 
 def get_dojo_tracker_status():
