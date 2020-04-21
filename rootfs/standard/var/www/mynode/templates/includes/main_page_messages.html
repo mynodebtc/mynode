@@ -1,0 +1,48 @@
+{% if fsck_error %}
+<div class="main_page_error_block">
+    <center>
+    <p>There may be an error with the filesystem on your drive.</p>
+    <p>{{ fsck_results }}</p>
+    </center>
+</div>
+{% endif %}
+
+{% if sd_rw_error %}
+<div class="main_page_error_block">
+    <center>
+    <p>There may be an error with the filesystem on your SD card. It was mounted as read-only and has been updated to read/write.</p>
+    </center>
+</div>
+{% endif %}
+
+{% if not has_changed_password %}
+<div class="upgrade_ad_main_page">
+    <p style="text-align: center;"><b>Warning!</b><br/>You appear to be using the default password! You should change it to something else on the <a href="/settings">settings</a> page.</p>
+</div>
+{% endif %}
+
+
+
+{% set blocks_until_halving = 210000 - (current_block % 210000) %}
+{% if blocks_until_halving < 1000 %}
+<div class="halving_message_main_page">
+    <table class="halving_message_table">
+        <tr>
+            <td><img class="halving_image" src="{{ url_for('static', filename='images/stopwatch.png')}}"/></td>
+            <td>{{ blocks_until_halving }} blocks to the halving...</td>
+            <td><img class="halving_image" src="{{ url_for('static', filename='images/timer.png')}}"/></td>
+        </tr>
+    </table>
+</div>
+{% endif %}
+{% if blocks_until_halving > 209400 %}
+<div class="halving_message_main_page">
+    <table class="halving_message_table">
+        <tr>
+            <td><img class="halving_image" src="{{ url_for('static', filename='images/fireworks1.png')}}"/></td>
+            <td>Happy Halving!!!</td>
+            <td><img class="halving_image" src="{{ url_for('static', filename='images/fireworks2.png')}}"/></td>
+        </tr>
+    </table>
+</div>
+{% endif %}

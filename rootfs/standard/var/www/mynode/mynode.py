@@ -252,6 +252,7 @@ def index():
         mempoolspace_status_color = "gray"
         vpn_status_color = "gray"
         vpn_status = ""
+        current_block = 1234
 
         if not get_has_updated_btc_info() or uptime_in_seconds < 150:
             error_message = ""
@@ -310,6 +311,7 @@ def index():
                     bitcoind_status = "Syncing<br/>{} blocks remaining...".format(remaining)
             else:
                 bitcoind_status = "Waiting for info..."
+            current_block = get_mynode_block_height()
 
         # Find lnd status
         if is_bitcoind_synced():
@@ -429,6 +431,7 @@ def index():
             "config": CONFIG,
             "bitcoind_status_color": bitcoind_status_color,
             "bitcoind_status": Markup(bitcoind_status),
+            "current_block": current_block,
             "lnd_status_color": lnd_status_color,
             "lnd_status": Markup(lnd_status),
             "lnd_ready": lnd_ready,
