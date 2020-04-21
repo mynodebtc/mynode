@@ -591,6 +591,31 @@ a:active {
     width: 128px;
 }
 
+.halving_message_main_page {
+    color: #333333;
+    border: 3px solid orange;
+    background-color: rgb(255, 250, 238);
+    width: 600px;
+    border-radius: 25px;
+    text-align: center;
+    display: block;
+    font-size: 32px;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 5px;
+    padding-left: 12px;
+    margin: auto;
+    margin-bottom: 20px;
+}
+.halving_message_table {
+    width: 100%;
+    font-size: 32px;
+    border: 0px;
+    text-align: center;
+}
+.halving_image {
+    width: 86px;
+}
+
 /* The switch - the box around the slider */
 .switch {
     position: relative;
