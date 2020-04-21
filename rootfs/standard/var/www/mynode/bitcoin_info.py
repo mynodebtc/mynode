@@ -12,6 +12,7 @@ mynode_block_height = 566000
 bitcoin_blockchain_info = None
 bitcoin_recent_blocks = None
 bitcoin_peers = []
+bitcoin_network_info = None
 bitcoin_wallet_info = None
 bitcoin_mempool = None
 bitcoin_version = None
@@ -65,6 +66,7 @@ def update_bitcoin_other_info():
     global bitcoin_blockchain_info
     global bitcoin_recent_blocks
     global bitcoin_peers
+    global bitcoin_network_info
     global bitcoin_mempool
     global bitcoin_wallet_info
 
@@ -88,6 +90,9 @@ def update_bitcoin_other_info():
 
             # Get peers
             bitcoin_peers = rpc_connection.getpeerinfo()
+
+            # Get network info
+            bitcoin_network_info = rpc_connection.getnetworkinfo()
 
             # Get mempool
             bitcoin_mempool = rpc_connection.getmempoolinfo()
@@ -122,6 +127,10 @@ def get_bitcoin_recent_blocks():
 def get_bitcoin_peers():
     global bitcoin_peers
     return copy.deepcopy(bitcoin_peers)
+
+def get_bitcoin_network_info():
+    global bitcoin_network_info
+    return copy.deepcopy(bitcoin_network_info)
 
 def get_bitcoin_mempool():
     global bitcoin_mempool
