@@ -8,6 +8,7 @@ After=network.target mynode.service docker_images.service
 [Service]
 Type=forking
 RemainAfterExit=yes
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_bitcoin.sh
 ExecStartPre=/usr/bin/wait_on_docker_image_install.sh
 WorkingDirectory=/opt/mynode/dojo/docker/my-dojo

@@ -1,10 +1,13 @@
 #!/bin/bash
 
+# Mark we are shutting down
+touch /tmp/shutting_down
+
+
 # Stop additional services
 systemctl stop glances
 systemctl stop lndhub
 systemctl stop netdata
-systemctl stop glances
 systemctl stop rtl
 systemctl stop webssh2
 systemctl stop whirlpool
