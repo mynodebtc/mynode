@@ -8,6 +8,7 @@ After=mynode.service docker_images.service
 
 [Service]
 WorkingDirectory=/opt/mynode/netdata
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_bitcoin.sh
 ExecStart=/usr/local/bin/docker-compose -f netdata-compose.yml up
 ExecStop=/usr/local/bin/docker-compose -f netdata-compose.yml down

@@ -7,6 +7,7 @@ Wants=www.service docker_images.service
 After=www.service docker_images.service
 
 [Service]
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStart=/usr/bin/docker run --rm --name webssh2 -p 2222:2222 -v /opt/mynode/webssh2/config.json:/usr/src/config.json webssh2
 ExecStop=/usr/bin/docker stop -t 2 webssh2
 

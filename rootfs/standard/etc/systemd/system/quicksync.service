@@ -13,6 +13,7 @@ TimeoutSec=60
 Restart=always
 RestartSec=30
 Nice=5
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStart=/usr/bin/mynode_quicksync.sh
 User=bitcoin
 Group=bitcoin

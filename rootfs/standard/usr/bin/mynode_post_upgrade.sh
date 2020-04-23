@@ -440,6 +440,8 @@ fi
 
 
 # Enable any new/required services
+systemctl enable bitcoind
+systemctl enable lnd
 systemctl enable firewall
 systemctl enable invalid_block_check
 systemctl enable usb_driver_check

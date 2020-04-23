@@ -7,6 +7,7 @@ Wants=bitcoind.service
 After=bitcoind.service
 
 [Service]
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/pre_lnd.sh
 ExecStartPre=/usr/bin/wait_on_bitcoin.sh
 ExecStart=/usr/local/bin/lnd --caches.channel-cache-size=35000 --ignore-historical-gossip-filters --accept-keysend
