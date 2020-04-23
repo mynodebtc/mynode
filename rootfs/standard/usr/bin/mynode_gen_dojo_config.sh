@@ -82,7 +82,6 @@ sed -i 's|EXPLORER_INSTALL=on|EXPLORER_INSTALL=off|' /opt/mynode/dojo/docker/my-
 
 # Enable electrs
 sed -i 's|INDEXER_IP=.*|INDEXER_IP=172.28.0.1|' /opt/mynode/dojo/docker/my-dojo/conf/docker-indexer.conf.tpl
-sed -i 's|INDEXER_BATCH_SUPPORT=.*|INDEXER_BATCH_SUPPORT=active|' /opt/mynode/dojo/docker/my-dojo/conf/docker-indexer.conf.tpl
 sed -i 's|NODE_ACTIVE_INDEXER=.*|NODE_ACTIVE_INDEXER=local_indexer|' /opt/mynode/dojo/docker/my-dojo/conf/docker-node.conf.tpl
 
 
