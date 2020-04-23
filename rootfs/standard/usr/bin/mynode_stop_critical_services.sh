@@ -13,6 +13,7 @@ systemctl stop webssh2
 systemctl stop whirlpool
 systemctl stop dojo
 systemctl stop btcpayserver
+systemctl stop btc_rpc_explorer
 
 
 # Manually stop services (backup)
