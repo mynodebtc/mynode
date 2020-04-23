@@ -57,6 +57,8 @@ STATE_QUICKSYNC_DOWNLOAD =    "quicksync_download"
 STATE_QUICKSYNC_COPY =        "quicksync_copy"
 STATE_QUICKSYNC_RESET =       "quicksync_reset"
 STATE_STABLE =                "stable"
+STATE_ROOTFS_READ_ONLY =      "rootfs_read_only"
+STATE_UNKNOWN =               "unknown"
 
 MYNODE_DIR =    "/mnt/hdd/mynode"
 BITCOIN_DIR =   "/mnt/hdd/mynode/bitcoin"
@@ -67,16 +69,28 @@ need_to_stop = False
 
 ### Helper functions
 def get_status():
-    status_file = "/mnt/hdd/mynode/.mynode_status"
-    status = ""
-    if (os.path.isfile(status_file)):
-        try:
-            with open(status_file, "r") as f:
-                status = f.read().strip()
-        except:
+    try:
+        status_file = "/mnt/hdd/mynode/.mynode_status"
+        status = STATE_UNKNOWN
+
+        # If its been a while, check for error conditions
+        uptime_in_sec = get_system_uptime_in_seconds()
+        if uptime_in_sec > 120:
+            # Check for read-only sd card
+            if is_mount_read_only("/"):
+                return STATE_ROOTFS_READ_ONLY
+
+        # Get status stored on drive
+        if (os.path.isfile(status_file)):
+            try:
+                with open(status_file, "r") as f:
+                    status = f.read().strip()
+            except:
+                status = STATE_DRIVE_MISSING
+        else:
             status = STATE_DRIVE_MISSING
-    else:
-        status = STATE_DRIVE_MISSING
+    except:
+        status = STATE_UNKNOWN
     return status
 
 
@@ -120,8 +134,23 @@ def index():
         }
         return render_template('uploader.html', **templateData)
 
-    if status == STATE_DRIVE_MISSING:
-
+    if status == STATE_UNKNOWN:
+        templateData = {
+            "title": "myNode Error",
+            "header_text": "Status Unknown",
+            "subheader_text": "An error has occurred. You may want to reboot the device.",
+            "ui_settings": read_ui_settings()
+        }
+        return render_template('state.html', **templateData)
+    elif status == STATE_ROOTFS_READ_ONLY:
+        templateData = {
+            "title": "myNode Error",
+            "header_text": "SD Card Error",
+            "subheader_text": "The root filesystem is read only. Your SD card may be corrupt.",
+            "ui_settings": read_ui_settings()
+        }
+        return render_template('state.html', **templateData)
+    elif status == STATE_DRIVE_MISSING:
         # Drive may be getting repaired
         if is_drive_being_repaired():
             templateData = {

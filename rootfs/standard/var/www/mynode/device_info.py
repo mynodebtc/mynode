@@ -228,6 +228,15 @@ def has_changed_password():
         return False
     return False
 
+def is_mount_read_only(mnt):
+    with open('/proc/mounts') as f:
+        for line in f:
+            device, mount_point, filesystem, flags, __, __ = line.split()
+            flags = flags.split(',')
+            if mount_point == mnt:
+                return 'ro' in flags
+    return False
+
 
 #==================================
 # Service Status, Enabled, Logs, etc...
