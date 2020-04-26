@@ -1,3 +1,9 @@
+=== v0.2.04 ===
+- Improve reboot / shutdown consistency
+- Separate settings and status pages
+- Detect and alert user to SD card problems
+- Bug Fixes
+
 === v0.2.03 ===
 - Dojo uses electrum server
 - Add remote support for Tor v2 and v3
