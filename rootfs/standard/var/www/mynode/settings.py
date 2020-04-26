@@ -110,15 +110,6 @@ def page_settings():
     except:
         bitcoin_status_log = "ERROR"
 
-    # Get Status
-    lnd_status_log = get_journalctl_log("lnd")
-    lndhub_status_log = get_journalctl_log("lndhub")
-    tor_status_log = get_journalctl_log("tor@default")
-    electrs_status_log = get_journalctl_log("electrs")
-    netdata_status_log = get_journalctl_log("netdata")
-    rtl_status_log = get_journalctl_log("rtl")
-    docker_status_log = get_journalctl_log("docker")
-    docker_image_build_status_log = get_journalctl_log("docker_images")
 
     # Get QuickSync Rates
     upload_rate = 100
@@ -133,6 +124,100 @@ def page_settings():
 
     templateData = {
         "title": "myNode Settings",
+        "password_message": "",
+        "current_version": current_version,
+        "latest_version": latest_version,
+        "current_beta_version": current_beta_version,
+        "latest_beta_version": latest_beta_version,
+        "upgrade_error": did_upgrade_fail(),
+        "upgrade_logs": get_recent_upgrade_logs(),
+        "serial_number": serial_number,
+        "device_type": device_type,
+        "device_ram": device_ram,
+        "product_key": product_key,
+        "product_key_skipped": pk_skipped,
+        "product_key_error": pk_error,
+        "changelog": changelog,
+        "is_bitcoin_synced": is_bitcoind_synced(),
+        "firewall_rules": get_firewall_rules(),
+        "is_quicksync_disabled": not quicksync_enabled,
+        "is_netdata_enabled": is_netdata_enabled(),
+        "is_uploader_device": is_uploader(),
+        "download_rate": download_rate,
+        "upload_rate": upload_rate,
+        "is_btc_lnd_tor_enabled": is_btc_lnd_tor_enabled(),
+        "uptime": uptime,
+        "date": date,
+        "public_ip": public_ip,
+        "local_ip": local_ip,
+        "drive_usage": get_drive_usage(),
+        "cpu_usage": get_cpu_usage(),
+        "ram_usage": get_ram_usage(),
+        "device_temp": get_device_temp(),
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('settings.html', **templateData)
+
+@mynode_settings.route("/status")
+def page_status():
+    check_logged_in()
+
+    current_version = get_current_version()
+    latest_version = get_latest_version()
+    current_beta_version = get_current_beta_version()
+    latest_beta_version = get_latest_beta_version()
+
+    changelog = get_device_changelog()
+    serial_number = get_device_serial()
+    device_type = get_device_type()
+    device_ram = get_device_ram()
+    product_key = get_product_key()
+    pk_skipped = skipped_product_key()
+    pk_error = not is_valid_product_key()
+    uptime = get_system_uptime()
+    date = get_system_date()
+    local_ip = get_local_ip()
+    public_ip = get_public_ip()
+
+
+    # Get Startup Status
+    startup_status_log = get_journalctl_log("mynode")
+
+    # Get QuickSync Status
+    quicksync_enabled = is_quicksync_enabled()
+    quicksync_status = "Disabled"
+    quicksync_status_color = "gray"
+    quicksync_status_log = "DISABLED"
+    if quicksync_enabled:
+        quicksync_status = get_service_status_basic_text("quicksync")
+        quicksync_status_color = get_service_status_color("quicksync")
+        try:
+            quicksync_status_log = subprocess.check_output(["mynode-get-quicksync-status"]).decode("utf8")
+        except:
+            quicksync_status_log = "ERROR"
+
+    # Get Bitcoin Status
+    bitcoin_status_log = ""
+    try:
+        bitcoin_status_log = subprocess.check_output(["tail","-n","200","/mnt/hdd/mynode/bitcoin/debug.log"]).decode("utf8")
+        lines = bitcoin_status_log.split('\n')
+        lines.reverse()
+        bitcoin_status_log = '\n'.join(lines)
+    except:
+        bitcoin_status_log = "ERROR"
+
+    # Get Status
+    lnd_status_log = get_journalctl_log("lnd")
+    lndhub_status_log = get_journalctl_log("lndhub")
+    tor_status_log = get_journalctl_log("tor@default")
+    electrs_status_log = get_journalctl_log("electrs")
+    netdata_status_log = get_journalctl_log("netdata")
+    rtl_status_log = get_journalctl_log("rtl")
+    docker_status_log = get_journalctl_log("docker")
+    docker_image_build_status_log = get_journalctl_log("docker_images")
+
+    templateData = {
+        "title": "myNode Status",
         "password_message": "",
         "current_version": current_version,
         "latest_version": latest_version,
@@ -196,9 +281,6 @@ def page_settings():
         "firewall_rules": get_firewall_rules(),
         "is_quicksync_disabled": not quicksync_enabled,
         "is_netdata_enabled": is_netdata_enabled(),
-        "is_uploader_device": is_uploader(),
-        "download_rate": download_rate,
-        "upload_rate": upload_rate,
         "is_btc_lnd_tor_enabled": is_btc_lnd_tor_enabled(),
         "uptime": uptime,
         "date": date,
@@ -210,7 +292,7 @@ def page_settings():
         "device_temp": get_device_temp(),
         "ui_settings": read_ui_settings()
     }
-    return render_template('settings.html', **templateData)
+    return render_template('status.html', **templateData)
 
 @mynode_settings.route("/settings/upgrade")
 def upgrade_page():

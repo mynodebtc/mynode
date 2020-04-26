@@ -1,0 +1,379 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        {% include 'includes/head.html' %}
+
+        <script>
+            $(document).ready(function() {
+
+                $("#show_startup_status").on("click", function() {
+                    $("#show_startup_status").hide(0);
+                    $("#startup_status").show();
+                });
+
+                $("#show_quicksync_status").on("click", function() {
+                    $("#show_quicksync_status").hide(0);
+                    $("#quicksync_status").show();
+                });
+
+                $("#show_bitcoin_status").on("click", function() {
+                    $("#show_bitcoin_status").hide(0);
+                    $("#bitcoin_status").show();
+                });
+
+                $("#show_lnd_status").on("click", function() {
+                    $("#show_lnd_status").hide(0);
+                    $("#lnd_status").show();
+                });
+
+                $("#show_lndhub_status").on("click", function() {
+                    $("#show_lndhub_status").hide(0);
+                    $("#lndhub_status").show();
+                });
+
+                $("#show_tor_status").on("click", function() {
+                    $("#show_tor_status").hide(0);
+                    $("#tor_status").show();
+                });
+
+                $("#show_electrs_status").on("click", function() {
+                    $("#show_electrs_status").hide(0);
+                    $("#electrs_status").show();
+                });
+
+                $("#show_rtl_status").on("click", function() {
+                    $("#show_rtl_status").hide(0);
+                    $("#rtl_status").show();
+                });
+
+                $("#show_docker_status").on("click", function() {
+                    $("#show_docker_status").hide(0);
+                    $("#docker_status").show();
+                });
+
+                $("#show_docker_image_build_status").on("click", function() {
+                    $("#show_docker_image_build_status").hide(0);
+                    $("#docker_image_build_status").show();
+                });
+
+                $("#show_netdata_status").on("click", function() {
+                    $("#show_netdata_status").hide(0);
+                    $("#netdata_status").show();
+                });
+
+                $("#show_dojo_status").on("click", function() {
+                    $("#show_dojo_status").hide(0);
+                    $("#dojo_status").show();
+                });
+
+                $("#show_btcpayserver_status").on("click", function() {
+                    $("#show_btcpayserver_status").hide(0);
+                    $("#btcpayserver_status").show();
+                });
+
+                $("#show_mempoolspace_status").on("click", function() {
+                    $("#show_mempoolspace_status").hide(0);
+                    $("#mempoolspace_status").show();
+                });
+
+                $("#show_upgrade_status").on("click", function() {
+                    $("#show_upgrade_status").hide(0);
+                    $("#upgrade_status").show();
+                });
+
+                $("#show_upgrade_status_beta").on("click", function() {
+                    $("#show_upgrade_status_beta").hide(0);
+                    $("#upgrade_status_beta").show();
+                });
+
+                $("#show_firewall_status").on("click", function() {
+                    $("#show_firewall_status").hide(0);
+                    $("#firewall_status").show();
+                });
+
+                $("#show_product_key").on("click", function() {
+                    $("#show_product_key").hide(0);
+                    $("#product_key").show();
+                });
+
+                $("#glances").on("click", function() {
+                    url = 'http://'+location.hostname+':61208'
+                    window.open(url,'_blank');
+                })
+
+                $("#netdata").on("click", function() {
+                    url = 'http://'+location.hostname+':19999'
+                    window.open(url,'_blank');
+                })
+
+                $("#linux_terminal").on("click", function() {
+                    url = 'http://'+location.hostname+':2222/ssh/host/'+"{{local_ip}}"
+                    window.open(url,'_blank');
+                })
+            });
+        </script>
+     </head>
+
+    <body>
+        {% include 'includes/logo_header.html' %}
+        <div class="mynode_back_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        </div>
+
+        <div class="main_header">Status</div>
+
+        {% include 'includes/message_display.html' %}
+
+        <br/>
+        <div class="settings_block">
+            <div class="settings_block_header">myNode</div>
+            
+            <div class="settings_block_subheader">Version</div>
+            <table border="0">
+                <tr>
+                    <td>Current Version</td>
+                    <td>{{current_version}}</td>
+                    <td></td>
+                </tr>
+            </table>
+            <div class="divider"></div>
+
+
+            <div class="settings_block_subheader">Info</div>
+            <table border="0">
+                <tr>
+                    <td>Serial Number</td>
+                    <td style="padding-left: 20px;">{{serial_number}}</td>
+                </tr>
+                <tr>
+                    <td>Product Key</td>
+                    <td style="padding-left: 20px;">
+                        {% if product_key_skipped %}
+                            {{product_key}}
+                        {% else %}
+                            <button id="show_product_key" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+                            <span id="product_key" style="display: none;">{{product_key}}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Device Type</td>
+                    <td style="padding-left: 20px;">{{device_type}}</td>
+                </tr>
+                <tr>
+                    <td>Device RAM</td>
+                    <td style="padding-left: 20px;">{{device_ram}} GB</td>
+                </tr>
+                <!--
+                <tr>
+                    <td>Public IP</td>
+                    <td style="padding-left: 20px;">
+                        {{public_ip}}
+                        {% if 'Failed to find' in public_ip %}
+                            <a href="/settings/check-in" class="ui-button ui-widget ui-corner-all settings_button_small">Refresh</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                -->
+                <tr>
+                    <td>Local IP</td>
+                    <td style="padding-left: 20px;">{{local_ip}}</td>
+                </tr>
+                
+            </table>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Status</div>
+            <table border="0">
+                <tr>
+                    <td>Details</td>
+                    <td style="padding-left: 20px;">
+                        {% if is_netdata_enabled and is_bitcoin_synced %}
+                        <a id="netdata" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Netdata</a>
+                        {% endif %}
+                        <a id="glances" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Glances</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Manage</td>
+                    <td style="padding-left: 20px;">
+                        <a id="linux_terminal" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Linux Terminal</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Disk Usage</td>
+                    <td style="padding-left: 20px;">{{drive_usage}}</td>
+                </tr>
+                <tr>
+                    <td>CPU</td>
+                    <td style="padding-left: 20px;">{{cpu_usage}}</td>
+                </tr>
+                <tr>
+                    <td>RAM</td>
+                    <td style="padding-left: 20px;">{{ram_usage}}</td>
+                </tr>
+                {% if device_temp != '...' %}
+                <tr>
+                    <td>Temperature</td>
+                    <td style="padding-left: 20px;">{{device_temp}} &deg;C</td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <td>Uptime</td>
+                    <td style="padding-left: 20px;">{{uptime}}</td>
+                </tr>
+                <tr>
+                    <td>Date</td>
+                    <td style="padding-left: 20px;">{{date}}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="settings_block">
+            <div class="settings_block_header">Service Status</div>
+
+            <div class="settings_block_subheader">myNode Startup Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ startup_status_color }}"></div>
+                {{ startup_status }}
+            </div>
+            <button id="show_startup_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="startup_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{startup_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">QuickSync Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ quicksync_status_color }}"></div>
+                {{ quicksync_status }}
+            </div>
+            <button id="show_quicksync_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="quicksync_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{quicksync_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Tor Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ tor_status_color }}"></div>
+                {{ tor_status }}
+            </div>
+            <button id="show_tor_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="tor_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{tor_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Bitcoin Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ bitcoin_status_color }}"></div>
+                {{ bitcoin_status }}
+            </div>
+            <button id="show_bitcoin_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="bitcoin_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{bitcoin_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            {% if is_bitcoin_synced %}
+
+            <div class="settings_block_subheader">LND Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ lnd_status_color }}"></div>
+                {{ lnd_status }}
+            </div>
+            <button id="show_lnd_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="lnd_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lnd_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Electrum Server Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ electrs_status_color }}"></div>
+                {{ electrs_status }}
+            </div>
+            <button id="show_electrs_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="electrs_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{electrs_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">LNDHub Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ lndhub_status_color }}"></div>
+                {{ lndhub_status }}
+            </div>
+            <button id="show_lndhub_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="lndhub_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lndhub_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">RTL Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ rtl_status_color }}"></div>
+                {{ rtl_status }}
+            </div>
+            <button id="show_rtl_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="rtl_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{rtl_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Docker Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ docker_status_color }}"></div>
+                {{ docker_status }}
+            </div>
+            <button id="show_docker_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="docker_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Docker Image Build Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ docker_image_build_status_color }}"></div>
+                {{ docker_image_build_status }}
+            </div>
+            <button id="show_docker_image_build_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="docker_image_build_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_image_build_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Dojo Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ dojo_status_color }}"></div>
+                {{ dojo_status }}
+            </div>
+            <button id="show_dojo_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="dojo_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{dojo_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">BTCPay Server Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ btcpayserver_status_color }}"></div>
+                {{ btcpayserver_status }}
+            </div>
+            <button id="show_btcpayserver_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="btcpayserver_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{btcpayserver_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Mempool Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ mempoolspace_status_color }}"></div>
+                {{ mempoolspace_status }}
+            </div>
+            <button id="show_mempoolspace_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="mempoolspace_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{mempoolspace_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            {% if is_netdata_enabled %}
+            <div class="settings_block_subheader">Netdata Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ netdata_status_color }}"></div>
+                {{ netdata_status }}
+            </div>
+            <button id="show_netdata_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="netdata_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{netdata_status_log}}</pre></div>
+            <div class="divider"></div>
+            {% endif %}
+
+            {% endif %}
+
+            <div class="settings_block_subheader">Firewall Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ firewall_status_color }}"></div>
+                {{ firewall_status }}
+            </div>
+            <button id="show_firewall_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <div id="firewall_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{firewall_status_log}}</pre></div>
+        </div>
+
+
+        {% include 'includes/footer.html' %}
+     </body>
+</html>
