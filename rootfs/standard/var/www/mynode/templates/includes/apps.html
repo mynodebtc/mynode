@@ -79,13 +79,13 @@
         <div class="app_title">Dojo</div>
         <div class="app_status">{{ dojo_status }}</div>
         <div class="app_contents">
-            {% if not is_installing_docker_images and electrs_active %}
-               <a class="ui-button ui-widget ui-corner-all mynode_button" href="/dojo">
-                   {% if dojo_initialized %}Info{% else %}Info{% endif %}
-               </a>
+            {% if not is_installing_docker_images %}
+               <a class="ui-button ui-widget ui-corner-all mynode_button" href="/dojo">Info</a>
+               {% if electrs_active %}
                <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-dojo">
                    {% if dojo_enabled %}Disable{% else %}Enable{% endif %}
                </a>
+               {% endif %}
             {% endif %}
         </div>
     </div>
