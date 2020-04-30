@@ -227,6 +227,11 @@
                     <td style="padding-left: 20px;">{{date}}</td>
                 </tr>
             </table>
+            
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Settings</div>
+            <a href="/settings" class="ui-button ui-widget ui-corner-all settings_button">Settings</a>
         </div>
 
         <div class="settings_block">
@@ -237,7 +242,7 @@
                 <div class="settings_block_subheader_status_icon {{ startup_status_color }}"></div>
                 {{ startup_status }}
             </div>
-            <button id="show_startup_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <button id="show_startup_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="startup_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{startup_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -246,7 +251,7 @@
                 <div class="settings_block_subheader_status_icon {{ quicksync_status_color }}"></div>
                 {{ quicksync_status }}
             </div>
-            <button id="show_quicksync_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <button id="show_quicksync_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="quicksync_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{quicksync_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -255,7 +260,7 @@
                 <div class="settings_block_subheader_status_icon {{ tor_status_color }}"></div>
                 {{ tor_status }}
             </div>
-            <button id="show_tor_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <button id="show_tor_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="tor_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{tor_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -264,7 +269,7 @@
                 <div class="settings_block_subheader_status_icon {{ bitcoin_status_color }}"></div>
                 {{ bitcoin_status }}
             </div>
-            <button id="show_bitcoin_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <button id="show_bitcoin_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="bitcoin_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{bitcoin_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -275,7 +280,7 @@
                 <div class="settings_block_subheader_status_icon {{ lnd_status_color }}"></div>
                 {{ lnd_status }}
             </div>
-            <button id="show_lnd_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <button id="show_lnd_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="lnd_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lnd_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -284,7 +289,7 @@
                 <div class="settings_block_subheader_status_icon {{ electrs_status_color }}"></div>
                 {{ electrs_status }}
             </div>
-            <button id="show_electrs_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <button id="show_electrs_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="electrs_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{electrs_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -293,7 +298,7 @@
                 <div class="settings_block_subheader_status_icon {{ lndhub_status_color }}"></div>
                 {{ lndhub_status }}
             </div>
-            <button id="show_lndhub_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <button id="show_lndhub_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="lndhub_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lndhub_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -302,7 +307,7 @@
                 <div class="settings_block_subheader_status_icon {{ rtl_status_color }}"></div>
                 {{ rtl_status }}
             </div>
-            <button id="show_rtl_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <button id="show_rtl_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="rtl_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{rtl_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -311,7 +316,7 @@
                 <div class="settings_block_subheader_status_icon {{ docker_status_color }}"></div>
                 {{ docker_status }}
             </div>
-            <button id="show_docker_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <button id="show_docker_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="docker_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -320,7 +325,7 @@
                 <div class="settings_block_subheader_status_icon {{ docker_image_build_status_color }}"></div>
                 {{ docker_image_build_status }}
             </div>
-            <button id="show_docker_image_build_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <button id="show_docker_image_build_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="docker_image_build_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_image_build_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -329,7 +334,7 @@
                 <div class="settings_block_subheader_status_icon {{ dojo_status_color }}"></div>
                 {{ dojo_status }}
             </div>
-            <button id="show_dojo_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <button id="show_dojo_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="dojo_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{dojo_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -338,7 +343,7 @@
                 <div class="settings_block_subheader_status_icon {{ btcpayserver_status_color }}"></div>
                 {{ btcpayserver_status }}
             </div>
-            <button id="show_btcpayserver_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <button id="show_btcpayserver_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="btcpayserver_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{btcpayserver_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -347,7 +352,7 @@
                 <div class="settings_block_subheader_status_icon {{ mempoolspace_status_color }}"></div>
                 {{ mempoolspace_status }}
             </div>
-            <button id="show_mempoolspace_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <button id="show_mempoolspace_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="mempoolspace_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{mempoolspace_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -357,7 +362,7 @@
                 <div class="settings_block_subheader_status_icon {{ netdata_status_color }}"></div>
                 {{ netdata_status }}
             </div>
-            <button id="show_netdata_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <button id="show_netdata_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="netdata_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{netdata_status_log}}</pre></div>
             <div class="divider"></div>
             {% endif %}
@@ -369,7 +374,7 @@
                 <div class="settings_block_subheader_status_icon {{ firewall_status_color }}"></div>
                 {{ firewall_status }}
             </div>
-            <button id="show_firewall_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+            <button id="show_firewall_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="firewall_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{firewall_status_log}}</pre></div>
         </div>
 
