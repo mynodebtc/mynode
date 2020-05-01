@@ -6,6 +6,7 @@ import time
 import re
 from threading import Timer
 from bitcoin_info import *
+from device_info import get_journalctl_log
 
 # Variables
 lightning_info = None
@@ -168,9 +169,10 @@ def get_lnd_status():
         return "Running"
 
     try:
-        log = subprocess.check_output("tail -n 100 /var/log/lnd.log", shell=True)
+        #log = subprocess.check_output("tail -n 100 /var/log/lnd.log", shell=True)
+        log = get_journalctl_log("lnd")
         lines = log.splitlines()
-        lines.reverse()
+        #lines.reverse()
         for line in lines:
             if "Caught up to height" in line:
                 m = re.search("height ([0-9]+)", line)
