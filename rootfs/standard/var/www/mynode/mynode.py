@@ -634,6 +634,12 @@ def page_toggle_dojo():
         enable_dojo()
     return redirect("/")
 
+@app.route("/clear-fsck-error")
+def page_clear_fsck_error():
+    check_logged_in()
+    clear_fsck_error()
+    return redirect("/")
+
 @app.route("/login", methods=["GET","POST"])
 def page_login():
     templateData = {

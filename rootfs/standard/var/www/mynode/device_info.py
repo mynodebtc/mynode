@@ -391,6 +391,8 @@ def is_drive_being_repaired():
     return os.path.isfile("/tmp/repairing_drive")
 def has_fsck_error():
     return os.path.isfile("/tmp/fsck_error")
+def clear_fsck_error():
+    os.system("rm -f /tmp/fsck_error")
 def get_fsck_results():
     try:
         with open("/tmp/fsck_results", "r") as f:
