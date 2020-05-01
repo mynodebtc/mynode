@@ -58,6 +58,21 @@ if [ ! -f /var/lib/mynode/.expanded_rootfs ]; then
     fi
 fi
 
+# Customize logo for resellers
+if [ -f /opt/mynode/custom/reseller ]; then
+    if [ -f /opt/mynode/custom/logo_custom.png ]; then
+        cp -f /opt/mynode/custom/logo_custom.png /var/www/mynode/static/images/logo.png 
+    else 
+        cp -f /var/www/mynode/static/images/logo_original.png /var/www/mynode/static/images/logo.png 
+    fi
+    if [ -f /opt/mynode/custom/logo_dark_custom.png ]; then
+        cp -f /opt/mynode/custom/logo_dark_custom.png /var/www/mynode/static/images/logo_dark.png
+    else 
+        cp -f /var/www/mynode/static/images/logo_dark_original.png /var/www/mynode/static/images/logo_dark.png 
+    fi
+fi
+
+
 # Verify we are in a clean state
 if [ $IS_RASPI -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
     dphys-swapfile swapoff || true

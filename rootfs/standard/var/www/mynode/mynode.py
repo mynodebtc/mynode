@@ -466,6 +466,7 @@ def index():
             "lnd_ready": lnd_ready,
             "tor_status_color": tor_status_color,
             "is_installing_docker_images": is_installing_docker_images(),
+            "is_device_from_reseller": is_device_from_reseller(),
             "electrs_status_color": electrs_status_color,
             "electrs_status": Markup(electrs_status),
             "electrs_enabled": is_electrs_enabled(),
