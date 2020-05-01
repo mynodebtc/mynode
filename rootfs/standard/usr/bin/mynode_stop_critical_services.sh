@@ -22,6 +22,7 @@ systemctl stop btc_rpc_explorer
 
 # Stop core services
 systemctl stop electrs
+systemctl stop loopd
 systemctl stop lnd
 systemctl stop quicksync
 systemctl stop bitcoind
