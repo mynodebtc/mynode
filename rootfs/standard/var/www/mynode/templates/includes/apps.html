@@ -73,6 +73,7 @@
             {% endif %}
         </div>
     </div>
+    {% if not is_device_from_reseller %}
     <div class="app_tile">
         <div class="app_status_icon {{ dojo_status_color }}"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/samourai.png")}}"/></div>
@@ -107,6 +108,7 @@
             </a>
         </div>
     </div>
+    {% endif %}
     <div class="app_tile">
         <div class="app_status_icon {% if product_key_skipped %}gray{% else %} {{mempoolspace_status_color}} {% endif %}"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/mempoolspace.png")}}"/></div>

@@ -165,6 +165,12 @@ def get_recent_upgrade_logs():
             pass
     return logs
 
+#==================================
+# Reseller Info
+#==================================
+def is_device_from_reseller():
+    return os.path.isfile("/opt/mynode/custom/reseller")
+
 
 #==================================
 # Device Info
