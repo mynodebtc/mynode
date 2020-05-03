@@ -259,36 +259,35 @@ fi
 
 # Upgrade JoinMarket
 echo "Upgrading JoinMarket..."
-if [ $IS_PREMIUM -eq 1 ]; then
-    JOINMARKET_VERSION=0.6.1
-    JOINMARKET_GITHUB_URL=https://github.com/JoinMarket-Org/joinmarket-clientserver.git
-    JOINMARKET_VERSION_FILE=/home/bitcoin/.mynode/.joinmarket_version
+if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
+    JOINMARKET_VERSION=v0.6.2
+    JOINMARKET_UPGRADE_URL=https://github.com/JoinMarket-Org/joinmarket-clientserver/archive/$JOINMARKET_VERSION.tar.gz
+    JOINMARKET_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.joinmarket_version
     CURRENT=""
-    if [ -f $JOINMARKET_VERSION_FILE ]; then
-        CURRENT=$(cat $JOINMARKET_VERSION_FILE)
+    if [ -f $JOINMARKET_UPGRADE_URL_FILE ]; then
+        CURRENT=$(cat $JOINMARKET_UPGRADE_URL_FILE)
     fi
     if [ "$CURRENT" != "$JOINMARKET_VERSION" ]; then
         # Download and build JoinMarket
         cd /opt/mynode
 
-        if [ ! -d /opt/mynode/joinmarket-clientserver ]; then
-            git clone $JOINMARKET_GITHUB_URL
-            cd joinmarket-clientserver
-        else
-            cd joinmarket-clientserver
-            git pull origin master
+        # Backup old version in case config / wallet was stored within folder
+        if [ ! -d /opt/mynode/jm_backup ] && [ -d /opt/mynode/joinmarket-clientserver ]; then
+            cp -R /opt/mynode/joinmarket-clientserver /opt/mynode/jm_backup
+            chown -R bitcoin:bitcoin /opt/mynode/jm_backup
         fi
-        git fetch --tags --all
-        git reset --hard v$JOINMARKET_VERSION
 
-        # Create virtualenv and setup JoinMarket
-        virtualenv -p python3 jmvenv
-        source jmvenv/bin/activate
-        python setupall.py --daemon
-        python setupall.py --client-bitcoin
-        deactivate
+        rm -rf joinmarket-clientserver
 
-        echo $JOINMARKET_VERSION > $JOINMARKET_VERSION_FILE
+        sudo -u bitcoin wget $JOINMARKET_UPGRADE_URL -O joinmarket.tar.gz
+        sudo -u bitcoin tar -xvf joinmarket.tar.gz
+        sudo -u bitcoin rm joinmarket.tar.gz
+        mv joinmarket-clientserver-* joinmarket-clientserver
+        
+        cd joinmarket-clientserver
+        yes | ./install.sh --without-qt
+
+        echo $JOINMARKET_VERSION > $JOINMARKET_UPGRADE_URL_FILE
     fi
 fi
 
