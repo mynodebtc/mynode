@@ -39,6 +39,7 @@ Each myNode device comes with a number of wonderful features:
 - BTC RPC Explorer (v2.0.0)
 - Mempool.Space - Mempool local visualizer for the Bitcoin blockchain
 - LND Hub - Lightning Wallet Server (v1.1.3)
+- Lndmanage (v0.10.0)
 - Lightning Loop - A Non-Custodial Off/On Chain Bridge (v0.5.1-beta)
 - Tor
 - JoinMarket CLI (v0.6.1)
