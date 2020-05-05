@@ -124,17 +124,9 @@ def get_macaroon():
 def lnd_wallet_exists():
     return os.path.isfile(WALLET_FILE)
 
-def unlock_wallet():
-    os.system("/usr/bin/expect /usr/bin/unlock_lnd.tcl")
-
 def create_wallet(seed):
     try:
         subprocess.check_call("create_lnd_wallet.tcl \""+seed+"\"", shell=True)
-
-        # DO NOT unlock after wallet create
-        # https://github.com/lightningnetwork/lnd/issues/3631
-        #t = Timer(1.0, unlock_wallet)
-        #t.start()
         
         # Sync FS and sleep so the success redirect understands the wallet was created
         os.system("sync")
