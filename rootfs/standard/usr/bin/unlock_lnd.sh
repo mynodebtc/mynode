@@ -19,7 +19,7 @@ while true; do
 
     # Sleep 15 seconds to let LND startup and avoid LN race condition
     # See https://github.com/lightningnetwork/lnd/issues/3631
-    /bin/sleep 30s
+    /bin/sleep 60s
 
     echo "Unlocking wallet..."
     /usr/bin/expect /usr/bin/unlock_lnd.tcl
