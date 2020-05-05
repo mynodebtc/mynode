@@ -42,7 +42,7 @@ Each myNode device comes with a number of wonderful features:
 - Lndmanage (v0.10.0)
 - Lightning Loop - A Non-Custodial Off/On Chain Bridge (v0.5.1-beta)
 - Tor
-- JoinMarket CLI (v0.6.1)
+- JoinMarket CLI (v0.6.2)
 - LND Connect - Generate QR Codes for connecting wallets (v0.2.0)
 - Virtual Machine support (OVA file: VirtualBox, VMWare)
 - VPN for Remote Access (OpenVPN 2.4.7)
