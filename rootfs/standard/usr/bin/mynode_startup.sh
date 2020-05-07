@@ -241,7 +241,9 @@ source /usr/bin/mynode_gen_lnd_config.sh
 # RTL config
 sudo -u bitcoin mkdir -p /opt/mynode/RTL/
 chown -R bitcoin:bitcoin /mnt/hdd/mynode/rtl_backup/
-cp /usr/share/mynode/RTL-Config.json /opt/mynode/RTL/RTL-Config.json
+if [ ! -f /opt/mynode/RTL/RTL-Config.json ]; then
+    cp -f /usr/share/mynode/RTL-Config.json /opt/mynode/RTL/RTL-Config.json
+fi
 if [ -f /home/bitcoin/.mynode/.hashedpw ]; then
     HASH=$(cat /home/bitcoin/.mynode/.hashedpw)
     sed -i "s/\"multiPassHashed\":.*/\"multiPassHashed\": \"$HASH\",/g" /opt/mynode/RTL/RTL-Config.json
