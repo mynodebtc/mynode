@@ -154,9 +154,6 @@ def get_lnd_status():
     if not lnd_wallet_exists():
         return "Please create wallet..."
 
-    if not is_lnd_logged_in():
-        return "Logging in..."
-
     if is_lnd_ready():
         return "Running"
 
@@ -175,6 +172,17 @@ def get_lnd_status():
                 return "Syncing..."
             elif "Started rescan from block" in line:
                 return "Scanning..."
+            elif "Version: " in line:
+                return "Launching..."
+            elif "Opening the main database" in line:
+                return "Opening DB..."
+            elif "Database now open" in line:
+                return "DB open..."
+            elif "Waiting for wallet encryption password" in line:
+                return "Logging in..."
+            elif "LightningWallet opened" in line:
+                return "Wallet open..."
+
         return "Waiting..."
     except:
         return "Status Error"
