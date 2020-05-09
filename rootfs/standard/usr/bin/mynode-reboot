@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# mynode-reboot
+# This script needs to be run with sudo
+# It is intended to stop all mynode services and reboot the device
+set -e
+
+source /usr/share/mynode/mynode_config.sh
+
+/usr/bin/mynode_stop_critical_services.sh
+reboot
