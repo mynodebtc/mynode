@@ -343,7 +343,7 @@ chown -R bitcoin:bitcoin /opt/mynode
 
 
 # Install LND Hub
-LNDHUB_VERSION="v1.1.3"
+LNDHUB_VERSION="v1.2.0"
 LNDHUB_UPGRADE_URL=https://github.com/BlueWallet/LndHub/archive/${LNDHUB_VERSION}.tar.gz
 LNDHUB_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lndhub_url
 CURRENT=""
