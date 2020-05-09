@@ -38,9 +38,9 @@ Each myNode device comes with a number of wonderful features:
 - Samourai Whirlpool (whirlpool-client-cli v0.10.5)
 - BTC RPC Explorer (v2.0.0)
 - Mempool.Space - Mempool local visualizer for the Bitcoin blockchain
-- LND Hub - Lightning Wallet Server (v1.1.3)
+- LND Hub - Lightning Wallet Server (v1.2.0)
 - Lndmanage (v0.10.0)
-- Lightning Loop - A Non-Custodial Off/On Chain Bridge (v0.5.1-beta)
+- Lightning Loop - A Non-Custodial Off/On Chain Bridge (v0.6.0-beta)
 - Tor
 - JoinMarket CLI (v0.6.2)
 - LND Connect - Generate QR Codes for connecting wallets (v0.2.0)
