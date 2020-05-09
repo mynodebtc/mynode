@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# mynode-stop-services
+# This script needs to be run with sudo
+# It is intended to stop all mynode services (minus the web UI)
+set -e
+
+source /usr/share/mynode/mynode_config.sh
+
+/usr/bin/mynode_stop_critical_services.sh
