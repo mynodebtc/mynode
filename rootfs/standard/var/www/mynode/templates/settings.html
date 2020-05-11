@@ -333,6 +333,21 @@
                         window.location.href='/settings/enable_btc_lnd_tor?enable=0'
                     }
                 });
+
+                $('#aptget_tor_checkbox').change(function () {
+                    $("#aptget_tor").show();
+                });
+                $("#aptget_tor").on("click", function() {
+                    enabled=$('#aptget_tor_checkbox').is(":checked")
+                    if (enabled)
+                    {
+                        window.location.href='/settings/enable_aptget_tor?enable=1'
+                    }
+                    else
+                    {
+                        window.location.href='/settings/enable_aptget_tor?enable=0'
+                    }
+                });
             });
         </script>
      </head>
@@ -700,6 +715,18 @@
             </label>
             <br/><br/>
             <button id="btc_lnd_tor" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Package Upgrade Tor</div>
+            During upgrades, new packages are downloaded and installed. This setting will download and install those packages via tor.
+            <br/><br/>
+            <label class="switch">
+                <input type="checkbox" id="aptget_tor_checkbox" {% if is_aptget_tor_enabled %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <br/><br/>
+            <button id="aptget_tor" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
 
             <div class="divider"></div>
             

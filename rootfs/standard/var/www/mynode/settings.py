@@ -146,6 +146,7 @@ def page_settings():
         "download_rate": download_rate,
         "upload_rate": upload_rate,
         "is_btc_lnd_tor_enabled": is_btc_lnd_tor_enabled(),
+        "is_aptget_tor_enabled": is_aptget_tor_enabled(),
         "uptime": uptime,
         "date": date,
         "public_ip": public_ip,
@@ -281,7 +282,6 @@ def page_status():
         "firewall_rules": get_firewall_rules(),
         "is_quicksync_disabled": not quicksync_enabled,
         "is_netdata_enabled": is_netdata_enabled(),
-        "is_btc_lnd_tor_enabled": is_btc_lnd_tor_enabled(),
         "uptime": uptime,
         "date": date,
         "public_ip": public_ip,
@@ -600,6 +600,17 @@ def page_enable_btc_lnd_tor():
         "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
+
+@mynode_settings.route("/settings/enable_aptget_tor")
+def page_enable_aptget_tor():
+    check_logged_in()
+    
+    enable = request.args.get('enable')
+    if enable == "1":
+        enable_aptget_tor()
+    else:
+        disable_aptget_tor()
+    return redirect(url_for(".page_settings"))
 
 @mynode_settings.route("/settings/mynode_logs.tar.gz")
 def download_logs_page():
