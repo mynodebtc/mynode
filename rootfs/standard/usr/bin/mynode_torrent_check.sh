@@ -2,10 +2,15 @@
 
 source /usr/share/mynode/mynode_config.sh
 
+sleep 1m
+
 echo "Waiting until QuickSync is complete..."
 while [ ! -f "$QUICKSYNC_COMPLETE_FILE" ]; do
     sleep 1h
 done
+
+# No need to check for new torrent right away
+sleep 2m
 
 while true; do
     # Wait a while... we don't want everyone starting on a new torrent at once
@@ -24,7 +29,8 @@ while true; do
             cmp --silent /tmp/blockchain_temp.torrent $QUICKSYNC_DIR/blockchain.torrent || NEW_TORRENT=1
             if [ $NEW_TORRENT -eq 1 ]; then
                 # Reboot to restart and get new torrent
-                reboot
+                sleep 30s
+                reboot 
             else
                 echo "Torrent has not changed."
             fi

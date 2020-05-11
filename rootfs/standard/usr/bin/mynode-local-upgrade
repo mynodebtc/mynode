@@ -18,6 +18,9 @@ else
     ip_address="$1"
 fi
 
+# Clear /var/log tmpfs
+rm -rf /var/log/*
+
 # Delete any existing rootfs tarball and download new one
 rm -f mynode_rootfs_${DEVICE_TYPE}.tar.gz
 wget http://${ip_address}:8000/mynode_rootfs_${DEVICE_TYPE}.tar.gz -O /tmp/mynode_rootfs_${DEVICE_TYPE}.tar.gz

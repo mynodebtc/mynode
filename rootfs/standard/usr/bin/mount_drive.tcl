@@ -67,7 +67,14 @@ proc createMyNodeFsOnBlockDevice {blockDevice} {
     }
 
     if [catch {
+        puts "Waiting on format confirmation..."
+        runCommand echo "drive_format_confirm" > /mnt/hdd/mynode/.mynode_status
+        while { [file exists "/tmp/format_ok"] == 0 } {
+            after 500
+        }
+
         puts "Creating new partition table on ${blockDevice}"
+        runCommand echo "drive_formatting" > /mnt/hdd/mynode/.mynode_status
         runCommand /usr/bin/format_drive.sh ${blockDevice}
         after 5000
 

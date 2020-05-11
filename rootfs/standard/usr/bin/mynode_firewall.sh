@@ -14,7 +14,7 @@ ufw default allow outgoing
 # Add firewall rules
 ufw allow 22    comment 'allow SSH'
 ufw allow 80    comment 'allow WWW'
-ufw allow 443    comment 'allow Secure WWW'
+ufw allow 443   comment 'allow Secure WWW'
 ufw allow 1900  comment 'allow SSDP for UPnP discovery'
 ufw allow 10009 comment 'allow Lightning gRPC'
 ufw allow 10080 comment 'allow Lightning REST RPC'
@@ -33,7 +33,7 @@ ufw allow 3000  comment 'allow LndHub'
 ufw allow 3002  comment 'allow BTC RPC Explorer'
 #ufw allow 3004  comment 'allow LND Admin'
 ufw allow 3010  comment 'allow RTL'
-ufw allow 4080  comment 'allow Mempool.Space'
+ufw allow 4080  comment 'allow Mempool'
 ufw allow 5353  comment 'allow Avahi'
 ufw allow 8899  comment 'allow Whirlpool'
 ufw allow 50001 comment 'allow Electrum Server'
@@ -61,5 +61,6 @@ ufw status
 sleep 120s
 ufw reload
 
-# Success
+# We don't really want to exit
+sleep 999d
 exit 0

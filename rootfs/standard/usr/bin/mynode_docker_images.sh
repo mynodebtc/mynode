@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -e
-set -x 
+set -x
 
 source /usr/share/mynode/mynode_config.sh
 
@@ -19,7 +19,7 @@ while true; do
     touch /tmp/installing_docker_images
 
     # Pull images that don't need to be built
-    docker pull netdata/netdata
+    # ???
 
     # Upgrade WebSSH2
     echo "Checking for new webssh2..."
@@ -44,8 +44,8 @@ while true; do
         echo $WEBSSH2_UPGRADE_URL > $WEBSSH2_UPGRADE_URL_FILE
     fi
 
-    # Upgrade mempool.space
-    echo "Checking for new mempool.space..."
+    # Upgrade mempool
+    echo "Checking for new mempool..."
     MEMPOOLSPACE_UPGRADE_URL=https://github.com/mempool-space/mempool.space/archive/8835c399e9b00c2579ed0bbd72f8cca4c5823dad.zip
     MEMPOOLSPACE_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/mempoolspace_url
     CURRENT=""
@@ -70,7 +70,7 @@ while true; do
     fi
 
     # Install Dojo
-    DOJO_VERSION="v1.4.1"
+    DOJO_VERSION="v1.5.0"
     DOJO_UPGRADE_URL=https://github.com/Samourai-Wallet/samourai-dojo/archive/$DOJO_VERSION.tar.gz
     DOJO_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/dojo_url
     CURRENT=""
@@ -96,9 +96,9 @@ while true; do
         # Run Dojo Install or Upgrade
         cd /opt/mynode/dojo/docker/my-dojo
         if [ "$INSTALL" = "true" ]; then
-            echo 'y' | sudo ./dojo.sh install &
+            yes | sudo ./dojo.sh install &
         else
-            echo 'y' | sudo ./dojo.sh upgrade &
+            yes | sudo ./dojo.sh upgrade &
         fi
 
         #Check for install/upgrade to finish to initialize Dojo mysql db

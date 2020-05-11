@@ -45,6 +45,17 @@ if [ $IS_UNKNOWN = 1 ]; then
     exit 1
 fi
 
+# Set kernel settings
+sysctl -w net.ipv6.conf.all.disable_ipv6=1
+sysctl -w net.ipv6.conf.default.disable_ipv6=1
+sysctl -w net.ipv6.conf.lo.disable_ipv6=1
+
+# Set DNS for install
+echo "" > /etc/resolv.conf
+echo "nameserver 1.1.1.1" >> /etc/resolv.conf
+echo "nameserver 9.9.9.9" >> /etc/resolv.conf
+echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+
 
 # Make sure FS is expanded for armbian
 if [ $IS_ARMBIAN = 1 ] ; then
@@ -159,7 +170,7 @@ pip3 install wheel setuptools
 pip3 install bitstring lnd-grpc pycoin aiohttp connectrum python-bitcoinlib
 pip3 install python-bitcointx
 pip3 install gnureadline
-pip3 install lndmanage==0.9.0   # Install LND Manage (keep up to date with LND)
+pip3 install lndmanage==0.10.0   # Install LND Manage (keep up to date with LND)
 pip3 install docker-compose
 
 
@@ -251,7 +262,7 @@ fi
 cd ~
 
 # Install Lightning
-LND_VERSION="v0.9.0-beta"
+LND_VERSION="v0.10.0-beta"
 LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
@@ -287,8 +298,8 @@ fi
 cd ~
 
 # Install Loopd
-echo "Upgrading loopd..."
-LOOP_VERSION="v0.5.0-beta"
+echo "Installing loopd..."
+LOOP_VERSION="v0.6.0-beta"
 LOOP_ARCH="loop-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LOOP_ARCH="loop-linux-amd64"
@@ -332,7 +343,7 @@ chown -R bitcoin:bitcoin /opt/mynode
 
 
 # Install LND Hub
-LNDHUB_VERSION="v1.1.3"
+LNDHUB_VERSION="v1.2.0"
 LNDHUB_UPGRADE_URL=https://github.com/BlueWallet/LndHub/archive/${LNDHUB_VERSION}.tar.gz
 LNDHUB_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lndhub_url
 CURRENT=""
@@ -382,9 +393,35 @@ if [ ! -f /usr/include/secp256k1_ecdh.h ]; then
     cp -f include/* /usr/include/
 fi
 
+# Install JoinMarket
+echo "Install JoinMarket..."
+if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
+    JOINMARKET_VERSION=v0.6.2
+    JOINMARKET_UPGRADE_URL=https://github.com/JoinMarket-Org/joinmarket-clientserver/archive/$JOINMARKET_VERSION.tar.gz
+    JOINMARKET_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.joinmarket_version
+    CURRENT=""
+    if [ -f $JOINMARKET_UPGRADE_URL_FILE ]; then
+        CURRENT=$(cat $JOINMARKET_UPGRADE_URL_FILE)
+    fi
+    if [ "$CURRENT" != "$JOINMARKET_VERSION" ]; then
+        # Download and build JoinMarket
+        cd /opt/mynode
+        rm -rf joinmarket-clientserver
+
+        sudo -u bitcoin wget $JOINMARKET_UPGRADE_URL -O joinmarket.tar.gz
+        sudo -u bitcoin tar -xvf joinmarket.tar.gz
+        sudo -u bitcoin rm joinmarket.tar.gz
+        mv joinmarket-clientserver-* joinmarket-clientserver
+        
+        cd joinmarket-clientserver
+        yes | ./install.sh --without-qt
+
+        echo $JOINMARKET_VERSION > $JOINMARKET_UPGRADE_URL_FILE
+    fi
+fi
 
 # Install Whirlpool
-WHIRLPOOL_UPGRADE_URL=https://github.com/Samourai-Wallet/whirlpool-client-cli/releases/download/0.10.2/whirlpool-client-cli-0.10.2-run.jar
+WHIRLPOOL_UPGRADE_URL=https://github.com/Samourai-Wallet/whirlpool-client-cli/releases/download/0.10.5/whirlpool-client-cli-0.10.5-run.jar
 WHIRLPOOL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.whirlpool_url
 CURRENT=""
 if [ -f $WHIRLPOOL_UPGRADE_URL_FILE ]; then
@@ -401,7 +438,7 @@ fi
 
 
 # Install RTL
-RTL_VERSION="v0.6.7"
+RTL_VERSION="v0.7.0"
 RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/$RTL_VERSION.tar.gz
 RTL_UPGRADE_ASC_URL=https://github.com/Ride-The-Lightning/RTL/releases/download/$RTL_VERSION/$RTL_VERSION.tar.gz.asc
 RTL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.rtl_url
@@ -430,8 +467,8 @@ if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
 fi
 
 
-# Install Bitcoin RPC Explorer
-BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v1.1.9.tar.gz
+# Install BTC RPC Explorer
+BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v2.0.0.tar.gz
 BTCRPCEXPLORER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btcrpcexplorer_url
 CURRENT=""
 if [ -f $BTCRPCEXPLORER_UPGRADE_URL_FILE ]; then
@@ -549,7 +586,7 @@ systemctl enable invalid_block_check
 systemctl enable usb_driver_check
 systemctl enable docker_images
 systemctl enable glances
-systemctl enable netdata
+#systemctl enable netdata # DISABLED BY DEFAULT
 systemctl enable webssh2
 systemctl enable rotate_logs
 

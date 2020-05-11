@@ -7,6 +7,7 @@ Wants=bitcoind.service
 After=bitcoind.service
 
 [Service]
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_bitcoin.sh
 ExecStartPre=/usr/bin/wait_on_electrs.sh
 WorkingDirectory=/opt/mynode/btc-rpc-explorer

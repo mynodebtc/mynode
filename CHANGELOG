@@ -1,3 +1,62 @@
+=== v0.2.05 ===
+- Upgrade LND to v0.10.0
+- Upgrade Loop to v0.6.0
+- Upgrade JoinMarket to 0.6.2
+- Upgrade lndmanage to v0.10.0
+- Upgrade Whirlpool client to v0.10.5
+- Add link between settings and status pages
+- Minor bug fixes and improvements
+
+=== v0.2.04 ===
+- Improve reboot / shutdown consistency
+- Separate settings and status pages
+- Detect and alert user to SD card problems
+- Bug Fixes
+
+=== v0.2.03 ===
+- Dojo uses electrum server
+- Add remote support for Tor v2 and v3
+- Add lnd accept-keysend option
+- Add LND SCB download to settings page
+- General UI improvements
+
+=== v0.2.02 ===
+- Update Dojo to 1.5.0
+- Add tracker status to Dojo page
+- Updates now upgrade system packages
+- Bug Fixes
+
+=== v0.2.01 ===
+- Update Whirlpool to v0.10.4
+- Add "do not unplug" warning
+- Explicitly add Onion URL to LND TLS cert
+- Bug fixes and minor improvements
+
+=== v0.2.00 ===
+- Add confirmation screen before drive format / setup
+- Add Fully Noded QR Code
+- Update Whirlpool to v0.10.3
+- Update BTC RPC Explorer to v2.0.0
+- Bug fixes
+
+=== v0.1.98 ===
+- Update RTL v0.7.0
+- Update Loop to v0.5.1
+- Add Docker reset option
+- Add Netdata reinstall option
+- Add more app logs on settings page
+- Fix Electrum Server Onion URL Link
+- Rename Mempool.Space to Mempool
+- Bug fixes
+
+=== v0.1.97 ===
+- Use v3 Onion addresses for remote access
+- Upgrade BTC to v0.19.1
+- Upgrade LND to v0.9.2
+- Upgrade Loop to v0.5.0
+- Improve Dojo installation
+- Bug fixes
+
 === v0.1.96 ===
 - Add Dojo re-install option
 - Add UFW re-install option

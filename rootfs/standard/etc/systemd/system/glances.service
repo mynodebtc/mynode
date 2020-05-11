@@ -6,6 +6,7 @@ Description=Glances
 After=network.target
 
 [Service]
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStart=/usr/bin/glances -w
 User=root
 Group=root

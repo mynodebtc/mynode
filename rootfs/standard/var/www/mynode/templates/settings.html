@@ -199,6 +199,12 @@
                     $("#show_firewall_status").hide(0);
                     $("#firewall_status").show();
                 });
+                $("#reset_docker_button").button();
+                $("#reset_docker_button").on("click", function() {
+                    if (confirm("Are you sure you want to reset docker?")) {
+                        window.location.href='/settings/reset-docker';
+                    }
+                });
 
                 $("#show_firewall_rules").on("click", function() {
                     $("#show_firewall_rules").hide(0);
@@ -326,6 +332,21 @@
                         window.location.href='/settings/enable_btc_lnd_tor?enable=0'
                     }
                 });
+
+                $('#aptget_tor_checkbox').change(function () {
+                    $("#aptget_tor").show();
+                });
+                $("#aptget_tor").on("click", function() {
+                    enabled=$('#aptget_tor_checkbox').is(":checked")
+                    if (enabled)
+                    {
+                        window.location.href='/settings/enable_aptget_tor?enable=1'
+                    }
+                    else
+                    {
+                        window.location.href='/settings/enable_aptget_tor?enable=0'
+                    }
+                });
             });
         </script>
      </head>
@@ -360,17 +381,43 @@
                     <div id="product_key" style="display: none;">{{product_key}}</div>
                     {% endif %}
                     </td>
+                    <td style="padding-left: 20px;">
+                        {% if product_key_skipped %}
+                            {{product_key}}
+                            &nbsp;<a href="/product-key" class="ui-button ui-widget ui-corner-all settings_button_small">Enter Product Key</a>
+                        {% else %}
+                            <button id="show_product_key" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+                            <span id="product_key" style="display: none;">{{product_key}}</span>
+                            &nbsp;<a href="/product-key" class="ui-button ui-widget ui-corner-all settings_button_small">Change</a>
+                        {% endif %}
+                    </td>
                 </tr>
                 <tr>
                     <td>Device Type</td>
                     <td>{{device_type}}</td>
                 </tr>
                 <tr>
+                    <td>Device RAM</td>
+                    <td style="padding-left: 20px;">{{device_ram}} GB</td>
+                </tr>
+                <!--
+                <tr>
+                    <td>Public IP</td>
+                    <td style="padding-left: 20px;">
+                        {{public_ip}}
+                        {% if 'Failed to find' in public_ip %}
+                            <a href="/settings/check-in" class="ui-button ui-widget ui-corner-all settings_button_small">Refresh</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                -->
+                <tr>
                     <td>Local IP</td>
                     <td>{{local_ip}}</td>
                 </tr>
             </table>
 
+<!-- <<<<<<< HEAD -->
             <nav><div class="nav nav-tabs" id="nav-tab" role="tablist">
                 <a class="nav-item nav-link active" id="nav-status-tab" data-toggle="tab" href="#nav-status" role="tab" aria-controls="nav-status" aria-selected="true">Status</a>
                 <a class="nav-item nav-link" id="nav-version-tab" data-toggle="tab" href="#nav-version" role="tab" aria-controls="nav-version" aria-selected="false">Version</a>
@@ -542,6 +589,177 @@
                 </a>
                 {% endif %}
             </div></nav>
+<!-- ======= -->
+            <div class="settings_block_subheader">Status</div>
+            <table border="0">
+                <tr>
+                    <td>Details</td>
+                    <td style="padding-left: 20px;">
+                        {% if is_netdata_enabled and is_bitcoin_synced %}
+                        <a id="netdata" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Netdata</a>
+                        {% endif %}
+                        <a id="glances" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Glances</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Manage</td>
+                    <td style="padding-left: 20px;">
+                        <a id="linux_terminal" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Linux Terminal</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Disk Usage</td>
+                    <td style="padding-left: 20px;">{{drive_usage}}</td>
+                </tr>
+                <tr>
+                    <td>CPU</td>
+                    <td style="padding-left: 20px;">{{cpu_usage}}</td>
+                </tr>
+                <tr>
+                    <td>RAM</td>
+                    <td style="padding-left: 20px;">{{ram_usage}}</td>
+                </tr>
+                {% if device_temp != '...' %}
+                <tr>
+                    <td>Temperature</td>
+                    <td style="padding-left: 20px;">{{device_temp}} &deg;C</td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <td>Uptime</td>
+                    <td style="padding-left: 20px;">{{uptime}}</td>
+                </tr>
+                <tr>
+                    <td>Date</td>
+                    <td style="padding-left: 20px;">{{date}}</td>
+                </tr>
+            </table>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Change Log</div>
+            <button id="show_mynode_changelog" class="ui-button ui-widget ui-corner-all settings_button">View Change Log</button>
+            <div id="mynode_changelog" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{changelog}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Change Password</div>
+            {{password_message}}
+            This will change the password you use in the myNode GUI, the password for SSH, and the password for apps like RTL.
+            <br/><br/>
+            <form action="/settings/password" method="POST">
+                <table border="0">
+                    <tr>
+                        <td>Current Password</td>
+                        <td><input type="password" id="current_password" name="current_password" width="20" class="ui-corner-all settings_input"/></td>
+                    </tr>
+                    <tr>
+                        <td>Password</td>
+                        <td><input type="password" id="password1" name="password1" width="20" class="ui-corner-all settings_input"/></td>
+                    </tr>
+                    <tr>
+                        <td>Repeat Password</td>
+                        <td><input type="password" id="password2" name="password2" width="20" class="ui-corner-all settings_input"/></td>
+                    </tr>
+                </table>
+                <input type="submit" id="password_submit" value="Change Password" class="ui-button ui-widget ui-corner-all settings_button"/>
+            </form>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Detailed Status</div>
+            <a href="/status" class="ui-button ui-widget ui-corner-all settings_button">Status</a>
+        </div>
+
+        <div class="settings_block">
+            <div class="settings_block_header">User Interface</div>
+
+            <div class="settings_block_subheader">Dark Mode</div>
+            This will enable or disable dark mode in the user interface.
+            <br/>
+            {% if ui_settings['darkmode'] %}
+                <a href="/settings/toggle-darkmode" class="ui-button ui-widget ui-corner-all settings_button">Disable</a>
+            {% else %}
+                <a href="/settings/toggle-darkmode" class="ui-button ui-widget ui-corner-all settings_button">Enable</a>
+            {% endif %}
+
+        </div>
+
+
+        <div class="settings_block">
+            <div class="settings_block_header">Device</div>
+
+            <div class="settings_block_subheader">Reboot Device</div>
+            This will reboot your myNode.
+            <br/>
+            <button id="reboot-device" class="ui-button ui-widget ui-corner-all settings_button">Reboot Device</button>
+            
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Shutdown Device</div>
+            This will shutdown your myNode. You will need to power cycle the device to turn it back on.
+            <br/>
+            <button id="shutdown-device" class="ui-button ui-widget ui-corner-all settings_button">Shutdown Device</button>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Download Debug Logs</div>
+            This will download all recent logs from your myNode. This can be helpful for debugging issues.
+            <br/>
+            It may take about one minute to gather and download the logs.
+            <br/>
+            Do not share these logs in a public place. They may contain sensitive information.
+            <br/>
+            <a href="/settings/mynode_logs.tar.gz" class="ui-button ui-widget ui-corner-all settings_button">Download Logs</a>
+        </div>
+
+
+        <div class="settings_block">
+            <div class="settings_block_header">Firewall</div>
+
+            <div class="settings_block_subheader">Rules</div>
+            Show the current firewall configuration.
+            <br/>
+            <button id="show_firewall_rules" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
+            <div id="firewall_rules" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{firewall_rules}}</pre></div>
+            
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Reset</div>
+            Resetting the firewall will disable and reenable the firewall and then reboot the device.
+            <br/>
+            <a href="/settings/reset-firewall" class="ui-button ui-widget ui-corner-all settings_button">Reset Firewall</a>
+
+        </div>
+
+
+        <div class="settings_block">
+            <div class="settings_block_header">QuickSync</div>
+
+            <div class="settings_block_subheader">Toggle QuickSync</div>
+            {% if is_quicksync_disabled %}
+                Enabling QuickSync will help speed up syncing only during the initial block download period. It will also take additional drive space and is not recommeded if using an SSD.
+                <br/>
+                <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Enable QuickSync</a>
+            {% else %}
+                Disabling QuickSync will remove the QuickSync files and stop the process.
+                <br/>
+                This may take a long time if Bitcoin is not already synced, but you can re-enable QuickSync later.
+                <br/>
+                <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Disable QuickSync</a>
+            {% endif %}
+
+            {% if not is_quicksync_disabled %}
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Restart QuickSync</div>
+            This will reset Bitcoin and redownload the blockchain via QuickSync.
+            <br/>
+            <button id="restart-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Restart QuickSync</button>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">QuickSync Rates</div>
+            You can control the background upload and download rates for QuickSync. This helps the myNode network.
+            <br/>
+<!-- >>>>>>> master -->
 
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="nav-mynode" role="tabpanel" aria-labelledby="nav-mynode-tab">
@@ -601,6 +819,7 @@
                     {% endif %}
                 </div>
 
+<!-- <<<<<<< HEAD -->
                 <div class="tab-pane fade" id="nav-tor" role="tabpanel" aria-labelledby="nav-tor-tab">
                     <div class="settings_block_subheader">Tor Status</div>
                     <button class="btn btn-light btn-sm" type="button" data-toggle="collapse" data-target="#tor-log" aria-expanded="false" aria-controls="tor-log">Toggle log</button>
@@ -626,6 +845,58 @@
                     <button id="reset_tor" class="ui-button ui-widget ui-corner-all settings_button float-right">Reset Tor</button>
                     <p>This will reset all of your Tor service settings and regenerate your Onion URLs.</p>
                 </div>
+<!-- ======= -->
+            <div class="settings_block_subheader">Rescan Blockchain</div>
+            Advanced: If you are having issues parsing the Bitcoin blockchain or blocks cannot be found, please try rescanning.
+            <br/>
+            <button id="rescan-blockchain" class="ui-button ui-widget ui-corner-all settings_button">Rescan Blockchain</button>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Reindex Blockchain</div>
+            Advanced: If you are having issues parsing the Bitcoin blockchain or blocks cannot be found, please try reindexing. 
+            <br/>
+            This will take a long time.
+            <br/>
+            <button id="reindex-blockchain" class="ui-button ui-widget ui-corner-all settings_button">Reindex Blockchain</button>
+        </div>
+
+
+        <div class="settings_block">
+            <div class="settings_block_header">Lightning</div>
+
+            <div class="settings_block_subheader">Download Channel Backup</div>
+            This will download the latest copy of your static channel backup file.
+            <br/>
+            <a class="ui-button ui-widget ui-corner-all settings_button" href="/lnd/channel.backup">Download</a>
+            
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Delete Lightning Wallet</div>
+            {{lnd_delete_message}}
+            Advanced: This will delete your Lightning Wallet.
+            <br/>
+            <button id="delete_lnd_wallet" class="ui-button ui-widget ui-corner-all settings_button">Delete Wallet</button>
+        </div>
+
+
+        <div class="settings_block">
+            <div class="settings_block_header">Electrum Server</div>
+            
+            <div class="settings_block_subheader">Reset Electrum Server</div>
+            Advanced: This will delete your Electrum Server data and reboot your device.
+            <br/>
+            <a href="/settings/reset-electrs" class="ui-button ui-widget ui-corner-all settings_button">Reset Data</a>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Reset Electrum Server Certificates</div>
+            This will regenerate your Electrum Server certificates.
+            <br/>
+            <a href="/settings/regen-electrs-certs" class="ui-button ui-widget ui-corner-all settings_button">Regenerate</a>
+
+        </div>
+<!-- >>>>>>> master -->
 
                 <div class="tab-pane fade" id="nav-firewall" role="tabpanel" aria-labelledby="nav-firewall-tab">
                     <div class="settings_block_subheader">Firewall Status</div>
@@ -643,6 +914,7 @@
                     <p>Resetting the firewall will disable and re-enable the firewall and then reboot the device.</p>
                 </div>
 
+<!-- <<<<<<< HEAD -->
                 <div class="tab-pane fade" id="nav-bitcoin" role="tabpanel" aria-labelledby="nav-bitcoin-tab">
                     <div class="settings_block_subheader">Bitcoin Status</div>
                     <button class="btn btn-light btn-sm" type="button" data-toggle="collapse" data-target="#bitcoin-log" aria-expanded="false" aria-controls="bitcoin-log">Toggle log</button>
@@ -668,6 +940,26 @@
                     <br/>
                     <button id="reindex-blockchain" class="btn btn-outline-warning btn-sm">Reindex Blockchain</button>
                 </div>
+<!-- ======= -->
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Package Upgrade Tor</div>
+            During upgrades, new packages are downloaded and installed. This setting will download and install those packages via tor.
+            <br/><br/>
+            <label class="switch">
+                <input type="checkbox" id="aptget_tor_checkbox" {% if is_aptget_tor_enabled %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <br/><br/>
+            <button id="aptget_tor" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+
+            <div class="divider"></div>
+            
+            <div class="settings_block_subheader">Reset Tor</div>
+            This will reset all of your Tor service settings and regenerate your Onion URLs.
+            <br/>
+            <button id="reset_tor" class="ui-button ui-widget ui-corner-all settings_button">Reset Tor</button>
+<!-- >>>>>>> master -->
 
                 <div class="tab-pane fade" id="nav-lnd" role="tabpanel" aria-labelledby="nav-lnd-tab">
                     <div class="settings_block_subheader">LND Status</div>
@@ -699,6 +991,7 @@
             </div>
         </div>
 
+<!-- <<<<<<< HEAD -->
         {% if is_bitcoin_synced %}
         <div class="settings_block" id="others-block">
             <div class="settings_block_header">Other Apps</div>
@@ -772,6 +1065,62 @@
                     <p>This will enable or disable Netdata device monitoring.</p>
                 </div>
             </div>
+<!-- ======= -->
+        <div class="settings_block">
+            <div class="settings_block_header">Docker</div>
+            
+            <div class="settings_block_subheader">Reset Docker</div>
+            This erases all docker state and state. Docker apps like BTC Pay Server and Dojo will lose all data.
+            <br/>
+            <button id="reset_docker_button">Reset Docker</button>
+        </div>
+
+        <div class="settings_block">
+            <div class="settings_block_header">Advanced</div>
+
+            <div class="settings_block_subheader">Reset HTTP Certificates</div>
+            This will regenerate your HTTPS certificates.
+            <br/>
+            <a href="/settings/regen-https-certs" class="ui-button ui-widget ui-corner-all settings_button">Regenerate</a>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Reinstall Applications</div>
+            If you are having issues with a specific application, you can try to reinstall them via the list below.
+            <br/>
+            Reinstalling an app will trigger a reboot of your device.
+            <br/><br/>
+
+            <select name="reinstall_app" id="reinstall_app">
+                <option value="none" selected="selected">Choose...</option>
+                <option value="bitcoin">Bitcoin</option>
+                <option value="lnd">LND</option>
+                <option value="btcrpcexplorer">BTC RPC Explorer</option>
+                <option value="dojo">Dojo</option>
+                <option value="joinmarket">JoinMarket</option>
+                <option value="loopd">Lightning Loop</option>
+                <option value="webssh2">Linux Terminal</option>
+                <option value="lndconnect">LND Connect</option>				
+                <option value="lndhub">LNDHub</option>
+                <option value="mempoolspace">Mempool</option>	
+                <option value="netdata">Netdata</option>				
+                <option value="rtl">RTL</option>
+                <option value="tor">Tor</option>
+                <option value="ufw">UFW</option>
+                <option value="whirlpool">Whirlpool</option>
+
+            </select>
+            <button id="reinstall_button">Reinstall</button>
+            
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Factory Reset</div>
+            This will factory reset your mynode and all storage will be completely reset.
+            <br/>
+            Make sure you have backed up all your keys and wallets!
+            <br/>
+            <button id="factory-reset" class="ui-button ui-widget ui-corner-all settings_button">Factory Reset</button>
+<!-- >>>>>>> master -->
         </div>
         {% endif %}
 

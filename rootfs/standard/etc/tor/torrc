@@ -232,6 +232,12 @@ HiddenServiceDir /var/lib/tor/mynode_btc/
 HiddenServiceVersion 3
 HiddenServicePort 8332 127.0.0.1:8332
 
+# Hidden Service for myNode (BTC) v2
+HiddenServiceDir /var/lib/tor/mynode_btc_v2/
+HiddenServiceVersion 2
+HiddenServiceAuthorizeClient stealth mynode
+HiddenServicePort 8332 127.0.0.1:8332
+
 # Hidden Service for myNode (LND)
 HiddenServiceDir /var/lib/tor/mynode_lnd/
 HiddenServiceVersion 3
@@ -248,3 +254,8 @@ HiddenServicePort 50002 127.0.0.1:50002
 HiddenServiceDir /var/lib/tor/mynode_ssh/
 HiddenServiceVersion 3
 HiddenServicePort 22022 127.0.0.1:22
+
+# Hidden Service for BTCPay Server
+HiddenServiceDir /var/lib/tor/mynode_btcpay/
+HiddenServiceVersion 3
+HiddenServicePort 49392 127.0.0.1:49392

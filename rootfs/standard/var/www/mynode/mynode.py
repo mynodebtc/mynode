@@ -49,12 +49,16 @@ app.register_blueprint(mynode_vpn)
 app.register_blueprint(mynode_settings)
 
 ### Definitions
-STATE_DRIVE_MISSING =       "drive_missing"
-STATE_DRIVE_MOUNTED =       "drive_mounted"
-STATE_QUICKSYNC_DOWNLOAD =  "quicksync_download"
-STATE_QUICKSYNC_COPY =      "quicksync_copy"
-STATE_QUICKSYNC_RESET =      "quicksync_reset"
-STATE_STABLE =              "stable"
+STATE_DRIVE_MISSING =         "drive_missing"
+STATE_DRIVE_CONFIRM_FORMAT =  "drive_format_confirm"
+STATE_DRIVE_FORMATTING =      "drive_formatting"
+STATE_DRIVE_MOUNTED =         "drive_mounted"
+STATE_QUICKSYNC_DOWNLOAD =    "quicksync_download"
+STATE_QUICKSYNC_COPY =        "quicksync_copy"
+STATE_QUICKSYNC_RESET =       "quicksync_reset"
+STATE_STABLE =                "stable"
+STATE_ROOTFS_READ_ONLY =      "rootfs_read_only"
+STATE_UNKNOWN =               "unknown"
 
 MYNODE_DIR =    "/mnt/hdd/mynode"
 BITCOIN_DIR =   "/mnt/hdd/mynode/bitcoin"
@@ -65,16 +69,28 @@ need_to_stop = False
 
 ### Helper functions
 def get_status():
-    status_file = "/mnt/hdd/mynode/.mynode_status"
-    status = ""
-    if (os.path.isfile(status_file)):
-        try:
-            with open(status_file, "r") as f:
-                status = f.read().strip()
-        except:
+    try:
+        status_file = "/mnt/hdd/mynode/.mynode_status"
+        status = STATE_UNKNOWN
+
+        # If its been a while, check for error conditions
+        uptime_in_sec = get_system_uptime_in_seconds()
+        if uptime_in_sec > 120:
+            # Check for read-only sd card
+            if is_mount_read_only("/"):
+                return STATE_ROOTFS_READ_ONLY
+
+        # Get status stored on drive
+        if (os.path.isfile(status_file)):
+            try:
+                with open(status_file, "r") as f:
+                    status = f.read().strip()
+            except:
+                status = STATE_DRIVE_MISSING
+        else:
             status = STATE_DRIVE_MISSING
-    else:
-        status = STATE_DRIVE_MISSING
+    except:
+        status = STATE_UNKNOWN
     return status
 
 
@@ -96,6 +112,7 @@ def index():
 
     bitcoin_block_height = get_bitcoin_block_height()
     mynode_block_height = get_mynode_block_height()
+    uptime_in_seconds = get_system_uptime_in_seconds()
     pk_skipped = skipped_product_key()
     pk_error = not is_valid_product_key()
 
@@ -117,8 +134,23 @@ def index():
         }
         return render_template('uploader.html', **templateData)
 
-    if status == STATE_DRIVE_MISSING:
-
+    if status == STATE_UNKNOWN:
+        templateData = {
+            "title": "myNode Error",
+            "header_text": "Status Unknown",
+            "subheader_text": "An error has occurred. You may want to reboot the device.",
+            "ui_settings": read_ui_settings()
+        }
+        return render_template('state.html', **templateData)
+    elif status == STATE_ROOTFS_READ_ONLY:
+        templateData = {
+            "title": "myNode Error",
+            "header_text": "SD Card Error",
+            "subheader_text": "The root filesystem is read only. Your SD card may be corrupt.",
+            "ui_settings": read_ui_settings()
+        }
+        return render_template('state.html', **templateData)
+    elif status == STATE_DRIVE_MISSING:
         # Drive may be getting repaired
         if is_drive_being_repaired():
             templateData = {
@@ -133,6 +165,25 @@ def index():
             "title": "myNode Looking for Drive",
             "header_text": "Looking for Drive",
             "subheader_text": "Please attach a drive to your myNode",
+            "ui_settings": read_ui_settings()
+        }
+        return render_template('state.html', **templateData)
+    elif status == STATE_DRIVE_CONFIRM_FORMAT:
+        if request.args.get('format'):
+            os.system("touch /tmp/format_ok")
+            time.sleep(1)
+            return redirect("/")
+
+        templateData = {
+            "title": "myNode Confirm Drive Format",
+            "ui_settings": read_ui_settings()
+        }
+        return render_template('confirm_drive_format.html', **templateData)
+    elif status == STATE_DRIVE_FORMATTING:
+        templateData = {
+            "title": "myNode Drive Formatting",
+            "header_text": "Drive Formatting",
+            "subheader_text": "myNode is preparing the drive for use...",
             "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
@@ -214,6 +265,7 @@ def index():
         rtl_status_color = "gray"
         rtl_status = "Lightning Wallet"
         electrs_status_color = "gray"
+        electrs_active = is_electrs_active()
         lndhub_status_color = "gray"
         bitcoind_status = "Inactive"
         lnd_status = "Inactive"
@@ -229,13 +281,18 @@ def index():
         mempoolspace_status_color = "gray"
         vpn_status_color = "gray"
         vpn_status = ""
+        current_block = 1234
 
-        if not get_has_updated_btc_info():
+        if not get_has_updated_btc_info() or uptime_in_seconds < 150:
+            error_message = ""
+            if bitcoind_status_code != 0 and uptime_in_seconds > 300:
+                error_message = "Bitcoin has experienced an error. Please check the logs."
             message = "<div class='small_message'>{}</<div>".format( get_message(include_funny=True) )
             templateData = {
                 "title": "myNode Status",
                 "header_text": "Starting...",
                 "subheader_text": Markup("Launching myNode services...{}".format(message)),
+                "error_message": error_message,
                 "ui_settings": read_ui_settings()
             }
             return render_template('state.html', **templateData)
@@ -283,6 +340,7 @@ def index():
                     bitcoind_status = "Syncing<br/>{} blocks remaining...".format(remaining)
             else:
                 bitcoind_status = "Waiting for info..."
+            current_block = get_mynode_block_height()
 
         # Find lnd status
         if is_bitcoind_synced():
@@ -325,7 +383,7 @@ def index():
         btcrpcexplorer_status = "BTC RPC Explorer"
         if is_btcrpcexplorer_enabled():
             if is_bitcoind_synced():
-                if is_electrs_active():
+                if electrs_active:
                     btcrpcexplorer_status_color = get_service_status_color("btc_rpc_explorer")
                     status_code = get_service_status_code("btc_rpc_explorer")
                     if status_code == 0:
@@ -353,18 +411,14 @@ def index():
         # Find btcpayserver status
         btcpayserver_status = "Merchant Tool"
         if lnd_ready:
-            if is_installing_docker_images():
-                btcpayserver_status_color = "yellow"
-                btcpayserver_status = "Installing..."
-            else:
-                btcpayserver_status_color = get_service_status_color("btcpayserver")
+            btcpayserver_status_color = get_service_status_color("btcpayserver")
         else:
             btcpayserver_status = "Waiting on LND..."
 
         # Find explorer status
         explorer_status_color = electrs_status_color
         if is_electrs_enabled():
-            if is_electrs_active():
+            if electrs_active:
                 explorer_ready = True
                 explorer_status = "myNode BTC Explorer"
             else:
@@ -406,14 +460,17 @@ def index():
             "config": CONFIG,
             "bitcoind_status_color": bitcoind_status_color,
             "bitcoind_status": Markup(bitcoind_status),
+            "current_block": current_block,
             "lnd_status_color": lnd_status_color,
             "lnd_status": Markup(lnd_status),
             "lnd_ready": lnd_ready,
             "tor_status_color": tor_status_color,
             "is_installing_docker_images": is_installing_docker_images(),
+            "is_device_from_reseller": is_device_from_reseller(),
             "electrs_status_color": electrs_status_color,
             "electrs_status": Markup(electrs_status),
             "electrs_enabled": is_electrs_enabled(),
+            "electrs_active": electrs_active,
             "rtl_status_color": rtl_status_color,
             "rtl_status": rtl_status,
             "lndhub_status_color": lndhub_status_color,
@@ -447,6 +504,7 @@ def index():
             "product_key_error": pk_error,
             "fsck_error": has_fsck_error(),
             "fsck_results": get_fsck_results(),
+            "sd_rw_error": has_sd_rw_error(),
             "drive_usage": get_drive_usage(),
             "cpu_usage": get_cpu_usage(),
             "ram_usage": get_ram_usage(),
@@ -574,6 +632,12 @@ def page_toggle_dojo():
         disable_dojo()
     else:
         enable_dojo()
+    return redirect("/")
+
+@app.route("/clear-fsck-error")
+def page_clear_fsck_error():
+    check_logged_in()
+    clear_fsck_error()
     return redirect("/")
 
 @app.route("/login", methods=["GET","POST"])

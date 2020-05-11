@@ -7,8 +7,12 @@ source /usr/share/mynode/mynode_config.sh
 
 # Verify FS is mounted as R/W
 if [ ! -w / ]; then
+    touch /tmp/sd_rw_error
     mount -o remount,rw /;
 fi
+
+# Set sticky bit on /tmp
+chmod +t /tmp
 
 # Make sure resolv.conf is a symlink to so resolvconf works
 # if [ ! -h /etc/resolv.conf ]; then
@@ -22,6 +26,7 @@ fi
 #     sleep 10s
 #     exit 1
 # fi
+
 # Add some DNS servers to make domain lookup more likely
 echo '' >> /etc/resolv.conf
 echo '# Added at myNode startup' >> /etc/resolv.conf
@@ -53,6 +58,21 @@ if [ ! -f /var/lib/mynode/.expanded_rootfs ]; then
     fi
 fi
 
+# Customize logo for resellers
+if [ -f /opt/mynode/custom/reseller ]; then
+    if [ -f /opt/mynode/custom/logo_custom.png ]; then
+        cp -f /opt/mynode/custom/logo_custom.png /var/www/mynode/static/images/logo.png 
+    else 
+        cp -f /var/www/mynode/static/images/logo_original.png /var/www/mynode/static/images/logo.png 
+    fi
+    if [ -f /opt/mynode/custom/logo_dark_custom.png ]; then
+        cp -f /opt/mynode/custom/logo_dark_custom.png /var/www/mynode/static/images/logo_dark.png
+    else 
+        cp -f /var/www/mynode/static/images/logo_dark_original.png /var/www/mynode/static/images/logo_dark.png 
+    fi
+fi
+
+
 # Verify we are in a clean state
 if [ $IS_RASPI -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
     dphys-swapfile swapoff || true
@@ -80,9 +100,22 @@ set -e
 # Mount HDD (format if necessary)
 while [ ! -f /mnt/hdd/.mynode ]
 do
+    # Clear status
+    rm -f $MYNODE_DIR/.mynode_status
     mount_drive.tcl || true
-    sleep 10
+    sleep 5
 done
+
+
+# Check for docker reset
+if [ -f /home/bitcoin/reset_docker ]; then
+    rm -rf /mnt/hdd/mynode/docker
+    rm /home/bitcoin/reset_docker
+    sync
+    reboot
+    sleep 60s
+    exit 0
+fi
 
 
 # Setup Drive
@@ -208,7 +241,9 @@ source /usr/bin/mynode_gen_lnd_config.sh
 # RTL config
 sudo -u bitcoin mkdir -p /opt/mynode/RTL/
 chown -R bitcoin:bitcoin /mnt/hdd/mynode/rtl_backup/
-cp /usr/share/mynode/RTL-Config.json /opt/mynode/RTL/RTL-Config.json
+if [ ! -f /opt/mynode/RTL/RTL-Config.json ]; then
+    cp -f /usr/share/mynode/RTL-Config.json /opt/mynode/RTL/RTL-Config.json
+fi
 if [ -f /home/bitcoin/.mynode/.hashedpw ]; then
     HASH=$(cat /home/bitcoin/.mynode/.hashedpw)
     sed -i "s/\"multiPassHashed\":.*/\"multiPassHashed\": \"$HASH\",/g" /opt/mynode/RTL/RTL-Config.json

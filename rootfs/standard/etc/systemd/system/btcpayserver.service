@@ -9,6 +9,7 @@ Requires=docker.service network-online.target bitcoind.service
 [Service]
 Type=oneshot
 RemainAfterExit=yes
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStart=/bin/bash -c  '. "/opt/mynode/btcpayserver/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY" && . helpers.sh && btcpay_up'
 ExecStop=/bin/bash -c   '. "/opt/mynode/btcpayserver/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY" && . helpers.sh && btcpay_down'
 ExecReload=/bin/bash -c '. "/opt/mynode/btcpayserver/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY" && . helpers.sh && btcpay_restart'

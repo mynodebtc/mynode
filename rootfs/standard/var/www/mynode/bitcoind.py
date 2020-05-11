@@ -117,6 +117,7 @@ def bitcoind_status_page():
         info = get_bitcoin_blockchain_info()
         blockdata = get_bitcoin_recent_blocks()
         peerdata  = get_bitcoin_peers()
+        networkdata = get_bitcoin_network_info()
         mempooldata = get_bitcoin_mempool()
         walletdata = get_bitcoin_wallet_info()
         version = get_bitcoin_version()
@@ -167,6 +168,13 @@ def bitcoind_status_page():
 
                 peers.append(peer)
 
+        # Local address
+        local_address = "..."
+        if networkdata != None:
+            local_address = "not none"
+            if "localaddresses" in networkdata:
+                local_address = "{}:{}".format(networkdata["localaddresses"][0]["address"], networkdata["localaddresses"][0]["port"])
+
         # Balance
         walletinfo = {}
         walletinfo["balance"] = 0.0
@@ -190,6 +198,7 @@ def bitcoind_status_page():
         "title": "myNode Bitcoin Status",
         "blocks": blocks,
         "peers": peers,
+        "local_address": local_address,
         "difficulty": "{:.3g}".format(info["difficulty"]),
         "block_num": info["blocks"],
         "header_num": info["headers"],

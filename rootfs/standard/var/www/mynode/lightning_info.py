@@ -6,6 +6,7 @@ import time
 import re
 from threading import Timer
 from bitcoin_info import *
+from device_info import get_journalctl_log
 
 # Variables
 lightning_info = None
@@ -123,17 +124,9 @@ def get_macaroon():
 def lnd_wallet_exists():
     return os.path.isfile(WALLET_FILE)
 
-def unlock_wallet():
-    os.system("/usr/bin/expect /usr/bin/unlock_lnd.tcl")
-
 def create_wallet(seed):
     try:
         subprocess.check_call("create_lnd_wallet.tcl \""+seed+"\"", shell=True)
-
-        # DO NOT unlock after wallet create
-        # https://github.com/lightningnetwork/lnd/issues/3631
-        #t = Timer(1.0, unlock_wallet)
-        #t.start()
         
         # Sync FS and sleep so the success redirect understands the wallet was created
         os.system("sync")
@@ -161,16 +154,14 @@ def get_lnd_status():
     if not lnd_wallet_exists():
         return "Please create wallet..."
 
-    if not is_lnd_logged_in():
-        return "Logging in..."
-
     if is_lnd_ready():
         return "Running"
 
     try:
-        log = subprocess.check_output("tail -n 100 /var/log/lnd.log", shell=True)
+        #log = subprocess.check_output("tail -n 100 /var/log/lnd.log", shell=True)
+        log = get_journalctl_log("lnd")
         lines = log.splitlines()
-        lines.reverse()
+        #lines.reverse()
         for line in lines:
             if "Caught up to height" in line:
                 m = re.search("height ([0-9]+)", line)
@@ -181,6 +172,17 @@ def get_lnd_status():
                 return "Syncing..."
             elif "Started rescan from block" in line:
                 return "Scanning..."
+            elif "Version: " in line:
+                return "Launching..."
+            elif "Opening the main database" in line:
+                return "Opening DB..."
+            elif "Database now open" in line:
+                return "DB open..."
+            elif "Waiting for wallet encryption password" in line:
+                return "Logging in..."
+            elif "LightningWallet opened" in line:
+                return "Wallet open..."
+
         return "Waiting..."
     except:
         return "Status Error"
