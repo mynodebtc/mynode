@@ -61,6 +61,17 @@ a:active {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+.state_error {
+    color: #DD5555;
+    text-align: center;
+    font-size: 14px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.shutoff_warning {
+    font-size: 12px;
+}
+
 .main_header {
     color: #555555;
     text-align: center;
@@ -69,6 +80,24 @@ a:active {
     margin-bottom: 5px;
 }
 .main_header_sub_text {
+    width: 600px;
+    color: #444444;
+    margin: auto;
+    text-align: center;
+    font-size: 14px;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-bottom: 10px;
+}
+
+.sub_header {
+    color: #555555;
+    text-align: center;
+    font-size: 24px;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+.sub_header_sub_text {
     width: 600px;
     color: #444444;
     margin: auto;
@@ -509,6 +538,21 @@ a:active {
     margin-top: 5px;
 }
 
+.format_div {
+    width: 800px;
+    color: #444444;
+    margin: auto;
+    text-align: center;
+    font-size: 18px;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-top: 10px;
+    margin-bottom: 40px;
+}
+.format_button {
+    width: 500px;
+    margin-top: 5px;
+}
+
 #download-handle {
     width: 6em;
     height: 1.6em;
@@ -545,6 +589,31 @@ a:active {
 
 .loading_image {
     width: 128px;
+}
+
+.halving_message_main_page {
+    color: #333333;
+    border: 3px solid orange;
+    background-color: rgb(255, 250, 238);
+    width: 600px;
+    border-radius: 25px;
+    text-align: center;
+    display: block;
+    font-size: 32px;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 5px;
+    padding-left: 12px;
+    margin: auto;
+    margin-bottom: 20px;
+}
+.halving_message_table {
+    width: 100%;
+    font-size: 32px;
+    border: 0px;
+    text-align: center;
+}
+.halving_image {
+    width: 86px;
 }
 
 /* The switch - the box around the slider */

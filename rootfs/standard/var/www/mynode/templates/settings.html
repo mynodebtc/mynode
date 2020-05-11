@@ -185,79 +185,11 @@
                     factory_reset_dialog.dialog( "open" );
                 });
 
-                $("#show_startup_status").on("click", function() {
-                    $("#show_startup_status").hide(0);
-                    $("#startup_status").show();
-                });
-
-                $("#show_quicksync_status").on("click", function() {
-                    $("#show_quicksync_status").hide(0);
-                    $("#quicksync_status").show();
-                });
-
-                $("#show_bitcoin_status").on("click", function() {
-                    $("#show_bitcoin_status").hide(0);
-                    $("#bitcoin_status").show();
-                });
-
-                $("#show_lnd_status").on("click", function() {
-                    $("#show_lnd_status").hide(0);
-                    $("#lnd_status").show();
-                });
-
-                $("#show_tor_status").on("click", function() {
-                    $("#show_tor_status").hide(0);
-                    $("#tor_status").show();
-                });
-
-                $("#show_electrs_status").on("click", function() {
-                    $("#show_electrs_status").hide(0);
-                    $("#electrs_status").show();
-                });
-
-                $("#show_rtl_status").on("click", function() {
-                    $("#show_rtl_status").hide(0);
-                    $("#rtl_status").show();
-                });
-
-                $("#show_docker_status").on("click", function() {
-                    $("#show_docker_status").hide(0);
-                    $("#docker_status").show();
-                });
-
-                $("#show_docker_image_build_status").on("click", function() {
-                    $("#show_docker_image_build_status").hide(0);
-                    $("#docker_image_build_status").show();
-                });
-
-                $("#show_dojo_status").on("click", function() {
-                    $("#show_dojo_status").hide(0);
-                    $("#dojo_status").show();
-                });
-
-                $("#show_btcpayserver_status").on("click", function() {
-                    $("#show_btcpayserver_status").hide(0);
-                    $("#btcpayserver_status").show();
-                });
-
-                $("#show_mempoolspace_status").on("click", function() {
-                    $("#show_mempoolspace_status").hide(0);
-                    $("#mempoolspace_status").show();
-                });
-
-                $("#show_upgrade_status").on("click", function() {
-                    $("#show_upgrade_status").hide(0);
-                    $("#upgrade_status").show();
-                });
-
-                $("#show_upgrade_status_beta").on("click", function() {
-                    $("#show_upgrade_status_beta").hide(0);
-                    $("#upgrade_status_beta").show();
-                });
-
-                $("#show_firewall_status").on("click", function() {
-                    $("#show_firewall_status").hide(0);
-                    $("#firewall_status").show();
+                $("#reset_docker_button").button();
+                $("#reset_docker_button").on("click", function() {
+                    if (confirm("Are you sure you want to reset docker?")) {
+                        window.location.href='/settings/reset-docker';
+                    }
                 });
 
                 $("#show_firewall_rules").on("click", function() {
@@ -401,6 +333,21 @@
                         window.location.href='/settings/enable_btc_lnd_tor?enable=0'
                     }
                 });
+
+                $('#aptget_tor_checkbox').change(function () {
+                    $("#aptget_tor").show();
+                });
+                $("#aptget_tor").on("click", function() {
+                    enabled=$('#aptget_tor_checkbox').is(":checked")
+                    if (enabled)
+                    {
+                        window.location.href='/settings/enable_aptget_tor?enable=1'
+                    }
+                    else
+                    {
+                        window.location.href='/settings/enable_aptget_tor?enable=0'
+                    }
+                });
             });
         </script>
      </head>
@@ -465,13 +412,18 @@
                             &nbsp;<a href="/product-key" class="ui-button ui-widget ui-corner-all settings_button_small">Enter Product Key</a>
                         {% else %}
                             <button id="show_product_key" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
-                            <div id="product_key" style="display: none;">{{product_key}}</div>
+                            <span id="product_key" style="display: none;">{{product_key}}</span>
+                            &nbsp;<a href="/product-key" class="ui-button ui-widget ui-corner-all settings_button_small">Change</a>
                         {% endif %}
                     </td>
                 </tr>
                 <tr>
                     <td>Device Type</td>
                     <td style="padding-left: 20px;">{{device_type}}</td>
+                </tr>
+                <tr>
+                    <td>Device RAM</td>
+                    <td style="padding-left: 20px;">{{device_ram}} GB</td>
                 </tr>
                 <!--
                 <tr>
@@ -497,7 +449,7 @@
                 <tr>
                     <td>Details</td>
                     <td style="padding-left: 20px;">
-                        {% if is_netdata_enabled %}
+                        {% if is_netdata_enabled and is_bitcoin_synced %}
                         <a id="netdata" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Netdata</a>
                         {% endif %}
                         <a id="glances" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Glances</a>
@@ -564,130 +516,10 @@
                 </table>
                 <input type="submit" id="password_submit" value="Change Password" class="ui-button ui-widget ui-corner-all settings_button"/>
             </form>
-
-        <div class="settings_block">
-            <div class="settings_block_header">Service Status</div>
-
-            <div class="settings_block_subheader">myNode Startup Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ startup_status_color }}"></div>
-                {{ startup_status }}
-            </div>
-            <button id="show_startup_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
-            <div id="startup_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{startup_status_log}}</pre></div>
             <div class="divider"></div>
 
-            <div class="settings_block_subheader">QuickSync Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ quicksync_status_color }}"></div>
-                {{ quicksync_status }}
-            </div>
-            <button id="show_quicksync_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
-            <div id="quicksync_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{quicksync_status_log}}</pre></div>
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Tor Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ tor_status_color }}"></div>
-                {{ tor_status }}
-            </div>
-            <button id="show_tor_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
-            <div id="tor_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{tor_status_log}}</pre></div>
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Bitcoin Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ bitcoin_status_color }}"></div>
-                {{ bitcoin_status }}
-            </div>
-            <button id="show_bitcoin_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
-            <div id="bitcoin_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{bitcoin_status_log}}</pre></div>
-            <div class="divider"></div>
-
-            {% if is_bitcoin_synced %}
-            <div class="settings_block_subheader">LND Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ lnd_status_color }}"></div>
-                {{ lnd_status }}
-            </div>
-            <button id="show_lnd_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
-            <div id="lnd_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lnd_status_log}}</pre></div>
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Electrum Server Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ electrs_status_color }}"></div>
-                {{ electrs_status }}
-            </div>
-            <button id="show_electrs_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
-            <div id="electrs_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{electrs_status_log}}</pre></div>
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">RTL Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ rtl_status_color }}"></div>
-                {{ rtl_status }}
-            </div>
-            <button id="show_rtl_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
-            <div id="rtl_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{rtl_status_log}}</pre></div>
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Docker Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ docker_status_color }}"></div>
-                {{ docker_status }}
-            </div>
-            <button id="show_docker_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
-            <div id="docker_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_status_log}}</pre></div>
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Docker Image Build Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ docker_image_build_status_color }}"></div>
-                {{ docker_image_build_status }}
-            </div>
-            <button id="show_docker_image_build_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
-            <div id="docker_image_build_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_image_build_status_log}}</pre></div>
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Dojo Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ dojo_status_color }}"></div>
-                {{ dojo_status }}
-            </div>
-            <button id="show_dojo_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
-            <div id="dojo_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{dojo_status_log}}</pre></div>
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">BTCPay Server Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ btcpayserver_status_color }}"></div>
-                {{ btcpayserver_status }}
-            </div>
-            <button id="show_btcpayserver_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
-            <div id="btcpayserver_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{btcpayserver_status_log}}</pre></div>
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Mempool.Space Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ mempoolspace_status_color }}"></div>
-                {{ mempoolspace_status }}
-            </div>
-            <button id="show_mempoolspace_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
-            <div id="mempoolspace_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{mempoolspace_status_log}}</pre></div>
-            <div class="divider"></div>
-
-            {% endif %}
-
-            <div class="settings_block_subheader">Firewall Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ firewall_status_color }}"></div>
-                {{ firewall_status }}
-            </div>
-            <button id="show_firewall_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
-            <div id="firewall_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{firewall_status_log}}</pre></div>
-
-
+            <div class="settings_block_subheader">Detailed Status</div>
+            <a href="/status" class="ui-button ui-widget ui-corner-all settings_button">Status</a>
         </div>
 
         <div class="settings_block">
@@ -725,7 +557,7 @@
             <div class="settings_block_subheader">Download Debug Logs</div>
             This will download all recent logs from your myNode. This can be helpful for debugging issues.
             <br/>
-            It may take ~60 seconds to gather and download the logs.
+            It may take about one minute to gather and download the logs.
             <br/>
             Do not share these logs in a public place. They may contain sensitive information.
             <br/>
@@ -745,7 +577,7 @@
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Reset</div>
-            Resetting the firewall will disable and re-enable the firewall and then reboot the device.
+            Resetting the firewall will disable and reenable the firewall and then reboot the device.
             <br/>
             <a href="/settings/reset-firewall" class="ui-button ui-widget ui-corner-all settings_button">Reset Firewall</a>
 
@@ -756,14 +588,16 @@
             <div class="settings_block_header">QuickSync</div>
 
             <div class="settings_block_subheader">Toggle QuickSync</div>
-            Disabling QuickSync will remove the QuickSync files and stop the process. 
-            <br/>
-            This may take a long time if Bitcoin is not already synced, but you can reenable QuickSync later.
-            <br/>
             {% if is_quicksync_disabled %}
-            <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Enable QuickSync</a>
+                Enabling QuickSync will help speed up syncing only during the initial block download period. It will also take additional drive space and is not recommeded if using an SSD.
+                <br/>
+                <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Enable QuickSync</a>
             {% else %}
-            <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Disable QuickSync</a>
+                Disabling QuickSync will remove the QuickSync files and stop the process.
+                <br/>
+                This may take a long time if Bitcoin is not already synced, but you can re-enable QuickSync later.
+                <br/>
+                <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Disable QuickSync</a>
             {% endif %}
 
             {% if not is_quicksync_disabled %}
@@ -832,7 +666,14 @@
 
         <div class="settings_block">
             <div class="settings_block_header">Lightning</div>
+
+            <div class="settings_block_subheader">Download Channel Backup</div>
+            This will download the latest copy of your static channel backup file.
+            <br/>
+            <a class="ui-button ui-widget ui-corner-all settings_button" href="/lnd/channel.backup">Download</a>
             
+            <div class="divider"></div>
+
             <div class="settings_block_subheader">Delete Lightning Wallet</div>
             {{lnd_delete_message}}
             Advanced: This will delete your Lightning Wallet.
@@ -876,6 +717,18 @@
             <button id="btc_lnd_tor" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
 
             <div class="divider"></div>
+
+            <div class="settings_block_subheader">Package Upgrade Tor</div>
+            During upgrades, new packages are downloaded and installed. This setting will download and install those packages via tor.
+            <br/><br/>
+            <label class="switch">
+                <input type="checkbox" id="aptget_tor_checkbox" {% if is_aptget_tor_enabled %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <br/><br/>
+            <button id="aptget_tor" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+
+            <div class="divider"></div>
             
             <div class="settings_block_subheader">Reset Tor</div>
             This will reset all of your Tor service settings and regenerate your Onion URLs.
@@ -899,6 +752,15 @@
         </div>
 
         <div class="settings_block">
+            <div class="settings_block_header">Docker</div>
+            
+            <div class="settings_block_subheader">Reset Docker</div>
+            This erases all docker state and state. Docker apps like BTC Pay Server and Dojo will lose all data.
+            <br/>
+            <button id="reset_docker_button">Reset Docker</button>
+        </div>
+
+        <div class="settings_block">
             <div class="settings_block_header">Advanced</div>
 
             <div class="settings_block_subheader">Reset HTTP Certificates</div>
@@ -918,18 +780,20 @@
                 <option value="none" selected="selected">Choose...</option>
                 <option value="bitcoin">Bitcoin</option>
                 <option value="lnd">LND</option>
-                <option value="loopd">Loop</option>
                 <option value="btcrpcexplorer">BTC RPC Explorer</option>
+                <option value="dojo">Dojo</option>
                 <option value="joinmarket">JoinMarket</option>
+                <option value="loopd">Lightning Loop</option>
+                <option value="webssh2">Linux Terminal</option>
                 <option value="lndconnect">LND Connect</option>				
                 <option value="lndhub">LNDHub</option>
-                <option value="mempoolspace">Mempool.Space</option>				
+                <option value="mempoolspace">Mempool</option>	
+                <option value="netdata">Netdata</option>				
                 <option value="rtl">RTL</option>
                 <option value="tor">Tor</option>
                 <option value="ufw">UFW</option>
-                <option value="webssh2">WebSSH2</option>
                 <option value="whirlpool">Whirlpool</option>
-                <option value="dojo">Dojo</option>
+
             </select>
             <button id="reinstall_button">Reinstall</button>
             

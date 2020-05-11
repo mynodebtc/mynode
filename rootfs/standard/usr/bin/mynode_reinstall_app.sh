@@ -30,6 +30,9 @@ elif [ "$APP" = "lndconnect" ]; then
     rm -f  /home/bitcoin/.mynode/.lndconnect_url
 elif [ "$APP" = "lndhub" ]; then
     rm -f /home/bitcoin/.mynode/.lndhub_url
+elif [ "$APP" = "netdata" ]; then
+    systemctl stop netdata
+    docker rmi netdata/netdata || true
 elif [ "$APP" = "mempoolspace" ]; then
     rm -f /mnt/hdd/mynode/settings/mempoolspace_url
     systemctl stop mempoolspace
@@ -51,9 +54,14 @@ elif [ "$APP" = "whirlpool" ]; then
 elif [ "$APP" = "dojo" ]; then
     rm -f /mnt/hdd/mynode/settings/dojo_url
     cd /opt/mynode/dojo/docker/my-dojo/
-    rm -f ./conf/docker-node.conf
-    rm -f ./conf/docker-mysql.conf
-    echo "y" | ./dojo.sh uninstall
+
+    # Stop and uninstall
+    yes | ./dojo.sh uninstall
+
+    # Reset config files
+    cd ~
+    rm -rf /opt/mynode/.dojo
+    rm -rf /opt/mynode/dojo
 else
     echo "UNKNOWN APP: $APP"
     exit 1

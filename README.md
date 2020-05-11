@@ -30,18 +30,19 @@ https://mynodebtc.com/order_now
 Each myNode device comes with a number of wonderful features:
 
 - Bitcoin Node (Bitcoin Core v0.19.1)
-- Lightning Node (LND v0.9.0-beta)
+- Lightning Node (LND v0.10.0-beta)
 - Electrum Server (Electrum Rust Server aka Electrs 0.7.0)
 - BTCPay Server (v1.0.3.153)
-- RTL (Ride the Lightning) - Lightning Wallet (v0.6.7)
-- Samourai Dojo (v1.4.1)
-- Samourai Whirlpool (whirlpool-client-cli v0.10.2)
-- Bitcoin RPC Explorer (v1.1.9)
+- RTL (Ride the Lightning) - Lightning Wallet (v0.7.0)
+- Samourai Dojo (v1.5.0)
+- Samourai Whirlpool (whirlpool-client-cli v0.10.5)
+- BTC RPC Explorer (v2.0.0)
 - Mempool.Space - Mempool local visualizer for the Bitcoin blockchain
-- LND Hub - Lightning Wallet Server (v1.1.3)
-- loopd - A Non-Custodial Off/On Chain Bridge (v0.5.0-beta)
+- LND Hub - Lightning Wallet Server (v1.2.0)
+- Lndmanage (v0.10.0)
+- Lightning Loop - A Non-Custodial Off/On Chain Bridge (v0.6.0-beta)
 - Tor
-- JoinMarket CLI (v0.6.1)
+- JoinMarket CLI (v0.6.2)
 - LND Connect - Generate QR Codes for connecting wallets (v0.2.0)
 - Virtual Machine support (OVA file: VirtualBox, VMWare)
 - VPN for Remote Access (OpenVPN 2.4.7)

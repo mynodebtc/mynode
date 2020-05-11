@@ -38,18 +38,22 @@ set -e
 
 
 # Check for updates (might auto-install all updates later)
-apt-get update
-
+TORIFY=""
+if [ -f /mnt/hdd/mynode/settings/torify_apt_get ]; then
+    TORIFY="torify"
+fi
+export DEBIAN_FRONTEND=noninteractive
+$TORIFY apt-get update
+$TORIFY apt-get -y upgrade
 
 # Install any new software
-export DEBIAN_FRONTEND=noninteractive
-apt-get -y install apt-transport-https
-apt-get -y install fonts-dejavu
-apt-get -y install pv sysstat network-manager unzip pkg-config libfreetype6-dev libpng-dev
-apt-get -y install libatlas-base-dev libffi-dev libssl-dev glances python3-bottle
-apt-get -y -qq install apt-transport-https ca-certificates
-apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
-apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
+$TORIFY apt-get -y install apt-transport-https
+$TORIFY apt-get -y install fonts-dejavu
+$TORIFY apt-get -y install pv sysstat network-manager unzip pkg-config libfreetype6-dev libpng-dev
+$TORIFY apt-get -y install libatlas-base-dev libffi-dev libssl-dev glances python3-bottle
+$TORIFY apt-get -y -qq install apt-transport-https ca-certificates
+$TORIFY apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
+$TORIFY apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
 
 # Make sure some software is removed
 apt-get -y purge ntp # (conflicts with systemd-timedatectl)
@@ -63,11 +67,11 @@ pip install tzupdate virtualenv --no-cache-dir
 # Install any pip3 software
 pip3 install python-bitcointx --no-cache-dir
 pip3 install gnureadline --no-cache-dir
-pip3 install lndmanage==0.9.0 --no-cache-dir   # Install LND Manage (keep up to date with LND)
+pip3 install lndmanage==0.10.0 --no-cache-dir   # Install LND Manage (keep up to date with LND)
 pip3 install docker-compose --no-cache-dir
 
 
-# Install docker
+# Install Docker
 if [ ! -f /usr/bin/docker ]; then
     rm -f /tmp/docker_install.sh
     wget https://get.docker.com -O /tmp/docker_install.sh
@@ -75,7 +79,7 @@ if [ ! -f /usr/bin/docker ]; then
     /bin/bash /tmp/docker_install.sh
 fi
 
-# Use systemd for managing docker
+# Use systemd for managing Docker
 rm -f /etc/init.d/docker
 rm -f /etc/systemd/system/multi-user.target.wants/docker.service
 systemctl -f enable docker.service
@@ -140,7 +144,7 @@ fi
 
 # Upgrade LND
 echo "Upgrading LND..."
-LND_VERSION="v0.9.0-beta"
+LND_VERSION="v0.10.0-beta"
 LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
@@ -177,9 +181,9 @@ if [ "$CURRENT" != "$LND_UPGRADE_URL" ]; then
     fi
 fi
 
-# Upgrade Loopd
+# Upgrade Loop
 echo "Upgrading loopd..."
-LOOP_VERSION="v0.5.0-beta"
+LOOP_VERSION="v0.6.0-beta"
 LOOP_ARCH="loop-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LOOP_ARCH="loop-linux-amd64"
@@ -217,7 +221,7 @@ if [ "$CURRENT" != "$LOOP_UPGRADE_URL" ]; then
 fi
 
 # Install LndHub
-LNDHUB_VERSION="v1.1.3"
+LNDHUB_VERSION="v1.2.0"
 LNDHUB_UPGRADE_URL=https://github.com/BlueWallet/LndHub/archive/${LNDHUB_VERSION}.tar.gz
 LNDHUB_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lndhub_url
 CURRENT=""
@@ -257,43 +261,42 @@ if [ ! -f /usr/include/secp256k1_ecdh.h ]; then
     cp -f include/* /usr/include/
 fi
 
-# Upgrade Joinmarket
+# Upgrade JoinMarket
 echo "Upgrading JoinMarket..."
-if [ $IS_PREMIUM -eq 1 ]; then
-    JOINMARKET_VERSION=0.6.1
-    JOINMARKET_GITHUB_URL=https://github.com/JoinMarket-Org/joinmarket-clientserver.git
-    JOINMARKET_VERSION_FILE=/home/bitcoin/.mynode/.joinmarket_version
+if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
+    JOINMARKET_VERSION=v0.6.2
+    JOINMARKET_UPGRADE_URL=https://github.com/JoinMarket-Org/joinmarket-clientserver/archive/$JOINMARKET_VERSION.tar.gz
+    JOINMARKET_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.joinmarket_version
     CURRENT=""
-    if [ -f $JOINMARKET_VERSION_FILE ]; then
-        CURRENT=$(cat $JOINMARKET_VERSION_FILE)
+    if [ -f $JOINMARKET_UPGRADE_URL_FILE ]; then
+        CURRENT=$(cat $JOINMARKET_UPGRADE_URL_FILE)
     fi
     if [ "$CURRENT" != "$JOINMARKET_VERSION" ]; then
         # Download and build JoinMarket
         cd /opt/mynode
 
-        if [ ! -d /opt/mynode/joinmarket-clientserver ]; then
-            git clone $JOINMARKET_GITHUB_URL
-            cd joinmarket-clientserver
-        else
-            cd joinmarket-clientserver
-            git pull origin master
+        # Backup old version in case config / wallet was stored within folder
+        if [ ! -d /opt/mynode/jm_backup ] && [ -d /opt/mynode/joinmarket-clientserver ]; then
+            cp -R /opt/mynode/joinmarket-clientserver /opt/mynode/jm_backup
+            chown -R bitcoin:bitcoin /opt/mynode/jm_backup
         fi
-        git fetch --tags --all
-        git reset --hard v$JOINMARKET_VERSION
 
-        # Create virtualenv and setup joinmarket
-        virtualenv -p python3 jmvenv
-        source jmvenv/bin/activate
-        python setupall.py --daemon
-        python setupall.py --client-bitcoin
-        deactivate
+        rm -rf joinmarket-clientserver
 
-        echo $JOINMARKET_VERSION > $JOINMARKET_VERSION_FILE
+        sudo -u bitcoin wget $JOINMARKET_UPGRADE_URL -O joinmarket.tar.gz
+        sudo -u bitcoin tar -xvf joinmarket.tar.gz
+        sudo -u bitcoin rm joinmarket.tar.gz
+        mv joinmarket-clientserver-* joinmarket-clientserver
+        
+        cd joinmarket-clientserver
+        yes | ./install.sh --without-qt
+
+        echo $JOINMARKET_VERSION > $JOINMARKET_UPGRADE_URL_FILE
     fi
 fi
 
 # Install Whirlpool
-WHIRLPOOL_UPGRADE_URL=https://github.com/Samourai-Wallet/whirlpool-client-cli/releases/download/0.10.2/whirlpool-client-cli-0.10.2-run.jar
+WHIRLPOOL_UPGRADE_URL=https://github.com/Samourai-Wallet/whirlpool-client-cli/releases/download/0.10.5/whirlpool-client-cli-0.10.5-run.jar
 WHIRLPOOL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.whirlpool_url
 CURRENT=""
 if [ -f $WHIRLPOOL_UPGRADE_URL_FILE ]; then
@@ -310,7 +313,7 @@ fi
 
 
 # Upgrade RTL
-RTL_VERSION="v0.6.7"
+RTL_VERSION="v0.7.0"
 RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/$RTL_VERSION.tar.gz
 RTL_UPGRADE_ASC_URL=https://github.com/Ride-The-Lightning/RTL/releases/download/$RTL_VERSION/$RTL_VERSION.tar.gz.asc
 RTL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.rtl_url
@@ -342,8 +345,8 @@ if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
     fi
 fi
 
-# Upgrade Bitcoin RPC Explorer
-BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v1.1.9.tar.gz
+# Upgrade BTC RPC Explorer
+BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v2.0.0.tar.gz
 BTCRPCEXPLORER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btcrpcexplorer_url
 CURRENT=""
 if [ -f $BTCRPCEXPLORER_UPGRADE_URL_FILE ]; then
@@ -430,8 +433,8 @@ fi
 #     echo $TOR_UPGRADE_URL > $TOR_UPGRADE_URL_FILE
 # fi
 rm -f /usr/local/bin/tor || true
-apt-get remove -y tor	
-apt-get install -y tor
+$TORIFY apt-get remove -y tor	
+$TORIFY apt-get install -y tor
 
 # Enable fan control
 if [ $IS_ROCKPRO64 = 1 ]; then
@@ -440,13 +443,14 @@ fi
 
 
 # Enable any new/required services
+systemctl enable bitcoind
+systemctl enable lnd
 systemctl enable firewall
 systemctl enable invalid_block_check
 systemctl enable usb_driver_check
 systemctl enable https
 systemctl enable docker_images
 systemctl enable glances
-systemctl enable netdata
 systemctl enable webssh2
 systemctl enable tor
 systemctl enable loopd

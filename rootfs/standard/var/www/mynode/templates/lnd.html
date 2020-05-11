@@ -104,12 +104,12 @@
         <div class="app_tile_row">
             <div class="info_tile">
                 <div class="info_tile_header">Manage Wallet</div>
-                <div class="info_tile_contents" style="width: 250px;">
+                <div class="info_tile_contents" style="width: 280px;">
 {% if wallet_exists %}
                     Wallet Created
 {% else %}
-                    <a class="ui-button ui-widget ui-corner-all" style="width: 180px; margin-bottom: 15px;" href="/lnd/create_wallet">Create Wallet</a>
-                    <a class="ui-button ui-widget ui-corner-all" style="width: 180px; margin-bottom: 15px;" href="/lnd/create_wallet_with_seed">Restore Wallet from Seed</a>
+                    <a class="ui-button ui-widget ui-corner-all" style="width: 210px; margin-bottom: 15px;" href="/lnd/create_wallet">Create Wallet</a>
+                    <a class="ui-button ui-widget ui-corner-all" style="width: 210px; margin-bottom: 15px;" href="/lnd/create_wallet_with_seed">Restore Wallet from Seed</a>
 {% endif %}
                 </div>
             </div>
@@ -140,12 +140,6 @@
         <div class="app_tile_row">
 {% if wallet_exists %}
             <div class="info_tile">
-                <div class="info_tile_header">LND Connect</div>
-                <div class="info_tile_contents">
-                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="lndconnect" style="width: 70%;" href="#">LND Connect</a>
-                </div>
-            </div>
-            <div class="info_tile">
                 <div class="info_tile_header">&nbsp;&nbsp;&nbsp;&nbsp;TLS Certificate&nbsp;&nbsp;&nbsp;&nbsp;</div>
                 <div class="info_tile_contents">
                     <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 32%;" href="/lnd/tls.cert">download</a>
@@ -174,12 +168,24 @@
                 </div>
             </div>
 {% endif %}
+            <div class="info_tile">
+                <div class="info_tile_header">LND Config</div>
+                <div class="info_tile_contents">
+                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;" href="/lnd/config">view / edit</a>
+                </div>
+            </div>
         </div>
 {% endif %}
 
 {% if wallet_exists %}
 {% if wallet_logged_in %}
         <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">LND Connect</div>
+                <div class="info_tile_contents">
+                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="lndconnect" style="width: 70%;" href="#">LND Connect</a>
+                </div>
+            </div>
             <div class="info_tile">
                 <div class="info_tile_header">Alias</div>
                 <div class="info_tile_contents">{{alias}} <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="change_alias" href="#"><span class="ui-icon ui-icon-gear"></a></div>
@@ -191,12 +197,6 @@
             <div class="info_tile">
                 <div class="info_tile_header">Local REST Port</div>
                 <div class="info_tile_contents">10080</div>
-            </div>
-            <div class="info_tile">
-                <div class="info_tile_header">LND Config</div>
-                <div class="info_tile_contents">
-                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;" href="/lnd/config">view / edit</a>
-                </div>
             </div>
         </div>
 
@@ -270,7 +270,7 @@
             <thead class="bitcoind_table_header">
                 <td>Chan ID</td>
                 <td>Capacity</td>
-                <td>Local Capaity</td>
+                <td>Local Capacity</td>
                 <td>Remote Capacity</td>
             </thead>
             <tbody>

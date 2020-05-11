@@ -10,7 +10,7 @@ clear
 echo "Step 1: "
 echo "  Install your a Debian Image:"
 echo "  Setup image for use with myNode:"
-echo "    See manual instructions in setup/setup_base_image_debian.txt"
+echo "    See manual instructions in doc/setup_base_image_debian.md"
 echo ""
 echo "Press a key when complete..."
 read -n 1

@@ -11,7 +11,7 @@ echo "Step 1: "
 echo "  Flash SD Card with Raspberry Pi Image: out/base_images/raspi4_base.img.gz"
 echo "  OR"
 echo "  If you would rather create your own base image, follow the"
-echo "  manual instructions in setup/setup_base_image_raspi4.txt"
+echo "  manual instructions in doc/setup_base_image_raspi4.md"
 echo ""
 echo "Press a key when complete..."
 read -n 1

@@ -6,6 +6,7 @@ Description=Bitcoin daemon
 After=network.target mynode.service
 
 [Service]
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_uploader.sh
 ExecStartPre=/bin/sh -c 'cat /mnt/hdd/mynode/quicksync/.quicksync_complete'
 EnvironmentFile=/mnt/hdd/mynode/bitcoin/env
@@ -18,6 +19,8 @@ Type=forking
 KillMode=process
 Restart=always
 Nice=0
+IOAccounting=true
+IOWeight=200
 TimeoutSec=300
 RestartSec=30
 StandardOutput=syslog

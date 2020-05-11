@@ -92,44 +92,60 @@ def get_latest_beta_version():
         beta_version = ""
     return beta_version
 
-def reinstall_app(app):
-    # Upgrade
-    os.system("mkdir -p /home/admin/upgrade_logs")
-    cmd = "/usr/bin/mynode_reinstall_app.sh {} 2>&1".format(app)
-    subprocess.call(cmd, shell=True)
-    
-    # Sync
+def mark_upgrade_started():
+    os.system("touch /tmp/upgrade_started")
     os.system("sync")
-    time.sleep(1)
 
-    # Reboot
-    reboot_device()
+def is_upgrade_running():
+    return os.path.isfile("/tmp/upgrade_started") 
+
+def reinstall_app(app):
+    if not is_upgrade_running():
+        mark_upgrade_started()
+
+        # Upgrade
+        os.system("mkdir -p /home/admin/reinstall_logs")
+        cmd = "/usr/bin/mynode_reinstall_app.sh {} > /home/admin/reinstall_logs/reinstall_{}.txt 2>&1".format(app,app)
+        subprocess.call(cmd, shell=True)
+        
+        # Sync
+        os.system("sync")
+        time.sleep(1)
+
+        # Reboot
+        reboot_device()
 
 def upgrade_device():
-    # Upgrade
-    os.system("mkdir -p /home/admin/upgrade_logs")
-    cmd = "/usr/bin/mynode_upgrade.sh > /home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt 2>&1".format(get_current_version())
-    subprocess.call(cmd, shell=True)
-    
-    # Sync
-    os.system("sync")
-    time.sleep(1)
+    if not is_upgrade_running():
+        mark_upgrade_started()
 
-    # Reboot
-    reboot_device()
+        # Upgrade
+        os.system("mkdir -p /home/admin/upgrade_logs")
+        cmd = "/usr/bin/mynode_upgrade.sh > /home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt 2>&1".format(get_current_version())
+        subprocess.call(cmd, shell=True)
+        
+        # Sync
+        os.system("sync")
+        time.sleep(1)
+
+        # Reboot
+        reboot_device()
 
 def upgrade_device_beta():
-    # Upgrade
-    os.system("mkdir -p /home/admin/upgrade_logs")
-    cmd = "/usr/bin/mynode_upgrade.sh beta > /home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt 2>&1".format(get_current_version())
-    subprocess.call(cmd, shell=True)
-    
-    # Sync
-    os.system("sync")
-    time.sleep(1)
+    if not is_upgrade_running():
+        mark_upgrade_started()
 
-    # Reboot
-    reboot_device()
+        # Upgrade
+        os.system("mkdir -p /home/admin/upgrade_logs")
+        cmd = "/usr/bin/mynode_upgrade.sh beta > /home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt 2>&1".format(get_current_version())
+        subprocess.call(cmd, shell=True)
+        
+        # Sync
+        os.system("sync")
+        time.sleep(1)
+
+        # Reboot
+        reboot_device()
 
 def did_upgrade_fail():
     return os.path.isfile("/mnt/hdd/mynode/settings/upgrade_error")
@@ -149,6 +165,12 @@ def get_recent_upgrade_logs():
             pass
     return logs
 
+#==================================
+# Reseller Info
+#==================================
+def is_device_from_reseller():
+    return os.path.isfile("/opt/mynode/custom/reseller")
+
 
 #==================================
 # Device Info
@@ -156,6 +178,11 @@ def get_recent_upgrade_logs():
 def get_system_uptime():
     uptime = subprocess.check_output('awk \'{print int($1/86400)" days "int($1%86400/3600)" hour(s) "int(($1%3600)/60)" minute(s) "int($1%60)" seconds(s)"}\' /proc/uptime', shell=True)
     uptime = uptime.strip()
+    return uptime
+
+def get_system_uptime_in_seconds():
+    uptime = subprocess.check_output('awk \'{print $1}\' /proc/uptime', shell=True)
+    uptime = int(float(uptime.strip()))
     return uptime
 
 def get_system_date():
@@ -176,6 +203,10 @@ def get_device_type():
     device = subprocess.check_output("mynode-get-device-type", shell=True)
     return device
 
+def get_device_ram():
+    ram = subprocess.check_output("free --giga | grep Mem | awk '{print $2}'", shell=True)
+    return ram
+
 def get_local_ip():
     local_ip = "unknown"
     try:
@@ -194,7 +225,23 @@ def get_device_changelog():
     return changelog
 
 def has_changed_password():
-    return os.path.isfile("/home/bitcoin/.mynode/.hashedpw")
+    try:
+        with open("/home/bitcoin/.mynode/.hashedpw", "r") as f:
+            hashedpw = f.read().strip()
+            if hashedpw != "d0b3cba71f725563d316ea3516099328042095d10f4571be25c07f9ce31985a5":
+                return True
+    except:
+        return False
+    return False
+
+def is_mount_read_only(mnt):
+    with open('/proc/mounts') as f:
+        for line in f:
+            device, mount_point, filesystem, flags, __, __ = line.split()
+            flags = flags.split(',')
+            if mount_point == mnt:
+                return 'ro' in flags
+    return False
 
 
 #==================================
@@ -243,13 +290,10 @@ def get_journalctl_log(service_name):
 # Uploader Functions
 #==================================
 def is_uploader():
-    return os.path.isfile("/home/bitcoin/.mynode/uploader") or \
-           os.path.isfile("/mnt/hdd/mynode/settings/uploader")
+    return os.path.isfile("/mnt/hdd/mynode/settings/uploader")
 def set_uploader():
-    os.system("touch /home/bitcoin/.mynode/uploader")
     os.system("touch /mnt/hdd/mynode/settings/uploader")
 def unset_uploader():
-    os.system("rm -rf /home/bitcoin/.mynode/uploader")
     os.system("rm -rf /mnt/hdd/mynode/settings/uploader")
 
 
@@ -347,6 +391,8 @@ def is_drive_being_repaired():
     return os.path.isfile("/tmp/repairing_drive")
 def has_fsck_error():
     return os.path.isfile("/tmp/fsck_error")
+def clear_fsck_error():
+    os.system("rm -f /tmp/fsck_error")
 def get_fsck_results():
     try:
         with open("/tmp/fsck_results", "r") as f:
@@ -354,6 +400,9 @@ def get_fsck_results():
     except:
         return "ERROR"
     return "ERROR"
+
+def has_sd_rw_error():
+    return os.path.isfile("/tmp/sd_rw_error")
 
 
 #==================================
@@ -380,6 +429,22 @@ def get_docker_image_build_status_color():
     if status_code != 0:
         return "red"
     return "green"
+
+def reset_docker():
+    # Delete docker data
+    os.system("touch /home/bitcoin/reset_docker")
+
+    # Reset marker files
+    os.system("rm -f /mnt/hdd/mynode/settings/webssh2_url")
+    os.system("rm -f /mnt/hdd/mynode/settings/mempoolspace_url")
+    os.system("rm -f /mnt/hdd/mynode/settings/dojo_url")
+
+    # Delete Dojo files
+    os.system("rm -rf /opt/mynode/.dojo")
+    os.system("rm -rf /opt/mynode/dojo")
+
+    os.system("sync")
+    reboot_device()
 
 #==================================
 # Bitcoin Functions
@@ -457,11 +522,22 @@ def is_btc_lnd_tor_enabled():
     return os.path.isfile("/mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
 
 def enable_btc_lnd_tor():
-    os.system("touch mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
+    os.system("touch /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
     os.system("sync")
 
 def disable_btc_lnd_tor():
-    os.system("rm -f mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
+    os.system("rm -f /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
+    os.system("sync")
+
+def is_aptget_tor_enabled():
+    return os.path.isfile("/mnt/hdd/mynode/settings/torify_apt_get")
+
+def enable_aptget_tor():
+    os.system("touch /mnt/hdd/mynode/settings/torify_apt_get")
+    os.system("sync")
+
+def disable_aptget_tor():
+    os.system("rm -f /mnt/hdd/mynode/settings/torify_apt_get")
     os.system("sync")
 
 def get_onion_url_ssh():
@@ -477,7 +553,7 @@ def get_onion_url_general():
     try:
         if os.path.isfile("/var/lib/tor/mynode/hostname"):
             with open("/var/lib/tor/mynode/hostname") as f:
-                return f.read()
+                return f.read().strip()
     except:
         pass
     return "error"
@@ -486,7 +562,7 @@ def get_onion_url_btc():
     try:
         if os.path.isfile("/var/lib/tor/mynode_btc/hostname"):
             with open("/var/lib/tor/mynode_btc/hostname") as f:
-                return f.read()
+                return f.read().strip()
     except:
         pass
     return "error"
@@ -495,7 +571,7 @@ def get_onion_url_lnd():
     try:
         if os.path.isfile("/var/lib/tor/mynode_lnd/hostname"):
             with open("/var/lib/tor/mynode_lnd/hostname") as f:
-                return f.read()
+                return f.read().strip()
     except:
         pass
     return "error"
@@ -504,10 +580,35 @@ def get_onion_url_electrs():
     try:
         if os.path.isfile("/var/lib/tor/mynode_electrs/hostname"):
             with open("/var/lib/tor/mynode_electrs/hostname") as f:
-                return f.read()
+                return f.read().strip()
     except:
         pass
     return "error"
+
+def get_onion_url_btcpay():
+    try:
+        if os.path.isfile("/var/lib/tor/mynode_btcpay/hostname"):
+            with open("/var/lib/tor/mynode_btcpay/hostname") as f:
+                return f.read().strip()
+    except:
+        pass
+    return "error"
+
+def get_onion_info_btc_v2():
+    info = {}
+    info["url"] = "unknown"
+    info["pass"] = "unknown"
+    try:
+        if os.path.isfile("/var/lib/tor/mynode_btc_v2/hostname"):
+            with open("/var/lib/tor/mynode_btc_v2/hostname") as f:
+                content = f.read().strip()
+                parts = content.split(" ")
+                info["url"] = parts[0]
+                info["pass"] = parts[1]
+                return info
+    except:
+        pass
+    return info
 
 
 #==================================
