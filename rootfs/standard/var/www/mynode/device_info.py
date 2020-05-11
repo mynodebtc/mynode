@@ -522,11 +522,22 @@ def is_btc_lnd_tor_enabled():
     return os.path.isfile("/mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
 
 def enable_btc_lnd_tor():
-    os.system("touch mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
+    os.system("touch /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
     os.system("sync")
 
 def disable_btc_lnd_tor():
-    os.system("rm -f mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
+    os.system("rm -f /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
+    os.system("sync")
+
+def is_aptget_tor_enabled():
+    return os.path.isfile("/mnt/hdd/mynode/settings/torify_apt_get")
+
+def enable_aptget_tor():
+    os.system("touch /mnt/hdd/mynode/settings/torify_apt_get")
+    os.system("sync")
+
+def disable_aptget_tor():
+    os.system("rm -f /mnt/hdd/mynode/settings/torify_apt_get")
     os.system("sync")
 
 def get_onion_url_ssh():

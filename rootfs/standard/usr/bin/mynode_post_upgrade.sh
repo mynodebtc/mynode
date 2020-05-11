@@ -38,18 +38,22 @@ set -e
 
 
 # Check for updates (might auto-install all updates later)
+TORIFY=""
+if [ -f /mnt/hdd/mynode/settings/torify_apt_get ]; then
+    TORIFY="torify"
+fi
 export DEBIAN_FRONTEND=noninteractive
-apt-get update
-apt-get -y upgrade
+$TORIFY apt-get update
+$TORIFY apt-get -y upgrade
 
 # Install any new software
-apt-get -y install apt-transport-https
-apt-get -y install fonts-dejavu
-apt-get -y install pv sysstat network-manager unzip pkg-config libfreetype6-dev libpng-dev
-apt-get -y install libatlas-base-dev libffi-dev libssl-dev glances python3-bottle
-apt-get -y -qq install apt-transport-https ca-certificates
-apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
-apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
+$TORIFY apt-get -y install apt-transport-https
+$TORIFY apt-get -y install fonts-dejavu
+$TORIFY apt-get -y install pv sysstat network-manager unzip pkg-config libfreetype6-dev libpng-dev
+$TORIFY apt-get -y install libatlas-base-dev libffi-dev libssl-dev glances python3-bottle
+$TORIFY apt-get -y -qq install apt-transport-https ca-certificates
+$TORIFY apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
+$TORIFY apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
 
 # Make sure some software is removed
 apt-get -y purge ntp # (conflicts with systemd-timedatectl)
@@ -429,8 +433,8 @@ fi
 #     echo $TOR_UPGRADE_URL > $TOR_UPGRADE_URL_FILE
 # fi
 rm -f /usr/local/bin/tor || true
-apt-get remove -y tor	
-apt-get install -y tor
+$TORIFY apt-get remove -y tor	
+$TORIFY apt-get install -y tor
 
 # Enable fan control
 if [ $IS_ROCKPRO64 = 1 ]; then
