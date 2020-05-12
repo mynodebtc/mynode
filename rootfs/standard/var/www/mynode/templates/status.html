@@ -333,6 +333,13 @@
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ dojo_status_color }}"></div>
                 {{ dojo_status }}
+                <span class='status_container_list'>
+                    Running Containers: 
+                    {% if 'tor' in running_containers %} tor {% endif %}
+                    {% if 'nodejs' in running_containers %} nodejs {% endif %}
+                    {% if 'db' in running_containers %} db {% endif %}
+                    {% if 'nginx' in running_containers %} nginx {% endif %}
+                </span>
             </div>
             <button id="show_dojo_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="dojo_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{dojo_status_log}}</pre></div>
@@ -342,6 +349,12 @@
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ btcpayserver_status_color }}"></div>
                 {{ btcpayserver_status }}
+                <span class='status_container_list'>
+                    Running Containers: 
+                    {% if 'btcpayserver_btcpayserver_1' in running_containers %} btcpayserver {% endif %}
+                    {% if 'btcpayserver_nbxplorer_1' in running_containers %} nbxplorer {% endif %}
+                    {% if 'btcpayserver_postgres_1' in running_containers %} postgres {% endif %}
+                </span>
             </div>
             <button id="show_btcpayserver_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="btcpayserver_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{btcpayserver_status_log}}</pre></div>
@@ -351,6 +364,10 @@
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ mempoolspace_status_color }}"></div>
                 {{ mempoolspace_status }}
+                <span class='status_container_list'>
+                    Running Containers: 
+                    {% if 'mempoolspace' in running_containers %} mempoolspace {% endif %}
+                </span>
             </div>
             <button id="show_mempoolspace_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="mempoolspace_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{mempoolspace_status_log}}</pre></div>
