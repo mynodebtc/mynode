@@ -331,8 +331,11 @@ if [ $IS_RASPI -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
         dd if=/dev/zero of=/mnt/hdd/swapfile count=1000 bs=1MiB
         chmod 600 /mnt/hdd/swapfile
     fi
-    mkswap /mnt/hdd/swapfile
-    dphys-swapfile swapon
+    # Only setup swap for low-mem devices
+    if [ "$TOTAL_RAM_GB" -lt "4" ]; then
+        mkswap /mnt/hdd/swapfile
+        dphys-swapfile swapon
+    fi
 fi
 
 
