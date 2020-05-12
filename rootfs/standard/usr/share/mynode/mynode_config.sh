@@ -37,6 +37,7 @@ elif [ $IS_X86 -eq 1 ]; then
     DEVICE_TYPE="debian"
 fi
 
+TOTAL_RAM_GB=$(free --giga | grep Mem | awk '{print $2}')
 
 SERIAL_NUM=$(cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2)
 if [[ "$SERIAL_NUM" == "" ]]; then
