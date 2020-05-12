@@ -446,6 +446,15 @@ def reset_docker():
     os.system("sync")
     reboot_device()
 
+def get_docker_running_containers():
+    containers = []
+    try:
+        text = subprocess.check_output("docker ps --format '{{.Names}}'", shell=True).decode("utf8")
+        containers = text.splitlines()
+    except:
+        containers = ["ERROR"]
+    return containers
+
 #==================================
 # Bitcoin Functions
 #==================================

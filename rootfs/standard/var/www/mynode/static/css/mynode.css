@@ -374,6 +374,9 @@ a:active {
     font-size: 14px;
     font-family: Arial, Helvetica, sans-serif;
 }
+.status_container_list {
+    margin-left: 150px;
+}
 
 .seed_textbox {
     width: 99%;
