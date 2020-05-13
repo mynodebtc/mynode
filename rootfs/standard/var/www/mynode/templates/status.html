@@ -26,6 +26,11 @@
                     $("#lnd_status").show();
                 });
 
+                $("#show_loopd_status").on("click", function() {
+                    $("#show_loopd_status").hide(0);
+                    $("#loopd_status").show();
+                });
+
                 $("#show_lndhub_status").on("click", function() {
                     $("#show_lndhub_status").hide(0);
                     $("#lndhub_status").show();
@@ -282,6 +287,15 @@
             </div>
             <button id="show_lnd_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="lnd_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lnd_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Loop Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ loopd_status_color }}"></div>
+                {{ loopd_status }}
+            </div>
+            <button id="show_loopd_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="loopd_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{loopd_status_log}}</pre></div>
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Electrum Server Status</div>
