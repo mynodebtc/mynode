@@ -1,5 +1,7 @@
 from config import *
 from threading import Timer
+from werkzeug.routing import RequestRedirect
+from flask import flash
 import time
 import os
 import subprocess
@@ -45,6 +47,12 @@ def factory_reset():
 
     # Reboot
     reboot_device()
+
+def check_and_mark_reboot_action(tmp_marker):
+    if os.path.isfile("/tmp/{}".format(tmp_marker)):
+        flash(u'Refresh prevented - action already triggered', category="error")
+        raise RequestRedirect("/")
+    os.system("touch /tmp/{}".format(tmp_marker))
 
 #==================================
 # Manage Versions and Upgrades

@@ -32,6 +32,12 @@
                 </div>
             </div>
             {% endif %}
+            <div class="info_tile">
+                <div class="info_tile_header">Uninstall</div>
+                <div class="info_tile_contents">
+                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;" href="/toggle-dojo-install">Uninstall</a>
+                </div>
+            </div>
         </div>
         </br>
         {% if dojo_enabled and dojo_initialized and electrs_status == "Running" %}
