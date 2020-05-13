@@ -707,7 +707,6 @@ def page_logout():
 @app.route("/about")
 def page_about():
     check_logged_in()
-    check_and_mark_reboot_action("toggle_mainpage")
     templateData = {"ui_settings": read_ui_settings()}
     return render_template('about.html', **templateData)
 

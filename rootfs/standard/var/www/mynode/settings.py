@@ -311,6 +311,8 @@ def page_status():
 def upgrade_page():
     check_logged_in()
 
+    check_and_mark_reboot_action("upgrade")
+
     # Upgrade device
     t = Timer(1.0, upgrade_device)
     t.start()
@@ -327,6 +329,8 @@ def upgrade_page():
 @mynode_settings.route("/settings/upgrade-beta")
 def upgrade_beta_page():
     check_logged_in()
+
+    check_and_mark_reboot_action("upgrade_beta")
 
     # Upgrade device
     t = Timer(1.0, upgrade_device_beta)
@@ -356,6 +360,9 @@ def check_in_page():
 @mynode_settings.route("/settings/reset-blockchain")
 def reset_blockchain_page():
     check_logged_in()
+
+    check_and_mark_reboot_action("reset_blockchain")
+
     t = Timer(1.0, reset_blockchain)
     t.start()
     
@@ -371,6 +378,9 @@ def reset_blockchain_page():
 @mynode_settings.route("/settings/restart-quicksync")
 def restart_quicksync_page():
     check_logged_in()
+
+    check_and_mark_reboot_action("restart_quicksync")
+
     t = Timer(1.0, restart_quicksync)
     t.start()
 
@@ -438,6 +448,9 @@ def rescan_blockchain_page():
 @mynode_settings.route("/settings/reset-docker")
 def reset_docker_page():
     check_logged_in()
+
+    check_and_mark_reboot_action("reset_docker")
+
     t = Timer(1.0, reset_docker)
     t.start()
 
@@ -454,6 +467,9 @@ def reset_docker_page():
 @mynode_settings.route("/settings/reset-electrs")
 def reset_electrs_page():
     check_logged_in()
+
+    check_and_mark_reboot_action("reset_electrs")
+
     t = Timer(1.0, reset_electrs)
     t.start()
 
@@ -483,6 +499,8 @@ def factory_reset_page():
         flash("Invalid Password", category="error")
         return redirect(url_for(".page_settings"))
     else:
+        check_and_mark_reboot_action("factory_reset")
+
         t = Timer(2.0, factory_reset)
         t.start()
 
@@ -549,6 +567,8 @@ def page_lnd_delete_wallet():
         flash("Invalid Password", category="error")
         return redirect(url_for(".page_settings"))
 
+    check_and_mark_reboot_action("delete_lnd_data")
+
     # Successful Auth
     delete_lnd_data()
     
@@ -575,6 +595,8 @@ def page_reset_tor():
         flash("Invalid Password", category="error")
         return redirect(url_for(".page_settings"))
     else:
+        check_and_mark_reboot_action("reset_tor")
+
         # Successful Auth
         reset_tor()
 
@@ -594,6 +616,8 @@ def page_reset_tor():
 @mynode_settings.route("/settings/enable_btc_lnd_tor")
 def page_enable_btc_lnd_tor():
     check_logged_in()
+
+    check_and_mark_reboot_action("enable_btc_lnd_tor")
     
     enable = request.args.get('enable')
     if enable == "1":
@@ -617,6 +641,8 @@ def page_enable_btc_lnd_tor():
 @mynode_settings.route("/settings/enable_aptget_tor")
 def page_enable_aptget_tor():
     check_logged_in()
+
+    check_and_mark_reboot_action("enable_aptget_tor")
     
     enable = request.args.get('enable')
     if enable == "1":
@@ -663,6 +689,8 @@ def regen_electrs_certs_page():
 def reinstall_app_page():
     check_logged_in()
 
+    check_and_mark_reboot_action("reinstall_app")
+
     app = request.args.get('app')
 
     # Re-install app
@@ -681,6 +709,9 @@ def reinstall_app_page():
 @mynode_settings.route("/settings/toggle-uploader")
 def toggle_uploader_page():
     check_logged_in()
+
+    check_and_mark_reboot_action("toggle_uploader")
+
     # Toggle uploader
     if is_uploader():
         unset_uploader()
@@ -703,6 +734,9 @@ def toggle_uploader_page():
 @mynode_settings.route("/settings/toggle-quicksync")
 def toggle_quicksync_page():
     check_logged_in()
+
+    check_and_mark_reboot_action("toggle_quicksync")
+
     # Toggle uploader
     if is_quicksync_enabled():
         t = Timer(1.0, settings_disable_quicksync)
