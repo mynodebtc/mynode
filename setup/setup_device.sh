@@ -332,7 +332,7 @@ if [ "$CURRENT" != "$LOOP_UPGRADE_URL" ]; then
         # Mark current version
         echo $LOOP_UPGRADE_URL > $LOOP_UPGRADE_URL_FILE
     else
-        echo "ERROR UPGRADING LND - GPG FAILED"
+        echo "ERROR UPGRADING LOOP - GPG FAILED"
     fi
 fi
 
