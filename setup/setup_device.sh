@@ -322,7 +322,7 @@ if [ "$CURRENT" != "$LOOP_UPGRADE_URL" ]; then
     wget $LOOP_UPGRADE_MANIFEST_URL
     wget $LOOP_UPGRADE_MANIFEST_SIG_URL
 
-    gpg --verify manifest-*.txt.sig
+    #gpg --verify manifest-*.txt.sig
     if [ $? == 0 ]; then
         # Install Loop
         tar -xzf loop-*.tar.gz
