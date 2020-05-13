@@ -9,8 +9,8 @@ After=lnd.service
 [Service]
 Type=simple
 ExecStart=/usr/bin/unlock_lnd.sh
-User=bitcoin
-Group=bitcoin
+User=root
+Group=root
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=unlock_lnd

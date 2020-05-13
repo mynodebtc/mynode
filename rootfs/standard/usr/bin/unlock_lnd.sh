@@ -3,7 +3,7 @@
 source /usr/share/mynode/mynode_config.sh
 
 # Wait for LND + BTC to start
-sleep 2m
+sleep 1m
 
 while true; do
 
@@ -19,7 +19,14 @@ while true; do
 
     # Sleep 15 seconds to let LND startup and avoid LN race condition
     # See https://github.com/lightningnetwork/lnd/issues/3631
-    /bin/sleep 60s
+    #/bin/sleep 60s
+
+    # Wait for lnd to accept logins
+    until journalctl -r -u lnd --no-pager | head -n 20 | grep "Waiting for wallet encryption password"
+    do
+        sleep 15s
+    done
+    sleep 15s
 
     echo "Unlocking wallet..."
     /usr/bin/expect /usr/bin/unlock_lnd.tcl
