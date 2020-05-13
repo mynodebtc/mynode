@@ -130,6 +130,19 @@ def disable_whirlpool():
     os.system("systemctl stop whirlpool --no-pager")
     os.system("systemctl disable whirlpool --no-pager")
 
+def is_dojo_installed():
+    return os.path.isfile(DOJO_INSTALL_FILE)
+
+def install_dojo():
+    os.system("touch " + DOJO_INSTALL_FILE)
+    os.system("sync")
+
+def uninstall_dojo():
+    os.system("rm -f " + DOJO_INSTALL_FILE)
+    os.system("rf -f /mnt/hdd/mynode/settings/dojo_url")
+    disable_dojo()
+    os.system("sync")
+
 def is_dojo_enabled():
     return is_service_enabled("dojo")
 
