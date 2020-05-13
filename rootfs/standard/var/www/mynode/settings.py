@@ -209,6 +209,7 @@ def page_status():
 
     # Get Status
     lnd_status_log = get_journalctl_log("lnd")
+    loopd_status_log = get_journalctl_log("loopd")
     lndhub_status_log = get_journalctl_log("lndhub")
     tor_status_log = get_journalctl_log("tor@default")
     electrs_status_log = get_journalctl_log("electrs")
@@ -259,6 +260,9 @@ def page_status():
         "lnd_status_log": lnd_status_log,
         "lnd_status": get_service_status_basic_text("lnd"),
         "lnd_status_color": get_service_status_color("lnd"),
+        "loopd_status_log": loopd_status_log,
+        "loopd_status": get_service_status_basic_text("loopd"),
+        "loopd_status_color": get_service_status_color("loopd"),
         "tor_status_log": tor_status_log,
         "tor_status": get_service_status_basic_text("tor@default"),
         "tor_status_color": get_service_status_color("tor@default"),
