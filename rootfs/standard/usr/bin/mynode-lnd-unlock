@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# mynode-lnd-unlock
+# This script needs to be run with sudo
+# It is intended to attempt a manual unlock of the lnd wallet
+set -e 
+
+LND_PASS=$(cat /mnt/hdd/mynode/settings/.lndpw)
+LND_TLS_CERT="/home/bitcoin/.lnd/tls.cert"
+LND_MACAROON="/home/bitcoin/.lnd/data/chain/mainnet/admin.macaroon"
+echo $LND_PASS | lncli --tlscertpath $LND_TLS_CERT --macaroonpath $LND_MACAROON unlock --stdin
