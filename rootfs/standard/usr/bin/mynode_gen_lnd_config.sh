@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Setup Initial LND Node Name
+if [ ! -f /mnt/hdd/mynode/settings/.lndalias ]; then
+    echo "mynodebtc.com [myNode]" > /mnt/hdd/mynode/settings/.lndalias
+fi
+
 # Generate LND Config
 if [ -f /mnt/hdd/mynode/settings/lnd_custom.conf ]; then
     # Use Custom Config
