@@ -37,7 +37,7 @@ Each myNode device comes with a number of wonderful features:
 - Samourai Dojo (v1.5.0)
 - Samourai Whirlpool (whirlpool-client-cli v0.10.5)
 - BTC RPC Explorer (v2.0.0)
-- Mempool.Space - Mempool local visualizer for the Bitcoin blockchain
+- Mempool.Space - (v1.0) Mempool local visualizer for the Bitcoin blockchain
 - LND Hub - Lightning Wallet Server (v1.2.0)
 - Lndmanage (v0.10.0)
 - Lightning Loop - A Non-Custodial Off/On Chain Bridge (v0.6.0-beta)
