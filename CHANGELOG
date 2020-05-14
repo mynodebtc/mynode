@@ -1,3 +1,11 @@
+=== v0.2.07 ===
+- Add Install/Uninstall for Dojo
+- Upgrade BTCPayServer to v1.0.4.4
+- Improve LND login timing
+- Add Loopd log to status page
+- Add mynode-lnd-unlock command
+- Minor improvements
+
 === v0.2.06 ===
 - Add Docker container info to status page
 - Add option to run apt-get upgrade via tor
