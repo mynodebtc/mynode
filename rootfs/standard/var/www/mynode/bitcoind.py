@@ -172,7 +172,7 @@ def bitcoind_status_page():
         local_address = "..."
         if networkdata != None:
             local_address = "not none"
-            if "localaddresses" in networkdata:
+            if ("localaddresses" in networkdata) and (len(networkdata["localaddresses"]) > 0):
                 local_address = "{}:{}".format(networkdata["localaddresses"][0]["address"], networkdata["localaddresses"][0]["port"])
 
         # Balance
