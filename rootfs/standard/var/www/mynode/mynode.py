@@ -696,7 +696,7 @@ def page_login():
     if login(pw):
         return redirect("/")
     else:
-        flash("Invalid Password", category="error")
+        flash(get_login_error_message(), category="error")
         return redirect("/login")
 
 @app.route("/logout")
