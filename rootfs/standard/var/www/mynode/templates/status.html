@@ -193,8 +193,12 @@
                 <tr>
                     <td>Details</td>
                     <td style="padding-left: 20px;">
-                        {% if is_netdata_enabled and is_bitcoin_synced %}
-                        <a id="netdata" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Netdata</a>
+                        {% if is_netdata_enabled %}
+                            {% if is_bitcoin_synced %}
+                                <a id="netdata" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Netdata</a>
+                            {% else %}
+                                <a class="ui-button ui-widget ui-corner-all settings_button_small" href="#" disabled>Netdata - Waiting on Bitcoin</a>
+                            {% endif %}
                         {% endif %}
                         <a id="glances" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Glances</a>
                     </td>
