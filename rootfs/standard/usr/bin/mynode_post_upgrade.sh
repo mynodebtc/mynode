@@ -14,6 +14,12 @@ date
 # Delete ramlog to prevent ram issues
 rm -rf /var/log/*
 
+# Check if upgrdes use tor
+TORIFY=""
+if [ -f /mnt/hdd/mynode/settings/torify_apt_get ]; then
+    TORIFY="torify"
+fi
+
 # Check if any dpkg installs have failed and correct
 dpkg --configure -a
 
@@ -32,16 +38,12 @@ curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/ma
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
 curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
 gpg  --keyserver hkps://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E #loopd
-curl https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import  # tor
+$TORIFY curl https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import  # tor
 gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | apt-key add -                                       # tor
 set -e
 
 
 # Check for updates (might auto-install all updates later)
-TORIFY=""
-if [ -f /mnt/hdd/mynode/settings/torify_apt_get ]; then
-    TORIFY="torify"
-fi
 export DEBIAN_FRONTEND=noninteractive
 $TORIFY apt-get update
 $TORIFY apt-get -y upgrade
