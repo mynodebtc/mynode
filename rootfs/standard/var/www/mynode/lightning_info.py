@@ -249,3 +249,11 @@ def set_lnd_custom_config(config):
 
 def delete_lnd_custom_config():
     os.system("rm -f /mnt/hdd/mynode/settings/lnd_custom.conf")
+
+def get_lnd_alias_file_data():
+    try:
+        with open("/mnt/hdd/mynode/settings/.lndalias", "r") as f:
+            return f.read().strip()
+    except:
+        return "ERROR"
+    return "ERROR"
