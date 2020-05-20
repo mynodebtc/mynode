@@ -139,6 +139,7 @@ def page_settings():
         "product_key_error": pk_error,
         "changelog": changelog,
         "is_bitcoin_synced": is_bitcoind_synced(),
+        "is_installing_docker_images": is_installing_docker_images(),
         "firewall_rules": get_firewall_rules(),
         "is_quicksync_disabled": not quicksync_enabled,
         "is_netdata_enabled": is_netdata_enabled(),
@@ -220,15 +221,6 @@ def page_status():
 
     # Find running containers
     running_containers = get_docker_running_containers()
-    webssh_cont_running = "webssh" in running_containers
-    mempool_cont_running = "mempoolspace" in running_containers
-    dojo_tor_cont_running = "tor" in running_containers
-    dojo_nodejs_cont_running = "nodejs" in running_containers
-    dojo_nginx_cont_running = "nginx" in running_containers
-    dojo_db_cont_running = "db" in running_containers
-    btcpay_btcpay_cont_running = "btcpayserver_btcpayserver_1" in running_containers
-    btcpay_nbxplorer_tor_cont_running = "btcpayserver_nbxplorer_1" in running_containers
-    btcpay_postgres_tor_cont_running = "btcpayserver_postgres_1" in running_containers
 
     templateData = {
         "title": "myNode Status",
@@ -246,6 +238,7 @@ def page_status():
         "product_key_skipped": pk_skipped,
         "product_key_error": pk_error,
         "changelog": changelog,
+        "is_installing_docker_images": is_installing_docker_images(),
         "running_containers": running_containers,
         "startup_status_log": startup_status_log,
         "startup_status": get_service_status_basic_text("mynode"),
