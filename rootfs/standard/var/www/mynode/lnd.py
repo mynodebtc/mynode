@@ -43,7 +43,7 @@ def page_lnd():
     check_logged_in()
 
     height = 0
-    alias = "empty"
+    alias = get_lnd_alias_file_data()
     num_peers = "0"
     num_active_channels = "TODO"
     num_pending_channels = "TODO"
@@ -77,6 +77,7 @@ def page_lnd():
             "title": "myNode Lightning Wallet",
             "wallet_exists": wallet_exists,
             "wallet_logged_in": wallet_logged_in,
+            "alias": alias,
             "status": get_lnd_status(),
             "version": get_lnd_version(),
             "ui_settings": read_ui_settings()
@@ -87,7 +88,6 @@ def page_lnd():
         data = get_lightning_info()
 
         height = data['block_height']
-        alias = data['alias']
         pubkey = data['identity_pubkey']
         if "num_peers" in data:
             num_peers = data['num_peers']
@@ -372,7 +372,7 @@ def page_lnd_change_alias():
     if alias == None or alias == "":
         flash("Empty Alias", category="error")
         return redirect(url_for(".page_lnd"))
-    if len(alias) > 35:
+    if len(alias) > 34:
         flash("Invalid Alias", category="error")
         return redirect(url_for(".page_lnd"))
     with open("/mnt/hdd/mynode/settings/.lndalias", "w") as f:

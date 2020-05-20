@@ -178,58 +178,58 @@
 {% endif %}
 
 {% if wallet_exists %}
-{% if wallet_logged_in %}
-        <div class="app_tile_row">
-            <div class="info_tile">
-                <div class="info_tile_header">LND Connect</div>
-                <div class="info_tile_contents">
-                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="lndconnect" style="width: 70%;" href="#">LND Connect</a>
-                </div>
-            </div>
-            <div class="info_tile">
-                <div class="info_tile_header">Alias</div>
-                <div class="info_tile_contents">{{alias}} <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="change_alias" href="#"><span class="ui-icon ui-icon-gear"></a></div>
-            </div>
-            <div class="info_tile">
-                <div class="info_tile_header">Local gRPC Port</div>
-                <div class="info_tile_contents">10009</div>
-            </div>
-            <div class="info_tile">
-                <div class="info_tile_header">Local REST Port</div>
-                <div class="info_tile_contents">10080</div>
+    <div class="app_tile_row">
+        <div class="info_tile">
+            <div class="info_tile_header">LND Connect</div>
+            <div class="info_tile_contents">
+                <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="lndconnect" style="width: 70%;" href="#">LND Connect</a>
             </div>
         </div>
-
-<!--
-        <div class="app_tile_row">
-            <div class="info_tile">
-                <div class="info_tile_header">Pubkey</div>
-                <div class="info_tile_contents">{{pubkey}}</div>
-            </div>
-            
-            <div class="info_tile">
-                <div class="info_tile_header">IP</div>
-                <div class="info_tile_contents">{{ip}}</div>
-            </div>
-            
+        <div class="info_tile">
+            <div class="info_tile_header">Alias</div>
+            <div class="info_tile_contents">{{alias}} <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="change_alias" href="#"><span class="ui-icon ui-icon-gear"></a></div>
         </div>
--->
-
-        <div class="app_tile_row">
-            <div class="info_tile">
-                <div class="info_tile_header">URI</div>
-                <div class="info_tile_contents">{{uri}}</div>
-            </div>
+        <div class="info_tile">
+            <div class="info_tile_header">Local gRPC Port</div>
+            <div class="info_tile_contents">10009</div>
         </div>
-
-{% else %}
-        <div class="app_tile_row">
-            <div class="info_tile">
-                <div class="info_tile_header">Status</div>
-                <div class="info_tile_contents">{{status}}</div>
-            </div>
+        <div class="info_tile">
+            <div class="info_tile_header">Local REST Port</div>
+            <div class="info_tile_contents">10080</div>
         </div>
+    </div>
 {% endif %}
+
+{% if wallet_logged_in %}
+<!--
+    <div class="app_tile_row">
+        <div class="info_tile">
+            <div class="info_tile_header">Pubkey</div>
+            <div class="info_tile_contents">{{pubkey}}</div>
+        </div>
+        
+        <div class="info_tile">
+            <div class="info_tile_header">IP</div>
+            <div class="info_tile_contents">{{ip}}</div>
+        </div>
+        
+    </div>
+-->
+    <div class="app_tile_row">
+        <div class="info_tile">
+            <div class="info_tile_header">URI</div>
+            <div class="info_tile_contents">{{uri}}</div>
+        </div>
+    </div>
+{% endif %}
+
+{% if not wallet_logged_in %}
+    <div class="app_tile_row">
+        <div class="info_tile">
+            <div class="info_tile_header">Status</div>
+            <div class="info_tile_contents">{{status}}</div>
+        </div>
+    </div>
 {% endif %}
 
 {% if wallet_exists and wallet_logged_in %}
@@ -361,7 +361,7 @@
                 <p>Please enter a new alias and your current password.</p>
                 <b>New Alias:</b>
                 <br/>
-                <input type="text" name="alias" id="alias" value="" class="text ui-widget-content ui-corner-all" size="35" maxlength="35">
+                <input type="text" name="alias" id="alias" value="" class="text ui-widget-content ui-corner-all" size="34" maxlength="34">
                 <br/><br/>
                 <b>Password:</b>
                 <br/>
