@@ -1,3 +1,9 @@
+=== v0.2.08 ===
+- Rate limit web logins to 5 failures / 5 min
+- Show more lnd info while logging in
+- Fix lnd restart issue
+- Bug fixes and UI enhancements
+
 === v0.2.07 ===
 - Add Install/Uninstall for Dojo
 - Upgrade BTCPayServer to v1.0.4.4
