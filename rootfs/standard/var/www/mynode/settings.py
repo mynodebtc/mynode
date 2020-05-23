@@ -134,6 +134,7 @@ def page_settings():
         "serial_number": serial_number,
         "device_type": device_type,
         "device_ram": device_ram,
+        "swap_size": get_swap_size(),
         "product_key": product_key,
         "product_key_skipped": pk_skipped,
         "product_key_error": pk_error,
@@ -757,6 +758,8 @@ def ping_page():
 
 @mynode_settings.route("/settings/toggle-darkmode")
 def toggle_darkmode_page():
+    check_logged_in()
+
     if is_darkmode_enabled():
         disable_darkmode()
     else:
@@ -765,8 +768,32 @@ def toggle_darkmode_page():
 
 @mynode_settings.route("/settings/toggle-netdata")
 def toggle_netdata_page():
+    check_logged_in()
+
     if is_netdata_enabled():
         disable_netdata()
     else:
         enable_netdata()
     return redirect("/settings")
+
+@mynode_settings.route("/settings/modify-swap")
+def modify_swap_page():
+    check_logged_in()
+
+    check_and_mark_reboot_action("modify_swap")
+
+    size = request.args.get('size')
+    set_swap_size(size)
+
+    # Trigger reboot
+    t = Timer(1.0, reboot_device)
+    t.start()
+
+    # Display wait page
+    templateData = {
+        "title": "myNode Reboot",
+        "header_text": "Restarting",
+        "subheader_text": "This will take several minutes...",
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('reboot.html', **templateData)

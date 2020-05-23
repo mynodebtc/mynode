@@ -74,7 +74,7 @@ fi
 
 
 # Verify we are in a clean state
-if [ $IS_RASPI -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
+if [ $IS_RASPI -eq 1 ] || [ $IS_ROCK64 -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
     dphys-swapfile swapoff || true
     dphys-swapfile uninstall || true
 fi
@@ -321,14 +321,23 @@ chown bitcoin:bitcoin /mnt/hdd/mynode/
 
 
 # Setup swap on new HDD
-if [ $IS_RASPI -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
-    if [ ! -f /mnt/hdd/swapfile ]; then
-        dd if=/dev/zero of=/mnt/hdd/swapfile count=1000 bs=1MiB
-        chmod 600 /mnt/hdd/swapfile
+if [ ! -f /mnt/hdd/mynode/settings/swap_size ]; then
+    # Set defaults
+    touch /mnt/hdd/mynode/settings/swap_size
+    echo "2" > /mnt/hdd/mynode/settings/swap_size
+    sed -i "s|CONF_SWAPSIZE=.*|CONF_SWAPSIZE=2048|" /etc/dphys-swapfile
+else
+    # Update swap config file in case upgrade overwrote file
+    SWAP=$(cat /mnt/hdd/mynode/settings/swap_size)
+    SWAP_MB=$(($SWAP * 1024))
+    sed -i "s|CONF_SWAPSIZE=.*|CONF_SWAPSIZE=$SWAP_MB|" /etc/dphys-swapfile
+fi
+if [ $IS_RASPI -eq 1 ] || [ $IS_ROCK64 -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
+    SWAP=$(cat /mnt/hdd/mynode/settings/swap_size)
+    if [ "$SWAP" -ne "0" ]; then
+        dphys-swapfile install
+        dphys-swapfile swapon
     fi
-
-    mkswap /mnt/hdd/swapfile
-    dphys-swapfile swapon
 fi
 
 

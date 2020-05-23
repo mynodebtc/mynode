@@ -319,6 +319,20 @@
                     window.location.href='/settings/reinstall-app?app='+reinstall_app_choice
                 });
 
+                var swap_choice="";
+                $("#swap_size").selectmenu( {
+                    change: function( event, data ) {
+                        swap_choice = data.item.value;
+                        $("#swap_button").button("enable");
+                    }
+                });
+                $("#swap_button").button({
+                    disabled: true
+                });
+                $("#swap_button").on("click", function() {
+                    window.location.href='/settings/modify-swap?size='+swap_choice
+                });
+
                 $('#btc_lnd_tor_checkbox').change(function () {
                     $("#btc_lnd_tor").show();
                 });
@@ -804,6 +818,24 @@
 
             </select>
             <button id="reinstall_button">Reinstall</button>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Swap</div>
+            Devices can use space on the external drive as additional RAM. The default is to use 2GB of space on the drive as additional memory, but this can be changed.
+            <br/><br/>
+            Modifying the amount of swap can affect overall performance. Saving will reboot the device.
+            
+            <br/><br/>
+            
+            <select name="swap_size" id="swap_size">
+                <option value="0" {% if swap_size == "0" %}selected="selected"{% endif %}>No Swap</option>
+                <option value="1" {% if swap_size == "1" %}selected="selected"{% endif %}>1 GB</option>
+                <option value="2" {% if swap_size == "2" %}selected="selected"{% endif %}>2 GB</option>
+                <option value="3" {% if swap_size == "3" %}selected="selected"{% endif %}>3 GB</option>
+                <option value="4" {% if swap_size == "4" %}selected="selected"{% endif %}>4 GB</option>
+            </select>
+            <button id="swap_button">Save</button>
             
             <div class="divider"></div>
 
