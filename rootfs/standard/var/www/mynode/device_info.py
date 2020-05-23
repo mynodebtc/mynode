@@ -9,6 +9,27 @@ import subprocess
 # Globals
 local_ip = "unknown"
 
+#==================================
+# Utilities
+#==================================
+def get_file_contents(filename):
+    contents = "UNKNOWN"
+    try:
+        with open(filename, "r") as f:
+            contents = f.read().strip()
+    except:
+        contents = "ERROR"
+    return contents
+
+def set_file_contents(filename, data):
+    try:
+        with open(filename, "w") as f:
+            f.write(data)
+        os.system("sync")
+        return True
+    except:
+        return False
+    return False
 
 #==================================
 # Manage Device
@@ -251,6 +272,13 @@ def is_mount_read_only(mnt):
                 return 'ro' in flags
     return False
 
+def set_swap_size(size):
+    size_mb = int(size) * 1024
+    os.system("sed -i 's|CONF_SWAPSIZE=.*|CONF_SWAPSIZE={}|' /etc/dphys-swapfile".format(size_mb))
+    return set_file_contents("/mnt/hdd/mynode/settings/swap_size", size)
+
+def get_swap_size():
+    return get_file_contents("/mnt/hdd/mynode/settings/swap_size")
 
 #==================================
 # Service Status, Enabled, Logs, etc...

@@ -13,7 +13,7 @@
 
 # set size to absolute value, leaving empty (default) then uses computed value
 #   you most likely don't want this, unless you have an special disk situation
-#######################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################CONF_SWAPSIZE=100100
+#CONF_SWAPSIZE=100100
 
 # set size to computed value, this times RAM size, dynamically adapts,
 #   guarantees that there is enough swap without wasting disk space on excess
@@ -23,5 +23,9 @@
 #   can be set to empty for no limit, but beware of filled partitions!
 #   this is/was a (outdated?) 32bit kernel limit (in MBytes), do not overrun it
 #   but is also sensible on 64bit to prevent filling /var or even / partition
-CONF_MAXSWAP=1024
+#CONF_MAXSWAP=8000
+
+# myNode Settings
+CONF_SWAPSIZE=2048
+CONF_MAXSWAP=8000
 CONF_SWAPFILE=/mnt/hdd/swapfile
