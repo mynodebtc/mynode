@@ -4,12 +4,20 @@
         {% include 'includes/head.html' %}
 
         <script>
-            function redirectHome() {
-                window.location.replace("/");
-            }
-
             $(document).ready(function() {
-                setInterval(redirectHome, 30000);
+                function redirectHome() {
+                    window.location.replace("/");
+                }
+
+                function checkStatus() {
+                    var jqxhr = $.get("/settings/ping", function() {})
+                    .fail(function() {
+                        setTimeout(redirectHome, 5000)
+                    })
+                }
+                
+                checkStatus()
+                setInterval(checkStatus, 2500);
             });
         </script>
 
@@ -21,8 +29,14 @@
         <div class="state_header">{{ header_text }}</div>
         <div class="state_subheader">
             {{ subheader_text }}
+
+            <br/>
+            <p class="shutoff_warning">Your myNode is shutting down.</p>
+
+            <p class="shutoff_warning">You will need to power cycle the device to turn it back on.</p>
             
             <br/><br/>
+            <img class="loading_image" src="{{ url_for('static', filename="images/loading.gif")}}"/>
         </div>
 
      </body>

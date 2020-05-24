@@ -420,7 +420,6 @@ def shutdown_device_page():
     templateData = {
         "title": "myNode Shutdown",
         "header_text": "Shutting down...",
-        "subheader_text": Markup("Your myNode is shutting down.<br/><br/>You will need to power cycle the device to turn it back on."),
         "ui_settings": read_ui_settings()
     }
     return render_template('shutdown.html', **templateData)
