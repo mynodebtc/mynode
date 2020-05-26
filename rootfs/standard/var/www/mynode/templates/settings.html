@@ -217,6 +217,16 @@
                     }
                 });
 
+                $("#show_upgrade_status").on("click", function() {
+                    $("#show_upgrade_status").hide(0);
+                    $("#upgrade_status").show();
+                });
+
+                $("#show_upgrade_status_beta").on("click", function() {
+                    $("#show_upgrade_status_beta").hide(0);
+                    $("#upgrade_status_beta").show();
+                });
+
                 $("#upgrade_changelog").on("click", function() {
                     $.get("https://raw.githubusercontent.com/mynodebtc/mynode/master/CHANGELOG")
                         .done(function( data ) {
