@@ -297,6 +297,7 @@
             <div id="lnd_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lnd_status_log}}</pre></div>
             <div class="divider"></div>
 
+            {% if lnd_wallet_exists %}
             <div class="settings_block_subheader">Loop Status</div>
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ loopd_status_color }}"></div>
@@ -305,6 +306,7 @@
             <button id="show_loopd_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="loopd_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{loopd_status_log}}</pre></div>
             <div class="divider"></div>
+            {% endif %}
 
             <div class="settings_block_subheader">Electrum Server Status</div>
             <div class="settings_block_subheader_status">
