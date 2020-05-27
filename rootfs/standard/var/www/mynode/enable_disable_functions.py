@@ -41,6 +41,18 @@ def disable_electrs():
     os.system("systemctl disable electrs --no-pager")
 
 
+def is_rtl_enabled():
+    return is_service_enabled("rtl")
+
+def enable_rtl():
+    os.system("systemctl enable rtl --no-pager")
+    os.system("systemctl start rtl --no-pager")
+
+def disable_rtl():
+    os.system("systemctl stop rtl --no-pager")
+    os.system("systemctl disable rtl --no-pager")
+
+
 def is_btcrpcexplorer_enabled():
     if os.path.isfile(BTCRPCEXPLORER_ENABLED_FILE):
         return True
