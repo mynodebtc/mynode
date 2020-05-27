@@ -192,6 +192,13 @@ a:active {
     -moz-border-radius: 50%;
     -webkit-border-radius: 50%;
 }
+.app_tooltip {
+    width: 14px;
+    height: 14px;
+    position: absolute;
+    top: 5px;
+    left: 130px;
+}
 .app_logo {
     margin: auto;
     height: 55px;
