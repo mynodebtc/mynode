@@ -87,8 +87,10 @@ def page_lnd():
     try:
         data = get_lightning_info()
 
-        height = data['block_height']
-        pubkey = data['identity_pubkey']
+        if "block_height" in data:
+            height = data['block_height']
+        if "identity_pubkey" in data:
+            pubkey = data['identity_pubkey']
         if "num_peers" in data:
             num_peers = data['num_peers']
         if "synced_to_chain" in data and data['synced_to_chain']:
