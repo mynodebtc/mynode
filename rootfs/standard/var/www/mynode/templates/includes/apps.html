@@ -7,7 +7,10 @@
         <div class="app_status">{% if not lnd_ready %}Waiting on LND...{% else %}{{ rtl_status }}{% endif %}</div>
         <div class="app_contents">
             {% if lnd_ready %}
-            <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="rtl">RTL</a>
+                {% if rtl_enabled %}
+                <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="rtl">RTL</a>
+                {% endif %}
+                <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-rtl" id="toggle-rtl">{% if rtl_enabled %}Disable{% else %}Enable{% endif %}</a>
             {% endif %}
         </div>
     </div>

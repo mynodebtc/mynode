@@ -366,11 +366,12 @@ def index():
 
         # Find RTL status
         if lnd_ready:
-            status_code = get_service_status_code("rtl")
-            if status_code != 0:
-                rtl_status_color = "red"
-            else:
-                rtl_status_color = "green"
+            if is_rtl_enabled():
+                status_code = get_service_status_code("rtl")
+                if status_code != 0:
+                    rtl_status_color = "red"
+                else:
+                    rtl_status_color = "green"
 
         # Find electrs status
         if is_electrs_enabled():
@@ -473,6 +474,7 @@ def index():
             "electrs_active": electrs_active,
             "rtl_status_color": rtl_status_color,
             "rtl_status": rtl_status,
+            "rtl_enabled": is_rtl_enabled(),
             "lndhub_status_color": lndhub_status_color,
             "lndhub_enabled": is_lndhub_enabled(),
             "explorer_ready": explorer_ready,
@@ -579,6 +581,15 @@ def page_toggle_electrs():
         disable_electrs()
     else:
         enable_electrs()
+    return redirect("/")
+
+@app.route("/toggle-rtl")
+def page_toggle_rtl():
+    check_logged_in()
+    if is_rtl_enabled():
+        disable_rtl()
+    else:
+        enable_rtl()
     return redirect("/")
 
 @app.route("/toggle-btcrpcexplorer")
