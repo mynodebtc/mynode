@@ -1,3 +1,12 @@
+=== v0.2.09 ===
+- Upgrade Bitcoin to 0.20.0
+- Add Caravan
+- Set swap size default to 2GB
+- Swap size is configurable
+- Add reboot/shutdown to home page
+- UI Improvements
+- Bug fixes
+
 === v0.2.08 ===
 - Rate limit web logins to 5 failures / 5 min
 - Show more lnd info while logging in
