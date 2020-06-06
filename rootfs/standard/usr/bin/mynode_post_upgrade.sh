@@ -490,7 +490,7 @@ fi
 rm -f /usr/local/bin/tor || true
 TOR_VERSION=$(tor --version)
 if [[ "$TOR_VERSION" != *"Tor version 0.4"* ]]; then
-    $TORIFY apt-get remove -y tor	
+    $TORIFY apt-get remove -y tor
     $TORIFY apt-get install -y tor
 fi
 
