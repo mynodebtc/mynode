@@ -14,7 +14,7 @@ date
 # Delete ramlog to prevent ram issues
 rm -rf /var/log/*
 
-# Check if upgrdes use tor
+# Check if upgrades use tor
 TORIFY=""
 if [ -f /mnt/hdd/mynode/settings/torify_apt_get ]; then
     TORIFY="torify"
@@ -401,7 +401,7 @@ if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
 fi
 
 # Upgrade BTC RPC Explorer
-BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v2.0.0.tar.gz
+BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v2.0.1.tar.gz
 BTCRPCEXPLORER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btcrpcexplorer_url
 CURRENT=""
 if [ -f $BTCRPCEXPLORER_UPGRADE_URL_FILE ]; then
