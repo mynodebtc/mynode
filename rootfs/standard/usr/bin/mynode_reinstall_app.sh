@@ -24,6 +24,8 @@ elif [ "$APP" = "loopd" ]; then
     rm -f /home/bitcoin/.mynode/.loop_url
 elif [ "$APP" = "btcrpcexplorer" ]; then
     rm -f /home/bitcoin/.mynode/.btcrpcexplorer_url
+elif [ "$APP" = "caravan" ]; then
+    rm -f /home/bitcoin/.mynode/.caravan_url
 elif [ "$APP" = "joinmarket" ]; then
     rm -f /home/bitcoin/.mynode/.joinmarket_url
 elif [ "$APP" = "lndconnect" ]; then

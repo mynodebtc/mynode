@@ -121,7 +121,7 @@ apt-get -y install libfreetype6-dev libpng-dev libatlas-base-dev libgmp-dev libl
 apt-get -y install libffi-dev libssl-dev glances python3-bottle automake libtool libltdl7
 apt -y -qq install apt-transport-https ca-certificates
 apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
-apt-get -y install zlib1g-dev
+apt-get -y install zlib1g-dev libudev-dev libusb-1.0-0-dev python3-venv
 
 
 # Make sure some software is removed
@@ -368,6 +368,57 @@ if [ "$CURRENT" != "$LNDHUB_UPGRADE_URL" ]; then
 fi
 cd ~
 
+# Install Caravan
+CARAVAN_VERSION="v0.2.0"
+CARAVAN_UPGRADE_URL=https://github.com/unchained-capital/caravan/archive/${CARAVAN_VERSION}.tar.gz
+CARAVAN_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.caravan_url
+CURRENT=""
+if [ -f $CARAVAN_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $CARAVAN_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$CARAVAN_UPGRADE_URL" ]; then
+    cd /opt/mynode
+    rm -rf caravan
+
+    rm -f caravan.tar.gz
+    wget $CARAVAN_UPGRADE_URL -O caravan.tar.gz
+    tar -xzf caravan.tar.gz 
+    rm -f caravan.tar.gz
+    mv caravan-* caravan
+    chown -R bitcoin:bitcoin caravan
+
+    cd caravan
+    sudo -u bitcoin npm install --only=production
+    sed -i 's/HTTPS=true/HTTPS=false/g' ./package.json || true
+    echo $CARAVAN_UPGRADE_URL > $CARAVAN_UPGRADE_URL_FILE
+fi
+cd ~
+
+
+# Install cors proxy (my fork)
+CORSPROXY_UPGRADE_URL=https://github.com/tehelsper/CORS-Proxy/archive/v1.6.0.tar.gz
+CORSPROXY_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.corsproxy_url
+CURRENT=""
+if [ -f $CORSPROXY_UPGRADE_URL ]; then
+    CURRENT=$(cat $CORSPROXY_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$CORSPROXY_UPGRADE_URL" ]; then
+    cd /opt/mynode
+    rm -rf corsproxy
+
+    rm -f corsproxy.tar.gz
+    wget $CORSPROXY_UPGRADE_URL -O corsproxy.tar.gz
+    tar -xzf corsproxy.tar.gz 
+    rm -f corsproxy.tar.gz
+    mv CORS-* corsproxy
+
+    cd corsproxy
+    npm install
+    echo $CORSPROXY_UPGRADE_URL > $CORSPROXY_UPGRADE_URL_FILE
+fi
+cd ~
+
+
 # Install Electrs (only build to save new version, now included in overlay)
 #cd /home/admin/download
 #wget https://github.com/romanz/electrs/archive/v0.7.0.tar.gz
@@ -589,6 +640,7 @@ systemctl enable glances
 #systemctl enable netdata # DISABLED BY DEFAULT
 systemctl enable webssh2
 systemctl enable rotate_logs
+systemctl enable corsproxy_btcrpc
 
 
 # Regenerate MAC Address for Armbian devices

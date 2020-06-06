@@ -56,6 +56,7 @@ $TORIFY apt-get -y install libatlas-base-dev libffi-dev libssl-dev glances pytho
 $TORIFY apt-get -y -qq install apt-transport-https ca-certificates
 $TORIFY apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
 $TORIFY apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
+$TORIFY apt-get -y install libudev-dev libusb-1.0-0-dev python3-venv
 
 # Make sure some software is removed
 apt-get -y purge ntp # (conflicts with systemd-timedatectl)
@@ -247,6 +248,58 @@ if [ "$CURRENT" != "$LNDHUB_UPGRADE_URL" ]; then
     echo $LNDHUB_UPGRADE_URL > $LNDHUB_UPGRADE_URL_FILE
 fi
 cd ~
+
+
+# Install Caravan
+CARAVAN_VERSION="v0.2.0"
+CARAVAN_UPGRADE_URL=https://github.com/unchained-capital/caravan/archive/${CARAVAN_VERSION}.tar.gz
+CARAVAN_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.caravan_url
+CURRENT=""
+if [ -f $CARAVAN_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $CARAVAN_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$CARAVAN_UPGRADE_URL" ]; then
+    cd /opt/mynode
+    rm -rf caravan
+
+    rm -f caravan.tar.gz
+    wget $CARAVAN_UPGRADE_URL -O caravan.tar.gz
+    tar -xzf caravan.tar.gz 
+    rm -f caravan.tar.gz
+    mv caravan-* caravan
+    chown -R bitcoin:bitcoin caravan
+
+    cd caravan
+    sudo -u bitcoin npm install --only=production
+    sed -i 's/HTTPS=true/HTTPS=false/g' ./package.json || true
+    echo $CARAVAN_UPGRADE_URL > $CARAVAN_UPGRADE_URL_FILE
+fi
+cd ~
+
+
+# Install cors proxy (my fork)
+CORSPROXY_UPGRADE_URL=https://github.com/tehelsper/CORS-Proxy/archive/v1.6.0.tar.gz
+CORSPROXY_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.corsproxy_url
+CURRENT=""
+if [ -f $CORSPROXY_UPGRADE_URL ]; then
+    CURRENT=$(cat $CORSPROXY_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$CORSPROXY_UPGRADE_URL" ]; then
+    cd /opt/mynode
+    rm -rf corsproxy
+
+    rm -f corsproxy.tar.gz
+    wget $CORSPROXY_UPGRADE_URL -O corsproxy.tar.gz
+    tar -xzf corsproxy.tar.gz 
+    rm -f corsproxy.tar.gz
+    mv CORS-* corsproxy
+
+    cd corsproxy
+    npm install
+    echo $CORSPROXY_UPGRADE_URL > $CORSPROXY_UPGRADE_URL_FILE
+fi
+cd ~
+
 
 # Install recent version of secp256k1
 echo "Installing secp256k1..."
@@ -457,6 +510,7 @@ systemctl enable webssh2
 systemctl enable tor
 systemctl enable loopd
 systemctl enable rotate_logs
+systemctl enable corsproxy_btcrpc
 
 # Disable any old services
 systemctl disable hitch || true

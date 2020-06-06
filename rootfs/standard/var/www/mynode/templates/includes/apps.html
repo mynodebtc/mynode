@@ -141,3 +141,22 @@
         </div>
     </div>
 </div>
+
+<div class="app_tile_row">
+    <div class="app_tile">
+        <div class="app_status_icon {{ caravan_status_color }}"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/caravan.png")}}"/></div>
+        <div class="app_title">Caravan</div>
+        <div class="app_status">{{ caravan_status }}</div>
+        <div class="app_contents">
+            {% if caravan_enabled %}
+                {% if caravan_ready %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="/caravan">Info</a>
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-caravan">Disable</a>
+                {% endif %}
+            {% else %}
+                <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-caravan">Enable</a>
+            {% endif %}
+        </div>
+    </div>
+</div>

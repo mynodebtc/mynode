@@ -101,6 +101,18 @@ def disable_btcpayserver():
     os.system("systemctl disable btcpayserver --no-pager")
 
 
+def is_caravan_enabled():
+    return is_service_enabled("caravan")
+
+def enable_caravan():
+    os.system("systemctl enable caravan --no-pager")
+    os.system("systemctl start caravan --no-pager")
+
+def disable_caravan():
+    os.system("systemctl stop caravan --no-pager")
+    os.system("systemctl disable caravan --no-pager")
+
+
 def is_vpn_enabled():
     if os.path.isfile(VPN_ENABLED_FILE):
         return True
