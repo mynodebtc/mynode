@@ -281,7 +281,7 @@ cd ~
 CORSPROXY_UPGRADE_URL=https://github.com/tehelsper/CORS-Proxy/archive/v1.6.0.tar.gz
 CORSPROXY_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.corsproxy_url
 CURRENT=""
-if [ -f $CORSPROXY_UPGRADE_URL ]; then
+if [ -f $CORSPROXY_UPGRADE_URL_FILE ]; then
     CURRENT=$(cat $CORSPROXY_UPGRADE_URL_FILE)
 fi
 if [ "$CURRENT" != "$CORSPROXY_UPGRADE_URL" ]; then
@@ -488,8 +488,12 @@ fi
 #     echo $TOR_UPGRADE_URL > $TOR_UPGRADE_URL_FILE
 # fi
 rm -f /usr/local/bin/tor || true
-$TORIFY apt-get remove -y tor	
-$TORIFY apt-get install -y tor
+TOR_VERSION=$(tor --version)
+if [[ "$TOR_VERSION" != *"Tor version 0.4"* ]]; then
+    $TORIFY apt-get remove -y tor	
+    $TORIFY apt-get install -y tor
+fi
+
 
 # Enable fan control
 if [ $IS_ROCKPRO64 = 1 ]; then
