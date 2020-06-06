@@ -147,7 +147,7 @@ fi
 
 # Upgrade LND
 echo "Upgrading LND..."
-LND_VERSION="v0.10.0-beta"
+LND_VERSION="v0.10.1-beta"
 LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
