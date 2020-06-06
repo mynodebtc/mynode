@@ -497,6 +497,15 @@ if [ $IS_ROCKPRO64 = 1 ]; then
 fi
 
 
+# Cleanup MOTD
+rm -f /etc/update-motd.d/10-armbian-header || true
+rm -f /etc/update-motd.d/30-armbian-sysinfo || true
+rm -f /etc/update-motd.d/35-armbian-tips || true
+rm -f /etc/update-motd.d/40-armbian-updates || true
+rm -f /etc/update-motd.d/41-armbian-config || true
+rm -f /etc/update-motd.d/98-armbian-autoreboot-warn || true
+
+
 # Enable any new/required services
 systemctl enable bitcoind
 systemctl enable lnd
