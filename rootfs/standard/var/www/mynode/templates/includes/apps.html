@@ -149,13 +149,17 @@
         <div class="app_title">Caravan</div>
         <div class="app_status">{{ caravan_status }}</div>
         <div class="app_contents">
-            {% if caravan_enabled %}
-                {% if caravan_ready %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="/caravan">Info</a>
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-caravan">Disable</a>
-                {% endif %}
+            {% if product_key_skipped %}
+                Premium Feature
             {% else %}
-                <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-caravan">Enable</a>
+                {% if caravan_enabled %}
+                    {% if caravan_ready %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="/caravan">Info</a>
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-caravan">Disable</a>
+                    {% endif %}
+                {% else %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-caravan">Enable</a>
+                {% endif %}
             {% endif %}
         </div>
     </div>
