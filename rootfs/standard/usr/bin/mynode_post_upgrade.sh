@@ -98,7 +98,7 @@ usermod -aG docker root
 
 # Upgrade BTC
 echo "Upgrading BTC..."
-BTC_VERSION="0.19.1"
+BTC_VERSION="0.20.0"
 ARCH="UNKNOWN"
 if [ $IS_RASPI = 1 ]; then
     ARCH="arm-linux-gnueabihf"
