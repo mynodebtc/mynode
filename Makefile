@@ -43,6 +43,9 @@ out/base_images/raspi4_base.img.gz:
 out/base_images/rock64_base.img.gz:
 	@mkdir -p out/base_images/
 	@wget http://mynodebtc.com/device/mynode_images/rock64_base.img.gz -O out/base_images/rock64_base.img.gz
+out/base_images/odroidn2_base.img.gz:
+	@mkdir -p out/base_images/
+	@wget http://bitcorn.wtf/mynode/odroidn2_base.img.gz -O out/base_images/odroidn2_base.img.gz
 out/base_images/rockpro64_base.img.gz:
 	@mkdir -p out/base_images/
 	@wget http://mynodebtc.com/device/mynode_images/rockpro64_base.img.gz -O out/base_images/rockpro64_base.img.gz
@@ -62,6 +65,11 @@ setup_new_rock64: start_file_server out/base_images/rock64_base.img.gz rootfs
 setup_new_rockpro64: start_file_server out/base_images/rockpro64_base.img.gz rootfs
 	@cp -f setup/setup_device.sh out/setup_device.sh 
 	@/bin/bash scripts/setup_new_rockpro64.sh
+
+.PHONY: setup_new_odroidn2
+setup_new_odroidn2: start_file_server out/base_images/odroidn2_base.img.gz rootfs
+	@cp -f setup/setup_device.sh out/setup_device.sh 
+	@/bin/bash scripts/setup_new_odroidn2.sh
 
 .PHONY: setup_new_raspi3
 setup_new_raspi3: start_file_server out/base_images/raspi3_base.img.gz rootfs 
