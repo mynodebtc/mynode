@@ -41,6 +41,7 @@ Each myNode device comes with a number of wonderful features:
 - LND Hub - Lightning Wallet Server (v1.2.0)
 - Lndmanage (v0.10.0)
 - Lightning Loop - A Non-Custodial Off/On Chain Bridge (v0.6.0-beta)
+- Caravan (v0.2.0)
 - Tor
 - JoinMarket CLI (v0.6.2)
 - LND Connect - Generate QR Codes for connecting wallets (v0.2.0)
