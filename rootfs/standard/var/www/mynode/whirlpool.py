@@ -35,7 +35,7 @@ def whirlpool_page():
 
     whirlpool_api_key = 'Not found'
     try:
-        whirlpool_api_key = subprocess.check_output("cat /opt/mynode/whirlpool/whirlpool-cli-config* | grep -i cli.Apikey= | cut -c 12-", shell=True)
+        whirlpool_api_key = subprocess.check_output("cat /mnt/hdd/mynode/whirlpool/whirlpool-cli-config* | grep -i cli.Apikey= | cut -c 12-", shell=True)
     except:
         whirlpool_api_key = 'error'
 
