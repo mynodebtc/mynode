@@ -187,7 +187,7 @@ fi
 
 # Upgrade Loop
 echo "Upgrading loopd..."
-LOOP_VERSION="v0.6.0-beta"
+LOOP_VERSION="v0.6.4-beta"
 LOOP_ARCH="loop-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LOOP_ARCH="loop-linux-amd64"

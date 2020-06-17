@@ -40,7 +40,7 @@ Each myNode device comes with a number of wonderful features:
 - Mempool.Space - Mempool local visualizer for the Bitcoin blockchain (v1.0)
 - LND Hub - Lightning Wallet Server (v1.2.0)
 - Lndmanage (v0.10.0)
-- Lightning Loop - A Non-Custodial Off/On Chain Bridge (v0.6.0-beta)
+- Lightning Loop - A Non-Custodial Off/On Chain Bridge (v0.6.4-beta)
 - Caravan (v0.2.0)
 - Tor
 - JoinMarket CLI (v0.6.2)
