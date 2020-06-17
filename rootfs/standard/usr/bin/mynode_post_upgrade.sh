@@ -72,6 +72,7 @@ pip3 install python-bitcointx --no-cache-dir
 pip3 install gnureadline --no-cache-dir
 pip3 install lndmanage==0.10.0 --no-cache-dir   # Install LND Manage (keep up to date with LND)
 pip3 install docker-compose --no-cache-dir
+pip3 install pipenv --no-cache-dir
 
 
 # Install Docker
@@ -271,14 +272,13 @@ if [ "$CURRENT" != "$CARAVAN_UPGRADE_URL" ]; then
 
     cd caravan
     sudo -u bitcoin npm install --only=production
-    sed -i 's/HTTPS=true/HTTPS=false/g' ./package.json || true
     echo $CARAVAN_UPGRADE_URL > $CARAVAN_UPGRADE_URL_FILE
 fi
 cd ~
 
 
 # Install cors proxy (my fork)
-CORSPROXY_UPGRADE_URL=https://github.com/tehelsper/CORS-Proxy/archive/v1.6.0.tar.gz
+CORSPROXY_UPGRADE_URL=https://github.com/tehelsper/CORS-Proxy/archive/v1.7.0.tar.gz
 CORSPROXY_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.corsproxy_url
 CURRENT=""
 if [ -f $CORSPROXY_UPGRADE_URL_FILE ]; then
@@ -421,6 +421,31 @@ if [ "$CURRENT" != "$BTCRPCEXPLORER_UPGRADE_URL" ]; then
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $BTCRPCEXPLORER_UPGRADE_URL > $BTCRPCEXPLORER_UPGRADE_URL_FILE
 fi
+
+
+# Upgrade LNBits
+# LNBITS_UPGRADE_URL=https://github.com/lnbits/lnbits/archive/raspiblitz.tar.gz
+# LNBITS_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lnbits_url
+# CURRENT=""
+# if [ -f $LNBITS_UPGRADE_URL_FILE ]; then
+#     CURRENT=$(cat $LNBITS_UPGRADE_URL_FILE)
+# fi
+# if [ "$CURRENT" != "$LNBITS_UPGRADE_URL" ]; then
+#     cd /opt/mynode
+#     rm -rf lnbits
+#     sudo -u bitcoin wget $LNBITS_UPGRADE_URL -O lnbits.tar.gz
+#     sudo -u bitcoin tar -xvf lnbits.tar.gz
+#     sudo -u bitcoin rm lnbits.tar.gz
+#     sudo -u bitcoin mv lnbits-* lnbits
+#     cd lnbits
+
+#     pipenv install lnd-grpc
+#     pipenv install --dev
+
+#     mkdir -p /home/bitcoin/.mynode/
+#     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+#     echo $LNBITS_UPGRADE_URL > $LNBITS_UPGRADE_URL_FILE
+# fi
 
 
 # Install LND Connect

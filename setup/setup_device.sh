@@ -172,6 +172,7 @@ pip3 install python-bitcointx
 pip3 install gnureadline
 pip3 install lndmanage==0.10.0   # Install LND Manage (keep up to date with LND)
 pip3 install docker-compose
+pip3 install pipenv
 
 
 # Install Rust
@@ -389,14 +390,13 @@ if [ "$CURRENT" != "$CARAVAN_UPGRADE_URL" ]; then
 
     cd caravan
     sudo -u bitcoin npm install --only=production
-    sed -i 's/HTTPS=true/HTTPS=false/g' ./package.json || true
     echo $CARAVAN_UPGRADE_URL > $CARAVAN_UPGRADE_URL_FILE
 fi
 cd ~
 
 
 # Install cors proxy (my fork)
-CORSPROXY_UPGRADE_URL=https://github.com/tehelsper/CORS-Proxy/archive/v1.6.0.tar.gz
+CORSPROXY_UPGRADE_URL=https://github.com/tehelsper/CORS-Proxy/archive/v1.7.0.tar.gz
 CORSPROXY_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.corsproxy_url
 CURRENT=""
 if [ -f $CORSPROXY_UPGRADE_URL ]; then
