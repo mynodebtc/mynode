@@ -255,11 +255,12 @@ cd ~
 CARAVAN_VERSION="v0.2.0"
 CARAVAN_UPGRADE_URL=https://github.com/unchained-capital/caravan/archive/${CARAVAN_VERSION}.tar.gz
 CARAVAN_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.caravan_url
+CARAVAN_SETTINGS_UPDATE_FILE=/home/bitcoin/.mynode/.caravan_settings_1
 CURRENT=""
 if [ -f $CARAVAN_UPGRADE_URL_FILE ]; then
     CURRENT=$(cat $CARAVAN_UPGRADE_URL_FILE)
 fi
-if [ "$CURRENT" != "$CARAVAN_UPGRADE_URL" ]; then
+if [ "$CURRENT" != "$CARAVAN_UPGRADE_URL" ] || [ ! -f $CARAVAN_SETTINGS_UPDATE_FILE ]; then
     cd /opt/mynode
     rm -rf caravan
 
@@ -273,6 +274,7 @@ if [ "$CURRENT" != "$CARAVAN_UPGRADE_URL" ]; then
     cd caravan
     sudo -u bitcoin npm install --only=production
     echo $CARAVAN_UPGRADE_URL > $CARAVAN_UPGRADE_URL_FILE
+    touch $CARAVAN_SETTINGS_UPDATE_FILE
 fi
 cd ~
 
