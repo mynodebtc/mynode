@@ -83,6 +83,10 @@ fi
 wget http://${SERVER_IP}:8000/${TARBALL} -O /tmp/rootfs.tar.gz
 
 
+# Create any necessary users
+sudo adduser --disabled-password --gecos "" lnbits || true
+
+
 # Add sources
 apt-get -y install apt-transport-https
 DEBIAN_VERSION=$(lsb_release -c | awk '{ print $2 }')
@@ -121,7 +125,8 @@ apt-get -y install libfreetype6-dev libpng-dev libatlas-base-dev libgmp-dev libl
 apt-get -y install libffi-dev libssl-dev glances python3-bottle automake libtool libltdl7
 apt -y -qq install apt-transport-https ca-certificates
 apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
-apt-get -y install zlib1g-dev libudev-dev libusb-1.0-0-dev python3-venv
+apt-get -y install zlib1g-dev libudev-dev libusb-1.0-0-dev python3-venv gunicorn
+apt-get -y isntall libsqlite3-dev
 
 
 # Make sure some software is removed
@@ -149,13 +154,17 @@ pip install tzupdate virtualenv
 
 
 # Update Python3 to 3.7.X
-PYTHON3_VERSION=$(python3 --version)
-if [[ "$PYTHON3_VERSION" != *"Python 3.7.6"* ]]; then
+PYTHON_VERSION=3.7.7
+CURRENT_PYTHON3_VERSION=$(python3 --version)
+if [[ "$CURRENT_PYTHON3_VERSION" != *"Python ${PYTHON_VERSION}"* ]]; then
     mkdir -p /opt/download
     cd /opt/download
-    wget https://www.python.org/ftp/python/3.7.6/Python-3.7.6.tar.xz
-    tar xf Python-3.7.6.tar.xz
-    cd Python-3.7.6
+    rm -rf Python-*
+
+    wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz -O python.tar.xz
+    tar xf python.tar.xz
+
+    cd Python-*
     ./configure
     make -j4
     make install

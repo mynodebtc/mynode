@@ -14,6 +14,9 @@ date
 # Delete ramlog to prevent ram issues
 rm -rf /var/log/*
 
+# Create any necessary users
+sudo adduser --disabled-password --gecos "" lnbits || true
+
 # Check if upgrades use tor
 TORIFY=""
 if [ -f /mnt/hdd/mynode/settings/torify_apt_get ]; then
@@ -56,7 +59,7 @@ $TORIFY apt-get -y install libatlas-base-dev libffi-dev libssl-dev glances pytho
 $TORIFY apt-get -y -qq install apt-transport-https ca-certificates
 $TORIFY apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
 $TORIFY apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
-$TORIFY apt-get -y install libudev-dev libusb-1.0-0-dev python3-venv
+$TORIFY apt-get -y install libudev-dev libusb-1.0-0-dev python3-venv gunicorn libsqlite3-dev
 
 # Make sure some software is removed
 apt-get -y purge ntp # (conflicts with systemd-timedatectl)
@@ -65,6 +68,27 @@ apt-get -y purge chrony # (conflicts with systemd-timedatectl)
 
 # Install any pip software
 pip install tzupdate virtualenv --no-cache-dir
+
+
+# Update Python3 to 3.7.X
+PYTHON_VERSION=3.7.7
+CURRENT_PYTHON3_VERSION=$(python3 --version)
+if [[ "$CURRENT_PYTHON3_VERSION" != *"Python ${PYTHON_VERSION}"* ]]; then
+    mkdir -p /opt/download
+    cd /opt/download
+    rm -rf Python-*
+
+    wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz -O python.tar.xz
+    tar xf python.tar.xz
+
+    cd Python-*
+    ./configure
+    make -j4
+    make install
+    cd ~
+else
+    echo "Python up to date"
+fi
 
 
 # Install any pip3 software
@@ -441,8 +465,12 @@ fi
 #     sudo -u bitcoin mv lnbits-* lnbits
 #     cd lnbits
 
-#     pipenv install lnd-grpc
-#     pipenv install --dev
+#     # Install with python 3.7 (Only use "pipenv install --python 3.7" once or it will rebuild the venv!)
+#     sudo -u bitcoin pipenv --python 3.7 install --dev
+#     sudo -u bitcoin pipenv run pip install python-dotenv
+#     sudo -u bitcoin pipenv run pip install -r requirements.txt
+#     sudo -u bitcoin pipenv run pip install lnd-grpc
+#     sudo -u bitcoin pipenv run flask migrate || true
 
 #     mkdir -p /home/bitcoin/.mynode/
 #     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/

@@ -131,6 +131,7 @@ mkdir -p /mnt/hdd/mynode/electrs
 mkdir -p /mnt/hdd/mynode/docker
 mkdir -p /mnt/hdd/mynode/rtl_backup
 mkdir -p /mnt/hdd/mynode/whirlpool
+mkdir -p /mnt/hdd/mynode/lnbits
 mkdir -p /tmp/flask_uploads
 echo "drive_mounted" > $MYNODE_DIR/.mynode_status
 chmod 777 $MYNODE_DIR/.mynode_status
@@ -307,6 +308,10 @@ fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/whirlpool)
 if [ "$USER" != "bitcoin" ]; then
     chown -R bitcoin:bitcoin /mnt/hdd/mynode/whirlpool
+fi
+USER=$(stat -c '%U' /mnt/hdd/mynode/lnbits)
+if [ "$USER" != "bitcoin" ]; then
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/lnbits
 fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/redis)
 if [ "$USER" != "redis" ]; then
