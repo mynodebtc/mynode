@@ -1,0 +1,31 @@
+# RTL service
+# /etc/systemd/system/rtl.service
+
+[Unit]
+Description=LNBits
+Wants=bitcoind.service lnd.service
+After=bitcoind.service lnd.service
+
+[Service]
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/usr/bin/wait_on_lnd.sh
+Environment=FLASK_ENV=development
+WorkingDirectory=/opt/mynode/lnbits
+
+#ExecStart=/usr/local/bin/pipenv run flask run --host 0.0.0.0
+ExecStart=/bin/sh -c 'cd /opt/mynode/lnbits && /usr/local/bin/pipenv --python 3.7 run flask run --host 0.0.0.0'
+#ExecStart=/bin/sh -c 'cd /opt/mynode/lnbits && python3 /usr/local/bin/pipenv --python 3.7 run gunicorn -b :5000 lnbits:app -k gevent'
+
+User=bitcoin
+Group=bitcoin
+Type=simple
+LimitNOFILE=128000
+TimeoutSec=240
+Restart=always
+RestartSec=60
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=lnbits
+
+[Install]
+WantedBy=multi-user.target
