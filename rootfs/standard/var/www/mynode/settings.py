@@ -217,6 +217,7 @@ def page_status():
     electrs_status_log = get_journalctl_log("electrs")
     netdata_status_log = get_journalctl_log("netdata")
     rtl_status_log = get_journalctl_log("rtl")
+    lnbits_status_log = get_journalctl_log("lnbits")
     docker_status_log = get_journalctl_log("docker")
     docker_image_build_status_log = get_journalctl_log("docker_images")
 
@@ -273,6 +274,9 @@ def page_status():
         "rtl_status_log": rtl_status_log,
         "rtl_status": get_service_status_basic_text("rtl"),
         "rtl_status_color": get_service_status_color("rtl"),
+        "lnbits_status_log": lnbits_status_log,
+        "lnbits_status": get_service_status_basic_text("lnbits"),
+        "lnbits_status_color": get_service_status_color("lnbits"),
         "docker_status_log": docker_status_log,
         "docker_status": get_service_status_basic_text("docker"),
         "docker_status_color": get_service_status_color("docker"),

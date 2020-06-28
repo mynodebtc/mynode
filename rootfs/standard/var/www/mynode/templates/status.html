@@ -51,6 +51,11 @@
                     $("#rtl_status").show();
                 });
 
+                $("#show_lnbits_status").on("click", function() {
+                    $("#show_lnbits_status").hide(0);
+                    $("#lnbits_status").show();
+                });
+
                 $("#show_docker_status").on("click", function() {
                     $("#show_docker_status").hide(0);
                     $("#docker_status").show();
@@ -333,6 +338,15 @@
             </div>
             <button id="show_rtl_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="rtl_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{rtl_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">LNbits Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ lnbits_status_color }}"></div>
+                {{ lnbits_status }}
+            </div>
+            <button id="show_lnbits_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="lnbits_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lnbits_status_log}}</pre></div>
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Docker Status</div>

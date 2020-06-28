@@ -15,7 +15,7 @@ date
 rm -rf /var/log/*
 
 # Create any necessary users
-sudo adduser --disabled-password --gecos "" lnbits || true
+
 
 # Check if upgrades use tor
 TORIFY=""
@@ -450,32 +450,36 @@ fi
 
 
 # Upgrade LNBits
-# LNBITS_UPGRADE_URL=https://github.com/lnbits/lnbits/archive/raspiblitz.tar.gz
-# LNBITS_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lnbits_url
-# CURRENT=""
-# if [ -f $LNBITS_UPGRADE_URL_FILE ]; then
-#     CURRENT=$(cat $LNBITS_UPGRADE_URL_FILE)
-# fi
-# if [ "$CURRENT" != "$LNBITS_UPGRADE_URL" ]; then
-#     cd /opt/mynode
-#     rm -rf lnbits
-#     sudo -u bitcoin wget $LNBITS_UPGRADE_URL -O lnbits.tar.gz
-#     sudo -u bitcoin tar -xvf lnbits.tar.gz
-#     sudo -u bitcoin rm lnbits.tar.gz
-#     sudo -u bitcoin mv lnbits-* lnbits
-#     cd lnbits
+LNBITS_UPGRADE_URL=https://github.com/lnbits/lnbits/archive/raspiblitz.tar.gz
+LNBITS_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lnbits_url
+CURRENT=""
+if [ -f $LNBITS_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $LNBITS_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$LNBITS_UPGRADE_URL" ]; then
+    cd /opt/mynode
+    rm -rf lnbits
+    sudo -u bitcoin wget $LNBITS_UPGRADE_URL -O lnbits.tar.gz
+    sudo -u bitcoin tar -xvf lnbits.tar.gz
+    sudo -u bitcoin rm lnbits.tar.gz
+    sudo -u bitcoin mv lnbits-* lnbits
+    cd lnbits
 
-#     # Install with python 3.7 (Only use "pipenv install --python 3.7" once or it will rebuild the venv!)
-#     sudo -u bitcoin pipenv --python 3.7 install --dev
-#     sudo -u bitcoin pipenv run pip install python-dotenv
-#     sudo -u bitcoin pipenv run pip install -r requirements.txt
-#     sudo -u bitcoin pipenv run pip install lnd-grpc
-#     sudo -u bitcoin pipenv run flask migrate || true
+    # Copy over config file
+    cp /usr/share/mynode/lnbits.env /opt/mynode/lnbits/.env
+    chown bitcoin:bitcoin /opt/mynode/lnbits/.env
 
-#     mkdir -p /home/bitcoin/.mynode/
-#     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
-#     echo $LNBITS_UPGRADE_URL > $LNBITS_UPGRADE_URL_FILE
-# fi
+    # Install with python 3.7 (Only use "pipenv install --python 3.7" once or it will rebuild the venv!)
+    sudo -u bitcoin pipenv --python 3.7 install
+    sudo -u bitcoin pipenv run pip install python-dotenv
+    sudo -u bitcoin pipenv run pip install -r requirements.txt
+    sudo -u bitcoin pipenv run pip install lnd-grpc
+    sudo -u bitcoin pipenv run flask migrate
+
+    mkdir -p /home/bitcoin/.mynode/
+    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+    echo $LNBITS_UPGRADE_URL > $LNBITS_UPGRADE_URL_FILE
+fi
 
 
 # Install LND Connect

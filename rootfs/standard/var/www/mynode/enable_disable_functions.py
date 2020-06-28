@@ -53,6 +53,16 @@ def disable_rtl():
     os.system("systemctl disable rtl --no-pager")
 
 
+def is_lnbits_enabled():
+    return is_service_enabled("lnbits")
+def enable_lnbits():
+    os.system("systemctl enable lnbits --no-pager")
+    os.system("systemctl start lnbits --no-pager")
+def disable_lnbits():
+    os.system("systemctl stop lnbits --no-pager")
+    os.system("systemctl disable lnbits --no-pager")
+
+
 def is_btcrpcexplorer_enabled():
     if os.path.isfile(BTCRPCEXPLORER_ENABLED_FILE):
         return True
