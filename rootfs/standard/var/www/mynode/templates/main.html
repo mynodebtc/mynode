@@ -23,6 +23,11 @@
                     window.open(url,'_blank');
                 })
 
+                $("#lnbits").on("click", function() {
+                    url = 'http://'+location.hostname+':5000'
+                    window.open(url,'_blank');
+                })
+
                 $("#lnd_admin").on("click", function() {
                     url = 'http://'+location.hostname+':3004'
                     window.open(url,'_blank');
@@ -101,6 +106,10 @@
 
                 $("#toggle-caravan").on("click", function() {
                         window.location.href="/toggle-caravan"
+                });
+
+                $("#toggle-lnbits").on("click", function() {
+                        window.location.href="/toggle-lnbits"
                 });
 
                 function lndconnect() {

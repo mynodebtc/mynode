@@ -251,6 +251,10 @@ chown bitcoin:bitcoin /opt/mynode/RTL/RTL-Config.json
 cp /usr/share/mynode/btc_rpc_explorer_env /opt/mynode/btc-rpc-explorer/.env
 chown bitcoin:bitcoin /opt/mynode/btc-rpc-explorer/.env
 
+# LNBits Config
+cp /usr/share/mynode/lnbits.env /opt/mynode/lnbits/.env
+chown bitcoin:bitcoin /opt/mynode/lnbits/.env
+
 
 # Update files that need RPC password (needed if upgrades overwrite files)
 PW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)

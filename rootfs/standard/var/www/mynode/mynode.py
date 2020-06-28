@@ -266,6 +266,8 @@ def index():
         lnd_ready = is_lnd_ready()
         rtl_status_color = "gray"
         rtl_status = "Lightning Wallet"
+        lnbits_status_color = "gray"
+        lnbits_status = "Lightning Wallet"
         electrs_status_color = "gray"
         electrs_active = is_electrs_active()
         lndhub_status_color = "gray"
@@ -378,6 +380,15 @@ def index():
                 else:
                     rtl_status_color = "green"
 
+        # Find LNbits status
+        if lnd_ready:
+            if is_lnbits_enabled():
+                status_code = get_service_status_code("lnbits")
+                if status_code != 0:
+                    lnbits_status_color = "red"
+                else:
+                    lnbits_status_color = "green"
+
         # Find electrs status
         if is_electrs_enabled():
             status_code = get_service_status_code("electrs")
@@ -489,6 +500,9 @@ def index():
             "rtl_status_color": rtl_status_color,
             "rtl_status": rtl_status,
             "rtl_enabled": is_rtl_enabled(),
+            "lnbits_status_color": lnbits_status_color,
+            "lnbits_status": lnbits_status,
+            "lnbits_enabled": is_lnbits_enabled(),
             "lndhub_status_color": lndhub_status_color,
             "lndhub_enabled": is_lndhub_enabled(),
             "explorer_ready": explorer_ready,
@@ -608,6 +622,15 @@ def page_toggle_rtl():
         disable_rtl()
     else:
         enable_rtl()
+    return redirect("/")
+
+@app.route("/toggle-lnbits")
+def page_toggle_lnbits():
+    check_logged_in()
+    if is_lnbits_enabled():
+        disable_lnbits()
+    else:
+        enable_lnbits()
     return redirect("/")
 
 @app.route("/toggle-btcrpcexplorer")
