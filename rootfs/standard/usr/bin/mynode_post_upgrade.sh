@@ -569,6 +569,9 @@ rm -f /etc/update-motd.d/41-armbian-config || true
 rm -f /etc/update-motd.d/98-armbian-autoreboot-warn || true
 
 
+# Clean apt-cache
+apt-get clean
+
 # Enable any new/required services
 systemctl enable bitcoind
 systemctl enable lnd
