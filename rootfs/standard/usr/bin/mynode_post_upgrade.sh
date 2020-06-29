@@ -473,8 +473,8 @@ if [ "$CURRENT" != "$LNBITS_UPGRADE_URL" ]; then
     sudo -u bitcoin pipenv --python 3.7 install
     sudo -u bitcoin pipenv run pip install python-dotenv
     sudo -u bitcoin pipenv run pip install -r requirements.txt
-    sudo -u bitcoin pipenv run pip install lnd-grpc
-    sudo -u bitcoin pipenv run flask migrate
+    #sudo -u bitcoin pipenv run pip install lnd-grpc # Using REST now (this install takes a LONG time)
+    sudo -u bitcoin pipenv run flask migrate || true
 
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/

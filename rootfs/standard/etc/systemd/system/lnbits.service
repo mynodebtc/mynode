@@ -9,11 +9,12 @@ After=bitcoind.service lnd.service
 [Service]
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_lnd.sh
+ExecStartPre=/bin/sh -c 'cd /opt/mynode/lnbits && /usr/local/bin/pipenv run flask migrate'
+sudo -u bitcoin pipenv run flask migrate || true
 Environment=FLASK_ENV=development
 WorkingDirectory=/opt/mynode/lnbits
 
 ExecStart=/bin/sh -c 'cd /opt/mynode/lnbits && /usr/local/bin/pipenv run flask run --host 0.0.0.0'
-#ExecStart=/bin/sh -c 'cd /opt/mynode/lnbits && python3 /usr/local/bin/pipenv --python 3.7 run gunicorn -b :5000 lnbits:app -k gevent'
 
 User=bitcoin
 Group=bitcoin
