@@ -84,14 +84,14 @@ Once you are running myNode, you can easily modify and update the software yours
 
 1. Start by running myNode on your device via the instructions above in "Running myNode"
 2. Modify myNode files
-    * Clone this git repo on your PC or laptop - 'git clone https://github.com/mynodebtc/mynode.git'
+    * Clone this git repo on your PC or laptop - `git clone https://github.com/mynodebtc/mynode.git`
     * Make your modifications
-3. Run 'make rootfs'
-    * Or run 'make rootfs_auto' in a new console tab
+3. Run `make rootfs`
+    * Or run `make rootfs_auto` in a new console tab
     * This will automatically create artifacts as local files are modified
 4. Run 'make start_file_server'
     * This will run a local HTTP server so your device can download files
-5. On your device, run 'sudo mynode-local-upgrade [dev pc ip address]'
+5. On your device, run `sudo mynode-local-upgrade [dev pc ip address]`
     * This will download your locally generated artifact and install it on your device
     * Your device will automatically reboot to ensure updates take effect
 6. Test your changes!
@@ -108,26 +108,27 @@ Once you are running myNode, you can easily update the software yourself!
 
 1. Start by running myNode on your device via the instructions above in "Running myNode"
 2. Clone the latest release from the git repo on your PC or laptop
-    * Run 'git clone https://github.com/mynodebtc/mynode.git --branch latest_release'
-    * Run 'cd mynode'
-3. Run 'make rootfs'
-4. Run 'make start_file_server'
+    * Run `git clone https://github.com/mynodebtc/mynode.git`
+    * Run `cd mynode`
+    * Run `git checkout tags/latest_release`
+3. Run `make rootfs`
+4. Run `make start_file_server`
     * This will run a local HTTP server so your device can download files
-5. On your device, run 'sudo mynode-local-upgrade [dev pc ip address]'
+5. On your device, run `sudo mynode-local-upgrade [dev pc ip address]`
     * This will download your locally generated artifact and install it on your device
     * Your device will automatically reboot to ensure updates take effect
-6. Optional: Run 'make stop_file_server'
+6. Optional: Run `make stop_file_server`
     * This will stop the local HTTP server
 7. You are now running the latest version of myNode software!
 
 ## Convert new device to run myNode
 1. Run make command for your device. Ex:
-    * make setup_new_rock64
-    * make setup_new_rockpro64
-    * make setup_new_raspi3
-    * make setup_new_raspi4
-    * make setup_new_debian
-    * make setup_new_other
+    * `make setup_new_rock64`
+    * `make setup_new_rockpro64`
+    * `make setup_new_raspi3`
+    * `make setup_new_raspi4`
+    * `make setup_new_debian`
+    * `make setup_new_other`
 3. Follow Instructions
 2. Reboot Device
 4. Congratulations! You're running a new myNode device!
