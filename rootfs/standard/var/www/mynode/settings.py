@@ -81,7 +81,6 @@ def page_settings():
     uptime = get_system_uptime()
     date = get_system_date()
     local_ip = get_local_ip()
-    public_ip = get_public_ip()
 
 
     # Get Startup Status
@@ -151,7 +150,6 @@ def page_settings():
         "is_aptget_tor_enabled": is_aptget_tor_enabled(),
         "uptime": uptime,
         "date": date,
-        "public_ip": public_ip,
         "local_ip": local_ip,
         "drive_usage": get_drive_usage(),
         "cpu_usage": get_cpu_usage(),
@@ -180,7 +178,6 @@ def page_status():
     uptime = get_system_uptime()
     date = get_system_date()
     local_ip = get_local_ip()
-    public_ip = get_public_ip()
 
 
     # Get Startup Status
@@ -300,7 +297,6 @@ def page_status():
         "is_netdata_enabled": is_netdata_enabled(),
         "uptime": uptime,
         "date": date,
-        "public_ip": public_ip,
         "local_ip": local_ip,
         "drive_usage": get_drive_usage(),
         "cpu_usage": get_cpu_usage(),

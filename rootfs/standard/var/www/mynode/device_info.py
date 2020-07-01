@@ -98,8 +98,8 @@ def get_current_beta_version():
     return current_beta_version
 
 def update_latest_version():
-    os.system("wget "+LATEST_VERSION_URL+" -O /usr/share/mynode/latest_version")
-    os.system("wget "+LATEST_BETA_VERSION_URL+" -O /usr/share/mynode/latest_beta_version")
+    os.system("torify wget "+LATEST_VERSION_URL+" -O /usr/share/mynode/latest_version")
+    os.system("torify wget "+LATEST_BETA_VERSION_URL+" -O /usr/share/mynode/latest_beta_version")
     return True
 
 def get_latest_version():

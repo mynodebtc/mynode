@@ -126,7 +126,7 @@ apt-get -y install libffi-dev libssl-dev glances python3-bottle automake libtool
 apt -y -qq install apt-transport-https ca-certificates
 apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
 apt-get -y install zlib1g-dev libudev-dev libusb-1.0-0-dev python3-venv gunicorn
-apt-get -y isntall libsqlite3-dev
+apt-get -y isntall libsqlite3-dev torsocks
 
 
 # Make sure some software is removed
@@ -150,7 +150,7 @@ pip install --upgrade wheel
 pip install speedtest-cli transmissionrpc flask python-bitcoinrpc redis prometheus_client requests
 pip install python-pam python-bitcoinlib psutil
 pip install grpcio grpcio-tools googleapis-common-protos 
-pip install tzupdate virtualenv
+pip install tzupdate virtualenv pysocks
 
 
 # Update Python3 to 3.7.X
