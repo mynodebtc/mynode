@@ -60,6 +60,7 @@ $TORIFY apt-get -y -qq install apt-transport-https ca-certificates
 $TORIFY apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
 $TORIFY apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
 $TORIFY apt-get -y install libudev-dev libusb-1.0-0-dev python3-venv gunicorn libsqlite3-dev
+$TORIFY apt-get -y install torsocks
 
 # Make sure some software is removed
 apt-get -y purge ntp # (conflicts with systemd-timedatectl)
@@ -67,7 +68,7 @@ apt-get -y purge chrony # (conflicts with systemd-timedatectl)
 
 
 # Install any pip software
-pip install tzupdate virtualenv --no-cache-dir
+pip install tzupdate virtualenv pysocks --no-cache-dir
 
 
 # Update Python3 to 3.7.X

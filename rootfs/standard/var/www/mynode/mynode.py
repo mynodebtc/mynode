@@ -819,7 +819,7 @@ if __name__ == "__main__":
     lnd_thread.start()
     drive_thread = BackgroundThread(update_device_info, 60)
     drive_thread.start()
-    public_ip_thread = BackgroundThread(find_public_ip, 60*60*3) # 3-hour repeat
+    public_ip_thread = BackgroundThread(find_public_ip, 60*60*12) # 12-hour repeat
     public_ip_thread.start()
     checkin_thread = BackgroundThread(check_in, 60*60*24) # Per-day checkin
     checkin_thread.start()
