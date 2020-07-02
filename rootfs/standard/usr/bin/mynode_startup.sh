@@ -405,6 +405,7 @@ fi
 # Weird hacks
 chmod +x /usr/bin/electrs || true # Once, a device didn't have the execute bit set for electrs
 timedatectl set-ntp True || true # Make sure NTP is enabled for Tor and Bitcoin
+rm -f /var/swap || true # Remove old swap file to save SD card space
 
 # Check for new versions
 torify wget $LATEST_VERSION_URL -O /usr/share/mynode/latest_version || true
