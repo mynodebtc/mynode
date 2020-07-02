@@ -5,6 +5,7 @@ from user_management import *
 from bitcoind import mynode_bitcoind
 from whirlpool import mynode_whirlpool, get_whirlpool_status
 from dojo import mynode_dojo, get_dojo_status
+from caravan import mynode_caravan
 from tor import mynode_tor
 from vpn import mynode_vpn
 from electrum_server import *
@@ -43,6 +44,7 @@ app.register_blueprint(mynode_bitcoind)
 app.register_blueprint(mynode_lnd)
 app.register_blueprint(mynode_whirlpool)
 app.register_blueprint(mynode_dojo)
+app.register_blueprint(mynode_caravan)
 app.register_blueprint(mynode_tor)
 app.register_blueprint(mynode_electrum_server)
 app.register_blueprint(mynode_vpn)
@@ -264,6 +266,8 @@ def index():
         lnd_ready = is_lnd_ready()
         rtl_status_color = "gray"
         rtl_status = "Lightning Wallet"
+        lnbits_status_color = "gray"
+        lnbits_status = "Lightning Wallet"
         electrs_status_color = "gray"
         electrs_active = is_electrs_active()
         lndhub_status_color = "gray"
@@ -278,6 +282,9 @@ def index():
         btcrpcexplorer_status = ""
         btcrpcexplorer_ready = False
         btcrpcexplorer_status_color = "gray"
+        caravan_status = ""
+        caravan_ready = False
+        caravan_status_color = "gray"
         mempoolspace_status_color = "gray"
         vpn_status_color = "gray"
         vpn_status = ""
@@ -373,6 +380,15 @@ def index():
                 else:
                     rtl_status_color = "green"
 
+        # Find LNbits status
+        if lnd_ready:
+            if is_lnbits_enabled():
+                status_code = get_service_status_code("lnbits")
+                if status_code != 0:
+                    lnbits_status_color = "red"
+                else:
+                    lnbits_status_color = "green"
+
         # Find electrs status
         if is_electrs_enabled():
             status_code = get_service_status_code("electrs")
@@ -448,6 +464,15 @@ def index():
             dojo_status_color = "yellow"
             dojo_status = "Installing..."
 
+        # Find caravan status
+        caravan_status = ""
+        caravan_ready = False
+        caravan_status_color = "gray"
+        if is_caravan_enabled():
+            caravan_status_color = get_service_status_color("caravan")
+            caravan_ready = True
+            caravan_status = "Running"
+
         # Check for new version of software
         upgrade_available = False
         current = get_current_version()
@@ -475,6 +500,9 @@ def index():
             "rtl_status_color": rtl_status_color,
             "rtl_status": rtl_status,
             "rtl_enabled": is_rtl_enabled(),
+            "lnbits_status_color": lnbits_status_color,
+            "lnbits_status": lnbits_status,
+            "lnbits_enabled": is_lnbits_enabled(),
             "lndhub_status_color": lndhub_status_color,
             "lndhub_enabled": is_lndhub_enabled(),
             "explorer_ready": explorer_ready,
@@ -484,6 +512,10 @@ def index():
             "btcrpcexplorer_status_color": btcrpcexplorer_status_color,
             "btcrpcexplorer_status": btcrpcexplorer_status,
             "btcrpcexplorer_enabled": is_btcrpcexplorer_enabled(),
+            "caravan_ready": caravan_ready,
+            "caravan_status_color": caravan_status_color,
+            "caravan_status": caravan_status,
+            "caravan_enabled": is_caravan_enabled(),
             "mempoolspace_status_color": mempoolspace_status_color,
             "mempoolspace_status": mempoolspace_status,
             "mempoolspace_enabled": is_mempoolspace_enabled(),
@@ -592,6 +624,15 @@ def page_toggle_rtl():
         enable_rtl()
     return redirect("/")
 
+@app.route("/toggle-lnbits")
+def page_toggle_lnbits():
+    check_logged_in()
+    if is_lnbits_enabled():
+        disable_lnbits()
+    else:
+        enable_lnbits()
+    return redirect("/")
+
 @app.route("/toggle-btcrpcexplorer")
 def page_toggle_btcrpcexplorer():
     check_logged_in()
@@ -617,6 +658,15 @@ def page_toggle_btcpayserver():
         disable_btcpayserver()
     else:
         enable_btcpayserver()
+    return redirect("/")
+
+@app.route("/toggle-caravan")
+def page_toggle_caravan():
+    check_logged_in()
+    if is_caravan_enabled():
+        disable_caravan()
+    else:
+        enable_caravan()
     return redirect("/")
 
 @app.route("/toggle-vpn")
@@ -769,7 +819,7 @@ if __name__ == "__main__":
     lnd_thread.start()
     drive_thread = BackgroundThread(update_device_info, 60)
     drive_thread.start()
-    public_ip_thread = BackgroundThread(find_public_ip, 60*60*3) # 3-hour repeat
+    public_ip_thread = BackgroundThread(find_public_ip, 60*60*12) # 12-hour repeat
     public_ip_thread.start()
     checkin_thread = BackgroundThread(check_in, 60*60*24) # Per-day checkin
     checkin_thread.start()

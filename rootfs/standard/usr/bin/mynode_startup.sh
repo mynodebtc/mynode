@@ -130,6 +130,8 @@ mkdir -p /mnt/hdd/mynode/mongodb
 mkdir -p /mnt/hdd/mynode/electrs
 mkdir -p /mnt/hdd/mynode/docker
 mkdir -p /mnt/hdd/mynode/rtl_backup
+mkdir -p /mnt/hdd/mynode/whirlpool
+mkdir -p /mnt/hdd/mynode/lnbits
 mkdir -p /tmp/flask_uploads
 echo "drive_mounted" > $MYNODE_DIR/.mynode_status
 chmod 777 $MYNODE_DIR/.mynode_status
@@ -249,6 +251,10 @@ chown bitcoin:bitcoin /opt/mynode/RTL/RTL-Config.json
 cp /usr/share/mynode/btc_rpc_explorer_env /opt/mynode/btc-rpc-explorer/.env
 chown bitcoin:bitcoin /opt/mynode/btc-rpc-explorer/.env
 
+# LNBits Config
+cp /usr/share/mynode/lnbits.env /opt/mynode/lnbits/.env
+chown bitcoin:bitcoin /opt/mynode/lnbits/.env
+
 
 # Update files that need RPC password (needed if upgrades overwrite files)
 PW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
@@ -302,6 +308,14 @@ fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/lnd)
 if [ "$USER" != "bitcoin" ]; then
     chown -R bitcoin:bitcoin /mnt/hdd/mynode/lnd
+fi
+USER=$(stat -c '%U' /mnt/hdd/mynode/whirlpool)
+if [ "$USER" != "bitcoin" ]; then
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/whirlpool
+fi
+USER=$(stat -c '%U' /mnt/hdd/mynode/lnbits)
+if [ "$USER" != "bitcoin" ]; then
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/lnbits
 fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/redis)
 if [ "$USER" != "redis" ]; then
@@ -393,8 +407,8 @@ chmod +x /usr/bin/electrs || true # Once, a device didn't have the execute bit s
 timedatectl set-ntp True || true # Make sure NTP is enabled for Tor and Bitcoin
 
 # Check for new versions
-wget $LATEST_VERSION_URL -O /usr/share/mynode/latest_version || true
-wget $LATEST_BETA_VERSION_URL -O /usr/share/mynode/latest_beta_version || true
+torify wget $LATEST_VERSION_URL -O /usr/share/mynode/latest_version || true
+torify wget $LATEST_BETA_VERSION_URL -O /usr/share/mynode/latest_beta_version || true
 
 # Update current state
 if [ -f $QUICKSYNC_DIR/.quicksync_complete ]; then

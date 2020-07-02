@@ -10,6 +10,7 @@
 /var/log/mynode_quicksync.log
 /var/log/redis-server.log
 /var/log/rtl.log
+/var/log/caravan.log
 /var/log/www.log
 /var/log/bitcoind.log
 /var/log/unlock_lnd.log

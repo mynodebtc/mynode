@@ -81,7 +81,6 @@ def page_settings():
     uptime = get_system_uptime()
     date = get_system_date()
     local_ip = get_local_ip()
-    public_ip = get_public_ip()
 
 
     # Get Startup Status
@@ -151,7 +150,6 @@ def page_settings():
         "is_aptget_tor_enabled": is_aptget_tor_enabled(),
         "uptime": uptime,
         "date": date,
-        "public_ip": public_ip,
         "local_ip": local_ip,
         "drive_usage": get_drive_usage(),
         "cpu_usage": get_cpu_usage(),
@@ -180,7 +178,6 @@ def page_status():
     uptime = get_system_uptime()
     date = get_system_date()
     local_ip = get_local_ip()
-    public_ip = get_public_ip()
 
 
     # Get Startup Status
@@ -217,6 +214,7 @@ def page_status():
     electrs_status_log = get_journalctl_log("electrs")
     netdata_status_log = get_journalctl_log("netdata")
     rtl_status_log = get_journalctl_log("rtl")
+    lnbits_status_log = get_journalctl_log("lnbits")
     docker_status_log = get_journalctl_log("docker")
     docker_image_build_status_log = get_journalctl_log("docker_images")
 
@@ -273,6 +271,9 @@ def page_status():
         "rtl_status_log": rtl_status_log,
         "rtl_status": get_service_status_basic_text("rtl"),
         "rtl_status_color": get_service_status_color("rtl"),
+        "lnbits_status_log": lnbits_status_log,
+        "lnbits_status": get_service_status_basic_text("lnbits"),
+        "lnbits_status_color": get_service_status_color("lnbits"),
         "docker_status_log": docker_status_log,
         "docker_status": get_service_status_basic_text("docker"),
         "docker_status_color": get_service_status_color("docker"),
@@ -296,7 +297,6 @@ def page_status():
         "is_netdata_enabled": is_netdata_enabled(),
         "uptime": uptime,
         "date": date,
-        "public_ip": public_ip,
         "local_ip": local_ip,
         "drive_usage": get_drive_usage(),
         "cpu_usage": get_cpu_usage(),

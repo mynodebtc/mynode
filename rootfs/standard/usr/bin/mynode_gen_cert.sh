@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -x
+set -e
+
 # Main variables
 OUTPUT_DIR_BASE="/home/bitcoin/.mynode"
 HDD_DIR_BASE="/mnt/hdd/mynode/settings"
@@ -51,14 +54,34 @@ openssl genrsa -des3 -passout pass:$password -out $OUTPUT_DIR/$domain.key 2048
 echo "Removing passphrase from key"
 openssl rsa -in $OUTPUT_DIR/$domain.key -passin pass:$password -out $OUTPUT_DIR/$domain.key
  
-# Create the request
-echo "Creating CSR"
-openssl req -new -key $OUTPUT_DIR/$domain.key -out $OUTPUT_DIR/$domain.csr -passin pass:$password \
-    -subj "/C=$country/ST=$state/L=$locality/O=$organization/OU=$organizationalunit/CN=$commonname/emailAddress=$email"
-
 # Create Certificate
 echo "Creating Certificate"
-openssl x509 -req -days $DAYS -in $OUTPUT_DIR/$domain.csr -signkey $OUTPUT_DIR/$domain.key -out $OUTPUT_DIR/$domain.crt
+cat > /tmp/cert_req.conf <<DELIM
+[req]
+distinguished_name = req_distinguished_name
+x509_extensions = v3_req
+prompt = no
+utf8 = yes
+[req_distinguished_name]
+C=$country
+ST=$state
+L=$locality
+O=$organization
+OU=$organizationalunit
+CN=${commonname}
+emailAddress=$email
+[v3_req]
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = $domain
+DNS.2 = www.$domain
+DNS.3 = localhost
+DNS.4 = localhost.localdomain
+DELIM
+
+openssl req -x509 -nodes -days 730 -key $OUTPUT_DIR/$domain.key -out $OUTPUT_DIR/$domain.crt -config /tmp/cert_req.conf -extensions 'v3_req'
 
 echo "Creating PEM"
 cat $OUTPUT_DIR/$domain.key > $OUTPUT_DIR/$domain.pem

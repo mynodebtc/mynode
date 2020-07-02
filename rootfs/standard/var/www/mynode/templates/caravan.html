@@ -1,0 +1,64 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        {% include 'includes/head.html' %}
+
+        <script>
+            $(document).ready(function() {
+
+                $("#caravan").on("click", function() {
+                    url = 'https://'+location.hostname+':3020'
+                    window.open(url,'_blank');
+                })
+
+            });
+        </script>
+    </head>
+    <body>
+        {% include 'includes/logo_header.html' %}
+        <div class="mynode_back_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        </div>
+
+        <div class="main_header">Caravan</div>
+        </br>
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Caravan</div>
+                <div class="info_tile_contents">
+                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;" href="#" id="caravan">Open</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <div class="instructions-header"><u><strong>NOTICE</u></strong></div>
+            </br>
+            <p>Caravan is provided as-is and from Unchained Capital. It is alpha software.</p>
+            </br>
+
+            <div class="instructions-header"><u><strong>Using Caravan</u></strong></div>
+            </br>
+            
+            <p>Caravan is a stateless app to help manage multi-sig wallets. The default settings use an external server for 
+            accessing the Bitcoin network, but you can use the local Bitcoin Instance on your myNode device.</p>
+
+            <p>To use your node, you need to edit the Bitcoin Client settings within Caravan.</p>
+            
+            <ol class="instructions-steps">
+                <li>Change the Public/Private option to Private</li>
+                <li>Change the URL to your node's IP address: <a href="https://{{local_ip}}:8334" target="_blank">https://{{local_ip}}:8334</a></li>
+                    <ul>
+                        <li>You may need to visit the URL in your browser and accept the HTTP certificate</li>
+                    </ul>
+                <li>Change the Username to "mynode"</li>
+                <li>Change the Password to the RPC Password from the <a href="/bitcoind">Bitcoin page</a></li>
+                <li>Click "Test Connection"</li>
+                <li>You should see a success message!</li>
+            </ol>
+
+        </div>
+
+        {% include 'includes/footer.html' %}
+     </body>
+</html>

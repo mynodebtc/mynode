@@ -89,6 +89,10 @@ fi
 wget http://${SERVER_IP}:8000/${TARBALL} -O /tmp/rootfs.tar.gz
 
 
+# Create any necessary users
+sudo adduser --disabled-password --gecos "" lnbits || true
+
+
 # Add sources
 apt-get -y install apt-transport-https
 DEBIAN_VERSION=$(lsb_release -c | awk '{ print $2 }')
@@ -127,7 +131,8 @@ apt-get -y install libfreetype6-dev libpng-dev libatlas-base-dev libgmp-dev libl
 apt-get -y install libffi-dev libssl-dev glances python3-bottle automake libtool libltdl7
 apt -y -qq install apt-transport-https ca-certificates
 apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
-apt-get -y install zlib1g-dev libudev-dev libusb-1.0-0-dev python3-venv
+apt-get -y install zlib1g-dev libudev-dev libusb-1.0-0-dev python3-venv gunicorn
+apt-get -y isntall libsqlite3-dev torsocks
 
 
 # Make sure some software is removed
@@ -151,17 +156,21 @@ pip install --upgrade wheel
 pip install speedtest-cli transmissionrpc flask python-bitcoinrpc redis prometheus_client requests
 pip install python-pam python-bitcoinlib psutil
 pip install grpcio grpcio-tools googleapis-common-protos 
-pip install tzupdate virtualenv
+pip install tzupdate virtualenv pysocks
 
 
 # Update Python3 to 3.7.X
-PYTHON3_VERSION=$(python3 --version)
-if [[ "$PYTHON3_VERSION" != *"Python 3.7.6"* ]]; then
+PYTHON_VERSION=3.7.7
+CURRENT_PYTHON3_VERSION=$(python3 --version)
+if [[ "$CURRENT_PYTHON3_VERSION" != *"Python ${PYTHON_VERSION}"* ]]; then
     mkdir -p /opt/download
     cd /opt/download
-    wget https://www.python.org/ftp/python/3.7.6/Python-3.7.6.tar.xz
-    tar xf Python-3.7.6.tar.xz
-    cd Python-3.7.6
+    rm -rf Python-*
+
+    wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz -O python.tar.xz
+    tar xf python.tar.xz
+
+    cd Python-*
     ./configure
     make -j4
     make install
@@ -178,6 +187,7 @@ pip3 install python-bitcointx
 pip3 install gnureadline
 pip3 install lndmanage==0.10.0   # Install LND Manage (keep up to date with LND)
 pip3 install docker-compose
+pip3 install pipenv
 
 
 # Install Rust
@@ -268,7 +278,7 @@ fi
 cd ~
 
 # Install Lightning
-LND_VERSION="v0.10.0-beta"
+LND_VERSION="v0.10.1-beta"
 LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
@@ -305,7 +315,7 @@ cd ~
 
 # Install Loopd
 echo "Installing loopd..."
-LOOP_VERSION="v0.6.0-beta"
+LOOP_VERSION="v0.6.4-beta"
 LOOP_ARCH="loop-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LOOP_ARCH="loop-linux-amd64"
@@ -395,14 +405,13 @@ if [ "$CURRENT" != "$CARAVAN_UPGRADE_URL" ]; then
 
     cd caravan
     sudo -u bitcoin npm install --only=production
-    sed -i 's/HTTPS=true/HTTPS=false/g' ./package.json || true
     echo $CARAVAN_UPGRADE_URL > $CARAVAN_UPGRADE_URL_FILE
 fi
 cd ~
 
 
 # Install cors proxy (my fork)
-CORSPROXY_UPGRADE_URL=https://github.com/tehelsper/CORS-Proxy/archive/v1.6.0.tar.gz
+CORSPROXY_UPGRADE_URL=https://github.com/tehelsper/CORS-Proxy/archive/v1.7.0.tar.gz
 CORSPROXY_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.corsproxy_url
 CURRENT=""
 if [ -f $CORSPROXY_UPGRADE_URL ]; then
@@ -525,7 +534,7 @@ fi
 
 
 # Install BTC RPC Explorer
-BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v2.0.0.tar.gz
+BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v2.0.1.tar.gz
 BTCRPCEXPLORER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btcrpcexplorer_url
 CURRENT=""
 if [ -f $BTCRPCEXPLORER_UPGRADE_URL_FILE ]; then
@@ -544,6 +553,39 @@ if [ "$CURRENT" != "$BTCRPCEXPLORER_UPGRADE_URL" ]; then
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $BTCRPCEXPLORER_UPGRADE_URL > $BTCRPCEXPLORER_UPGRADE_URL_FILE
+fi
+
+
+# Install LNBits
+LNBITS_UPGRADE_URL=https://github.com/lnbits/lnbits/archive/raspiblitz.tar.gz
+LNBITS_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lnbits_url
+CURRENT=""
+if [ -f $LNBITS_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $LNBITS_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$LNBITS_UPGRADE_URL" ]; then
+    cd /opt/mynode
+    rm -rf lnbits
+    sudo -u bitcoin wget $LNBITS_UPGRADE_URL -O lnbits.tar.gz
+    sudo -u bitcoin tar -xvf lnbits.tar.gz
+    sudo -u bitcoin rm lnbits.tar.gz
+    sudo -u bitcoin mv lnbits-* lnbits
+    cd lnbits
+
+    # Copy over config file
+    cp /usr/share/mynode/lnbits.env /opt/mynode/lnbits/.env
+    chown bitcoin:bitcoin /opt/mynode/lnbits/.env
+
+    # Install with python 3.7 (Only use "pipenv install --python 3.7" once or it will rebuild the venv!)
+    sudo -u bitcoin pipenv --python 3.7 install
+    sudo -u bitcoin pipenv run pip install python-dotenv
+    sudo -u bitcoin pipenv run pip install -r requirements.txt
+    sudo -u bitcoin pipenv run pip install lnd-grpc
+    sudo -u bitcoin pipenv run flask migrate
+
+    mkdir -p /home/bitcoin/.mynode/
+    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+    echo $LNBITS_UPGRADE_URL > $LNBITS_UPGRADE_URL_FILE
 fi
 
 

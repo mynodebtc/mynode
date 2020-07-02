@@ -13,7 +13,7 @@ def get_whirlpool_status():
     # Find whirlpool status
     whirlpool_status = "Disabled"
     whirlpool_status_color = "gray"
-    whirlpool_initialized = os.path.isfile("/opt/mynode/whirlpool/whirlpool-cli-config.properties")
+    whirlpool_initialized = os.path.isfile("/mnt/hdd/mynode/whirlpool/whirlpool-cli-config.properties")
     if is_whirlpool_enabled():
         status_code = get_service_status_code("whirlpool")
         if status_code != 0:
@@ -35,7 +35,7 @@ def whirlpool_page():
 
     whirlpool_api_key = 'Not found'
     try:
-        whirlpool_api_key = subprocess.check_output("cat /opt/mynode/whirlpool/whirlpool-cli-config* | grep -i cli.Apikey= | cut -c 12-", shell=True)
+        whirlpool_api_key = subprocess.check_output("cat /mnt/hdd/mynode/whirlpool/whirlpool-cli-config* | grep -i cli.Apikey= | cut -c 12-", shell=True)
     except:
         whirlpool_api_key = 'error'
 
@@ -63,5 +63,6 @@ def page_toggle_whirlpool():
 def page_reset_whirlpool():
     check_logged_in()
     os.system("rm -f /opt/mynode/whirlpool/whirlpool-cli-config.properties")
+    os.system("rm -f /mnt/hdd/mynode/whirlpool/whirlpool-cli-config.properties")
     os.system("systemctl restart whirlpool --no-pager")
     return redirect("/whirlpool")

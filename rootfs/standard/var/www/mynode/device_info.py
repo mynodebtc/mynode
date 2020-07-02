@@ -8,6 +8,7 @@ import subprocess
 
 # Globals
 local_ip = "unknown"
+cached_data = {}
 
 #==================================
 # Utilities
@@ -97,8 +98,8 @@ def get_current_beta_version():
     return current_beta_version
 
 def update_latest_version():
-    os.system("wget "+LATEST_VERSION_URL+" -O /usr/share/mynode/latest_version")
-    os.system("wget "+LATEST_BETA_VERSION_URL+" -O /usr/share/mynode/latest_beta_version")
+    os.system("torify wget "+LATEST_VERSION_URL+" -O /usr/share/mynode/latest_version")
+    os.system("torify wget "+LATEST_BETA_VERSION_URL+" -O /usr/share/mynode/latest_beta_version")
     return True
 
 def get_latest_version():
@@ -220,20 +221,36 @@ def get_system_date():
     return date
 
 def get_device_serial():
+    global cached_data
+    if "serial" in cached_data:
+        return cached_data["serial"]
+
     serial = subprocess.check_output("cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2", shell=True)
     serial = serial.strip()
     if serial == "":
         # For VMs, use the UUID
         serial = subprocess.check_output("sudo dmidecode | grep UUID | cut -d ' ' -f 2", shell=True)
         serial = serial.strip()
+
+    cached_data["serial"] = serial
     return serial
 
 def get_device_type():
-    device = subprocess.check_output("mynode-get-device-type", shell=True)
+    global cached_data
+    if "device_type" in cached_data:
+        return cached_data["device_type"]
+    
+    device = subprocess.check_output("mynode-get-device-type", shell=True).strip()
+    cached_data["device_type"] = device
     return device
 
 def get_device_ram():
-    ram = subprocess.check_output("free --giga | grep Mem | awk '{print $2}'", shell=True)
+    global cached_data
+    if "ram" in cached_data:
+        return cached_data["ram"]
+
+    ram = subprocess.check_output("free --giga | grep Mem | awk '{print $2}'", shell=True).strip()
+    cached_data["ram"] = ram
     return ram
 
 def get_local_ip():
@@ -654,6 +671,14 @@ def get_onion_info_btc_v2():
     except:
         pass
     return info
+
+def get_tor_version():
+    global cached_data
+    if "tor_version" in cached_data:
+        return cached_data["tor_version"]
+
+    cached_data["tor_version"] = subprocess.check_output("tor --version | egrep -o '[0-9\\.]+'", shell=True).strip().strip(".")
+    return cached_data["tor_version"]
 
 
 #==================================

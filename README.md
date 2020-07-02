@@ -29,18 +29,19 @@ https://mynodebtc.com/order_now
 ## Features
 Each myNode device comes with a number of wonderful features:
 
-- Bitcoin Node (Bitcoin Core v0.19.1)
-- Lightning Node (LND v0.10.0-beta)
+- Bitcoin Node (Bitcoin Core v0.20.0)
+- Lightning Node (LND v0.10.1-beta)
 - Electrum Server (Electrum Rust Server aka Electrs 0.7.0)
-- BTCPay Server (v1.0.3.153)
+- BTCPay Server (v1.0.4.4)
 - RTL (Ride the Lightning) - Lightning Wallet (v0.7.1)
 - Samourai Dojo (v1.5.0)
 - Samourai Whirlpool (whirlpool-client-cli v0.10.5)
-- BTC RPC Explorer (v2.0.0)
+- BTC RPC Explorer (v2.0.1)
 - Mempool.Space - Mempool local visualizer for the Bitcoin blockchain (v1.0)
 - LND Hub - Lightning Wallet Server (v1.2.0)
 - Lndmanage (v0.10.0)
-- Lightning Loop - A Non-Custodial Off/On Chain Bridge (v0.6.0-beta)
+- Lightning Loop - A Non-Custodial Off/On Chain Bridge (v0.6.4-beta)
+- Caravan (v0.2.0)
 - Tor
 - JoinMarket CLI (v0.6.2)
 - LND Connect - Generate QR Codes for connecting wallets (v0.2.0)
@@ -83,14 +84,14 @@ Once you are running myNode, you can easily modify and update the software yours
 
 1. Start by running myNode on your device via the instructions above in "Running myNode"
 2. Modify myNode files
-    * Clone this git repo on your PC or laptop - 'git clone https://github.com/mynodebtc/mynode.git'
+    * Clone this git repo on your PC or laptop - `git clone https://github.com/mynodebtc/mynode.git`
     * Make your modifications
-3. Run 'make rootfs'
-    * Or run 'make rootfs_auto' in a new console tab
+3. Run `make rootfs`
+    * Or run `make rootfs_auto` in a new console tab
     * This will automatically create artifacts as local files are modified
 4. Run 'make start_file_server'
     * This will run a local HTTP server so your device can download files
-5. On your device, run 'sudo mynode-local-upgrade [dev pc ip address]'
+5. On your device, run `sudo mynode-local-upgrade [dev pc ip address]`
     * This will download your locally generated artifact and install it on your device
     * Your device will automatically reboot to ensure updates take effect
 6. Test your changes!
@@ -107,26 +108,27 @@ Once you are running myNode, you can easily update the software yourself!
 
 1. Start by running myNode on your device via the instructions above in "Running myNode"
 2. Clone the latest release from the git repo on your PC or laptop
-    * Run 'git clone https://github.com/mynodebtc/mynode.git --branch latest_release'
-    * Run 'cd mynode'
-3. Run 'make rootfs'
-4. Run 'make start_file_server'
+    * Run `git clone https://github.com/mynodebtc/mynode.git`
+    * Run `cd mynode`
+    * Run `git checkout tags/latest_release`
+3. Run `make rootfs`
+4. Run `make start_file_server`
     * This will run a local HTTP server so your device can download files
-5. On your device, run 'sudo mynode-local-upgrade [dev pc ip address]'
+5. On your device, run `sudo mynode-local-upgrade [dev pc ip address]`
     * This will download your locally generated artifact and install it on your device
     * Your device will automatically reboot to ensure updates take effect
-6. Optional: Run 'make stop_file_server'
+6. Optional: Run `make stop_file_server`
     * This will stop the local HTTP server
 7. You are now running the latest version of myNode software!
 
 ## Convert new device to run myNode
 1. Run make command for your device. Ex:
-    * make setup_new_rock64
-    * make setup_new_rockpro64
-    * make setup_new_raspi3
-    * make setup_new_raspi4
-    * make setup_new_debian
-    * make setup_new_other
+    * `make setup_new_rock64`
+    * `make setup_new_rockpro64`
+    * `make setup_new_raspi3`
+    * `make setup_new_raspi4`
+    * `make setup_new_debian`
+    * `make setup_new_other`
 3. Follow Instructions
 2. Reboot Device
 4. Congratulations! You're running a new myNode device!

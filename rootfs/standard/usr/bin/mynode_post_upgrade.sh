@@ -14,7 +14,10 @@ date
 # Delete ramlog to prevent ram issues
 rm -rf /var/log/*
 
-# Check if upgrdes use tor
+# Create any necessary users
+
+
+# Check if upgrades use tor
 TORIFY=""
 if [ -f /mnt/hdd/mynode/settings/torify_apt_get ]; then
     TORIFY="torify"
@@ -56,6 +59,8 @@ $TORIFY apt-get -y install libatlas-base-dev libffi-dev libssl-dev glances pytho
 $TORIFY apt-get -y -qq install apt-transport-https ca-certificates
 $TORIFY apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
 $TORIFY apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
+$TORIFY apt-get -y install libudev-dev libusb-1.0-0-dev python3-venv gunicorn libsqlite3-dev
+$TORIFY apt-get -y install torsocks
 
 # Make sure some software is removed
 apt-get -y purge ntp # (conflicts with systemd-timedatectl)
@@ -63,7 +68,28 @@ apt-get -y purge chrony # (conflicts with systemd-timedatectl)
 
 
 # Install any pip software
-pip install tzupdate virtualenv --no-cache-dir
+pip install tzupdate virtualenv pysocks --no-cache-dir
+
+
+# Update Python3 to 3.7.X
+PYTHON_VERSION=3.7.7
+CURRENT_PYTHON3_VERSION=$(python3 --version)
+if [[ "$CURRENT_PYTHON3_VERSION" != *"Python ${PYTHON_VERSION}"* ]]; then
+    mkdir -p /opt/download
+    cd /opt/download
+    rm -rf Python-*
+
+    wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz -O python.tar.xz
+    tar xf python.tar.xz
+
+    cd Python-*
+    ./configure
+    make -j4
+    make install
+    cd ~
+else
+    echo "Python up to date"
+fi
 
 
 # Install any pip3 software
@@ -71,6 +97,7 @@ pip3 install python-bitcointx --no-cache-dir
 pip3 install gnureadline --no-cache-dir
 pip3 install lndmanage==0.10.0 --no-cache-dir   # Install LND Manage (keep up to date with LND)
 pip3 install docker-compose --no-cache-dir
+pip3 install pipenv --no-cache-dir
 
 
 # Install Docker
@@ -97,7 +124,7 @@ usermod -aG docker root
 
 # Upgrade BTC
 echo "Upgrading BTC..."
-BTC_VERSION="0.19.1"
+BTC_VERSION="0.20.0"
 ARCH="UNKNOWN"
 if [ $IS_RASPI = 1 ]; then
     ARCH="arm-linux-gnueabihf"
@@ -146,7 +173,7 @@ fi
 
 # Upgrade LND
 echo "Upgrading LND..."
-LND_VERSION="v0.10.0-beta"
+LND_VERSION="v0.10.1-beta"
 LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
@@ -185,7 +212,7 @@ fi
 
 # Upgrade Loop
 echo "Upgrading loopd..."
-LOOP_VERSION="v0.6.0-beta"
+LOOP_VERSION="v0.6.4-beta"
 LOOP_ARCH="loop-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LOOP_ARCH="loop-linux-amd64"
@@ -247,6 +274,59 @@ if [ "$CURRENT" != "$LNDHUB_UPGRADE_URL" ]; then
     echo $LNDHUB_UPGRADE_URL > $LNDHUB_UPGRADE_URL_FILE
 fi
 cd ~
+
+
+# Install Caravan
+CARAVAN_VERSION="v0.2.0"
+CARAVAN_UPGRADE_URL=https://github.com/unchained-capital/caravan/archive/${CARAVAN_VERSION}.tar.gz
+CARAVAN_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.caravan_url
+CARAVAN_SETTINGS_UPDATE_FILE=/home/bitcoin/.mynode/.caravan_settings_1
+CURRENT=""
+if [ -f $CARAVAN_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $CARAVAN_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$CARAVAN_UPGRADE_URL" ] || [ ! -f $CARAVAN_SETTINGS_UPDATE_FILE ]; then
+    cd /opt/mynode
+    rm -rf caravan
+
+    rm -f caravan.tar.gz
+    wget $CARAVAN_UPGRADE_URL -O caravan.tar.gz
+    tar -xzf caravan.tar.gz 
+    rm -f caravan.tar.gz
+    mv caravan-* caravan
+    chown -R bitcoin:bitcoin caravan
+
+    cd caravan
+    sudo -u bitcoin npm install --only=production
+    echo $CARAVAN_UPGRADE_URL > $CARAVAN_UPGRADE_URL_FILE
+    touch $CARAVAN_SETTINGS_UPDATE_FILE
+fi
+cd ~
+
+
+# Install cors proxy (my fork)
+CORSPROXY_UPGRADE_URL=https://github.com/tehelsper/CORS-Proxy/archive/v1.7.0.tar.gz
+CORSPROXY_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.corsproxy_url
+CURRENT=""
+if [ -f $CORSPROXY_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $CORSPROXY_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$CORSPROXY_UPGRADE_URL" ]; then
+    cd /opt/mynode
+    rm -rf corsproxy
+
+    rm -f corsproxy.tar.gz
+    wget $CORSPROXY_UPGRADE_URL -O corsproxy.tar.gz
+    tar -xzf corsproxy.tar.gz 
+    rm -f corsproxy.tar.gz
+    mv CORS-* corsproxy
+
+    cd corsproxy
+    npm install
+    echo $CORSPROXY_UPGRADE_URL > $CORSPROXY_UPGRADE_URL_FILE
+fi
+cd ~
+
 
 # Install recent version of secp256k1
 echo "Installing secp256k1..."
@@ -348,7 +428,7 @@ if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
 fi
 
 # Upgrade BTC RPC Explorer
-BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v2.0.0.tar.gz
+BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v2.0.1.tar.gz
 BTCRPCEXPLORER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btcrpcexplorer_url
 CURRENT=""
 if [ -f $BTCRPCEXPLORER_UPGRADE_URL_FILE ]; then
@@ -367,6 +447,39 @@ if [ "$CURRENT" != "$BTCRPCEXPLORER_UPGRADE_URL" ]; then
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $BTCRPCEXPLORER_UPGRADE_URL > $BTCRPCEXPLORER_UPGRADE_URL_FILE
+fi
+
+
+# Upgrade LNBits
+LNBITS_UPGRADE_URL=https://github.com/lnbits/lnbits/archive/raspiblitz.tar.gz
+LNBITS_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lnbits_url
+CURRENT=""
+if [ -f $LNBITS_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $LNBITS_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$LNBITS_UPGRADE_URL" ]; then
+    cd /opt/mynode
+    rm -rf lnbits
+    sudo -u bitcoin wget $LNBITS_UPGRADE_URL -O lnbits.tar.gz
+    sudo -u bitcoin tar -xvf lnbits.tar.gz
+    sudo -u bitcoin rm lnbits.tar.gz
+    sudo -u bitcoin mv lnbits-* lnbits
+    cd lnbits
+
+    # Copy over config file
+    cp /usr/share/mynode/lnbits.env /opt/mynode/lnbits/.env
+    chown bitcoin:bitcoin /opt/mynode/lnbits/.env
+
+    # Install with python 3.7 (Only use "pipenv install --python 3.7" once or it will rebuild the venv!)
+    sudo -u bitcoin pipenv --python 3.7 install
+    sudo -u bitcoin pipenv run pip install python-dotenv
+    sudo -u bitcoin pipenv run pip install -r requirements.txt
+    #sudo -u bitcoin pipenv run pip install lnd-grpc # Using REST now (this install takes a LONG time)
+    sudo -u bitcoin pipenv run flask migrate || true
+
+    mkdir -p /home/bitcoin/.mynode/
+    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+    echo $LNBITS_UPGRADE_URL > $LNBITS_UPGRADE_URL_FILE
 fi
 
 
@@ -435,14 +548,30 @@ fi
 #     echo $TOR_UPGRADE_URL > $TOR_UPGRADE_URL_FILE
 # fi
 rm -f /usr/local/bin/tor || true
-$TORIFY apt-get remove -y tor	
-$TORIFY apt-get install -y tor
+TOR_VERSION=$(tor --version)
+if [[ "$TOR_VERSION" != *"Tor version 0.4"* ]]; then
+    $TORIFY apt-get remove -y tor
+    $TORIFY apt-get install -y tor
+fi
+
 
 # Enable fan control
 if [ $IS_ROCKPRO64 = 1 ]; then
     systemctl enable fan_control
 fi
 
+
+# Cleanup MOTD
+rm -f /etc/update-motd.d/10-armbian-header || true
+rm -f /etc/update-motd.d/30-armbian-sysinfo || true
+rm -f /etc/update-motd.d/35-armbian-tips || true
+rm -f /etc/update-motd.d/40-armbian-updates || true
+rm -f /etc/update-motd.d/41-armbian-config || true
+rm -f /etc/update-motd.d/98-armbian-autoreboot-warn || true
+
+
+# Clean apt-cache
+apt-get clean
 
 # Enable any new/required services
 systemctl enable bitcoind
@@ -457,6 +586,7 @@ systemctl enable webssh2
 systemctl enable tor
 systemctl enable loopd
 systemctl enable rotate_logs
+systemctl enable corsproxy_btcrpc
 
 # Disable any old services
 systemctl disable hitch || true

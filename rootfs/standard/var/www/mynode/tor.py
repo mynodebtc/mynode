@@ -55,6 +55,7 @@ def page_tor():
     # Load page
     templateData = {
         "title": "myNode Tor Services",
+        "version": get_tor_version(),
         "v3_services": v3_services,
         "v2_services": v2_services,
         "fully_noded_link": fully_noded_link,

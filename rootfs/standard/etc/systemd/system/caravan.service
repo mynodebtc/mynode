@@ -1,0 +1,34 @@
+# caravan service
+# /etc/systemd/system/caravan.service
+
+[Unit]
+Description=Caravan
+Wants=bitcoind.service
+After=bitcoind.service
+
+[Service]
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/usr/bin/wait_on_bitcoin.sh
+Environment="PORT=3020 NODE_ENV=production"
+WorkingDirectory=/opt/mynode/caravan
+ExecStart=/usr/bin/npm start
+
+StandardInput=tty-force
+TTYVHangup=yes
+TTYPath=/dev/tty20
+TTYReset=yes
+
+User=bitcoin
+Group=bitcoin
+Type=simple
+KillMode=process
+LimitNOFILE=128000
+TimeoutSec=30
+Restart=on-failure
+RestartSec=120
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=caravan
+
+[Install]
+WantedBy=multi-user.target

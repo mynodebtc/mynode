@@ -141,3 +141,46 @@
         </div>
     </div>
 </div>
+
+<div class="app_tile_row">
+    <div class="app_tile">
+        <div class="app_status_icon {{ caravan_status_color }}"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/caravan.png")}}"/></div>
+        <div class="app_title">Caravan</div>
+        <div class="app_status">{{ caravan_status }}</div>
+        <div class="app_contents">
+            {% if product_key_skipped %}
+                Premium Feature
+            {% else %}
+                {% if caravan_enabled %}
+                    {% if caravan_ready %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="/caravan">Info</a>
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-caravan">Disable</a>
+                    {% endif %}
+                {% else %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-caravan">Enable</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="app_tile">
+        <div class="app_status_icon {{ lnbits_status_color }}"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lnbits.png")}}"/></div>
+        <div class="app_title">LNbits</div>
+        <div class="app_status">{% if not lnd_ready %}Waiting on LND...{% else %}{{ lnbits_status }}{% endif %}</div>
+        <div class="app_contents">
+            {% if product_key_skipped %}
+                Premium Feature
+            {% else %}
+                {% if lnd_ready %}
+                    {% if lnbits_enabled %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lnbits">LNbits</a>
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-lnbits">Disable</a>
+                    {% else %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-lnbits">Enable</a>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
