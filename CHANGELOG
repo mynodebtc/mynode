@@ -1,3 +1,14 @@
+=== v0.2.10 ===
+- Add LNBits
+- Upgrade LND to v0.10.1
+- Upgrade Loop to v0.6.4
+- Upgrade BTC RPC Explorer to v2.0.1
+- Use tor for key checks and upgrades
+- Add HTTPS for Caravan
+- Move Whirlpool files to HDD
+- HTTPS Certificate Improvements
+- UI Improvements and Bug Fixes
+
 === v0.2.09 ===
 - Upgrade Bitcoin to 0.20.0
 - Add Caravan
