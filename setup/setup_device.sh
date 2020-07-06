@@ -84,14 +84,19 @@ wget http://${SERVER_IP}:8000/${TARBALL} -O /tmp/rootfs.tar.gz
 
 
 # Create any necessary users
-sudo adduser --disabled-password --gecos "" lnbits || true
 
 
 # Add sources
 apt-get -y install apt-transport-https
 DEBIAN_VERSION=$(lsb_release -c | awk '{ print $2 }')
-grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.lis
-grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.lis
+# Tor
+grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+# Raspbian mirrors
+grep -qxF "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+grep -qxF "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+grep -qxF "deb http://mirror.ox.ac.uk/sites/archive.raspbian.org/archive/raspbian ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://mirror.ox.ac.uk/sites/archive.raspbian.org/archive/raspbian ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+grep -qxF "deb http://mirror.netcologne.de/raspbian/raspbian/ ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://mirror.netcologne.de/raspbian/raspbian/ ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
 
 
 # Import Keys
@@ -126,7 +131,7 @@ apt-get -y install libffi-dev libssl-dev glances python3-bottle automake libtool
 apt -y -qq install apt-transport-https ca-certificates
 apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
 apt-get -y install zlib1g-dev libudev-dev libusb-1.0-0-dev python3-venv gunicorn
-apt-get -y isntall libsqlite3-dev torsocks
+apt-get -y install libsqlite3-dev torsocks
 
 
 # Make sure some software is removed
