@@ -460,7 +460,7 @@ fi
 # Install JoinMarket
 echo "Install JoinMarket..."
 if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
-    JOINMARKET_VERSION=v0.6.3.1
+    JOINMARKET_VERSION=v0.6.2
     JOINMARKET_UPGRADE_URL=https://github.com/JoinMarket-Org/joinmarket-clientserver/archive/$JOINMARKET_VERSION.tar.gz
     JOINMARKET_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.joinmarket_version
     CURRENT=""
