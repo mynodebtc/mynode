@@ -276,7 +276,7 @@ fi
 cd ~
 
 # Install Lightning
-LND_VERSION="v0.10.1-beta"
+LND_VERSION="v0.10.3-beta"
 LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
@@ -313,7 +313,7 @@ cd ~
 
 # Install Loopd
 echo "Installing loopd..."
-LOOP_VERSION="v0.6.4-beta"
+LOOP_VERSION="v0.6.5-beta"
 LOOP_ARCH="loop-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LOOP_ARCH="loop-linux-amd64"
@@ -460,7 +460,7 @@ fi
 # Install JoinMarket
 echo "Install JoinMarket..."
 if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
-    JOINMARKET_VERSION=v0.6.2
+    JOINMARKET_VERSION=v0.6.3.1
     JOINMARKET_UPGRADE_URL=https://github.com/JoinMarket-Org/joinmarket-clientserver/archive/$JOINMARKET_VERSION.tar.gz
     JOINMARKET_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.joinmarket_version
     CURRENT=""
@@ -532,7 +532,7 @@ fi
 
 
 # Install BTC RPC Explorer
-BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v2.0.1.tar.gz
+BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v2.0.2.tar.gz
 BTCRPCEXPLORER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btcrpcexplorer_url
 CURRENT=""
 if [ -f $BTCRPCEXPLORER_UPGRADE_URL_FILE ]; then
