@@ -31,7 +31,7 @@ Each myNode device comes with a number of wonderful features:
 
 - Bitcoin Node (Bitcoin Core v0.20.0)
 - Lightning Node (LND v0.10.3-beta)
-- Electrum Server (Electrum Rust Server aka Electrs 0.7.0)
+- Electrum Server (Electrum Rust Server aka Electrs 0.8.5)
 - BTCPay Server (v1.0.4.4)
 - RTL (Ride the Lightning) - Lightning Wallet (v0.7.1)
 - Samourai Dojo (v1.5.0)
