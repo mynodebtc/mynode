@@ -34,11 +34,10 @@ DEBIAN_VERSION=$(lsb_release -c | awk '{ print $2 }')
 grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
 grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
 # Raspbian mirrors
-grep -qxF "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
-grep -qxF "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
-grep -qxF "deb http://mirror.ox.ac.uk/sites/archive.raspbian.org/archive/raspbian ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://mirror.ox.ac.uk/sites/archive.raspbian.org/archive/raspbian ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
-grep -qxF "deb http://mirror.netcologne.de/raspbian/raspbian/ ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://mirror.netcologne.de/raspbian/raspbian/ ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
-
+if [ $IS_RASPI = 1 ]; then
+    grep -qxF "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+    grep -qxF "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+fi
 
 # Import Keys
 set +e
@@ -580,6 +579,7 @@ rm -f /etc/update-motd.d/98-armbian-autoreboot-warn || true
 apt-get clean
 
 # Enable any new/required services
+systemctl enable docker
 systemctl enable bitcoind
 systemctl enable lnd
 systemctl enable firewall
