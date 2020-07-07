@@ -252,8 +252,10 @@ cp /usr/share/mynode/btc_rpc_explorer_env /opt/mynode/btc-rpc-explorer/.env
 chown bitcoin:bitcoin /opt/mynode/btc-rpc-explorer/.env
 
 # LNBits Config
-cp /usr/share/mynode/lnbits.env /opt/mynode/lnbits/.env
-chown bitcoin:bitcoin /opt/mynode/lnbits/.env
+if [ -d /opt/mynode/lnbits ]; then
+    cp /usr/share/mynode/lnbits.env /opt/mynode/lnbits/.env
+    chown bitcoin:bitcoin /opt/mynode/lnbits/.env
+fi
 
 
 # Update files that need RPC password (needed if upgrades overwrite files)
