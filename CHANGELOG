@@ -1,3 +1,12 @@
+=== v0.2.11 ===
+- Update electrs to v0.8.5
+- Add Specter Desktop v0.5.2
+- Upgrade LND to v0.10.3
+- Upgrade BTC RPC Explorer to v2.0.2
+- Fix config issue with LNbits
+- Fix issue causing reboot to get stuck at starting
+- Add raspibian mirrors for more consistent upgrades
+
 === v0.2.10 ===
 - Add LNBits
 - Upgrade LND to v0.10.1
