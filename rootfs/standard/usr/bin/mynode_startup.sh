@@ -132,6 +132,7 @@ mkdir -p /mnt/hdd/mynode/docker
 mkdir -p /mnt/hdd/mynode/rtl_backup
 mkdir -p /mnt/hdd/mynode/whirlpool
 mkdir -p /mnt/hdd/mynode/lnbits
+mkdir -p /mnt/hdd/mynode/specter
 mkdir -p /tmp/flask_uploads
 echo "drive_mounted" > $MYNODE_DIR/.mynode_status
 chmod 777 $MYNODE_DIR/.mynode_status
@@ -257,6 +258,19 @@ if [ -d /opt/mynode/lnbits ]; then
     chown bitcoin:bitcoin /opt/mynode/lnbits/.env
 fi
 
+# Setup Specter
+if [ -d /home/bitcoin/.specter ]; then
+    # Migrate to HDD
+    cp -r -f /home/bitcoin/.specter/* /mnt/hdd/mynode/specter/
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/specter
+    rm -rf /home/bitcoin/.specter
+    sync
+fi
+if [ ! -L /home/bitcoin/.specter ]; then
+    # Setup symlink to HDD
+    sudo -u bitcoin ln -s /mnt/hdd/mynode/specter /home/bitcoin/.specter
+fi
+
 # Setup udev
 chown root:root /etc/udev/rules.d/* || true
 udevadm trigger
@@ -324,6 +338,10 @@ fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/lnbits)
 if [ "$USER" != "bitcoin" ]; then
     chown -R bitcoin:bitcoin /mnt/hdd/mynode/lnbits
+fi
+USER=$(stat -c '%U' /mnt/hdd/mynode/specter)
+if [ "$USER" != "bitcoin" ]; then
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/specter
 fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/redis)
 if [ "$USER" != "redis" ]; then
