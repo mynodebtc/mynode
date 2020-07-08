@@ -506,7 +506,7 @@ if [ "$CURRENT" != "$SPECTER_UPGRADE_VERSION" ]; then
         sudo -u bitcoin python3 -m venv env
     fi
     source env/bin/activate
-    pip3 install ecdsa===0.14.1
+    pip3 install ecdsa===0.13.3
     pip3 install cryptoadvance.specter===$SPECTER_UPGRADE_VERSION --upgrade
     deactivate
 
