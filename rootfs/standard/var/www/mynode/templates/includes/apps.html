@@ -142,6 +142,7 @@
     </div>
 </div>
 
+<div class="main_header">Beta Apps</div>
 <div class="app_tile_row">
     <div class="app_tile">
         <div class="app_status_icon {{ caravan_status_color }}"></div>
@@ -159,6 +160,26 @@
                     {% endif %}
                 {% else %}
                     <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-caravan">Enable</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="app_tile">
+        <div class="app_status_icon {{ specter_status_color }}"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/specter.png")}}"/></div>
+        <div class="app_title">Specter</div>
+        <div class="app_status">{{ specter_status }}</div>
+        <div class="app_contents">
+            {% if product_key_skipped %}
+                Premium Feature
+            {% else %}
+                {% if specter_enabled %}
+                    {% if btcrpcexplorer_ready %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="specter">Specter</a>
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-specter">Disable</a>
+                    {% endif %}
+                {% else %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-specter">Enable</a>
                 {% endif %}
             {% endif %}
         </div>

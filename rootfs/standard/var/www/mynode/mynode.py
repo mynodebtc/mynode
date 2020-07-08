@@ -473,6 +473,13 @@ def index():
             caravan_ready = True
             caravan_status = "Running"
 
+        # Find caravan status
+        specter_status = ""
+        specter_status_color = "gray"
+        if is_specter_enabled():
+            specter_status_color = get_service_status_color("specter")
+            specter_status = "Running"
+
         # Check for new version of software
         upgrade_available = False
         current = get_current_version()
@@ -516,6 +523,9 @@ def index():
             "caravan_status_color": caravan_status_color,
             "caravan_status": caravan_status,
             "caravan_enabled": is_caravan_enabled(),
+            "specter_status_color": specter_status_color,
+            "specter_status": specter_status,
+            "specter_enabled": is_specter_enabled(),
             "mempoolspace_status_color": mempoolspace_status_color,
             "mempoolspace_status": mempoolspace_status,
             "mempoolspace_enabled": is_mempoolspace_enabled(),
@@ -667,6 +677,15 @@ def page_toggle_caravan():
         disable_caravan()
     else:
         enable_caravan()
+    return redirect("/")
+
+@app.route("/toggle-specter")
+def page_toggle_specter():
+    check_logged_in()
+    if is_specter_enabled():
+        disable_specter()
+    else:
+        enable_specter()
     return redirect("/")
 
 @app.route("/toggle-vpn")

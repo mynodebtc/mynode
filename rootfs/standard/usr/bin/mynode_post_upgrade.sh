@@ -488,6 +488,31 @@ if [ "$CURRENT" != "$LNBITS_UPGRADE_URL" ]; then
 fi
 
 
+# Upgrade Specter Desktop
+SPECTER_UPGRADE_VERSION=0.5.2
+SPECTER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.spectre_url
+CURRENT=""
+if [ -f $SPECTER_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $SPECTER_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$SPECTER_UPGRADE_VERSION" ]; then
+    cd /opt/mynode
+    mkdir -p specter
+    cd specter
+
+    # Make venv
+    if [ ! -d env ]; then
+        sudo -u bitcoin python3 -m venv env
+    fi
+    source env/bin/activate
+    pip3 install ecdsa===0.14.1
+    pip3 install cryptoadvance.specter===$SPECTER_UPGRADE_VERSION --upgrade
+    deactivate
+
+    echo $SPECTER_UPGRADE_VERSION > $SPECTER_UPGRADE_URL_FILE
+fi
+
+
 # Install LND Connect
 LNDCONNECTARCH="lndconnect-linux-armv7"
 if [ $IS_X86 = 1 ]; then

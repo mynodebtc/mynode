@@ -1,0 +1,32 @@
+# Specter service
+# /etc/systemd/system/specter.service
+
+[Unit]
+Description=Specter
+Wants=bitcoind.service lnd.service
+After=bitcoind.service lnd.service
+
+[Service]
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/usr/bin/wait_on_lnd.sh
+ExecStartPre=/usr/bin/mynode_gen_cert.sh specter 825
+#ExecStartPre=/usr/bin/mynode_pre_specter.sh
+WorkingDirectory=/opt/mynode/specter
+
+ExecStart=/opt/mynode/specter/env/bin/python3 -m cryptoadvance.specter server --host 0.0.0.0 --cert=/mnt/hdd/mynode/settings/specter/myNode.local.crt --key=/mnt/hdd/mynode/settings/specter/myNode.local.key
+
+Environment=PATH=/opt/mynode/specter/env/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/sbin:/bin
+
+
+User=bitcoin
+Group=bitcoin
+Type=simple
+TimeoutSec=120
+Restart=always
+RestartSec=30
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=specter
+
+[Install]
+WantedBy=multi-user.target
