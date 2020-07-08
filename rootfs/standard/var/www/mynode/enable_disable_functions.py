@@ -123,6 +123,18 @@ def disable_caravan():
     os.system("systemctl disable caravan --no-pager")
 
 
+def is_specter_enabled():
+    return is_service_enabled("specter")
+
+def enable_specter():
+    os.system("systemctl enable specter --no-pager")
+    os.system("systemctl start specter --no-pager")
+
+def disable_specter():
+    os.system("systemctl stop specter --no-pager")
+    os.system("systemctl disable specter --no-pager")
+
+
 def is_vpn_enabled():
     if os.path.isfile(VPN_ENABLED_FILE):
         return True

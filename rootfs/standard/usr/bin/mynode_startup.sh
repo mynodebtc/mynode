@@ -257,6 +257,12 @@ if [ -d /opt/mynode/lnbits ]; then
     chown bitcoin:bitcoin /opt/mynode/lnbits/.env
 fi
 
+# Setup udev
+chown root:root /etc/udev/rules.d/* || true
+udevadm trigger
+udevadm control --reload-rules
+groupadd plugdev || true
+sudo usermod -aG plugdev bitcoin
 
 # Update files that need RPC password (needed if upgrades overwrite files)
 PW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)

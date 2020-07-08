@@ -38,6 +38,11 @@
                     window.open(url,'_blank');
                 })
 
+                $("#specter").on("click", function() {
+                    url = 'https://'+location.hostname+':25441'
+                    window.open(url,'_blank');
+                })
+
                 $("#mempoolspace").on("click", function() {
                     url = 'http://'+location.hostname+':4080'
                     window.open(url,'_blank');
@@ -106,6 +111,10 @@
 
                 $("#toggle-caravan").on("click", function() {
                         window.location.href="/toggle-caravan"
+                });
+
+                $("#toggle-specter").on("click", function() {
+                        window.location.href="/toggle-specter"
                 });
 
                 $("#toggle-lnbits").on("click", function() {
