@@ -498,6 +498,7 @@ fi
 if [ "$CURRENT" != "$SPECTER_UPGRADE_VERSION" ]; then
     cd /opt/mynode
     mkdir -p specter
+    chown -R bitcoin:bitcoin specter
     cd specter
 
     # Make venv
