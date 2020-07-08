@@ -3,12 +3,11 @@
 
 [Unit]
 Description=Specter
-Wants=bitcoind.service lnd.service
-After=bitcoind.service lnd.service
+Wants=bitcoind.service
+After=bitcoind.service
 
 [Service]
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
-ExecStartPre=/usr/bin/wait_on_lnd.sh
 ExecStartPre=/usr/bin/mynode_gen_cert.sh specter 825
 #ExecStartPre=/usr/bin/mynode_pre_specter.sh
 WorkingDirectory=/opt/mynode/specter
