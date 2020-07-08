@@ -259,7 +259,7 @@ if [ -d /opt/mynode/lnbits ]; then
 fi
 
 # Setup Specter
-if [ -d /home/bitcoin/.specter ]; then
+if [ -d /home/bitcoin/.specter ] && [ ! -L /home/bitcoin/.specter ] ; then
     # Migrate to HDD
     cp -r -f /home/bitcoin/.specter/* /mnt/hdd/mynode/specter/
     chown -R bitcoin:bitcoin /mnt/hdd/mynode/specter
