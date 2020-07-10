@@ -225,12 +225,8 @@ def get_device_serial():
     if "serial" in cached_data:
         return cached_data["serial"]
 
-    serial = subprocess.check_output("cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2", shell=True)
+    serial = subprocess.check_output("mynode-get-device-serial", shell=True)
     serial = serial.strip()
-    if serial == "":
-        # For VMs, use the UUID
-        serial = subprocess.check_output("sudo dmidecode | grep UUID | cut -d ' ' -f 2", shell=True)
-        serial = serial.strip()
 
     cached_data["serial"] = serial
     return serial
