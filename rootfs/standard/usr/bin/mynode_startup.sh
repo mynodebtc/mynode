@@ -88,6 +88,8 @@ if [ $IS_X86 = 0 ]; then
         echo "Repairing drive $d ...";
         fsck -y $d > /tmp/fsck_results 2>&1
         RC=$?
+        echo "" >> /tmp/fsck_results
+        echo "Code: $RC" >> /tmp/fsck_results
         if [ "$RC" -ne 0 ]; then
             touch /tmp/fsck_error
         fi
