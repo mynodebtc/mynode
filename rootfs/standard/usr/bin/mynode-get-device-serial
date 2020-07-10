@@ -1,0 +1,12 @@
+#!/bin/bash
+
+SERIAL_NUM=$(cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2)
+if [[ "$SERIAL_NUM" == "" ]]; then
+    SERIAL_NUM=$(sudo dmidecode | grep UUID | cut -d ' ' -f 2)
+elif [[ "$SERIAL_NUM" == "0000000000000000" ]]; then
+    # RockPro64 returns 0s, so use eth0 mac
+    MAC=$(cat /sys/class/net/eth0/address)
+    SERIAL_NUM=$(echo "${MAC//:}")
+fi
+
+echo $SERIAL_NUM
