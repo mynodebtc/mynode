@@ -2,6 +2,8 @@ from config import *
 from flask import Blueprint, render_template, session, abort, Markup, request, redirect, send_from_directory, url_for, flash
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from bitcoind import is_bitcoind_synced
+from bitcoin_info import using_bitcoin_custom_config
+from lightning_info import using_lnd_custom_config
 from pprint import pprint, pformat
 from threading import Timer
 from thread_functions import *
@@ -138,6 +140,8 @@ def page_settings():
         "product_key_skipped": pk_skipped,
         "product_key_error": pk_error,
         "changelog": changelog,
+        "using_bitcoin_custom_config": using_bitcoin_custom_config(),
+        "using_lnd_custom_config": using_lnd_custom_config(),
         "is_bitcoin_synced": is_bitcoind_synced(),
         "is_installing_docker_images": is_installing_docker_images(),
         "firewall_rules": get_firewall_rules(),

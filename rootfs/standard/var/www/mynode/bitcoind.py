@@ -265,6 +265,7 @@ def bitcoind_config_page():
 
     templateData = {
         "title": "myNode Bitcoin Config",
+        "using_bitcoin_custom_config": using_bitcoin_custom_config(),
         "bitcoin_config": bitcoin_config,
         "ui_settings": read_ui_settings()
     }
