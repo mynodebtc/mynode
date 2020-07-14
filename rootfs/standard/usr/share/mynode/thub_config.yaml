@@ -1,0 +1,6 @@
+masterPassword: 'bolt' # Default password unless defined in account
+accounts:
+  - name: 'localhost'
+    serverUrl: '127.0.0.1:10009'
+    macaroonPath: '/home/bitcoin/.lnd/data/chain/bitcoin/mainnet/admin.macaroon'
+    certificatePath: '/home/bitcoin/.lnd/tls.cert'

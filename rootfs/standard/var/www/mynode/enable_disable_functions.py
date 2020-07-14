@@ -63,6 +63,16 @@ def disable_lnbits():
     os.system("systemctl disable lnbits --no-pager")
 
 
+def is_thunderhub_enabled():
+    return is_service_enabled("thunderhub")
+def enable_thunderhub():
+    os.system("systemctl enable thunderhub --no-pager")
+    os.system("systemctl start thunderhub --no-pager")
+def disable_thunderhub():
+    os.system("systemctl stop thunderhub --no-pager")
+    os.system("systemctl disable thunderhub --no-pager")
+
+
 def is_btcrpcexplorer_enabled():
     if os.path.isfile(BTCRPCEXPLORER_ENABLED_FILE):
         return True

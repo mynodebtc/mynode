@@ -514,6 +514,41 @@ if [ "$CURRENT" != "$SPECTER_UPGRADE_VERSION" ]; then
 fi
 
 
+# Upgrade Thunderhub
+THUNDERHUB_UPGRADE_URL=https://github.com/apotdevin/thunderhub/archive/v0.8.8.tar.gz
+THUNDERHUB_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.thunderhub_url
+CURRENT=""
+if [ -f $THUNDERHUB_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $THUNDERHUB_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$THUNDERHUB_UPGRADE_URL" ]; then
+    cd /opt/mynode
+    rm -rf thunderhub
+    sudo -u bitcoin wget $THUNDERHUB_UPGRADE_URL -O thunderhub.tar.gz
+    sudo -u bitcoin tar -xvf thunderhub.tar.gz
+    sudo -u bitcoin rm thunderhub.tar.gz
+    sudo -u bitcoin mv thunderhub-* thunderhub
+    cd thunderhub
+
+    sudo -u bitcoin npm install # --only=production # (can't build with only production)
+    sudo -u bitcoin npm run build
+
+    # Setup symlink to service files
+    mkdir -p /mnt/hdd/mynode/thunderhub/
+    rm -f /opt/mynode/thunderhub/.env.local
+    sudo ln -s /mnt/hdd/mynode/thunderhub/.env.local /opt/mynode/thunderhub/.env.local
+    if [ ! -f /mnt/hdd/mynode/thunderhub/.env.local ]; then
+        cp -f /usr/share/mynode/thunderhub.env /mnt/hdd/mynode/thunderhub/.env.local
+    fi
+    if [ ! -f /mnt/hdd/mynode/thunderhub/thub_config.yaml ]; then
+        cp -f /usr/share/mynode/thub_config.yaml /mnt/hdd/mynode/thunderhub/thub_config.yaml
+    fi
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/thunderhub
+
+    echo $THUNDERHUB_UPGRADE_URL > $THUNDERHUB_UPGRADE_URL_FILE
+fi
+
+
 # Install LND Connect
 LNDCONNECTARCH="lndconnect-linux-armv7"
 if [ $IS_X86 = 1 ]; then

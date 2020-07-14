@@ -204,4 +204,24 @@
             {% endif %}
         </div>
     </div>
+    <div class="app_tile">
+        <div class="app_status_icon {{ thunderhub_status_color }}"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/thunderhub.png")}}"/></div>
+        <div class="app_title">Thunderhub</div>
+        <div class="app_status">{% if not lnd_ready %}Waiting on LND...{% else %}{{ thunderhub_status }}{% endif %}</div>
+        <div class="app_contents">
+            {% if product_key_skipped %}
+                Premium Feature
+            {% else %}
+                {% if lnd_ready %}
+                    {% if thunderhub_enabled %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="thunderhub">Thunderhub</a>
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-thunderhub">Disable</a>
+                    {% else %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-thunderhub">Enable</a>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
 </div>
