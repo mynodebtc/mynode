@@ -268,6 +268,8 @@ def index():
         rtl_status = "Lightning Wallet"
         lnbits_status_color = "gray"
         lnbits_status = "Lightning Wallet"
+        thunderhub_status_color = "gray"
+        thunderhub_status = "Lightning Wallet"
         electrs_status_color = "gray"
         electrs_active = is_electrs_active()
         lndhub_status_color = "gray"
@@ -388,6 +390,15 @@ def index():
                     lnbits_status_color = "red"
                 else:
                     lnbits_status_color = "green"
+
+        # Find Thunderhub status
+        if lnd_ready:
+            if is_thunderhub_enabled():
+                status_code = get_service_status_code("thunderhub")
+                if status_code != 0:
+                    thunderhub_status_color = "red"
+                else:
+                    thunderhub_status_color = "green"
 
         # Find electrs status
         if is_electrs_enabled():
@@ -510,6 +521,9 @@ def index():
             "lnbits_status_color": lnbits_status_color,
             "lnbits_status": lnbits_status,
             "lnbits_enabled": is_lnbits_enabled(),
+            "thunderhub_status_color": thunderhub_status_color,
+            "thunderhub_status": thunderhub_status,
+            "thunderhub_enabled": is_thunderhub_enabled(),
             "lndhub_status_color": lndhub_status_color,
             "lndhub_enabled": is_lndhub_enabled(),
             "explorer_ready": explorer_ready,
@@ -614,6 +628,15 @@ def page_toggle_lndhub():
         disable_lndhub()
     else:
         enable_lndhub()
+    return redirect("/")
+
+@app.route("/toggle-thunderhub")
+def page_toggle_thunderhub():
+    check_logged_in()
+    if is_thunderhub_enabled():
+        disable_thunderhub()
+    else:
+        enable_thunderhub()
     return redirect("/")
 
 @app.route("/toggle-electrs")

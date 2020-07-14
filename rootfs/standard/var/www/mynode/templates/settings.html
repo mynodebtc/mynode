@@ -658,6 +658,19 @@
         <div class="settings_block">
             <div class="settings_block_header">Bitcoin</div>
 
+            <div class="settings_block_subheader">Edit Config</div>
+            You can edit the Bitcoin config. However, using your own config will prevent any future automatic config updates and may have adverse effects.
+            <br/>
+            {% if using_bitcoin_custom_config %}
+            <br/>
+            <div class="settings_block_subheader_status_icon yellow"></div>
+            <i>You are currently using a custom Bitcoin config.</i>
+            <br/><br/>
+            {% endif %}
+            <a href="/bitcoind/config" class="ui-button ui-widget ui-corner-all settings_button">Edit Config</a>
+
+            <div class="divider"></div>
+
             <div class="settings_block_subheader">Reset Blockchain</div>
             If Bitcoin is having issues, you can reset the blockchain data.
             <br/>
@@ -693,6 +706,19 @@
             <br/>
             <a class="ui-button ui-widget ui-corner-all settings_button" href="/lnd/channel.backup">Download</a>
             
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Edit Config</div>
+            You can edit the Lightning config. However, using your own config will prevent any future automatic updates and may have adverse effects.
+            <br/>
+            {% if using_lnd_custom_config %}
+            <br/>
+            <div class="settings_block_subheader_status_icon yellow"></div>
+            <i>You are currently using a custom Lightning config.</i>
+            <br/><br/>
+            {% endif %}
+            <a href="/lnd/config" class="ui-button ui-widget ui-corner-all settings_button">Edit Config</a>
+
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Delete Lightning Wallet</div>
@@ -814,6 +840,7 @@
                 <option value="netdata">Netdata</option>
                 <option value="specter">Specter</option>			
                 <option value="rtl">RTL</option>
+                <option value="thunderhub">Thunderhub</option>
                 <option value="tor">Tor</option>
                 <option value="ufw">UFW</option>
                 <option value="whirlpool">Whirlpool</option>

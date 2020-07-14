@@ -28,6 +28,11 @@
                     window.open(url,'_blank');
                 })
 
+                $("#thunderhub").on("click", function() {
+                    url = 'http://'+location.hostname+':3030'
+                    window.open(url,'_blank');
+                })
+
                 $("#lnd_admin").on("click", function() {
                     url = 'http://'+location.hostname+':3004'
                     window.open(url,'_blank');
@@ -119,6 +124,10 @@
 
                 $("#toggle-lnbits").on("click", function() {
                         window.location.href="/toggle-lnbits"
+                });
+
+                $("#toggle-thunderhub").on("click", function() {
+                        window.location.href="/toggle-thunderhub"
                 });
 
                 function lndconnect() {

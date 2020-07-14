@@ -219,6 +219,7 @@ def page_status():
     netdata_status_log = get_journalctl_log("netdata")
     rtl_status_log = get_journalctl_log("rtl")
     lnbits_status_log = get_journalctl_log("lnbits")
+    thunderhub_status_log = get_journalctl_log("thunderhub")
     docker_status_log = get_journalctl_log("docker")
     docker_image_build_status_log = get_journalctl_log("docker_images")
 
@@ -278,6 +279,9 @@ def page_status():
         "lnbits_status_log": lnbits_status_log,
         "lnbits_status": get_service_status_basic_text("lnbits"),
         "lnbits_status_color": get_service_status_color("lnbits"),
+        "thunderhub_status_log": thunderhub_status_log,
+        "thunderhub_status": get_service_status_basic_text("thunderhub"),
+        "thunderhub_status_color": get_service_status_color("thunderhub"),
         "docker_status_log": docker_status_log,
         "docker_status": get_service_status_basic_text("docker"),
         "docker_status_color": get_service_status_color("docker"),

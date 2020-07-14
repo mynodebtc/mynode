@@ -45,6 +45,8 @@ elif [ "$APP" = "rtl" ]; then
     rm -f /home/bitcoin/.mynode/.rtl_url
 elif [ "$APP" = "specter" ]; then
     rm -f /home/bitcoin/.mynode/.spectre_url
+elif [ "$APP" = "thunderhub" ]; then
+    rm -f /home/bitcoin/.mynode/.thunderhub_url
 elif [ "$APP" = "tor" ]; then
     apt-get remove -y tor
     apt-get install -y tor
