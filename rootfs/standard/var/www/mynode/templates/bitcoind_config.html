@@ -15,7 +15,16 @@
 
         <div class="main_header">Bitcoin Config</div>
         <div class="main_header_sub_text">
+            You can edit the Bitcoin config. However, using your own config will prevent any future automatic updates and may have adverse effects.
+            <br/><br/>
             Saving will reboot your device.
+            <br/>
+            {% if using_bitcoin_custom_config %}
+            <br/>
+            <div class="settings_block_subheader_status_icon yellow"></div>
+            <i>You are currently using a custom Bitcoin config.</i>
+            <div class="settings_block_subheader_status_icon yellow"></div>
+            {% endif %}
         </div>
         <div class="centered_text_div">
             <form action="/bitcoind/config" method="POST">
