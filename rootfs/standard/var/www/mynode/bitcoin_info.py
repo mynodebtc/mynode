@@ -173,6 +173,9 @@ def set_bitcoin_custom_config(config):
     except:
         return False
 
+def using_bitcoin_custom_config():
+    return os.path.isfile("/mnt/hdd/mynode/settings/bitcoin_custom.conf")
+
 def delete_bitcoin_custom_config():
     os.system("rm -f /mnt/hdd/mynode/settings/bitcoin_custom.conf")
 
