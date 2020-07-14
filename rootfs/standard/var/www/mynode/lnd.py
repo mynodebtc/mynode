@@ -442,6 +442,7 @@ def lnd_config_page():
 
     templateData = {
         "title": "myNode LND Config",
+        "using_lnd_custom_config": using_lnd_custom_config(),
         "lnd_config": lnd_config,
         "ui_settings": read_ui_settings()
     }
