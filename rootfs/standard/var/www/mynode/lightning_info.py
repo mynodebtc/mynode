@@ -247,6 +247,9 @@ def set_lnd_custom_config(config):
     except:
         return False
 
+def using_lnd_custom_config():
+    return os.path.isfile("/mnt/hdd/mynode/settings/lnd_custom.conf")
+
 def delete_lnd_custom_config():
     os.system("rm -f /mnt/hdd/mynode/settings/lnd_custom.conf")
 
