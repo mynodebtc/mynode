@@ -131,6 +131,7 @@ mkdir -p /mnt/hdd/mynode/redis
 mkdir -p /mnt/hdd/mynode/mongodb
 mkdir -p /mnt/hdd/mynode/electrs
 mkdir -p /mnt/hdd/mynode/docker
+mkdir -p /mnt/hdd/mynode/rtl
 mkdir -p /mnt/hdd/mynode/rtl_backup
 mkdir -p /mnt/hdd/mynode/whirlpool
 mkdir -p /mnt/hdd/mynode/lnbits
@@ -239,16 +240,24 @@ source /usr/bin/mynode_gen_bitcoin_config.sh
 source /usr/bin/mynode_gen_lnd_config.sh
 
 # RTL config
-sudo -u bitcoin mkdir -p /opt/mynode/RTL/
-chown -R bitcoin:bitcoin /mnt/hdd/mynode/rtl_backup/
-if [ ! -f /opt/mynode/RTL/RTL-Config.json ]; then
-    cp -f /usr/share/mynode/RTL-Config.json /opt/mynode/RTL/RTL-Config.json
+sudo -u bitcoin mkdir -p /opt/mynode/RTL
+sudo -u bitcoin mkdir -p /mnt/hdd/mynode/rtl
+chown -R bitcoin:bitcoin /mnt/hdd/mynode/rtl
+chown -R bitcoin:bitcoin /mnt/hdd/mynode/rtl_backup
+# If local settings file is not a symlink, delete and setup symlink to HDD
+if [ ! -L /opt/mynode/RTL/RTL-Config.json ]; then
+    rm -f /opt/mynode/RTL/RTL-Config.json
+    sudo -u bitcoin ln -s /mnt/hdd/mynode/rtl/RTL-Config.json /opt/mynode/RTL/RTL-Config.json
 fi
+# If config file on HDD does not exist, create it
+if [ ! -f /mnt/hdd/mynode/rtl/RTL-Config.json ]; then
+    cp -f /usr/share/mynode/RTL-Config.json /mnt/hdd/mynode/rtl/RTL-Config.json
+fi
+# Update RTL config file to use mynode pw
 if [ -f /home/bitcoin/.mynode/.hashedpw ]; then
     HASH=$(cat /home/bitcoin/.mynode/.hashedpw)
-    sed -i "s/\"multiPassHashed\":.*/\"multiPassHashed\": \"$HASH\",/g" /opt/mynode/RTL/RTL-Config.json
+    sed -i "s/\"multiPassHashed\":.*/\"multiPassHashed\": \"$HASH\",/g" /mnt/hdd/mynode/rtl/RTL-Config.json
 fi
-chown bitcoin:bitcoin /opt/mynode/RTL/RTL-Config.json
 
 # BTC RPC Explorer Config
 cp /usr/share/mynode/btc_rpc_explorer_env /opt/mynode/btc-rpc-explorer/.env
@@ -340,6 +349,10 @@ fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/lnbits)
 if [ "$USER" != "bitcoin" ]; then
     chown -R bitcoin:bitcoin /mnt/hdd/mynode/lnbits
+fi
+USER=$(stat -c '%U' /mnt/hdd/mynode/rtl)
+if [ "$USER" != "bitcoin" ]; then
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/rtl
 fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/specter)
 if [ "$USER" != "bitcoin" ]; then
