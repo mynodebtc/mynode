@@ -10,5 +10,9 @@ echo "admin:$PASSWORD" | chpasswd
 echo "$HASH" > /home/bitcoin/.mynode/.hashedpw
 
 # Change RTL password
-sed -i "s/\"multiPassHashed\":.*/\"multiPassHashed\": \"$HASH\",/g" /opt/mynode/RTL/RTL-Config.json
+sed -i "s/\"multiPassHashed\":.*/\"multiPassHashed\": \"$HASH\",/g" /mnt/hdd/mynode/rtl/RTL-Config.json
 systemctl restart rtl &
+
+# Change Thunderhub password
+#sed -i "s/???/???/g" /mnt/hdd/mynode/rtl/RTL-Config.json
+#systemctl restart thunderhub &
