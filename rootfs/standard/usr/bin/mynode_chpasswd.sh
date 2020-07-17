@@ -5,10 +5,10 @@ PASSWORD=$1
 HASH_SHA256=$(echo -n "$PASSWORD" | sha256sum | awk '{print $1}')
 HASH_BCRYPT=$(python3.7 -c "import bcrypt; print(bcrypt.hashpw(b\"$PASSWORD\", bcrypt.gensalt()).decode(\"ascii\"))")
 
-# If pass did not change, exit success
+# If pass did not change and all hash files exist, exit success
 if [ -f /home/bitcoin/.mynode/.hashedpw ]; then
     OLD_HASH_SHA256=$(cat /home/bitcoin/.mynode/.hashedpw)
-    if [ "$OLD_HASH_SHA256" = "$HASH_SHA256" ]; then
+    if [ "$OLD_HASH_SHA256" = "$HASH_SHA256" ] && [ -f /home/bitcoin/.mynode/.hashedpw_bcrypt ]; then
         exit 0;
     fi
 fi
@@ -29,6 +29,6 @@ fi
 
 # Change Thunderhub password
 if [ -f /mnt/hdd/mynode/thunderhub/thub_config.yaml ]; then
-    sed -i "s/masterPassword:.*/masterPassword: 'thunderhub-$HASH_BCRYPT'/g" /mnt/hdd/mynode/thunderhub/thub_config.yaml
+    sed -i "s#masterPassword:.*#masterPassword: \"thunderhub-$HASH_BCRYPT\"#g" /mnt/hdd/mynode/thunderhub/thub_config.yaml
     systemctl restart thunderhub &
 fi

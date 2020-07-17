@@ -7,14 +7,14 @@ Wants=lnd.service
 After=lnd.service
 
 [Service]
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_lnd.sh
 ExecStart=/usr/local/bin/loopd
 
 User=bitcoin
 Group=bitcoin
 Type=simple
-KillMode=process
-LimitNOFILE=128000
+KillMode=control-group
 TimeoutSec=240
 Restart=always
 RestartSec=60
