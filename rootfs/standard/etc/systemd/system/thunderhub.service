@@ -1,8 +1,8 @@
-# lndhub service
-# /etc/systemd/system/lndhub.service
+# thunderhub service
+# /etc/systemd/system/thunderhub.service
 
 [Unit]
-Description=LND Hub
+Description=Thunderhub
 Wants=lnd.service
 After=lnd.service
 
