@@ -282,6 +282,14 @@ if [ ! -L /home/bitcoin/.specter ]; then
     sudo -u bitcoin ln -s /mnt/hdd/mynode/specter /home/bitcoin/.specter
 fi
 
+# Setup Thunderhub
+if [ -f /mnt/hdd/mynode/thunderhub/thub_config.yaml ]; then
+    if [ -f /home/bitcoin/.mynode/.hashedpw_bcrypt ]; then
+        HASH_BCRYPT=$(cat /home/bitcoin/.mynode/.hashedpw_bcrypt)
+        sed -i "s/masterPassword:.*/masterPassword: 'thunderhub-$HASH_BCRYPT'/g" /mnt/hdd/mynode/thunderhub/thub_config.yaml
+    fi
+fi
+
 # Setup udev
 chown root:root /etc/udev/rules.d/* || true
 udevadm trigger
