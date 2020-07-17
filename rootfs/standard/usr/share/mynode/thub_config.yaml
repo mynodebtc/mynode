@@ -1,4 +1,4 @@
-masterPassword: 'bolt' # Default password unless defined in account
+masterPassword: 'thunderhub-$2b$12$IMmGa2C29byHS7TkaAzMcuptaAQgthisisgarbage' # Invalid password unless defined in account
 accounts:
   - name: 'localhost'
     serverUrl: '127.0.0.1:10009'

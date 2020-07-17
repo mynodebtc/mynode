@@ -40,8 +40,13 @@ def login(password):
         increase_recent_invalid_login_attempts()
         return False
     else:
+        # Setup settion info
         session["logged_in"] = True
         session.permanent = True
+
+        # Call change password to ensure hash files are up to date
+        subprocess.call(['/usr/bin/mynode_chpasswd.sh', password])
+
         return True
 
 def logout():

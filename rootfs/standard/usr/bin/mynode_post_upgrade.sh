@@ -103,6 +103,7 @@ pip3 install gnureadline --no-cache-dir
 pip3 install lndmanage==0.10.0 --no-cache-dir   # Install LND Manage (keep up to date with LND)
 pip3 install docker-compose --no-cache-dir
 pip3 install pipenv --no-cache-dir
+pip3 install bcrypt --no-cache-dir
 
 
 # Install Docker
@@ -515,7 +516,7 @@ fi
 
 
 # Upgrade Thunderhub
-THUNDERHUB_UPGRADE_URL=https://github.com/apotdevin/thunderhub/archive/v0.8.8.tar.gz
+THUNDERHUB_UPGRADE_URL=https://github.com/apotdevin/thunderhub/archive/v0.8.13.tar.gz
 THUNDERHUB_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.thunderhub_url
 CURRENT=""
 if [ -f $THUNDERHUB_UPGRADE_URL_FILE ]; then
