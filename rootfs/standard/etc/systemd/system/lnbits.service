@@ -19,7 +19,6 @@ ExecStart=/bin/sh -c 'cd /opt/mynode/lnbits && /usr/local/bin/pipenv run flask r
 User=bitcoin
 Group=bitcoin
 Type=simple
-LimitNOFILE=128000
 TimeoutSec=240
 Restart=always
 RestartSec=60

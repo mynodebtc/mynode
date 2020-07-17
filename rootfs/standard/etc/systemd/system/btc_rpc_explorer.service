@@ -16,7 +16,6 @@ ExecStart=/usr/bin/npm start
 User=bitcoin
 Group=bitcoin
 Type=simple
-LimitNOFILE=128000
 TimeoutSec=120
 Restart=always
 RestartSec=60

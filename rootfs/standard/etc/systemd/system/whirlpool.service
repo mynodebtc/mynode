@@ -11,7 +11,7 @@ ExecStart=/usr/bin/java -jar /opt/mynode/whirlpool/whirlpool.jar --server=mainne
 User=bitcoin
 Group=bitcoin
 Type=simple
-KillMode=process
+KillMode=control-group
 TimeoutSec=60
 Restart=always
 RestartSec=60

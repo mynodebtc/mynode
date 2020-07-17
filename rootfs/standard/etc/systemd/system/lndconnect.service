@@ -13,7 +13,6 @@ User=root
 Group=root
 Type=simple
 KillMode=control-group
-LimitNOFILE=128000
 TimeoutSec=30
 Restart=always
 RestartSec=30

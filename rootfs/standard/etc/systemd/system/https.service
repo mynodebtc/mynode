@@ -9,7 +9,7 @@ After=www.service
 
 [Service]
 Type=simple
-KillMode=process
+KillMode=control-group
 TimeoutSec=30
 Restart=always
 RestartSec=10

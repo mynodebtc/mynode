@@ -7,7 +7,7 @@ After=network.target mynode.service
 
 [Service]
 Type=simple
-KillMode=process
+KillMode=control-group
 ExecStart=/usr/bin/mynode_invalid_block_check.sh
 User=root
 Group=root

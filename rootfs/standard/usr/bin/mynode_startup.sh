@@ -286,7 +286,7 @@ fi
 if [ -f /mnt/hdd/mynode/thunderhub/thub_config.yaml ]; then
     if [ -f /home/bitcoin/.mynode/.hashedpw_bcrypt ]; then
         HASH_BCRYPT=$(cat /home/bitcoin/.mynode/.hashedpw_bcrypt)
-        sed -i "s/masterPassword:.*/masterPassword: 'thunderhub-$HASH_BCRYPT'/g" /mnt/hdd/mynode/thunderhub/thub_config.yaml
+        sed -i "s#masterPassword:.*#masterPassword: \"thunderhub-$HASH_BCRYPT\"#g" /mnt/hdd/mynode/thunderhub/thub_config.yaml
     fi
 fi
 
