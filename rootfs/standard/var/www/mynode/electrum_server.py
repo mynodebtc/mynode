@@ -2,9 +2,8 @@ from flask import Blueprint, render_template, session, abort, Markup, request, r
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from pprint import pprint, pformat
 from bitcoin_info import *
-from device_info import get_local_ip, skipped_product_key, get_onion_url_electrs
+from device_info import get_local_ip, skipped_product_key, get_onion_url_electrs, read_ui_settings
 from user_management import check_logged_in
-from settings import read_ui_settings
 from electrum_info import *
 import json
 import time

@@ -6,7 +6,6 @@ from device_info import *
 #from bitcoin.wallet import *
 from subprocess import check_output, check_call
 from electrum_info import *
-from settings import read_ui_settings
 from user_management import check_logged_in
 import socket
 import hashlib

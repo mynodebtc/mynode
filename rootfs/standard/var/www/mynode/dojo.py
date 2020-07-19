@@ -1,6 +1,6 @@
 
 from flask import Blueprint, render_template, redirect
-from settings import read_ui_settings
+from device_info import read_ui_settings
 from user_management import check_logged_in
 from enable_disable_functions import is_dojo_enabled, enable_dojo, disable_dojo, is_dojo_installed
 from bitcoin_info import get_mynode_block_height

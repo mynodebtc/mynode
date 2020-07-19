@@ -3,6 +3,7 @@ from threading import Timer
 from werkzeug.routing import RequestRedirect
 from flask import flash
 import time
+import json
 import os
 import subprocess
 
@@ -334,6 +335,57 @@ def get_journalctl_log(service_name):
         log = "ERROR"
     return log
 
+#==================================
+# UI Functions
+#==================================
+
+def read_ui_settings():
+    ui_hdd_file = '/mnt/hdd/mynode/settings/ui.json'
+    ui_mynode_file = '/home/bitcoin/.mynode/ui.json'
+
+    # read ui.json from HDD
+    if os.path.isfile(ui_hdd_file):
+        with open(ui_hdd_file, 'r') as fp:
+            ui_settings = json.load(fp)
+    # read ui.json from mynode
+    elif os.path.isfile(ui_mynode_file):
+        with open(ui_mynode_file, 'r') as fp:
+            ui_settings = json.load(fp)
+    # if ui.json is not found anywhere, use default settings
+    else:
+        ui_settings = {'darkmode': False}
+
+    # Set reseller
+    ui_settings["reseller"] = is_device_from_reseller()
+
+    return ui_settings
+
+def write_ui_settings(ui_settings):
+    ui_hdd_file = '/mnt/hdd/mynode/settings/ui.json'
+    ui_mynode_file = '/home/bitcoin/.mynode/ui.json'
+
+    try:
+        with open(ui_hdd_file, 'w') as fp:
+            json.dump(ui_settings, fp)
+    except:
+        pass
+
+    with open(ui_mynode_file, 'w') as fp:
+        json.dump(ui_settings, fp)
+
+def is_darkmode_enabled():
+    ui_settings = read_ui_settings()
+    return ui_settings['darkmode']
+
+def disable_darkmode():
+    ui_settings = read_ui_settings()
+    ui_settings['darkmode'] = False
+    write_ui_settings(ui_settings)
+
+def enable_darkmode():
+    ui_settings = read_ui_settings()
+    ui_settings['darkmode'] = True
+    write_ui_settings(ui_settings)
 
 #==================================
 # Uploader Functions

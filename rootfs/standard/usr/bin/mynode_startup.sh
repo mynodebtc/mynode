@@ -59,17 +59,11 @@ if [ ! -f /var/lib/mynode/.expanded_rootfs ]; then
 fi
 
 # Customize logo for resellers
-if [ -f /opt/mynode/custom/reseller ]; then
-    if [ -f /opt/mynode/custom/logo_custom.png ]; then
-        cp -f /opt/mynode/custom/logo_custom.png /var/www/mynode/static/images/logo.png 
-    else 
-        cp -f /var/www/mynode/static/images/logo_original.png /var/www/mynode/static/images/logo.png 
-    fi
-    if [ -f /opt/mynode/custom/logo_dark_custom.png ]; then
-        cp -f /opt/mynode/custom/logo_dark_custom.png /var/www/mynode/static/images/logo_dark.png
-    else 
-        cp -f /var/www/mynode/static/images/logo_dark_original.png /var/www/mynode/static/images/logo_dark.png 
-    fi
+if [ -f /opt/mynode/custom/logo_custom.png ]; then
+    cp -f /opt/mynode/custom/logo_custom.png /var/www/mynode/static/images/logo_custom.png 
+fi
+if [ -f /opt/mynode/custom/logo_dark_custom.png ]; then
+    cp -f /opt/mynode/custom/logo_dark_custom.png /var/www/mynode/static/images/logo_dark_custom.png
 fi
 
 
