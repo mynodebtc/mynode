@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, session, abort, Markup, request, redirect
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from pprint import pprint, pformat
-from settings import read_ui_settings
 from device_info import *
 from user_management import check_logged_in
 import os

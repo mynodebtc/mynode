@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, session, abort, Markup, request, redirect, send_from_directory, url_for, flash
 from thread_functions import get_public_ip, check_in, find_public_ip
-from device_info import is_community_edition
-from settings import read_ui_settings
+from device_info import is_community_edition, read_ui_settings
 from user_management import check_logged_in
 import subprocess
 import pam
