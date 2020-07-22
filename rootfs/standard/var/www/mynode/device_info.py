@@ -135,8 +135,8 @@ def reinstall_app(app):
         mark_upgrade_started()
 
         # Upgrade
-        os.system("mkdir -p /home/admin/reinstall_logs")
-        cmd = "/usr/bin/mynode_reinstall_app.sh {} > /home/admin/reinstall_logs/reinstall_{}.txt 2>&1".format(app,app)
+        os.system("mkdir -p /home/admin/upgrade_logs")
+        cmd = "/usr/bin/mynode_reinstall_app.sh {} > /home/admin/upgrade_logs/reinstall_{}.txt 2>&1".format(app,app)
         subprocess.call(cmd, shell=True)
         
         # Sync
@@ -386,6 +386,9 @@ def enable_darkmode():
     ui_settings = read_ui_settings()
     ui_settings['darkmode'] = True
     write_ui_settings(ui_settings)
+
+def is_https_forced():
+    return os.path.isfile('/home/bitcoin/.mynode/https_enabled')
 
 #==================================
 # Uploader Functions
