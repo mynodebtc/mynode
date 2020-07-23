@@ -196,6 +196,9 @@ def get_recent_upgrade_logs():
             pass
     return logs
 
+def has_checkin_error():
+    return os.path.isfile("/tmp/check_in_error")
+
 #==================================
 # Reseller Info
 #==================================

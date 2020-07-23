@@ -190,6 +190,7 @@ def check_in():
                     os.system("echo '{}' > /home/bitcoin/.mynode/.product_key_error".format(r.text))
                     os.system("printf \"%s | Check In Returned Error: {} \\n\" \"$(date)\" >> /tmp/check_in_status".format(r.text))
 
+                os.system("rm -f /tmp/check_in_error")
                 check_in_success = True
             else:
                 os.system("printf \"%s | Check In Failed. Retrying... Code {} \\n\" \"$(date)\" >> /tmp/check_in_status".format(r.status_code))
@@ -197,7 +198,8 @@ def check_in():
             os.system("printf \"%s | Check In Failed. Retrying... Exception {} \\n\" \"$(date)\" >> /tmp/check_in_status".format(e))
 
         if not check_in_success:
-            # Check in failed, try again in 2 minutes 
+            # Check in failed, try again in 2 minutes
+            os.system("touch /tmp/check_in_error")
             time.sleep(120)
 
     return True

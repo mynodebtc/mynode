@@ -453,6 +453,12 @@
                     <td>Local IP</td>
                     <td style="padding-left: 20px;">{{local_ip}}</td>
                 </tr>
+                {% if has_checkin_error %}
+                <tr>
+                    <td>Server</td>
+                    <td style="padding-left: 20px; color: red;"><b>Error contacting mynodebtc.com via Tor!</b><br/>You may have issues checking for new versions or saving product keys.</td>
+                </tr>
+                {% endif %}
                 
             </table>
             <div class="divider"></div>
