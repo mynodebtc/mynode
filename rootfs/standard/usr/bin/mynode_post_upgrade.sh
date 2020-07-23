@@ -490,7 +490,7 @@ fi
 
 
 # Upgrade Specter Desktop
-SPECTER_UPGRADE_VERSION=0.5.2
+SPECTER_UPGRADE_VERSION=0.5.5
 SPECTER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.spectre_url
 CURRENT=""
 if [ -f $SPECTER_UPGRADE_URL_FILE ]; then
