@@ -68,6 +68,7 @@ LN_DIR =        "/mnt/hdd/mynode/lnd"
 
 ### Global Variables
 need_to_stop = False
+threads = []
 
 ### Helper functions
 def get_status():
@@ -102,7 +103,7 @@ class ServiceExit(Exception):
 
 # Function to run on exit
 def on_shutdown(signum, frame):
-    print('Caught signal %d' % signum)
+    app.logger.info('Caught signal %d' % signum)
     raise ServiceExit
 
 
@@ -840,6 +841,15 @@ def internal_error(error):
     }
     return render_template('state.html', **templateData), 500
 
+# Check for forced HTTPS
+@app.before_request
+def before_request():
+    if is_https_forced():
+        if not request.is_secure:
+            url = request.url.replace('http://', 'https://', 1)
+            code = 301
+            return redirect(url, code=code)
+
 # Disable browser caching
 @app.after_request
 def set_response_headers(response):
@@ -848,54 +858,80 @@ def set_response_headers(response):
     #response.headers['Expires'] = '0'
     return response
 
-if __name__ == "__main__":
-    signal.signal(signal.SIGTERM, on_shutdown)
-    signal.signal(signal.SIGINT, on_shutdown)
-    btc_thread1 = BackgroundThread(update_bitcoin_main_info_thread, 60)
-    btc_thread1.start()
-    btc_thread2 = BackgroundThread(update_bitcoin_other_info_thread, 60)
-    btc_thread2.start()
-    electrs_info_thread = BackgroundThread(update_electrs_info_thread, 60)
-    electrs_info_thread.start()
-    lnd_thread = BackgroundThread(update_lnd_info_thread, 60)
-    lnd_thread.start()
-    drive_thread = BackgroundThread(update_device_info, 60)
-    drive_thread.start()
-    public_ip_thread = BackgroundThread(find_public_ip, 60*60*12) # 12-hour repeat
-    public_ip_thread.start()
-    checkin_thread = BackgroundThread(check_in, 60*60*24) # Per-day checkin
-    checkin_thread.start()
+@app.before_first_request
+def before_first_request():
+    global threads
 
     my_logger = logging.getLogger('FlaskLogger')
     my_logger.setLevel(logging.DEBUG)
     handler = logging.handlers.RotatingFileHandler(filename='/var/log/flask', maxBytes=2000000, backupCount=2)
     my_logger.addHandler(handler)
     app.logger.addHandler(my_logger)
+    app.logger.setLevel(logging.INFO)
 
     app.register_error_handler(LoginError, handle_login_exception)
 
     app.secret_key = 'NoZlPx7t15foPfKpivbVrTrTy2bTQ99chJoz3LFmf5BFsh3Nz4ud0mMpGjtB4bhP'
     app.permanent_session_lifetime = timedelta(days=90)
 
+    app.logger.info("BEFORE_FIRST_REQUEST")
+
+    # Start threads
+    btc_thread1 = BackgroundThread(update_bitcoin_main_info_thread, 60)
+    btc_thread1.start()
+    threads.append(btc_thread1)
+    btc_thread2 = BackgroundThread(update_bitcoin_other_info_thread, 60)
+    btc_thread2.start()
+    threads.append(btc_thread2)
+    electrs_info_thread = BackgroundThread(update_electrs_info_thread, 60)
+    electrs_info_thread.start()
+    threads.append(electrs_info_thread)
+    lnd_thread = BackgroundThread(update_lnd_info_thread, 60)
+    lnd_thread.start()
+    threads.append(lnd_thread)
+    drive_thread = BackgroundThread(update_device_info, 60)
+    drive_thread.start()
+    threads.append(drive_thread)
+    public_ip_thread = BackgroundThread(find_public_ip, 60*60*12) # 12-hour repeat
+    public_ip_thread.start()
+    threads.append(public_ip_thread)
+    checkin_thread = BackgroundThread(check_in, 60*60*24) # Per-day checkin
+    checkin_thread.start()
+    threads.append(checkin_thread)
+
+    app.logger.info("STARTED {} THREADS".format(len(threads)))
+
+def stop_app():
+    global threads
+
+    app.logger.info("START STOP_APP")
+
+    app.logger.info("STOPPING {} THREADS".format(len(threads)))
+
+    # Stop threads
+    for t in threads:
+        app.logger.info("Killing {}".format(t.pid))
+        os.kill(t.pid, signal.SIGKILL)
+
+    # Shutdown Flask (if used)
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        raise RuntimeError('Not running with the Werkzeug Server')
+    else:
+        func()
+
+    app.logger.info("DONE STOP_APP")
+
+if __name__ == "__main__":
+
+    # Handle signals
+    signal.signal(signal.SIGTERM, on_shutdown)
+    signal.signal(signal.SIGINT, on_shutdown)
+
     try:
         app.run(host='0.0.0.0', port=80)
     except ServiceExit:
-        # Stop background thread
-        print("Killing {}".format(btc_thread1.pid))
-        os.kill(btc_thread1.pid, signal.SIGKILL)
-        print("Killing {}".format(btc_thread2.pid))
-        os.kill(btc_thread2.pid, signal.SIGKILL)
-        print("Killing {}".format(electrs_info_thread.pid))
-        os.kill(electrs_info_thread.pid, signal.SIGKILL)
-        print("Killing {}".format(lnd_thread.pid))
-        os.kill(lnd_thread.pid, signal.SIGKILL)
-        print("Killing {}".format(drive_thread.pid))
-        os.kill(drive_thread.pid, signal.SIGKILL)
+        # Stop background threads
+        stop_app()
 
-        # Shutdown Flask
-        func = request.environ.get('werkzeug.server.shutdown')
-        if func is None:
-            raise RuntimeError('Not running with the Werkzeug Server')
-        func()
-
-    print("Service www exiting...")
+    app.logger.info("Service www exiting...")
