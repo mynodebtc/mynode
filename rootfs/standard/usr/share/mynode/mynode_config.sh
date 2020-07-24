@@ -51,7 +51,7 @@ QUICKSYNC_TORRENT_BETA_URL="https://mynodebtc.com/device/blockchain_beta.tar.gz.
 QUICKSYNC_UPLOAD_RATE_FILE="/mnt/hdd/mynode/settings/quicksync_upload_rate"
 QUICKSYNC_BACKGROUND_DOWNLOAD_RATE_FILE="/mnt/hdd/mynode/settings/quicksync_background_download_rate"
 LATEST_VERSION_URL="http://www.mynodebtc.com/device_api/get_latest_version.php?type=${DEVICE_TYPE}"
-LATEST_BETA_VERSION_URL="http://www.mynodebtc.com/device_api/get_latest_version.php?${DEVICE_TYPE}&beta=1"
+LATEST_BETA_VERSION_URL="http://www.mynodebtc.com/device_api/get_latest_version.php?type=${DEVICE_TYPE}&beta=1"
 UPLOADER_FILE="/mnt/hdd/mynode/settings/uploader"
 UPGRADE_ERROR_FILE="/mnt/hdd/mynode/settings/upgrade_error"
 LND_BACKUP_FOLDER="/home/bitcoin/lnd_backup/"
