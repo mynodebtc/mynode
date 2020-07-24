@@ -175,10 +175,17 @@ def check_in():
     session.proxies['https'] = 'socks5h://localhost:9050'
 
     # Check In
+    fail_count = 0
     check_in_success = False
     while not check_in_success:
         try:
-            r = session.post(CHECKIN_URL, data=data, timeout=10)
+            # Use tor for check in unless there have been tor 10 failures in a row
+            r = None
+            if (fail_count+1) % 10 == 0:
+                r = requests.post(CHECKIN_URL, data=data, timeout=15)
+            else:
+                r = session.post(CHECKIN_URL, data=data, timeout=15)
+            
             if r.status_code == 200:
                 if r.text == "OK":
                     os.system("printf \"%s | Check In Success: {} \\n\" \"$(date)\" >> /tmp/check_in_status".format(r.text))
@@ -198,8 +205,9 @@ def check_in():
             os.system("printf \"%s | Check In Failed. Retrying... Exception {} \\n\" \"$(date)\" >> /tmp/check_in_status".format(e))
 
         if not check_in_success:
-            # Check in failed, try again in 2 minutes
+            # Check in failed, try again in 3 minutes
             os.system("touch /tmp/check_in_error")
-            time.sleep(120)
+            time.sleep(180)
+            fail_count = fail_count + 1
 
     return True

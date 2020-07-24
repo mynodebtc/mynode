@@ -16,6 +16,7 @@ Nice=-15
 IOAccounting=true
 IOWeight=2000
 ExecStart=/usr/bin/python /var/www/mynode/mynode.py
+ExecStartPost=/usr/bin/mynode_post_www.sh
 User=root
 Group=root
 StandardOutput=syslog
