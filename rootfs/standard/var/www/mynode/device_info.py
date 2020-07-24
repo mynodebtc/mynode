@@ -390,7 +390,13 @@ def enable_darkmode():
     write_ui_settings(ui_settings)
 
 def is_https_forced():
-    return os.path.isfile('/home/bitcoin/.mynode/https_enabled')
+    return os.path.isfile('/home/bitcoin/.mynode/https_forced')
+
+def force_https(force):
+    if force:
+        os.system("touch /home/bitcoin/.mynode/https_forced")
+    else:
+        os.system("rm -f /home/bitcoin/.mynode/https_forced")
 
 #==================================
 # Uploader Functions
