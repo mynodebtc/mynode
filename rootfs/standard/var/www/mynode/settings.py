@@ -95,6 +95,7 @@ def page_settings():
         "product_key_skipped": pk_skipped,
         "product_key_error": pk_error,
         "changelog": changelog,
+        "is_https_forced": is_https_forced(),
         "using_bitcoin_custom_config": using_bitcoin_custom_config(),
         "using_lnd_custom_config": using_lnd_custom_config(),
         "is_bitcoin_synced": is_bitcoind_synced(),
@@ -599,6 +600,20 @@ def page_enable_btc_lnd_tor():
         "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
+
+@mynode_settings.route("/settings/set_https_forced")
+def page_set_https_forced_page():
+    check_logged_in()
+    
+    forced = request.args.get('forced')
+    if forced == "1":
+        force_https(True)
+    else:
+        force_https(False)
+
+    flash("HTTPS Settings Saved", category="message")
+    return redirect(url_for(".page_settings"))
+    
 
 @mynode_settings.route("/settings/enable_aptget_tor")
 def page_enable_aptget_tor():

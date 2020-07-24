@@ -358,6 +358,21 @@
                     }
                 });
 
+                $('#https_forced_checkbox').change(function () {
+                    $("#https_forced").show();
+                });
+                $("#https_forced").on("click", function() {
+                    enabled=$('#https_forced_checkbox').is(":checked")
+                    if (enabled)
+                    {
+                        window.location.href='/settings/set_https_forced?forced=1'
+                    }
+                    else
+                    {
+                        window.location.href='/settings/set_https_forced?forced=0'
+                    }
+                });
+
                 $('#aptget_tor_checkbox').change(function () {
                     $("#aptget_tor").show();
                 });
@@ -560,6 +575,20 @@
             {% else %}
                 <a href="/settings/toggle-darkmode" class="ui-button ui-widget ui-corner-all settings_button">Enable</a>
             {% endif %}
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Force HTTPS</div>
+            You can force the myNode web interface to only use HTTPS.
+            <br/><br/>
+            <label class="switch">
+                <input type="checkbox" id="https_forced_checkbox" {% if is_https_forced %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <br/><br/>
+            <button id="https_forced" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+
+            
 
         </div>
 
@@ -816,7 +845,7 @@
         <div class="settings_block">
             <div class="settings_block_header">Advanced</div>
 
-            <div class="settings_block_subheader">Reset HTTP Certificates</div>
+            <div class="settings_block_subheader">Reset HTTPS Certificates</div>
             This will regenerate your HTTPS certificates.
             <br/>
             <a href="/settings/regen-https-certs" class="ui-button ui-widget ui-corner-all settings_button">Regenerate</a>
