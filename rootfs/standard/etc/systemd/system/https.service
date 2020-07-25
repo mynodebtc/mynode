@@ -16,6 +16,7 @@ Nice=-15
 IOAccounting=true
 IOWeight=2000
 WorkingDirectory=/var/www/mynode
+ExecStartPre=/usr/bin/mynode_gen_cert.sh https 825
 ExecStart=/usr/bin/python2.7 /usr/bin/gunicorn -b 0.0.0.0:443 --certfile=/home/bitcoin/.mynode/https/myNode.local.crt --keyfile=/home/bitcoin/.mynode/https/myNode.local.key --workers 2 --timeout 300 wsgi:app
 User=root
 Group=root
