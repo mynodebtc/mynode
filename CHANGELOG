@@ -1,3 +1,14 @@
+=== v0.2.12 ===
+- Add Thunderhub v0.8.13
+- Upgrade Specter to v0.5.5
+- Decrease CPU usage when electrum wallet is using myNode
+- Use gunicorn for HTTPS
+- Add tor service for lnbits, caravan, and specter
+- Fix serial on RockPro64 devices
+- Move RTL settings to external drive
+- Various UI improvements
+- Bug fixes
+
 === v0.2.11 ===
 - Update electrs to v0.8.5
 - Add Specter Desktop v0.5.2
