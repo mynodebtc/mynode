@@ -65,7 +65,7 @@ $TORIFY apt-get -y -qq install apt-transport-https ca-certificates
 $TORIFY apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
 $TORIFY apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
 $TORIFY apt-get -y install libudev-dev libusb-1.0-0-dev python3-venv gunicorn libsqlite3-dev
-$TORIFY apt-get -y install torsocks
+$TORIFY apt-get -y install torsocks python3-requests
 
 # Make sure some software is removed
 apt-get -y purge ntp # (conflicts with systemd-timedatectl)

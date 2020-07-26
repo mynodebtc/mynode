@@ -7,7 +7,7 @@ Wants=network-online.target
 After=network-online.target
 
 [Service]
-ExecStart=/usr/bin/python3 /usr/bin/mynode_check_in.py
+ExecStart=/usr/local/bin/python3 /usr/bin/mynode_check_in.py
 User=root
 Group=root
 StandardOutput=syslog
