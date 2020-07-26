@@ -130,7 +130,7 @@ apt-get -y install libffi-dev libssl-dev glances python3-bottle automake libtool
 apt -y -qq install apt-transport-https ca-certificates
 apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
 apt-get -y install zlib1g-dev libudev-dev libusb-1.0-0-dev python3-venv gunicorn
-apt-get -y install libsqlite3-dev torsocks
+apt-get -y install libsqlite3-dev torsocks python3-requests
 
 
 # Make sure some software is removed

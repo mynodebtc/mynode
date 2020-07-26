@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/local/bin/python3
 import os
 import requests
 import time
@@ -73,9 +73,9 @@ def check_in():
     check_in_success = False
     while not check_in_success:
         try:
-            # Use tor for check in unless there have been tor 10 failures in a row
+            # Use tor for check in unless there have been tor 5 failures in a row
             r = None
-            if (fail_count+1) % 10 == 0:
+            if (fail_count+1) % 5 == 0:
                 r = requests.post(CHECKIN_URL, data=data, timeout=15)
             else:
                 r = session.post(CHECKIN_URL, data=data, timeout=15)
@@ -101,7 +101,7 @@ def check_in():
         if not check_in_success:
             # Check in failed, try again in 3 minutes
             os.system("touch /tmp/check_in_error")
-            time.sleep(180)
+            time.sleep(120)
             fail_count = fail_count + 1
 
     return True
