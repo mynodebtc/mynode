@@ -34,8 +34,10 @@ fi
 
 if [ -f $OUTPUT_DIR/$domain.pem ]; then
     # Verify files are stored on HDD
-    cp -f $OUTPUT_DIR/* $HDD_DIR/
-
+    if [ ! -f $HDD_DIR/$domain.pem ]; then
+        cp -f $OUTPUT_DIR/* $HDD_DIR/
+    fi
+    echo "Certificate already exists."
     exit 0
 fi
  

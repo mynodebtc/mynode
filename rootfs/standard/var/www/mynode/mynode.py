@@ -895,9 +895,6 @@ def before_first_request():
     public_ip_thread = BackgroundThread(find_public_ip, 60*60*12) # 12-hour repeat
     public_ip_thread.start()
     threads.append(public_ip_thread)
-    checkin_thread = BackgroundThread(check_in, 60*60*24) # Per-day checkin
-    checkin_thread.start()
-    threads.append(checkin_thread)
 
     app.logger.info("STARTED {} THREADS".format(len(threads)))
 

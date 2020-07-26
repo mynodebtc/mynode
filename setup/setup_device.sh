@@ -147,14 +147,14 @@ usermod -a -G debian-tor bitcoin
 
 
 # Install pip packages
-pip install setuptools
-pip install --upgrade setuptools
-pip install wheel
-pip install --upgrade wheel
-pip install speedtest-cli transmissionrpc flask python-bitcoinrpc redis prometheus_client requests
-pip install python-pam python-bitcoinlib psutil
-pip install grpcio grpcio-tools googleapis-common-protos 
-pip install tzupdate virtualenv pysocks
+pip2 install setuptools
+pip2 install --upgrade setuptools
+pip2 install wheel
+pip2 install --upgrade wheel
+pip2 install speedtest-cli transmissionrpc flask python-bitcoinrpc redis prometheus_client requests
+pip2 install python-pam python-bitcoinlib psutil
+pip2 install grpcio grpcio-tools googleapis-common-protos 
+pip2 install tzupdate virtualenv pysocks
 
 
 # Update Python3 to 3.7.X
@@ -186,6 +186,7 @@ pip3 install gnureadline
 pip3 install lndmanage==0.10.0   # Install LND Manage (keep up to date with LND)
 pip3 install docker-compose
 pip3 install pipenv
+pip3 install pysocks
 
 
 # Install Rust
