@@ -73,7 +73,7 @@ apt-get -y purge chrony # (conflicts with systemd-timedatectl)
 
 
 # Install any pip software
-pip install tzupdate virtualenv pysocks --no-cache-dir
+pip2 install tzupdate virtualenv pysocks --no-cache-dir
 
 
 # Update Python3 to 3.7.X
@@ -104,6 +104,7 @@ pip3 install lndmanage==0.10.0 --no-cache-dir   # Install LND Manage (keep up to
 pip3 install docker-compose --no-cache-dir
 pip3 install pipenv --no-cache-dir
 pip3 install bcrypt --no-cache-dir
+pip3 install pysocks --no-cache-dir
 
 
 # Install Docker
@@ -498,6 +499,7 @@ if [ -f $SPECTER_UPGRADE_URL_FILE ]; then
 fi
 if [ "$CURRENT" != "$SPECTER_UPGRADE_VERSION" ]; then
     cd /opt/mynode
+    rm -rf specter
     mkdir -p specter
     chown -R bitcoin:bitcoin specter
     cd specter
@@ -641,6 +643,7 @@ rm -f /etc/update-motd.d/98-armbian-autoreboot-warn || true
 apt-get clean
 
 # Enable any new/required services
+systemctl enable check_in
 systemctl enable docker
 systemctl enable bitcoind
 systemctl enable lnd

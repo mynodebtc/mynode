@@ -150,64 +150,6 @@ def find_public_ip():
         public_ip = "Failed to find public IP. "
 
 
-# Checkin every 24 hours
+# Updated: Check ins now happen in different process. This will just restart the service to force a new check in.
 def check_in():
-
-    # Check in
-    product_key = get_product_key()
-    data = {
-        "serial": get_device_serial(),
-        "device_type": get_device_type(),
-        "version": get_current_version(),
-        "product_key": product_key
-    }
-
-    # Check for new version
-    update_latest_version()
-
-    # Find public IP
-    find_public_ip()
-
-    # Setup tor proxy
-    session = requests.session()
-    session.proxies = {}
-    session.proxies['http'] = 'socks5h://localhost:9050'
-    session.proxies['https'] = 'socks5h://localhost:9050'
-
-    # Check In
-    fail_count = 0
-    check_in_success = False
-    while not check_in_success:
-        try:
-            # Use tor for check in unless there have been tor 10 failures in a row
-            r = None
-            if (fail_count+1) % 10 == 0:
-                r = requests.post(CHECKIN_URL, data=data, timeout=15)
-            else:
-                r = session.post(CHECKIN_URL, data=data, timeout=15)
-            
-            if r.status_code == 200:
-                if r.text == "OK":
-                    os.system("printf \"%s | Check In Success: {} \\n\" \"$(date)\" >> /tmp/check_in_status".format(r.text))
-
-                    if product_key != "community_edition":
-                        unset_skipped_product_key()
-                    delete_product_key_error()
-                else:
-                    os.system("echo '{}' > /home/bitcoin/.mynode/.product_key_error".format(r.text))
-                    os.system("printf \"%s | Check In Returned Error: {} \\n\" \"$(date)\" >> /tmp/check_in_status".format(r.text))
-
-                os.system("rm -f /tmp/check_in_error")
-                check_in_success = True
-            else:
-                os.system("printf \"%s | Check In Failed. Retrying... Code {} \\n\" \"$(date)\" >> /tmp/check_in_status".format(r.status_code))
-        except Exception as e:
-            os.system("printf \"%s | Check In Failed. Retrying... Exception {} \\n\" \"$(date)\" >> /tmp/check_in_status".format(e))
-
-        if not check_in_success:
-            # Check in failed, try again in 3 minutes
-            os.system("touch /tmp/check_in_error")
-            time.sleep(180)
-            fail_count = fail_count + 1
-
-    return True
+    os.system("systemctl restart check_in")
