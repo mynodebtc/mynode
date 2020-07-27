@@ -24,8 +24,12 @@ elif [ "$APP" = "loopd" ]; then
     rm -f /home/bitcoin/.mynode/.loop_url
 elif [ "$APP" = "btcrpcexplorer" ]; then
     rm -f /home/bitcoin/.mynode/.btcrpcexplorer_url
+elif [ "$APP" = "caravan" ]; then
+    rm -f /home/bitcoin/.mynode/.caravan_url
 elif [ "$APP" = "joinmarket" ]; then
     rm -f /home/bitcoin/.mynode/.joinmarket_url
+elif [ "$APP" = "lnbits" ]; then
+    rm -f /home/bitcoin/.mynode/.lnbits_url
 elif [ "$APP" = "lndconnect" ]; then
     rm -f  /home/bitcoin/.mynode/.lndconnect_url
 elif [ "$APP" = "lndhub" ]; then
@@ -39,6 +43,10 @@ elif [ "$APP" = "mempoolspace" ]; then
     docker rmi mempoolspace
 elif [ "$APP" = "rtl" ]; then
     rm -f /home/bitcoin/.mynode/.rtl_url
+elif [ "$APP" = "specter" ]; then
+    rm -f /home/bitcoin/.mynode/.spectre_url
+elif [ "$APP" = "thunderhub" ]; then
+    rm -f /home/bitcoin/.mynode/.thunderhub_url
 elif [ "$APP" = "tor" ]; then
     apt-get remove -y tor
     apt-get install -y tor

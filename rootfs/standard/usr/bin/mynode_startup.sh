@@ -59,22 +59,16 @@ if [ ! -f /var/lib/mynode/.expanded_rootfs ]; then
 fi
 
 # Customize logo for resellers
-if [ -f /opt/mynode/custom/reseller ]; then
-    if [ -f /opt/mynode/custom/logo_custom.png ]; then
-        cp -f /opt/mynode/custom/logo_custom.png /var/www/mynode/static/images/logo.png 
-    else 
-        cp -f /var/www/mynode/static/images/logo_original.png /var/www/mynode/static/images/logo.png 
-    fi
-    if [ -f /opt/mynode/custom/logo_dark_custom.png ]; then
-        cp -f /opt/mynode/custom/logo_dark_custom.png /var/www/mynode/static/images/logo_dark.png
-    else 
-        cp -f /var/www/mynode/static/images/logo_dark_original.png /var/www/mynode/static/images/logo_dark.png 
-    fi
+if [ -f /opt/mynode/custom/logo_custom.png ]; then
+    cp -f /opt/mynode/custom/logo_custom.png /var/www/mynode/static/images/logo_custom.png 
+fi
+if [ -f /opt/mynode/custom/logo_dark_custom.png ]; then
+    cp -f /opt/mynode/custom/logo_dark_custom.png /var/www/mynode/static/images/logo_dark_custom.png
 fi
 
 
 # Verify we are in a clean state
-if [ $IS_RASPI -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
+if [ $IS_RASPI -eq 1 ] || [ $IS_ROCK64 -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
     dphys-swapfile swapoff || true
     dphys-swapfile uninstall || true
 fi
@@ -88,6 +82,8 @@ if [ $IS_X86 = 0 ]; then
         echo "Repairing drive $d ...";
         fsck -y $d > /tmp/fsck_results 2>&1
         RC=$?
+        echo "" >> /tmp/fsck_results
+        echo "Code: $RC" >> /tmp/fsck_results
         if [ "$RC" -ne 0 ]; then
             touch /tmp/fsck_error
         fi
@@ -129,7 +125,11 @@ mkdir -p /mnt/hdd/mynode/redis
 mkdir -p /mnt/hdd/mynode/mongodb
 mkdir -p /mnt/hdd/mynode/electrs
 mkdir -p /mnt/hdd/mynode/docker
+mkdir -p /mnt/hdd/mynode/rtl
 mkdir -p /mnt/hdd/mynode/rtl_backup
+mkdir -p /mnt/hdd/mynode/whirlpool
+mkdir -p /mnt/hdd/mynode/lnbits
+mkdir -p /mnt/hdd/mynode/specter
 mkdir -p /tmp/flask_uploads
 echo "drive_mounted" > $MYNODE_DIR/.mynode_status
 chmod 777 $MYNODE_DIR/.mynode_status
@@ -194,11 +194,6 @@ do
     chmod 600 /mnt/hdd/mynode/settings/.btcrpcpw
 done
 
-# Setup LND Node Name
-if [ ! -f /mnt/hdd/mynode/settings/.lndalias ]; then
-    echo "mynodebtc.com [myNode]" > /mnt/hdd/mynode/settings/.lndalias
-fi
-
 # Default QuickSync
 if [ ! -f /mnt/hdd/mynode/settings/.setquicksyncdefault ]; then
     # Default x86 to no QuickSync
@@ -239,21 +234,62 @@ source /usr/bin/mynode_gen_bitcoin_config.sh
 source /usr/bin/mynode_gen_lnd_config.sh
 
 # RTL config
-sudo -u bitcoin mkdir -p /opt/mynode/RTL/
-chown -R bitcoin:bitcoin /mnt/hdd/mynode/rtl_backup/
-if [ ! -f /opt/mynode/RTL/RTL-Config.json ]; then
-    cp -f /usr/share/mynode/RTL-Config.json /opt/mynode/RTL/RTL-Config.json
+sudo -u bitcoin mkdir -p /opt/mynode/RTL
+sudo -u bitcoin mkdir -p /mnt/hdd/mynode/rtl
+chown -R bitcoin:bitcoin /mnt/hdd/mynode/rtl
+chown -R bitcoin:bitcoin /mnt/hdd/mynode/rtl_backup
+# If local settings file is not a symlink, delete and setup symlink to HDD
+if [ ! -L /opt/mynode/RTL/RTL-Config.json ]; then
+    rm -f /opt/mynode/RTL/RTL-Config.json
+    sudo -u bitcoin ln -s /mnt/hdd/mynode/rtl/RTL-Config.json /opt/mynode/RTL/RTL-Config.json
 fi
+# If config file on HDD does not exist, create it
+if [ ! -f /mnt/hdd/mynode/rtl/RTL-Config.json ]; then
+    cp -f /usr/share/mynode/RTL-Config.json /mnt/hdd/mynode/rtl/RTL-Config.json
+fi
+# Update RTL config file to use mynode pw
 if [ -f /home/bitcoin/.mynode/.hashedpw ]; then
     HASH=$(cat /home/bitcoin/.mynode/.hashedpw)
-    sed -i "s/\"multiPassHashed\":.*/\"multiPassHashed\": \"$HASH\",/g" /opt/mynode/RTL/RTL-Config.json
+    sed -i "s/\"multiPassHashed\":.*/\"multiPassHashed\": \"$HASH\",/g" /mnt/hdd/mynode/rtl/RTL-Config.json
 fi
-chown bitcoin:bitcoin /opt/mynode/RTL/RTL-Config.json
 
 # BTC RPC Explorer Config
 cp /usr/share/mynode/btc_rpc_explorer_env /opt/mynode/btc-rpc-explorer/.env
 chown bitcoin:bitcoin /opt/mynode/btc-rpc-explorer/.env
 
+# LNBits Config
+if [ -d /opt/mynode/lnbits ]; then
+    cp /usr/share/mynode/lnbits.env /opt/mynode/lnbits/.env
+    chown bitcoin:bitcoin /opt/mynode/lnbits/.env
+fi
+
+# Setup Specter
+if [ -d /home/bitcoin/.specter ] && [ ! -L /home/bitcoin/.specter ] ; then
+    # Migrate to HDD
+    cp -r -f /home/bitcoin/.specter/* /mnt/hdd/mynode/specter/
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/specter
+    rm -rf /home/bitcoin/.specter
+    sync
+fi
+if [ ! -L /home/bitcoin/.specter ]; then
+    # Setup symlink to HDD
+    sudo -u bitcoin ln -s /mnt/hdd/mynode/specter /home/bitcoin/.specter
+fi
+
+# Setup Thunderhub
+if [ -f /mnt/hdd/mynode/thunderhub/thub_config.yaml ]; then
+    if [ -f /home/bitcoin/.mynode/.hashedpw_bcrypt ]; then
+        HASH_BCRYPT=$(cat /home/bitcoin/.mynode/.hashedpw_bcrypt)
+        sed -i "s#masterPassword:.*#masterPassword: \"thunderhub-$HASH_BCRYPT\"#g" /mnt/hdd/mynode/thunderhub/thub_config.yaml
+    fi
+fi
+
+# Setup udev
+chown root:root /etc/udev/rules.d/* || true
+udevadm trigger
+udevadm control --reload-rules
+groupadd plugdev || true
+sudo usermod -aG plugdev bitcoin
 
 # Update files that need RPC password (needed if upgrades overwrite files)
 PW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
@@ -308,6 +344,22 @@ USER=$(stat -c '%U' /mnt/hdd/mynode/lnd)
 if [ "$USER" != "bitcoin" ]; then
     chown -R bitcoin:bitcoin /mnt/hdd/mynode/lnd
 fi
+USER=$(stat -c '%U' /mnt/hdd/mynode/whirlpool)
+if [ "$USER" != "bitcoin" ]; then
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/whirlpool
+fi
+USER=$(stat -c '%U' /mnt/hdd/mynode/lnbits)
+if [ "$USER" != "bitcoin" ]; then
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/lnbits
+fi
+USER=$(stat -c '%U' /mnt/hdd/mynode/rtl)
+if [ "$USER" != "bitcoin" ]; then
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/rtl
+fi
+USER=$(stat -c '%U' /mnt/hdd/mynode/specter)
+if [ "$USER" != "bitcoin" ]; then
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/specter
+fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/redis)
 if [ "$USER" != "redis" ]; then
     chown -R redis:redis /mnt/hdd/mynode/redis
@@ -326,13 +378,23 @@ chown bitcoin:bitcoin /mnt/hdd/mynode/
 
 
 # Setup swap on new HDD
-if [ $IS_RASPI -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
-    if [ ! -f /mnt/hdd/swapfile ]; then
-        dd if=/dev/zero of=/mnt/hdd/swapfile count=1000 bs=1MiB
-        chmod 600 /mnt/hdd/swapfile
+if [ ! -f /mnt/hdd/mynode/settings/swap_size ]; then
+    # Set defaults
+    touch /mnt/hdd/mynode/settings/swap_size
+    echo "2" > /mnt/hdd/mynode/settings/swap_size
+    sed -i "s|CONF_SWAPSIZE=.*|CONF_SWAPSIZE=2048|" /etc/dphys-swapfile
+else
+    # Update swap config file in case upgrade overwrote file
+    SWAP=$(cat /mnt/hdd/mynode/settings/swap_size)
+    SWAP_MB=$(($SWAP * 1024))
+    sed -i "s|CONF_SWAPSIZE=.*|CONF_SWAPSIZE=$SWAP_MB|" /etc/dphys-swapfile
+fi
+if [ $IS_RASPI -eq 1 ] || [ $IS_ROCK64 -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
+    SWAP=$(cat /mnt/hdd/mynode/settings/swap_size)
+    if [ "$SWAP" -ne "0" ]; then
+        dphys-swapfile install
+        dphys-swapfile swapon
     fi
-    mkswap /mnt/hdd/swapfile
-    dphys-swapfile swapon
 fi
 
 
@@ -386,10 +448,12 @@ fi
 # Weird hacks
 chmod +x /usr/bin/electrs || true # Once, a device didn't have the execute bit set for electrs
 timedatectl set-ntp True || true # Make sure NTP is enabled for Tor and Bitcoin
+rm -f /var/swap || true # Remove old swap file to save SD card space
+systemctl enable check_in || true
 
 # Check for new versions
-wget $LATEST_VERSION_URL -O /usr/share/mynode/latest_version || true
-wget $LATEST_BETA_VERSION_URL -O /usr/share/mynode/latest_beta_version || true
+torify wget $LATEST_VERSION_URL -O /usr/share/mynode/latest_version || true
+torify wget $LATEST_BETA_VERSION_URL -O /usr/share/mynode/latest_beta_version || true
 
 # Update current state
 if [ -f $QUICKSYNC_DIR/.quicksync_complete ]; then

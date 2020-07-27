@@ -75,37 +75,46 @@ while true; do
     DOJO_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/dojo_url
     CURRENT=""
     INSTALL=true
+    # If Upgrade file existed, mark "install" choice for legacy devices
     if [ -f $DOJO_UPGRADE_URL_FILE ]; then
-        INSTALL=false
-        CURRENT=$(cat $DOJO_UPGRADE_URL_FILE)
+        touch /mnt/hdd/mynode/settings/mynode_dojo_install
+        sync
+        sleep 3s
     fi
-    if [ "$CURRENT" != "$DOJO_UPGRADE_URL" ]; then
-        sudo mkdir -p /opt/mynode/.dojo
-        sudo mkdir -p /opt/mynode/dojo
-        sudo rm -rf /opt/mynode/.dojo/*
-        cd /opt/mynode/.dojo
-        sudo wget -O dojo.tar.gz $DOJO_UPGRADE_URL
-        sudo tar -zxvf dojo.tar.gz
-        sudo cp -r samourai-dojo*/* /opt/mynode/dojo
-        cd /usr/bin
-        sudo rm -rf /opt/mynode/.dojo/*
-
-        # Configure Dojo for MyNode
-        sudo ./mynode_gen_dojo_config.sh
-
-        # Run Dojo Install or Upgrade
-        cd /opt/mynode/dojo/docker/my-dojo
-        if [ "$INSTALL" = "true" ]; then
-            yes | sudo ./dojo.sh install &
-        else
-            yes | sudo ./dojo.sh upgrade &
+    # Only install Dojo if marked for installation
+    if [ -f /mnt/hdd/mynode/settings/mynode_dojo_install ]; then
+        if [ -f $DOJO_UPGRADE_URL_FILE ]; then
+            INSTALL=false
+            CURRENT=$(cat $DOJO_UPGRADE_URL_FILE)
         fi
+        if [ "$CURRENT" != "$DOJO_UPGRADE_URL" ]; then
+            sudo mkdir -p /opt/mynode/.dojo
+            sudo mkdir -p /opt/mynode/dojo
+            sudo rm -rf /opt/mynode/.dojo/*
+            cd /opt/mynode/.dojo
+            sudo wget -O dojo.tar.gz $DOJO_UPGRADE_URL
+            sudo tar -zxvf dojo.tar.gz
+            sudo cp -r samourai-dojo*/* /opt/mynode/dojo
+            cd /usr/bin
+            sudo rm -rf /opt/mynode/.dojo/*
 
-        #Check for install/upgrade to finish to initialize Dojo mysql db
-        cd /usr/bin
-        sudo ./mynode_post_dojo.sh
+            # Configure Dojo for MyNode
+            sudo ./mynode_gen_dojo_config.sh
 
-        echo $DOJO_UPGRADE_URL > $DOJO_UPGRADE_URL_FILE
+            # Run Dojo Install or Upgrade
+            cd /opt/mynode/dojo/docker/my-dojo
+            if [ "$INSTALL" = "true" ]; then
+                yes | sudo ./dojo.sh install &
+            else
+                yes | sudo ./dojo.sh upgrade &
+            fi
+
+            #Check for install/upgrade to finish to initialize Dojo mysql db
+            cd /usr/bin
+            sudo ./mynode_post_dojo.sh
+
+            echo $DOJO_UPGRADE_URL > $DOJO_UPGRADE_URL_FILE
+        fi
     fi
 
     rm -f /tmp/installing_docker_images

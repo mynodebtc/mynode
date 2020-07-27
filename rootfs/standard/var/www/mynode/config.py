@@ -8,8 +8,6 @@ CONFIG["btcrpcexplorer_enabled"] = True
 CONFIG["lndhub_enabled"] = True
 
 # myNode variables
-LATEST_VERSION_URL = "https://www.mynodebtc.com/device/latest_version"
-LATEST_BETA_VERSION_URL = "https://www.mynodebtc.com/device/latest_beta_version"
 CHECKIN_URL = "https://www.mynodebtc.com/device_api/check_in.php"
 
 # Bitcoin Variables
@@ -19,6 +17,9 @@ BITCOIN_SYNCED_FILE = "/mnt/hdd/mynode/.mynode_bitcoind_synced"
 # LND Variables
 LND_WALLET_FILE = "/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/wallet.db"
 LND_DATA_FOLDER = "/mnt/hdd/mynode/lnd/data/"
+
+# Variables marking if app should be installed
+DOJO_INSTALL_FILE =  "/mnt/hdd/mynode/settings/mynode_dojo_install"
 
 # Other Variables
 ELECTRS_ENABLED_FILE =  "/mnt/hdd/mynode/.mynode_electrs_enabled"

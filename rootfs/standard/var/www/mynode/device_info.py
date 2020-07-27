@@ -1,12 +1,37 @@
 from config import *
 from threading import Timer
+from werkzeug.routing import RequestRedirect
+from flask import flash
 import time
+import json
 import os
 import subprocess
 
 # Globals
 local_ip = "unknown"
+cached_data = {}
 
+#==================================
+# Utilities
+#==================================
+def get_file_contents(filename):
+    contents = "UNKNOWN"
+    try:
+        with open(filename, "r") as f:
+            contents = f.read().strip()
+    except:
+        contents = "ERROR"
+    return contents
+
+def set_file_contents(filename, data):
+    try:
+        with open(filename, "w") as f:
+            f.write(data)
+        os.system("sync")
+        return True
+    except:
+        return False
+    return False
 
 #==================================
 # Manage Device
@@ -46,6 +71,12 @@ def factory_reset():
     # Reboot
     reboot_device()
 
+def check_and_mark_reboot_action(tmp_marker):
+    if os.path.isfile("/tmp/{}".format(tmp_marker)):
+        flash(u'Refresh prevented - action already triggered', category="error")
+        raise RequestRedirect("/")
+    os.system("touch /tmp/{}".format(tmp_marker))
+
 #==================================
 # Manage Versions and Upgrades
 #==================================
@@ -68,8 +99,7 @@ def get_current_beta_version():
     return current_beta_version
 
 def update_latest_version():
-    os.system("wget "+LATEST_VERSION_URL+" -O /usr/share/mynode/latest_version")
-    os.system("wget "+LATEST_BETA_VERSION_URL+" -O /usr/share/mynode/latest_beta_version")
+    os.system("/usr/bin/mynode_get_latest_version.sh")
     return True
 
 def get_latest_version():
@@ -104,8 +134,8 @@ def reinstall_app(app):
         mark_upgrade_started()
 
         # Upgrade
-        os.system("mkdir -p /home/admin/reinstall_logs")
-        cmd = "/usr/bin/mynode_reinstall_app.sh {} > /home/admin/reinstall_logs/reinstall_{}.txt 2>&1".format(app,app)
+        os.system("mkdir -p /home/admin/upgrade_logs")
+        cmd = "/usr/bin/mynode_reinstall_app.sh {} > /home/admin/upgrade_logs/reinstall_{}.txt 2>&1".format(app,app)
         subprocess.call(cmd, shell=True)
         
         # Sync
@@ -165,6 +195,9 @@ def get_recent_upgrade_logs():
             pass
     return logs
 
+def has_checkin_error():
+    return os.path.isfile("/tmp/check_in_error")
+
 #==================================
 # Reseller Info
 #==================================
@@ -191,20 +224,32 @@ def get_system_date():
     return date
 
 def get_device_serial():
-    serial = subprocess.check_output("cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2", shell=True)
+    global cached_data
+    if "serial" in cached_data:
+        return cached_data["serial"]
+
+    serial = subprocess.check_output("mynode-get-device-serial", shell=True)
     serial = serial.strip()
-    if serial == "":
-        # For VMs, use the UUID
-        serial = subprocess.check_output("sudo dmidecode | grep UUID | cut -d ' ' -f 2", shell=True)
-        serial = serial.strip()
+
+    cached_data["serial"] = serial
     return serial
 
 def get_device_type():
-    device = subprocess.check_output("mynode-get-device-type", shell=True)
+    global cached_data
+    if "device_type" in cached_data:
+        return cached_data["device_type"]
+    
+    device = subprocess.check_output("mynode-get-device-type", shell=True).strip()
+    cached_data["device_type"] = device
     return device
 
 def get_device_ram():
-    ram = subprocess.check_output("free --giga | grep Mem | awk '{print $2}'", shell=True)
+    global cached_data
+    if "ram" in cached_data:
+        return cached_data["ram"]
+
+    ram = subprocess.check_output("free --giga | grep Mem | awk '{print $2}'", shell=True).strip()
+    cached_data["ram"] = ram
     return ram
 
 def get_local_ip():
@@ -243,6 +288,13 @@ def is_mount_read_only(mnt):
                 return 'ro' in flags
     return False
 
+def set_swap_size(size):
+    size_mb = int(size) * 1024
+    os.system("sed -i 's|CONF_SWAPSIZE=.*|CONF_SWAPSIZE={}|' /etc/dphys-swapfile".format(size_mb))
+    return set_file_contents("/mnt/hdd/mynode/settings/swap_size", size)
+
+def get_swap_size():
+    return get_file_contents("/mnt/hdd/mynode/settings/swap_size")
 
 #==================================
 # Service Status, Enabled, Logs, etc...
@@ -285,6 +337,66 @@ def get_journalctl_log(service_name):
         log = "ERROR"
     return log
 
+#==================================
+# UI Functions
+#==================================
+
+def read_ui_settings():
+    ui_hdd_file = '/mnt/hdd/mynode/settings/ui.json'
+    ui_mynode_file = '/home/bitcoin/.mynode/ui.json'
+
+    # read ui.json from HDD
+    if os.path.isfile(ui_hdd_file):
+        with open(ui_hdd_file, 'r') as fp:
+            ui_settings = json.load(fp)
+    # read ui.json from mynode
+    elif os.path.isfile(ui_mynode_file):
+        with open(ui_mynode_file, 'r') as fp:
+            ui_settings = json.load(fp)
+    # if ui.json is not found anywhere, use default settings
+    else:
+        ui_settings = {'darkmode': False}
+
+    # Set reseller
+    ui_settings["reseller"] = is_device_from_reseller()
+
+    return ui_settings
+
+def write_ui_settings(ui_settings):
+    ui_hdd_file = '/mnt/hdd/mynode/settings/ui.json'
+    ui_mynode_file = '/home/bitcoin/.mynode/ui.json'
+
+    try:
+        with open(ui_hdd_file, 'w') as fp:
+            json.dump(ui_settings, fp)
+    except:
+        pass
+
+    with open(ui_mynode_file, 'w') as fp:
+        json.dump(ui_settings, fp)
+
+def is_darkmode_enabled():
+    ui_settings = read_ui_settings()
+    return ui_settings['darkmode']
+
+def disable_darkmode():
+    ui_settings = read_ui_settings()
+    ui_settings['darkmode'] = False
+    write_ui_settings(ui_settings)
+
+def enable_darkmode():
+    ui_settings = read_ui_settings()
+    ui_settings['darkmode'] = True
+    write_ui_settings(ui_settings)
+
+def is_https_forced():
+    return os.path.isfile('/home/bitcoin/.mynode/https_forced')
+
+def force_https(force):
+    if force:
+        os.system("touch /home/bitcoin/.mynode/https_forced")
+    else:
+        os.system("rm -f /home/bitcoin/.mynode/https_forced")
 
 #==================================
 # Uploader Functions
@@ -445,6 +557,15 @@ def reset_docker():
 
     os.system("sync")
     reboot_device()
+
+def get_docker_running_containers():
+    containers = []
+    try:
+        text = subprocess.check_output("docker ps --format '{{.Names}}'", shell=True).decode("utf8")
+        containers = text.splitlines()
+    except:
+        containers = ["ERROR"]
+    return containers
 
 #==================================
 # Bitcoin Functions
@@ -609,6 +730,14 @@ def get_onion_info_btc_v2():
     except:
         pass
     return info
+
+def get_tor_version():
+    global cached_data
+    if "tor_version" in cached_data:
+        return cached_data["tor_version"]
+
+    cached_data["tor_version"] = subprocess.check_output("tor --version | egrep -o '[0-9\\.]+'", shell=True).strip().strip(".")
+    return cached_data["tor_version"]
 
 
 #==================================

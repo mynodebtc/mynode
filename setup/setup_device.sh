@@ -83,12 +83,20 @@ fi
 wget http://${SERVER_IP}:8000/${TARBALL} -O /tmp/rootfs.tar.gz
 
 
+# Create any necessary users
+
+
 # Add sources
 apt-get -y install apt-transport-https
 DEBIAN_VERSION=$(lsb_release -c | awk '{ print $2 }')
-grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.lis
-grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.lis
-
+# Tor
+grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+# Raspbian mirrors
+if [ $IS_RASPI = 1 ]; then
+    grep -qxF "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+    grep -qxF "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+fi
 
 # Import Keys
 curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
@@ -121,7 +129,8 @@ apt-get -y install libfreetype6-dev libpng-dev libatlas-base-dev libgmp-dev libl
 apt-get -y install libffi-dev libssl-dev glances python3-bottle automake libtool libltdl7
 apt -y -qq install apt-transport-https ca-certificates
 apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
-apt-get -y install zlib1g-dev
+apt-get -y install zlib1g-dev libudev-dev libusb-1.0-0-dev python3-venv gunicorn
+apt-get -y install libsqlite3-dev torsocks python3-requests
 
 
 # Make sure some software is removed
@@ -138,24 +147,28 @@ usermod -a -G debian-tor bitcoin
 
 
 # Install pip packages
-pip install setuptools
-pip install --upgrade setuptools
-pip install wheel
-pip install --upgrade wheel
-pip install speedtest-cli transmissionrpc flask python-bitcoinrpc redis prometheus_client requests
-pip install python-pam python-bitcoinlib psutil
-pip install grpcio grpcio-tools googleapis-common-protos 
-pip install tzupdate virtualenv
+pip2 install setuptools
+pip2 install --upgrade setuptools
+pip2 install wheel
+pip2 install --upgrade wheel
+pip2 install speedtest-cli transmissionrpc flask python-bitcoinrpc redis prometheus_client requests
+pip2 install python-pam python-bitcoinlib psutil
+pip2 install grpcio grpcio-tools googleapis-common-protos 
+pip2 install tzupdate virtualenv pysocks
 
 
 # Update Python3 to 3.7.X
-PYTHON3_VERSION=$(python3 --version)
-if [[ "$PYTHON3_VERSION" != *"Python 3.7.6"* ]]; then
+PYTHON_VERSION=3.7.7
+CURRENT_PYTHON3_VERSION=$(python3 --version)
+if [[ "$CURRENT_PYTHON3_VERSION" != *"Python ${PYTHON_VERSION}"* ]]; then
     mkdir -p /opt/download
     cd /opt/download
-    wget https://www.python.org/ftp/python/3.7.6/Python-3.7.6.tar.xz
-    tar xf Python-3.7.6.tar.xz
-    cd Python-3.7.6
+    rm -rf Python-*
+
+    wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz -O python.tar.xz
+    tar xf python.tar.xz
+
+    cd Python-*
     ./configure
     make -j4
     make install
@@ -168,10 +181,11 @@ fi
 # Install Python3 specific tools (run multiple times to make sure success)
 pip3 install wheel setuptools
 pip3 install bitstring lnd-grpc pycoin aiohttp connectrum python-bitcoinlib
-pip3 install python-bitcointx
 pip3 install gnureadline
 pip3 install lndmanage==0.10.0   # Install LND Manage (keep up to date with LND)
 pip3 install docker-compose
+pip3 install pipenv
+pip3 install pysocks
 
 
 # Install Rust
@@ -213,7 +227,7 @@ rm -rf /etc/update-motd.d/*
 
 
 # Install Bitcoin
-BTC_VERSION="0.19.1"
+BTC_VERSION="0.20.0"
 ARCH="UNKNOWN"
 if [ $IS_RASPI = 1 ]; then
     ARCH="arm-linux-gnueabihf"
@@ -262,7 +276,7 @@ fi
 cd ~
 
 # Install Lightning
-LND_VERSION="v0.10.0-beta"
+LND_VERSION="v0.10.3-beta"
 LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
@@ -299,7 +313,7 @@ cd ~
 
 # Install Loopd
 echo "Installing loopd..."
-LOOP_VERSION="v0.6.0-beta"
+LOOP_VERSION="v0.6.4-beta"
 LOOP_ARCH="loop-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LOOP_ARCH="loop-linux-amd64"
@@ -367,6 +381,56 @@ if [ "$CURRENT" != "$LNDHUB_UPGRADE_URL" ]; then
     echo $LNDHUB_UPGRADE_URL > $LNDHUB_UPGRADE_URL_FILE
 fi
 cd ~
+
+# Install Caravan
+CARAVAN_VERSION="v0.2.0"
+CARAVAN_UPGRADE_URL=https://github.com/unchained-capital/caravan/archive/${CARAVAN_VERSION}.tar.gz
+CARAVAN_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.caravan_url
+CURRENT=""
+if [ -f $CARAVAN_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $CARAVAN_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$CARAVAN_UPGRADE_URL" ]; then
+    cd /opt/mynode
+    rm -rf caravan
+
+    rm -f caravan.tar.gz
+    wget $CARAVAN_UPGRADE_URL -O caravan.tar.gz
+    tar -xzf caravan.tar.gz 
+    rm -f caravan.tar.gz
+    mv caravan-* caravan
+    chown -R bitcoin:bitcoin caravan
+
+    cd caravan
+    sudo -u bitcoin npm install --only=production
+    echo $CARAVAN_UPGRADE_URL > $CARAVAN_UPGRADE_URL_FILE
+fi
+cd ~
+
+
+# Install cors proxy (my fork)
+CORSPROXY_UPGRADE_URL=https://github.com/tehelsper/CORS-Proxy/archive/v1.7.0.tar.gz
+CORSPROXY_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.corsproxy_url
+CURRENT=""
+if [ -f $CORSPROXY_UPGRADE_URL ]; then
+    CURRENT=$(cat $CORSPROXY_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$CORSPROXY_UPGRADE_URL" ]; then
+    cd /opt/mynode
+    rm -rf corsproxy
+
+    rm -f corsproxy.tar.gz
+    wget $CORSPROXY_UPGRADE_URL -O corsproxy.tar.gz
+    tar -xzf corsproxy.tar.gz 
+    rm -f corsproxy.tar.gz
+    mv CORS-* corsproxy
+
+    cd corsproxy
+    npm install
+    echo $CORSPROXY_UPGRADE_URL > $CORSPROXY_UPGRADE_URL_FILE
+fi
+cd ~
+
 
 # Install Electrs (only build to save new version, now included in overlay)
 #cd /home/admin/download
@@ -438,7 +502,7 @@ fi
 
 
 # Install RTL
-RTL_VERSION="v0.7.0"
+RTL_VERSION="v0.7.1"
 RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/$RTL_VERSION.tar.gz
 RTL_UPGRADE_ASC_URL=https://github.com/Ride-The-Lightning/RTL/releases/download/$RTL_VERSION/$RTL_VERSION.tar.gz.asc
 RTL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.rtl_url
@@ -468,7 +532,7 @@ fi
 
 
 # Install BTC RPC Explorer
-BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v2.0.0.tar.gz
+BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v2.0.2.tar.gz
 BTCRPCEXPLORER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btcrpcexplorer_url
 CURRENT=""
 if [ -f $BTCRPCEXPLORER_UPGRADE_URL_FILE ]; then
@@ -487,6 +551,39 @@ if [ "$CURRENT" != "$BTCRPCEXPLORER_UPGRADE_URL" ]; then
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $BTCRPCEXPLORER_UPGRADE_URL > $BTCRPCEXPLORER_UPGRADE_URL_FILE
+fi
+
+
+# Install LNBits
+LNBITS_UPGRADE_URL=https://github.com/lnbits/lnbits/archive/raspiblitz.tar.gz
+LNBITS_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lnbits_url
+CURRENT=""
+if [ -f $LNBITS_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $LNBITS_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$LNBITS_UPGRADE_URL" ]; then
+    cd /opt/mynode
+    rm -rf lnbits
+    sudo -u bitcoin wget $LNBITS_UPGRADE_URL -O lnbits.tar.gz
+    sudo -u bitcoin tar -xvf lnbits.tar.gz
+    sudo -u bitcoin rm lnbits.tar.gz
+    sudo -u bitcoin mv lnbits-* lnbits
+    cd lnbits
+
+    # Copy over config file
+    cp /usr/share/mynode/lnbits.env /opt/mynode/lnbits/.env
+    chown bitcoin:bitcoin /opt/mynode/lnbits/.env
+
+    # Install with python 3.7 (Only use "pipenv install --python 3.7" once or it will rebuild the venv!)
+    sudo -u bitcoin pipenv --python 3.7 install
+    sudo -u bitcoin pipenv run pip install python-dotenv
+    sudo -u bitcoin pipenv run pip install -r requirements.txt
+    sudo -u bitcoin pipenv run pip install lnd-grpc
+    sudo -u bitcoin pipenv run flask migrate
+
+    mkdir -p /home/bitcoin/.mynode/
+    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+    echo $LNBITS_UPGRADE_URL > $LNBITS_UPGRADE_URL_FILE
 fi
 
 
@@ -559,6 +656,7 @@ fi
 
 # Setup myNode Startup Script
 systemctl daemon-reload
+systemctl enable docker
 systemctl enable mynode
 systemctl enable quicksync
 systemctl enable torrent_check
@@ -589,6 +687,7 @@ systemctl enable glances
 #systemctl enable netdata # DISABLED BY DEFAULT
 systemctl enable webssh2
 systemctl enable rotate_logs
+systemctl enable corsproxy_btcrpc
 
 
 # Regenerate MAC Address for Armbian devices

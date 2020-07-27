@@ -9,6 +9,7 @@ from device_info import *
 from enable_disable_functions import *
 from electrum_info import update_electrs_info
 from requests import get
+import random
 
 # Info to get from the update threads
 has_updated_btc_info = False
@@ -138,55 +139,17 @@ def update_lnd_info_thread():
 def find_public_ip():
     global public_ip
 
+    #urls = ["http://mynodebtc.com/device_api/get_public_ip.php"]
+    urls = ["https://api.ipify.org/","https://ip.seeip.org/","https://ip.seeip.org"]
+    url = random.choice(urls)
+
     # Get public IP
     try:
-        public_ip = get('http://mynodebtc.com/device_api/get_public_ip.php').text
+        public_ip = get(url).text
     except Exception as e:
         public_ip = "Failed to find public IP. "
 
 
-# Checkin every 24 hours
+# Updated: Check ins now happen in different process. This will just restart the service to force a new check in.
 def check_in():
-
-    # Check in
-    product_key = get_product_key()
-    data = {
-        "serial": get_device_serial(),
-        "device_type": get_device_type(),
-        "version": get_current_version(),
-        "product_key": product_key
-    }
-
-    # Check for new version
-    update_latest_version()
-
-    # Find public IP
-    find_public_ip()
-
-    # Check In
-    check_in_success = False
-    while not check_in_success:
-        try:
-            r = requests.post(CHECKIN_URL, data=data, timeout=10)
-            if r.status_code == 200:
-                if r.text == "OK":
-                    print("Check In Success: {}".format(r.text))
-
-                    if product_key != "community_edition":
-                        unset_skipped_product_key()
-                    delete_product_key_error()
-                else:
-                    os.system("echo '{}' > /home/bitcoin/.mynode/.product_key_error".format(r.text))
-                    print("Check In Returned Error: {}".format(r.text))
-
-                check_in_success = True
-            else:
-                print("Check In Failed. Retrying... Code {}".format(r.status_code))
-        except Exception as e:
-            print("Check In Failed. Retrying... Exception {}".format(e))
-
-        if not check_in_success:
-            # Check in failed, try again in 2 minutes 
-            time.sleep(120)
-
-    return True
+    os.system("systemctl restart check_in")

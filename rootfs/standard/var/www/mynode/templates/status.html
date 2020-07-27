@@ -26,6 +26,11 @@
                     $("#lnd_status").show();
                 });
 
+                $("#show_loopd_status").on("click", function() {
+                    $("#show_loopd_status").hide(0);
+                    $("#loopd_status").show();
+                });
+
                 $("#show_lndhub_status").on("click", function() {
                     $("#show_lndhub_status").hide(0);
                     $("#lndhub_status").show();
@@ -44,6 +49,16 @@
                 $("#show_rtl_status").on("click", function() {
                     $("#show_rtl_status").hide(0);
                     $("#rtl_status").show();
+                });
+
+                $("#show_lnbits_status").on("click", function() {
+                    $("#show_lnbits_status").hide(0);
+                    $("#lnbits_status").show();
+                });
+
+                $("#show_thunderhub_status").on("click", function() {
+                    $("#show_thunderhub_status").hide(0);
+                    $("#thunderhub_status").show();
                 });
 
                 $("#show_docker_status").on("click", function() {
@@ -164,21 +179,16 @@
                     <td>Device RAM</td>
                     <td style="padding-left: 20px;">{{device_ram}} GB</td>
                 </tr>
-                <!--
-                <tr>
-                    <td>Public IP</td>
-                    <td style="padding-left: 20px;">
-                        {{public_ip}}
-                        {% if 'Failed to find' in public_ip %}
-                            <a href="/settings/check-in" class="ui-button ui-widget ui-corner-all settings_button_small">Refresh</a>
-                        {% endif %}
-                    </td>
-                </tr>
-                -->
                 <tr>
                     <td>Local IP</td>
                     <td style="padding-left: 20px;">{{local_ip}}</td>
                 </tr>
+                {% if has_checkin_error %}
+                <tr>
+                    <td>Server</td>
+                    <td style="padding-left: 20px; color: red;"><b>Error contacting mynodebtc.com via Tor!</b><br/>You may have issues checking for new versions or saving product keys.</td>
+                </tr>
+                {% endif %}
                 
             </table>
             <div class="divider"></div>
@@ -188,8 +198,16 @@
                 <tr>
                     <td>Details</td>
                     <td style="padding-left: 20px;">
-                        {% if is_netdata_enabled and is_bitcoin_synced %}
-                        <a id="netdata" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Netdata</a>
+                        {% if is_netdata_enabled %}
+                            {% if is_bitcoin_synced %}
+                                {% if not is_installing_docker_images %}
+                                    <a id="netdata" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Netdata</a>
+                                {% else %}
+                                    <a class="ui-button ui-widget ui-corner-all settings_button_small" href="#" disabled>Netdata - Waiting on Docker</a>
+                                {% endif %}
+                            {% else %}
+                                <a class="ui-button ui-widget ui-corner-all settings_button_small" href="#" disabled>Netdata - Waiting on Bitcoin</a>
+                            {% endif %}
                         {% endif %}
                         <a id="glances" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Glances</a>
                     </td>
@@ -284,6 +302,17 @@
             <div id="lnd_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lnd_status_log}}</pre></div>
             <div class="divider"></div>
 
+            {% if lnd_wallet_exists %}
+            <div class="settings_block_subheader">Loop Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ loopd_status_color }}"></div>
+                {{ loopd_status }}
+            </div>
+            <button id="show_loopd_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="loopd_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{loopd_status_log}}</pre></div>
+            <div class="divider"></div>
+            {% endif %}
+
             <div class="settings_block_subheader">Electrum Server Status</div>
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ electrs_status_color }}"></div>
@@ -311,6 +340,24 @@
             <div id="rtl_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{rtl_status_log}}</pre></div>
             <div class="divider"></div>
 
+            <div class="settings_block_subheader">LNbits Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ lnbits_status_color }}"></div>
+                {{ lnbits_status }}
+            </div>
+            <button id="show_lnbits_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="lnbits_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lnbits_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Thunderhub Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ thunderhub_status_color }}"></div>
+                {{ thunderhub_status }}
+            </div>
+            <button id="show_thunderhub_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="thunderhub_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{thunderhub_status_log}}</pre></div>
+            <div class="divider"></div>
+
             <div class="settings_block_subheader">Docker Status</div>
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ docker_status_color }}"></div>
@@ -333,6 +380,13 @@
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ dojo_status_color }}"></div>
                 {{ dojo_status }}
+                <span class='status_container_list'>
+                    Running Containers: 
+                    {% if 'tor' in running_containers %} tor {% endif %}
+                    {% if 'nodejs' in running_containers %} nodejs {% endif %}
+                    {% if 'db' in running_containers %} db {% endif %}
+                    {% if 'nginx' in running_containers %} nginx {% endif %}
+                </span>
             </div>
             <button id="show_dojo_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="dojo_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{dojo_status_log}}</pre></div>
@@ -342,6 +396,12 @@
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ btcpayserver_status_color }}"></div>
                 {{ btcpayserver_status }}
+                <span class='status_container_list'>
+                    Running Containers: 
+                    {% if 'btcpayserver_btcpayserver_1' in running_containers %} btcpayserver {% endif %}
+                    {% if 'btcpayserver_nbxplorer_1' in running_containers %} nbxplorer {% endif %}
+                    {% if 'btcpayserver_postgres_1' in running_containers %} postgres {% endif %}
+                </span>
             </div>
             <button id="show_btcpayserver_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="btcpayserver_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{btcpayserver_status_log}}</pre></div>
@@ -351,6 +411,10 @@
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ mempoolspace_status_color }}"></div>
                 {{ mempoolspace_status }}
+                <span class='status_container_list'>
+                    Running Containers: 
+                    {% if 'mempoolspace' in running_containers %} mempoolspace {% endif %}
+                </span>
             </div>
             <button id="show_mempoolspace_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="mempoolspace_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{mempoolspace_status_log}}</pre></div>

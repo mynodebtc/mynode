@@ -3,7 +3,9 @@
 source /usr/share/mynode/mynode_config.sh
 
 # Wait for LND + BTC to start
-sleep 2m
+sleep 1m
+
+CHECK_RATE="10s"
 
 while true; do
 
@@ -17,15 +19,21 @@ while true; do
         sleep 30s
     done
 
-    # Sleep 15 seconds to let LND startup and avoid LN race condition
-    # See https://github.com/lightningnetwork/lnd/issues/3631
-    /bin/sleep 60s
+    # Wait for lnd to accept logins
+    until journalctl -r -u lnd --no-pager | head -n 20 | grep "Waiting for wallet encryption password"
+    do
+        sleep $CHECK_RATE
+    done
+    sleep 5s
 
     echo "Unlocking wallet..."
     /usr/bin/expect /usr/bin/unlock_lnd.tcl
     if [ $? -eq 0 ]; then
         # Unlocked! Verify unlocked every time LND files change
         inotifywait -t 600 -r -e modify -e create -e delete /mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/ /mnt/hdd/mynode/lnd/tls.cert
+        
+        # Slow down check rate for next time around
+        CHECK_RATE="60s"
     else
         # Failed, try again in 15 seconds
         /bin/sleep 15s

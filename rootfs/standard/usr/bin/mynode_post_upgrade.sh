@@ -14,6 +14,15 @@ date
 # Delete ramlog to prevent ram issues
 rm -rf /var/log/*
 
+# Create any necessary users
+
+
+# Check if upgrades use tor
+TORIFY=""
+if [ -f /mnt/hdd/mynode/settings/torify_apt_get ]; then
+    TORIFY="torify"
+fi
+
 # Check if any dpkg installs have failed and correct
 dpkg --configure -a
 
@@ -21,9 +30,14 @@ dpkg --configure -a
 # Add sources
 apt-get -y install apt-transport-https
 DEBIAN_VERSION=$(lsb_release -c | awk '{ print $2 }')
+# Tor
 grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
 grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
-
+# Raspbian mirrors
+if [ $IS_RASPI = 1 ]; then
+    grep -qxF "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+    grep -qxF "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+fi
 
 # Import Keys
 set +e
@@ -32,16 +46,12 @@ curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/ma
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
 curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
 gpg  --keyserver hkps://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E #loopd
-curl https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import  # tor
+$TORIFY curl https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import  # tor
 gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | apt-key add -                                       # tor
 set -e
 
 
 # Check for updates (might auto-install all updates later)
-TORIFY=""
-if [ -f /mnt/hdd/mynode/settings/torify_apt_get ]; then
-    TORIFY="torify"
-fi
 export DEBIAN_FRONTEND=noninteractive
 $TORIFY apt-get update
 $TORIFY apt-get -y upgrade
@@ -54,6 +64,8 @@ $TORIFY apt-get -y install libatlas-base-dev libffi-dev libssl-dev glances pytho
 $TORIFY apt-get -y -qq install apt-transport-https ca-certificates
 $TORIFY apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
 $TORIFY apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
+$TORIFY apt-get -y install libudev-dev libusb-1.0-0-dev python3-venv gunicorn libsqlite3-dev
+$TORIFY apt-get -y install torsocks python3-requests
 
 # Make sure some software is removed
 apt-get -y purge ntp # (conflicts with systemd-timedatectl)
@@ -61,14 +73,37 @@ apt-get -y purge chrony # (conflicts with systemd-timedatectl)
 
 
 # Install any pip software
-pip install tzupdate virtualenv --no-cache-dir
+pip2 install tzupdate virtualenv pysocks --no-cache-dir
+
+
+# Update Python3 to 3.7.X
+PYTHON_VERSION=3.7.7
+CURRENT_PYTHON3_VERSION=$(python3 --version)
+if [[ "$CURRENT_PYTHON3_VERSION" != *"Python ${PYTHON_VERSION}"* ]]; then
+    mkdir -p /opt/download
+    cd /opt/download
+    rm -rf Python-*
+
+    wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz -O python.tar.xz
+    tar xf python.tar.xz
+
+    cd Python-*
+    ./configure
+    make -j4
+    make install
+    cd ~
+else
+    echo "Python up to date"
+fi
 
 
 # Install any pip3 software
-pip3 install python-bitcointx --no-cache-dir
 pip3 install gnureadline --no-cache-dir
 pip3 install lndmanage==0.10.0 --no-cache-dir   # Install LND Manage (keep up to date with LND)
 pip3 install docker-compose --no-cache-dir
+pip3 install pipenv --no-cache-dir
+pip3 install bcrypt --no-cache-dir
+pip3 install pysocks --no-cache-dir
 
 
 # Install Docker
@@ -95,7 +130,7 @@ usermod -aG docker root
 
 # Upgrade BTC
 echo "Upgrading BTC..."
-BTC_VERSION="0.19.1"
+BTC_VERSION="0.20.0"
 ARCH="UNKNOWN"
 if [ $IS_RASPI = 1 ]; then
     ARCH="arm-linux-gnueabihf"
@@ -144,7 +179,7 @@ fi
 
 # Upgrade LND
 echo "Upgrading LND..."
-LND_VERSION="v0.10.0-beta"
+LND_VERSION="v0.10.3-beta"
 LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
@@ -183,7 +218,7 @@ fi
 
 # Upgrade Loop
 echo "Upgrading loopd..."
-LOOP_VERSION="v0.6.0-beta"
+LOOP_VERSION="v0.6.4-beta"
 LOOP_ARCH="loop-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LOOP_ARCH="loop-linux-amd64"
@@ -245,6 +280,59 @@ if [ "$CURRENT" != "$LNDHUB_UPGRADE_URL" ]; then
     echo $LNDHUB_UPGRADE_URL > $LNDHUB_UPGRADE_URL_FILE
 fi
 cd ~
+
+
+# Install Caravan
+CARAVAN_VERSION="v0.2.0"
+CARAVAN_UPGRADE_URL=https://github.com/unchained-capital/caravan/archive/${CARAVAN_VERSION}.tar.gz
+CARAVAN_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.caravan_url
+CARAVAN_SETTINGS_UPDATE_FILE=/home/bitcoin/.mynode/.caravan_settings_1
+CURRENT=""
+if [ -f $CARAVAN_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $CARAVAN_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$CARAVAN_UPGRADE_URL" ] || [ ! -f $CARAVAN_SETTINGS_UPDATE_FILE ]; then
+    cd /opt/mynode
+    rm -rf caravan
+
+    rm -f caravan.tar.gz
+    wget $CARAVAN_UPGRADE_URL -O caravan.tar.gz
+    tar -xzf caravan.tar.gz 
+    rm -f caravan.tar.gz
+    mv caravan-* caravan
+    chown -R bitcoin:bitcoin caravan
+
+    cd caravan
+    sudo -u bitcoin npm install --only=production
+    echo $CARAVAN_UPGRADE_URL > $CARAVAN_UPGRADE_URL_FILE
+    touch $CARAVAN_SETTINGS_UPDATE_FILE
+fi
+cd ~
+
+
+# Install cors proxy (my fork)
+CORSPROXY_UPGRADE_URL=https://github.com/tehelsper/CORS-Proxy/archive/v1.7.0.tar.gz
+CORSPROXY_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.corsproxy_url
+CURRENT=""
+if [ -f $CORSPROXY_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $CORSPROXY_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$CORSPROXY_UPGRADE_URL" ]; then
+    cd /opt/mynode
+    rm -rf corsproxy
+
+    rm -f corsproxy.tar.gz
+    wget $CORSPROXY_UPGRADE_URL -O corsproxy.tar.gz
+    tar -xzf corsproxy.tar.gz 
+    rm -f corsproxy.tar.gz
+    mv CORS-* corsproxy
+
+    cd corsproxy
+    npm install
+    echo $CORSPROXY_UPGRADE_URL > $CORSPROXY_UPGRADE_URL_FILE
+fi
+cd ~
+
 
 # Install recent version of secp256k1
 echo "Installing secp256k1..."
@@ -313,7 +401,7 @@ fi
 
 
 # Upgrade RTL
-RTL_VERSION="v0.7.0"
+RTL_VERSION="v0.7.1"
 RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/$RTL_VERSION.tar.gz
 RTL_UPGRADE_ASC_URL=https://github.com/Ride-The-Lightning/RTL/releases/download/$RTL_VERSION/$RTL_VERSION.tar.gz.asc
 RTL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.rtl_url
@@ -346,7 +434,7 @@ if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
 fi
 
 # Upgrade BTC RPC Explorer
-BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v2.0.0.tar.gz
+BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v2.0.2.tar.gz
 BTCRPCEXPLORER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btcrpcexplorer_url
 CURRENT=""
 if [ -f $BTCRPCEXPLORER_UPGRADE_URL_FILE ]; then
@@ -365,6 +453,105 @@ if [ "$CURRENT" != "$BTCRPCEXPLORER_UPGRADE_URL" ]; then
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $BTCRPCEXPLORER_UPGRADE_URL > $BTCRPCEXPLORER_UPGRADE_URL_FILE
+fi
+
+
+# Upgrade LNBits
+LNBITS_UPGRADE_URL=https://github.com/lnbits/lnbits/archive/raspiblitz.tar.gz
+LNBITS_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lnbits_url
+CURRENT=""
+if [ -f $LNBITS_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $LNBITS_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$LNBITS_UPGRADE_URL" ]; then
+    cd /opt/mynode
+    rm -rf lnbits
+    sudo -u bitcoin wget $LNBITS_UPGRADE_URL -O lnbits.tar.gz
+    sudo -u bitcoin tar -xvf lnbits.tar.gz
+    sudo -u bitcoin rm lnbits.tar.gz
+    sudo -u bitcoin mv lnbits-* lnbits
+    cd lnbits
+
+    # Copy over config file
+    cp /usr/share/mynode/lnbits.env /opt/mynode/lnbits/.env
+    chown bitcoin:bitcoin /opt/mynode/lnbits/.env
+
+    # Install with python 3.7 (Only use "pipenv install --python 3.7" once or it will rebuild the venv!)
+    sudo -u bitcoin pipenv --python 3.7 install
+    sudo -u bitcoin pipenv run pip install python-dotenv
+    sudo -u bitcoin pipenv run pip install -r requirements.txt
+    #sudo -u bitcoin pipenv run pip install lnd-grpc # Using REST now (this install takes a LONG time)
+    sudo -u bitcoin pipenv run flask migrate || true
+
+    mkdir -p /home/bitcoin/.mynode/
+    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+    echo $LNBITS_UPGRADE_URL > $LNBITS_UPGRADE_URL_FILE
+fi
+
+
+# Upgrade Specter Desktop
+SPECTER_UPGRADE_VERSION=0.5.5
+if [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ]; then
+    SPECTER_UPGRADE_VERSION=0.5.2
+fi
+SPECTER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.spectre_url
+CURRENT=""
+if [ -f $SPECTER_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $SPECTER_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$SPECTER_UPGRADE_VERSION" ]; then
+    cd /opt/mynode
+    rm -rf specter
+    mkdir -p specter
+    chown -R bitcoin:bitcoin specter
+    cd specter
+
+    # Make venv
+    if [ ! -d env ]; then
+        sudo -u bitcoin python3 -m venv env
+    fi
+    source env/bin/activate
+    pip3 install ecdsa===0.13.3
+    pip3 install cryptoadvance.specter===$SPECTER_UPGRADE_VERSION --upgrade
+    deactivate
+
+    echo $SPECTER_UPGRADE_VERSION > $SPECTER_UPGRADE_URL_FILE
+fi
+
+
+# Upgrade Thunderhub
+THUNDERHUB_UPGRADE_URL=https://github.com/apotdevin/thunderhub/archive/v0.8.13.tar.gz
+THUNDERHUB_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.thunderhub_url
+CURRENT=""
+if [ -f $THUNDERHUB_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $THUNDERHUB_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$THUNDERHUB_UPGRADE_URL" ]; then
+    cd /opt/mynode
+    rm -rf thunderhub
+    sudo -u bitcoin wget $THUNDERHUB_UPGRADE_URL -O thunderhub.tar.gz
+    sudo -u bitcoin tar -xvf thunderhub.tar.gz
+    sudo -u bitcoin rm thunderhub.tar.gz
+    sudo -u bitcoin mv thunderhub-* thunderhub
+    cd thunderhub
+
+    sudo -u bitcoin npm install # --only=production # (can't build with only production)
+    sudo -u bitcoin npm run build
+    sudo -u bitcoin npx next telemetry disable
+
+    # Setup symlink to service files
+    mkdir -p /mnt/hdd/mynode/thunderhub/
+    rm -f /opt/mynode/thunderhub/.env.local
+    sudo ln -s /mnt/hdd/mynode/thunderhub/.env.local /opt/mynode/thunderhub/.env.local
+    if [ ! -f /mnt/hdd/mynode/thunderhub/.env.local ]; then
+        cp -f /usr/share/mynode/thunderhub.env /mnt/hdd/mynode/thunderhub/.env.local
+    fi
+    if [ ! -f /mnt/hdd/mynode/thunderhub/thub_config.yaml ]; then
+        cp -f /usr/share/mynode/thub_config.yaml /mnt/hdd/mynode/thunderhub/thub_config.yaml
+    fi
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/thunderhub
+
+    echo $THUNDERHUB_UPGRADE_URL > $THUNDERHUB_UPGRADE_URL_FILE
 fi
 
 
@@ -433,8 +620,12 @@ fi
 #     echo $TOR_UPGRADE_URL > $TOR_UPGRADE_URL_FILE
 # fi
 rm -f /usr/local/bin/tor || true
-$TORIFY apt-get remove -y tor	
-$TORIFY apt-get install -y tor
+TOR_VERSION=$(tor --version)
+if [[ "$TOR_VERSION" != *"Tor version 0.4"* ]]; then
+    $TORIFY apt-get remove -y tor
+    $TORIFY apt-get install -y tor
+fi
+
 
 # Enable fan control
 if [ $IS_ROCKPRO64 = 1 ]; then
@@ -442,7 +633,21 @@ if [ $IS_ROCKPRO64 = 1 ]; then
 fi
 
 
+# Cleanup MOTD
+rm -f /etc/update-motd.d/10-armbian-header || true
+rm -f /etc/update-motd.d/30-armbian-sysinfo || true
+rm -f /etc/update-motd.d/35-armbian-tips || true
+rm -f /etc/update-motd.d/40-armbian-updates || true
+rm -f /etc/update-motd.d/41-armbian-config || true
+rm -f /etc/update-motd.d/98-armbian-autoreboot-warn || true
+
+
+# Clean apt-cache
+apt-get clean
+
 # Enable any new/required services
+systemctl enable check_in
+systemctl enable docker
 systemctl enable bitcoind
 systemctl enable lnd
 systemctl enable firewall
@@ -455,6 +660,7 @@ systemctl enable webssh2
 systemctl enable tor
 systemctl enable loopd
 systemctl enable rotate_logs
+systemctl enable corsproxy_btcrpc
 
 # Disable any old services
 systemctl disable hitch || true

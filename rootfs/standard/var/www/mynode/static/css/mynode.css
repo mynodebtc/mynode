@@ -192,6 +192,13 @@ a:active {
     -moz-border-radius: 50%;
     -webkit-border-radius: 50%;
 }
+.app_tooltip {
+    width: 14px;
+    height: 14px;
+    position: absolute;
+    top: 5px;
+    left: 130px;
+}
 .app_logo {
     margin: auto;
     height: 55px;
@@ -261,7 +268,7 @@ a:active {
 }
 
 .instructions {
-    width: 75%;
+    width: 60%;
     color: #444444;
     margin: auto;
     text-align: left;
@@ -373,6 +380,9 @@ a:active {
 .settings_input {
     font-size: 14px;
     font-family: Arial, Helvetica, sans-serif;
+}
+.status_container_list {
+    margin-left: 150px;
 }
 
 .seed_textbox {

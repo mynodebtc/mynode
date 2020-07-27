@@ -1,0 +1,30 @@
+# LNBits service
+# /etc/systemd/system/lnbits.service
+
+[Unit]
+Description=LNBits
+Wants=bitcoind.service lnd.service
+After=bitcoind.service lnd.service
+
+[Service]
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/usr/bin/wait_on_lnd.sh
+ExecStartPre=/usr/bin/mynode_pre_lnbits.sh
+ExecStartPre=/bin/sh -c 'cd /opt/mynode/lnbits && /usr/local/bin/pipenv run flask migrate'
+Environment=FLASK_ENV=development
+WorkingDirectory=/opt/mynode/lnbits
+
+ExecStart=/bin/sh -c 'cd /opt/mynode/lnbits && /usr/local/bin/pipenv run flask run --host 0.0.0.0'
+
+User=bitcoin
+Group=bitcoin
+Type=simple
+TimeoutSec=240
+Restart=always
+RestartSec=60
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=lnbits
+
+[Install]
+WantedBy=multi-user.target

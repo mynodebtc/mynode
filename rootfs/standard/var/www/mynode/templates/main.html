@@ -11,6 +11,8 @@
                 vpn_enabled = {% if vpn_enabled %}1{% else %}0{% endif %}
                 mempoolspace_enabled = {% if mempoolspace_enabled %}1{% else %}0{% endif %}
 
+                $( document ).tooltip();
+
                 $("#lndhub").on("click", function() {
                     url = 'http://'+location.hostname+':3000'
                     window.open(url,'_blank');
@@ -21,6 +23,16 @@
                     window.open(url,'_blank');
                 })
 
+                $("#lnbits").on("click", function() {
+                    url = 'http://'+location.hostname+':5000'
+                    window.open(url,'_blank');
+                })
+
+                $("#thunderhub").on("click", function() {
+                    url = 'http://'+location.hostname+':3030'
+                    window.open(url,'_blank');
+                })
+
                 $("#lnd_admin").on("click", function() {
                     url = 'http://'+location.hostname+':3004'
                     window.open(url,'_blank');
@@ -28,6 +40,11 @@
 
                 $("#btcrpcexplorer").on("click", function() {
                     url = 'http://'+location.hostname+':3002'
+                    window.open(url,'_blank');
+                })
+
+                $("#specter").on("click", function() {
+                    url = 'https://'+location.hostname+':25441'
                     window.open(url,'_blank');
                 })
 
@@ -97,6 +114,22 @@
                         window.location.href="/toggle-btcpayserver"
                 });
 
+                $("#toggle-caravan").on("click", function() {
+                        window.location.href="/toggle-caravan"
+                });
+
+                $("#toggle-specter").on("click", function() {
+                        window.location.href="/toggle-specter"
+                });
+
+                $("#toggle-lnbits").on("click", function() {
+                        window.location.href="/toggle-lnbits"
+                });
+
+                $("#toggle-thunderhub").on("click", function() {
+                        window.location.href="/toggle-thunderhub"
+                });
+
                 function lndconnect() {
                     $("#lndconnect_form").submit();
                     lndconnect_dialog.dialog( "close" );
@@ -130,6 +163,20 @@
                     location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
                 });
 
+                power_dialog = $( "#power-dialog" ).dialog({
+                    autoOpen: false,
+                    resizable: false,
+                    height: "auto",
+                    width: 400,
+                    modal: true,
+                    position: { my: "center top", at: "center top", of: window, collision: "none" },
+                    buttons: {
+                    }
+                });
+                $("#power_button").on("click", function() {
+                    power_dialog.dialog( "open" );
+                });
+
                 // Show HTTPS button
                 if (location.protocol != 'https:') {
                     $("#https").show();
@@ -146,8 +193,9 @@
             {% if upgrade_available %}
             <a class="ui-button ui-widget ui-corner-all mynode_back" href="/settings"><span class="ui-icon ui-icon-notice"></span>upgrade available&nbsp;</a>
             {% endif %}
-            <a class="ui-button ui-widget ui-corner-all mynode_back" id="https" style="display: none;" href="#">&nbsp;<span class="ui-icon ui-icon-locked"></span>&nbsp;</a>
-            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/logout"><span class="ui-icon ui-icon-close"></span>&nbsp;</a>
+            <a class="ui-button ui-widget ui-corner-all mynode_back" id="https" title="Use HTTPS" style="display: none;" href="#">&nbsp;<span class="ui-icon ui-icon-locked"></span>&nbsp;</a>
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/logout" title="Logout"><span class="ui-icon ui-icon-close"></span>&nbsp;</a>
+            <a class="ui-button ui-widget ui-corner-all mynode_back" id="power_button" title="Reboot or Shutdown"><span class="ui-icon ui-icon-power"></span>&nbsp;</a> 
         </div> 
         
 
@@ -269,6 +317,15 @@
                 <!-- Allow form submission with keyboard without duplicating the dialog button -->
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
             </form>
+        </div>
+
+        <div id="power-dialog" title="Shutdown" style="display:none;">
+            <br/>
+            <center>
+                <a href="/settings/reboot-device" class="ui-button ui-widget ui-corner-all" style="width: 80%; margin: auto;">Reboot</a>
+                <br/><br/>
+                <a href="/settings/shutdown-device" class="ui-button ui-widget ui-corner-all" style="width: 80%; margin: auto;">Shutdown</a>
+            </center>
         </div>
         
         {% include 'includes/footer.html' %}

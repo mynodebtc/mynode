@@ -217,6 +217,16 @@
                     }
                 });
 
+                $("#show_upgrade_status").on("click", function() {
+                    $("#show_upgrade_status").hide(0);
+                    $("#upgrade_status").show();
+                });
+
+                $("#show_upgrade_status_beta").on("click", function() {
+                    $("#show_upgrade_status_beta").hide(0);
+                    $("#upgrade_status_beta").show();
+                });
+
                 $("#upgrade_changelog").on("click", function() {
                     $.get("https://raw.githubusercontent.com/mynodebtc/mynode/master/CHANGELOG")
                         .done(function( data ) {
@@ -319,6 +329,20 @@
                     window.location.href='/settings/reinstall-app?app='+reinstall_app_choice
                 });
 
+                var swap_choice="";
+                $("#swap_size").selectmenu( {
+                    change: function( event, data ) {
+                        swap_choice = data.item.value;
+                        $("#swap_button").button("enable");
+                    }
+                });
+                $("#swap_button").button({
+                    disabled: true
+                });
+                $("#swap_button").on("click", function() {
+                    window.location.href='/settings/modify-swap?size='+swap_choice
+                });
+
                 $('#btc_lnd_tor_checkbox').change(function () {
                     $("#btc_lnd_tor").show();
                 });
@@ -331,6 +355,21 @@
                     else
                     {
                         window.location.href='/settings/enable_btc_lnd_tor?enable=0'
+                    }
+                });
+
+                $('#https_forced_checkbox').change(function () {
+                    $("#https_forced").show();
+                });
+                $("#https_forced").on("click", function() {
+                    enabled=$('#https_forced_checkbox').is(":checked")
+                    if (enabled)
+                    {
+                        window.location.href='/settings/set_https_forced?forced=1'
+                    }
+                    else
+                    {
+                        window.location.href='/settings/set_https_forced?forced=0'
                     }
                 });
 
@@ -425,21 +464,16 @@
                     <td>Device RAM</td>
                     <td style="padding-left: 20px;">{{device_ram}} GB</td>
                 </tr>
-                <!--
-                <tr>
-                    <td>Public IP</td>
-                    <td style="padding-left: 20px;">
-                        {{public_ip}}
-                        {% if 'Failed to find' in public_ip %}
-                            <a href="/settings/check-in" class="ui-button ui-widget ui-corner-all settings_button_small">Refresh</a>
-                        {% endif %}
-                    </td>
-                </tr>
-                -->
                 <tr>
                     <td>Local IP</td>
                     <td style="padding-left: 20px;">{{local_ip}}</td>
                 </tr>
+                {% if has_checkin_error %}
+                <tr>
+                    <td>Server</td>
+                    <td style="padding-left: 20px; color: red;"><b>Error contacting mynodebtc.com via Tor!</b><br/>You may have issues checking for new versions or saving product keys.</td>
+                </tr>
+                {% endif %}
                 
             </table>
             <div class="divider"></div>
@@ -449,8 +483,16 @@
                 <tr>
                     <td>Details</td>
                     <td style="padding-left: 20px;">
-                        {% if is_netdata_enabled and is_bitcoin_synced %}
-                        <a id="netdata" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Netdata</a>
+                        {% if is_netdata_enabled %}
+                            {% if is_bitcoin_synced %}
+                                {% if not is_installing_docker_images %}
+                                    <a id="netdata" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Netdata</a>
+                                {% else %}
+                                    <a class="ui-button ui-widget ui-corner-all settings_button_small" href="#" disabled>Netdata - Waiting on Docker</a>
+                                {% endif %}
+                            {% else %}
+                                <a class="ui-button ui-widget ui-corner-all settings_button_small" href="#" disabled>Netdata - Waiting on Bitcoin</a>
+                            {% endif %}
                         {% endif %}
                         <a id="glances" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Glances</a>
                     </td>
@@ -533,6 +575,20 @@
             {% else %}
                 <a href="/settings/toggle-darkmode" class="ui-button ui-widget ui-corner-all settings_button">Enable</a>
             {% endif %}
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Force HTTPS</div>
+            You can force the myNode web interface to only use HTTPS.
+            <br/><br/>
+            <label class="switch">
+                <input type="checkbox" id="https_forced_checkbox" {% if is_https_forced %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <br/><br/>
+            <button id="https_forced" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+
+            
 
         </div>
 
@@ -637,6 +693,19 @@
         <div class="settings_block">
             <div class="settings_block_header">Bitcoin</div>
 
+            <div class="settings_block_subheader">Edit Config</div>
+            You can edit the Bitcoin config. However, using your own config will prevent any future automatic config updates and may have adverse effects.
+            <br/>
+            {% if using_bitcoin_custom_config %}
+            <br/>
+            <div class="settings_block_subheader_status_icon yellow"></div>
+            <i>You are currently using a custom Bitcoin config.</i>
+            <br/><br/>
+            {% endif %}
+            <a href="/bitcoind/config" class="ui-button ui-widget ui-corner-all settings_button">Edit Config</a>
+
+            <div class="divider"></div>
+
             <div class="settings_block_subheader">Reset Blockchain</div>
             If Bitcoin is having issues, you can reset the blockchain data.
             <br/>
@@ -674,6 +743,19 @@
             
             <div class="divider"></div>
 
+            <div class="settings_block_subheader">Edit Config</div>
+            You can edit the Lightning config. However, using your own config will prevent any future automatic updates and may have adverse effects.
+            <br/>
+            {% if using_lnd_custom_config %}
+            <br/>
+            <div class="settings_block_subheader_status_icon yellow"></div>
+            <i>You are currently using a custom Lightning config.</i>
+            <br/><br/>
+            {% endif %}
+            <a href="/lnd/config" class="ui-button ui-widget ui-corner-all settings_button">Edit Config</a>
+
+            <div class="divider"></div>
+
             <div class="settings_block_subheader">Delete Lightning Wallet</div>
             {{lnd_delete_message}}
             Advanced: This will delete your Lightning Wallet.
@@ -692,8 +774,8 @@
 
             <div class="divider"></div>
 
-            <div class="settings_block_subheader">Reset Electrum Server Certificates</div>
-            This will regenerate your Electrum Server certificates.
+            <div class="settings_block_subheader">Reset Electrum Server Certificate</div>
+            This will regenerate your Electrum Server certificate.
             <br/>
             <a href="/settings/regen-electrs-certs" class="ui-button ui-widget ui-corner-all settings_button">Regenerate</a>
 
@@ -763,7 +845,7 @@
         <div class="settings_block">
             <div class="settings_block_header">Advanced</div>
 
-            <div class="settings_block_subheader">Reset HTTP Certificates</div>
+            <div class="settings_block_subheader">Reset HTTPS Certificates</div>
             This will regenerate your HTTPS certificates.
             <br/>
             <a href="/settings/regen-https-certs" class="ui-button ui-widget ui-corner-all settings_button">Regenerate</a>
@@ -781,21 +863,43 @@
                 <option value="bitcoin">Bitcoin</option>
                 <option value="lnd">LND</option>
                 <option value="btcrpcexplorer">BTC RPC Explorer</option>
+                <option value="caravan">Caravan</option>
                 <option value="dojo">Dojo</option>
                 <option value="joinmarket">JoinMarket</option>
+                <option value="lnbits">Lnbits</option>
                 <option value="loopd">Lightning Loop</option>
                 <option value="webssh2">Linux Terminal</option>
                 <option value="lndconnect">LND Connect</option>				
                 <option value="lndhub">LNDHub</option>
                 <option value="mempoolspace">Mempool</option>	
-                <option value="netdata">Netdata</option>				
+                <option value="netdata">Netdata</option>
+                <option value="specter">Specter</option>			
                 <option value="rtl">RTL</option>
+                <option value="thunderhub">Thunderhub</option>
                 <option value="tor">Tor</option>
                 <option value="ufw">UFW</option>
                 <option value="whirlpool">Whirlpool</option>
 
             </select>
             <button id="reinstall_button">Reinstall</button>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Swap</div>
+            Devices can use space on the external drive as additional RAM. The default is to use 2GB of space on the drive as additional memory, but this can be changed.
+            <br/><br/>
+            Modifying the amount of swap can affect overall performance. Saving will reboot the device.
+            
+            <br/><br/>
+            
+            <select name="swap_size" id="swap_size">
+                <option value="0" {% if swap_size == "0" %}selected="selected"{% endif %}>No Swap</option>
+                <option value="1" {% if swap_size == "1" %}selected="selected"{% endif %}>1 GB</option>
+                <option value="2" {% if swap_size == "2" %}selected="selected"{% endif %}>2 GB</option>
+                <option value="3" {% if swap_size == "3" %}selected="selected"{% endif %}>3 GB</option>
+                <option value="4" {% if swap_size == "4" %}selected="selected"{% endif %}>4 GB</option>
+            </select>
+            <button id="swap_button">Save</button>
             
             <div class="divider"></div>
 

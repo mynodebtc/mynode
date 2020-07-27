@@ -1,22 +1,28 @@
-
 # myNode www service
 # /etc/systemd/system/www.service
 
 [Unit]
-Description=Proxy for HTTPS
-Wants=www.service
-After=www.service
+Description=myNode Web Server
+After=network.target
 
 [Service]
 Type=simple
-KillMode=process
+KillMode=mixed
+KillSignal=2
 TimeoutSec=30
 Restart=always
 RestartSec=10
+Nice=-15
+IOAccounting=true
+IOWeight=2000
+WorkingDirectory=/var/www/mynode
 ExecStartPre=/usr/bin/mynode_gen_cert.sh https 825
-ExecStart=/usr/sbin/hitch -u bitcoin -g bitcoin --tls --backend=[127.0.0.1]:80 --frontend=[0.0.0.0]:443 /home/bitcoin/.mynode/https/myNode.local.pem
+ExecStart=/usr/bin/python2.7 /usr/bin/gunicorn -b 0.0.0.0:443 --certfile=/home/bitcoin/.mynode/https/myNode.local.crt --keyfile=/home/bitcoin/.mynode/https/myNode.local.key --workers 2 --timeout 300 wsgi:app
 User=root
 Group=root
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=www
 
 [Install]
 WantedBy=multi-user.target

@@ -1,0 +1,28 @@
+# thunderhub service
+# /etc/systemd/system/thunderhub.service
+
+[Unit]
+Description=Thunderhub
+Wants=lnd.service
+After=lnd.service
+
+[Service]
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/usr/bin/wait_on_lnd.sh
+Environment=PORT=3030
+WorkingDirectory=/opt/mynode/thunderhub
+ExecStart=/usr/bin/npm run start:compatible -- -p 3030
+
+User=bitcoin
+Group=bitcoin
+Type=simple
+KillMode=control-group
+TimeoutSec=240
+Restart=always
+RestartSec=60
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=thunderhub
+
+[Install]
+WantedBy=multi-user.target

@@ -8,11 +8,11 @@ After=mynode.service bitcoind.service
 
 [Service]
 Type=simple
-KillMode=process
+KillMode=control-group
 TimeoutSec=30
 Restart=always
 RestartSec=10
-ExecStartPre=/usr/bin/mynode_gen_cert.sh
+ExecStartPre=/usr/bin/mynode_gen_cert_electrs.sh
 ExecStart=/usr/sbin/hitch --tls --backend=[127.0.0.1]:50001 --frontend=[0.0.0.0]:50002 /home/bitcoin/.mynode/electrs/myNode.local.pem
 User=bitcoin
 Group=bitcoin

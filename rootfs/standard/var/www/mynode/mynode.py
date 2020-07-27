@@ -5,6 +5,7 @@ from user_management import *
 from bitcoind import mynode_bitcoind
 from whirlpool import mynode_whirlpool, get_whirlpool_status
 from dojo import mynode_dojo, get_dojo_status
+from caravan import mynode_caravan
 from tor import mynode_tor
 from vpn import mynode_vpn
 from electrum_server import *
@@ -43,6 +44,7 @@ app.register_blueprint(mynode_bitcoind)
 app.register_blueprint(mynode_lnd)
 app.register_blueprint(mynode_whirlpool)
 app.register_blueprint(mynode_dojo)
+app.register_blueprint(mynode_caravan)
 app.register_blueprint(mynode_tor)
 app.register_blueprint(mynode_electrum_server)
 app.register_blueprint(mynode_vpn)
@@ -66,6 +68,7 @@ LN_DIR =        "/mnt/hdd/mynode/lnd"
 
 ### Global Variables
 need_to_stop = False
+threads = []
 
 ### Helper functions
 def get_status():
@@ -100,7 +103,7 @@ class ServiceExit(Exception):
 
 # Function to run on exit
 def on_shutdown(signum, frame):
-    print('Caught signal %d' % signum)
+    app.logger.info('Caught signal %d' % signum)
     raise ServiceExit
 
 
@@ -264,6 +267,10 @@ def index():
         lnd_ready = is_lnd_ready()
         rtl_status_color = "gray"
         rtl_status = "Lightning Wallet"
+        lnbits_status_color = "gray"
+        lnbits_status = "Lightning Wallet"
+        thunderhub_status_color = "gray"
+        thunderhub_status = "Lightning Wallet"
         electrs_status_color = "gray"
         electrs_active = is_electrs_active()
         lndhub_status_color = "gray"
@@ -278,6 +285,9 @@ def index():
         btcrpcexplorer_status = ""
         btcrpcexplorer_ready = False
         btcrpcexplorer_status_color = "gray"
+        caravan_status = ""
+        caravan_ready = False
+        caravan_status_color = "gray"
         mempoolspace_status_color = "gray"
         vpn_status_color = "gray"
         vpn_status = ""
@@ -366,11 +376,30 @@ def index():
 
         # Find RTL status
         if lnd_ready:
-            status_code = get_service_status_code("rtl")
-            if status_code != 0:
-                rtl_status_color = "red"
-            else:
-                rtl_status_color = "green"
+            if is_rtl_enabled():
+                status_code = get_service_status_code("rtl")
+                if status_code != 0:
+                    rtl_status_color = "red"
+                else:
+                    rtl_status_color = "green"
+
+        # Find LNbits status
+        if lnd_ready:
+            if is_lnbits_enabled():
+                status_code = get_service_status_code("lnbits")
+                if status_code != 0:
+                    lnbits_status_color = "red"
+                else:
+                    lnbits_status_color = "green"
+
+        # Find Thunderhub status
+        if lnd_ready:
+            if is_thunderhub_enabled():
+                status_code = get_service_status_code("thunderhub")
+                if status_code != 0:
+                    thunderhub_status_color = "red"
+                else:
+                    thunderhub_status_color = "green"
 
         # Find electrs status
         if is_electrs_enabled():
@@ -447,6 +476,22 @@ def index():
             dojo_status_color = "yellow"
             dojo_status = "Installing..."
 
+        # Find caravan status
+        caravan_status = ""
+        caravan_ready = False
+        caravan_status_color = "gray"
+        if is_caravan_enabled():
+            caravan_status_color = get_service_status_color("caravan")
+            caravan_ready = True
+            caravan_status = "Running"
+
+        # Find caravan status
+        specter_status = ""
+        specter_status_color = "gray"
+        if is_specter_enabled():
+            specter_status_color = get_service_status_color("specter")
+            specter_status = "Running"
+
         # Check for new version of software
         upgrade_available = False
         current = get_current_version()
@@ -473,6 +518,13 @@ def index():
             "electrs_active": electrs_active,
             "rtl_status_color": rtl_status_color,
             "rtl_status": rtl_status,
+            "rtl_enabled": is_rtl_enabled(),
+            "lnbits_status_color": lnbits_status_color,
+            "lnbits_status": lnbits_status,
+            "lnbits_enabled": is_lnbits_enabled(),
+            "thunderhub_status_color": thunderhub_status_color,
+            "thunderhub_status": thunderhub_status,
+            "thunderhub_enabled": is_thunderhub_enabled(),
             "lndhub_status_color": lndhub_status_color,
             "lndhub_enabled": is_lndhub_enabled(),
             "explorer_ready": explorer_ready,
@@ -482,6 +534,13 @@ def index():
             "btcrpcexplorer_status_color": btcrpcexplorer_status_color,
             "btcrpcexplorer_status": btcrpcexplorer_status,
             "btcrpcexplorer_enabled": is_btcrpcexplorer_enabled(),
+            "caravan_ready": caravan_ready,
+            "caravan_status_color": caravan_status_color,
+            "caravan_status": caravan_status,
+            "caravan_enabled": is_caravan_enabled(),
+            "specter_status_color": specter_status_color,
+            "specter_status": specter_status,
+            "specter_enabled": is_specter_enabled(),
             "mempoolspace_status_color": mempoolspace_status_color,
             "mempoolspace_status": mempoolspace_status,
             "mempoolspace_enabled": is_mempoolspace_enabled(),
@@ -496,6 +555,7 @@ def index():
             "whirlpool_status_color": whirlpool_status_color,
             "whirlpool_enabled": is_whirlpool_enabled(),
             "whirlpool_initialized": whirlpool_initialized,
+            "is_dojo_installed": is_dojo_installed(),
             "dojo_status": dojo_status,
             "dojo_status_color": dojo_status_color,
             "dojo_enabled": is_dojo_enabled(),
@@ -571,6 +631,15 @@ def page_toggle_lndhub():
         enable_lndhub()
     return redirect("/")
 
+@app.route("/toggle-thunderhub")
+def page_toggle_thunderhub():
+    check_logged_in()
+    if is_thunderhub_enabled():
+        disable_thunderhub()
+    else:
+        enable_thunderhub()
+    return redirect("/")
+
 @app.route("/toggle-electrs")
 def page_toggle_electrs():
     check_logged_in()
@@ -578,6 +647,24 @@ def page_toggle_electrs():
         disable_electrs()
     else:
         enable_electrs()
+    return redirect("/")
+
+@app.route("/toggle-rtl")
+def page_toggle_rtl():
+    check_logged_in()
+    if is_rtl_enabled():
+        disable_rtl()
+    else:
+        enable_rtl()
+    return redirect("/")
+
+@app.route("/toggle-lnbits")
+def page_toggle_lnbits():
+    check_logged_in()
+    if is_lnbits_enabled():
+        disable_lnbits()
+    else:
+        enable_lnbits()
     return redirect("/")
 
 @app.route("/toggle-btcrpcexplorer")
@@ -607,6 +694,24 @@ def page_toggle_btcpayserver():
         enable_btcpayserver()
     return redirect("/")
 
+@app.route("/toggle-caravan")
+def page_toggle_caravan():
+    check_logged_in()
+    if is_caravan_enabled():
+        disable_caravan()
+    else:
+        enable_caravan()
+    return redirect("/")
+
+@app.route("/toggle-specter")
+def page_toggle_specter():
+    check_logged_in()
+    if is_specter_enabled():
+        disable_specter()
+    else:
+        enable_specter()
+    return redirect("/")
+
 @app.route("/toggle-vpn")
 def page_toggle_vpn():
     check_logged_in()
@@ -634,6 +739,48 @@ def page_toggle_dojo():
         enable_dojo()
     return redirect("/")
 
+@app.route("/toggle-dojo-install")
+def page_toggle_dojo_install():
+    check_logged_in()
+
+    # In case of refresh, mark toggle was started
+    check_and_mark_reboot_action("toggle_dojo_install")
+
+    if is_dojo_installed():
+        # Mark app as not installed
+        uninstall_dojo()        
+
+        # Re-install app (this will uninstall and not re-install after reboot since install file is missing)
+        t = Timer(1.0, reinstall_app, ["dojo"])
+        t.start()
+
+        # Display wait page
+        templateData = {
+            "title": "myNode Uninstall",
+            "header_text": "Uninstalling",
+            "subheader_text": "This may take a while...",
+            "ui_settings": read_ui_settings()
+        }
+        return render_template('reboot.html', **templateData)
+    else:
+        # Mark Dojo for install
+        install_dojo()
+
+        # Re-install app
+        t = Timer(1.0, reboot_device)
+        t.start()
+
+        # Display wait page
+        templateData = {
+            "title": "myNode Install",
+            "header_text": "Installing",
+            "subheader_text": "This may take a while...",
+            "ui_settings": read_ui_settings()
+        }
+        return render_template('reboot.html', **templateData)
+
+    return redirect("/")
+
 @app.route("/clear-fsck-error")
 def page_clear_fsck_error():
     check_logged_in()
@@ -653,7 +800,7 @@ def page_login():
     if login(pw):
         return redirect("/")
     else:
-        flash("Invalid Password", category="error")
+        flash(get_login_error_message(), category="error")
         return redirect("/login")
 
 @app.route("/logout")
@@ -694,6 +841,15 @@ def internal_error(error):
     }
     return render_template('state.html', **templateData), 500
 
+# Check for forced HTTPS
+@app.before_request
+def before_request():
+    if is_https_forced():
+        if not request.is_secure:
+            url = request.url.replace('http://', 'https://', 1)
+            code = 301
+            return redirect(url, code=code)
+
 # Disable browser caching
 @app.after_request
 def set_response_headers(response):
@@ -702,54 +858,77 @@ def set_response_headers(response):
     #response.headers['Expires'] = '0'
     return response
 
-if __name__ == "__main__":
-    signal.signal(signal.SIGTERM, on_shutdown)
-    signal.signal(signal.SIGINT, on_shutdown)
-    btc_thread1 = BackgroundThread(update_bitcoin_main_info_thread, 60)
-    btc_thread1.start()
-    btc_thread2 = BackgroundThread(update_bitcoin_other_info_thread, 60)
-    btc_thread2.start()
-    electrs_info_thread = BackgroundThread(update_electrs_info_thread, 60)
-    electrs_info_thread.start()
-    lnd_thread = BackgroundThread(update_lnd_info_thread, 60)
-    lnd_thread.start()
-    drive_thread = BackgroundThread(update_device_info, 60)
-    drive_thread.start()
-    public_ip_thread = BackgroundThread(find_public_ip, 60*60*3) # 3-hour repeat
-    public_ip_thread.start()
-    checkin_thread = BackgroundThread(check_in, 60*60*24) # Per-day checkin
-    checkin_thread.start()
+@app.before_first_request
+def before_first_request():
+    global threads
 
     my_logger = logging.getLogger('FlaskLogger')
     my_logger.setLevel(logging.DEBUG)
     handler = logging.handlers.RotatingFileHandler(filename='/var/log/flask', maxBytes=2000000, backupCount=2)
     my_logger.addHandler(handler)
     app.logger.addHandler(my_logger)
+    app.logger.setLevel(logging.INFO)
 
     app.register_error_handler(LoginError, handle_login_exception)
 
     app.secret_key = 'NoZlPx7t15foPfKpivbVrTrTy2bTQ99chJoz3LFmf5BFsh3Nz4ud0mMpGjtB4bhP'
     app.permanent_session_lifetime = timedelta(days=90)
 
+    app.logger.info("BEFORE_FIRST_REQUEST")
+
+    # Start threads
+    btc_thread1 = BackgroundThread(update_bitcoin_main_info_thread, 60)
+    btc_thread1.start()
+    threads.append(btc_thread1)
+    btc_thread2 = BackgroundThread(update_bitcoin_other_info_thread, 60)
+    btc_thread2.start()
+    threads.append(btc_thread2)
+    electrs_info_thread = BackgroundThread(update_electrs_info_thread, 60)
+    electrs_info_thread.start()
+    threads.append(electrs_info_thread)
+    lnd_thread = BackgroundThread(update_lnd_info_thread, 60)
+    lnd_thread.start()
+    threads.append(lnd_thread)
+    drive_thread = BackgroundThread(update_device_info, 60)
+    drive_thread.start()
+    threads.append(drive_thread)
+    public_ip_thread = BackgroundThread(find_public_ip, 60*60*12) # 12-hour repeat
+    public_ip_thread.start()
+    threads.append(public_ip_thread)
+
+    app.logger.info("STARTED {} THREADS".format(len(threads)))
+
+def stop_app():
+    global threads
+
+    app.logger.info("START STOP_APP")
+
+    app.logger.info("STOPPING {} THREADS".format(len(threads)))
+
+    # Stop threads
+    for t in threads:
+        app.logger.info("Killing {}".format(t.pid))
+        os.kill(t.pid, signal.SIGKILL)
+
+    # Shutdown Flask (if used)
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        raise RuntimeError('Not running with the Werkzeug Server')
+    else:
+        func()
+
+    app.logger.info("DONE STOP_APP")
+
+if __name__ == "__main__":
+
+    # Handle signals
+    signal.signal(signal.SIGTERM, on_shutdown)
+    signal.signal(signal.SIGINT, on_shutdown)
+
     try:
         app.run(host='0.0.0.0', port=80)
     except ServiceExit:
-        # Stop background thread
-        print("Killing {}".format(btc_thread1.pid))
-        os.kill(btc_thread1.pid, signal.SIGKILL)
-        print("Killing {}".format(btc_thread2.pid))
-        os.kill(btc_thread2.pid, signal.SIGKILL)
-        print("Killing {}".format(electrs_info_thread.pid))
-        os.kill(electrs_info_thread.pid, signal.SIGKILL)
-        print("Killing {}".format(lnd_thread.pid))
-        os.kill(lnd_thread.pid, signal.SIGKILL)
-        print("Killing {}".format(drive_thread.pid))
-        os.kill(drive_thread.pid, signal.SIGKILL)
+        # Stop background threads
+        stop_app()
 
-        # Shutdown Flask
-        func = request.environ.get('werkzeug.server.shutdown')
-        if func is None:
-            raise RuntimeError('Not running with the Werkzeug Server')
-        func()
-
-    print("Service www exiting...")
+    app.logger.info("Service www exiting...")

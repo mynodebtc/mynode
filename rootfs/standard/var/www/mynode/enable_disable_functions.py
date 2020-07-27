@@ -41,6 +41,38 @@ def disable_electrs():
     os.system("systemctl disable electrs --no-pager")
 
 
+def is_rtl_enabled():
+    return is_service_enabled("rtl")
+
+def enable_rtl():
+    os.system("systemctl enable rtl --no-pager")
+    os.system("systemctl start rtl --no-pager")
+
+def disable_rtl():
+    os.system("systemctl stop rtl --no-pager")
+    os.system("systemctl disable rtl --no-pager")
+
+
+def is_lnbits_enabled():
+    return is_service_enabled("lnbits")
+def enable_lnbits():
+    os.system("systemctl enable lnbits --no-pager")
+    os.system("systemctl start lnbits --no-pager")
+def disable_lnbits():
+    os.system("systemctl stop lnbits --no-pager")
+    os.system("systemctl disable lnbits --no-pager")
+
+
+def is_thunderhub_enabled():
+    return is_service_enabled("thunderhub")
+def enable_thunderhub():
+    os.system("systemctl enable thunderhub --no-pager")
+    os.system("systemctl start thunderhub --no-pager")
+def disable_thunderhub():
+    os.system("systemctl stop thunderhub --no-pager")
+    os.system("systemctl disable thunderhub --no-pager")
+
+
 def is_btcrpcexplorer_enabled():
     if os.path.isfile(BTCRPCEXPLORER_ENABLED_FILE):
         return True
@@ -89,6 +121,30 @@ def disable_btcpayserver():
     os.system("systemctl disable btcpayserver --no-pager")
 
 
+def is_caravan_enabled():
+    return is_service_enabled("caravan")
+
+def enable_caravan():
+    os.system("systemctl enable caravan --no-pager")
+    os.system("systemctl start caravan --no-pager")
+
+def disable_caravan():
+    os.system("systemctl stop caravan --no-pager")
+    os.system("systemctl disable caravan --no-pager")
+
+
+def is_specter_enabled():
+    return is_service_enabled("specter")
+
+def enable_specter():
+    os.system("systemctl enable specter --no-pager")
+    os.system("systemctl start specter --no-pager")
+
+def disable_specter():
+    os.system("systemctl stop specter --no-pager")
+    os.system("systemctl disable specter --no-pager")
+
+
 def is_vpn_enabled():
     if os.path.isfile(VPN_ENABLED_FILE):
         return True
@@ -129,6 +185,19 @@ def enable_whirlpool():
 def disable_whirlpool():
     os.system("systemctl stop whirlpool --no-pager")
     os.system("systemctl disable whirlpool --no-pager")
+
+def is_dojo_installed():
+    return os.path.isfile(DOJO_INSTALL_FILE)
+
+def install_dojo():
+    os.system("touch " + DOJO_INSTALL_FILE)
+    os.system("sync")
+
+def uninstall_dojo():
+    os.system("rm -f " + DOJO_INSTALL_FILE)
+    os.system("rf -f /mnt/hdd/mynode/settings/dojo_url")
+    disable_dojo()
+    os.system("sync")
 
 def is_dojo_enabled():
     return is_service_enabled("dojo")

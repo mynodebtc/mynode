@@ -1,3 +1,66 @@
+=== v0.2.12 ===
+- Add Thunderhub v0.8.13
+- Upgrade Specter to v0.5.5
+- Decrease CPU usage when electrum wallet is using myNode
+- Use gunicorn for HTTPS
+- Add tor service for lnbits, caravan, and specter
+- Fix serial on RockPro64 devices
+- Move RTL settings to external drive
+- Various UI improvements
+- Bug fixes
+
+=== v0.2.11 ===
+- Update electrs to v0.8.5
+- Add Specter Desktop v0.5.2
+- Upgrade LND to v0.10.3
+- Upgrade BTC RPC Explorer to v2.0.2
+- Fix config issue with LNbits
+- Fix issue causing reboot to get stuck at starting
+- Add raspbian mirrors for more consistent upgrades
+
+=== v0.2.10 ===
+- Add LNBits
+- Upgrade LND to v0.10.1
+- Upgrade Loop to v0.6.4
+- Upgrade BTC RPC Explorer to v2.0.1
+- Use tor for key checks and upgrades
+- Add HTTPS for Caravan
+- Move Whirlpool files to HDD
+- HTTPS Certificate Improvements
+- UI Improvements and Bug Fixes
+
+=== v0.2.09 ===
+- Upgrade Bitcoin to 0.20.0
+- Add Caravan
+- Set swap size default to 2GB
+- Swap size is configurable
+- Add reboot/shutdown to home page
+- UI Improvements
+- Bug fixes
+
+=== v0.2.08 ===
+- Rate limit web logins to 5 failures / 5 min
+- Show more lnd info while logging in
+- Fix lnd restart issue
+- Bug fixes and UI enhancements
+
+=== v0.2.07 ===
+- Add Install/Uninstall for Dojo
+- Upgrade BTCPayServer to v1.0.4.4
+- Improve LND login timing
+- Add Loopd log to status page
+- Add mynode-lnd-unlock command
+- Minor improvements
+
+=== v0.2.06 ===
+- Add Docker container info to status page
+- Add option to run apt-get upgrade via tor
+- Add Onion URL for BTCPay Server
+- Add more myNode CLI commands
+- Upgrade RTL to v0.7.1
+- Add more detail to lnd status
+- Bug fixes and minor improvements
+
 === v0.2.05 ===
 - Upgrade LND to v0.10.0
 - Upgrade Loop to v0.6.0

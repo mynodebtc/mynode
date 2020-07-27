@@ -1,8 +1,8 @@
 
 from flask import Blueprint, render_template, redirect
-from settings import read_ui_settings
+from device_info import read_ui_settings
 from user_management import check_logged_in
-from enable_disable_functions import is_dojo_enabled, enable_dojo, disable_dojo
+from enable_disable_functions import is_dojo_enabled, enable_dojo, disable_dojo, is_dojo_installed
 from bitcoin_info import get_mynode_block_height
 from electrum_info import get_electrs_status, is_electrs_active
 import subprocess
@@ -87,6 +87,7 @@ def dojo_page():
     templateData = {
         "title": "myNode Dojo",
         "ui_settings": read_ui_settings(),
+        "is_dojo_installed": is_dojo_installed(),
         "dojo_status": dojo_status,
         "dojo_status_color": dojo_status_color,
         "dojo_enabled": is_dojo_enabled(),

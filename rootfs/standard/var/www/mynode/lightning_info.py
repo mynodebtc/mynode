@@ -16,6 +16,7 @@ lightning_peers = None
 lightning_channels = None
 lightning_channel_balance = None
 lightning_wallet_balance = None
+lightning_desync_count = 0
 
 LND_FOLDER = "/mnt/hdd/mynode/lnd/"
 MACAROON_FILE = "/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon"
@@ -31,6 +32,7 @@ def update_lightning_info():
     global lightning_channels
     global lightning_channel_balance
     global lightning_wallet_balance
+    global lightning_desync_count
     global lnd_ready
 
     # Get latest LN info
@@ -45,12 +47,18 @@ def update_lightning_info():
     #   See https://github.com/bitcoin/bitcoin/pull/14687
     # Hopefully patch comes soon to enable TCP keepalive to prevent this from happening
     if lnd_ready and lightning_info != None and "synced_to_chain" in lightning_info and not lightning_info['synced_to_chain']:
-        os.system("echo 'LND De-sync!!!' >> /tmp/lnd_failures")
-        os.system("uptime >> /tmp/lnd_failures")
-        restart_lnd()
+        lightning_desync_count += 1
+        os.system("printf \"%s | LND De-sync!!! Count: {} \\n\" \"$(date)\" >> /tmp/lnd_failures".format(lightning_desync_count))
+        if lightning_desync_count >= 8:
+            os.system("printf \"%s | De-sync count too high! Retarting LND... \\n\" \"$(date)\" >> /tmp/lnd_failures")
+            restart_lnd()
+            lightning_desync_count = 0
         return True
 
     if lnd_ready:
+        if lightning_desync_count > 0:
+            os.system("printf \"%s | De-sync greater than 0 (was {}), but now synced! Setting to 0. \\n\" \"$(date)\" >> /tmp/lnd_failures".format(lightning_desync_count))
+            lightning_desync_count = 0
         lightning_peers = lnd_get("/peers")
         lightning_channels = lnd_get("/channels")
         lightning_channel_balance = lnd_get("/balance/channels")
@@ -239,5 +247,16 @@ def set_lnd_custom_config(config):
     except:
         return False
 
+def using_lnd_custom_config():
+    return os.path.isfile("/mnt/hdd/mynode/settings/lnd_custom.conf")
+
 def delete_lnd_custom_config():
     os.system("rm -f /mnt/hdd/mynode/settings/lnd_custom.conf")
+
+def get_lnd_alias_file_data():
+    try:
+        with open("/mnt/hdd/mynode/settings/.lndalias", "r") as f:
+            return f.read().strip()
+    except:
+        return "ERROR"
+    return "ERROR"

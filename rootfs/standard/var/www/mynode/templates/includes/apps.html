@@ -2,12 +2,19 @@
 <div class="app_tile_row">
     <div class="app_tile">
         <div class="app_status_icon {{ rtl_status_color }}"></div>
+        <!-- 
+            Sample Help Tooltip for each app
+            <img class="app_tooltip" src="{{ url_for('static', filename="images/help_icon.png")}}" title="RTL is a web app for managing your lightning wallet"/>
+        -->
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/rtl.png")}}"/></div>
         <div class="app_title">RTL</div>
         <div class="app_status">{% if not lnd_ready %}Waiting on LND...{% else %}{{ rtl_status }}{% endif %}</div>
         <div class="app_contents">
             {% if lnd_ready %}
-            <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="rtl">RTL</a>
+                {% if rtl_enabled %}
+                <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="rtl">RTL</a>
+                {% endif %}
+                <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-rtl" id="toggle-rtl">{% if rtl_enabled %}Disable{% else %}Enable{% endif %}</a>
             {% endif %}
         </div>
     </div>
@@ -81,12 +88,16 @@
         <div class="app_status">{{ dojo_status }}</div>
         <div class="app_contents">
             {% if not is_installing_docker_images %}
-               <a class="ui-button ui-widget ui-corner-all mynode_button" href="/dojo">Info</a>
-               {% if electrs_active %}
-               <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-dojo">
-                   {% if dojo_enabled %}Disable{% else %}Enable{% endif %}
-               </a>
-               {% endif %}
+                {% if is_dojo_installed %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="/dojo">Info</a>
+                    {% if electrs_active %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-dojo">
+                        {% if dojo_enabled %}Disable{% else %}Enable{% endif %}
+                    </a>
+                    {% endif %}
+                {% else %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-dojo-install">Install</a>
+                {% endif %}
             {% endif %}
         </div>
     </div>
@@ -124,6 +135,90 @@
                         <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-mempoolspace">Disable</a>
                     {% else %}
                         <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-mempoolspace">Enable</a>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="main_header">Beta Apps</div>
+<div class="app_tile_row">
+    <div class="app_tile">
+        <div class="app_status_icon {{ caravan_status_color }}"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/caravan.png")}}"/></div>
+        <div class="app_title">Caravan</div>
+        <div class="app_status">{{ caravan_status }}</div>
+        <div class="app_contents">
+            {% if product_key_skipped %}
+                Premium Feature
+            {% else %}
+                {% if caravan_enabled %}
+                    {% if caravan_ready %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="/caravan">Info</a>
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-caravan">Disable</a>
+                    {% endif %}
+                {% else %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-caravan">Enable</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="app_tile">
+        <div class="app_status_icon {{ specter_status_color }}"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/specter.png")}}"/></div>
+        <div class="app_title">Specter</div>
+        <div class="app_status">{{ specter_status }}</div>
+        <div class="app_contents">
+            {% if product_key_skipped %}
+                Premium Feature
+            {% else %}
+                {% if specter_enabled %}
+                    {% if btcrpcexplorer_ready %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="specter">Specter</a>
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-specter">Disable</a>
+                    {% endif %}
+                {% else %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-specter">Enable</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="app_tile">
+        <div class="app_status_icon {{ lnbits_status_color }}"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lnbits.png")}}"/></div>
+        <div class="app_title">LNbits</div>
+        <div class="app_status">{% if not lnd_ready %}Waiting on LND...{% else %}{{ lnbits_status }}{% endif %}</div>
+        <div class="app_contents">
+            {% if product_key_skipped %}
+                Premium Feature
+            {% else %}
+                {% if lnd_ready %}
+                    {% if lnbits_enabled %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lnbits">LNbits</a>
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-lnbits">Disable</a>
+                    {% else %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-lnbits">Enable</a>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="app_tile">
+        <div class="app_status_icon {{ thunderhub_status_color }}"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/thunderhub.png")}}"/></div>
+        <div class="app_title">Thunderhub</div>
+        <div class="app_status">{% if not lnd_ready %}Waiting on LND...{% else %}{{ thunderhub_status }}{% endif %}</div>
+        <div class="app_contents">
+            {% if product_key_skipped %}
+                Premium Feature
+            {% else %}
+                {% if lnd_ready %}
+                    {% if thunderhub_enabled %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="thunderhub">Thunderhub</a>
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-thunderhub">Disable</a>
+                    {% else %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-thunderhub">Enable</a>
                     {% endif %}
                 {% endif %}
             {% endif %}

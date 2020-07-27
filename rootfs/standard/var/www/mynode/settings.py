@@ -2,6 +2,8 @@ from config import *
 from flask import Blueprint, render_template, session, abort, Markup, request, redirect, send_from_directory, url_for, flash
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from bitcoind import is_bitcoind_synced
+from bitcoin_info import using_bitcoin_custom_config
+from lightning_info import using_lnd_custom_config
 from pprint import pprint, pformat
 from threading import Timer
 from thread_functions import *
@@ -9,57 +11,11 @@ from user_management import check_logged_in
 from lightning_info import *
 from thread_functions import *
 import pam
-import json
 import time
 import os
 import subprocess
 
 mynode_settings = Blueprint('mynode_settings',__name__)
-
-def read_ui_settings():
-    ui_hdd_file = '/mnt/hdd/mynode/settings/ui.json'
-    ui_mynode_file = '/home/bitcoin/.mynode/ui.json'
-
-    # read ui.json from HDD
-    if os.path.isfile(ui_hdd_file):
-        with open(ui_hdd_file, 'r') as fp:
-            ui_settings = json.load(fp)
-    # read ui.json from mynode
-    elif os.path.isfile(ui_mynode_file):
-        with open(ui_mynode_file, 'r') as fp:
-            ui_settings = json.load(fp)
-    # if ui.json is not found anywhere, use default settings
-    else:
-        ui_settings = {'darkmode': False}
-
-    return ui_settings
-
-def write_ui_settings(ui_settings):
-    ui_hdd_file = '/mnt/hdd/mynode/settings/ui.json'
-    ui_mynode_file = '/home/bitcoin/.mynode/ui.json'
-
-    try:
-        with open(ui_hdd_file, 'w') as fp:
-            json.dump(ui_settings, fp)
-    except:
-        pass
-
-    with open(ui_mynode_file, 'w') as fp:
-        json.dump(ui_settings, fp)
-
-def is_darkmode_enabled():
-    ui_settings = read_ui_settings()
-    return ui_settings['darkmode']
-
-def disable_darkmode():
-    ui_settings = read_ui_settings()
-    ui_settings['darkmode'] = False
-    write_ui_settings(ui_settings)
-
-def enable_darkmode():
-    ui_settings = read_ui_settings()
-    ui_settings['darkmode'] = True
-    write_ui_settings(ui_settings)
 
 # Flask Pages
 @mynode_settings.route("/settings")
@@ -81,7 +37,6 @@ def page_settings():
     uptime = get_system_uptime()
     date = get_system_date()
     local_ip = get_local_ip()
-    public_ip = get_public_ip()
 
 
     # Get Startup Status
@@ -129,16 +84,22 @@ def page_settings():
         "latest_version": latest_version,
         "current_beta_version": current_beta_version,
         "latest_beta_version": latest_beta_version,
+        "has_checkin_error": has_checkin_error(),
         "upgrade_error": did_upgrade_fail(),
         "upgrade_logs": get_recent_upgrade_logs(),
         "serial_number": serial_number,
         "device_type": device_type,
         "device_ram": device_ram,
+        "swap_size": get_swap_size(),
         "product_key": product_key,
         "product_key_skipped": pk_skipped,
         "product_key_error": pk_error,
         "changelog": changelog,
+        "is_https_forced": is_https_forced(),
+        "using_bitcoin_custom_config": using_bitcoin_custom_config(),
+        "using_lnd_custom_config": using_lnd_custom_config(),
         "is_bitcoin_synced": is_bitcoind_synced(),
+        "is_installing_docker_images": is_installing_docker_images(),
         "firewall_rules": get_firewall_rules(),
         "is_quicksync_disabled": not quicksync_enabled,
         "is_netdata_enabled": is_netdata_enabled(),
@@ -149,7 +110,6 @@ def page_settings():
         "is_aptget_tor_enabled": is_aptget_tor_enabled(),
         "uptime": uptime,
         "date": date,
-        "public_ip": public_ip,
         "local_ip": local_ip,
         "drive_usage": get_drive_usage(),
         "cpu_usage": get_cpu_usage(),
@@ -178,7 +138,6 @@ def page_status():
     uptime = get_system_uptime()
     date = get_system_date()
     local_ip = get_local_ip()
-    public_ip = get_public_ip()
 
 
     # Get Startup Status
@@ -209,13 +168,19 @@ def page_status():
 
     # Get Status
     lnd_status_log = get_journalctl_log("lnd")
+    loopd_status_log = get_journalctl_log("loopd")
     lndhub_status_log = get_journalctl_log("lndhub")
     tor_status_log = get_journalctl_log("tor@default")
     electrs_status_log = get_journalctl_log("electrs")
     netdata_status_log = get_journalctl_log("netdata")
     rtl_status_log = get_journalctl_log("rtl")
+    lnbits_status_log = get_journalctl_log("lnbits")
+    thunderhub_status_log = get_journalctl_log("thunderhub")
     docker_status_log = get_journalctl_log("docker")
     docker_image_build_status_log = get_journalctl_log("docker_images")
+
+    # Find running containers
+    running_containers = get_docker_running_containers()
 
     templateData = {
         "title": "myNode Status",
@@ -224,6 +189,7 @@ def page_status():
         "latest_version": latest_version,
         "current_beta_version": current_beta_version,
         "latest_beta_version": latest_beta_version,
+        "has_checkin_error": has_checkin_error(),
         "upgrade_error": did_upgrade_fail(),
         "upgrade_logs": get_recent_upgrade_logs(),
         "serial_number": serial_number,
@@ -233,6 +199,9 @@ def page_status():
         "product_key_skipped": pk_skipped,
         "product_key_error": pk_error,
         "changelog": changelog,
+        "lnd_wallet_exists": lnd_wallet_exists(),
+        "is_installing_docker_images": is_installing_docker_images(),
+        "running_containers": running_containers,
         "startup_status_log": startup_status_log,
         "startup_status": get_service_status_basic_text("mynode"),
         "startup_status_color": get_service_status_color("mynode"),
@@ -246,6 +215,9 @@ def page_status():
         "lnd_status_log": lnd_status_log,
         "lnd_status": get_service_status_basic_text("lnd"),
         "lnd_status_color": get_service_status_color("lnd"),
+        "loopd_status_log": loopd_status_log,
+        "loopd_status": get_service_status_basic_text("loopd"),
+        "loopd_status_color": get_service_status_color("loopd"),
         "tor_status_log": tor_status_log,
         "tor_status": get_service_status_basic_text("tor@default"),
         "tor_status_color": get_service_status_color("tor@default"),
@@ -261,6 +233,12 @@ def page_status():
         "rtl_status_log": rtl_status_log,
         "rtl_status": get_service_status_basic_text("rtl"),
         "rtl_status_color": get_service_status_color("rtl"),
+        "lnbits_status_log": lnbits_status_log,
+        "lnbits_status": get_service_status_basic_text("lnbits"),
+        "lnbits_status_color": get_service_status_color("lnbits"),
+        "thunderhub_status_log": thunderhub_status_log,
+        "thunderhub_status": get_service_status_basic_text("thunderhub"),
+        "thunderhub_status_color": get_service_status_color("thunderhub"),
         "docker_status_log": docker_status_log,
         "docker_status": get_service_status_basic_text("docker"),
         "docker_status_color": get_service_status_color("docker"),
@@ -284,7 +262,6 @@ def page_status():
         "is_netdata_enabled": is_netdata_enabled(),
         "uptime": uptime,
         "date": date,
-        "public_ip": public_ip,
         "local_ip": local_ip,
         "drive_usage": get_drive_usage(),
         "cpu_usage": get_cpu_usage(),
@@ -297,6 +274,8 @@ def page_status():
 @mynode_settings.route("/settings/upgrade")
 def upgrade_page():
     check_logged_in()
+
+    check_and_mark_reboot_action("upgrade")
 
     # Upgrade device
     t = Timer(1.0, upgrade_device)
@@ -314,6 +293,8 @@ def upgrade_page():
 @mynode_settings.route("/settings/upgrade-beta")
 def upgrade_beta_page():
     check_logged_in()
+
+    check_and_mark_reboot_action("upgrade_beta")
 
     # Upgrade device
     t = Timer(1.0, upgrade_device_beta)
@@ -343,6 +324,9 @@ def check_in_page():
 @mynode_settings.route("/settings/reset-blockchain")
 def reset_blockchain_page():
     check_logged_in()
+
+    check_and_mark_reboot_action("reset_blockchain")
+
     t = Timer(1.0, reset_blockchain)
     t.start()
     
@@ -358,6 +342,9 @@ def reset_blockchain_page():
 @mynode_settings.route("/settings/restart-quicksync")
 def restart_quicksync_page():
     check_logged_in()
+
+    check_and_mark_reboot_action("restart_quicksync")
+
     t = Timer(1.0, restart_quicksync)
     t.start()
 
@@ -399,7 +386,6 @@ def shutdown_device_page():
     templateData = {
         "title": "myNode Shutdown",
         "header_text": "Shutting down...",
-        "subheader_text": Markup("Your myNode is shutting down.<br/><br/>You will need to power cycle the device to turn it back on."),
         "ui_settings": read_ui_settings()
     }
     return render_template('shutdown.html', **templateData)
@@ -425,6 +411,9 @@ def rescan_blockchain_page():
 @mynode_settings.route("/settings/reset-docker")
 def reset_docker_page():
     check_logged_in()
+
+    check_and_mark_reboot_action("reset_docker")
+
     t = Timer(1.0, reset_docker)
     t.start()
 
@@ -441,6 +430,9 @@ def reset_docker_page():
 @mynode_settings.route("/settings/reset-electrs")
 def reset_electrs_page():
     check_logged_in()
+
+    check_and_mark_reboot_action("reset_electrs")
+
     t = Timer(1.0, reset_electrs)
     t.start()
 
@@ -470,6 +462,8 @@ def factory_reset_page():
         flash("Invalid Password", category="error")
         return redirect(url_for(".page_settings"))
     else:
+        check_and_mark_reboot_action("factory_reset")
+
         t = Timer(2.0, factory_reset)
         t.start()
 
@@ -536,6 +530,8 @@ def page_lnd_delete_wallet():
         flash("Invalid Password", category="error")
         return redirect(url_for(".page_settings"))
 
+    check_and_mark_reboot_action("delete_lnd_data")
+
     # Successful Auth
     delete_lnd_data()
     
@@ -562,6 +558,8 @@ def page_reset_tor():
         flash("Invalid Password", category="error")
         return redirect(url_for(".page_settings"))
     else:
+        check_and_mark_reboot_action("reset_tor")
+
         # Successful Auth
         reset_tor()
 
@@ -581,6 +579,8 @@ def page_reset_tor():
 @mynode_settings.route("/settings/enable_btc_lnd_tor")
 def page_enable_btc_lnd_tor():
     check_logged_in()
+
+    check_and_mark_reboot_action("enable_btc_lnd_tor")
     
     enable = request.args.get('enable')
     if enable == "1":
@@ -601,9 +601,25 @@ def page_enable_btc_lnd_tor():
     }
     return render_template('reboot.html', **templateData)
 
+@mynode_settings.route("/settings/set_https_forced")
+def page_set_https_forced_page():
+    check_logged_in()
+    
+    forced = request.args.get('forced')
+    if forced == "1":
+        force_https(True)
+    else:
+        force_https(False)
+
+    flash("HTTPS Settings Saved", category="message")
+    return redirect(url_for(".page_settings"))
+    
+
 @mynode_settings.route("/settings/enable_aptget_tor")
 def page_enable_aptget_tor():
     check_logged_in()
+
+    check_and_mark_reboot_action("enable_aptget_tor")
     
     enable = request.args.get('enable')
     if enable == "1":
@@ -650,6 +666,8 @@ def regen_electrs_certs_page():
 def reinstall_app_page():
     check_logged_in()
 
+    check_and_mark_reboot_action("reinstall_app")
+
     app = request.args.get('app')
 
     # Re-install app
@@ -668,6 +686,9 @@ def reinstall_app_page():
 @mynode_settings.route("/settings/toggle-uploader")
 def toggle_uploader_page():
     check_logged_in()
+
+    check_and_mark_reboot_action("toggle_uploader")
+
     # Toggle uploader
     if is_uploader():
         unset_uploader()
@@ -690,6 +711,9 @@ def toggle_uploader_page():
 @mynode_settings.route("/settings/toggle-quicksync")
 def toggle_quicksync_page():
     check_logged_in()
+
+    check_and_mark_reboot_action("toggle_quicksync")
+
     # Toggle uploader
     if is_quicksync_enabled():
         t = Timer(1.0, settings_disable_quicksync)
@@ -713,6 +737,8 @@ def ping_page():
 
 @mynode_settings.route("/settings/toggle-darkmode")
 def toggle_darkmode_page():
+    check_logged_in()
+
     if is_darkmode_enabled():
         disable_darkmode()
     else:
@@ -721,8 +747,32 @@ def toggle_darkmode_page():
 
 @mynode_settings.route("/settings/toggle-netdata")
 def toggle_netdata_page():
+    check_logged_in()
+
     if is_netdata_enabled():
         disable_netdata()
     else:
         enable_netdata()
     return redirect("/settings")
+
+@mynode_settings.route("/settings/modify-swap")
+def modify_swap_page():
+    check_logged_in()
+
+    check_and_mark_reboot_action("modify_swap")
+
+    size = request.args.get('size')
+    set_swap_size(size)
+
+    # Trigger reboot
+    t = Timer(1.0, reboot_device)
+    t.start()
+
+    # Display wait page
+    templateData = {
+        "title": "myNode Reboot",
+        "header_text": "Restarting",
+        "subheader_text": "This will take several minutes...",
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('reboot.html', **templateData)
