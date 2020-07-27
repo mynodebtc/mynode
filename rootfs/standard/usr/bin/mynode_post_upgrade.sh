@@ -509,8 +509,9 @@ if [ "$CURRENT" != "$SPECTER_UPGRADE_VERSION" ]; then
         sudo -u bitcoin python3 -m venv env
     fi
     source env/bin/activate
-    pip3 install ecdsa===0.13.3
-    pip3 install cryptoadvance.specter===$SPECTER_UPGRADE_VERSION --upgrade
+    sudo -u bitcoin pip3 install ecdsa===0.13.3
+    sudo -u bitcoin pip3 install secp256k1
+    sudo -u bitcoin pip3 install cryptoadvance.specter===$SPECTER_UPGRADE_VERSION --upgrade
     deactivate
 
     echo $SPECTER_UPGRADE_VERSION > $SPECTER_UPGRADE_URL_FILE
@@ -535,6 +536,7 @@ if [ "$CURRENT" != "$THUNDERHUB_UPGRADE_URL" ]; then
 
     sudo -u bitcoin npm install # --only=production # (can't build with only production)
     sudo -u bitcoin npm run build
+    sudo -u bitcoin npx next telemetry disable
 
     # Setup symlink to service files
     mkdir -p /mnt/hdd/mynode/thunderhub/
