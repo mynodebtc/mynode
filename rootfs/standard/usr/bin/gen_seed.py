@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/local/bin/python3
 from lnd_grpc import lnd_grpc
 
 def format_seed_numbered(seed):
