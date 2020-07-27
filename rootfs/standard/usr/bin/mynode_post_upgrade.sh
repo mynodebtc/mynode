@@ -492,6 +492,9 @@ fi
 
 # Upgrade Specter Desktop
 SPECTER_UPGRADE_VERSION=0.5.5
+if [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ]; then
+    SPECTER_UPGRADE_VERSION=0.5.2
+fi
 SPECTER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.spectre_url
 CURRENT=""
 if [ -f $SPECTER_UPGRADE_URL_FILE ]; then
@@ -509,9 +512,8 @@ if [ "$CURRENT" != "$SPECTER_UPGRADE_VERSION" ]; then
         sudo -u bitcoin python3 -m venv env
     fi
     source env/bin/activate
-    sudo -u bitcoin pip3 install ecdsa===0.13.3
-    sudo -u bitcoin pip3 install secp256k1
-    sudo -u bitcoin pip3 install cryptoadvance.specter===$SPECTER_UPGRADE_VERSION --upgrade
+    pip3 install ecdsa===0.13.3
+    pip3 install cryptoadvance.specter===$SPECTER_UPGRADE_VERSION --upgrade
     deactivate
 
     echo $SPECTER_UPGRADE_VERSION > $SPECTER_UPGRADE_URL_FILE
