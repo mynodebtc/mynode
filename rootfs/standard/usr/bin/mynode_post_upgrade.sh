@@ -283,7 +283,7 @@ cd ~
 
 
 # Install Caravan
-CARAVAN_VERSION="v0.2.0"
+CARAVAN_VERSION="v0.3.2"
 CARAVAN_UPGRADE_URL=https://github.com/unchained-capital/caravan/archive/${CARAVAN_VERSION}.tar.gz
 CARAVAN_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.caravan_url
 CARAVAN_SETTINGS_UPDATE_FILE=/home/bitcoin/.mynode/.caravan_settings_1
