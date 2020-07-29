@@ -17,6 +17,10 @@ systemctl stop whirlpool
 systemctl stop dojo
 systemctl stop btcpayserver
 systemctl stop btc_rpc_explorer
+systemctl stop specter
+systemctl stop caravan
+systemctl stop lnbits
+systemctl stop thunderhub
 
 
 # Manually stop services (backup)
