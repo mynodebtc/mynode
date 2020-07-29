@@ -1,3 +1,8 @@
+=== v0.2.13 ===
+- Upgrade Caravan to v0.3.2
+- Upgrade RTL to v0.8.2
+- Bug fixes and refactoring
+
 === v0.2.12 ===
 - Add Thunderhub v0.8.13
 - Upgrade Specter to v0.5.5
