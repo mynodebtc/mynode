@@ -540,16 +540,8 @@ if [ "$CURRENT" != "$THUNDERHUB_UPGRADE_URL" ]; then
     sudo -u bitcoin npx next telemetry disable
 
     # Setup symlink to service files
-    mkdir -p /mnt/hdd/mynode/thunderhub/
     rm -f /opt/mynode/thunderhub/.env.local
     sudo ln -s /mnt/hdd/mynode/thunderhub/.env.local /opt/mynode/thunderhub/.env.local
-    if [ ! -f /mnt/hdd/mynode/thunderhub/.env.local ]; then
-        cp -f /usr/share/mynode/thunderhub.env /mnt/hdd/mynode/thunderhub/.env.local
-    fi
-    if [ ! -f /mnt/hdd/mynode/thunderhub/thub_config.yaml ]; then
-        cp -f /usr/share/mynode/thub_config.yaml /mnt/hdd/mynode/thunderhub/thub_config.yaml
-    fi
-    chown -R bitcoin:bitcoin /mnt/hdd/mynode/thunderhub
 
     echo $THUNDERHUB_UPGRADE_URL > $THUNDERHUB_UPGRADE_URL_FILE
 fi
