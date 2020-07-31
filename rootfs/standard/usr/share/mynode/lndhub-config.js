@@ -1,6 +1,6 @@
 let config = {
     bitcoind: {
-      rpc: 'http://mynode:bolt@127.0.0.1:8332',
+      rpc: 'http://mynode:bolt@127.0.0.1:8332/wallet/wallet.dat',
     },
     redis: {
       port: 6379,
