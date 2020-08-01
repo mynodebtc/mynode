@@ -91,6 +91,11 @@
                     $("#mempoolspace_status").show();
                 });
 
+                $("#show_caravan_status").on("click", function() {
+                    $("#show_caravan_status").hide(0);
+                    $("#caravan_status").show();
+                });
+
                 $("#show_upgrade_status").on("click", function() {
                     $("#show_upgrade_status").hide(0);
                     $("#upgrade_status").show();
@@ -418,6 +423,15 @@
             </div>
             <button id="show_mempoolspace_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="mempoolspace_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{mempoolspace_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Caravan Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ caravan_status_color }}"></div>
+                {{ caravan_status }}
+            </div>
+            <button id="show_caravan_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="caravan_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{caravan_status_log}}</pre></div>
             <div class="divider"></div>
 
             {% if is_netdata_enabled %}

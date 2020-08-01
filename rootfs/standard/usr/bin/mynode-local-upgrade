@@ -51,6 +51,7 @@ if [ "$#" -ge 2 ]; then
     if [ "$2" = "www" ]; then
         echo "Restarting www service..."
         systemctl restart www
+        systemctl restart https
     elif [ "$2" = "files" ]; then
         echo "Only updating files... Done."
     elif [ "$2" = "reboot" ]; then
