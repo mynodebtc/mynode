@@ -6,6 +6,8 @@ import time
 import json
 import os
 import subprocess
+import random
+import string
 
 # Globals
 local_ip = "unknown"
@@ -397,6 +399,16 @@ def force_https(force):
         os.system("touch /home/bitcoin/.mynode/https_forced")
     else:
         os.system("rm -f /home/bitcoin/.mynode/https_forced")
+
+def get_flask_secret_key():
+    if os.path.isfile("/home/bitcoin/.mynode/flask_secret_key"):
+        key = get_file_contents("/home/bitcoin/.mynode/flask_secret_key")
+    else:
+        letters = string.ascii_letters
+        key = ''.join(random.choice(letters) for i in range(32))
+        set_file_contents("/home/bitcoin/.mynode/flask_secret_key", key)
+    return key
+
 
 #==================================
 # Uploader Functions
