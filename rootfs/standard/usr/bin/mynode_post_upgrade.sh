@@ -72,6 +72,13 @@ apt-get -y purge ntp # (conflicts with systemd-timedatectl)
 apt-get -y purge chrony # (conflicts with systemd-timedatectl)
 
 
+# Install nginx
+mkdir -p /var/log/nginx || true
+$TORIFY apt-get -y install nginx || true
+# Install may fail, so we need to edit the default config file and reconfigure
+echo "" > /etc/nginx/sites-available/default
+dpkg --configure -a
+
 # Install any pip software
 pip2 install tzupdate virtualenv pysocks --no-cache-dir
 
@@ -401,7 +408,7 @@ fi
 
 
 # Upgrade RTL
-RTL_VERSION="v0.8.2"
+RTL_VERSION="v0.8.3"
 RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/$RTL_VERSION.tar.gz
 RTL_UPGRADE_ASC_URL=https://github.com/Ride-The-Lightning/RTL/releases/download/$RTL_VERSION/$RTL_VERSION.tar.gz.asc
 RTL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.rtl_url
