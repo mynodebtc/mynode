@@ -144,6 +144,15 @@ apt-get -y purge chrony # (conflicts with systemd-timedatectl)
 # Install other things without recommendation
 apt-get -y install --no-install-recommends expect
 
+
+# Install nginx
+mkdir -p /var/log/nginx
+$TORIFY apt-get -y install nginx || true
+# Install may fail, so we need to edit the default config file and reconfigure
+echo "" > /etc/nginx/sites-available/default
+dpkg --configure -a
+
+
 # Add bitcoin users
 useradd -m -s /bin/bash bitcoin || true
 usermod -a -G debian-tor bitcoin
@@ -505,7 +514,7 @@ fi
 
 
 # Install RTL
-RTL_VERSION="v0.8.2"
+RTL_VERSION="v0.8.3"
 RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/$RTL_VERSION.tar.gz
 RTL_UPGRADE_ASC_URL=https://github.com/Ride-The-Lightning/RTL/releases/download/$RTL_VERSION/$RTL_VERSION.tar.gz.asc
 RTL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.rtl_url
