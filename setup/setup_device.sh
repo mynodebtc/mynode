@@ -86,6 +86,9 @@ wget http://${SERVER_IP}:8000/${TARBALL} -O /tmp/rootfs.tar.gz
 # Create any necessary users
 
 
+# Update sources
+apt-get -y update
+
 # Add sources
 apt-get -y install apt-transport-https
 DEBIAN_VERSION=$(lsb_release -c | awk '{ print $2 }')
@@ -140,6 +143,15 @@ apt-get -y purge chrony # (conflicts with systemd-timedatectl)
 
 # Install other things without recommendation
 apt-get -y install --no-install-recommends expect
+
+
+# Install nginx
+mkdir -p /var/log/nginx
+$TORIFY apt-get -y install nginx || true
+# Install may fail, so we need to edit the default config file and reconfigure
+echo "" > /etc/nginx/sites-available/default
+dpkg --configure -a
+
 
 # Add bitcoin users
 useradd -m -s /bin/bash bitcoin || true
@@ -203,7 +215,7 @@ if [ ! -f /tmp/installed_node ]; then
 fi
 
 # Install docker
-curl -sSL https://get.docker.com | sed 's/sleep 20/sleep 1/' | sudo sh
+curl -sSL https://get.docker.com | sed 's/sleep 20/sleep 1/' | sudo sh || true
 
 # Use systemd for managing docker
 rm -f /etc/init.d/docker
@@ -502,7 +514,7 @@ fi
 
 
 # Install RTL
-RTL_VERSION="v0.7.1"
+RTL_VERSION="v0.8.3"
 RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/$RTL_VERSION.tar.gz
 RTL_UPGRADE_ASC_URL=https://github.com/Ride-The-Lightning/RTL/releases/download/$RTL_VERSION/$RTL_VERSION.tar.gz.asc
 RTL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.rtl_url
@@ -571,19 +583,77 @@ if [ "$CURRENT" != "$LNBITS_UPGRADE_URL" ]; then
     cd lnbits
 
     # Copy over config file
-    cp /usr/share/mynode/lnbits.env /opt/mynode/lnbits/.env
-    chown bitcoin:bitcoin /opt/mynode/lnbits/.env
+    #cp /usr/share/mynode/lnbits.env /opt/mynode/lnbits/.env
+    #chown bitcoin:bitcoin /opt/mynode/lnbits/.env
 
     # Install with python 3.7 (Only use "pipenv install --python 3.7" once or it will rebuild the venv!)
     sudo -u bitcoin pipenv --python 3.7 install
     sudo -u bitcoin pipenv run pip install python-dotenv
     sudo -u bitcoin pipenv run pip install -r requirements.txt
-    sudo -u bitcoin pipenv run pip install lnd-grpc
-    sudo -u bitcoin pipenv run flask migrate
+    #sudo -u bitcoin pipenv run pip install lnd-grpc # Using REST now (this install takes a LONG time)
+    sudo -u bitcoin pipenv run flask migrate || true
 
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $LNBITS_UPGRADE_URL > $LNBITS_UPGRADE_URL_FILE
+fi
+
+
+# Upgrade Specter Desktop
+SPECTER_UPGRADE_VERSION=0.5.5
+if [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ]; then
+    SPECTER_UPGRADE_VERSION=0.5.2
+fi
+SPECTER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.spectre_url
+CURRENT=""
+if [ -f $SPECTER_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $SPECTER_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$SPECTER_UPGRADE_VERSION" ]; then
+    cd /opt/mynode
+    rm -rf specter
+    mkdir -p specter
+    chown -R bitcoin:bitcoin specter
+    cd specter
+
+    # Make venv
+    if [ ! -d env ]; then
+        sudo -u bitcoin python3 -m venv env
+    fi
+    source env/bin/activate
+    pip3 install ecdsa===0.13.3
+    pip3 install cryptoadvance.specter===$SPECTER_UPGRADE_VERSION --upgrade
+    deactivate
+
+    echo $SPECTER_UPGRADE_VERSION > $SPECTER_UPGRADE_URL_FILE
+fi
+
+
+# Upgrade Thunderhub
+THUNDERHUB_UPGRADE_URL=https://github.com/apotdevin/thunderhub/archive/v0.8.13.tar.gz
+THUNDERHUB_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.thunderhub_url
+CURRENT=""
+if [ -f $THUNDERHUB_UPGRADE_URL_FILE ]; then
+    CURRENT=$(cat $THUNDERHUB_UPGRADE_URL_FILE)
+fi
+if [ "$CURRENT" != "$THUNDERHUB_UPGRADE_URL" ]; then
+    cd /opt/mynode
+    rm -rf thunderhub
+    sudo -u bitcoin wget $THUNDERHUB_UPGRADE_URL -O thunderhub.tar.gz
+    sudo -u bitcoin tar -xvf thunderhub.tar.gz
+    sudo -u bitcoin rm thunderhub.tar.gz
+    sudo -u bitcoin mv thunderhub-* thunderhub
+    cd thunderhub
+
+    sudo -u bitcoin npm install # --only=production # (can't build with only production)
+    sudo -u bitcoin npm run build
+    sudo -u bitcoin npx next telemetry disable
+
+    # Setup symlink to service files
+    rm -f /opt/mynode/thunderhub/.env.local
+    sudo ln -s /mnt/hdd/mynode/thunderhub/.env.local /opt/mynode/thunderhub/.env.local
+    
+    echo $THUNDERHUB_UPGRADE_URL > $THUNDERHUB_UPGRADE_URL_FILE
 fi
 
 
@@ -656,6 +726,7 @@ fi
 
 # Setup myNode Startup Script
 systemctl daemon-reload
+systemctl enable check_in
 systemctl enable docker
 systemctl enable mynode
 systemctl enable quicksync

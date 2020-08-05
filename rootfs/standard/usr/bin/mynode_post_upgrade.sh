@@ -72,6 +72,13 @@ apt-get -y purge ntp # (conflicts with systemd-timedatectl)
 apt-get -y purge chrony # (conflicts with systemd-timedatectl)
 
 
+# Install nginx
+mkdir -p /var/log/nginx || true
+$TORIFY apt-get -y install nginx || true
+# Install may fail, so we need to edit the default config file and reconfigure
+echo "" > /etc/nginx/sites-available/default
+dpkg --configure -a
+
 # Install any pip software
 pip2 install tzupdate virtualenv pysocks --no-cache-dir
 
@@ -283,7 +290,7 @@ cd ~
 
 
 # Install Caravan
-CARAVAN_VERSION="v0.2.0"
+CARAVAN_VERSION="v0.3.2"
 CARAVAN_UPGRADE_URL=https://github.com/unchained-capital/caravan/archive/${CARAVAN_VERSION}.tar.gz
 CARAVAN_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.caravan_url
 CARAVAN_SETTINGS_UPDATE_FILE=/home/bitcoin/.mynode/.caravan_settings_1
@@ -401,7 +408,7 @@ fi
 
 
 # Upgrade RTL
-RTL_VERSION="v0.7.1"
+RTL_VERSION="v0.8.3"
 RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/$RTL_VERSION.tar.gz
 RTL_UPGRADE_ASC_URL=https://github.com/Ride-The-Lightning/RTL/releases/download/$RTL_VERSION/$RTL_VERSION.tar.gz.asc
 RTL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.rtl_url
@@ -540,16 +547,8 @@ if [ "$CURRENT" != "$THUNDERHUB_UPGRADE_URL" ]; then
     sudo -u bitcoin npx next telemetry disable
 
     # Setup symlink to service files
-    mkdir -p /mnt/hdd/mynode/thunderhub/
     rm -f /opt/mynode/thunderhub/.env.local
     sudo ln -s /mnt/hdd/mynode/thunderhub/.env.local /opt/mynode/thunderhub/.env.local
-    if [ ! -f /mnt/hdd/mynode/thunderhub/.env.local ]; then
-        cp -f /usr/share/mynode/thunderhub.env /mnt/hdd/mynode/thunderhub/.env.local
-    fi
-    if [ ! -f /mnt/hdd/mynode/thunderhub/thub_config.yaml ]; then
-        cp -f /usr/share/mynode/thub_config.yaml /mnt/hdd/mynode/thunderhub/thub_config.yaml
-    fi
-    chown -R bitcoin:bitcoin /mnt/hdd/mynode/thunderhub
 
     echo $THUNDERHUB_UPGRADE_URL > $THUNDERHUB_UPGRADE_URL_FILE
 fi

@@ -277,12 +277,20 @@ if [ ! -L /home/bitcoin/.specter ]; then
 fi
 
 # Setup Thunderhub
+mkdir -p /mnt/hdd/mynode/thunderhub/
+if [ ! -f /mnt/hdd/mynode/thunderhub/.env.local ]; then
+    cp -f /usr/share/mynode/thunderhub.env /mnt/hdd/mynode/thunderhub/.env.local
+fi
+if [ ! -f /mnt/hdd/mynode/thunderhub/thub_config.yaml ]; then
+    cp -f /usr/share/mynode/thub_config.yaml /mnt/hdd/mynode/thunderhub/thub_config.yaml
+fi
 if [ -f /mnt/hdd/mynode/thunderhub/thub_config.yaml ]; then
     if [ -f /home/bitcoin/.mynode/.hashedpw_bcrypt ]; then
         HASH_BCRYPT=$(cat /home/bitcoin/.mynode/.hashedpw_bcrypt)
         sed -i "s#masterPassword:.*#masterPassword: \"thunderhub-$HASH_BCRYPT\"#g" /mnt/hdd/mynode/thunderhub/thub_config.yaml
     fi
 fi
+chown -R bitcoin:bitcoin /mnt/hdd/mynode/thunderhub
 
 # Setup udev
 chown root:root /etc/udev/rules.d/* || true
@@ -450,6 +458,7 @@ chmod +x /usr/bin/electrs || true # Once, a device didn't have the execute bit s
 timedatectl set-ntp True || true # Make sure NTP is enabled for Tor and Bitcoin
 rm -f /var/swap || true # Remove old swap file to save SD card space
 systemctl enable check_in || true
+mkdir -p /var/log/nginx || true
 
 # Check for new versions
 torify wget $LATEST_VERSION_URL -O /usr/share/mynode/latest_version || true

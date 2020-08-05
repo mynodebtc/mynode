@@ -847,12 +847,17 @@ def before_request():
     if is_https_forced():
         if not request.is_secure:
             url = request.url.replace('http://', 'https://', 1)
-            code = 301
+            code = 302
+            app.logger.info("Redirecting to HTTPS ({})".format(url))
             return redirect(url, code=code)
 
 # Disable browser caching
 @app.after_request
 def set_response_headers(response):
+    # Prevents 301 from saving forever
+    response.headers['Cache-Control'] = 'no-store'
+
+    # No Caching
     #response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     #response.headers['Pragma'] = 'no-cache'
     #response.headers['Expires'] = '0'
@@ -871,7 +876,8 @@ def before_first_request():
 
     app.register_error_handler(LoginError, handle_login_exception)
 
-    app.secret_key = 'NoZlPx7t15foPfKpivbVrTrTy2bTQ99chJoz3LFmf5BFsh3Nz4ud0mMpGjtB4bhP'
+    app.config["SESSION_COOKIE_NAME"] = "mynode_session_id"
+    app.secret_key = get_flask_secret_key()
     app.permanent_session_lifetime = timedelta(days=90)
 
     app.logger.info("BEFORE_FIRST_REQUEST")
