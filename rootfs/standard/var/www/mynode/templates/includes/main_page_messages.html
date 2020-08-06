@@ -22,28 +22,29 @@
 </div>
 {% endif %}
 
-
-
-{% set blocks_until_halving = 210000 - (current_block % 210000) %}
-{% if blocks_until_halving < 1000 %}
-<div class="halving_message_main_page">
-    <table class="halving_message_table">
-        <tr>
-            <td><img class="halving_image" src="{{ url_for('static', filename='images/stopwatch.png')}}"/></td>
-            <td>{{ blocks_until_halving }} blocks to the halving...</td>
-            <td><img class="halving_image" src="{{ url_for('static', filename='images/timer.png')}}"/></td>
-        </tr>
-    </table>
-</div>
-{% endif %}
-{% if blocks_until_halving > 209400 %}
-<div class="halving_message_main_page">
-    <table class="halving_message_table">
-        <tr>
-            <td><img class="halving_image" src="{{ url_for('static', filename='images/fireworks1.png')}}"/></td>
-            <td>Happy Halving!!!</td>
-            <td><img class="halving_image" src="{{ url_for('static', filename='images/fireworks2.png')}}"/></td>
-        </tr>
-    </table>
-</div>
+<!-- Make sure blocks are syncing, otherwise on startup block 0 may show halving -->
+{% if current_block > 100000 %}
+    {% set blocks_until_halving = 210000 - (current_block % 210000) %}
+    {% if blocks_until_halving < 1000 %}
+    <div class="halving_message_main_page">
+        <table class="halving_message_table">
+            <tr>
+                <td><img class="halving_image" src="{{ url_for('static', filename='images/stopwatch.png')}}"/></td>
+                <td>{{ blocks_until_halving }} blocks to the halving...</td>
+                <td><img class="halving_image" src="{{ url_for('static', filename='images/timer.png')}}"/></td>
+            </tr>
+        </table>
+    </div>
+    {% endif %}
+    {% if blocks_until_halving > 209400 %}
+    <div class="halving_message_main_page">
+        <table class="halving_message_table">
+            <tr>
+                <td><img class="halving_image" src="{{ url_for('static', filename='images/fireworks1.png')}}"/></td>
+                <td>Happy Halving!!!</td>
+                <td><img class="halving_image" src="{{ url_for('static', filename='images/fireworks2.png')}}"/></td>
+            </tr>
+        </table>
+    </div>
+    {% endif %}
 {% endif %}
