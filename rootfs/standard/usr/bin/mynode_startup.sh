@@ -275,6 +275,16 @@ if [ ! -L /home/bitcoin/.specter ]; then
     # Setup symlink to HDD
     sudo -u bitcoin ln -s /mnt/hdd/mynode/specter /home/bitcoin/.specter
 fi
+if [ -f /mnt/hdd/mynode/specter/config.json ]; then
+    # Setup config file to point to local bitcoin instance
+    BTCRPCPW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
+    sed -i "s#\"datadir\": .*#\"datadir\": \"/home/bitcoin/.bitcoin\",#g" /mnt/hdd/mynode/specter/config.json
+    sed -i "s#\"user\": .*#\"user\": \"mynode\",#g" /mnt/hdd/mynode/specter/config.json
+    sed -i "s#\"password\": .*#\"password\": \"$BTCRPCPW\",#g" /mnt/hdd/mynode/specter/config.json
+    sed -i "s#\"port\": .*#\"port\": \"8332\",#g" /mnt/hdd/mynode/specter/config.json
+    sed -i "s#\"host\": .*#\"host\": \"localhost\",#g" /mnt/hdd/mynode/specter/config.json
+    sed -i "s#\"protocol\": .*#\"protocol\": \"http\"#g" /mnt/hdd/mynode/specter/config.json
+fi
 
 # Setup Thunderhub
 mkdir -p /mnt/hdd/mynode/thunderhub/
@@ -299,20 +309,19 @@ udevadm control --reload-rules
 groupadd plugdev || true
 sudo usermod -aG plugdev bitcoin
 
-# Update files that need RPC password (needed if upgrades overwrite files)
-PW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
+# Update other files that need RPC password (needed if upgrades overwrite files)
+BTCRPCPW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
 if [ -f /opt/mynode/LndHub/config.js ]; then
     cp -f /usr/share/mynode/lndhub-config.js /opt/mynode/LndHub/config.js
-    sed -i "s/mynode:.*@/mynode:$PW@/g" /opt/mynode/LndHub/config.js
+    sed -i "s/mynode:.*@/mynode:$BTCRPCPW@/g" /opt/mynode/LndHub/config.js
     chown bitcoin:bitcoin /opt/mynode/LndHub/config.js
 fi
 if [ -f /opt/mynode/btc-rpc-explorer/.env ]; then
-    sed -i "s/BTCEXP_BITCOIND_PASS=.*/BTCEXP_BITCOIND_PASS=$PW/g" /opt/mynode/btc-rpc-explorer/.env
+    sed -i "s/BTCEXP_BITCOIND_PASS=.*/BTCEXP_BITCOIND_PASS=$BTCRPCPW/g" /opt/mynode/btc-rpc-explorer/.env
 fi
-echo "BTC_RPC_PASSWORD=$PW" > /mnt/hdd/mynode/settings/.btcrpc_environment
+echo "BTC_RPC_PASSWORD=$BTCRPCPW" > /mnt/hdd/mynode/settings/.btcrpc_environment
 chown bitcoin:bitcoin /mnt/hdd/mynode/settings/.btcrpc_environment
 if [ -f /mnt/hdd/mynode/bitcoin/bitcoin.conf ]; then
-    #sed -i "s/rpcpassword=.*/rpcpassword=$PW/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
     sed -i "s/rpcauth=.*/$RPCAUTH/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
 fi
 cp -f /mnt/hdd/mynode/bitcoin/bitcoin.conf /home/admin/.bitcoin/bitcoin.conf
