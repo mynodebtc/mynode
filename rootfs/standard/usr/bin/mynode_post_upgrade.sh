@@ -497,10 +497,7 @@ fi
 
 
 # Upgrade Specter Desktop
-SPECTER_UPGRADE_VERSION=0.5.5
-if [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ]; then
-    SPECTER_UPGRADE_VERSION=0.5.2
-fi
+SPECTER_UPGRADE_VERSION=0.6.0
 SPECTER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.spectre_url
 CURRENT=""
 if [ -f $SPECTER_UPGRADE_URL_FILE ]; then
@@ -527,7 +524,7 @@ fi
 
 
 # Upgrade Thunderhub
-THUNDERHUB_UPGRADE_URL=https://github.com/apotdevin/thunderhub/archive/v0.8.13.tar.gz
+THUNDERHUB_UPGRADE_URL=https://github.com/apotdevin/thunderhub/archive/v0.9.0.tar.gz
 THUNDERHUB_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.thunderhub_url
 CURRENT=""
 if [ -f $THUNDERHUB_UPGRADE_URL_FILE ]; then
