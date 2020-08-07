@@ -785,7 +785,7 @@
         <div class="settings_block">
             <div class="settings_block_header">Tor</div>
 
-            <div class="settings_block_subheader">Bitcoin and Lightning Tor</div>
+            <div class="settings_block_subheader">Use Tor for Bitcoin and Lightning</div>
             You can use Tor for Bitcoin and Lightning to increase privacy. However, it can slow down block download, 
             especially during IBD. If you have customized your Bitcoin or LND config, this setting has no effect.
             <br/><br/>
@@ -800,8 +800,10 @@
 
             <div class="divider"></div>
 
-            <div class="settings_block_subheader">Package Upgrade Tor</div>
-            During upgrades, new packages are downloaded and installed. This setting will download and install those packages via tor.
+            <div class="settings_block_subheader">Use Tor for System Upgrades</div>
+            During upgrades, new system packages are downloaded and installed. This setting will download and install those packages via tor.
+            <br/><br/>
+            This is not recommended unless you are having a specific upgrade issue accessing some package servers.
             <br/><br/>
             <label class="switch">
                 <input type="checkbox" id="aptget_tor_checkbox" {% if is_aptget_tor_enabled %}checked{% endif %}>
