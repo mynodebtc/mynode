@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# TODO: add color, align the columns
-
-
 printStatus() {
 	for app in $*; do
 		STATUS=`systemctl status ${app} | grep Active | awk '{print $2}'`
@@ -14,15 +11,12 @@ printStatus() {
 	done
 }
 
-
 echo ":::::::::Core-Services:::::"
 printStatus bitcoind electrs lnd tor vpn | column -t
 
-echo ''
-echo ":::::::Other-Services::::::"
+echo -e "\n:::::::Other-Services::::::"
 printStatus btc_rpc_explorer btcpayserver dojo firewall https glances \
 	    lndconnect lndhub quicksync netdata rtl webssh2 whirlpool www | column -t
 
-echo ''
-echo "::::::::Beta-Services::::::"
+echo -e "\n::::::::Beta-Services::::::"
 printStatus caravan lnbits specter thunderhub | column -t
