@@ -11,14 +11,14 @@ printStatus() {
 	done
 }
 
-echo ":::::::::Core-Apps:::::"
+echo ":::::::Core-Apps:::::::"
 printStatus bitcoind electrs lnd tor vpn | column -t
 
-echo -e "\n:::::::Other-Apps::::::"
+echo -e "\n::::::Other-Apps:::::::"
 printStatus btc_rpc_explorer btcpayserver dojo firewall https glances \
 	    lndconnect lndhub mempoolspace netdata quicksync rtl webssh2 whirlpool www | column -t
 
-echo -e "\n::::::::Beta-Apps::::::"
+echo -e "\n:::::::Beta-Apps:::::::"
 printStatus caravan lnbits specter thunderhub | column -t
 
 echo -e "\n::Background-Services::"
