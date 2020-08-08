@@ -11,12 +11,17 @@ printStatus() {
 	done
 }
 
-echo ":::::::::Core-Services:::::"
+echo ":::::::::Core-Apps:::::"
 printStatus bitcoind electrs lnd tor vpn | column -t
 
-echo -e "\n:::::::Other-Services::::::"
+echo -e "\n:::::::Other-Apps::::::"
 printStatus btc_rpc_explorer btcpayserver dojo firewall https glances \
-	    lndconnect lndhub quicksync netdata rtl webssh2 whirlpool www | column -t
+	    lndconnect lndhub mempoolspace netdata quicksync rtl webssh2 whirlpool www | column -t
 
-echo -e "\n::::::::Beta-Services::::::"
+echo -e "\n::::::::Beta-Apps::::::"
 printStatus caravan lnbits specter thunderhub | column -t
+
+echo -e "\n::Background-Services::"
+printStatus bandwidth check_in corsproxy_btcrpc docker_images drive_check \
+			invalid_block_check lnd_admin_files lnd_backup lnd_unlock loopd \
+			mynode rotate_logs tls_proxy torrent_check usb_driver_check | column -t
