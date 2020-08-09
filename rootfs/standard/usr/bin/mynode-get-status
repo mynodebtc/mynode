@@ -7,6 +7,10 @@ printStatus() {
 			echo -e "$app: \e[32m $STATUS\e[0m"
 		elif [[ $STATUS == "inactive" ]]; then
 			echo -e "$app: \e[33m $STATUS\e[0m"
+		elif [[ $STATUS == "failed" ]]; then
+			echo -e "$app: \e[31m $STATUS\e[0m"
+		else
+			echo -e "$app: \e[35m $STATUS\e[0m"
 		fi
 	done
 }
