@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# - Get the status of all the relevant services on mynode from "systemctl"
+#   and print them in a 2-column format.
+# - All apps are run as systemd services in mynode, so this script facilitates
+#   getting a quick status of all of them for debugging
+
+printStatus() {
+	for app in $*; do
+		STATUS=`systemctl status ${app} | grep Active | awk '{print $2}'`
+		if [[ $STATUS == "active" ]]; then
+			echo -e "$app: \e[32m $STATUS\e[0m" # green
+		elif [[ $STATUS == "inactive" ]]; then
+			echo -e "$app: \e[33m $STATUS\e[0m" # yellow
+		elif [[ $STATUS == "failed" ]]; then
+			echo -e "$app: \e[31m $STATUS\e[0m" # red
+		else
+			echo -e "$app: \e[35m $STATUS\e[0m" # magenta
+		fi
+	done
+}
+
+# Apps are classified into three categories and arranged alphabetically
+
+echo ":::::::Core-Apps:::::::"
+printStatus bitcoind electrs lnd tor vpn | column -t
+
+echo -e "\n::::::Other-Apps:::::::"
+printStatus btc_rpc_explorer btcpayserver dojo firewall https glances \
+	    lndconnect lndhub mempoolspace netdata quicksync rtl webssh2 whirlpool www | column -t
+
+echo -e "\n:::::::Beta-Apps:::::::"
+printStatus caravan lnbits specter thunderhub | column -t
+
+# Remaining services are listed here
+
+echo -e "\n::Background-Services::"
+printStatus bandwidth check_in corsproxy_btcrpc docker_images drive_check \
+			invalid_block_check lnd_admin_files lnd_backup lnd_unlock loopd \
+			mynode rotate_logs tls_proxy torrent_check usb_driver_check | column -t
