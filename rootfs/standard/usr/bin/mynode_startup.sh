@@ -461,13 +461,32 @@ if [ $STARTUP_MODIFIED -eq 1 ]; then
     exit 0
 fi
 
+# Generate certificates
+echo "Generating certificates..."
+/usr/bin/mynode_gen_cert.sh https 825
+/usr/bin/mynode_gen_cert_electrs.sh
+
+# Setup nginx HTTPS proxy
+mkdir -p /var/log/nginx || true
+mkdir -p /etc/nginx || true
+rm -f /etc/nginx/modules-enabled/50-mod-* || true # Remove unnecessary files
+if [ ! -f /etc/ssl/certs/dhparam.pem ]; then
+    time openssl dhparam -out /tmp/dhparam.pem 2048
+    cp -f /tmp/dhparam.pem /etc/ssl/certs/dhparam.pem
+    sync
+else
+    echo "dharam.pem already created"
+fi
+cp -f /usr/share/mynode/nginx.conf /etc/nginx/nginx.conf
+systemctl restart nginx || true
+
 
 # Weird hacks
 chmod +x /usr/bin/electrs || true # Once, a device didn't have the execute bit set for electrs
 timedatectl set-ntp True || true # Make sure NTP is enabled for Tor and Bitcoin
 rm -f /var/swap || true # Remove old swap file to save SD card space
 systemctl enable check_in || true
-mkdir -p /var/log/nginx || true
+
 
 # Check for new versions
 torify wget $LATEST_VERSION_URL -O /usr/share/mynode/latest_version || true

@@ -18,8 +18,9 @@ else
     ip_address="$1"
 fi
 
-# Clear /var/log tmpfs
+# Clear /var/log tmpfs (remake necessary folders)
 rm -rf /var/log/*
+mkdir -p /var/log/nginx
 
 # Delete any existing rootfs tarball and download new one
 rm -f mynode_rootfs_${DEVICE_TYPE}.tar.gz
