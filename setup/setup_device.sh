@@ -149,6 +149,7 @@ apt-get -y install --no-install-recommends expect
 mkdir -p /var/log/nginx
 $TORIFY apt-get -y install nginx || true
 # Install may fail, so we need to edit the default config file and reconfigure
+rm -f /etc/nginx/modules-enabled/50-mod-* || true
 echo "" > /etc/nginx/sites-available/default
 dpkg --configure -a
 

@@ -11,8 +11,9 @@ date
 # Shut down main services to save memory and CPU
 /usr/bin/mynode_stop_critical_services.sh
 
-# Delete ramlog to prevent ram issues
+# Delete ramlog to prevent ram issues (remake necessary folders)
 rm -rf /var/log/*
+mkdir -p /var/log/nginx
 
 # Create any necessary users
 
@@ -76,6 +77,7 @@ apt-get -y purge chrony # (conflicts with systemd-timedatectl)
 mkdir -p /var/log/nginx || true
 $TORIFY apt-get -y install nginx || true
 # Install may fail, so we need to edit the default config file and reconfigure
+rm -f /etc/nginx/modules-enabled/50-mod-* || true
 echo "" > /etc/nginx/sites-available/default
 dpkg --configure -a
 
@@ -627,6 +629,10 @@ fi
 if [ $IS_ROCKPRO64 = 1 ]; then
     systemctl enable fan_control
 fi
+
+
+# Update nginx conf file
+cp -f /usr/share/mynode/nginx.conf /etc/nginx/nginx.conf
 
 
 # Cleanup MOTD
