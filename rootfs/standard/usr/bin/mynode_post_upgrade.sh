@@ -466,7 +466,8 @@ fi
 
 
 # Upgrade LNBits
-LNBITS_UPGRADE_URL=https://github.com/lnbits/lnbits/archive/raspiblitz.tar.gz
+#LNBITS_UPGRADE_URL=https://github.com/lnbits/lnbits/archive/raspiblitz.tar.gz
+LNBITS_UPGRADE_URL=https://github.com/lnbits/lnbits/archive/1e36a8a393cab168c04cfa5f6096a024386f46ef.tar.gz
 LNBITS_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lnbits_url
 CURRENT=""
 if [ -f $LNBITS_UPGRADE_URL_FILE ]; then
