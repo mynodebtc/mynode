@@ -14,7 +14,11 @@
                 $( document ).tooltip();
 
                 $("#lndhub").on("click", function() {
-                    url = 'http://'+location.hostname+':3000'
+                    port="3000"
+                    if (location.protocol == "https:") {
+                        port="3001"
+                    }
+                    url = location.protocol+'://'+location.hostname+':'+port
                     window.open(url,'_blank');
                 })
 
@@ -33,13 +37,12 @@
                     window.open(url,'_blank');
                 })
 
-                $("#lnd_admin").on("click", function() {
-                    url = 'http://'+location.hostname+':3004'
-                    window.open(url,'_blank');
-                })
-
                 $("#btcrpcexplorer").on("click", function() {
-                    url = 'http://'+location.hostname+':3002'
+                    port="3002"
+                    if (location.protocol == "https:") {
+                        port="3003"
+                    }
+                    url = location.protocol+'//'+location.hostname+':'+port
                     window.open(url,'_blank');
                 })
 
