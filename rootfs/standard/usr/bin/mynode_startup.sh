@@ -470,13 +470,7 @@ echo "Generating certificates..."
 mkdir -p /var/log/nginx || true
 mkdir -p /etc/nginx || true
 rm -f /etc/nginx/modules-enabled/50-mod-* || true # Remove unnecessary files
-if [ ! -f /etc/ssl/certs/dhparam.pem ]; then
-    time openssl dhparam -out /tmp/dhparam.pem 2048
-    cp -f /tmp/dhparam.pem /etc/ssl/certs/dhparam.pem
-    sync
-else
-    echo "dharam.pem already created"
-fi
+/usr/bin/mynode_gen_dhparam.sh
 cp -f /usr/share/mynode/nginx.conf /etc/nginx/nginx.conf
 systemctl restart nginx || true
 
