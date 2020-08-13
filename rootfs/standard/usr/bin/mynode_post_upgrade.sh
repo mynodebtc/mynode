@@ -24,6 +24,15 @@ if [ -f /mnt/hdd/mynode/settings/torify_apt_get ]; then
     TORIFY="torify"
 fi
 
+# Stop and disable any old services
+systemctl stop https || true
+systemctl disable https || true
+
+
+# Create dhparam.pem (do before dpkg configure since its needed for nginx)
+/usr/bin/mynode_gen_dhparam.sh
+
+
 # Check if any dpkg installs have failed and correct
 dpkg --configure -a
 
@@ -656,7 +665,6 @@ systemctl enable lnd
 systemctl enable firewall
 systemctl enable invalid_block_check
 systemctl enable usb_driver_check
-systemctl enable https
 systemctl enable docker_images
 systemctl enable glances
 systemctl enable webssh2

@@ -35,11 +35,24 @@ import os.path
 import psutil
 import time
 
+# Proxy class to redirect to HTTP or HTTPS depending on connection
+class ReverseProxied(object):
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        scheme = environ.get('HTTP_X_FORWARDED_PROTO')
+        if scheme:
+            environ['wsgi.url_scheme'] = scheme
+        return self.app(environ, start_response)
+
+
 app = Flask(__name__)
 app.config['DEBUG'] = False
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024     # 32 MB upload file max
 app.config['UPLOAD_FOLDER'] = "/tmp/flask_uploads"
+app.wsgi_app = ReverseProxied(app.wsgi_app)
 app.register_blueprint(mynode_bitcoind)
 app.register_blueprint(mynode_lnd)
 app.register_blueprint(mynode_whirlpool)
@@ -293,9 +306,9 @@ def index():
         vpn_status = ""
         current_block = 1234
 
-        if not get_has_updated_btc_info() or uptime_in_seconds < 150:
+        if not get_has_updated_btc_info() or uptime_in_seconds < 180:
             error_message = ""
-            if bitcoind_status_code != 0 and uptime_in_seconds > 300:
+            if bitcoind_status_code != 0 and uptime_in_seconds > 600:
                 error_message = "Bitcoin has experienced an error. Please check the logs."
             message = "<div class='small_message'>{}</<div>".format( get_message(include_funny=True) )
             templateData = {
@@ -845,7 +858,8 @@ def internal_error(error):
 @app.before_request
 def before_request():
     if is_https_forced():
-        if not request.is_secure:
+        scheme = request.headers.get('X-Forwarded-Proto')
+        if scheme and scheme == 'http' and request.url.startswith('http://'):
             url = request.url.replace('http://', 'https://', 1)
             code = 302
             app.logger.info("Redirecting to HTTPS ({})".format(url))

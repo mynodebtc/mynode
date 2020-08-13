@@ -746,7 +746,6 @@ systemctl enable redis-server
 #systemctl enable lndhub # DISABLED BY DEFAULT
 #systemctl enable btc_rpc_explorer # DISABLED BY DEFAULT
 systemctl enable tls_proxy
-systemctl enable https
 systemctl enable rtl
 systemctl enable tor
 systemctl enable invalid_block_check
