@@ -1,6 +1,10 @@
 # myNode www service
 # /etc/systemd/system/www.service
 
+###############################
+# NOT IN USE ANYMORE (keeping for gunicorn reference)
+###############################
+
 [Unit]
 Description=myNode Web Server
 After=network.target

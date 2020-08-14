@@ -52,7 +52,20 @@ app.config['DEBUG'] = False
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024     # 32 MB upload file max
 app.config['UPLOAD_FOLDER'] = "/tmp/flask_uploads"
+app.config["SESSION_COOKIE_NAME"] = "mynode_session_id"
+app.secret_key = get_flask_secret_key()
+app.permanent_session_lifetime = timedelta(days=90)
+app.register_error_handler(LoginError, handle_login_exception)
+
 app.wsgi_app = ReverseProxied(app.wsgi_app)
+
+my_logger = logging.getLogger('FlaskLogger')
+my_logger.setLevel(logging.DEBUG)
+handler = logging.handlers.RotatingFileHandler(filename='/var/log/flask', maxBytes=2000000, backupCount=2)
+my_logger.addHandler(handler)
+app.logger.addHandler(my_logger)
+app.logger.setLevel(logging.INFO)
+
 app.register_blueprint(mynode_bitcoind)
 app.register_blueprint(mynode_lnd)
 app.register_blueprint(mynode_whirlpool)
@@ -879,22 +892,16 @@ def set_response_headers(response):
 
 @app.before_first_request
 def before_first_request():
+    app.logger.info("BEFORE_FIRST_REQUEST START")
+
+    # Need to do anything here?
+
+    app.logger.info("BEFORE_FIRST_REQUEST END")
+    
+
+def start_threads():
     global threads
-
-    my_logger = logging.getLogger('FlaskLogger')
-    my_logger.setLevel(logging.DEBUG)
-    handler = logging.handlers.RotatingFileHandler(filename='/var/log/flask', maxBytes=2000000, backupCount=2)
-    my_logger.addHandler(handler)
-    app.logger.addHandler(my_logger)
-    app.logger.setLevel(logging.INFO)
-
-    app.register_error_handler(LoginError, handle_login_exception)
-
-    app.config["SESSION_COOKIE_NAME"] = "mynode_session_id"
-    app.secret_key = get_flask_secret_key()
-    app.permanent_session_lifetime = timedelta(days=90)
-
-    app.logger.info("BEFORE_FIRST_REQUEST")
+    app.logger.info("STARTING THREADS")
 
     # Start threads
     btc_thread1 = BackgroundThread(update_bitcoin_main_info_thread, 60)
@@ -918,17 +925,19 @@ def before_first_request():
 
     app.logger.info("STARTED {} THREADS".format(len(threads)))
 
-def stop_app():
+def stop_threads():
     global threads
 
-    app.logger.info("START STOP_APP")
-
-    app.logger.info("STOPPING {} THREADS".format(len(threads)))
-
     # Stop threads
+    app.logger.info("STOPPING {} THREADS".format(len(threads)))
     for t in threads:
         app.logger.info("Killing {}".format(t.pid))
         os.kill(t.pid, signal.SIGKILL)
+
+def stop_app():
+    app.logger.info("STOP_APP START")
+
+    stop_threads()
 
     # Shutdown Flask (if used)
     func = request.environ.get('werkzeug.server.shutdown')
@@ -937,13 +946,16 @@ def stop_app():
     else:
         func()
 
-    app.logger.info("DONE STOP_APP")
+    app.logger.info("STOP_APP END")
 
 if __name__ == "__main__":
 
     # Handle signals
     signal.signal(signal.SIGTERM, on_shutdown)
     signal.signal(signal.SIGINT, on_shutdown)
+
+    # Setup and start threads
+    start_threads()
 
     try:
         app.run(host='0.0.0.0', port=80)
