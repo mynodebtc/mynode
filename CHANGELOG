@@ -1,3 +1,12 @@
+=== v0.2.14 ===
+- Update Bitcoin to v0.20.1
+- Upgrade Specter to v0.6.0
+- Upgrade Thunderhub to v0.9.0
+- Upgrade RTL to v0.8.3
+- Add NGINX for HTTPS
+- Add HTTPS for rtl, thunderhub, lnbits, lndhub, and btc rpc explorer
+- Bug fixes and refactoring
+
 === v0.2.13 ===
 - Upgrade Caravan to v0.3.2
 - Upgrade RTL to v0.8.2
