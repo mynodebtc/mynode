@@ -246,17 +246,29 @@
                 });
 
                 $("#glances").on("click", function() {
-                    url = 'http://'+location.hostname+':61208'
+                    port="61208";
+                    if (location.protocol == "https:") {
+                        port="61209";
+                    }
+                    url = location.protocol+'//'+location.hostname+':'+port;
                     window.open(url,'_blank');
                 })
 
                 $("#netdata").on("click", function() {
-                    url = 'http://'+location.hostname+':19999'
+                    port="19999";
+                    if (location.protocol == "https:") {
+                        port="20000";
+                    }
+                    url = location.protocol+'//'+location.hostname+':'+port;
                     window.open(url,'_blank');
                 })
 
                 $("#linux_terminal").on("click", function() {
-                    url = 'http://'+location.hostname+':2222/ssh/host/'+"{{local_ip}}"
+                    port="2222";
+                    if (location.protocol == "https:") {
+                        port="2223";
+                    }
+                    url = location.protocol+'//'+location.hostname+':'+port+'/ssh/host/'+"{{local_ip}}";
                     window.open(url,'_blank');
                 })
 
