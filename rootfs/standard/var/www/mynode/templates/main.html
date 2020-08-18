@@ -23,17 +23,29 @@
                 })
 
                 $("#rtl").on("click", function() {
-                    url = 'https://'+location.hostname+':3011'
+                    port="3010"
+                    if (location.protocol == "https:") {
+                        port="3011"
+                    }
+                    url = location.protocol+'//'+location.hostname+':'+port
                     window.open(url,'_blank');
                 })
 
                 $("#lnbits").on("click", function() {
-                    url = 'https://'+location.hostname+':5001'
+                    port="5000"
+                    if (location.protocol == "https:") {
+                        port="5001"
+                    }
+                    url = location.protocol+'//'+location.hostname+':'+port
                     window.open(url,'_blank');
                 })
 
                 $("#thunderhub").on("click", function() {
-                    url = 'https://'+location.hostname+':3031'
+                    port="3030"
+                    if (location.protocol == "https:") {
+                        port="3031"
+                    }
+                    url = location.protocol+'//'+location.hostname+':'+port
                     window.open(url,'_blank');
                 })
 
@@ -52,12 +64,20 @@
                 })
 
                 $("#mempoolspace").on("click", function() {
-                    url = 'http://'+location.hostname+':4080'
+                    port="4080"
+                    if (location.protocol == "https:") {
+                        port="4081"
+                    }
+                    url = location.protocol+'//'+location.hostname+':'+port
                     window.open(url,'_blank');
                 })
 
                 $("#btcpayserver").on("click", function() {
-                    url = 'http://'+location.hostname+':49392'
+                    port="49392"
+                    if (location.protocol == "https:") {
+                        port="49393"
+                    }
+                    url = location.protocol+'//'+location.hostname+':'+port
                     window.open(url,'_blank');
                 })
 
