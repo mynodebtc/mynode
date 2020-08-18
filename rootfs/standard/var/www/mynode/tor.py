@@ -33,6 +33,7 @@ def page_tor():
     # Services
     v3_services = []
     v3_services.append({"service": "myNode Web", "url": general_onion_url, "port": "80","guide":""})
+    v3_services.append({"service": "WebSSH", "url": general_onion_url,"port": "2222 / 2223","guide":""})
     v3_services.append({"service": "LND Hub", "url": general_onion_url,"port": "3000 / 3001","guide":""})
     v3_services.append({"service": "BTC RPC Explorer", "url": general_onion_url,"port": "3002 / 3003","guide":""})
     v3_services.append({"service": "Ride the Lightning", "url": general_onion_url,"port": "3010 / 3011","guide":""})
@@ -40,7 +41,9 @@ def page_tor():
     v3_services.append({"service": "Thunderhub", "url": general_onion_url,"port": "3030 / 3031","guide":""})
     v3_services.append({"service": "Mempool", "url": general_onion_url,"port": "4080 / 4081","guide":""})
     v3_services.append({"service": "LNbits", "url": general_onion_url,"port": "5000 / 5001","guide":""})
+    v3_services.append({"service": "Netdata", "url": general_onion_url,"port": "19999 / 20000","guide":""})
     v3_services.append({"service": "Specter Desktop", "url": general_onion_url,"port": "25441","guide":""})
+    v3_services.append({"service": "Glances", "url": general_onion_url,"port": "61208 / 61209","guide":""})
     v3_services.append({"service": "BTCPay Server", "url": btcpay_onion_url,"port": "49392 / 49393","guide":""})
     v3_services.append({"service": "Bitcoin API (REST)", "url": btc_onion_url,"port": "8332","guide":""})
     v3_services.append({"service": "LND API (gRPC)", "url": lnd_onion_url,"port": "10009","guide":""})
