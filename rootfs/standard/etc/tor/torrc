@@ -228,6 +228,7 @@ HiddenServicePort 3020 127.0.0.1:3020
 HiddenServicePort 3030 127.0.0.1:3030
 HiddenServicePort 3031 127.0.0.1:3031
 HiddenServicePort 4080 127.0.0.1:4080
+HiddenServicePort 4081 127.0.0.1:4081
 HiddenServicePort 5000 127.0.0.1:5000
 HiddenServicePort 5001 127.0.0.1:5001
 HiddenServicePort 8899 127.0.0.1:8899
@@ -268,3 +269,4 @@ HiddenServicePort 22022 127.0.0.1:22
 HiddenServiceDir /var/lib/tor/mynode_btcpay/
 HiddenServiceVersion 3
 HiddenServicePort 49392 127.0.0.1:49392
+HiddenServicePort 49393 127.0.0.1:49393
