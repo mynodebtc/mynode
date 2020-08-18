@@ -4,6 +4,10 @@
         {% include 'includes/head.html' %}
         <script>
         $(document).ready(function() {
+            // Show intial prompt
+            $("#cli_contents").append("<b>>>></b> ");
+            $("#cmd").focus();
+
             $("#cmd_form").submit(function( event ) {
                 // Prevent "real" submission
                 event.preventDefault();
@@ -15,15 +19,24 @@
                 console.log("URL    : "+url)
                 console.log("Command: "+cmd)
 
+                $("#cmd").val("");
+                $("#cli_contents").append("<b>"+cmd+"</b><br/>");
+
+                // Disable button until response
+                $("#cmd").prop("disabled", true);
+                $("#submit_btn").prop("disabled", true);
+
                 var posting = $.post( "/bitcoind/cli-run", {cmd:  cmd} );
                 posting.done(function( data ) {
-                    console.log("Response:" + data) 
+                    console.log("Response:" + data)
 
-                    $("#cmd" ).val("");
-                    
-                    $("#cli_contents").append( "<b>>>> "+cmd+"</b><br/>" );
                     $("#cli_contents").append( data+"<br/>" );
-                    $("#cli_contents").append( "<b>>>></b>" );
+                    $("#cli_contents").append( "<b>>>></b> " );
+
+                    // Re-enable button until response
+                    $("#cmd").prop("disabled", false);
+                    $("#submit_btn").prop("disabled", false);
+                    $("#cmd").focus();
 
                     var objDiv = document.getElementById("cli_scrollable");
                     objDiv.scrollTop = objDiv.scrollHeight;
@@ -45,10 +58,16 @@
 
         <div class="cli_command">
             <form id="cmd_form" action="/bitcoind/cli-run">
-                <input class="ui-corner-all cli_command_input" id="cmd" name="cmd" type="text">
-                <input type="submit" class="ui-button ui-widget ui-corner-all cli_enter_button" value="Enter">
+                <input class="ui-corner-all cli_command_input" id="cmd" name="cmd" type="text" autofocus>
+                <input type="submit" id="submit_btn" class="ui-button ui-widget ui-corner-all cli_enter_button" value="Enter">
                 <div class="small_message">Enter 'help' to see the list of possible commands.</div>
             </form>
+        </div>
+
+        <div id="loading_overlay">
+            <div class="cv-spinner">
+                <span class="spinner"></span>
+            </div>
         </div>
 
         {% include 'includes/footer.html' %}
