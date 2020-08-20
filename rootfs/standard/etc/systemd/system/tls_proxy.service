@@ -1,6 +1,10 @@
 # myNode www service
 # /etc/systemd/system/www.service
 
+#############################################
+## NOT USED ANYMORE - Now handled by NGINX ##
+#############################################
+
 [Unit]
 Description=Proxy for Secure Electrs
 Wants=mynode.service bitcoind.service

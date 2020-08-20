@@ -27,7 +27,8 @@ fi
 # Stop and disable any old services
 systemctl stop https || true
 systemctl disable https || true
-
+systemctl stop tls_proxy || true
+systemctl disable tls_proxy || true
 
 # Create dhparam.pem (do before dpkg configure since its needed for nginx)
 /usr/bin/mynode_gen_dhparam.sh
