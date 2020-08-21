@@ -48,7 +48,7 @@ out/base_images/rockpro64_base.img.gz:
 	@wget http://mynodebtc.com/device/mynode_images/rockpro64_base.img.gz -O out/base_images/rockpro64_base.img.gz
 out/base_images/debian_base.ova:
 	@mkdir -p out/base_images/
-	@wget http://mynodebtc.com/device/mynode_images/vm_base.ova -O out/base_images/vm_base.ova
+	@wget http://mynodebtc.com/device/mynode_images/vm_base.ova -O out/base_images/debian_base.ova
 
 
 
