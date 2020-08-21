@@ -65,6 +65,13 @@ set -e
 # Check for updates (might auto-install all updates later)
 export DEBIAN_FRONTEND=noninteractive
 $TORIFY apt-get update
+
+# Freeze any packages we don't want to update
+if [ $IS_X86 = 1 ]; then
+    apt-mark hold grub*
+fi
+
+# Upgrade packages
 $TORIFY apt-get -y upgrade
 
 # Install any new software
