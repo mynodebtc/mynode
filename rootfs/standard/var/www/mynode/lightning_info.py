@@ -12,6 +12,7 @@ from device_info import get_journalctl_log
 lightning_info = None
 lnd_ready = False
 lnd_version = None
+loopd_version = None
 lightning_peers = None
 lightning_channels = None
 lightning_channel_balance = None
@@ -213,6 +214,12 @@ def get_lnd_version():
     if lnd_version == None:
         lnd_version = subprocess.check_output("lnd --version | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+' | head -n 1", shell=True)
     return lnd_version
+
+def get_loopd_version():
+    global loopd_version
+    if loopd_version == None:
+        loopd_version = subprocess.check_output("loopd --version | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+' | head -n 1", shell=True)
+    return loopd_version
 
 def get_default_lnd_config():
     try:
