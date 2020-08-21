@@ -97,7 +97,7 @@ set -e
 while [ ! -f /mnt/hdd/.mynode ]
 do
     # Clear status
-    rm -f $MYNODE_DIR/.mynode_status
+    rm -f $MYNODE_STATUS_FILE
     mount_drive.tcl || true
     sleep 5
 done
@@ -131,8 +131,8 @@ mkdir -p /mnt/hdd/mynode/whirlpool
 mkdir -p /mnt/hdd/mynode/lnbits
 mkdir -p /mnt/hdd/mynode/specter
 mkdir -p /tmp/flask_uploads
-echo "drive_mounted" > $MYNODE_DIR/.mynode_status
-chmod 777 $MYNODE_DIR/.mynode_status
+echo "drive_mounted" > $MYNODE_STATUS_FILE
+chmod 777 $MYNODE_STATUS_FILE
 rm -rf $MYNODE_DIR/.mynode_bitcoind_synced
 
 
@@ -488,5 +488,5 @@ torify wget $LATEST_BETA_VERSION_URL -O /usr/share/mynode/latest_beta_version ||
 
 # Update current state
 if [ -f $QUICKSYNC_DIR/.quicksync_complete ]; then
-    echo "stable" > $MYNODE_DIR/.mynode_status
+    echo "stable" > $MYNODE_STATUS_FILE
 fi

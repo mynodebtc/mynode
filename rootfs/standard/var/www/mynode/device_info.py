@@ -454,7 +454,7 @@ def stop_quicksync():
     os.system("systemctl stop quicksync")
 
 def restart_quicksync():
-    os.system('echo "quicksync_reset" > /mnt/hdd/mynode/.mynode_status')
+    os.system('echo "quicksync_reset" > /tmp/.mynode_status')
     stop_bitcoind()
     stop_quicksync()
     delete_bitcoin_data()
