@@ -81,6 +81,7 @@ STATE_DRIVE_MISSING =         "drive_missing"
 STATE_DRIVE_CONFIRM_FORMAT =  "drive_format_confirm"
 STATE_DRIVE_FORMATTING =      "drive_formatting"
 STATE_DRIVE_MOUNTED =         "drive_mounted"
+STATE_GEN_DHPARAM =           "gen_dhparam"
 STATE_QUICKSYNC_DOWNLOAD =    "quicksync_download"
 STATE_QUICKSYNC_COPY =        "quicksync_copy"
 STATE_QUICKSYNC_RESET =       "quicksync_reset"
@@ -221,6 +222,14 @@ def index():
             "title": "myNode Drive Mounted",
             "header_text": "Drive Mounted",
             "subheader_text": "myNode starting soon...",
+            "ui_settings": read_ui_settings()
+        }
+        return render_template('state.html', **templateData)
+    elif status == STATE_GEN_DHPARAM:
+        templateData = {
+            "title": "myNode Generating Data",
+            "header_text": "Generating Data",
+            "subheader_text": "This may take 15-20 minutes...",
             "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
