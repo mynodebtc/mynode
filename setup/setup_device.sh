@@ -25,7 +25,7 @@ IS_X86=0
 IS_UNKNOWN=0
 DEVICE_TYPE="unknown"
 MODEL=$(cat /proc/device-tree/model) || IS_UNKNOWN=1
-uname -a | grep amd64 && IS_X86=1 || true
+uname -a | grep amd64 && IS_X86=1 && IS_UNKNOWN=0 || true
 if [[ $MODEL == *"Rock64"* ]]; then
     IS_ARMBIAN=1
     IS_ROCK64=1
@@ -90,7 +90,7 @@ wget http://${SERVER_IP}:8000/${TARBALL} -O /tmp/rootfs.tar.gz
 apt-get -y update
 
 # Add sources
-apt-get -y install apt-transport-https
+apt-get -y install apt-transport-https curl gnupg
 DEBIAN_VERSION=$(lsb_release -c | awk '{ print $2 }')
 # Tor
 grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
@@ -114,6 +114,13 @@ gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | apt-key add -           
 # Update OS
 apt -y update # Needed to accept new repos
 apt-get -y update
+
+# Freeze any packages we don't want to update
+if [ $IS_X86 = 1 ]; then
+    apt-mark hold grub*
+fi
+
+# Upgrade packages
 apt-get -y upgrade
 
 # Install other tools (run section multiple times to make sure success)
