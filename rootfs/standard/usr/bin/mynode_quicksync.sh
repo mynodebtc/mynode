@@ -31,7 +31,7 @@ while [ -f /mnt/hdd/mynode/settings/quicksync_disabled ]; do
     sync
     # Give Bitcoin a couple minutes to start
     sleep 120s
-    echo "stable" > $MYNODE_DIR/.mynode_status
+    echo "stable" > $MYNODE_STATUS_FILE
     sync
     sleep 10d
 done
@@ -39,7 +39,7 @@ done
 # Make sure folder exists
 mkdir -p $QUICKSYNC_DIR
 if [ ! -f $QUICKSYNC_DIR/.quicksync_download_complete ]; then
-    echo "quicksync_download" > $MYNODE_DIR/.mynode_status
+    echo "quicksync_download" > $MYNODE_STATUS_FILE
 fi
 echo "Starting quicksync..."
 
@@ -50,7 +50,7 @@ if [ ! -f $QUICKSYNC_DIR/.quicksync_complete ] && [ -f $QUICKSYNC_DIR/.quicksync
 fi
 # Check if quicksync was completed
 if [ -f $QUICKSYNC_DIR/.quicksync_complete ]; then
-    echo "stable" > $MYNODE_DIR/.mynode_status
+    echo "stable" > $MYNODE_STATUS_FILE
 fi
 
 # Download torrent

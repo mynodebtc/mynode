@@ -99,7 +99,7 @@ threads = []
 ### Helper functions
 def get_status():
     try:
-        status_file = "/mnt/hdd/mynode/.mynode_status"
+        status_file = "/tmp/.mynode_status"
         status = STATE_UNKNOWN
 
         # If its been a while, check for error conditions

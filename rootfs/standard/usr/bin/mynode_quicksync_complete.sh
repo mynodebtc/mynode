@@ -14,7 +14,7 @@ touch $QUICKSYNC_DIR/.quicksync_download_complete
 sync
 
 # Copy files
-echo "quicksync_copy" > $MYNODE_DIR/.mynode_status
+echo "quicksync_copy" > $MYNODE_STATUS_FILE
 rm -rf $MYNODE_DIR/bitcoin/blocks/
 rm -rf $MYNODE_DIR/bitcoin/chainstate/
 tar -xvf $QUICKSYNC_DIR/blockchain*.tar.gz -C $MYNODE_DIR/bitcoin/ --dereference 2>&1 > /tmp/tar_log_$(date +%s)
@@ -27,7 +27,7 @@ sleep 30s
 touch $QUICKSYNC_DIR/.quicksync_complete
 sync
 sleep 5m
-echo "stable" > $MYNODE_DIR/.mynode_status
+echo "stable" > $MYNODE_STATUS_FILE
 sync
 
 exit 0
