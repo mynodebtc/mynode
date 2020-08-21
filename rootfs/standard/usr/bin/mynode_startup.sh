@@ -470,7 +470,9 @@ echo "Generating certificates..."
 mkdir -p /var/log/nginx || true
 mkdir -p /etc/nginx || true
 rm -f /etc/nginx/modules-enabled/50-mod-* || true # Remove unnecessary files
+echo "gen_dhparam" > $MYNODE_STATUS_FILE
 /usr/bin/mynode_gen_dhparam.sh
+echo "drive_mounted" > $MYNODE_STATUS_FILE
 cp -f /usr/share/mynode/nginx.conf /etc/nginx/nginx.conf
 systemctl restart nginx || true
 
