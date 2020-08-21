@@ -18,13 +18,14 @@ SERVER_IP=$1
 IS_ARMBIAN=0
 IS_ROCK64=0
 IS_ROCKPRO64=0
+IS_ODROIDN2=0
 IS_RASPI=0
 IS_RASPI3=0
 IS_RASPI4=0
 IS_X86=0
 IS_UNKNOWN=0
 DEVICE_TYPE="unknown"
-MODEL=$(cat /proc/device-tree/model) || IS_UNKNOWN=1
+MODEL=$(tr -d '\0' </proc/device-tree/model) || IS_UNKNOWN=1
 uname -a | grep amd64 && IS_X86=1 || true
 if [[ $MODEL == *"Rock64"* ]]; then
     IS_ARMBIAN=1
@@ -32,6 +33,9 @@ if [[ $MODEL == *"Rock64"* ]]; then
 elif [[ $MODEL == *"RockPro64"* ]]; then
     IS_ARMBIAN=1
     IS_ROCKPRO64=1
+elif [[ $MODEL == *"ODROID-N2"* ]]; then
+    IS_ARMBIAN=1
+    IS_ODROIDN2=1
 elif [[ $MODEL == *"Raspberry Pi 3"* ]]; then
     IS_RASPI=1
     IS_RASPI3=1
@@ -73,6 +77,8 @@ if [ $IS_ROCK64 = 1 ]; then
     TARBALL="mynode_rootfs_rock64.tar.gz"
 elif [ $IS_ROCKPRO64 = 1 ]; then
     TARBALL="mynode_rootfs_rockpro64.tar.gz"
+elif [ $IS_ODROIDN2 = 1 ]; then
+    TARBALL="mynode_rootfs_odroidn2.tar.gz"
 elif [ $IS_RASPI3 = 1 ]; then
     TARBALL="mynode_rootfs_raspi3.tar.gz"
 elif [ $IS_RASPI4 = 1 ]; then
@@ -244,7 +250,7 @@ BTC_VERSION="0.20.1"
 ARCH="UNKNOWN"
 if [ $IS_RASPI = 1 ]; then
     ARCH="arm-linux-gnueabihf"
-elif [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ]; then
+elif [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ] || [ $IS_ODROIDN2 = 1 ]; then
     ARCH="aarch64-linux-gnu"
 elif [ $IS_X86 = 1 ]; then
     ARCH="x86_64-linux-gnu" 
