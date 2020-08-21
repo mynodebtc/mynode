@@ -6,4 +6,5 @@ chromium \
     --disable-suggestions-service \
     --disable-save-password-bubble \
     --start-maximized \
-    --app="http://localhost/" &
+    --guest \
+    http://localhost/ &
