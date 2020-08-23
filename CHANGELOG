@@ -1,3 +1,11 @@
+=== v0.2.15 ===
+- Upgrade LND to v0.11.0
+- Upgrade Loop to v0.8.0
+- Improve UI on Bitcoin CLI Page
+- Use NGINX for Electrum Server port 50002
+- Improve Desktop UI when using a VM or monitor with mouse/keyboard
+- Bug fixes
+
 === v0.2.14 ===
 - Update Bitcoin to v0.20.1
 - Upgrade Specter to v0.6.0
