@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TOTAL_RAM_GB - Comes from mynode_config.sh since this is only sourced from mynode_startup
+
 # Setup default settings
 if [ ! -f /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled_defaulted ]; then
     touch /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled_defaulted
@@ -14,6 +16,32 @@ if [ -f /mnt/hdd/mynode/settings/bitcoin_custom.conf ]; then
 else
     # Generate a default config
     cp -f /usr/share/mynode/bitcoin.conf /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    sync
+
+    # Generate config based on RAM
+    if [ "$TOTAL_RAM_GB" -le "1"  ]; then
+        sed -i "s/dbcache=.*/dbcache=225/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        sed -i "s/maxmempool=.*/maxmempool=50/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    elif [ "$TOTAL_RAM_GB" -le "2" ]; then
+        sed -i "s/dbcache=.*/dbcache=500/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        sed -i "s/maxmempool=.*/maxmempool=50/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    elif [ "$TOTAL_RAM_GB" -le "3" ]; then
+        sed -i "s/dbcache=.*/dbcache=750/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        sed -i "s/maxmempool=.*/maxmempool=100/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    elif [ "$TOTAL_RAM_GB" -le "4" ]; then
+        sed -i "s/dbcache=.*/dbcache=1250/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        sed -i "s/maxmempool=.*/maxmempool=250/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    elif [ "$TOTAL_RAM_GB" -le "6" ]; then
+        sed -i "s/dbcache=.*/dbcache=2000/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        sed -i "s/maxmempool=.*/maxmempool=400/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    elif [ "$TOTAL_RAM_GB" -le "8" ]; then
+        sed -i "s/dbcache=.*/dbcache=2500/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        sed -i "s/maxmempool=.*/maxmempool=500/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    else
+        echo "UNKNOWN RAM AMMOUNT: $TOTAL_RAM_GB"
+        sed -i "s/dbcache=.*/dbcache=500/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        sed -i "s/maxmempool=.*/maxmempool=50/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    fi
 
     # Append other sections
     if [ -f /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled ]; then

@@ -154,9 +154,6 @@ def get_bitcoin_config():
     except:
         return "ERROR"
 
-def regenerate_bitcoin_config():
-    os.system("/usr/bin/mynode_gen_bitcoin_config.sh")
-
 def get_bitcoin_custom_config():
     try:
         with open("/mnt/hdd/mynode/settings/bitcoin_custom.conf") as f:
