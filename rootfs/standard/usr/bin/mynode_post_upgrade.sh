@@ -669,6 +669,7 @@ apt-get clean
 systemctl enable check_in
 systemctl enable docker
 systemctl enable bitcoind
+systemctl enable seed_bitcoin_peers
 systemctl enable lnd
 systemctl enable firewall
 systemctl enable invalid_block_check
