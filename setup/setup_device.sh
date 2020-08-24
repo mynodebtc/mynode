@@ -742,6 +742,7 @@ systemctl enable bandwidth
 systemctl enable www
 systemctl enable drive_check
 systemctl enable bitcoind
+systemctl enable seed_bitcoin_peers
 systemctl enable lnd
 systemctl enable loopd
 systemctl enable lnd_unlock
