@@ -235,9 +235,6 @@ def get_lnd_config():
     except:
         return "ERROR"
 
-def regenerate_lnd_config():
-    os.system("/usr/bin/mynode_gen_lnd_config.sh")
-
 def get_lnd_custom_config():
     try:
         with open("/mnt/hdd/mynode/settings/lnd_custom.conf") as f:
