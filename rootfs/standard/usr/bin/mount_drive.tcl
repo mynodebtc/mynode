@@ -41,7 +41,13 @@ proc findBlockDevices {hardDrivesName} {
 
     foreach dev $devs {
         if [regexp "sd.*|hd.*|vd.*|nvme.*" $dev] {
-            lappend hardDrives $dev
+            # Check if drive mounted - command will fail if not mounted and get caught
+            if {[catch { exec mount | grep $dev }]} {
+                puts "Adding possible drive $dev"
+                lappend hardDrives $dev
+            } else {
+                puts "Skipping drive $dev - already mounted"
+            }
         }
     }
 }
