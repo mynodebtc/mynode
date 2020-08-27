@@ -163,7 +163,7 @@ if [ $IS_RASPI = 1 ]; then
 elif [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ]; then
     ARCH="aarch64-linux-gnu"
 elif [ $IS_X86 = 1 ]; then
-    ARCH="x86_64-linux-gnu" 
+    ARCH="x86_64-linux-gnu"
 else
     echo "Unknown Bitcoin Version"
     exit 1
@@ -283,7 +283,7 @@ fi
 
 # Install LndHub
 LNDHUB_VERSION="v1.2.0"
-LNDHUB_UPGRADE_URL=https://github.com/BlueWallet/LndHub/archive/${LNDHUB_VERSION}.tar.gz
+LNDHUB_UPGRADE_URL=https://github.com/BlueWallet/LndHub/archive/$LNDHUB_VERSION.tar.gz
 LNDHUB_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lndhub_url
 CURRENT=""
 if [ -f $LNDHUB_UPGRADE_URL_FILE ]; then
@@ -309,8 +309,8 @@ cd ~
 
 
 # Install Caravan
-CARAVAN_VERSION="v0.3.2"
-CARAVAN_UPGRADE_URL=https://github.com/unchained-capital/caravan/archive/${CARAVAN_VERSION}.tar.gz
+CARAVAN_VERSION="v0.3.3"
+CARAVAN_UPGRADE_URL=https://github.com/unchained-capital/caravan/archive/$CARAVAN_VERSION.tar.gz
 CARAVAN_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.caravan_url
 CARAVAN_SETTINGS_UPDATE_FILE=/home/bitcoin/.mynode/.caravan_settings_1
 CURRENT=""
@@ -323,7 +323,7 @@ if [ "$CURRENT" != "$CARAVAN_UPGRADE_URL" ] || [ ! -f $CARAVAN_SETTINGS_UPDATE_F
 
     rm -f caravan.tar.gz
     wget $CARAVAN_UPGRADE_URL -O caravan.tar.gz
-    tar -xzf caravan.tar.gz 
+    tar -xzf caravan.tar.gz
     rm -f caravan.tar.gz
     mv caravan-* caravan
     chown -R bitcoin:bitcoin caravan
@@ -337,7 +337,8 @@ cd ~
 
 
 # Install cors proxy (my fork)
-CORSPROXY_UPGRADE_URL=https://github.com/tehelsper/CORS-Proxy/archive/v1.7.0.tar.gz
+CORSPROXY_VERSION="v1.7.0"
+CORSPROXY_UPGRADE_URL=https://github.com/tehelsper/CORS-Proxy/archive/$CORSPROXY_VERSION.tar.gz
 CORSPROXY_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.corsproxy_url
 CURRENT=""
 if [ -f $CORSPROXY_UPGRADE_URL_FILE ]; then
@@ -349,7 +350,7 @@ if [ "$CURRENT" != "$CORSPROXY_UPGRADE_URL" ]; then
 
     rm -f corsproxy.tar.gz
     wget $CORSPROXY_UPGRADE_URL -O corsproxy.tar.gz
-    tar -xzf corsproxy.tar.gz 
+    tar -xzf corsproxy.tar.gz
     rm -f corsproxy.tar.gz
     mv CORS-* corsproxy
 
@@ -378,7 +379,7 @@ fi
 # Upgrade JoinMarket
 echo "Upgrading JoinMarket..."
 if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
-    JOINMARKET_VERSION=v0.6.2
+    JOINMARKET_VERSION="v0.7.0"
     JOINMARKET_UPGRADE_URL=https://github.com/JoinMarket-Org/joinmarket-clientserver/archive/$JOINMARKET_VERSION.tar.gz
     JOINMARKET_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.joinmarket_version
     CURRENT=""
@@ -401,7 +402,7 @@ if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
         sudo -u bitcoin tar -xvf joinmarket.tar.gz
         sudo -u bitcoin rm joinmarket.tar.gz
         mv joinmarket-clientserver-* joinmarket-clientserver
-        
+
         cd joinmarket-clientserver
         yes | ./install.sh --without-qt
 
@@ -410,7 +411,8 @@ if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
 fi
 
 # Install Whirlpool
-WHIRLPOOL_UPGRADE_URL=https://github.com/Samourai-Wallet/whirlpool-client-cli/releases/download/0.10.5/whirlpool-client-cli-0.10.5-run.jar
+WHIRLPOOL_VERSION="0.10.5"
+WHIRLPOOL_UPGRADE_URL=https://github.com/Samourai-Wallet/whirlpool-client-cli/releases/download/$WHIRLPOOL_VERSION/whirlpool-client-cli-$WHIRLPOOL_VERSION-run.jar
 WHIRLPOOL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.whirlpool_url
 CURRENT=""
 if [ -f $WHIRLPOOL_UPGRADE_URL_FILE ]; then
@@ -421,7 +423,7 @@ if [ "$CURRENT" != "$WHIRLPOOL_UPGRADE_URL" ]; then
     cd /opt/mynode/whirlpool
     sudo rm -rf *.jar
     sudo -u bitcoin wget -O whirlpool.jar $WHIRLPOOL_UPGRADE_URL
-    
+
     echo $WHIRLPOOL_UPGRADE_URL > $WHIRLPOOL_UPGRADE_URL_FILE
 fi
 
@@ -450,7 +452,7 @@ if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
         sudo -u bitcoin mv RTL-* RTL
         cd RTL
         sudo -u bitcoin NG_CLI_ANALYTICS=false npm install --only=production
-        
+
         mkdir -p /home/bitcoin/.mynode/
         chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
         echo $RTL_UPGRADE_URL > $RTL_UPGRADE_URL_FILE
@@ -460,7 +462,8 @@ if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
 fi
 
 # Upgrade BTC RPC Explorer
-BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/v2.0.2.tar.gz
+BTCRPCEXPLORER_VERSION="v2.0.2"
+BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/$BTCRPCEXPLORER_VERSION.tar.gz
 BTCRPCEXPLORER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btcrpcexplorer_url
 CURRENT=""
 if [ -f $BTCRPCEXPLORER_UPGRADE_URL_FILE ]; then
@@ -517,7 +520,7 @@ fi
 
 
 # Upgrade Specter Desktop
-SPECTER_UPGRADE_VERSION=0.6.0
+SPECTER_UPGRADE_VERSION="0.6.1"
 SPECTER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.spectre_url
 CURRENT=""
 if [ -f $SPECTER_UPGRADE_URL_FILE ]; then
@@ -544,7 +547,8 @@ fi
 
 
 # Upgrade Thunderhub
-THUNDERHUB_UPGRADE_URL=https://github.com/apotdevin/thunderhub/archive/v0.9.0.tar.gz
+THUNDERHUB_VERSION="v0.9.7"
+THUNDERHUB_UPGRADE_URL=https://github.com/apotdevin/thunderhub/archive/$THUNDERHUB_VERSION.tar.gz
 THUNDERHUB_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.thunderhub_url
 CURRENT=""
 if [ -f $THUNDERHUB_UPGRADE_URL_FILE ]; then
@@ -576,7 +580,8 @@ LNDCONNECTARCH="lndconnect-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LNDCONNECTARCH="lndconnect-linux-amd64"
 fi
-LNDCONNECT_UPGRADE_URL=https://github.com/LN-Zap/lndconnect/releases/download/v0.2.0/$LNDCONNECTARCH-v0.2.0.tar.gz
+LNDCONNECT_VERSION="v0.2.0"
+LNDCONNECT_UPGRADE_URL=https://github.com/LN-Zap/lndconnect/releases/download/$LNDCONNECT_VERSION/$LNDCONNECTARCH-$LNDCONNECT_VERSION.tar.gz
 LNDCONNECT_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lndconnect_url
 CURRENT=""
 if [ -f $LNDCONNECT_UPGRADE_URL_FILE ]; then
@@ -590,7 +595,7 @@ if [ "$CURRENT" != "$LNDCONNECT_UPGRADE_URL" ]; then
     tar -xvf lndconnect.tar.gz
     rm lndconnect.tar.gz
     mv lndconnect-* lndconnect
-    install -m 0755 -o root -g root -t /usr/local/bin lndconnect/* 
+    install -m 0755 -o root -g root -t /usr/local/bin lndconnect/*
 
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
@@ -627,7 +632,7 @@ fi
 #     tar -xvf tor.tar.gz
 #     rm tor.tar.gz
 #     mv tor-* tor
-    
+
 #     cd tor
 #     ./configure
 #     make
