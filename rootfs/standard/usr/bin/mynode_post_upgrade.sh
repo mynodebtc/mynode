@@ -411,8 +411,8 @@ if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
 fi
 
 # Install Whirlpool
-WHIRLPOOL_VERSION="0.10.5"
-WHIRLPOOL_UPGRADE_URL=https://github.com/Samourai-Wallet/whirlpool-client-cli/releases/download/$WHIRLPOOL_VERSION/whirlpool-client-cli-$WHIRLPOOL_VERSION-run.jar
+# update the entire URL with every available upgrade
+WHIRLPOOL_UPGRADE_URL=https://code.samourai.io/whirlpool/whirlpool-client-cli/uploads/7998ea5a9bb180451616809bc346b9ac/whirlpool-client-cli-0.10.8-run.jar
 WHIRLPOOL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.whirlpool_url
 CURRENT=""
 if [ -f $WHIRLPOOL_UPGRADE_URL_FILE ]; then
