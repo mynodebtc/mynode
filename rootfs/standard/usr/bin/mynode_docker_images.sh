@@ -70,8 +70,8 @@ while true; do
     fi
 
     # Install Dojo
-    DOJO_VERSION="v1.5.0"
-    DOJO_UPGRADE_URL=https://github.com/Samourai-Wallet/samourai-dojo/archive/$DOJO_VERSION.tar.gz
+    DOJO_VERSION="v1.7.0"
+    DOJO_UPGRADE_URL=https://code.samourai.io/dojo/samourai-dojo/-/archive/$DOJO_VERSION/samourai-dojo-$DOJO_VERSION.tar.gz
     DOJO_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/dojo_url
     CURRENT=""
     INSTALL=true
