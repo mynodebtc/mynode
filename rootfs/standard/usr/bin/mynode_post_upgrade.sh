@@ -312,13 +312,13 @@ cd ~
 # Install Caravan
 CARAVAN_VERSION="v0.3.3"
 CARAVAN_UPGRADE_URL=https://github.com/unchained-capital/caravan/archive/$CARAVAN_VERSION.tar.gz
-CARAVAN_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.caravan_url
-CARAVAN_SETTINGS_UPDATE_FILE=/home/bitcoin/.mynode/.caravan_settings_1
+CARAVAN_VERSION_FILE=/home/bitcoin/.mynode/caravan_version
+CARAVAN_SETTINGS_UPDATE_FILE=/home/bitcoin/.mynode/caravan_settings_1
 CURRENT=""
-if [ -f $CARAVAN_UPGRADE_URL_FILE ]; then
-    CURRENT=$(cat $CARAVAN_UPGRADE_URL_FILE)
+if [ -f $CARAVAN_VERSION_FILE ]; then
+    CURRENT=$(cat $CARAVAN_VERSION_FILE)
 fi
-if [ "$CURRENT" != "$CARAVAN_UPGRADE_URL" ] || [ ! -f $CARAVAN_SETTINGS_UPDATE_FILE ]; then
+if [ "$CURRENT" != "$CARAVAN_VERSION" ] || [ ! -f $CARAVAN_SETTINGS_UPDATE_FILE ]; then
     cd /opt/mynode
     rm -rf caravan
 
@@ -331,7 +331,7 @@ if [ "$CURRENT" != "$CARAVAN_UPGRADE_URL" ] || [ ! -f $CARAVAN_SETTINGS_UPDATE_F
 
     cd caravan
     sudo -u bitcoin npm install --only=production
-    echo $CARAVAN_UPGRADE_URL > $CARAVAN_UPGRADE_URL_FILE
+    echo $CARAVAN_UPGRADE_URL > $CARAVAN_VERSION_FILE
     touch $CARAVAN_SETTINGS_UPDATE_FILE
 fi
 cd ~
@@ -382,10 +382,10 @@ echo "Upgrading JoinMarket..."
 if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
     JOINMARKET_VERSION="v0.7.0"
     JOINMARKET_UPGRADE_URL=https://github.com/JoinMarket-Org/joinmarket-clientserver/archive/$JOINMARKET_VERSION.tar.gz
-    JOINMARKET_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.joinmarket_version
+    JOINMARKET_VERSION_FILE=/home/bitcoin/.mynode/joinmarket_version
     CURRENT=""
-    if [ -f $JOINMARKET_UPGRADE_URL_FILE ]; then
-        CURRENT=$(cat $JOINMARKET_UPGRADE_URL_FILE)
+    if [ -f $JOINMARKET_VERSION_FILE ]; then
+        CURRENT=$(cat $JOINMARKET_VERSION_FILE)
     fi
     if [ "$CURRENT" != "$JOINMARKET_VERSION" ]; then
         # Download and build JoinMarket
@@ -407,7 +407,7 @@ if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
         cd joinmarket-clientserver
         yes | ./install.sh --without-qt
 
-        echo $JOINMARKET_VERSION > $JOINMARKET_UPGRADE_URL_FILE
+        echo $JOINMARKET_VERSION > $JOINMARKET_VERSION_FILE
     fi
 fi
 
@@ -433,12 +433,12 @@ fi
 RTL_VERSION="v0.9.0"
 RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/$RTL_VERSION.tar.gz
 RTL_UPGRADE_ASC_URL=https://github.com/Ride-The-Lightning/RTL/releases/download/$RTL_VERSION/$RTL_VERSION.tar.gz.asc
-RTL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.rtl_url
+RTL_VERSION_FILE=/home/bitcoin/.mynode/rtl_version
 CURRENT=""
-if [ -f $RTL_UPGRADE_URL_FILE ]; then
-    CURRENT=$(cat $RTL_UPGRADE_URL_FILE)
+if [ -f $RTL_VERSION_FILE ]; then
+    CURRENT=$(cat $RTL_VERSION_FILE)
 fi
-if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
+if [ "$CURRENT" != "$RTL_VERSION" ]; then
     cd /opt/mynode
     rm -rf RTL
 
@@ -456,7 +456,7 @@ if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
 
         mkdir -p /home/bitcoin/.mynode/
         chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
-        echo $RTL_UPGRADE_URL > $RTL_UPGRADE_URL_FILE
+        echo $RTL_VERSION > $RTL_VERSION_FILE
     else
         echo "ERROR UPGRADING RTL - GPG FAILED"
     fi
