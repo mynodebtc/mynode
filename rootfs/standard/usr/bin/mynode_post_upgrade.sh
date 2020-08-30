@@ -245,20 +245,20 @@ fi
 
 # Upgrade Loop
 echo "Upgrading loopd..."
-LOOP_VERSION="v0.8.0-beta"
+LOOP_VERSION="v0.8.1-beta"
 LOOP_ARCH="loop-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LOOP_ARCH="loop-linux-amd64"
 fi
 LOOP_UPGRADE_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/$LOOP_ARCH-$LOOP_VERSION.tar.gz
-LOOP_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.loop_url
 LOOP_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt
 LOOP_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt.sig
+LOOP_VERSION_FILE=/home/bitcoin/.mynode/loop_version
 CURRENT=""
-if [ -f $LOOP_UPGRADE_URL_FILE ]; then
-    CURRENT=$(cat $LOOP_UPGRADE_URL_FILE)
+if [ -f $LOOP_VERSION_FILE ]; then
+    CURRENT=$(cat $LOOP_VERSION_FILE)
 fi
-if [ "$CURRENT" != "$LOOP_UPGRADE_URL" ]; then
+if [ "$CURRENT" != "$LOOP_VERSION" ]; then
     # Download and install Loop
     rm -rf /opt/download
     mkdir -p /opt/download
@@ -276,7 +276,7 @@ if [ "$CURRENT" != "$LOOP_UPGRADE_URL" ]; then
         install -m 0755 -o root -g root -t /usr/local/bin loop/*
 
         # Mark current version
-        echo $LOOP_UPGRADE_URL > $LOOP_UPGRADE_URL_FILE
+        echo $LOOP_VERSION > $LOOP_VERSION_FILE
     else
         echo "ERROR UPGRADING LND - GPG FAILED"
     fi
@@ -521,11 +521,11 @@ fi
 
 
 # Upgrade Specter Desktop
-SPECTER_UPGRADE_VERSION="0.6.1"
-SPECTER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.spectre_url
+SPECTER_UPGRADE_VERSION="0.7.2"
+SPECTER_VERSION_FILE=/home/bitcoin/.mynode/specter_version
 CURRENT=""
-if [ -f $SPECTER_UPGRADE_URL_FILE ]; then
-    CURRENT=$(cat $SPECTER_UPGRADE_URL_FILE)
+if [ -f $SPECTER_VERSION_FILE ]; then
+    CURRENT=$(cat $SPECTER_VERSION_FILE)
 fi
 if [ "$CURRENT" != "$SPECTER_UPGRADE_VERSION" ]; then
     cd /opt/mynode
@@ -543,19 +543,19 @@ if [ "$CURRENT" != "$SPECTER_UPGRADE_VERSION" ]; then
     pip3 install cryptoadvance.specter===$SPECTER_UPGRADE_VERSION --upgrade
     deactivate
 
-    echo $SPECTER_UPGRADE_VERSION > $SPECTER_UPGRADE_URL_FILE
+    echo $SPECTER_UPGRADE_VERSION > $SPECTER_VERSION_FILE
 fi
 
 
 # Upgrade Thunderhub
-THUNDERHUB_VERSION="v0.9.7"
+THUNDERHUB_VERSION="v0.9.8"
 THUNDERHUB_UPGRADE_URL=https://github.com/apotdevin/thunderhub/archive/$THUNDERHUB_VERSION.tar.gz
-THUNDERHUB_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.thunderhub_url
+THUNDERHUB_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version
 CURRENT=""
-if [ -f $THUNDERHUB_UPGRADE_URL_FILE ]; then
-    CURRENT=$(cat $THUNDERHUB_UPGRADE_URL_FILE)
+if [ -f $THUNDERHUB_VERSION_FILE ]; then
+    CURRENT=$(cat $THUNDERHUB_VERSION_FILE)
 fi
-if [ "$CURRENT" != "$THUNDERHUB_UPGRADE_URL" ]; then
+if [ "$CURRENT" != "$THUNDERHUB_VERSION" ]; then
     cd /opt/mynode
     rm -rf thunderhub
     sudo -u bitcoin wget $THUNDERHUB_UPGRADE_URL -O thunderhub.tar.gz
@@ -572,7 +572,7 @@ if [ "$CURRENT" != "$THUNDERHUB_UPGRADE_URL" ]; then
     rm -f /opt/mynode/thunderhub/.env.local
     sudo ln -s /mnt/hdd/mynode/thunderhub/.env.local /opt/mynode/thunderhub/.env.local
 
-    echo $THUNDERHUB_UPGRADE_URL > $THUNDERHUB_UPGRADE_URL_FILE
+    echo $THUNDERHUB_VERSION > $THUNDERHUB_VERSION_FILE
 fi
 
 
