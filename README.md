@@ -33,7 +33,7 @@ Each myNode device comes with a number of wonderful features:
 - Lightning Node (LND v0.11.0-beta)
 - Electrum Server (Electrum Rust Server aka Electrs 0.8.5)
 - BTCPay Server (v1.0.4.4)
-- RTL (Ride the Lightning) - Lightning Wallet (v0.8.3-beta)
+- RTL (Ride the Lightning) - Lightning Wallet (v0.9.0-beta)
 - Samourai Dojo (v1.5.0)
 - Samourai Whirlpool (whirlpool-client-cli v0.10.5)
 - Specter Desktop (v0.6.1)

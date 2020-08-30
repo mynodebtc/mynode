@@ -199,10 +199,10 @@ fi
 
 
 # Install Python3 specific tools (run multiple times to make sure success)
-pip3 install wheel setuptools
+pip3 install --upgrade pip wheel setuptools
 pip3 install bitstring lnd-grpc pycoin aiohttp connectrum python-bitcoinlib
 pip3 install gnureadline
-pip3 install lndmanage==0.10.0   # Install LND Manage (keep up to date with LND)
+pip3 install lndmanage==0.11.0   # Install LND Manage (keep up to date with LND)
 pip3 install docker-compose
 pip3 install pipenv
 pip3 install pysocks
