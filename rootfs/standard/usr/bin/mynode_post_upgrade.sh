@@ -413,9 +413,9 @@ fi
 
 # Install Whirlpool
 WHIRLPOOL_VERSION="0.10.8"
-WHIRLPOOL_UPGRADE_URL_HASH="7998ea5a9bb180451616809bc346b9ac"
 WHIRLPOOL_HASH="62e17b6020d0821a98e99ebb773b46191770ec186ceaa3e616a428f5cafe9f49"
-WHIRLPOOL_UPGRADE_URL=https://code.samourai.io/whirlpool/whirlpool-client-cli/uploads/$WHIRLPOOL_UPGRADE_URL_HASH/whirlpool-client-cli-$WHIRLPOOL_VERSION-run.jar
+WHIRLPOOL_UPGRADE_URL=https://code.samourai.io/whirlpool/whirlpool-client-cli/uploads/7998ea5a9bb180451616809bc346b9ac/whirlpool-client-cli-$WHIRLPOOL_VERSION-run.jar
+WHIRLPOOL_SIG_URL=https://code.samourai.io/whirlpool/whirlpool-client-cli/uploads/8d919af2d97657a835195a928e7646bc/whirlpool-client-cli-$WHIRLPOOL_VERSION-run.jar.sig.asc
 WHIRLPOOL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.whirlpool_url
 CURRENT=""
 if [ -f $WHIRLPOOL_UPGRADE_URL_FILE ]; then
@@ -429,6 +429,8 @@ if [ "$CURRENT" != "$WHIRLPOOL_UPGRADE_URL" ]; then
 
     echo "$WHIRLPOOL_HASH  whirlpool.jar" > WHIRLPOOL_SHASUM
     sha256sum --check WHIRLPOOL_SHASUM
+    wget -O whirlpool.asc $WHIRLPOOL_SIG_URL
+    gpg --verify whirlpool.asc
 
     echo $WHIRLPOOL_UPGRADE_URL > $WHIRLPOOL_UPGRADE_URL_FILE
 fi
