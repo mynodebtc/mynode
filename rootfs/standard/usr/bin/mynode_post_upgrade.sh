@@ -56,6 +56,7 @@ curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
 curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
 curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
+curl https://samouraiwallet.com/pgp.txt | gpg --import # two keys from Samourai team
 gpg  --keyserver hkps://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E #loopd
 $TORIFY curl https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import  # tor
 gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | apt-key add -                                       # tor
@@ -411,8 +412,10 @@ if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
 fi
 
 # Install Whirlpool
-# update the entire URL with every available upgrade
-WHIRLPOOL_UPGRADE_URL=https://code.samourai.io/whirlpool/whirlpool-client-cli/uploads/7998ea5a9bb180451616809bc346b9ac/whirlpool-client-cli-0.10.8-run.jar
+WHIRLPOOL_VERSION="0.10.8"
+WHIRLPOOL_UPGRADE_URL_HASH="7998ea5a9bb180451616809bc346b9ac"
+WHIRLPOOL_HASH="62e17b6020d0821a98e99ebb773b46191770ec186ceaa3e616a428f5cafe9f49"
+WHIRLPOOL_UPGRADE_URL=https://code.samourai.io/whirlpool/whirlpool-client-cli/uploads/$WHIRLPOOL_UPGRADE_URL_HASH/whirlpool-client-cli-$WHIRLPOOL_VERSION-run.jar
 WHIRLPOOL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.whirlpool_url
 CURRENT=""
 if [ -f $WHIRLPOOL_UPGRADE_URL_FILE ]; then
@@ -423,6 +426,9 @@ if [ "$CURRENT" != "$WHIRLPOOL_UPGRADE_URL" ]; then
     cd /opt/mynode/whirlpool
     sudo rm -rf *.jar
     sudo -u bitcoin wget -O whirlpool.jar $WHIRLPOOL_UPGRADE_URL
+
+    echo "$WHIRLPOOL_HASH  whirlpool.jar" > WHIRLPOOL_SHASUM
+    sha256sum --check WHIRLPOOL_SHASUM
 
     echo $WHIRLPOOL_UPGRADE_URL > $WHIRLPOOL_UPGRADE_URL_FILE
 fi
