@@ -427,8 +427,9 @@ if [ "$CURRENT" != "$WHIRLPOOL_UPGRADE_URL" ]; then
     sudo rm -rf *.jar
     sudo -u bitcoin wget -O whirlpool.jar $WHIRLPOOL_UPGRADE_URL
 
-    echo "$WHIRLPOOL_HASH  whirlpool.jar" > WHIRLPOOL_SHASUM
-    sha256sum --check WHIRLPOOL_SHASUM
+    echo "$WHIRLPOOL_HASH  whirlpool.jar" > /tmp/whirlpool.shasum
+    sha256sum --check /tmp/whirlpool.shasum
+    rm /tmp/whirlpool.shasum
     wget -O whirlpool.asc $WHIRLPOOL_SIG_URL
     gpg --verify whirlpool.asc
 
