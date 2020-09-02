@@ -8,9 +8,17 @@
         <div class="mynode_back_div">
             <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
         </div>
-        
+
         <div class="main_header">Samourai Whirlpool</div>
         <div class="app_tile_row">
+            <div class="info_tile">
+              <div class="info_tile_header">Toggle</div>
+              <div class="info_tile_contents">
+                <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;" href="/toggle-whirlpool">
+                  {% if whirlpool_enabled %}Disable{% else %}Enable{% endif %}
+                </a>
+              </div>
+            </div>
             <div class="info_tile">
                 <div class="info_tile_header">Status</div>
                 <div class="info_tile_contents">{{whirlpool_status}}</div>
@@ -39,17 +47,15 @@
         <div class="instructions">
             <div class="instructions-header">Instructions to setup Whirlpool</div>
             <ol class="instructions-steps">
-                <li>You will need the Samourai wallet passphrase and pairing payload in next steps.</li>
-                <li>To get the pairing payload, open up your Samourai mobile wallet. Press 3 dots on top right -> Settings -> Transactions-> Pair to Whirlpool GUI. Copy the code to clipboard and send the code to yourself securely. It would look something like:<br>{"pairing":{"type":"whirlpool.gui","version":"3.0.0"...</li>
-                <li>Download and install Whirlpool GUI from <a href="https://github.com/Samourai-Wallet/whirlpool-gui/releases" target="_blank">https://github.com/Samourai-Wallet/whirlpool-gui/releases</a>.</li>
-                <li>Ensure that Whirlpool is running on myNode and status is "Waiting for initialization".</li>
-                <li>Select "Connect to remote CLI". Type in https://mynode.local (or the IP address of your myNode in the https://&lt;mynode-IP-address&gt; format), leave the port as 8899 and leave the API key field empty. Click on "Connect".</li>
-                <li>Once connected, paste the pairing payload from Step 2, enable Tor using the slider and click on "Initialize GUI".</li>
-                <li>Initialization is successful if you see "CLI restart required. Wallet inizialization success". Repeat steps 3-6 if you don't see it.</li>
-                <li>Restart myNode Whirlpool by clicking on "Restart" button above.</li>
-                <li>myNode Whirlpool status should now be "Running" and API key should now be visible. This API key is useful if you reset the Whirlpool GUI.</li>
-                <li>Click on "Retry to connect" if it doesn't connect automatically.</li>
-                <li>Type in the Samourai mobile wallet passphrase (not the pairing payload) and click on "Sign in".</li>
+                <li>Ensure that whirlpool is enabled and you see "Waiting for initialization.." on status tile.</li>
+                <li>Download and install Whirlpool GUI v0.10.2 from <a href="https://samouraiwallet.com/download" target="_blank">https://samouraiwallet.com/download</a>.</li>
+                <li>On the installed Whirlpool GUI, select "Advanced: remote CLI". Type in https://mynode.local:8899 (or use the raw IP address) and click on "Connect".</li>
+                <li>Follow the instructions and scan your payload. Use secure channels if you are copy/pasting the payload.</li>
+                <li>Once connected, enable Tor using the slider and click on "Initialize GUI".</li>
+                <li>It might take few seconds to initialize GUI or click on the retry button.</li>
+                <li>Refresh this page to see the status change to "Running" and the API key.</li>
+                <li>Type in the passphrase used in Samourai mobile wallet and click on "Sign in".</li>
+                <li>It might take few seconds to authenticate and show the available pools.</li>
                 <li>Enjoy mixing your coins!</li>
             </ol>
 
@@ -57,8 +63,8 @@
 
             <div class="instructions-header">Tips and Notes</div>
             <ul style="font-size: 12px;">
-                <li>The pairing payload contains an encrypted version of your Samourai mobile wallet password/passphrase 
-                    which enables the Whirlpool GUI  to interface with your Samourai wallet. If you receive 
+                <li>The pairing payload contains an encrypted version of your Samourai mobile wallet password/passphrase
+                    which enables the Whirlpool GUI  to interface with your Samourai wallet. If you receive
                     "authentication /passphrase invalid  errors" when you try to open the GUI, you need to update your
                     pairing payload and repeat this procedure so that it contains your current Samourai password. Note
                     that the payload  should be sent to yourself by  secure channels to prevent it from being
