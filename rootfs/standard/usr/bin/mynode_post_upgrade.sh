@@ -56,6 +56,7 @@ curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
 curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
 curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
+curl https://samouraiwallet.com/pgp.txt | gpg --import # two keys from Samourai team
 gpg  --keyserver hkps://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E #loopd
 $TORIFY curl https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import  # tor
 gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | apt-key add -                                       # tor
@@ -331,7 +332,7 @@ if [ "$CURRENT" != "$CARAVAN_VERSION" ] || [ ! -f $CARAVAN_SETTINGS_UPDATE_FILE 
 
     cd caravan
     sudo -u bitcoin npm install --only=production
-    echo $CARAVAN_UPGRADE_URL > $CARAVAN_VERSION_FILE
+    echo $CARAVAN_VERSION > $CARAVAN_VERSION_FILE
     touch $CARAVAN_SETTINGS_UPDATE_FILE
 fi
 cd ~
@@ -412,12 +413,15 @@ if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
 fi
 
 # Install Whirlpool
-WHIRLPOOL_VERSION="0.10.5"
-WHIRLPOOL_UPGRADE_URL=https://github.com/Samourai-Wallet/whirlpool-client-cli/releases/download/$WHIRLPOOL_VERSION/whirlpool-client-cli-$WHIRLPOOL_VERSION-run.jar
-WHIRLPOOL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.whirlpool_url
+WHIRLPOOL_VERSION="0.10.8"
+WHIRLPOOL_UPLOAD_FILE_ID="7998ea5a9bb180451616809bc346b9ac"
+WHIRLPOOL_UPLOAD_SIG_ID="8d919af2d97657a835195a928e7646bc"
+WHIRLPOOL_UPGRADE_URL=https://code.samourai.io/whirlpool/whirlpool-client-cli/uploads/$WHIRLPOOL_UPLOAD_FILE_ID/whirlpool-client-cli-$WHIRLPOOL_VERSION-run.jar
+WHIRLPOOL_SIG_URL=https://code.samourai.io/whirlpool/whirlpool-client-cli/uploads/$WHIRLPOOL_UPLOAD_SIG_ID/whirlpool-client-cli-$WHIRLPOOL_VERSION-run.jar.sig.asc
+WHIRLPOOL_VERSION_FILE=/home/bitcoin/.mynode/whirlpool_version
 CURRENT=""
-if [ -f $WHIRLPOOL_UPGRADE_URL_FILE ]; then
-    CURRENT=$(cat $WHIRLPOOL_UPGRADE_URL_FILE)
+if [ -f $WHIRLPOOL_VERSION_FILE ]; then
+    CURRENT=$(cat $WHIRLPOOL_VERSION_FILE)
 fi
 if [ "$CURRENT" != "$WHIRLPOOL_UPGRADE_URL" ]; then
     sudo -u bitcoin mkdir -p /opt/mynode/whirlpool
@@ -425,7 +429,10 @@ if [ "$CURRENT" != "$WHIRLPOOL_UPGRADE_URL" ]; then
     sudo rm -rf *.jar
     sudo -u bitcoin wget -O whirlpool.jar $WHIRLPOOL_UPGRADE_URL
 
-    echo $WHIRLPOOL_UPGRADE_URL > $WHIRLPOOL_UPGRADE_URL_FILE
+    wget -O whirlpool.asc $WHIRLPOOL_SIG_URL
+    gpg --verify whirlpool.asc
+
+    echo $WHIRLPOOL_VERSION > $WHIRLPOOL_VERSION_FILE
 fi
 
 

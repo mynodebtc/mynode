@@ -423,7 +423,7 @@ if [ "$CURRENT" != "$CARAVAN_VERSION" ]; then
 
     cd caravan
     sudo -u bitcoin npm install --only=production
-    echo $CARAVAN_UPGRADE_URL > $CARAVAN_VERSION_FILE
+    echo $CARAVAN_VERSION > $CARAVAN_VERSION_FILE
 fi
 cd ~
 
@@ -506,12 +506,15 @@ if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
 fi
 
 # Install Whirlpool
-WHIRLPOOL_VERSION="0.10.5"
-WHIRLPOOL_UPGRADE_URL=https://github.com/Samourai-Wallet/whirlpool-client-cli/releases/download/$WHIRLPOOL_VERSION/whirlpool-client-cli-$WHIRLPOOL_VERSION-run.jar
-WHIRLPOOL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.whirlpool_url
+WHIRLPOOL_VERSION="0.10.8"
+WHIRLPOOL_UPLOAD_FILE_ID="7998ea5a9bb180451616809bc346b9ac"
+WHIRLPOOL_UPLOAD_SIG_ID="8d919af2d97657a835195a928e7646bc"
+WHIRLPOOL_UPGRADE_URL=https://code.samourai.io/whirlpool/whirlpool-client-cli/uploads/$WHIRLPOOL_UPLOAD_FILE_ID/whirlpool-client-cli-$WHIRLPOOL_VERSION-run.jar
+WHIRLPOOL_SIG_URL=https://code.samourai.io/whirlpool/whirlpool-client-cli/uploads/$WHIRLPOOL_UPLOAD_SIG_ID/whirlpool-client-cli-$WHIRLPOOL_VERSION-run.jar.sig.asc
+WHIRLPOOL_VERSION_FILE=/home/bitcoin/.mynode/whirlpool_version
 CURRENT=""
-if [ -f $WHIRLPOOL_UPGRADE_URL_FILE ]; then
-    CURRENT=$(cat $WHIRLPOOL_UPGRADE_URL_FILE)
+if [ -f $WHIRLPOOL_VERSION_FILE ]; then
+    CURRENT=$(cat $WHIRLPOOL_VERSION_FILE)
 fi
 if [ "$CURRENT" != "$WHIRLPOOL_UPGRADE_URL" ]; then
     sudo -u bitcoin mkdir -p /opt/mynode/whirlpool
@@ -519,7 +522,10 @@ if [ "$CURRENT" != "$WHIRLPOOL_UPGRADE_URL" ]; then
     sudo rm -rf *.jar
     sudo -u bitcoin wget -O whirlpool.jar $WHIRLPOOL_UPGRADE_URL
 
-    echo $WHIRLPOOL_UPGRADE_URL > $WHIRLPOOL_UPGRADE_URL_FILE
+    wget -O whirlpool.asc $WHIRLPOOL_SIG_URL
+    gpg --verify whirlpool.asc
+
+    echo $WHIRLPOOL_VERSION > $WHIRLPOOL_VERSION_FILE
 fi
 
 
