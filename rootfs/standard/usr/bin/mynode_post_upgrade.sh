@@ -332,7 +332,7 @@ if [ "$CURRENT" != "$CARAVAN_VERSION" ] || [ ! -f $CARAVAN_SETTINGS_UPDATE_FILE 
 
     cd caravan
     sudo -u bitcoin npm install --only=production
-    echo $CARAVAN_UPGRADE_URL > $CARAVAN_VERSION_FILE
+    echo $CARAVAN_VERSION > $CARAVAN_VERSION_FILE
     touch $CARAVAN_SETTINGS_UPDATE_FILE
 fi
 cd ~
