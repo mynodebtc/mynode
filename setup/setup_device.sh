@@ -423,7 +423,7 @@ if [ "$CURRENT" != "$CARAVAN_VERSION" ]; then
 
     cd caravan
     sudo -u bitcoin npm install --only=production
-    echo $CARAVAN_UPGRADE_URL > $CARAVAN_VERSION_FILE
+    echo $CARAVAN_VERSION > $CARAVAN_VERSION_FILE
 fi
 cd ~
 
