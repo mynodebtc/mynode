@@ -259,12 +259,12 @@ else
     echo "Unknown Bitcoin Version"
     exit 1
 fi
+BTC_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version
 BTC_UPGRADE_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/bitcoin-$BTC_VERSION-$ARCH.tar.gz
-BTC_UPGRADE_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version
 BTC_UPGRADE_SHA256SUM_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/SHA256SUMS.asc
 CURRENT=""
-if [ -f $BTC_UPGRADE_VERSION_FILE ]; then
-    CURRENT=$(cat $BTC_UPGRADE_VERSION_FILE)
+if [ -f $BTC_VERSION_FILE ]; then
+    CURRENT=$(cat $BTC_VERSION_FILE)
 fi
 if [ "$CURRENT" != "$BTC_VERSION" ]; then
     # Download and install Bitcoin
@@ -291,7 +291,7 @@ if [ "$CURRENT" != "$BTC_VERSION" ]; then
     mkdir -p /home/admin/.bitcoin
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
-    echo $BTC_VERSION > $BTC_UPGRADE_VERSION_FILE
+    echo $BTC_VERSION > $BTC_VERSION_FILE
 fi
 cd ~
 
@@ -301,15 +301,15 @@ LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
 fi
+LND_VERSION_FILE=/home/bitcoin/.mynode/lnd_version
 LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/$LND_ARCH-$LND_VERSION.tar.gz
-LND_UPGRADE_VERSION_FILE=/home/bitcoin/.mynode/.lnd_url
 LND_UPGRADE_MANIFEST_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
 LND_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt.sig
 CURRENT=""
-if [ -f $LND_UPGRADE_VERSION_FILE ]; then
-    CURRENT=$(cat $LND_UPGRADE_VERSION_FILE)
+if [ -f $LND_VERSION_FILE ]; then
+    CURRENT=$(cat $LND_VERSION_FILE)
 fi
-if [ "$CURRENT" != "$LND_UPGRADE_URL" ]; then
+if [ "$CURRENT" != "$LND_VERSION" ]; then
     rm -rf /opt/download
     mkdir -p /opt/download
     cd /opt/download
@@ -327,7 +327,7 @@ if [ "$CURRENT" != "$LND_UPGRADE_URL" ]; then
 
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
-    echo $LND_VERSION > $LND_UPGRADE_VERSION_FILE
+    echo $LND_VERSION > $LND_VERSION_FILE
 fi
 cd ~
 
@@ -346,7 +346,7 @@ CURRENT=""
 if [ -f $LOOP_VERSION_FILE ]; then
     CURRENT=$(cat $LOOP_VERSION_FILE)
 fi
-if [ "$CURRENT" != "$LOOP_UPGRADE_URL" ]; then
+if [ "$CURRENT" != "$LOOP_VERSION" ]; then
     # Download and install Loop
     rm -rf /opt/download
     mkdir -p /opt/download
@@ -618,13 +618,13 @@ fi
 
 
 # Upgrade Specter Desktop
-SPECTER_UPGRADE_VERSION="0.7.2"
+SPECTER_VERSION="0.7.2"
 SPECTER_VERSION_FILE=/home/bitcoin/.mynode/specter_version
 CURRENT=""
 if [ -f $SPECTER_VERSION_FILE ]; then
     CURRENT=$(cat $SPECTER_VERSION_FILE)
 fi
-if [ "$CURRENT" != "$SPECTER_UPGRADE_VERSION" ]; then
+if [ "$CURRENT" != "$SPECTER_VERSION" ]; then
     cd /opt/mynode
     rm -rf specter
     mkdir -p specter
@@ -637,10 +637,10 @@ if [ "$CURRENT" != "$SPECTER_UPGRADE_VERSION" ]; then
     fi
     source env/bin/activate
     pip3 install ecdsa===0.13.3
-    pip3 install cryptoadvance.specter===$SPECTER_UPGRADE_VERSION --upgrade
+    pip3 install cryptoadvance.specter===$SPECTER_VERSION --upgrade
     deactivate
 
-    echo $SPECTER_UPGRADE_VERSION > $SPECTER_VERSION_FILE
+    echo $SPECTER_VERSION > $SPECTER_VERSION_FILE
 fi
 
 

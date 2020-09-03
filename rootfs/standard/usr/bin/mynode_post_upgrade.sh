@@ -170,12 +170,12 @@ else
     echo "Unknown Bitcoin Version"
     exit 1
 fi
+BTC_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version
 BTC_UPGRADE_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/bitcoin-$BTC_VERSION-$ARCH.tar.gz
-BTC_UPGRADE_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version
 BTC_UPGRADE_SHA256SUM_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/SHA256SUMS.asc
 CURRENT=""
-if [ -f $BTC_UPGRADE_VERSION_FILE ]; then
-    CURRENT=$(cat $BTC_UPGRADE_VERSION_FILE)
+if [ -f $BTC_VERSION_FILE ]; then
+    CURRENT=$(cat $BTC_VERSION_FILE)
 fi
 if [ "$CURRENT" != "$BTC_VERSION" ]; then
     # Download and install Bitcoin
@@ -196,7 +196,7 @@ if [ "$CURRENT" != "$BTC_VERSION" ]; then
             install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
 
             # Mark current version
-            echo $BTC_VERSION > $BTC_UPGRADE_VERSION_FILE
+            echo $BTC_VERSION > $BTC_VERSION_FILE
         else
             echo "ERROR UPGRADING BITCOIN - GPG FAILED"
         fi
@@ -212,13 +212,13 @@ LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
 fi
+LND_VERSION_FILE=/home/bitcoin/.mynode/lnd_version
 LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/$LND_ARCH-$LND_VERSION.tar.gz
-LND_UPGRADE_VERSION_FILE=/home/bitcoin/.mynode/lnd_version
 LND_UPGRADE_MANIFEST_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
 LND_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt.sig
 CURRENT=""
-if [ -f $LND_UPGRADE_VERSION_FILE ]; then
-    CURRENT=$(cat $LND_UPGRADE_VERSION_FILE)
+if [ -f $LND_VERSION_FILE ]; then
+    CURRENT=$(cat $LND_VERSION_FILE)
 fi
 if [ "$CURRENT" != "$LND_VERSION" ]; then
     # Download and install LND
@@ -238,7 +238,7 @@ if [ "$CURRENT" != "$LND_VERSION" ]; then
         install -m 0755 -o root -g root -t /usr/local/bin lnd/*
 
         # Mark current version
-        echo $LND_VERSION > $LND_UPGRADE_VERSION_FILE
+        echo $LND_VERSION > $LND_VERSION_FILE
     else
         echo "ERROR UPGRADING LND - GPG FAILED"
     fi
@@ -251,10 +251,10 @@ LOOP_ARCH="loop-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LOOP_ARCH="loop-linux-amd64"
 fi
+LOOP_VERSION_FILE=/home/bitcoin/.mynode/loop_version
 LOOP_UPGRADE_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/$LOOP_ARCH-$LOOP_VERSION.tar.gz
 LOOP_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt
 LOOP_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt.sig
-LOOP_VERSION_FILE=/home/bitcoin/.mynode/loop_version
 CURRENT=""
 if [ -f $LOOP_VERSION_FILE ]; then
     CURRENT=$(cat $LOOP_VERSION_FILE)
@@ -528,13 +528,13 @@ fi
 
 
 # Upgrade Specter Desktop
-SPECTER_UPGRADE_VERSION="0.7.2"
+SPECTER_VERSION="0.7.2"
 SPECTER_VERSION_FILE=/home/bitcoin/.mynode/specter_version
 CURRENT=""
 if [ -f $SPECTER_VERSION_FILE ]; then
     CURRENT=$(cat $SPECTER_VERSION_FILE)
 fi
-if [ "$CURRENT" != "$SPECTER_UPGRADE_VERSION" ]; then
+if [ "$CURRENT" != "$SPECTER_VERSION" ]; then
     cd /opt/mynode
     rm -rf specter
     mkdir -p specter
@@ -550,7 +550,7 @@ if [ "$CURRENT" != "$SPECTER_UPGRADE_VERSION" ]; then
     pip3 install cryptoadvance.specter===$SPECTER_UPGRADE_VERSION --upgrade
     deactivate
 
-    echo $SPECTER_UPGRADE_VERSION > $SPECTER_VERSION_FILE
+    echo $SPECTER_VERSION > $SPECTER_VERSION_FILE
 fi
 
 
