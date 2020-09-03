@@ -124,8 +124,9 @@ fi
 
 
 # Install any pip3 software
+pip3 install --upgrade pip setuptools wheel
 pip3 install gnureadline --no-cache-dir
-pip3 install lndmanage==0.10.0 --no-cache-dir   # Install LND Manage (keep up to date with LND)
+pip3 install lndmanage==0.11.0 --no-cache-dir   # Install lndmanage (keep up to date with LND)
 pip3 install docker-compose --no-cache-dir
 pip3 install pipenv --no-cache-dir
 pip3 install bcrypt --no-cache-dir
@@ -244,20 +245,20 @@ fi
 
 # Upgrade Loop
 echo "Upgrading loopd..."
-LOOP_VERSION="v0.8.0-beta"
+LOOP_VERSION="v0.8.1-beta"
 LOOP_ARCH="loop-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LOOP_ARCH="loop-linux-amd64"
 fi
 LOOP_UPGRADE_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/$LOOP_ARCH-$LOOP_VERSION.tar.gz
-LOOP_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.loop_url
 LOOP_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt
 LOOP_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt.sig
+LOOP_VERSION_FILE=/home/bitcoin/.mynode/loop_version
 CURRENT=""
-if [ -f $LOOP_UPGRADE_URL_FILE ]; then
-    CURRENT=$(cat $LOOP_UPGRADE_URL_FILE)
+if [ -f $LOOP_VERSION_FILE ]; then
+    CURRENT=$(cat $LOOP_VERSION_FILE)
 fi
-if [ "$CURRENT" != "$LOOP_UPGRADE_URL" ]; then
+if [ "$CURRENT" != "$LOOP_VERSION" ]; then
     # Download and install Loop
     rm -rf /opt/download
     mkdir -p /opt/download
@@ -275,7 +276,7 @@ if [ "$CURRENT" != "$LOOP_UPGRADE_URL" ]; then
         install -m 0755 -o root -g root -t /usr/local/bin loop/*
 
         # Mark current version
-        echo $LOOP_UPGRADE_URL > $LOOP_UPGRADE_URL_FILE
+        echo $LOOP_VERSION > $LOOP_VERSION_FILE
     else
         echo "ERROR UPGRADING LND - GPG FAILED"
     fi
@@ -311,13 +312,13 @@ cd ~
 # Install Caravan
 CARAVAN_VERSION="v0.3.3"
 CARAVAN_UPGRADE_URL=https://github.com/unchained-capital/caravan/archive/$CARAVAN_VERSION.tar.gz
-CARAVAN_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.caravan_url
-CARAVAN_SETTINGS_UPDATE_FILE=/home/bitcoin/.mynode/.caravan_settings_1
+CARAVAN_VERSION_FILE=/home/bitcoin/.mynode/caravan_version
+CARAVAN_SETTINGS_UPDATE_FILE=/home/bitcoin/.mynode/caravan_settings_1
 CURRENT=""
-if [ -f $CARAVAN_UPGRADE_URL_FILE ]; then
-    CURRENT=$(cat $CARAVAN_UPGRADE_URL_FILE)
+if [ -f $CARAVAN_VERSION_FILE ]; then
+    CURRENT=$(cat $CARAVAN_VERSION_FILE)
 fi
-if [ "$CURRENT" != "$CARAVAN_UPGRADE_URL" ] || [ ! -f $CARAVAN_SETTINGS_UPDATE_FILE ]; then
+if [ "$CURRENT" != "$CARAVAN_VERSION" ] || [ ! -f $CARAVAN_SETTINGS_UPDATE_FILE ]; then
     cd /opt/mynode
     rm -rf caravan
 
@@ -330,7 +331,7 @@ if [ "$CURRENT" != "$CARAVAN_UPGRADE_URL" ] || [ ! -f $CARAVAN_SETTINGS_UPDATE_F
 
     cd caravan
     sudo -u bitcoin npm install --only=production
-    echo $CARAVAN_UPGRADE_URL > $CARAVAN_UPGRADE_URL_FILE
+    echo $CARAVAN_UPGRADE_URL > $CARAVAN_VERSION_FILE
     touch $CARAVAN_SETTINGS_UPDATE_FILE
 fi
 cd ~
@@ -381,10 +382,10 @@ echo "Upgrading JoinMarket..."
 if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
     JOINMARKET_VERSION="v0.7.0"
     JOINMARKET_UPGRADE_URL=https://github.com/JoinMarket-Org/joinmarket-clientserver/archive/$JOINMARKET_VERSION.tar.gz
-    JOINMARKET_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.joinmarket_version
+    JOINMARKET_VERSION_FILE=/home/bitcoin/.mynode/joinmarket_version
     CURRENT=""
-    if [ -f $JOINMARKET_UPGRADE_URL_FILE ]; then
-        CURRENT=$(cat $JOINMARKET_UPGRADE_URL_FILE)
+    if [ -f $JOINMARKET_VERSION_FILE ]; then
+        CURRENT=$(cat $JOINMARKET_VERSION_FILE)
     fi
     if [ "$CURRENT" != "$JOINMARKET_VERSION" ]; then
         # Download and build JoinMarket
@@ -406,7 +407,7 @@ if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
         cd joinmarket-clientserver
         yes | ./install.sh --without-qt
 
-        echo $JOINMARKET_VERSION > $JOINMARKET_UPGRADE_URL_FILE
+        echo $JOINMARKET_VERSION > $JOINMARKET_VERSION_FILE
     fi
 fi
 
@@ -432,12 +433,12 @@ fi
 RTL_VERSION="v0.9.0"
 RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/$RTL_VERSION.tar.gz
 RTL_UPGRADE_ASC_URL=https://github.com/Ride-The-Lightning/RTL/releases/download/$RTL_VERSION/$RTL_VERSION.tar.gz.asc
-RTL_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.rtl_url
+RTL_VERSION_FILE=/home/bitcoin/.mynode/rtl_version
 CURRENT=""
-if [ -f $RTL_UPGRADE_URL_FILE ]; then
-    CURRENT=$(cat $RTL_UPGRADE_URL_FILE)
+if [ -f $RTL_VERSION_FILE ]; then
+    CURRENT=$(cat $RTL_VERSION_FILE)
 fi
-if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
+if [ "$CURRENT" != "$RTL_VERSION" ]; then
     cd /opt/mynode
     rm -rf RTL
 
@@ -455,7 +456,7 @@ if [ "$CURRENT" != "$RTL_UPGRADE_URL" ]; then
 
         mkdir -p /home/bitcoin/.mynode/
         chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
-        echo $RTL_UPGRADE_URL > $RTL_UPGRADE_URL_FILE
+        echo $RTL_VERSION > $RTL_VERSION_FILE
     else
         echo "ERROR UPGRADING RTL - GPG FAILED"
     fi
@@ -520,11 +521,11 @@ fi
 
 
 # Upgrade Specter Desktop
-SPECTER_UPGRADE_VERSION="0.6.1"
-SPECTER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.spectre_url
+SPECTER_UPGRADE_VERSION="0.7.2"
+SPECTER_VERSION_FILE=/home/bitcoin/.mynode/specter_version
 CURRENT=""
-if [ -f $SPECTER_UPGRADE_URL_FILE ]; then
-    CURRENT=$(cat $SPECTER_UPGRADE_URL_FILE)
+if [ -f $SPECTER_VERSION_FILE ]; then
+    CURRENT=$(cat $SPECTER_VERSION_FILE)
 fi
 if [ "$CURRENT" != "$SPECTER_UPGRADE_VERSION" ]; then
     cd /opt/mynode
@@ -542,19 +543,19 @@ if [ "$CURRENT" != "$SPECTER_UPGRADE_VERSION" ]; then
     pip3 install cryptoadvance.specter===$SPECTER_UPGRADE_VERSION --upgrade
     deactivate
 
-    echo $SPECTER_UPGRADE_VERSION > $SPECTER_UPGRADE_URL_FILE
+    echo $SPECTER_UPGRADE_VERSION > $SPECTER_VERSION_FILE
 fi
 
 
 # Upgrade Thunderhub
-THUNDERHUB_VERSION="v0.9.7"
+THUNDERHUB_VERSION="v0.9.8"
 THUNDERHUB_UPGRADE_URL=https://github.com/apotdevin/thunderhub/archive/$THUNDERHUB_VERSION.tar.gz
-THUNDERHUB_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.thunderhub_url
+THUNDERHUB_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version
 CURRENT=""
-if [ -f $THUNDERHUB_UPGRADE_URL_FILE ]; then
-    CURRENT=$(cat $THUNDERHUB_UPGRADE_URL_FILE)
+if [ -f $THUNDERHUB_VERSION_FILE ]; then
+    CURRENT=$(cat $THUNDERHUB_VERSION_FILE)
 fi
-if [ "$CURRENT" != "$THUNDERHUB_UPGRADE_URL" ]; then
+if [ "$CURRENT" != "$THUNDERHUB_VERSION" ]; then
     cd /opt/mynode
     rm -rf thunderhub
     sudo -u bitcoin wget $THUNDERHUB_UPGRADE_URL -O thunderhub.tar.gz
@@ -571,7 +572,7 @@ if [ "$CURRENT" != "$THUNDERHUB_UPGRADE_URL" ]; then
     rm -f /opt/mynode/thunderhub/.env.local
     sudo ln -s /mnt/hdd/mynode/thunderhub/.env.local /opt/mynode/thunderhub/.env.local
 
-    echo $THUNDERHUB_UPGRADE_URL > $THUNDERHUB_UPGRADE_URL_FILE
+    echo $THUNDERHUB_VERSION > $THUNDERHUB_VERSION_FILE
 fi
 
 
