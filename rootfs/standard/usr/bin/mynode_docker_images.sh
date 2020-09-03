@@ -23,7 +23,8 @@ while true; do
 
     # Upgrade WebSSH2
     echo "Checking for new webssh2..."
-    WEBSSH2_UPGRADE_URL=https://github.com/billchurch/webssh2/archive/v0.2.10-0.tar.gz
+    WEBSSH2_UPGRADE_VERSION=v0.2.10-0
+    WEBSSH2_UPGRADE_URL=https://github.com/billchurch/webssh2/archive/${WEBSSH2_UPGRADE_VERSION}.tar.gz
     WEBSSH2_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/webssh2_url
     CURRENT=""
     if [ -f $WEBSSH2_UPGRADE_URL_FILE ]; then
@@ -46,7 +47,8 @@ while true; do
 
     # Upgrade mempool
     echo "Checking for new mempool..."
-    MEMPOOLSPACE_UPGRADE_URL=https://github.com/mempool-space/mempool.space/archive/8835c399e9b00c2579ed0bbd72f8cca4c5823dad.zip
+    MEMPOOLSPACE_UPGRADE_VERSION=8835c399e9b00c2579ed0bbd72f8cca4c5823dad
+    MEMPOOLSPACE_UPGRADE_URL=https://github.com/mempool-space/mempool.space/archive/${MEMPOOLSPACE_UPGRADE_VERSION}.zip
     MEMPOOLSPACE_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/mempoolspace_url
     CURRENT=""
     if [ -f $MEMPOOLSPACE_UPGRADE_URL_FILE ]; then
