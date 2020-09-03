@@ -516,7 +516,7 @@ CURRENT=""
 if [ -f $WHIRLPOOL_VERSION_FILE ]; then
     CURRENT=$(cat $WHIRLPOOL_VERSION_FILE)
 fi
-if [ "$CURRENT" != "$WHIRLPOOL_UPGRADE_URL" ]; then
+if [ "$CURRENT" != "$WHIRLPOOL_VERSION" ]; then
     sudo -u bitcoin mkdir -p /opt/mynode/whirlpool
     cd /opt/mynode/whirlpool
     sudo rm -rf *.jar
