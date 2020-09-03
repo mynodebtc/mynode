@@ -171,13 +171,13 @@ else
     exit 1
 fi
 BTC_UPGRADE_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/bitcoin-$BTC_VERSION-$ARCH.tar.gz
-BTC_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btc_url
+BTC_UPGRADE_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version
 BTC_UPGRADE_SHA256SUM_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/SHA256SUMS.asc
 CURRENT=""
-if [ -f $BTC_UPGRADE_URL_FILE ]; then
-    CURRENT=$(cat $BTC_UPGRADE_URL_FILE)
+if [ -f $BTC_UPGRADE_VERSION_FILE ]; then
+    CURRENT=$(cat $BTC_UPGRADE_VERSION_FILE)
 fi
-if [ "$CURRENT" != "$BTC_UPGRADE_URL" ]; then
+if [ "$CURRENT" != "$BTC_VERSION" ]; then
     # Download and install Bitcoin
     rm -rf /opt/download
     mkdir -p /opt/download
@@ -196,7 +196,7 @@ if [ "$CURRENT" != "$BTC_UPGRADE_URL" ]; then
             install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
 
             # Mark current version
-            echo $BTC_UPGRADE_URL > $BTC_UPGRADE_URL_FILE
+            echo $BTC_VERSION > $BTC_UPGRADE_VERSION_FILE
         else
             echo "ERROR UPGRADING BITCOIN - GPG FAILED"
         fi
@@ -213,14 +213,14 @@ if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
 fi
 LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/$LND_ARCH-$LND_VERSION.tar.gz
-LND_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lnd_url
+LND_UPGRADE_VERSION_FILE=/home/bitcoin/.mynode/lnd_version
 LND_UPGRADE_MANIFEST_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
 LND_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt.sig
 CURRENT=""
-if [ -f $LND_UPGRADE_URL_FILE ]; then
-    CURRENT=$(cat $LND_UPGRADE_URL_FILE)
+if [ -f $LND_UPGRADE_VERSION_FILE ]; then
+    CURRENT=$(cat $LND_UPGRADE_VERSION_FILE)
 fi
-if [ "$CURRENT" != "$LND_UPGRADE_URL" ]; then
+if [ "$CURRENT" != "$LND_VERSION" ]; then
     # Download and install LND
     rm -rf /opt/download
     mkdir -p /opt/download
@@ -238,7 +238,7 @@ if [ "$CURRENT" != "$LND_UPGRADE_URL" ]; then
         install -m 0755 -o root -g root -t /usr/local/bin lnd/*
 
         # Mark current version
-        echo $LND_UPGRADE_URL > $LND_UPGRADE_URL_FILE
+        echo $LND_VERSION > $LND_UPGRADE_VERSION_FILE
     else
         echo "ERROR UPGRADING LND - GPG FAILED"
     fi
