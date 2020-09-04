@@ -17,17 +17,17 @@ APP="$1"
 
 # Delete the app's version file so it will be re-installed
 if [ "$APP" = "bitcoin" ]; then
-    rm -f /home/bitcoin/.mynode/.btc_url
+    rm -f /home/bitcoin/.mynode/bitcoin_version
 elif [ "$APP" = "lnd" ]; then
-    rm -f /home/bitcoin/.mynode/.lnd_url
+    rm -f /home/bitcoin/.mynode/lnd_version
 elif [ "$APP" = "loopd" ]; then
-    rm -f /home/bitcoin/.mynode/.loop_url
+    rm -f /home/bitcoin/.mynode/loop_version
 elif [ "$APP" = "btcrpcexplorer" ]; then
     rm -f /home/bitcoin/.mynode/.btcrpcexplorer_url
 elif [ "$APP" = "caravan" ]; then
-    rm -f /home/bitcoin/.mynode/.caravan_url
+    rm -f /home/bitcoin/.mynode/caravan_version
 elif [ "$APP" = "joinmarket" ]; then
-    rm -f /home/bitcoin/.mynode/.joinmarket_url
+    rm -f /home/bitcoin/.mynode/joinmarket_version
 elif [ "$APP" = "lnbits" ]; then
     rm -f /home/bitcoin/.mynode/.lnbits_url
 elif [ "$APP" = "lndconnect" ]; then
@@ -42,11 +42,11 @@ elif [ "$APP" = "mempoolspace" ]; then
     systemctl stop mempoolspace
     docker rmi mempoolspace
 elif [ "$APP" = "rtl" ]; then
-    rm -f /home/bitcoin/.mynode/.rtl_url
+    rm -f /home/bitcoin/.mynode/rtl_version
 elif [ "$APP" = "specter" ]; then
-    rm -f /home/bitcoin/.mynode/.spectre_url
+    rm -f /home/bitcoin/.mynode/specter_version
 elif [ "$APP" = "thunderhub" ]; then
-    rm -f /home/bitcoin/.mynode/.thunderhub_url
+    rm -f /home/bitcoin/.mynode/thunderhub_version
 elif [ "$APP" = "tor" ]; then
     apt-get remove -y tor
     apt-get install -y tor
@@ -58,7 +58,7 @@ elif [ "$APP" = "webssh2" ]; then
     systemctl stop webssh2
     docker rmi webssh2
 elif [ "$APP" = "whirlpool" ]; then
-    rm -f /home/bitcoin/.mynode/.whirlpool_url
+    rm -f /home/bitcoin/.mynode/whirlpool_version
 elif [ "$APP" = "dojo" ]; then
     rm -f /mnt/hdd/mynode/settings/dojo_url
     cd /opt/mynode/dojo/docker/my-dojo/
