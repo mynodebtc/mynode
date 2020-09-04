@@ -1,0 +1,37 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        {% include 'includes/head.html' %}
+    </head>
+    <body>
+        {% include 'includes/logo_header.html' %}
+        <div class="mynode_back_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        </div>
+
+        <div class="main_header">Manage Applications</div>
+        </br>
+        
+        <br/><br/>
+        <table class="bitcoind_table">
+            <thead class="bitcoind_table_header">
+                <td>Application</td>
+                <td>Current Version</td>
+                <td>Actions</td>
+            </thead>
+            <tbody>
+                {% for app in apps %}
+                    <tr>
+                        <td>{{ app.name }}</td>
+                        <td>{{ app.current_version }}</td>
+                        <td></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <br/><br/>
+
+        {% include 'includes/footer.html' %}
+     </body>
+</html>

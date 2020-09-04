@@ -131,22 +131,6 @@ def mark_upgrade_started():
 def is_upgrade_running():
     return os.path.isfile("/tmp/upgrade_started") 
 
-def reinstall_app(app):
-    if not is_upgrade_running():
-        mark_upgrade_started()
-
-        # Upgrade
-        os.system("mkdir -p /home/admin/upgrade_logs")
-        cmd = "/usr/bin/mynode_reinstall_app.sh {} > /home/admin/upgrade_logs/reinstall_{}.txt 2>&1".format(app,app)
-        subprocess.call(cmd, shell=True)
-        
-        # Sync
-        os.system("sync")
-        time.sleep(1)
-
-        # Reboot
-        reboot_device()
-
 def upgrade_device():
     if not is_upgrade_running():
         mark_upgrade_started()
@@ -199,6 +183,35 @@ def get_recent_upgrade_logs():
 
 def has_checkin_error():
     return os.path.isfile("/tmp/check_in_error")
+
+
+#==================================
+# Manage Apps
+#==================================
+def get_app_current_version(app):
+    version = "unknown"
+    filename = "/home/bitcoin/.mynode/"+app+"_version"
+    if os.path.isfile(filename):
+        version = get_file_contents(filename)
+    return version
+
+
+# This is going to be the "old" way to install apps
+def reinstall_app(app):
+    if not is_upgrade_running():
+        mark_upgrade_started()
+
+        # Upgrade
+        os.system("mkdir -p /home/admin/upgrade_logs")
+        cmd = "/usr/bin/mynode_reinstall_app.sh {} > /home/admin/upgrade_logs/reinstall_{}.txt 2>&1".format(app,app)
+        subprocess.call(cmd, shell=True)
+        
+        # Sync
+        os.system("sync")
+        time.sleep(1)
+
+        # Reboot
+        reboot_device()
 
 #==================================
 # Reseller Info
