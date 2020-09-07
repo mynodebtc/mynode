@@ -19,15 +19,21 @@ def caravan_page():
     apps.append({"name":"LND",                  "short_name": "lnd"})
     apps.append({"name":"Loop",                 "short_name": "loop"})
     #apps.append({"name":"Electrum Server",      "short_name": "electrs"})
-    #apps.append({"name":"LND Hub",              "short_name": "lndhub"})
-    #apps.append({"name":"BTC RPC Explorer",     "short_name": "btc_rpc_explorer"})
+    apps.append({"name":"Corsproxy",            "short_name": "corsproxy"})
+    apps.append({"name":"Joinmarket",           "short_name": "joinmarket"})
+    apps.append({"name":"LNDConnect",           "short_name": "lndconnect"})
+    apps.append({"name":"LND Hub",              "short_name": "lndhub"})
     apps.append({"name":"Ride the Lightning",   "short_name": "rtl"})
+    apps.append({"name":"BTC RPC Explorer",     "short_name": "btcrpcexplorer"})
+    apps.append({"name":"Whirlpool",            "short_name": "whirlpool"})
     apps.append({"name":"Thunderhub",           "short_name": "thunderhub"})
-    #apps.append({"name":"LNbits",               "short_name": "lnbits"})
+    apps.append({"name":"LNbits",               "short_name": "lnbits"})
+    apps.append({"name":"Caravan",              "short_name": "caravan"})
     apps.append({"name":"Specter",              "short_name": "specter"})
 
     for app in apps:
         app["current_version"] = get_app_current_version(app["short_name"])
+        app["latest_version"] = get_app_latest_version(app["short_name"])
 
     # Load page
     templateData = {

@@ -195,6 +195,13 @@ def get_app_current_version(app):
         version = get_file_contents(filename)
     return version
 
+def get_app_latest_version(app):
+    version = "unknown"
+    filename = "/home/bitcoin/.mynode/"+app+"_version_latest"
+    if os.path.isfile(filename):
+        version = get_file_contents(filename)
+    return version
+
 
 # This is going to be the "old" way to install apps
 def reinstall_app(app):

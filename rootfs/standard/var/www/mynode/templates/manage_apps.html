@@ -17,6 +17,7 @@
             <thead class="bitcoind_table_header">
                 <td>Application</td>
                 <td>Current Version</td>
+                <td>Latest Version</td>
                 <td>Actions</td>
             </thead>
             <tbody>
@@ -24,6 +25,7 @@
                     <tr>
                         <td>{{ app.name }}</td>
                         <td>{{ app.current_version }}</td>
+                        <td>{{ app.latest_version }}</td>
                         <td></td>
                     </tr>
                 {% endfor %}
