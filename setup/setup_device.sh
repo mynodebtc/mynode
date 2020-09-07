@@ -82,6 +82,10 @@ elif [ $IS_X86 = 1 ]; then
 fi
 wget http://${SERVER_IP}:8000/${TARBALL} -O /tmp/rootfs.tar.gz
 
+# Get mynode_app_versions.sh file
+wget http://${SERVER_IP}:8000/mynode_app_versions.sh -O /tmp/mynode_app_versions.sh
+source /tmp/mynode_app_versions.sh
+
 
 # Create any necessary users
 
@@ -247,7 +251,6 @@ rm -rf /etc/update-motd.d/*
 
 
 # Install Bitcoin
-BTC_VERSION="0.20.1"
 ARCH="UNKNOWN"
 if [ $IS_RASPI = 1 ]; then
     ARCH="arm-linux-gnueabihf"
@@ -259,7 +262,6 @@ else
     echo "Unknown Bitcoin Version"
     exit 1
 fi
-BTC_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version
 BTC_UPGRADE_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/bitcoin-$BTC_VERSION-$ARCH.tar.gz
 BTC_UPGRADE_SHA256SUM_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/SHA256SUMS.asc
 CURRENT=""
@@ -296,12 +298,10 @@ fi
 cd ~
 
 # Install Lightning
-LND_VERSION="v0.11.0-beta"
 LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
 fi
-LND_VERSION_FILE=/home/bitcoin/.mynode/lnd_version
 LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/$LND_ARCH-$LND_VERSION.tar.gz
 LND_UPGRADE_MANIFEST_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
 LND_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt.sig
@@ -333,7 +333,6 @@ cd ~
 
 # Install Loopd
 echo "Installing loopd..."
-LOOP_VERSION="v0.8.1-beta"
 LOOP_ARCH="loop-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LOOP_ARCH="loop-linux-amd64"
@@ -341,7 +340,6 @@ fi
 LOOP_UPGRADE_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/$LOOP_ARCH-$LOOP_VERSION.tar.gz
 LOOP_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt
 LOOP_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt.sig
-LOOP_VERSION_FILE=/home/bitcoin/.mynode/loop_version
 CURRENT=""
 if [ -f $LOOP_VERSION_FILE ]; then
     CURRENT=$(cat $LOOP_VERSION_FILE)
@@ -377,14 +375,12 @@ chown -R bitcoin:bitcoin /opt/mynode
 
 
 # Install LND Hub
-LNDHUB_VERSION="v1.2.0"
 LNDHUB_UPGRADE_URL=https://github.com/BlueWallet/LndHub/archive/$LNDHUB_VERSION.tar.gz
-LNDHUB_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lndhub_url
 CURRENT=""
-if [ -f $LNDHUB_UPGRADE_URL_FILE ]; then
-    CURRENT=$(cat $LNDHUB_UPGRADE_URL_FILE)
+if [ -f $LNDHUB_VERSION_FILE ]; then
+    CURRENT=$(cat $LNDHUB_VERSION_FILE)
 fi
-if [ "$CURRENT" != "$LNDHUB_UPGRADE_URL" ]; then
+if [ "$CURRENT" != "$LNDHUB_VERSION" ]; then
     cd /opt/mynode
     rm -rf LndHub
 
@@ -398,14 +394,12 @@ if [ "$CURRENT" != "$LNDHUB_UPGRADE_URL" ]; then
     sudo -u bitcoin npm install --only=production
     sudo -u bitcoin ln -s /home/bitcoin/.lnd/tls.cert tls.cert
     sudo -u bitcoin ln -s /home/bitcoin/.lnd/data/chain/bitcoin/mainnet/admin.macaroon admin.macaroon
-    echo $LNDHUB_UPGRADE_URL > $LNDHUB_UPGRADE_URL_FILE
+    echo $LNDHUB_VERSION > $LNDHUB_VERSION_FILE
 fi
 cd ~
 
 # Install Caravan
-CARAVAN_VERSION="v0.3.3"
 CARAVAN_UPGRADE_URL=https://github.com/unchained-capital/caravan/archive/$CARAVAN_VERSION.tar.gz
-CARAVAN_VERSION_FILE=/home/bitcoin/.mynode/caravan_version
 CURRENT=""
 if [ -f $CARAVAN_VERSION_FILE ]; then
     CURRENT=$(cat $CARAVAN_VERSION_FILE)
@@ -429,14 +423,12 @@ cd ~
 
 
 # Install cors proxy (my fork)
-CORSPROXY_VERSION="v1.7.0"
 CORSPROXY_UPGRADE_URL=https://github.com/tehelsper/CORS-Proxy/archive/$CORSPROXY_VERSION.tar.gz
-CORSPROXY_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.corsproxy_url
 CURRENT=""
-if [ -f $CORSPROXY_UPGRADE_URL ]; then
-    CURRENT=$(cat $CORSPROXY_UPGRADE_URL_FILE)
+if [ -f $CORSPROXY_VERSION_FILE ]; then
+    CURRENT=$(cat $CORSPROXY_VERSION_FILE)
 fi
-if [ "$CURRENT" != "$CORSPROXY_UPGRADE_URL" ]; then
+if [ "$CURRENT" != "$CORSPROXY_VERSION" ]; then
     cd /opt/mynode
     rm -rf corsproxy
 
@@ -448,7 +440,7 @@ if [ "$CURRENT" != "$CORSPROXY_UPGRADE_URL" ]; then
 
     cd corsproxy
     npm install
-    echo $CORSPROXY_UPGRADE_URL > $CORSPROXY_UPGRADE_URL_FILE
+    echo $CORSPROXY_VERSION > $CORSPROXY_VERSION_FILE
 fi
 cd ~
 
@@ -481,9 +473,7 @@ fi
 # Install JoinMarket
 echo "Install JoinMarket..."
 if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
-    JOINMARKET_VERSION="v0.7.0"
     JOINMARKET_UPGRADE_URL=https://github.com/JoinMarket-Org/joinmarket-clientserver/archive/$JOINMARKET_VERSION.tar.gz
-    JOINMARKET_VERSION_FILE=/home/bitcoin/.mynode/joinmarket_version
     CURRENT=""
     if [ -f $JOINMARKET_VERSION_FILE ]; then
         CURRENT=$(cat $JOINMARKET_VERSION_FILE)
@@ -506,12 +496,8 @@ if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
 fi
 
 # Install Whirlpool
-WHIRLPOOL_VERSION="0.10.8"
-WHIRLPOOL_UPLOAD_FILE_ID="7998ea5a9bb180451616809bc346b9ac"
-WHIRLPOOL_UPLOAD_SIG_ID="8d919af2d97657a835195a928e7646bc"
 WHIRLPOOL_UPGRADE_URL=https://code.samourai.io/whirlpool/whirlpool-client-cli/uploads/$WHIRLPOOL_UPLOAD_FILE_ID/whirlpool-client-cli-$WHIRLPOOL_VERSION-run.jar
 WHIRLPOOL_SIG_URL=https://code.samourai.io/whirlpool/whirlpool-client-cli/uploads/$WHIRLPOOL_UPLOAD_SIG_ID/whirlpool-client-cli-$WHIRLPOOL_VERSION-run.jar.sig.asc
-WHIRLPOOL_VERSION_FILE=/home/bitcoin/.mynode/whirlpool_version
 CURRENT=""
 if [ -f $WHIRLPOOL_VERSION_FILE ]; then
     CURRENT=$(cat $WHIRLPOOL_VERSION_FILE)
@@ -530,10 +516,8 @@ fi
 
 
 # Install RTL
-RTL_VERSION="v0.9.0"
 RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/$RTL_VERSION.tar.gz
 RTL_UPGRADE_ASC_URL=https://github.com/Ride-The-Lightning/RTL/releases/download/$RTL_VERSION/$RTL_VERSION.tar.gz.asc
-RTL_VERSION_FILE=/home/bitcoin/.mynode/rtl_version
 CURRENT=""
 if [ -f $RTL_VERSION_FILE ]; then
     CURRENT=$(cat $RTL_VERSION_FILE)
@@ -560,14 +544,12 @@ fi
 
 
 # Install BTC RPC Explorer
-BTCRPCEXPLORER_VERSION="v2.0.2"
 BTCRPCEXPLORER_UPGRADE_URL=https://github.com/janoside/btc-rpc-explorer/archive/$BTCRPCEXPLORER_VERSION.tar.gz
-BTCRPCEXPLORER_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.btcrpcexplorer_url
 CURRENT=""
-if [ -f $BTCRPCEXPLORER_UPGRADE_URL_FILE ]; then
-    CURRENT=$(cat $BTCRPCEXPLORER_UPGRADE_URL_FILE)
+if [ -f $BTCRPCEXPLORER_VERSION_FILE ]; then
+    CURRENT=$(cat $BTCRPCEXPLORER_VERSION_FILE)
 fi
-if [ "$CURRENT" != "$BTCRPCEXPLORER_UPGRADE_URL" ]; then
+if [ "$CURRENT" != "$BTCRPCEXPLORER_VERSION" ]; then
     cd /opt/mynode
     rm -rf btc-rpc-explorer
     sudo -u bitcoin wget $BTCRPCEXPLORER_UPGRADE_URL -O btc-rpc-explorer.tar.gz
@@ -579,19 +561,18 @@ if [ "$CURRENT" != "$BTCRPCEXPLORER_UPGRADE_URL" ]; then
 
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
-    echo $BTCRPCEXPLORER_UPGRADE_URL > $BTCRPCEXPLORER_UPGRADE_URL_FILE
+    echo $BTCRPCEXPLORER_VERSION > $BTCRPCEXPLORER_VERSION_FILE
 fi
 
 
 # Install LNBits
 # Find URL by going to https://github.com/lnbits/lnbits/releases and finding the exact commit for the mynode tag
-LNBITS_UPGRADE_URL=https://github.com/lnbits/lnbits/archive/dd2a282158d5774c2a3c85c164a10709c13ef7b4.tar.gz
-LNBITS_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lnbits_url
+LNBITS_UPGRADE_URL=https://github.com/lnbits/lnbits/archive/$LNBITS_VERSION.tar.gz
 CURRENT=""
-if [ -f $LNBITS_UPGRADE_URL_FILE ]; then
-    CURRENT=$(cat $LNBITS_UPGRADE_URL_FILE)
+if [ -f $LNBITS_VERSION_FILE ]; then
+    CURRENT=$(cat $LNBITS_VERSION_FILE)
 fi
-if [ "$CURRENT" != "$LNBITS_UPGRADE_URL" ]; then
+if [ "$CURRENT" != "$LNBITS_VERSION" ]; then
     cd /opt/mynode
     rm -rf lnbits
     sudo -u bitcoin wget $LNBITS_UPGRADE_URL -O lnbits.tar.gz
@@ -613,13 +594,11 @@ if [ "$CURRENT" != "$LNBITS_UPGRADE_URL" ]; then
 
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
-    echo $LNBITS_UPGRADE_URL > $LNBITS_UPGRADE_URL_FILE
+    echo $LNBITS_VERSION > $LNBITS_VERSION_FILE
 fi
 
 
 # Upgrade Specter Desktop
-SPECTER_VERSION="0.7.2"
-SPECTER_VERSION_FILE=/home/bitcoin/.mynode/specter_version
 CURRENT=""
 if [ -f $SPECTER_VERSION_FILE ]; then
     CURRENT=$(cat $SPECTER_VERSION_FILE)
@@ -645,9 +624,7 @@ fi
 
 
 # Upgrade Thunderhub
-THUNDERHUB_VERSION="v0.9.8"
 THUNDERHUB_UPGRADE_URL=https://github.com/apotdevin/thunderhub/archive/$THUNDERHUB_VERSION.tar.gz
-THUNDERHUB_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version
 CURRENT=""
 if [ -f $THUNDERHUB_VERSION_FILE ]; then
     CURRENT=$(cat $THUNDERHUB_VERSION_FILE)
@@ -678,14 +655,12 @@ LNDCONNECTARCH="lndconnect-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LNDCONNECTARCH="lndconnect-linux-amd64"
 fi
-LNDCONNECT_VERSION="v0.2.0"
 LNDCONNECT_UPGRADE_URL=https://github.com/LN-Zap/lndconnect/releases/download/v0.2.0/$LNDCONNECTARCH-$LNDCONNECT_VERSION.tar.gz
-LNDCONNECT_UPGRADE_URL_FILE=/home/bitcoin/.mynode/.lndconnect_url
 CURRENT=""
-if [ -f $LNDCONNECT_UPGRADE_URL_FILE ]; then
-    CURRENT=$(cat $LNDCONNECT_UPGRADE_URL_FILE)
+if [ -f $LNDCONNECT_VERSION_FILE ]; then
+    CURRENT=$(cat $LNDCONNECT_VERSION_FILE)
 fi
-if [ "$CURRENT" != "$LNDCONNECT_UPGRADE_URL" ]; then
+if [ "$CURRENT" != "$LNDCONNECT_VERSION" ]; then
     rm -rf /opt/download
     mkdir -p /opt/download
     cd /opt/download
@@ -697,7 +672,7 @@ if [ "$CURRENT" != "$LNDCONNECT_UPGRADE_URL" ]; then
 
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
-    echo $LNDCONNECT_UPGRADE_URL > $LNDCONNECT_UPGRADE_URL_FILE
+    echo $LNDCONNECT_VERSION > $LNDCONNECT_VERSION_FILE
 fi
 
 

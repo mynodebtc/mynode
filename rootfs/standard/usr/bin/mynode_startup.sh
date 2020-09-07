@@ -4,6 +4,7 @@ set -e
 set -x 
 
 source /usr/share/mynode/mynode_config.sh
+source /usr/share/mynode/mynode_app_versions.sh
 
 # Verify FS is mounted as R/W
 if [ ! -w / ]; then
@@ -475,6 +476,23 @@ echo "gen_dhparam" > $MYNODE_STATUS_FILE
 echo "drive_mounted" > $MYNODE_STATUS_FILE
 cp -f /usr/share/mynode/nginx.conf /etc/nginx/nginx.conf
 systemctl restart nginx || true
+
+
+# Update latest version files
+echo $BTC_VERSION > $BTC_LATEST_VERSION_FILE
+echo $LND_VERSION > $LND_LATEST_VERSION_FILE
+echo $LOOP_VERSION > $LOOP_LATEST_VERSION_FILE
+echo $LNDHUB_VERSION > $LNDHUB_LATEST_VERSION_FILE
+echo $CARAVAN_VERSION > $CARAVAN_LATEST_VERSION_FILE
+echo $CORSPROXY_VERSION > $CORSPROXY_LATEST_VERSION_FILE
+echo $JOINMARKET_VERSION > $JOINMARKET_LATEST_VERSION_FILE
+echo $WHIRLPOOL_VERSION > $WHIRLPOOL_LATEST_VERSION_FILE
+echo $RTL_VERSION > $RTL_LATEST_VERSION_FILE
+echo $BTCRPCEXPLORER_VERSION > $BTCRPCEXPLORER_LATEST_VERSION_FILE
+echo $LNBITS_VERSION > $LNBITS_LATEST_VERSION_FILE
+echo $SPECTER_VERSION > $SPECTER_LATEST_VERSION_FILE
+echo $THUNDERHUB_VERSION > $THUNDERHUB_LATEST_VERSION_FILE
+echo $LNDCONNECT_VERSION > $LNDCONNECT_LATEST_VERSION_FILE
 
 
 # Weird hacks

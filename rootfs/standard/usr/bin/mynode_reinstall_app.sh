@@ -4,6 +4,7 @@ set -x
 #set -e
 
 source /usr/share/mynode/mynode_config.sh
+source /usr/share/mynode/mynode_app_versions.sh
 
 # Make sure we have an app argument
 if [ "$#" -ne 1 ]; then
@@ -17,23 +18,25 @@ APP="$1"
 
 # Delete the app's version file so it will be re-installed
 if [ "$APP" = "bitcoin" ]; then
-    rm -f /home/bitcoin/.mynode/bitcoin_version
+    rm -f $BTC_VERSION_FILE
 elif [ "$APP" = "lnd" ]; then
-    rm -f /home/bitcoin/.mynode/lnd_version
+    rm -f $LND_VERSION_FILE
 elif [ "$APP" = "loopd" ]; then
-    rm -f /home/bitcoin/.mynode/loop_version
+    rm -f $LOOP_VERSION_FILE
 elif [ "$APP" = "btcrpcexplorer" ]; then
-    rm -f /home/bitcoin/.mynode/.btcrpcexplorer_url
+    rm -f /home/bitcoin/.mynode/.btcrpcexplorer_url # NEEDS UPDATE TO VERSION FILE
 elif [ "$APP" = "caravan" ]; then
-    rm -f /home/bitcoin/.mynode/caravan_version
+    rm -f $CARAVAN_VERSION_FILE
+elif [ "$APP" = "corsproxy" ]; then
+    rm -f $CORSPROXY_VERSION_FILE
 elif [ "$APP" = "joinmarket" ]; then
-    rm -f /home/bitcoin/.mynode/joinmarket_version
+    rm -f $JOINMARKET_VERSION_FILE
 elif [ "$APP" = "lnbits" ]; then
-    rm -f /home/bitcoin/.mynode/.lnbits_url
+    rm -f /home/bitcoin/.mynode/.lnbits_url # NEEDS UPDATE TO VERSION FILE
 elif [ "$APP" = "lndconnect" ]; then
-    rm -f  /home/bitcoin/.mynode/.lndconnect_url
+    rm -f  $LNDCONNECT_VERSION_FILE
 elif [ "$APP" = "lndhub" ]; then
-    rm -f /home/bitcoin/.mynode/.lndhub_url
+    rm -f $LNDHUB_VERSION_FILE
 elif [ "$APP" = "netdata" ]; then
     systemctl stop netdata
     docker rmi netdata/netdata || true
@@ -42,11 +45,11 @@ elif [ "$APP" = "mempoolspace" ]; then
     systemctl stop mempoolspace
     docker rmi mempoolspace
 elif [ "$APP" = "rtl" ]; then
-    rm -f /home/bitcoin/.mynode/rtl_version
+    rm -f $RTL_VERSION_FILE
 elif [ "$APP" = "specter" ]; then
-    rm -f /home/bitcoin/.mynode/specter_version
+    rm -f $SPECTER_VERSION_FILE
 elif [ "$APP" = "thunderhub" ]; then
-    rm -f /home/bitcoin/.mynode/thunderhub_version
+    rm -f $THUNDERHUB_VERSION_FILE
 elif [ "$APP" = "tor" ]; then
     apt-get remove -y tor
     apt-get install -y tor
@@ -58,7 +61,7 @@ elif [ "$APP" = "webssh2" ]; then
     systemctl stop webssh2
     docker rmi webssh2
 elif [ "$APP" = "whirlpool" ]; then
-    rm -f /home/bitcoin/.mynode/whirlpool_version
+    rm -f $WHIRLPOOL_VERSION_FILE
 elif [ "$APP" = "dojo" ]; then
     rm -f /mnt/hdd/mynode/settings/dojo_url
     cd /opt/mynode/dojo/docker/my-dojo/
