@@ -24,7 +24,7 @@ elif [ "$APP" = "lnd" ]; then
 elif [ "$APP" = "loopd" ]; then
     rm -f $LOOP_VERSION_FILE
 elif [ "$APP" = "btcrpcexplorer" ]; then
-    rm -f /home/bitcoin/.mynode/.btcrpcexplorer_url # NEEDS UPDATE TO VERSION FILE
+    rm -f $BTCRPCEXPLORER_VERSION_FILE
 elif [ "$APP" = "caravan" ]; then
     rm -f $CARAVAN_VERSION_FILE
 elif [ "$APP" = "corsproxy" ]; then
@@ -32,7 +32,7 @@ elif [ "$APP" = "corsproxy" ]; then
 elif [ "$APP" = "joinmarket" ]; then
     rm -f $JOINMARKET_VERSION_FILE
 elif [ "$APP" = "lnbits" ]; then
-    rm -f /home/bitcoin/.mynode/.lnbits_url # NEEDS UPDATE TO VERSION FILE
+    rm -f $LNBITS_VERSION_FILE
 elif [ "$APP" = "lndconnect" ]; then
     rm -f  $LNDCONNECT_VERSION_FILE
 elif [ "$APP" = "lndhub" ]; then

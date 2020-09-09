@@ -190,16 +190,34 @@ def has_checkin_error():
 #==================================
 def get_app_current_version(app):
     version = "unknown"
-    filename = "/home/bitcoin/.mynode/"+app+"_version"
-    if os.path.isfile(filename):
-        version = get_file_contents(filename)
+    filename1 = "/home/bitcoin/.mynode/"+app+"_version"
+    filename2 = "/mnt/hdd/mynode/settings/"+app+"_version"
+    if os.path.isfile(filename1):
+        version = get_file_contents(filename1)
+    elif os.path.isfile(filename2):
+        version = get_file_contents(filename2)
+    else:
+        version = "not installed"
+
+    # For versions that are hashes, shorten them
+    version = version[0:16]
+
     return version
 
 def get_app_latest_version(app):
     version = "unknown"
-    filename = "/home/bitcoin/.mynode/"+app+"_version_latest"
-    if os.path.isfile(filename):
-        version = get_file_contents(filename)
+    filename1 = "/home/bitcoin/.mynode/"+app+"_version_latest"
+    filename2 = "/mnt/hdd/mynode/settings/"+app+"_version_latest"
+    if os.path.isfile(filename1):
+        version = get_file_contents(filename1)
+    elif os.path.isfile(filename2):
+        version = get_file_contents(filename2)
+    else:
+        version = "error"
+
+    # For versions that are hashes, shorten them
+    version = version[0:16]
+
     return version
 
 

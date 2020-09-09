@@ -456,7 +456,7 @@ CURRENT=""
 if [ -f $BTCRPCEXPLORER_VERSION_FILE ]; then
     CURRENT=$(cat $BTCRPCEXPLORER_VERSION_FILE)
 fi
-if [ "$CURRENT" != "$BTCRPCEXPLORER_UPGRADE_URL" ]; then
+if [ "$CURRENT" != "$BTCRPCEXPLORER_VERSION" ]; then
     cd /opt/mynode
     rm -rf btc-rpc-explorer
     sudo -u bitcoin wget $BTCRPCEXPLORER_UPGRADE_URL -O btc-rpc-explorer.tar.gz
@@ -468,7 +468,7 @@ if [ "$CURRENT" != "$BTCRPCEXPLORER_UPGRADE_URL" ]; then
 
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
-    echo $BTCRPCEXPLORER_UPGRADE_URL > $BTCRPCEXPLORER_VERSION_FILE
+    echo $BTCRPCEXPLORER_VERSION > $BTCRPCEXPLORER_VERSION_FILE
 fi
 
 
