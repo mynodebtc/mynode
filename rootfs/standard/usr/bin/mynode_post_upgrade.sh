@@ -296,6 +296,7 @@ if [ "$CURRENT" != "$LNDHUB_VERSION" ]; then
 
     cd LndHub
     sudo -u bitcoin npm install --only=production
+    sudo -u bitcoin npm audit fix
     sudo -u bitcoin ln -s /home/bitcoin/.lnd/tls.cert tls.cert
     sudo -u bitcoin ln -s /home/bitcoin/.lnd/data/chain/bitcoin/mainnet/admin.macaroon admin.macaroon
     echo $LNDHUB_VERSION > $LNDHUB_VERSION_FILE
@@ -323,6 +324,7 @@ if [ "$CURRENT" != "$CARAVAN_VERSION" ] || [ ! -f $CARAVAN_SETTINGS_UPDATE_FILE 
 
     cd caravan
     sudo -u bitcoin npm install --only=production
+    sudo -u bitcoin npm audit fix
     echo $CARAVAN_VERSION > $CARAVAN_VERSION_FILE
     touch $CARAVAN_SETTINGS_UPDATE_FILE
 fi
@@ -347,6 +349,7 @@ if [ "$CURRENT" != "$CORSPROXY_VERSION" ]; then
 
     cd corsproxy
     npm install
+    npm audit fix
     echo $CORSPROXY_VERSION > $CORSPROXY_VERSION_FILE
 fi
 cd ~
@@ -441,7 +444,7 @@ if [ "$CURRENT" != "$RTL_VERSION" ]; then
         sudo -u bitcoin mv RTL-* RTL
         cd RTL
         sudo -u bitcoin NG_CLI_ANALYTICS=false npm install --only=production
-
+        sudo -u bitcoin npm audit fix
         mkdir -p /home/bitcoin/.mynode/
         chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
         echo $RTL_VERSION > $RTL_VERSION_FILE
@@ -465,6 +468,7 @@ if [ "$CURRENT" != "$BTCRPCEXPLORER_VERSION" ]; then
     sudo -u bitcoin mv btc-rpc-* btc-rpc-explorer
     cd btc-rpc-explorer
     sudo -u bitcoin npm install --only=production
+    sudo -u bitcoin npm audit fix
 
     mkdir -p /home/bitcoin/.mynode/
     chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
@@ -546,6 +550,7 @@ if [ "$CURRENT" != "$THUNDERHUB_VERSION" ]; then
     cd thunderhub
 
     sudo -u bitcoin npm install # --only=production # (can't build with only production)
+    sudo -u bitcoin npm audit fix
     sudo -u bitcoin npm run build
     sudo -u bitcoin npx next telemetry disable
 
