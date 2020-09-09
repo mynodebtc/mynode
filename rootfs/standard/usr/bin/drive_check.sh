@@ -14,7 +14,7 @@ echo "Found Drive: $drive"
 
 lsblk $drive &> /dev/null
 while [ $? -eq 0 ]; do
-    echo "$drive still found..."
+    #echo "$drive still found..."
     sleep 60
     lsblk $drive &> /dev/null
 done
