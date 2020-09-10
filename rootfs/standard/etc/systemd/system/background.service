@@ -1,0 +1,20 @@
+# myNode background service
+# /etc/systemd/system/background.service
+
+[Unit]
+Description=myNode Background Checks
+Wants=mynode.service
+After=mynode.service
+
+[Service]
+Type=simple
+KillMode=control-group
+TimeoutSec=30
+Restart=always
+RestartSec=30
+ExecStart=/usr/bin/mynode_background.sh
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target

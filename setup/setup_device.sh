@@ -719,6 +719,7 @@ fi
 # Setup myNode Startup Script
 systemctl daemon-reload
 systemctl enable check_in
+systemctl enable background
 systemctl enable docker
 systemctl enable mynode
 systemctl enable quicksync

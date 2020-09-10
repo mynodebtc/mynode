@@ -54,6 +54,9 @@ def update_device_info():
 
     # Get drive info
     try:
+        # Get throttled info (raspi only)
+        reload_throttled_data()
+
         # Get drive actual usage
         #results = subprocess.check_output(["du","-sh","/mnt/hdd/mynode/"])
         #drive_usage = results.split()[0]
