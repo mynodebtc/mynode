@@ -637,7 +637,7 @@ def reset_docker():
 def get_docker_running_containers():
     containers = []
     try:
-        text = subprocess.check_output("docker ps --format '{{.Names}}'", shell=True).decode("utf8")
+        text = subprocess.check_output("docker ps --format '{{.Names}}'", shell=True, timeout=3).decode("utf8")
         containers = text.splitlines()
     except:
         containers = ["ERROR"]
