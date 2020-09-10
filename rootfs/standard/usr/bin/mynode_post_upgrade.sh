@@ -630,6 +630,7 @@ apt-get clean
 
 # Enable any new/required services
 systemctl enable check_in
+systemctl enable background
 systemctl enable docker
 systemctl enable bitcoind
 systemctl enable seed_bitcoin_peers

@@ -79,6 +79,32 @@ def check_and_mark_reboot_action(tmp_marker):
         raise RequestRedirect("/")
     os.system("touch /tmp/{}".format(tmp_marker))
 
+def reload_throttled_data():
+    global cached_data
+    if os.path.isfile("/tmp/get_throttled_data"):
+        cached_data["get_throttled_data"] = get_file_contents("/tmp/get_throttled_data")
+
+def get_throttled_data():
+    global cached_data
+    if "get_throttled_data" in cached_data:
+        data = cached_data["get_throttled_data"]
+        hex_data = int(data, 16)
+        r = {}
+        r["RAW_DATA"] = data
+        r["UNDERVOLTED"] = 1 if hex_data & 0x1 else 0
+        r["CAPPED"] = 1 if hex_data & 0x2 else 0
+        r["THROTTLED"] = 1 if hex_data & 0x4 else 0
+        r["SOFT_TEMPLIMIT"] = 1 if hex_data & 0x8 else 0
+        r["HAS_UNDERVOLTED"] = 1 if hex_data & 0x10000 else 0
+        r["HAS_CAPPED"] = 1 if hex_data & 0x20000 else 0
+        r["HAS_THROTTLED"] = 1 if hex_data & 0x40000 else 0
+        r["HAS_SOFT_TEMPLIMIT"] = 1 if hex_data & 0x80000 else 0
+        return r
+    else:
+        r = {}
+        r["RAW_DATA"] = "MISSING"
+        return r
+
 #==================================
 # Manage Versions and Upgrades
 #==================================

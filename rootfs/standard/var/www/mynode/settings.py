@@ -1,5 +1,5 @@
 from config import *
-from flask import Blueprint, render_template, session, abort, Markup, request, redirect, send_from_directory, url_for, flash
+from flask import Blueprint, render_template, session, abort, Markup, request, redirect, send_from_directory, url_for, flash, current_app
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from bitcoind import is_bitcoind_synced
 from bitcoin_info import using_bitcoin_custom_config
@@ -111,6 +111,7 @@ def page_settings():
         "uptime": uptime,
         "date": date,
         "local_ip": local_ip,
+        "throttled_data": get_throttled_data(),
         "drive_usage": get_drive_usage(),
         "cpu_usage": get_cpu_usage(),
         "ram_usage": get_ram_usage(),
@@ -269,6 +270,7 @@ def page_status():
         "uptime": uptime,
         "date": date,
         "local_ip": local_ip,
+        "throttled_data": get_throttled_data(),
         "drive_usage": get_drive_usage(),
         "cpu_usage": get_cpu_usage(),
         "ram_usage": get_ram_usage(),

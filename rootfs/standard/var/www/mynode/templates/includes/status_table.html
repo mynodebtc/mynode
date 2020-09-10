@@ -1,0 +1,53 @@
+<div class="settings_block_subheader">Status</div>
+<table border="0">
+    <tr>
+        <td>Details</td>
+        <td style="padding-left: 20px;">
+            {% if is_netdata_enabled %}
+                {% if is_bitcoin_synced %}
+                    {% if not is_installing_docker_images %}
+                        <a id="netdata" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Netdata</a>
+                    {% else %}
+                        <a class="ui-button ui-widget ui-corner-all settings_button_small" href="#" disabled>Netdata - Waiting on Docker</a>
+                    {% endif %}
+                {% else %}
+                    <a class="ui-button ui-widget ui-corner-all settings_button_small" href="#" disabled>Netdata - Waiting on Bitcoin</a>
+                {% endif %}
+            {% endif %}
+            <a id="glances" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Glances</a>
+        </td>
+    </tr>
+    <tr>
+        <td>Manage</td>
+        <td style="padding-left: 20px;">
+            <a id="linux_terminal" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Linux Terminal</a>
+        </td>
+    </tr>
+    <tr>
+        <td>Disk Usage</td>
+        <td style="padding-left: 20px;">{{drive_usage}}</td>
+    </tr>
+    <tr>
+        <td>CPU</td>
+        <td style="padding-left: 20px;">{{cpu_usage}}</td>
+    </tr>
+    <tr>
+        <td>RAM</td>
+        <td style="padding-left: 20px;">{{ram_usage}}</td>
+    </tr>
+    {% if device_temp != '...' %}
+    <tr>
+        <td>Temperature</td>
+        <td style="padding-left: 20px;">{{device_temp}} &deg;C</td>
+    </tr>
+    {% endif %}
+    <tr>
+        <td>Uptime</td>
+        <td style="padding-left: 20px;">{{uptime}}</td>
+    </tr>
+    <tr>
+        <td>Date</td>
+        <td style="padding-left: 20px;">{{date}}</td>
+    </tr>
+</table>
+<div class="divider"></div>
