@@ -6,6 +6,8 @@ set -x
 source /usr/share/mynode/mynode_config.sh
 source /usr/share/mynode/mynode_app_versions.sh
 
+# NOTE: Background services will run before mynode service completes, so a drive MAY NOT be attached
+
 COUNTER=0
 
 while true; do
