@@ -12,6 +12,7 @@ import string
 # Globals
 local_ip = "unknown"
 cached_data = {}
+warning_data = {}
 
 #==================================
 # Utilities
