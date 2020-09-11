@@ -22,6 +22,7 @@ from messages import get_message
 from thread_functions import *
 from datetime import timedelta
 from device_info import *
+from device_warnings import *
 import pam
 import json
 import random
@@ -193,6 +194,17 @@ def index():
             "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
+    elif is_warning_present():
+        warning = get_current_warning()
+        templateData = {
+            "title": "myNode Warning",
+            "header_text": "Warning",
+            "subheader_text": get_warning_header(warning),
+            "description_text": get_warning_description(warning),
+            "warning_name": warning,
+            "ui_settings": read_ui_settings()
+        }
+        return render_template('warning.html', **templateData)
     elif status == STATE_DRIVE_MISSING:
         # Drive may be getting repaired
         if is_drive_being_repaired():
@@ -669,6 +681,14 @@ def page_product_key():
             return redirect("/")
 
         return "Error"
+
+@app.route("/ignore-warning")
+def page_ignore_warning():
+    check_logged_in()
+    if request.method == 'GET':
+        warning = request.args.get('warning')
+        skip_warning(warning)
+    return redirect("/")
 
 @app.route("/toggle-lndhub")
 def page_toggle_lndhub():

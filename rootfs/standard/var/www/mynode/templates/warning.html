@@ -1,0 +1,40 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        {% include 'includes/head.html' %}
+        <meta http-equiv="refresh" content="30">
+
+        <script>
+            $(document).ready(function() {
+
+                $("#warning-continue").on("click", function() {
+                    window.location.href="/ignore-warning?warning={{warning_name}}"
+                });
+            });
+        </script>
+
+     </head>
+
+    <body>
+        {% include 'includes/logo_header.html' %}
+        
+        <div class="state_header">{{header_text}}</div>
+
+        <div class="warning_div">
+            <div class="warning_divider"></div>
+
+            <div class="state_subheader">{{ subheader_text }}</div>
+
+            <p>{{description_text}}</p>
+            <br/>
+            <div class="warning_divider"></div>
+            <br/>
+            <button id="warning-continue" value="Login" class="ui-button ui-widget ui-corner-all format_button">Continue</button>
+            
+            <br/><br/>
+        </div>
+
+        <div style="height: 40px;">&nbsp;</div>
+        {% include 'includes/footer.html' %}
+     </body>
+</html>
