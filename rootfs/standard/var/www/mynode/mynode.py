@@ -89,6 +89,7 @@ STATE_QUICKSYNC_COPY =        "quicksync_copy"
 STATE_QUICKSYNC_RESET =       "quicksync_reset"
 STATE_STABLE =                "stable"
 STATE_ROOTFS_READ_ONLY =      "rootfs_read_only"
+STATE_HDD_READ_ONLY =         "hdd_read_only"
 STATE_UNKNOWN =               "unknown"
 
 MYNODE_DIR =    "/mnt/hdd/mynode"
@@ -111,6 +112,8 @@ def get_status():
             # Check for read-only sd card
             if is_mount_read_only("/"):
                 return STATE_ROOTFS_READ_ONLY
+            if is_mount_read_only("/mnt/hdd"):
+                return STATE_HDD_READ_ONLY
 
         # Get status stored on drive
         if (os.path.isfile(status_file)):
@@ -179,6 +182,14 @@ def index():
             "title": "myNode Error",
             "header_text": "SD Card Error",
             "subheader_text": "The root filesystem is read only. Your SD card may be corrupt.",
+            "ui_settings": read_ui_settings()
+        }
+        return render_template('state.html', **templateData)
+    elif status == STATE_HDD_READ_ONLY:
+        templateData = {
+            "title": "myNode Error",
+            "header_text": "Drive Error",
+            "subheader_text": "The external drive filesystem is read only. Try rebooting the device.",
             "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)

@@ -284,6 +284,9 @@ def get_system_uptime_in_seconds():
     uptime = int(float(uptime.strip()))
     return uptime
 
+def get_system_time_in_ms():
+    return int(round(time.time() * 1000))
+
 def get_system_date():
     date = subprocess.check_output('date', shell=True)
     date = date.strip()
