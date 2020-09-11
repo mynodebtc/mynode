@@ -1,3 +1,17 @@
+=== v0.2.16 ===
+- Upgrade Caravan to v0.3.3 
+- Upgrade Joinmarket to v0.7.0
+- Upgrade Specter to v0.7.2
+- Upgrade Thunderhub to v0.9.8
+- Upgrade RTL to v0.9.0
+- Upgrade Whirlpool to v0.10.8
+- Add foundation for improved app management
+- Generate Bitcoin config based on total RAM
+- Improve finding initial Bitcoin peers
+- Add detection for undervoltage, throttling, and capping on Raspi devices
+- Fix issue where status page may not load if no drive is found
+- Fix issue with VM drive detection
+
 === v0.2.15 ===
 - Upgrade LND to v0.11.0
 - Upgrade Loop to v0.8.0
