@@ -14,22 +14,26 @@ mynode_manage_apps = Blueprint('mynode_manage_apps',__name__)
 def caravan_page():
     check_logged_in()
 
+    # Community Apps
     apps = []
     apps.append({"name":"Bitcoin",              "short_name": "bitcoin"})
     apps.append({"name":"LND",                  "short_name": "lnd"})
     apps.append({"name":"Loop",                 "short_name": "loop"})
     #apps.append({"name":"Electrum Server",      "short_name": "electrs"})
+    apps.append({"name":"BTC RPC Explorer",     "short_name": "btcrpcexplorer"})
     apps.append({"name":"Corsproxy",            "short_name": "corsproxy"})
-    apps.append({"name":"Joinmarket",           "short_name": "joinmarket"})
     apps.append({"name":"LNDConnect",           "short_name": "lndconnect"})
     apps.append({"name":"LND Hub",              "short_name": "lndhub"})
     apps.append({"name":"Ride the Lightning",   "short_name": "rtl"})
-    apps.append({"name":"BTC RPC Explorer",     "short_name": "btcrpcexplorer"})
     apps.append({"name":"Whirlpool",            "short_name": "whirlpool"})
-    apps.append({"name":"Thunderhub",           "short_name": "thunderhub"})
-    apps.append({"name":"LNbits",               "short_name": "lnbits"})
-    apps.append({"name":"Caravan",              "short_name": "caravan"})
-    apps.append({"name":"Specter",              "short_name": "specter"})
+
+    # Premium Apps
+    if not is_community_edition():
+        apps.append({"name":"Joinmarket",           "short_name": "joinmarket"})
+        apps.append({"name":"Thunderhub",           "short_name": "thunderhub"})
+        apps.append({"name":"LNbits",               "short_name": "lnbits"})
+        apps.append({"name":"Caravan",              "short_name": "caravan"})
+        apps.append({"name":"Specter",              "short_name": "specter"})
 
     for app in apps:
         app["current_version"] = get_app_current_version(app["short_name"])
