@@ -33,15 +33,15 @@ def get_dojo_status():
             dojo_status = "Issue Starting"
             dojo_status_color = "red"
             dojo_initialized = ""
-        
+
     return dojo_status, dojo_status_color, dojo_initialized
 
 def get_dojo_tracker_status():
     try:
-        tracker_log = subprocess.check_output("docker exec nodejs tail -n 50 /data/logs/tracker-output.log", shell=True)
+        tracker_log = subprocess.check_output("/opt/mynode/dojo/docker/my-dojo/dojo.sh logs nodejs | head -n 50", shell=True)
     except:
         return "error"
-        
+
     lines = tracker_log.splitlines()
     lines.reverse()
     tracker_status = "unknown"
@@ -59,7 +59,7 @@ def get_dojo_tracker_status():
 
 
     return tracker_status
-    
+
 
 ### Page functions
 @mynode_dojo.route("/dojo")

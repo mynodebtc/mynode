@@ -72,8 +72,9 @@ while true; do
     fi
 
     # Install Dojo
-    DOJO_VERSION="v1.5.0"
-    DOJO_UPGRADE_URL=https://github.com/Samourai-Wallet/samourai-dojo/archive/$DOJO_VERSION.tar.gz
+    DOJO_VERSION="v1.7.0"
+    DOJO_TAR_HASH="5d81be6c20d73434ec207ae84a3ad7f03aeb0b0c5b2c807685a455b2b2d54885"
+    DOJO_UPGRADE_URL=https://code.samourai.io/dojo/samourai-dojo/-/archive/$DOJO_VERSION/samourai-dojo-$DOJO_VERSION.tar.gz
     DOJO_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/dojo_url
     CURRENT=""
     INSTALL=true
@@ -95,6 +96,11 @@ while true; do
             sudo rm -rf /opt/mynode/.dojo/*
             cd /opt/mynode/.dojo
             sudo wget -O dojo.tar.gz $DOJO_UPGRADE_URL
+
+            # verify tar file
+            echo "$DOJO_TAR_HASH  dojo.tar.gz" > /tmp/dojo_hash
+            sha256sum --check /tmp/dojo_hash
+
             sudo tar -zxvf dojo.tar.gz
             sudo cp -r samourai-dojo*/* /opt/mynode/dojo
             cd /usr/bin
