@@ -389,6 +389,7 @@ def index():
                 "title": "myNode Sync",
                 "header_text": "Bitcoin Blockchain",
                 "subheader_text": subheader,
+                "refresh_rate": 10,
                 "ui_settings": read_ui_settings()
             }
             return render_template('state.html', **templateData)
@@ -946,7 +947,7 @@ def start_threads():
     app.logger.info("STARTING THREADS")
 
     # Start threads
-    btc_thread1 = BackgroundThread(update_bitcoin_main_info_thread, 60)
+    btc_thread1 = BackgroundThread(update_bitcoin_main_info_thread, 10)
     btc_thread1.start()
     threads.append(btc_thread1)
     btc_thread2 = BackgroundThread(update_bitcoin_other_info_thread, 60)
