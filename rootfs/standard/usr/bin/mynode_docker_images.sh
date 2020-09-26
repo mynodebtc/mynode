@@ -72,8 +72,8 @@ while true; do
     fi
 
     # Install Dojo
-    DOJO_VERSION="v1.7.0"
-    DOJO_TAR_HASH="5d81be6c20d73434ec207ae84a3ad7f03aeb0b0c5b2c807685a455b2b2d54885"
+    DOJO_VERSION="v1.8.0"
+    DOJO_TAR_HASH="4c1e41790b6839f26ec947e96b3dc4c94e0218f0003e292a2c3808b0a1182fe6"
     DOJO_UPGRADE_URL=https://code.samourai.io/dojo/samourai-dojo/-/archive/$DOJO_VERSION/samourai-dojo-$DOJO_VERSION.tar.gz
     DOJO_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/dojo_url
     CURRENT=""
@@ -111,15 +111,24 @@ while true; do
 
             # Run Dojo Install or Upgrade
             cd /opt/mynode/dojo/docker/my-dojo
+            INSTALL_PID=0
             if [ "$INSTALL" = "true" ]; then
                 yes | sudo ./dojo.sh install &
+                INSTALL_PID=$!
             else
                 yes | sudo ./dojo.sh upgrade &
+                INSTALL_PID=$!
             fi
 
             #Check for install/upgrade to finish to initialize Dojo mysql db
             cd /usr/bin
             sudo ./mynode_post_dojo.sh
+
+            # Wait for install script to finish
+            wait $INSTALL_PID
+
+            # Try and start dojo (if upgraded and already enabled)
+            systemctl restart dojo || true
 
             echo $DOJO_UPGRADE_URL > $DOJO_UPGRADE_URL_FILE
         fi
