@@ -38,7 +38,7 @@ def get_dojo_status():
 
 def get_dojo_tracker_status():
     try:
-        tracker_log = subprocess.check_output("/opt/mynode/dojo/docker/my-dojo/dojo.sh logs nodejs | head -n 50", shell=True)
+        tracker_log = subprocess.check_output("docker logs --tail 100 nodejs", shell=True)
     except:
         return "error"
 
