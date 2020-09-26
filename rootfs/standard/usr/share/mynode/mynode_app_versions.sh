@@ -8,7 +8,9 @@ LND_VERSION="v0.11.0-beta"
 LND_VERSION_FILE=/home/bitcoin/.mynode/lnd_version
 LND_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnd_version_latest
 
-LOOP_VERSION="v0.8.1-beta"
+# Upgrade to v0.9.0 once RTL or other web wallets support it
+# https://github.com/Ride-The-Lightning/RTL/issues/472
+LOOP_VERSION="v0.8.1-beta" 
 LOOP_VERSION_FILE=/home/bitcoin/.mynode/loop_version
 LOOP_LATEST_VERSION_FILE=/home/bitcoin/.mynode/loop_version_latest
 
@@ -46,7 +48,7 @@ LNBITS_VERSION=dd2a282158d5774c2a3c85c164a10709c13ef7b4         # Github hash to
 LNBITS_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version
 LNBITS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version_latest
 
-SPECTER_VERSION="0.7.2"
+SPECTER_VERSION="0.8.0"
 SPECTER_VERSION_FILE=/home/bitcoin/.mynode/specter_version
 SPECTER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/specter_version_latest
 
