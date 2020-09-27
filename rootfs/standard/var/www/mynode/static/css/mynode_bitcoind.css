@@ -46,14 +46,15 @@
 }
 
 table.bitcoind_table tbody tr:nth-child(odd) td{
-    background-color: #ffdecb;
+    background-color: #ffa5000d;
 }
+
 table.bitcoind_table tbody tr:nth-child(even) td{
-    background-color: #fff5ef;
+    background-color: #fff;
 }
 
 table.bitcoind_table td {
-    padding: 10px;
+    padding: 20px 0;
     margin: 0px;
 }
 .bitcoind_dump_contents {

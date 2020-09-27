@@ -12,7 +12,7 @@
 }
 
 table.bitcoind_table tbody tr:nth-child(odd) td{
-    background-color: #222;
+    background-color: #ffffff05;
 }
 table.bitcoind_table tbody tr:nth-child(even) td{
     background-color: unset;
