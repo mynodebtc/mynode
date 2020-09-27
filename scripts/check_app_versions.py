@@ -14,7 +14,7 @@ apps = [{"name": "bitcoin/bitcoin",                         "current_version": "
         {"name": "unchained-capital/caravan",               "current_version": "v0.3.3"},
         {"name": "cryptoadvance/specter-desktop",           "current_version": "v0.8.0"},
         {"name": "lnbits/lnbits",                           "current_version": "6cf4881"},
-        {"name": "apotdevin/thunderhub",                    "current_version": "v0.9.8"}
+        {"name": "apotdevin/thunderhub",                    "current_version": "v0.9.15"}
 ]
 
 # Apps that don't work or are not on GitHub
