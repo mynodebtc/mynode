@@ -1,3 +1,9 @@
+@import url(/fonts/inter.css);
+
+body, input, select, textarea {
+  font-family: "Inter", "Source Sans Pro", Helvetica, sans-serif;
+}
+
 .logo_header {
     margin: auto;
     width: 300px;
@@ -14,7 +20,6 @@
     padding: 25px 0 50px 0;
     text-align: center;
     font-size: 12px;
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 a:link {
@@ -62,7 +67,6 @@ td {
     color: #555555;
     text-align: center;
     font-size: 56px;
-    font-family: Arial, Helvetica, sans-serif;
     padding-bottom: 15px;
 }
 
@@ -70,21 +74,18 @@ td {
     color: #555555;
     text-align: center;
     font-size: 28px;
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 .state_error {
     color: #DD5555;
     text-align: center;
     font-size: 14px;
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 .state_warning {
     color: #555555;
     text-align: center;
     font-size: 14px;
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 .shutoff_warning {
@@ -95,7 +96,7 @@ td {
     color: #555555;
     text-align: center;
     font-size: 32px;
-    font-family: Arial, Helvetica, sans-serif;
+
     margin-bottom: 5px;
 }
 .main_header_sub_text {
@@ -104,7 +105,6 @@ td {
     margin: auto;
     text-align: center;
     font-size: 14px;
-    font-family: Arial, Helvetica, sans-serif;
     margin-bottom: 10px;
 }
 
@@ -112,7 +112,6 @@ td {
     color: #555555;
     text-align: center;
     font-size: 24px;
-    font-family: Arial, Helvetica, sans-serif;
     margin-top: 15px;
     margin-bottom: 5px;
 }
@@ -122,21 +121,18 @@ td {
     margin: auto;
     text-align: center;
     font-size: 14px;
-    font-family: Arial, Helvetica, sans-serif;
     margin-bottom: 10px;
 }
 
 .error_message {
     color: red;
     font-size: 16px;
-    font-family: Arial, Helvetica, sans-serif;
     padding-top: 10px;
     padding-bottom: 10px;
 }
 .success_message {
     color: green;
     font-size: 16px;
-    font-family: Arial, Helvetica, sans-serif;
     padding-top: 10px;
     padding-bottom: 10px;
 }
@@ -232,17 +228,15 @@ td {
 .app_title {
     font-size: 18px;
     text-align: center;
-    font-family: Arial, Helvetica, sans-serif;
     margin-bottom: 6px;
+    line-height: 1em;
 }
 .app_status {
     font-size: 12px;
-    font-family: Arial, Helvetica, sans-serif;
     line-height: 130%;
 }
 .app_contents {
     font-size: 12px;
-    font-family: Arial, Helvetica, sans-serif;
     position: absolute;
     margin: auto;
     width: 130px;
@@ -263,7 +257,6 @@ td {
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
     font-size: 12px;
-    font-family: Arial, Helvetica, sans-serif;
     color: #FFFFFF;
     background-color: orange;
     padding: 5px 10px 5px 10px;
@@ -273,7 +266,6 @@ td {
 .info_tile_contents {
     margin-top: 5px;
     font-size: 16px;
-    font-family: Arial, Helvetica, sans-serif;
     vertical-align: middle;
     padding: 5px 10px 5px 10px;
 }
@@ -284,7 +276,6 @@ td {
     margin: auto;
     text-align: justify;
     font-size: 14px;
-    font-family: Arial, Helvetica, sans-serif;
     margin-bottom: 40px;
 }
 
@@ -294,7 +285,6 @@ td {
     margin: auto;
     text-align: left;
     font-size: 18px;
-    font-family: Arial, Helvetica, sans-serif;
     margin-bottom: 40px;
     margin-top: 40px;
 }
@@ -319,7 +309,6 @@ td {
 .mynode_button {
     width: 80%;
     font-size: 14px;
-    font-family: Arial, Helvetica, sans-serif;
     margin-top: 5px;
 }
 
@@ -344,7 +333,6 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
 
 .mynode_button_small {
     font-size: 12px !important;
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 .drive_usage {
@@ -359,7 +347,6 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     text-align: center;
     display: block;
     font-size: 24px;
-    font-family: Arial, Helvetica, sans-serif;
     padding: 15px;
     margin-bottom: 15px;
 }
@@ -367,7 +354,6 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     color: #f19c00;
     text-align: left;
     font-size: 12px;
-    font-family: Arial, Helvetica, sans-serif;
     font-weight: 500;
     margin-bottom: 8px;
     text-transform: uppercase;
@@ -378,7 +364,6 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     height: 18px;
     text-align: left;
     font-size: 14px;
-    font-family: Arial, Helvetica, sans-serif;
     font-style: italic;
     vertical-align: middle;
     margin-bottom: 2px;
@@ -398,7 +383,6 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     margin: auto;
     text-align: justify;
     font-size: 14px;
-    font-family: Arial, Helvetica, sans-serif;
     margin-bottom: 80px;
 }
 .divider {
@@ -411,16 +395,13 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
 }
 .settings_button {
     font-size: 14px;
-    font-family: Arial, Helvetica, sans-serif;
     margin-top: 15px;
 }
 .settings_button_small {
     font-size: 10px !important;
-    font-family: Arial, Helvetica, sans-serif;
 }
 .settings_input {
     font-size: 14px;
-    font-family: Arial, Helvetica, sans-serif;
 }
 .status_container_list {
     margin-left: 150px;
@@ -436,7 +417,6 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     width: 500px;
     font-size: 12px;
     line-height: 1.5;
-    font-family: Arial, Helvetica, sans-serif;
     text-align: center;
     padding-top: 40px;
     margin: auto;
@@ -445,7 +425,6 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
 #lndconnect_tabs {
     margin: auto;
     width: 500px;
-    font-family: Arial, Helvetica, sans-serif;
     font-size: 10px;
     line-height: 1.2;
     word-wrap: break-word;
@@ -463,7 +442,6 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
 .product_key_input {
     width: 100%;
     font-size: 24px;
-    font-family: Arial, Helvetica, sans-serif;
     text-align: center;
 }
 .product_key_save_button {
@@ -486,7 +464,6 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     text-align: justify;
     display: block;
     font-size: 12px;
-    font-family: Arial, Helvetica, sans-serif;
     padding: 5px;
     margin: auto;
     margin-bottom: 20px;
@@ -501,7 +478,6 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     text-align: justify;
     display: block;
     font-size: 12px;
-    font-family: Arial, Helvetica, sans-serif;
     padding: 5px;
     margin: auto;
     margin-bottom: 20px;
@@ -511,7 +487,6 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     margin: auto;
     padding-bottom: 10px;
     text-align: center;
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 .upgrade_ad_main_page {
@@ -523,7 +498,6 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     text-align: justify;
     display: block;
     font-size: 12px;
-    font-family: Arial, Helvetica, sans-serif;
     padding: 5px;
     padding-left: 12px;
     margin: auto;
@@ -573,7 +547,6 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     margin: auto;
     text-align: justify;
     font-size: 18px;
-    font-family: Arial, Helvetica, sans-serif;
     margin-top: 10px;
     margin-bottom: 40px;
 }
@@ -595,7 +568,6 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     margin: auto;
     text-align: center;
     font-size: 18px;
-    font-family: Arial, Helvetica, sans-serif;
     margin-top: 10px;
     margin-bottom: 40px;
 }
@@ -610,7 +582,6 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     margin: auto;
     text-align: center;
     font-size: 18px;
-    font-family: Arial, Helvetica, sans-serif;
     margin-top: 10px;
     margin-bottom: 40px;
 }
@@ -649,7 +620,6 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     margin: auto;
     text-align: justify;
     font-size: 14px;
-    font-family: Arial, Helvetica, sans-serif;
     margin-top: 10px;
     margin-bottom: 40px;
 }
@@ -674,7 +644,6 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     text-align: center;
     display: block;
     font-size: 32px;
-    font-family: Arial, Helvetica, sans-serif;
     padding: 5px;
     padding-left: 12px;
     margin: auto;
