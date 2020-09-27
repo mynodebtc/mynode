@@ -4,7 +4,7 @@
 /* light gray: #eee */
 
 body {
-    background: #303841;
+    background: #1b2127;
 }
 
 a:link,
@@ -12,7 +12,7 @@ a:visited,
 a:hover,
 a:active {
     color: #eee;
-    text-decoration: underline dashed #eee;
+    text-decoration: underline solid #eeeeee5e;
 }
 
 .footer,
@@ -30,7 +30,6 @@ a:active {
 .content_block,
 .instructions,
 .drive_usage,
-.settings_block_header,
 .settings_block_subheader,
 .settings_block_subheader_status,
 .settings_block,
@@ -42,24 +41,50 @@ table,
 
 .app_tile,
 .app_tile_short,
-.info_tile,
-.settings_block_header {
-    border: 3px solid #f9c132;
+.info_tile {
+    border: none;
+}
+
+.app_tile {
+  background-color: #121C21;
+}
+
+.info_tile {
+    background: #121C1F;
 }
 
 .info_tile_header {
-    color: #FFFFFF;
+    color: #121C21;
     background-color: #f9c132;
 }
 
+
+
+.settings_block_header {
+  color: orange;
+  font-weight: bold;
+}
+
+.settings_block_subheader {
+    color: orange;
+}
+
+
 .divider {
-    border-bottom: 3px dashed #f9c132;
+    border-bottom: 1px solid #ffb7001c;
+}
+
+td {
+    border-top: #323640 1px solid;
 }
 
 .ui-button.ui-widget.ui-corner-all {
-    color: #303841;
-    background-color: #eee;
-    border-color: #eee;
+    color: #c3c3c3;
+    background-color: #2a343d;
+}
+
+.ui-button.ui-widget.ui-corner-all:hover{
+  background-color: #3a4854;
 }
 
 .main_page_warning_block,
