@@ -1,3 +1,9 @@
+@import url(/fonts/inter.css);
+
+body, input, select, textarea {
+  font-family: "Inter", "Source Sans Pro", Helvetica, sans-serif;
+}
+
 .logo_header {
     margin: auto;
     width: 300px;
@@ -11,27 +17,38 @@
 
 .footer {
     margin: auto;
-    padding-top: 25px;
+    padding: 25px 0 50px 0;
     text-align: center;
     font-size: 12px;
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 a:link {
     color: black;
-    text-decoration: underline dashed orange;
-}  
+    text-decoration: underline solid #0000005e;
+}
 a:visited {
     color: black;
-    text-decoration: underline dashed orange;
+    text-decoration: underline solid #0000005e;
 }
 a:hover {
     color: black;
-    text-decoration: underline solid orange;
+    text-decoration: underline solid #0000005e;
 }
 a:active {
     color: black;
-    text-decoration: underline dashed orange;
+    text-decoration: underline solid #0000005e;
+}
+
+table{
+    border-collapse: collapse;
+}
+
+td {
+    padding-top: 11px;
+    padding-bottom: 8px;
+    border-collapse: collapse;
+    border-top: #e7e7e7 1px solid;
+    padding-right: 40px;
 }
 
 .mynode_back_div {
@@ -50,7 +67,6 @@ a:active {
     color: #555555;
     text-align: center;
     font-size: 56px;
-    font-family: Arial, Helvetica, sans-serif;
     padding-bottom: 15px;
 }
 
@@ -58,21 +74,18 @@ a:active {
     color: #555555;
     text-align: center;
     font-size: 28px;
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 .state_error {
     color: #DD5555;
     text-align: center;
     font-size: 14px;
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 .state_warning {
     color: #555555;
     text-align: center;
     font-size: 14px;
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 .shutoff_warning {
@@ -83,7 +96,7 @@ a:active {
     color: #555555;
     text-align: center;
     font-size: 32px;
-    font-family: Arial, Helvetica, sans-serif;
+
     margin-bottom: 5px;
 }
 .main_header_sub_text {
@@ -92,7 +105,6 @@ a:active {
     margin: auto;
     text-align: center;
     font-size: 14px;
-    font-family: Arial, Helvetica, sans-serif;
     margin-bottom: 10px;
 }
 
@@ -100,7 +112,6 @@ a:active {
     color: #555555;
     text-align: center;
     font-size: 24px;
-    font-family: Arial, Helvetica, sans-serif;
     margin-top: 15px;
     margin-bottom: 5px;
 }
@@ -110,21 +121,18 @@ a:active {
     margin: auto;
     text-align: center;
     font-size: 14px;
-    font-family: Arial, Helvetica, sans-serif;
     margin-bottom: 10px;
 }
 
 .error_message {
     color: red;
     font-size: 16px;
-    font-family: Arial, Helvetica, sans-serif;
     padding-top: 10px;
     padding-bottom: 10px;
 }
 .success_message {
     color: green;
     font-size: 16px;
-    font-family: Arial, Helvetica, sans-serif;
     padding-top: 10px;
     padding-bottom: 10px;
 }
@@ -132,7 +140,7 @@ a:active {
 .app_tile_row_divider_left {
     width: 50%;
     float: left;
-    margin: 0px;
+    margin: 25px;
 }
 
 .app_tile_row_divider_right {
@@ -147,7 +155,7 @@ a:active {
     display: flex;
     text-align: center;
     justify-content: center;
-    margin-bottom: 10px;
+    margin-bottom: 30px;
 }
 .app_tile_row_section {
     margin: auto;
@@ -161,24 +169,25 @@ a:active {
 .app_tile {
     display: inline-block;
     position: relative;
-    border: 3px solid orange;
-    border-radius: 20px;
+    border: none;
+    border-radius: 10px;
     width: 130px;
     min-width: 130px;
     height: 180px;
     padding: 10px;
     margin: 6px 10px 6px 10px;
+    background: #f0f0f0;
 }
 .app_tile_short {
     display: inline-block;
     position: relative;
-    border: 3px solid orange;
-    border-radius: 20px;
+    border-radius: 10px;
     width: 130px;
     min-width: 130px;
     height: 150px;
     padding: 10px;
     margin: 10px;
+    background: #f0f0f0;
 }
 .green { background-color: green; }
 .yellow { background-color: yellow; }
@@ -193,8 +202,8 @@ a:active {
     width: 14px;
     height: 14px;
     position: absolute;
-    top: 5px;
-    left: 5px;
+    top: 10px;
+    left: 10px;
     border-radius: 50%;
     -moz-border-radius: 50%;
     -webkit-border-radius: 50%;
@@ -219,47 +228,44 @@ a:active {
 .app_title {
     font-size: 18px;
     text-align: center;
-    font-family: Arial, Helvetica, sans-serif;
     margin-bottom: 6px;
+    line-height: 1em;
 }
 .app_status {
     font-size: 12px;
-    font-family: Arial, Helvetica, sans-serif;
     line-height: 130%;
 }
 .app_contents {
     font-size: 12px;
-    font-family: Arial, Helvetica, sans-serif;
     position: absolute;
     margin: auto;
     width: 130px;
-    bottom: 10px;
+    bottom: 13px;
     text-align: center;
 }
 
 .info_tile {
     display: inline-block;
     position: relative;
-    border: 3px solid orange;
-    border-radius: 25px;
+    background: #f0f0f0;
+    border-radius: 8px;
     min-width: 120px;
-    margin-left: 10px;
-    margin-right: 10px;
+    margin-left: 15px;
+    margin-right: 15px;
 }
 .info_tile_header {
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-    font-size: 18px;
-    font-family: Arial, Helvetica, sans-serif;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    font-size: 12px;
     color: #FFFFFF;
     background-color: orange;
     padding: 5px 10px 5px 10px;
     margin-top: -2px;
+    text-transform: uppercase;
 }
 .info_tile_contents {
     margin-top: 5px;
     font-size: 16px;
-    font-family: Arial, Helvetica, sans-serif;
     vertical-align: middle;
     padding: 5px 10px 5px 10px;
 }
@@ -270,7 +276,6 @@ a:active {
     margin: auto;
     text-align: justify;
     font-size: 14px;
-    font-family: Arial, Helvetica, sans-serif;
     margin-bottom: 40px;
 }
 
@@ -280,7 +285,6 @@ a:active {
     margin: auto;
     text-align: left;
     font-size: 18px;
-    font-family: Arial, Helvetica, sans-serif;
     margin-bottom: 40px;
     margin-top: 40px;
 }
@@ -305,13 +309,30 @@ a:active {
 .mynode_button {
     width: 80%;
     font-size: 14px;
-    font-family: Arial, Helvetica, sans-serif;
     margin-top: 5px;
+}
+
+
+.ui-state-default a, .ui-state-default a:link,
+.ui-state-default a:visited, a.ui-button,
+a:link.ui-button, a:visited.ui-button, .ui-button {
+  border: none;
+}
+
+
+.ui-button.ui-widget.ui-corner-all{
+  border: none;
+  border-radius: 6px;
+  color: #000000;
+  background-color: #e2e2e2;
+}
+
+.ui-button.ui-widget.ui-corner-all:hover{
+  background-color: #d7d7d7;
 }
 
 .mynode_button_small {
     font-size: 12px !important;
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 .drive_usage {
@@ -321,30 +342,28 @@ a:active {
 }
 
 .settings_block_header {
-    color: #333333;
-    border: 3px solid orange;
-    border-radius: 25px;
+    color: #f19c00;
+    border-bottom: 1px solid #ffb700;
     text-align: center;
     display: block;
     font-size: 24px;
-    font-family: Arial, Helvetica, sans-serif;
-    padding: 5px;
+    padding: 15px;
     margin-bottom: 15px;
 }
 .settings_block_subheader {
-    color: #333333;
+    color: #f19c00;
     text-align: left;
-    font-size: 18px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: bold;
-    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 .settings_block_subheader_status {
     color: #333333;
     height: 18px;
     text-align: left;
     font-size: 14px;
-    font-family: Arial, Helvetica, sans-serif;
     font-style: italic;
     vertical-align: middle;
     margin-bottom: 2px;
@@ -364,29 +383,25 @@ a:active {
     margin: auto;
     text-align: justify;
     font-size: 14px;
-    font-family: Arial, Helvetica, sans-serif;
-    margin-bottom: 30px;
+    margin-bottom: 80px;
 }
 .divider {
     width: 100%;
-    margin-top: 12px;
-    margin-bottom: 12px;
-    border-bottom: 3px dashed orange;
+    margin-top: 50px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ffb70054;
     margin-left: auto;
     margin-right: auto;
 }
 .settings_button {
     font-size: 14px;
-    font-family: Arial, Helvetica, sans-serif;
-    margin-top: 5px;
+    margin-top: 15px;
 }
 .settings_button_small {
     font-size: 10px !important;
-    font-family: Arial, Helvetica, sans-serif;
 }
 .settings_input {
     font-size: 14px;
-    font-family: Arial, Helvetica, sans-serif;
 }
 .status_container_list {
     margin-left: 150px;
@@ -402,7 +417,6 @@ a:active {
     width: 500px;
     font-size: 12px;
     line-height: 1.5;
-    font-family: Arial, Helvetica, sans-serif;
     text-align: center;
     padding-top: 40px;
     margin: auto;
@@ -411,7 +425,6 @@ a:active {
 #lndconnect_tabs {
     margin: auto;
     width: 500px;
-    font-family: Arial, Helvetica, sans-serif;
     font-size: 10px;
     line-height: 1.2;
     word-wrap: break-word;
@@ -429,8 +442,7 @@ a:active {
 .product_key_input {
     width: 100%;
     font-size: 24px;
-    font-family: Arial, Helvetica, sans-serif;
-    text-align: center; 
+    text-align: center;
 }
 .product_key_save_button {
     width: 100%;
@@ -452,7 +464,6 @@ a:active {
     text-align: justify;
     display: block;
     font-size: 12px;
-    font-family: Arial, Helvetica, sans-serif;
     padding: 5px;
     margin: auto;
     margin-bottom: 20px;
@@ -467,7 +478,6 @@ a:active {
     text-align: justify;
     display: block;
     font-size: 12px;
-    font-family: Arial, Helvetica, sans-serif;
     padding: 5px;
     margin: auto;
     margin-bottom: 20px;
@@ -477,7 +487,6 @@ a:active {
     margin: auto;
     padding-bottom: 10px;
     text-align: center;
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 .upgrade_ad_main_page {
@@ -489,7 +498,6 @@ a:active {
     text-align: justify;
     display: block;
     font-size: 12px;
-    font-family: Arial, Helvetica, sans-serif;
     padding: 5px;
     padding-left: 12px;
     margin: auto;
@@ -539,7 +547,6 @@ a:active {
     margin: auto;
     text-align: justify;
     font-size: 18px;
-    font-family: Arial, Helvetica, sans-serif;
     margin-top: 10px;
     margin-bottom: 40px;
 }
@@ -561,7 +568,6 @@ a:active {
     margin: auto;
     text-align: center;
     font-size: 18px;
-    font-family: Arial, Helvetica, sans-serif;
     margin-top: 10px;
     margin-bottom: 40px;
 }
@@ -576,7 +582,6 @@ a:active {
     margin: auto;
     text-align: center;
     font-size: 18px;
-    font-family: Arial, Helvetica, sans-serif;
     margin-top: 10px;
     margin-bottom: 40px;
 }
@@ -615,7 +620,6 @@ a:active {
     margin: auto;
     text-align: justify;
     font-size: 14px;
-    font-family: Arial, Helvetica, sans-serif;
     margin-top: 10px;
     margin-bottom: 40px;
 }
@@ -640,7 +644,6 @@ a:active {
     text-align: center;
     display: block;
     font-size: 32px;
-    font-family: Arial, Helvetica, sans-serif;
     padding: 5px;
     padding-left: 12px;
     margin: auto;
