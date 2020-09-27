@@ -36,7 +36,7 @@ Each myNode device comes with a number of wonderful features:
 - RTL (Ride the Lightning) - Lightning Wallet (v0.9.0-beta)
 - Samourai Dojo (v1.8.0)
 - Samourai Whirlpool (whirlpool-client-cli v0.10.8)
-- Specter Desktop (v0.7.2)
+- Specter Desktop (v0.8.0)
 - Thunderhub (v0.9.8)
 - BTC RPC Explorer (v2.0.2)
 - Mempool.Space - Mempool local visualizer for the Bitcoin blockchain (v1.0)
