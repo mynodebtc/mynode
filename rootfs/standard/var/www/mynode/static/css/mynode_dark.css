@@ -45,7 +45,8 @@ table,
     border: none;
 }
 
-.app_tile {
+.app_tile,
+.app_tile_short {
   background-color: #121C21;
 }
 
