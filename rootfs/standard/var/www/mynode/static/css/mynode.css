@@ -1,4 +1,4 @@
-@import url(/fonts/inter.css);
+@import url(/static/fonts/inter.css);
 
 body, input, select, textarea {
   font-family: "Inter", "Source Sans Pro", Helvetica, sans-serif;
@@ -44,10 +44,12 @@ table{
 }
 
 td {
-    padding-top: 11px;
-    padding-bottom: 8px;
+    padding-top: 9px;
+    padding-bottom: 6px;
     border-collapse: collapse;
     border-top: #e7e7e7 1px solid;
+}
+.td_left_header {
     padding-right: 40px;
 }
 
@@ -155,7 +157,7 @@ td {
     display: flex;
     text-align: center;
     justify-content: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 .app_tile_row_section {
     margin: auto;
@@ -187,6 +189,17 @@ td {
     height: 150px;
     padding: 10px;
     margin: 10px;
+    background: #f0f0f0;
+}
+.app_tile_very_wide {
+    display: inline-block;
+    position: relative;
+    border: none;
+    border-radius: 10px;
+    width: 300px;
+    height: 180px;
+    padding: 10px;
+    margin: 6px 10px 6px 10px;
     background: #f0f0f0;
 }
 .green { background-color: green; }
@@ -223,7 +236,7 @@ td {
 .app_logo_icon {
     margin: auto;
     display: block;
-    width: 40%;
+    width: 55px;
 }
 .app_title {
     font-size: 18px;
@@ -383,12 +396,12 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     margin: auto;
     text-align: justify;
     font-size: 14px;
-    margin-bottom: 80px;
+    margin-bottom: 30px;
 }
 .divider {
     width: 100%;
-    margin-top: 50px;
-    margin-bottom: 20px;
+    margin-top: 25px;
+    margin-bottom: 15px;
     border-bottom: 1px solid #ffb70054;
     margin-left: auto;
     margin-right: auto;

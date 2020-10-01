@@ -361,7 +361,7 @@ def index():
             templateData = {
                 "title": "myNode Status",
                 "header_text": "Starting...",
-                "subheader_text": Markup("Launching myNode services...{}".format(message)),
+                "subheader_text": Markup("Launching myNode Services{}".format(message)),
                 "error_message": error_message,
                 "ui_settings": read_ui_settings()
             }
@@ -398,6 +398,9 @@ def index():
         tor_status_color = get_service_status_color("tor@default")
 
         # Find bitcoind status
+        bitcoin_info = get_bitcoin_blockchain_info()
+        bitcoin_mempool = get_bitcoin_mempool_info()
+        bitcoin_peers = get_bitcoin_peers()
         if bitcoind_status_code != 0:
             bitcoind_status_color = "red"
         else:
@@ -567,9 +570,17 @@ def index():
             "bitcoind_status_color": bitcoind_status_color,
             "bitcoind_status": Markup(bitcoind_status),
             "current_block": current_block,
+            "bitcoin_peer_count": get_bitcoin_peer_count(),
+            "bitcoin_difficulty": get_bitcoin_difficulty(),
+            "bitcoin_mempool_size": "{:.3} MB".format(float(bitcoin_mempool["bytes"]) / 1000 / 1000),
+            "bitcoin_version": get_bitcoin_version(),
             "lnd_status_color": lnd_status_color,
             "lnd_status": Markup(lnd_status),
             "lnd_ready": lnd_ready,
+            "lnd_peer_count": get_lightning_peer_count(),
+            "lnd_channel_count": get_lightning_channel_count(),
+            "lnd_balance_info": get_lightning_balance_info(),
+            "lnd_version": get_lnd_version(),
             "tor_status_color": tor_status_color,
             "is_installing_docker_images": is_installing_docker_images(),
             "is_device_from_reseller": is_device_from_reseller(),

@@ -35,20 +35,12 @@ def bitcoind_status_page():
         blockdata = get_bitcoin_recent_blocks()
         peerdata  = get_bitcoin_peers()
         networkdata = get_bitcoin_network_info()
-        mempooldata = get_bitcoin_mempool()
         walletdata = get_bitcoin_wallet_info()
         version = get_bitcoin_version()
         rpc_password = get_bitcoin_rpc_password()
 
         # Mempool info
-        mempool = {}
-        mempool["size"] = "???"
-        mempool["bytes"] = "0"
-        if mempooldata != None:
-            if "size" in mempooldata:
-                mempool["size"] = mempooldata["size"]
-            if "bytes" in mempooldata:
-                mempool["bytes"] = mempooldata["bytes"]
+        mempool = get_bitcoin_mempool_info()
 
         # Recent blocks
         blocks = []
@@ -116,7 +108,7 @@ def bitcoind_status_page():
         "blocks": blocks,
         "peers": peers,
         "local_address": local_address,
-        "difficulty": "{:.3g}".format(info["difficulty"]),
+        "difficulty": get_bitcoin_difficulty(),
         "block_num": info["blocks"],
         "header_num": info["headers"],
         "rpc_password": rpc_password,

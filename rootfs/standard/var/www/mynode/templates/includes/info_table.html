@@ -3,12 +3,12 @@
 </div>
 <table border="0">
     <tr>
-        <td>Serial Number</td>
-        <td style="padding-left: 20px;">{{serial_number}}</td>
+        <td class="td_left_header">Serial Number</td>
+        <td>{{serial_number}}</td>
     </tr>
     <tr>
-        <td>Product Key</td>
-        <td style="padding-left: 20px;">
+        <td class="td_left_header">Product Key</td>
+        <td>
             {% if product_key_skipped %}
                 {{product_key}}
                 &nbsp;<a href="/product-key" class="ui-button ui-widget ui-corner-all settings_button_small">Enter Product Key</a>
@@ -20,22 +20,22 @@
         </td>
     </tr>
     <tr>
-        <td>Device Type</td>
-        <td style="padding-left: 20px;">{{device_type}}</td>
+        <td class="td_left_header">Device Type</td >
+        <td>{{device_type}}</td>
     </tr>
     <tr>
-        <td>Device RAM</td>
-        <td style="padding-left: 20px;">{{device_ram}} GB</td>
+        <td class="td_left_header">Device RAM</td>
+        <td>{{device_ram}} GB</td>
     </tr>
     <tr>
-        <td>Local IP</td>
-        <td style="padding-left: 20px;">{{local_ip}}</td>
+        <td class="td_left_header">Local IP</td>
+        <td>{{local_ip}}</td>
     </tr>
     {% if throttled_data['RAW_DATA'] != "0x0" and throttled_data['RAW_DATA'] != "MISSING" %}
     {% if throttled_data['UNDERVOLTED'] or throttled_data['CAPPED'] or throttled_data['THROTTLED'] or throttled_data['SOFT_TEMPLIMIT'] %}
     <tr>
-        <td>Active Throttling Data</td>
-        <td style="padding-left: 20px; color: red; font-size: 10px">
+        <td class="td_left_header">Active Throttling Data</td>
+        <td style="color: red; font-size: 10px">
             {% if throttled_data['UNDERVOLTED'] %}Undervolted<br/>{% endif %}
             {% if throttled_data['CAPPED'] %}Capped CPU<br/>{% endif %}
             {% if throttled_data['THROTTLED'] %}Throttled CPU<br/>{% endif %}
@@ -45,8 +45,8 @@
     {% endif %}
     {% if throttled_data['HAS_UNDERVOLTED'] or throttled_data['HAS_CAPPED'] or throttled_data['HAS_THROTTLED'] or throttled_data['HAS_SOFT_TEMPLIMIT'] %}
     <tr>
-        <td>Historic Throttling Data<br/><span style="font-size: 10px;">*Occurred since last reboot</span></td>
-        <td style="padding-left: 20px; color: red; font-size: 10px;">
+        <td class="td_left_header">Historic Throttling Data<br/><span style="font-size: 10px;">*Occurred since last reboot</span></td>
+        <td style="color: red; font-size: 10px;">
             {% if throttled_data['HAS_UNDERVOLTED'] %}Undervolted<br/>{% endif %}
             {% if throttled_data['HAS_CAPPED'] %}Capped CPU<br/>{% endif %}
             {% if throttled_data['HAS_THROTTLED'] %}Throttled CPU<br/>{% endif %}
@@ -57,8 +57,8 @@
     {% endif %}
     {% if has_checkin_error %}
     <tr>
-        <td>Server</td>
-        <td style="padding-left: 20px; color: red;"><b>Error contacting mynodebtc.com via Tor!</b><br/>You may have issues checking for new versions or saving product keys.</td>
+        <td class="td_left_header">Server</td>
+        <td style="color: red;"><b>Error contacting mynodebtc.com via Tor!</b><br/>You may have issues checking for new versions or saving product keys.</td>
     </tr>
     {% endif %}
     

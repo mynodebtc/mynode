@@ -41,11 +41,13 @@ table,
 
 .app_tile,
 .app_tile_short,
+.app_tile_very_wide,
 .info_tile {
     border: none;
 }
 
 .app_tile,
+.app_tile_very_wide,
 .app_tile_short {
   background-color: #121C21;
 }

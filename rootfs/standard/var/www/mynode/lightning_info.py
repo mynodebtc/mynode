@@ -86,9 +86,22 @@ def get_lightning_peers():
     global lightning_peers
     return copy.deepcopy(lightning_peers)
 
+def get_lightning_peer_count():
+    info = get_lightning_info()
+    num_peers = 0
+    if "num_peers" in info:
+        num_peers = info['num_peers']
+    return num_peers
+
 def get_lightning_channels():
     global lightning_channels
     return copy.deepcopy(lightning_channels)
+
+def get_lightning_channel_count():
+    channeldata = get_lightning_channels()
+    if channeldata != None and "channels" in channeldata:
+        return len(channeldata["channels"])
+    return 0
 
 def get_lightning_channel_balance():
     global lightning_channel_balance
@@ -97,6 +110,30 @@ def get_lightning_channel_balance():
 def get_lightning_wallet_balance():
     global lightning_wallet_balance
     return copy.deepcopy(lightning_wallet_balance)
+
+def get_lightning_balance_info():
+    channel_balance_data = get_lightning_channel_balance()
+    wallet_balance_data = get_lightning_wallet_balance()
+
+    balance_data = {}
+    balance_data["channel_balance"] = "N/A"
+    balance_data["channel_pending"] = "N/A"
+    balance_data["wallet_balance"] = "N/A"
+    balance_data["wallet_pending"] = "N/A"
+
+    channel_balance_data = get_lightning_channel_balance()
+    if channel_balance_data != None and "balance" in channel_balance_data:
+        balance_data["channel_balance"] = channel_balance_data["balance"]
+    if channel_balance_data != None and "pending_open_balance" in channel_balance_data:
+        balance_data["channel_pending"] = channel_balance_data["pending_open_balance"]
+    
+    wallet_balance_data = get_lightning_wallet_balance()
+    if wallet_balance_data != None and "confirmed_balance" in wallet_balance_data:
+        balance_data["wallet_balance"] = wallet_balance_data["confirmed_balance"]
+    if wallet_balance_data != None and "unconfirmed_balance" in wallet_balance_data:
+        balance_data["wallet_pending"] = wallet_balance_data["unconfirmed_balance"]
+
+    return balance_data
 
 def is_lnd_ready():
     global lnd_ready
@@ -213,13 +250,13 @@ def get_lnd_version():
     global lnd_version
     if lnd_version == None:
         lnd_version = subprocess.check_output("lnd --version | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+' | head -n 1", shell=True)
-    return lnd_version
+    return "v{}".format(lnd_version)
 
 def get_loopd_version():
     global loopd_version
     if loopd_version == None:
         loopd_version = subprocess.check_output("loopd --version | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+' | head -n 1", shell=True)
-    return loopd_version
+    return "v{}".format(loopd_version)
 
 def get_default_lnd_config():
     try:
