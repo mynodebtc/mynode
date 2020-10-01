@@ -112,6 +112,12 @@ def get_bitcoin_blockchain_info():
     global bitcoin_blockchain_info
     return copy.deepcopy(bitcoin_blockchain_info)
 
+def get_bitcoin_difficulty():
+    info = get_bitcoin_blockchain_info()
+    if "difficulty" in info:
+        return "{:.3g}".format(info["difficulty"])
+    return "???"
+
 def get_bitcoin_block_height():
     global bitcoin_block_height
     return bitcoin_block_height
@@ -128,6 +134,12 @@ def get_bitcoin_peers():
     global bitcoin_peers
     return copy.deepcopy(bitcoin_peers)
 
+def get_bitcoin_peer_count():
+    peers = get_bitcoin_peers()
+    if peers != None:
+        return len(peers)
+    return 0
+
 def get_bitcoin_network_info():
     global bitcoin_network_info
     return copy.deepcopy(bitcoin_network_info)
@@ -135,6 +147,20 @@ def get_bitcoin_network_info():
 def get_bitcoin_mempool():
     global bitcoin_mempool
     return copy.deepcopy(bitcoin_mempool)
+
+def get_bitcoin_mempool_info():
+    mempooldata = get_bitcoin_mempool()
+
+    mempool = {}
+    mempool["size"] = "???"
+    mempool["bytes"] = "0"
+    if mempooldata != None:
+        if "size" in mempooldata:
+            mempool["size"] = mempooldata["size"]
+        if "bytes" in mempooldata:
+            mempool["bytes"] = mempooldata["bytes"]
+
+    return copy.deepcopy(mempool)
 
 def get_bitcoin_wallet_info():
     global bitcoin_wallet_info

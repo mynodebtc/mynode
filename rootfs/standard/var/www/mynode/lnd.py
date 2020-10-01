@@ -134,6 +134,7 @@ def page_lnd():
                     channel["remote_balance"] = "0"
                 channels.append(channel)
 
+        balance_info = get_lightning_balance_info()
 
         channel_balance_data = get_lightning_channel_balance()
         if channel_balance_data != None and "balance" in channel_balance_data:
@@ -173,10 +174,10 @@ def page_lnd():
         "pubkey": pubkey,
         "uri": uri,
         "ip": ip,
-        "channel_balance": channel_balance,
-        "channel_pending": channel_pending,
-        "wallet_balance": wallet_balance,
-        "wallet_pending": wallet_pending,
+        "channel_balance": balance_info["channel_balance"],
+        "channel_pending": balance_info["channel_pending"],
+        "wallet_balance": balance_info["wallet_balance"],
+        "wallet_pending": balance_info["wallet_pending"],
         "peers": peers,
         "channels": channels,
         "ui_settings": read_ui_settings()

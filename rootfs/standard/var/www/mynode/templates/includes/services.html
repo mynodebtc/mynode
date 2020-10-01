@@ -1,8 +1,8 @@
 <div class="app_tile_row">
     <div>
         <div class="main_header">Core Services</div>
-        <div class="app_tile_row_section">
-            <div class="app_tile">
+        <div class="app_tile_very_wide" style="width: 300px;">
+            <div style="width: 130px; float: left;">
                 <div class="app_status_icon {{ bitcoind_status_color }}"></div>
                 <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/bitcoin.png")}}"/></div>
                 <div class="app_title">Bitcoin</div>
@@ -11,61 +11,69 @@
                     <a class="ui-button ui-widget ui-corner-all mynode_button" href="/bitcoind">Manage</a>
                 </div>
             </div>
-            <div class="app_tile">
+            <div style="width: 160px; padding-left: 10px; float: right;">
+                <table style="font-size: 10px; width: 100%;" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td class="td_left_header">Height</td>
+                        <td>{{ current_block }}</td>
+                    </tr>
+                    <tr>
+                        <td class="td_left_header">Peers</td>
+                        <td>{{ bitcoin_peer_count }}</td>
+                    </tr>
+                    <tr>
+                        <td class="td_left_header">Difficulty</td>
+                        <td>{{ bitcoin_difficulty }}</td>
+                    </tr>
+                    <tr>
+                        <td class="td_left_header">Mempool Size</td>
+                        <td>{{ bitcoin_mempool_size }}</td>
+                    </tr>
+                    <tr>
+                        <td class="td_left_header">Version</td>
+                        <td>{{ bitcoin_version }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="app_tile_very_wide" style="width: 300px;">
+            <div style="width: 130px; float: left;">
                 <div class="app_status_icon {{ lnd_status_color }}"></div>
                 <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lightning.png")}}"/></div>
                 <div class="app_title">Lightning</div>
                 <div class="app_status">{{ lnd_status }}</div>
                 <div class="app_contents">
+                    {% if lnd_ready %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lndconnect">Pair Wallet</a>
+                    {% endif %}
                     <a class="ui-button ui-widget ui-corner-all mynode_button" href="/lnd">Manage</a>
                 </div>
             </div>
-        </div>
-    </div>
-    <div>
-        <div class="main_header">Services</div>
-            <div class="app_tile_row_section">
-                <div class="app_tile">
-                    <div class="app_status_icon {{ electrs_status_color }}"></div>
-                    <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/electrum_logo.png")}}"/></div>
-                    <div class="app_title">Electrum Server</div>
-                    <div class="app_status">{{ electrs_status }}</div>
-                    <div class="app_contents">
-                        {% if electrs_enabled %}
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="/electrum-server">Info</a>
-                        {% endif %}
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-electrs">{% if electrs_enabled %}Disable{% else %}Enable{% endif %}</a>
-                    </div>
-                </div>
-                <div class="app_tile">
-                    <div class="app_status_icon {{ tor_status_color }}"></div>
-                    <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/tor.png")}}"/></div>
-                    <div class="app_title">Tor</div>
-                    <div class="app_status">Private Connections</div>
-                    <div class="app_contents">
-                        {% if product_key_skipped %}
-                            Remote Access Premium Feature
-                        {% else %}
-                            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/tor">Tor Services</a>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="app_tile">
-                    <div class="app_status_icon {{ vpn_status_color }}"></div>
-                    <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/vpn.png")}}"/></div>
-                    <div class="app_title">VPN</div>
-                    <div class="app_status">{{ vpn_status }}</div>
-                    <div class="app_contents">
-                        {% if product_key_skipped %}
-                            Premium Feature
-                        {% else %}
-                            {% if vpn_enabled %}
-                            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/vpn-info">Info</a>
-                            {% endif %}
-                            <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-vpn">{% if vpn_enabled %}Disable{% else %}Enable{% endif %}</a>
-                        {% endif %}
-                    </div>
-                </div>
+            <div style="width: 160px; padding-left: 10px; float: right;">
+                <table style="font-size: 10px; width: 100%;" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td class="td_left_header">Peers</td>
+                        <td>{{ lnd_peer_count }}</td>
+                    </tr>
+                    <tr>
+                        <td class="td_left_header">Channels</td>
+                        <td>{{ lnd_channel_count }}</td>
+                    </tr>
+                    <!--
+                    <tr>
+                        <td class="td_left_header">On-chain Balance</td>
+                        <td>{{ lnd_balance_info['wallet_balance'] }}</td>
+                    </tr>
+                    <tr>
+                        <td class="td_left_header">Lightning Balance</td>
+                        <td>{{ lnd_balance_info['channel_balance'] }}</td>
+                    </tr>
+                    -->
+                    <tr>
+                        <td class="td_left_header">Version</td>
+                        <td>{{ lnd_version }}</td>
+                    </tr>
+                </table>
             </div>
         </div>
     </div>

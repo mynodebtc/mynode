@@ -19,6 +19,18 @@
         </div>
     </div>
     <div class="app_tile">
+        <div class="app_status_icon {{ electrs_status_color }}"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/electrum_logo.png")}}"/></div>
+        <div class="app_title">Electrum Server</div>
+        <div class="app_status">{{ electrs_status }}</div>
+        <div class="app_contents">
+            {% if electrs_enabled %}
+            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/electrum-server">Info</a>
+            {% endif %}
+            <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-electrs">{% if electrs_enabled %}Disable{% else %}Enable{% endif %}</a>
+        </div>
+    </div>
+    <div class="app_tile">
         <div class="app_status_icon {{ btcpayserver_status_color }}"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/btcpayserver.png")}}"/></div>
         <div class="app_title">BTCPay Server</div>
@@ -50,6 +62,7 @@
             {% endif %}
         </div>
     </div>
+    <!--
     <div class="app_tile">
         <div class="app_status_icon {{ lndconnect_status_color }}"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lndconnect.png")}}"/></div>
@@ -61,6 +74,7 @@
             {% endif %}
         </div>
     </div>
+    -->
 </div>
 
 <div class="app_tile_row">
@@ -225,3 +239,56 @@
 
 <!-- BETA APPS -->
 <!-- <div class="main_header">Beta Apps</div> -->
+
+<!-- REMOTE SERVICES -->
+<div class="app_tile_row">
+    <div>
+        <div class="main_header">Remote Access Services</div>
+            <div class="app_tile_row_section">
+                <!--
+                <div class="app_tile">
+                    <div class="app_status_icon {{ electrs_status_color }}"></div>
+                    <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/electrum_logo.png")}}"/></div>
+                    <div class="app_title">Electrum Server</div>
+                    <div class="app_status">{{ electrs_status }}</div>
+                    <div class="app_contents">
+                        {% if electrs_enabled %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="/electrum-server">Info</a>
+                        {% endif %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-electrs">{% if electrs_enabled %}Disable{% else %}Enable{% endif %}</a>
+                    </div>
+                </div>
+                -->
+                <div class="app_tile">
+                    <div class="app_status_icon {{ tor_status_color }}"></div>
+                    <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/tor.png")}}"/></div>
+                    <div class="app_title">Tor</div>
+                    <div class="app_status">Private Connections</div>
+                    <div class="app_contents">
+                        {% if product_key_skipped %}
+                            Remote Access Premium Feature
+                        {% else %}
+                            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/tor">Tor Services</a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="app_tile">
+                    <div class="app_status_icon {{ vpn_status_color }}"></div>
+                    <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/vpn.png")}}"/></div>
+                    <div class="app_title">VPN</div>
+                    <div class="app_status">{{ vpn_status }}</div>
+                    <div class="app_contents">
+                        {% if product_key_skipped %}
+                            Premium Feature
+                        {% else %}
+                            {% if vpn_enabled %}
+                            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/vpn-info">Info</a>
+                            {% endif %}
+                            <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-vpn">{% if vpn_enabled %}Disable{% else %}Enable{% endif %}</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
