@@ -101,7 +101,7 @@ echo "" > /etc/nginx/sites-available/default
 dpkg --configure -a
 
 # Install any pip software
-pip2 install tzupdate virtualenv pysocks --no-cache-dir
+pip2 install tzupdate virtualenv pysocks redis --no-cache-dir
 
 
 # Update Python3 to 3.7.X
@@ -133,6 +133,7 @@ pip3 install docker-compose --no-cache-dir
 pip3 install pipenv --no-cache-dir
 pip3 install bcrypt --no-cache-dir
 pip3 install pysocks --no-cache-dir
+pip3 install redis --no-cache-dir
 
 
 # Install Docker
