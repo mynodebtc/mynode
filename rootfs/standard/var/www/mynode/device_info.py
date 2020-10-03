@@ -8,6 +8,7 @@ import os
 import subprocess
 import random
 import string
+import redis
 
 # Globals
 local_ip = "unknown"
@@ -408,9 +409,21 @@ def get_journalctl_log(service_name):
     return log
 
 #==================================
+# Data Storage Functions
+#==================================
+def set_data(key, value):
+    r = redis.Redis(host='localhost', port=6379, db=0)
+    mynode_key = "mynode_" + key
+    return r.set(mynode_key, value)
+
+def get_data(key):
+    r = redis.Redis(host='localhost', port=6379, db=0)
+    mynode_key = "mynode_" + key
+    return r.get(mynode_key)
+
+#==================================
 # UI Functions
 #==================================
-
 def read_ui_settings():
     ui_hdd_file = '/mnt/hdd/mynode/settings/ui.json'
     ui_mynode_file = '/home/bitcoin/.mynode/ui.json'

@@ -108,6 +108,21 @@ def update_bitcoin_other_info():
 
     return True
 
+def get_bitcoin_status():
+    height = get_bitcoin_block_height()
+    block = get_mynode_block_height()
+    status = "unknown"
+
+    if height != None and block != None:
+        remaining = height - block
+        if remaining == 0:
+            status = "Running"
+        else:
+            status = "Syncing<br/>{} blocks remaining...".format(remaining)
+    else:
+        status = "Waiting for info..."
+    return status
+
 def get_bitcoin_blockchain_info():
     global bitcoin_blockchain_info
     return copy.deepcopy(bitcoin_blockchain_info)
@@ -161,6 +176,11 @@ def get_bitcoin_mempool_info():
             mempool["bytes"] = mempooldata["bytes"]
 
     return copy.deepcopy(mempool)
+
+def get_bitcoin_mempool_size():
+    info = get_bitcoin_mempool_info()
+    size = float(info["bytes"]) / 1000 / 1000
+    return "{:.3} MB".format(size)
 
 def get_bitcoin_wallet_info():
     global bitcoin_wallet_info
