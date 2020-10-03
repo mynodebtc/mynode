@@ -6,7 +6,7 @@ import time
 import re
 from threading import Timer
 from bitcoin_info import *
-from device_info import get_journalctl_log
+from device_info import get_journalctl_log, get_service_status_code
 
 # Variables
 lightning_info = None
@@ -200,6 +200,9 @@ def get_lnd_status():
     if not lnd_wallet_exists():
         return "Please create wallet..."
 
+    if not is_bitcoind_synced():
+        return "Waiting..."
+
     if is_lnd_ready():
         return "Running"
 
@@ -232,6 +235,22 @@ def get_lnd_status():
         return "Waiting..."
     except:
         return "Status Error"
+
+def get_lnd_status_color():
+    if not is_bitcoind_synced():
+        return "yellow"
+
+    if not lnd_wallet_exists():
+        # This hides the restart /login attempt LND does from the GUI
+        return "green"
+    
+    lnd_status_code = get_service_status_code("lnd")
+    if lnd_status_code != 0:
+        lnd_status_color = "red"
+        lnd_status = get_lnd_status()
+        if lnd_status == "Logging in...":
+            lnd_status_color = "yellow"
+    return "green"
 
 def get_lnd_channels():
     try:

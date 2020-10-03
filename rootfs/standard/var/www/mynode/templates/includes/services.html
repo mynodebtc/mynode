@@ -1,80 +1,78 @@
+<div class="main_header">Core Services</div>
 <div class="app_tile_row">
-    <div>
-        <div class="main_header">Core Services</div>
-        <div class="app_tile_very_wide" style="width: 300px;">
-            <div style="width: 130px; float: left;">
-                <div class="app_status_icon {{ bitcoind_status_color }}"></div>
-                <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/bitcoin.png")}}"/></div>
-                <div class="app_title">Bitcoin</div>
-                <div class="app_status">{{ bitcoind_status }}</div>
-                <div class="app_contents">
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="/bitcoind">Manage</a>
-                </div>
-            </div>
-            <div style="width: 160px; padding-left: 10px; float: right;">
-                <table style="font-size: 10px; width: 100%;" cellpadding="0" cellspacing="0">
-                    <tr>
-                        <td class="td_left_header">Height</td>
-                        <td>{{ current_block }}</td>
-                    </tr>
-                    <tr>
-                        <td class="td_left_header">Peers</td>
-                        <td>{{ bitcoin_peer_count }}</td>
-                    </tr>
-                    <tr>
-                        <td class="td_left_header">Difficulty</td>
-                        <td>{{ bitcoin_difficulty }}</td>
-                    </tr>
-                    <tr>
-                        <td class="td_left_header">Mempool Size</td>
-                        <td>{{ bitcoin_mempool_size }}</td>
-                    </tr>
-                    <tr>
-                        <td class="td_left_header">Version</td>
-                        <td>{{ bitcoin_version }}</td>
-                    </tr>
-                </table>
+    <div class="app_tile_very_wide">
+        <div style="width: 130px; float: left;">
+            <div class="app_status_icon {{ bitcoind_status_color }}" id="bitcoin_status_icon"></div>
+            <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/bitcoin.png")}}"/></div>
+            <div class="app_title">Bitcoin</div>
+            <div class="app_status" id="bitcoin_status">{{ bitcoind_status }}</div>
+            <div class="app_contents">
+                <a class="ui-button ui-widget ui-corner-all mynode_button" href="/bitcoind">Manage</a>
             </div>
         </div>
-        <div class="app_tile_very_wide" style="width: 300px;">
-            <div style="width: 130px; float: left;">
-                <div class="app_status_icon {{ lnd_status_color }}"></div>
-                <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lightning.png")}}"/></div>
-                <div class="app_title">Lightning</div>
-                <div class="app_status">{{ lnd_status }}</div>
-                <div class="app_contents">
-                    {% if lnd_ready %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lndconnect">Pair Wallet</a>
-                    {% endif %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="/lnd">Manage</a>
-                </div>
+        <div style="width: 160px; padding-left: 10px; float: right;">
+            <table style="font-size: 10px; width: 100%;" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td class="td_left_header">Height</td>
+                    <td id="current_block">{{ current_block }}</td>
+                </tr>
+                <tr>
+                    <td class="td_left_header">Peers</td>
+                    <td id="bitcoin_peer_count">{{ bitcoin_peer_count }}</td>
+                </tr>
+                <tr>
+                    <td class="td_left_header">Difficulty</td>
+                    <td id="bitcoin_difficulty">{{ bitcoin_difficulty }}</td>
+                </tr>
+                <tr>
+                    <td class="td_left_header">Mempool Size</td>
+                    <td id="bitcoin_mempool_size">{{ bitcoin_mempool_size }}</td>
+                </tr>
+                <tr>
+                    <td class="td_left_header">Version</td>
+                    <td id="bitcoin_version">{{ bitcoin_version }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="app_tile_very_wide">
+        <div style="width: 130px; float: left;">
+            <div class="app_status_icon {{ lnd_status_color }}" id="lnd_status_icon"></div>
+            <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lightning.png")}}"/></div>
+            <div class="app_title">Lightning</div>
+            <div class="app_status" id="lnd_status">{{ lnd_status }}</div>
+            <div class="app_contents">
+                {% if lnd_ready %}
+                <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lndconnect">Pair Wallet</a>
+                {% endif %}
+                <a class="ui-button ui-widget ui-corner-all mynode_button" href="/lnd">Manage</a>
             </div>
-            <div style="width: 160px; padding-left: 10px; float: right;">
-                <table style="font-size: 10px; width: 100%;" cellpadding="0" cellspacing="0">
-                    <tr>
-                        <td class="td_left_header">Peers</td>
-                        <td>{{ lnd_peer_count }}</td>
-                    </tr>
-                    <tr>
-                        <td class="td_left_header">Channels</td>
-                        <td>{{ lnd_channel_count }}</td>
-                    </tr>
-                    <!--
-                    <tr>
-                        <td class="td_left_header">On-chain Balance</td>
-                        <td>{{ lnd_balance_info['wallet_balance'] }}</td>
-                    </tr>
-                    <tr>
-                        <td class="td_left_header">Lightning Balance</td>
-                        <td>{{ lnd_balance_info['channel_balance'] }}</td>
-                    </tr>
-                    -->
-                    <tr>
-                        <td class="td_left_header">Version</td>
-                        <td>{{ lnd_version }}</td>
-                    </tr>
-                </table>
-            </div>
+        </div>
+        <div style="width: 160px; padding-left: 10px; float: right;">
+            <table style="font-size: 10px; width: 100%;" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td class="td_left_header">Peers</td>
+                    <td id="lnd_peer_count">{{ lnd_peer_count }}</td>
+                </tr>
+                <tr>
+                    <td class="td_left_header">Channels</td>
+                    <td id="lnd_channel_count">{{ lnd_channel_count }}</td>
+                </tr>
+                <!--
+                <tr>
+                    <td class="td_left_header">On-chain Balance</td>
+                    <td>{{ lnd_balance_info['wallet_balance'] }}</td>
+                </tr>
+                <tr>
+                    <td class="td_left_header">Lightning Balance</td>
+                    <td>{{ lnd_balance_info['channel_balance'] }}</td>
+                </tr>
+                -->
+                <tr>
+                    <td class="td_left_header">Version</td>
+                    <td>{{ lnd_version }}</td>
+                </tr>
+            </table>
         </div>
     </div>
 </div>

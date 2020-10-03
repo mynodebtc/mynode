@@ -2,6 +2,7 @@
 from config import *
 from flask import Flask, render_template, Markup, send_from_directory, redirect, request, url_for
 from user_management import *
+from api import mynode_api
 from bitcoind import mynode_bitcoind
 from whirlpool import mynode_whirlpool, get_whirlpool_status
 from dojo import mynode_dojo, get_dojo_status
@@ -70,6 +71,7 @@ app.logger.setLevel(logging.INFO)
 
 app.register_blueprint(mynode_bitcoind)
 app.register_blueprint(mynode_lnd)
+app.register_blueprint(mynode_api)
 app.register_blueprint(mynode_whirlpool)
 app.register_blueprint(mynode_dojo)
 app.register_blueprint(mynode_caravan)
@@ -396,42 +398,21 @@ def index():
 
         # Find tor status
         tor_status_color = get_service_status_color("tor@default")
+        tor_status = "Private Connections"
 
         # Find bitcoind status
         bitcoin_info = get_bitcoin_blockchain_info()
-        bitcoin_mempool = get_bitcoin_mempool_info()
         bitcoin_peers = get_bitcoin_peers()
         if bitcoind_status_code != 0:
             bitcoind_status_color = "red"
         else:
-            bitcoind_status = "Validating blocks..."
             bitcoind_status_color = "green"
-            if bitcoin_block_height != None:
-                remaining = bitcoin_block_height - mynode_block_height
-                if remaining == 0:
-                    bitcoind_status = "Running"
-                else:
-                    bitcoind_status = "Syncing<br/>{} blocks remaining...".format(remaining)
-            else:
-                bitcoind_status = "Waiting for info..."
+            bitcoind_status = get_bitcoin_status()
             current_block = get_mynode_block_height()
 
         # Find lnd status
-        if is_bitcoind_synced():
-            lnd_status_color = "green"
-            lnd_status = get_lnd_status()
-            
-            # Get LND status
-            if not lnd_wallet_exists():
-                # This hides the restart /login attempt LND does from the GUI
-                lnd_status_color = "green"
-            elif lnd_status_code != 0:
-                lnd_status_color = "red"
-                if lnd_status == "Logging in...":
-                    lnd_status_color = "yellow"
-        else:
-            lnd_status_color = "yellow"
-            lnd_status = "Waiting..."
+        lnd_status = get_lnd_status()
+        lnd_status_color = get_lnd_status_color()
 
         # Find lndhub status
         if is_lndhub_enabled():
@@ -563,16 +544,23 @@ def index():
         if current != "0.0" and latest != "0.0" and current != latest:
             upgrade_available = True
 
+        # Refresh rate
+        refresh_rate = 900
+        if bitcoind_status_color == "red" or lnd_status_color == "red":
+            refresh_rate = 60
+        elif bitcoind_status_color == "yellow" or lnd_status_color == "yellow":
+            refresh_rate = 120
 
         templateData = {
             "title": "myNode Home",
+            "refresh_rate": refresh_rate,
             "config": CONFIG,
             "bitcoind_status_color": bitcoind_status_color,
             "bitcoind_status": Markup(bitcoind_status),
             "current_block": current_block,
             "bitcoin_peer_count": get_bitcoin_peer_count(),
             "bitcoin_difficulty": get_bitcoin_difficulty(),
-            "bitcoin_mempool_size": "{:.3} MB".format(float(bitcoin_mempool["bytes"]) / 1000 / 1000),
+            "bitcoin_mempool_size": get_bitcoin_mempool_size(),
             "bitcoin_version": get_bitcoin_version(),
             "lnd_status_color": lnd_status_color,
             "lnd_status": Markup(lnd_status),
@@ -582,6 +570,7 @@ def index():
             "lnd_balance_info": get_lightning_balance_info(),
             "lnd_version": get_lnd_version(),
             "tor_status_color": tor_status_color,
+            "tor_status": tor_status,
             "is_installing_docker_images": is_installing_docker_images(),
             "is_device_from_reseller": is_device_from_reseller(),
             "electrs_status_color": electrs_status_color,

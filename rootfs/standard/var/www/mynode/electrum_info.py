@@ -64,9 +64,9 @@ def get_electrs_status():
         elif "opening DB at" in line or "enabling auto-compactions" in line:
             return "Starting..."
         elif "downloading 100000 block headers" in line:
-            return "Downloading headers..."
+            return "Getting headers..."
         elif "starting full compaction" in line:
-            return "Compressing data..."
+            return "Compressing..."
         elif "enabling auto-compactions" in line:
             break
         elif "RPC server running on" in line:

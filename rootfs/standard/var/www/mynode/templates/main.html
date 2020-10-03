@@ -2,9 +2,78 @@
     <head>
         <title>{{ title }}</title>
         {% include 'includes/head.html' %}
-        <meta http-equiv="refresh" content="120">
+        <meta http-equiv="refresh" content="{{ refresh_rate }}">
 
         <script>
+            // Update status functions
+            function update_status(status_name, data) {
+                if (data != null && "status" in data && data["status"] != null) {
+                    $("#"+status_name).html(data["status"]);
+                }
+            }
+            function update_status_icon(status_icon_name, data) {
+                if (data != null && "color" in data && data["color"] != null) {
+                    $("#"+status_icon_name).removeClass("red");
+                    $("#"+status_icon_name).removeClass("yellow");
+                    $("#"+status_icon_name).removeClass("green");
+                    $("#"+status_icon_name).removeClass("gray");
+                    $("#"+status_icon_name).addClass(data["color"]);
+                }
+            }
+
+            // Update page function
+            function update_page() {
+                // Update Bitcoin Info
+                $.getJSON("/api/get_bitcoin_info", function( data ) {
+                    //console.log("Bitcoin Data: " + JSON.stringify(data))
+                    if ("current_block" in data && data["current_block"] != null) {
+                        $("#current_block").html(data["current_block"]);
+                    }
+                    if ("peer_count" in data && data["peer_count"] != null) {
+                        $("#bitcoin_peer_count").html(data["peer_count"]);
+                    }
+                    if ("difficulty" in data && data["difficulty"] != null) {
+                        $("#bitcoin_difficulty").html(data["difficulty"]);
+                    }
+                    if ("mempool_size" in data && data["mempool_size"] != null) {
+                        $("#bitcoin_mempool_size").html(data["mempool_size"]);
+                    }
+                    if ("recent_blocks" in data && data["recent_blocks"] != null) {
+                        // TODO
+                    }
+                });
+
+                // Update Lightning Info
+                $.getJSON("/api/get_lightning_info", function( data ) {
+                    //console.log("Lightning Data: " + JSON.stringify(data))
+                    if ("channel_count" in data && data["channel_count"] != null) {
+                        $("#lnd_channel_count").html(data["channel_count"]);
+                    }
+                    if ("peer_count" in data && data["peer_count"] != null) {
+                        $("#lnd_peer_count").html(data["peer_count"]);
+                    }
+                });
+
+                // Update app status
+                $.getJSON("/api/get_service_status?service=bitcoin", function( data ) {
+                    update_status("bitcoin_status", data);
+                    update_status_icon("bitcoin_status_icon", data);
+                });
+                $.getJSON("/api/get_service_status?service=lightning", function( data ) {
+                    update_status("lnd_status", data);
+                    update_status_icon("lnd_status_icon", data);
+                });
+                $.getJSON("/api/get_service_status?service=electrs", function( data ) {
+                    update_status("electrs_status", data);
+                    update_status_icon("electrs_status_icon", data);
+                });
+                $.getJSON("/api/get_service_status?service=dojo", function( data ) {
+                    update_status("dojo_status", data);
+                    update_status_icon("dojo_status_icon", data);
+                });
+            }
+
+            // Run when page ready
             $(document).ready(function() {
                 electrs_enabled = {% if electrs_enabled %}1{% else %}0{% endif %}
                 lndhub_enabled = {% if lndhub_enabled %}1{% else %}0{% endif %}
@@ -205,6 +274,8 @@
                     $("#https").show();
                 }
 
+                // Update info every 15 seconds
+                const update_interval = setInterval(update_page, 15000);
             });
         </script>
      </head>
