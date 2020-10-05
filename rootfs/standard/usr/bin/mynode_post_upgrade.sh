@@ -15,6 +15,10 @@ date
 # Delete ramlog to prevent ram issues (remake necessary folders)
 rm -rf /var/log/*
 mkdir -p /var/log/nginx
+if [ $IS_RASPI = 1 ]; then
+    log2ram write || true
+    log2ram stop || true
+fi
 
 # Create any necessary users
 
