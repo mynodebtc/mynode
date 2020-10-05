@@ -72,6 +72,7 @@ $TORIFY apt-get update
 if [ $IS_X86 = 1 ]; then
     apt-mark hold grub*
 fi
+apt-mark hold redis-server
 
 # Upgrade packages
 $TORIFY apt-get -y upgrade

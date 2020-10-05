@@ -124,6 +124,7 @@ apt-get -y update
 if [ $IS_X86 = 1 ]; then
     apt-mark hold grub*
 fi
+apt-mark hold redis-server
 
 # Upgrade packages
 apt-get -y upgrade
