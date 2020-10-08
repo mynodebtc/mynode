@@ -8,7 +8,7 @@
         -->
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/rtl.png")}}"/></div>
         <div class="app_title">RTL</div>
-        <div class="app_status"id="rtl_status">{% if not lnd_ready %}Waiting on LND...{% else %}{{ rtl_status }}{% endif %}</div>
+        <div class="app_status"id="rtl_status">{{ rtl_status }}</div>
         <div class="app_contents">
             {% if lnd_ready %}
                 {% if rtl_enabled %}
@@ -52,7 +52,7 @@
         <div class="app_status_icon {{ lndhub_status_color }}" id="lndhub_status_icon"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lndhub.png")}}"/></div>
         <div class="app_title">LND Hub</div>
-        <div class="app_status" id="lndhub_status">{% if not lnd_ready %}Waiting on LND...{% endif %}</div>
+        <div class="app_status" id="lndhub_status">{{ lndhub_status }}</div>
         <div class="app_contents">
             {% if lnd_ready %}
                 {% if lndhub_enabled %}
@@ -125,9 +125,7 @@
         <div class="app_title">Whirlpool</div>
         <div class="app_status" id="whirlpool_status">{{ whirlpool_status }}</div>
         <div class="app_contents">
-            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/whirlpool">
-                {% if whirlpool_initialized %}Info{% else %}Setup{% endif %}
-            </a>
+            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/whirlpool">Info</a>
             <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-whirlpool">
                 {% if whirlpool_enabled %}Disable{% else %}Enable{% endif %}
             </a>
@@ -135,7 +133,7 @@
     </div>
     {% endif %}
     <div class="app_tile">
-        <div class="app_status_icon {% if product_key_skipped %}gray{% else %} {{mempoolspace_status_color}} {% endif %}" id="mempoolspace_status_icon"></div>
+        <div class="app_status_icon {{mempoolspace_status_color}}" id="mempoolspace_status_icon"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/mempoolspace.png")}}"/></div>
         <div class="app_title">Mempool</div>
         <div class="app_status" id="mempoolspace_status">{{ mempoolspace_status }}</div>
@@ -167,10 +165,8 @@
                 Premium Feature
             {% else %}
                 {% if caravan_enabled %}
-                    {% if caravan_ready %}
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="/caravan">Info</a>
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-caravan">Disable</a>
-                    {% endif %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="/caravan">Info</a>
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-caravan">Disable</a>
                 {% else %}
                     <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-caravan">Enable</a>
                 {% endif %}
@@ -199,7 +195,7 @@
         <div class="app_status_icon {{ lnbits_status_color }}" id="lnbits_status_icon"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lnbits.png")}}"/></div>
         <div class="app_title">LNbits</div>
-        <div class="app_status" id="lnbits_status">{% if not lnd_ready %}Waiting on LND...{% else %}{{ lnbits_status }}{% endif %}</div>
+        <div class="app_status" id="lnbits_status">{{ lnbits_status }}</div>
         <div class="app_contents">
             {% if product_key_skipped %}
                 Premium Feature
@@ -219,7 +215,7 @@
         <div class="app_status_icon {{ thunderhub_status_color }}" id="thunderhub_status_icon"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/thunderhub.png")}}"/></div>
         <div class="app_title">Thunderhub</div>
-        <div class="app_status" id="thunderhub_status">{% if not lnd_ready %}Waiting on LND...{% else %}{{ thunderhub_status }}{% endif %}</div>
+        <div class="app_status" id="thunderhub_status">{{ thunderhub_status }}</div>
         <div class="app_contents">
             {% if product_key_skipped %}
                 Premium Feature

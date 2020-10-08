@@ -191,7 +191,8 @@ td {
     margin: 10px;
     background: #f0f0f0;
 }
-.app_tile_very_wide {
+/* width of two tiles */
+.app_tile_wide {
     display: inline-block;
     position: relative;
     border: none;
@@ -202,10 +203,69 @@ td {
     margin: 6px 10px 6px 10px;
     background: #f0f0f0;
 }
+/* width of four tiles (full width) */
+.app_tile_bitcoin_recent_blocks {
+    display: inline-block;
+    position: relative;
+    border: none;
+    border-radius: 10px;
+    width: 640px;
+    height: 120px;
+    padding: 10px;
+    margin: 6px 10px 6px 10px;
+    background: #f0f0f0;
+}
+.bitcoin_block_set {
+    margin-left: auto;
+    margin-right: auto;
+}
+.bitcoin_block {
+    display: inline-block;
+    position: relative;
+    text-align: center;
+    width: 85px;
+    margin: 5px 8px 5px 8px;
+}
+.bitcoin_block_orange_square {
+    display: inline-block;
+    position: relative;
+    background-color: orange;
+    color: #222;
+    width: 85px;
+    height: 85px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+.bitcoin_block_size {
+    display: inline-block;
+    position: relative;
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    width: 100%;
+}
+.bitcoin_block_num_txs {
+    display: inline-block;
+    position: relative;
+    font-size: 10px;
+    margin-bottom: 5px;
+    width: 100%;
+}
+.bitcoin_block_time {
+    display: inline-block;
+    position: relative;
+    font-size: 10px;
+    margin-bottom: 5px;
+    width: 100%;
+}
+
+
 .green { background-color: green; }
 .yellow { background-color: yellow; }
 .red { background-color: red; }
 .gray { background-color: gray; }
+.blue { background-color: blue; }
 
 .green_text {color: green;}
 .yellow_text {color: yellow;}
@@ -348,7 +408,7 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     font-size: 12px !important;
 }
 
-.drive_usage {
+.device_status_info {
     margin-bottom: 25px;
     font-size: 24px;
     color: #222222;

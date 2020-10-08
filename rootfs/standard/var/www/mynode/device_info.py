@@ -2,6 +2,12 @@ from config import *
 from threading import Timer
 from werkzeug.routing import RequestRedirect
 from flask import flash
+from enable_disable_functions import *
+from lightning_info import is_lnd_ready, get_lnd_status, get_lnd_status_color
+from systemctl_info import *
+from electrum_info import get_electrs_status, is_electrs_active
+from bitcoind import is_bitcoind_synced
+from bitcoin_info import get_bitcoin_status
 import time
 import json
 import os
@@ -368,45 +374,198 @@ def get_swap_size():
     return get_file_contents("/mnt/hdd/mynode/settings/swap_size")
 
 #==================================
-# Service Status, Enabled, Logs, etc...
+# myNode Status
 #==================================
-def is_service_enabled(service_name):
-    cmd = "systemctl is-enabled {}".format(service_name)
+STATE_DRIVE_MISSING =         "drive_missing"
+STATE_DRIVE_CONFIRM_FORMAT =  "drive_format_confirm"
+STATE_DRIVE_FORMATTING =      "drive_formatting"
+STATE_DRIVE_MOUNTED =         "drive_mounted"
+STATE_GEN_DHPARAM =           "gen_dhparam"
+STATE_QUICKSYNC_DOWNLOAD =    "quicksync_download"
+STATE_QUICKSYNC_COPY =        "quicksync_copy"
+STATE_QUICKSYNC_RESET =       "quicksync_reset"
+STATE_STABLE =                "stable"
+STATE_ROOTFS_READ_ONLY =      "rootfs_read_only"
+STATE_HDD_READ_ONLY =         "hdd_read_only"
+STATE_UNKNOWN =               "unknown"
+
+def get_mynode_status():
     try:
-        subprocess.check_call(cmd, shell=True)
-        return True
+        status_file = "/tmp/.mynode_status"
+        status = STATE_UNKNOWN
+
+        # If its been a while, check for error conditions
+        uptime_in_sec = get_system_uptime_in_seconds()
+        if uptime_in_sec > 120:
+            # Check for read-only sd card
+            if is_mount_read_only("/"):
+                return STATE_ROOTFS_READ_ONLY
+            if is_mount_read_only("/mnt/hdd"):
+                return STATE_HDD_READ_ONLY
+
+        # Get status stored on drive
+        if (os.path.isfile(status_file)):
+            try:
+                with open(status_file, "r") as f:
+                    status = f.read().strip()
+            except:
+                status = STATE_DRIVE_MISSING
+        else:
+            status = STATE_DRIVE_MISSING
     except:
-        return False
-    return False
+        status = STATE_UNKNOWN
+    return status
 
-def get_service_status_code(service_name):
-    code = os.system("systemctl status {} --no-pager".format(service_name))
-    return code
+#==================================
+# Specific Service Status / Colors
+#==================================
+def get_bitcoin_status_and_color():
+    status = ""
+    color = "gray"
+    if get_service_status_code("bitcoind") == 0:
+        status = get_bitcoin_status()
+        color = "green"
+    else:
+        status = "Error"
+        color = "red"
+    return status,color
 
-def get_service_status_basic_text(service_name):
-    if not is_service_enabled(service_name):
-        return "Disabled"
+def get_lnd_status_and_color():
+    status = get_lnd_status()
+    color = get_lnd_status_color()
+    return status,color
 
-    code = os.system("systemctl status {} --no-pager".format(service_name))
-    if code == 0:
-        return "Running"
-    return "Error"
+def get_vpn_status_and_color():
+    status = ""
+    color = "gray"
+    if is_vpn_enabled():
+        color = get_service_status_color("vpn")
+        status_code = get_service_status_code("vpn")
+        if status_code != 0:
+            status = "Unknown"
+        else:
+            if os.path.isfile("/home/pivpn/ovpns/mynode_vpn.ovpn"):
+                status = "Running"
+            else:
+                status = "Setting up..."
+    return status,color
 
-def get_service_status_color(service_name):
-    if not is_service_enabled(service_name):
-        return "gray"
+def get_rtl_status_and_color():
+    status = "Lightning Wallet"
+    color = "gray"
+    if is_lnd_ready():
+        if is_rtl_enabled():
+            status_code = get_service_status_code("rtl")
+            if status_code != 0:
+                color = "red"
+            else:
+                color = "green"
+    else:
+        status = "Waiting on LND..."
+    return status,color
 
-    code = os.system("systemctl status {} --no-pager".format(service_name))
-    if code == 0:
-        return "green"
-    return "red"
+def get_lnbits_status_and_color():
+    color = "gray"
+    status = "Lightning Wallet"
+    if is_lnd_ready():
+        if is_lnbits_enabled():
+            status_code = get_service_status_code("lnbits")
+            if status_code != 0:
+                lnbits_status_color = "red"
+            else:
+                lnbits_status_color = "green"
+    else:
+        status = "Waiting on LND..."
+    return status,color
 
-def get_journalctl_log(service_name):
-    try:
-        log = subprocess.check_output("journalctl -r --unit={} --no-pager | head -n 200".format(service_name), shell=True).decode("utf8")
-    except:
-        log = "ERROR"
-    return log
+def get_thunderhub_status_and_color():
+    color = "gray"
+    status = "Lightning Wallet"
+    if is_lnd_ready():
+        if is_thunderhub_enabled():
+            status_code = get_service_status_code("thunderhub")
+            if status_code != 0:
+                color = "red"
+            else:
+                color = "green"
+    else:
+        status = "Waiting on LND..."
+    return status,color
+
+def get_lndhub_status_and_color():
+    status = "BlueWallet Backend"
+    color = "gray"
+    if is_lnd_ready():
+        if is_lndhub_enabled():
+            color = get_service_status_color("lndhub")
+    else:
+        status = "Waiting on LND..."
+    return status,color
+
+def get_btcpayserver_status_and_color():
+    status = "Merchant Tool"
+    color = "gray"
+    if is_lnd_ready():
+        color = get_service_status_color("btcpayserver")
+    else:
+        status = "Waiting on LND..."
+    return status,color
+
+def get_electrs_status_and_color():
+    status = ""
+    color = "gray"
+    if is_electrs_enabled():
+        status_code = get_service_status_code("electrs")
+        color = get_service_status_color("electrs")
+        if status_code == 0:
+            status = get_electrs_status()
+    return status,color
+
+def get_btcrpcexplorer_status_and_color_and_ready():
+    status = "BTC RPC Explorer"
+    color = "gray"
+    ready = False
+    if is_btcrpcexplorer_enabled():
+        if is_bitcoind_synced():
+            if is_electrs_active():
+                color = get_service_status_color("btc_rpc_explorer")
+                status_code = get_service_status_code("btc_rpc_explorer")
+                if status_code == 0:
+                    ready = True
+            else:
+                color = "yellow"
+                status = "Waiting on electrs..."
+        else:
+            color = "yellow"
+            status = "Waiting on bitcoin..."
+    return status,color,ready
+
+def get_caravan_status_and_color():
+    status = ""
+    color = "gray"
+    if is_caravan_enabled():
+        color = get_service_status_color("caravan")
+        status = "Running"
+    return status,color
+
+def get_specter_status_and_color():
+    status = ""
+    color = "gray"
+    if is_specter_enabled():
+        color = get_service_status_color("specter")
+        status = "Running"
+    return status,color
+
+def get_mempool_status_and_color():
+    status = "Mempool Viewer"
+    color = "gray"
+    if is_mempoolspace_enabled():
+        if is_installing_docker_images():
+            color = "yellow"
+            status = "Installing..."
+        else:
+            color = get_service_status_color("mempoolspace")
+    return status,color
 
 #==================================
 # Data Storage Functions
@@ -509,13 +668,15 @@ def is_quicksync_enabled():
     return not os.path.isfile("/mnt/hdd/mynode/settings/quicksync_disabled")
 def disable_quicksync():
     os.system("touch /mnt/hdd/mynode/settings/quicksync_disabled")
+    os.system("sync")
 def enable_quicksync():
     os.system("rm -rf /mnt/hdd/mynode/settings/quicksync_disabled")
 
 def settings_disable_quicksync():
+    disable_quicksync()
     stop_bitcoind()
     stop_quicksync()
-    disable_quicksync()
+    disable_quicksync() # Try disable again (some users had disable fail)
     delete_quicksync_data()
     reboot_device()
 

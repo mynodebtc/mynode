@@ -29,7 +29,8 @@ a:active {
 .info_tile_contents,
 .content_block,
 .instructions,
-.drive_usage,
+.device_status_info,
+.bitcoin_block,
 .settings_block_subheader,
 .settings_block_subheader_status,
 .settings_block,
@@ -41,13 +42,15 @@ table,
 
 .app_tile,
 .app_tile_short,
-.app_tile_very_wide,
+.app_tile_wide,
+.app_tile_bitcoin_recent_blocks,
 .info_tile {
     border: none;
 }
 
 .app_tile,
-.app_tile_very_wide,
+.app_tile_wide,
+.app_tile_bitcoin_recent_blocks,
 .app_tile_short {
   background-color: #121C21;
 }

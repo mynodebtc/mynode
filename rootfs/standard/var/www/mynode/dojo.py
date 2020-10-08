@@ -1,6 +1,6 @@
 
 from flask import Blueprint, render_template, redirect
-from device_info import read_ui_settings
+from device_info import read_ui_settings, is_installing_docker_images
 from user_management import check_logged_in
 from enable_disable_functions import is_dojo_enabled, enable_dojo, disable_dojo, is_dojo_installed
 from bitcoin_info import get_mynode_block_height
@@ -16,6 +16,13 @@ def get_dojo_status():
     # Find dojo status
     dojo_status = "Disabled"
     dojo_status_color = "gray"
+
+    if is_installing_docker_images():
+        dojo_status = "Installing..."
+        dojo_status_color = "yellow"
+        dojo_initialized = ""
+        return dojo_status, dojo_status_color, dojo_initialized
+
     try:
         dojo_initialized = subprocess.check_output("docker inspect --format={{.State.Running}} db", shell=True)
         dojo_initialized = dojo_initialized.strip()

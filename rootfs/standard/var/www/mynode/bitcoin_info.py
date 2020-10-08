@@ -70,10 +70,10 @@ def update_bitcoin_other_info():
     global bitcoin_mempool
     global bitcoin_wallet_info
 
-    if bitcoin_blockchain_info == None:
-        # We still havent gotten the important info... wait 1 minute and return
-        time.sleep(60)
-        return True
+    while bitcoin_blockchain_info == None:
+        # Wait until we have gotten the important info...
+        # Checking quickly helps the API get started faster
+        time.sleep(1)
 
     try:
         rpc_user = get_bitcoin_rpc_username()

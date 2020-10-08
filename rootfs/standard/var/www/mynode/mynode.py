@@ -24,6 +24,7 @@ from thread_functions import *
 from datetime import timedelta
 from device_info import *
 from device_warnings import *
+from systemctl_info import *
 import pam
 import json
 import random
@@ -82,19 +83,6 @@ app.register_blueprint(mynode_vpn)
 app.register_blueprint(mynode_settings)
 
 ### Definitions
-STATE_DRIVE_MISSING =         "drive_missing"
-STATE_DRIVE_CONFIRM_FORMAT =  "drive_format_confirm"
-STATE_DRIVE_FORMATTING =      "drive_formatting"
-STATE_DRIVE_MOUNTED =         "drive_mounted"
-STATE_GEN_DHPARAM =           "gen_dhparam"
-STATE_QUICKSYNC_DOWNLOAD =    "quicksync_download"
-STATE_QUICKSYNC_COPY =        "quicksync_copy"
-STATE_QUICKSYNC_RESET =       "quicksync_reset"
-STATE_STABLE =                "stable"
-STATE_ROOTFS_READ_ONLY =      "rootfs_read_only"
-STATE_HDD_READ_ONLY =         "hdd_read_only"
-STATE_UNKNOWN =               "unknown"
-
 MYNODE_DIR =    "/mnt/hdd/mynode"
 BITCOIN_DIR =   "/mnt/hdd/mynode/bitcoin"
 LN_DIR =        "/mnt/hdd/mynode/lnd"
@@ -102,35 +90,6 @@ LN_DIR =        "/mnt/hdd/mynode/lnd"
 ### Global Variables
 need_to_stop = False
 threads = []
-
-### Helper functions
-def get_status():
-    try:
-        status_file = "/tmp/.mynode_status"
-        status = STATE_UNKNOWN
-
-        # If its been a while, check for error conditions
-        uptime_in_sec = get_system_uptime_in_seconds()
-        if uptime_in_sec > 120:
-            # Check for read-only sd card
-            if is_mount_read_only("/"):
-                return STATE_ROOTFS_READ_ONLY
-            if is_mount_read_only("/mnt/hdd"):
-                return STATE_HDD_READ_ONLY
-
-        # Get status stored on drive
-        if (os.path.isfile(status_file)):
-            try:
-                with open(status_file, "r") as f:
-                    status = f.read().strip()
-            except:
-                status = STATE_DRIVE_MISSING
-        else:
-            status = STATE_DRIVE_MISSING
-    except:
-        status = STATE_UNKNOWN
-    return status
-
 
 # Exception to throw on exit
 class ServiceExit(Exception):
@@ -146,7 +105,7 @@ def on_shutdown(signum, frame):
 @app.route("/")
 def index():
     check_logged_in()
-    status = get_status()
+    status = get_mynode_status()
 
     bitcoin_block_height = get_bitcoin_block_height()
     mynode_block_height = get_mynode_block_height()
@@ -213,7 +172,7 @@ def index():
             templateData = {
                 "title": "myNode Repairing Drive",
                 "header_text": "Repairing Drive",
-                "subheader_text": Markup("Drive is being checked and repaired...<br/><br/>This will take several hours."),
+                "subheader_text": Markup("Drive is being checked and repaired...<br/><br/>This may take several hours."),
                 "ui_settings": read_ui_settings()
             }
             return render_template('state.html', **templateData)
@@ -327,29 +286,12 @@ def index():
         bitcoind_status_color = "red"
         lnd_status_color = "red"
         lnd_ready = is_lnd_ready()
-        rtl_status_color = "gray"
-        rtl_status = "Lightning Wallet"
-        lnbits_status_color = "gray"
-        lnbits_status = "Lightning Wallet"
-        thunderhub_status_color = "gray"
-        thunderhub_status = "Lightning Wallet"
-        electrs_status_color = "gray"
         electrs_active = is_electrs_active()
-        lndhub_status_color = "gray"
         bitcoind_status = "Inactive"
         lnd_status = "Inactive"
         electrs_status = ""
-        explorer_status = ""
-        explorer_ready = False
-        explorer_status_color = "red"
         lndconnect_status_color = "gray"
         btcpayserver_status_color = "gray"
-        btcrpcexplorer_status = ""
-        btcrpcexplorer_ready = False
-        btcrpcexplorer_status_color = "gray"
-        caravan_status = ""
-        caravan_ready = False
-        caravan_status_color = "gray"
         mempoolspace_status_color = "gray"
         vpn_status_color = "gray"
         vpn_status = ""
@@ -415,127 +357,43 @@ def index():
         lnd_status_color = get_lnd_status_color()
 
         # Find lndhub status
-        if is_lndhub_enabled():
-            if lnd_ready:
-                lndhub_status_color = get_service_status_color("lndhub")
+        lndhub_status, lndhub_status_color = get_lndhub_status_and_color()
 
         # Find RTL status
-        if lnd_ready:
-            if is_rtl_enabled():
-                status_code = get_service_status_code("rtl")
-                if status_code != 0:
-                    rtl_status_color = "red"
-                else:
-                    rtl_status_color = "green"
+        rtl_status, rtl_status_color = get_rtl_status_and_color()
 
         # Find LNbits status
-        if lnd_ready:
-            if is_lnbits_enabled():
-                status_code = get_service_status_code("lnbits")
-                if status_code != 0:
-                    lnbits_status_color = "red"
-                else:
-                    lnbits_status_color = "green"
+        lnbits_status, lnbits_status_color = get_lnbits_status_and_color()
 
         # Find Thunderhub status
-        if lnd_ready:
-            if is_thunderhub_enabled():
-                status_code = get_service_status_code("thunderhub")
-                if status_code != 0:
-                    thunderhub_status_color = "red"
-                else:
-                    thunderhub_status_color = "green"
+        thunderhub_status, thunderhub_status_color = get_thunderhub_status_and_color()
 
         # Find electrs status
-        if is_electrs_enabled():
-            status_code = get_service_status_code("electrs")
-            electrs_status_color = get_service_status_color("electrs")
-            if status_code == 0:
-                electrs_status = get_electrs_status()
+        electrs_status, electrs_status_color = get_electrs_status_and_color()
 
         # Find btc-rpc-explorer status
-        btcrpcexplorer_status = "BTC RPC Explorer"
-        if is_btcrpcexplorer_enabled():
-            if is_bitcoind_synced():
-                if electrs_active:
-                    btcrpcexplorer_status_color = get_service_status_color("btc_rpc_explorer")
-                    status_code = get_service_status_code("btc_rpc_explorer")
-                    if status_code == 0:
-                        btcrpcexplorer_ready = True
-                else:
-                    btcrpcexplorer_status_color = "green"
-                    btcrpcexplorer_status = "Waiting on electrs..."
-            else:
-                btcrpcexplorer_status_color = "gray"
-                btcrpcexplorer_status = "Waiting on bitcoin..."
+        btcrpcexplorer_status, btcrpcexplorer_status_color, btcrpcexplorer_ready = get_btcrpcexplorer_status_and_color_and_ready()
 
         # Find mempool space status
-        mempoolspace_status = "Mempool Viewer"
-        if is_mempoolspace_enabled():
-            if is_installing_docker_images():
-                mempoolspace_status_color = "yellow"
-                mempoolspace_status = "Installing..."
-            else:
-                mempoolspace_status_color = get_service_status_color("mempoolspace")
-
-        # Find lndconnect status
-        if lnd_ready:
-            lndconnect_status_color = "green"
+        mempoolspace_status, mempoolspace_status_color = get_mempool_status_and_color()
 
         # Find btcpayserver status
-        btcpayserver_status = "Merchant Tool"
-        if lnd_ready:
-            btcpayserver_status_color = get_service_status_color("btcpayserver")
-        else:
-            btcpayserver_status = "Waiting on LND..."
-
-        # Find explorer status
-        explorer_status_color = electrs_status_color
-        if is_electrs_enabled():
-            if electrs_active:
-                explorer_ready = True
-                explorer_status = "myNode BTC Explorer"
-            else:
-                explorer_status = Markup("Bitcoin Explorer<br/><br/>Waiting on Electrum Server...")
-        else:
-            explorer_status = Markup("Bitcoin Explorer<br/><br/>Requires Electrum Server")
+        btcpayserver_status, btcpayserver_status_color = get_btcpayserver_status_and_color()
 
         # Find VPN status
-        if is_vpn_enabled():
-            vpn_status_color = get_service_status_color("vpn")
-            status_code = get_service_status_code("vpn")
-            if status_code != 0:
-                vpn_status = "Unknown"
-            else:
-                if os.path.isfile("/home/pivpn/ovpns/mynode_vpn.ovpn"):
-                     vpn_status = "Running"
-                else:
-                    vpn_status = "Setting up..."
+        vpn_status, vpn_status_color = get_vpn_status_and_color()
 
         # Find whirlpool status
         whirlpool_status, whirlpool_status_color, whirlpool_initialized = get_whirlpool_status()
 
         # Find dojo status
         dojo_status, dojo_status_color, dojo_initialized = get_dojo_status()
-        if is_installing_docker_images():
-            dojo_status_color = "yellow"
-            dojo_status = "Installing..."
 
         # Find caravan status
-        caravan_status = ""
-        caravan_ready = False
-        caravan_status_color = "gray"
-        if is_caravan_enabled():
-            caravan_status_color = get_service_status_color("caravan")
-            caravan_ready = True
-            caravan_status = "Running"
+        caravan_status, caravan_status_color = get_caravan_status_and_color()
 
-        # Find caravan status
-        specter_status = ""
-        specter_status_color = "gray"
-        if is_specter_enabled():
-            specter_status_color = get_service_status_color("specter")
-            specter_status = "Running"
+        # Find specter status
+        specter_status, specter_status_color = get_specter_status_and_color()
 
         # Check for new version of software
         upgrade_available = False
@@ -545,7 +403,7 @@ def index():
             upgrade_available = True
 
         # Refresh rate
-        refresh_rate = 900
+        refresh_rate = 3600 * 24
         if bitcoind_status_color == "red" or lnd_status_color == "red":
             refresh_rate = 60
         elif bitcoind_status_color == "yellow" or lnd_status_color == "yellow":
@@ -587,15 +445,12 @@ def index():
             "thunderhub_status": thunderhub_status,
             "thunderhub_enabled": is_thunderhub_enabled(),
             "lndhub_status_color": lndhub_status_color,
+            "lndhub_status": lndhub_status,
             "lndhub_enabled": is_lndhub_enabled(),
-            "explorer_ready": explorer_ready,
-            "explorer_status_color": explorer_status_color,
-            "explorer_status": explorer_status,
             "btcrpcexplorer_ready": btcrpcexplorer_ready,
             "btcrpcexplorer_status_color": btcrpcexplorer_status_color,
             "btcrpcexplorer_status": btcrpcexplorer_status,
             "btcrpcexplorer_enabled": is_btcrpcexplorer_enabled(),
-            "caravan_ready": caravan_ready,
             "caravan_status_color": caravan_status_color,
             "caravan_status": caravan_status,
             "caravan_enabled": is_caravan_enabled(),
@@ -608,7 +463,6 @@ def index():
             "btcpayserver_enabled": is_btcpayserver_enabled(),
             "btcpayserver_status_color": btcpayserver_status_color,
             "btcpayserver_status": btcpayserver_status,
-            "lndconnect_status_color": lndconnect_status_color,
             "vpn_status_color": vpn_status_color,
             "vpn_status": vpn_status,
             "vpn_enabled": is_vpn_enabled(),
@@ -950,7 +804,7 @@ def start_threads():
     btc_thread1 = BackgroundThread(update_bitcoin_main_info_thread, 10)
     btc_thread1.start()
     threads.append(btc_thread1)
-    btc_thread2 = BackgroundThread(update_bitcoin_other_info_thread, 60)
+    btc_thread2 = BackgroundThread(update_bitcoin_other_info_thread, 30)
     btc_thread2.start()
     threads.append(btc_thread2)
     electrs_info_thread = BackgroundThread(update_electrs_info_thread, 60)

@@ -17,11 +17,31 @@
                     $("#"+status_icon_name).removeClass("yellow");
                     $("#"+status_icon_name).removeClass("green");
                     $("#"+status_icon_name).removeClass("gray");
+                    $("#"+status_icon_name).removeClass("blue");
                     $("#"+status_icon_name).addClass(data["color"]);
                 }
             }
 
+            function refresh_page() {
+                window.location.href=location.protocol+'//'+location.hostname+"/";
+            }
+
+            var showing_blocks = false;
+            function toggleBlocks() {
+                if (showing_blocks) {
+                    $("#bitcoin_blocks").slideUp(400);
+                    $('#show_bitcoin_blocks').attr('src', location.protocol+'//'+location.hostname+'/static/images/expand_down.png');
+                } else {
+                    $("#bitcoin_blocks").slideDown(400);
+                    $('#show_bitcoin_blocks').attr('src', location.protocol+'//'+location.hostname+'/static/images/expand_up.png');
+                }
+                showing_blocks = !showing_blocks;
+            }
+
             // Update page function
+            var lnd_ready = {% if lnd_ready %}true{% else %}false{% endif %};
+            var btcrpcexplorer_ready = {% if btcrpcexplorer_ready %}true{% else %}false{% endif %};
+            var is_installing_docker_images = {% if is_installing_docker_images %}true{% else %}false{% endif %};
             function update_page() {
                 // Update Bitcoin Info
                 $.getJSON("/api/get_bitcoin_info", function( data ) {
@@ -39,7 +59,19 @@
                         $("#bitcoin_mempool_size").html(data["mempool_size"]);
                     }
                     if ("recent_blocks" in data && data["recent_blocks"] != null) {
-                        // TODO
+                        blocks = data["recent_blocks"].reverse();
+                        for (i=0; i < data["recent_blocks"].length; i++) {
+                            b = data["recent_blocks"][i]
+                            //console.log(JSON.stringify(b))
+                            $("#bitcoin_block_height_"+i).html(b["height"]);
+                            size = parseFloat(b["size"]) / 1000 / 1000;
+                            $("#bitcoin_block_size_"+i).html(size.toFixed(2) + " MB");
+                            $("#bitcoin_block_num_txs_"+i).html(b["nTx"] + " txs");
+                            var now = new Date();
+                            var nowSeconds = Math.round(now.getTime() / 1000);
+                            var minutesAgo = Math.round((nowSeconds - parseInt(b["time"])) / 60);
+                            $("#bitcoin_block_time_"+i).html(minutesAgo + " min ago");
+                        }
                     }
                 });
 
@@ -51,6 +83,11 @@
                     }
                     if ("peer_count" in data && data["peer_count"] != null) {
                         $("#lnd_peer_count").html(data["peer_count"]);
+                    }
+                    if ("lnd_ready" in data && data["lnd_ready"] != null) {
+                        if (lnd_ready != data["lnd_ready"]) {
+                            refresh_page();
+                        }
                     }
                 });
 
@@ -70,6 +107,92 @@
                 $.getJSON("/api/get_service_status?service=dojo", function( data ) {
                     update_status("dojo_status", data);
                     update_status_icon("dojo_status_icon", data);
+                });
+                $.getJSON("/api/get_service_status?service=rtl", function( data ) {
+                    update_status("rtl_status", data);
+                    update_status_icon("rtl_status_icon", data);
+                });
+                $.getJSON("/api/get_service_status?service=mempool", function( data ) {
+                    update_status("mempoolspace_status", data);
+                    update_status_icon("mempoolspace_status_icon", data);
+                });
+                $.getJSON("/api/get_service_status?service=whirlpool", function( data ) {
+                    update_status("whirlpool_status", data);
+                    update_status_icon("whirlpool_status_icon", data);
+                });
+                $.getJSON("/api/get_service_status?service=btcpayserver", function( data ) {
+                    update_status("btcpayserver_status", data);
+                    update_status_icon("btcpayserver_status_icon", data);
+                });
+                $.getJSON("/api/get_service_status?service=lndhub", function( data ) {
+                    update_status("lndhub_status", data);
+                    update_status_icon("lndhub_status_icon", data);
+                });
+                // BTC RPC Explorer // TODO: Refresh page if btcexplorerready changes
+                $.getJSON("/api/get_service_status?service=btcrpcexplorer", function( data ) {
+                    update_status("btcrpcexplorer_status", data);
+                    update_status_icon("btcrpcexplorer_status_icon", data);
+                    if ("ready" in data && data["ready"] != null && btcrpcexplorer_ready != data["ready"]) {
+                        refresh_page();
+                    }
+                });
+                $.getJSON("/api/get_service_status?service=caravan", function( data ) {
+                    update_status("caravan_status", data);
+                    update_status_icon("caravan_status_icon", data);
+                });
+                $.getJSON("/api/get_service_status?service=specter", function( data ) {
+                    update_status("specter_status", data);
+                    update_status_icon("specter_status_icon", data);
+                });
+                $.getJSON("/api/get_service_status?service=lnbits", function( data ) {
+                    update_status("lnbits_status", data);
+                    update_status_icon("lnbits_status_icon", data);
+                });
+                $.getJSON("/api/get_service_status?service=thunderhub", function( data ) {
+                    update_status("thunderhub_status", data);
+                    update_status_icon("thunderhub_status_icon", data);
+                });
+                $.getJSON("/api/get_service_status?service=tor", function( data ) {
+                    update_status("tor_status", data);
+                    update_status_icon("tor_status_icon", data);
+                });
+                $.getJSON("/api/get_service_status?service=vpn", function( data ) {
+                    update_status("vpn_status", data);
+                    update_status_icon("vpn_status_icon", data);
+                });
+
+                // Update device info
+                $.getJSON("/api/get_device_info", function( data ) {
+                    //console.log("Device Data: " + JSON.stringify(data))
+                    if ("disk_usage" in data && data["disk_usage"] != null) {
+                        $("#device_drive_usage").html(data["disk_usage"]);
+                    }
+                    if ("cpu" in data && data["cpu"] != null) {
+                        $("#device_cpu_usage").html(data["cpu"]);
+                    }
+                    if ("ram" in data && data["ram"] != null) {
+                        $("#device_ram_usage").html(data["ram"]);
+                    }
+                    if ("temp" in data && data["temp"] != null) {
+                        $("#device_temp").html(data["temp"] + " &deg;C");
+                        if (data["temp"] != "...") {
+                            $("#temp_tile").show();
+                        }
+                    }
+                    if ("is_installing_docker_images" in data && data["is_installing_docker_images"] != null) {
+                        if (is_installing_docker_images != data["is_installing_docker_images"]) {
+                            refresh_page();
+                        }
+                    }
+                });
+
+                // Check if we need a full page refresh (errors, status changes, etc...)
+                $.getJSON("/api/homepage_needs_refresh", function( data ) {
+                    if ("needs_refresh" in data && data["needs_refresh"] != null) {
+                        if (data["needs_refresh"] == "yes") {
+                            refresh_page()
+                        }
+                    }
                 });
             }
 
@@ -276,6 +399,7 @@
 
                 // Update info every 15 seconds
                 const update_interval = setInterval(update_page, 15000);
+                update_page();
             });
         </script>
      </head>
@@ -354,31 +478,30 @@
                 <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/drive.png")}}"/></div>
                 <div class="app_title">Disk Usage</div>
                 <div class="app_status"></div>
-                <div class="app_contents"><div class="drive_usage">{{drive_usage}}</div></div>
+                <div class="app_contents"><div class="device_status_info" id="device_drive_usage">{{drive_usage}}</div></div>
             </div>
             <div class="app_tile">
                 <div class="app_status_icon"></div>
                 <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/cpu.png")}}"/></div>
                 <div class="app_title">CPU</div>
                 <div class="app_status"></div>
-                <div class="app_contents"><div class="drive_usage">{{cpu_usage}}</div></div>
+                <div class="app_contents"><div class="device_status_info" id="device_cpu_usage">{{cpu_usage}}</div></div>
             </div>
             <div class="app_tile">
                 <div class="app_status_icon"></div>
                 <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/ram.png")}}"/></div>
                 <div class="app_title">RAM</div>
                 <div class="app_status"></div>
-                <div class="app_contents"><div class="drive_usage">{{ram_usage}}</div></div>
+                <div class="app_contents"><div class="device_status_info" id="device_ram_usage">{{ram_usage}}</div></div>
             </div>
-            {% if device_temp != '...' %}
-            <div class="app_tile">
+            <div class="app_tile" id="temp_tile" {% if device_temp == '...' %}style="display: none;"{% endif %}>
                 <div class="app_status_icon"></div>
                 <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/temperature.png")}}"/></div>
                 <div class="app_title">Temperature</div>
                 <div class="app_status"></div>
-                <div class="app_contents"><div class="drive_usage">{{device_temp}} &deg;C</div></div>
+                <div class="app_contents"><div class="device_status_info" id="device_temp">{{device_temp}} &deg;C</div></div>
             </div>
-            {% endif %}
+            
             <!--
             <div class="app_tile">
                 <div class="app_status_icon"></div>
