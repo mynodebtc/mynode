@@ -6,8 +6,7 @@ from enable_disable_functions import *
 from lightning_info import is_lnd_ready, get_lnd_status, get_lnd_status_color
 from systemctl_info import *
 from electrum_info import get_electrs_status, is_electrs_active
-from bitcoind import is_bitcoind_synced
-from bitcoin_info import get_bitcoin_status
+from bitcoin_info import get_bitcoin_status, is_bitcoind_synced
 import time
 import json
 import os
