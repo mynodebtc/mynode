@@ -1,9 +1,7 @@
 import os
 import subprocess
 from config import *
-from device_info import is_service_enabled
-
-
+from systemctl_info import *
 
 # Enable disable functions on homepage
 def is_lndhub_enabled():

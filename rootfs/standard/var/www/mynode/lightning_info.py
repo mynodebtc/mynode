@@ -6,7 +6,7 @@ import time
 import re
 from threading import Timer
 from bitcoin_info import *
-from device_info import get_journalctl_log, get_service_status_code
+from systemctl_info import *
 
 # Variables
 lightning_info = None
@@ -89,7 +89,7 @@ def get_lightning_peers():
 def get_lightning_peer_count():
     info = get_lightning_info()
     num_peers = 0
-    if "num_peers" in info:
+    if info != None and "num_peers" in info:
         num_peers = info['num_peers']
     return num_peers
 

@@ -1,6 +1,6 @@
 <div class="main_header">Core Services</div>
 <div class="app_tile_row">
-    <div class="app_tile_very_wide">
+    <div class="app_tile_wide">
         <div style="width: 130px; float: left;">
             <div class="app_status_icon {{ bitcoind_status_color }}" id="bitcoin_status_icon"></div>
             <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/bitcoin.png")}}"/></div>
@@ -33,9 +33,11 @@
                     <td id="bitcoin_version">{{ bitcoin_version }}</td>
                 </tr>
             </table>
+            <br/>
+            <img class="" id="show_bitcoin_blocks" style="margin: auto; width: 60px; cursor: pointer;" onclick="toggleBlocks();" src="{{ url_for('static', filename="images/expand_down.png")}}"/>
         </div>
     </div>
-    <div class="app_tile_very_wide">
+    <div class="app_tile_wide">
         <div style="width: 130px; float: left;">
             <div class="app_status_icon {{ lnd_status_color }}" id="lnd_status_icon"></div>
             <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lightning.png")}}"/></div>
@@ -73,6 +75,62 @@
                     <td>{{ lnd_version }}</td>
                 </tr>
             </table>
+        </div>
+    </div>
+</div>
+
+<!-- Show Bitcoin Blocks -->
+<div class="app_tile_row">
+    <div class="app_tile_bitcoin_recent_blocks" id="bitcoin_blocks" style="display: None;">
+        <div class="bitcoin_block_set"></div>
+            <div class="bitcoin_block">
+                <div class="bitcoin_block_orange_square">
+                    <div class="bitcoin_block_size" id="bitcoin_block_size_0">0.00 MB</div>
+                    <div class="bitcoin_block_num_txs" id="bitcoin_block_num_txs_0">0 TXs</div>
+                    <div class="bitcoin_block_time" id="bitcoin_block_time_0">999 min ago</div>
+                </div>
+                <div class="bitcoin_block_height" id="bitcoin_block_height_0">???</div>
+            </div>
+            <div class="bitcoin_block">
+                <div class="bitcoin_block_orange_square">
+                    <div class="bitcoin_block_size" id="bitcoin_block_size_1">0.00 MB</div>
+                    <div class="bitcoin_block_num_txs" id="bitcoin_block_num_txs_1">0 TXs</div>
+                    <div class="bitcoin_block_time" id="bitcoin_block_time_1">999 min ago</div>
+                </div>
+                <div class="bitcoin_block_height" id="bitcoin_block_height_1">???</div>
+            </div>
+            <div class="bitcoin_block">
+                <div class="bitcoin_block_orange_square">
+                    <div class="bitcoin_block_size" id="bitcoin_block_size_2">0.00 MB</div>
+                    <div class="bitcoin_block_num_txs" id="bitcoin_block_num_txs_2">0 TXs</div>
+                    <div class="bitcoin_block_time" id="bitcoin_block_time_2">999 min ago</div>
+                </div>
+                <div class="bitcoin_block_height" id="bitcoin_block_height_2">???</div>
+            </div>
+            <div class="bitcoin_block">
+                <div class="bitcoin_block_orange_square">
+                    <div class="bitcoin_block_size" id="bitcoin_block_size_3">0.00 MB</div>
+                    <div class="bitcoin_block_num_txs" id="bitcoin_block_num_txs_3">0 TXs</div>
+                    <div class="bitcoin_block_time" id="bitcoin_block_time_3">999 min ago</div>
+                </div>
+                <div class="bitcoin_block_height" id="bitcoin_block_height_3">???</div>
+            </div>
+            <div class="bitcoin_block">
+                <div class="bitcoin_block_orange_square">
+                    <div class="bitcoin_block_size" id="bitcoin_block_size_4">0.00 MB</div>
+                    <div class="bitcoin_block_num_txs" id="bitcoin_block_num_txs_4">0 TXs</div>
+                    <div class="bitcoin_block_time" id="bitcoin_block_time_4">999 min ago</div>
+                </div>
+                <div class="bitcoin_block_height" id="bitcoin_block_height_4">???</div>
+            </div>
+            <div class="bitcoin_block">
+                <div class="bitcoin_block_orange_square">
+                    <div class="bitcoin_block_size" id="bitcoin_block_size_5">0.00 MB</div>
+                    <div class="bitcoin_block_num_txs" id="bitcoin_block_num_txs_5">0 TXs</div>
+                    <div class="bitcoin_block_time" id="bitcoin_block_time_5">999 min ago</div>
+                </div>
+                <div class="bitcoin_block_height" id="bitcoin_block_height_5">???</div>
+            </div>
         </div>
     </div>
 </div>

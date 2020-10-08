@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, redirect
 from user_management import check_logged_in
 from enable_disable_functions import is_whirlpool_enabled, enable_whirlpool, disable_whirlpool
-from device_info import get_service_status_code, read_ui_settings
+from device_info import read_ui_settings
+from systemctl_info import *
 import subprocess
 import os
 
