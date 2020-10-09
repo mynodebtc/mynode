@@ -1,3 +1,10 @@
+=== v0.2.17 ===
+- Major UI Update
+- Upgrade Dojo to v1.8.0
+- Upgrade Thunderhub to v0.9.15
+- Upgrade Specter to v0.8.1
+- Bug Fixes
+
 === v0.2.16 ===
 - Upgrade Caravan to v0.3.3 
 - Upgrade Joinmarket to v0.7.0
