@@ -186,9 +186,9 @@
 {% if wallet_exists %}
     <div class="app_tile_row">
         <div class="info_tile">
-            <div class="info_tile_header">LND Connect</div>
+            <div class="info_tile_header">Pair Wallet</div>
             <div class="info_tile_contents">
-                <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="lndconnect" style="width: 70%;" href="#">LND Connect</a>
+                <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="lndconnect" style="width: 70%;" href="#">Pair Wallet</a>
             </div>
         </div>
         <div class="info_tile">
@@ -378,11 +378,11 @@
             </form>
         </div>
 
-        <div id="lndconnect-dialog" title="LND Connect Access" style="display:none;">
+        <div id="lndconnect-dialog" title="Pair Wallet" style="display:none;">
             <form id="lndconnect_form" name="lndconnect_form" action="/lnd/lndconnect" method="POST">
-                <p>LND Connect info will allow access to your Lightning Wallet! Do not share this info with others
+                <p>Pairing a wallet will give another device access to your Lightning Wallet! Do not share this info with others
                     or they will be able to control your funds.</p>
-                <p>Please enter your password to view your lndconnect codes.</p>
+                <p>Please enter your password to view your pairing information.</p>
                 <b>Password:</b>
                 <br/>
                 <input type="password" name="password_lndconnect" id="password_lndconnect" value="" class="text ui-widget-content ui-corner-all">
