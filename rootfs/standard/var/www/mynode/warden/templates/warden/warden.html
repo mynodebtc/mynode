@@ -1,0 +1,1057 @@
+{% extends "warden/warden_layout.html" %}
+{% block content %}
+
+<!--  High Charts -->
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="{{url_for('warden.static', filename='js/portfolio.js')}}"></script>
+<script src="{{url_for('warden.static', filename='js/utils.js')}}"></script>
+<script src="{{url_for('warden.static', filename='js/highcharts.js')}}"></script>
+
+<div class="row">
+
+    <!-- Start of left side column with positions, etc -->
+    <div class="col-sm-8">
+        <table id="portfoliosummary" class="table-condensed">
+
+            <tbody>
+                <tr>
+                    <td class="border-bottom hinumber" data-toggle="tooltip" data-placement="top"
+                        title="Market Value in {{FX | fxsymbol}}">
+                        <span id="pvalue">
+
+                            <img src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                height="30"></img>
+                        </span>
+                    </td>
+                    <td></td>
+                    <td class="border-bottom hinumber" data-toggle="tooltip" data-placement="top"
+                        title="Market Value in BTC">
+                        <span id="pvaluebtc">
+                            &#8383 {{(portfolio_data['BTC']['trade_quantity'] | jformat(4))}}
+                        </span>
+                    </td>
+                    <td class="border-bottom hinumber" data-toggle="tooltip" data-placement="top"
+                        title="Market Value in Sats">
+                        <span id="pvaluesats">
+                            {{(portfolio_data['BTC']['trade_quantity'] * 100000000) | jformat(0)}} sats
+                        </span>
+                    </td>
+                    <td></td>
+                    <td id="chg1" class="redgreen border-bottom hinumber text-right">
+                        <span id="">
+                            <img src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                height="30"></img>
+                        </span>
+                    </td>
+                    <td></td>
+                    <td id="chg2" class="redgreen border-bottom hinumber text-right">
+                        <img src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                            height="30"></img>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="small">
+                        portfolio value
+                    </td>
+                    <td></td>
+                    <td class="small">
+                        portfolio value
+                    </td>
+                    <td class="small">
+                        portfolio value
+                    </td>
+                    <td></td>
+                    <td class="small text-right">
+                        24hr change
+                    </td>
+                    <td></td>
+                    <td class="small text-right">
+                        24hr change
+
+                    </td>
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Portfolio Summary Bar at top -->
+    <div class="col-sm-4 align-right">
+        <table id="time" class="table-condensed table-right text-right">
+            <tbody>
+                <tr>
+
+                    <td id='latest_btc_price' class="text-center border-bottom hinumbersmall" data-toggle="tooltip"
+                        data-placement="top" title="Bitcoin's Latest Price">
+                        <img src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                            height="30"></img></img>
+                    </td>
+
+                    <td id='latest_btc_block' class="text-center border-bottom hinumbersmall small"
+                        data-toggle="tooltip" data-placement="top" title="Bitcoin's Latest Block">
+                        <img src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                            height="30"></img></img>
+                    </td>
+
+                    <td class="border-bottom hinumbersmall text-right small">
+                        <span id="lstupd">
+                            <img src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                height="30"></img></img>
+                        </span>
+
+                    </td>
+
+
+                </tr>
+                <tr>
+                    <td class="small text-center">
+                        &#8383 Price
+                    </td>
+
+                    <td class="small text-center">
+                        &#8383 Block Height
+                    </td>
+
+                    <td class="small text-right">
+                        last update
+                    </td>
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</br>
+
+
+<div class="row">
+
+    <div class="col-sm-8">
+
+        <!-- START Portfolio Snapshot section  -->
+        <div class="content-section table-responsive">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="lead">Portfolio Snapshot</div>
+                </div>
+            </div>
+
+            <table id="positionstable" class="table table-sm small-text">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col">
+                            Ticker
+                        </th>
+
+                        <th class="text-right" data-toggle="tooltip" data-placement="top" title="in number of coins">
+                            Quantity
+                        </th>
+
+                        <th class="text-right">
+                            Latest Price ({{FX | fxsymbol}})
+                        </th>
+
+                        <th class="text-right small">
+                            24hr Chg
+                        </th>
+                        <th>
+
+                        </th>
+                        <th class="text-right">
+                            Position ({{FX | fxsymbol}})
+                        </th>
+                        <th class="text-right small">
+                            % of total
+                        </th>
+
+
+                    </tr>
+                </thead>
+                <tbody id="portfolio">
+                    {% for position in portfolio_data %}
+
+                    <tr id="ticker{{position}}">
+
+                        <th class="align-middle" scope="row">
+
+                            {{position}}
+
+                        </th>
+
+                        <td class="text-right align-middle">
+                            {{(portfolio_data[position]['trade_quantity'] | jformat(4))}}
+
+                        </td>
+
+                        <td class="text-right align-middle hinumbersmall">
+                            <strong>
+                                <span id="{{position}}_price">
+                                    <img src='{{url_for('warden.static', filename='images/loading_small.gif')}}'
+                                        width="30" height="30"></img>
+                                </span>
+                            </strong>
+                        </td>
+
+                        <td class="text-right small align-middle redgreen">
+                            <span id="{{position}}_24hchg">
+                                <img src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                    height="30"></img>
+                            </span>
+
+                        </td>
+
+                        <td class="text-center align-middle">
+
+
+                        </td>
+
+                        <td class="text-right align-middle">
+                            <span id="{{position}}_position">
+                                <img src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                    height="30"></img>
+                            </span>
+                        </td>
+
+                        <td class="text-right small align-middle">
+                            <span id="{{position}}_allocation">
+                                <img src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                    height="30"></img>
+                            </span>
+
+                        </td>
+
+
+
+
+                    </tr>
+
+                    {% endfor %}
+
+
+                </tbody>
+            </table>
+        </div>
+        <!-- END Portfolio Snapshot section  -->
+
+        <!-- START Address activity ALERTS -->
+
+        {%if alerts%}
+        {%set changes_detected = true%}
+        <div class="content-section table-responsive">
+            <div class="row" style='padding-bottom: 20px;'>
+                <div class="col-sm-12">
+                    <div class="lead">Address Activity Alerts</div>
+                </div>
+            </div>
+
+            <div class="alert alert-warning" role="alert" style='height: 60px; font-size: 16px;'><i
+                    class="fas fa-exclamation-triangle"></i>&nbsp;&nbsp;Changes
+                Detected to one or more addresses
+                <span class='float-right'>
+                    <button id="dismiss_balances" type="button" class="btn btn-warning" style='width: 200px;'>Dismiss
+                        Notification</button>
+                </span>
+            </div>
+
+
+            {%if (not warden_metadata['old_new_df_old'].empty)%}
+
+            <h6 class='text-danger'>Some Addresses have zero balance or are missing since the previous checkpoint</h6>
+            <table class="table table-sm small-text">
+                <thead class="thead-light">
+                    <tr class='text-left'>
+                        <th>
+                            Wallet
+                        </th>
+                        <th class='text-right'>
+                            TxID
+                        </th>
+                        <th class='text-right'>
+                            Previous Balance
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%for element in warden_metadata['old_new_df_old'].iterrows()%}
+                    <tr>
+                        <td class='text-left'>
+                            {{element[1]['trade_account']}}
+                        </td>
+                        <td class='text-right'>
+                            <a href="http://mynode.local:3002/tx/{{element[1]['trade_blockchain_id']}}" target='_blank'>
+                                {{element[1]['trade_blockchain_id'][0:3]}}..{{element[1]['trade_blockchain_id'][-4:-1]}}
+                            </a>
+                        </td>
+                        <td class='text-right'>
+                            {{element[1]['Amount'] | jformat(4)}}
+                        </td>
+                    </tr>
+                    {%endfor%}
+                </tbody>
+            </table>
+
+            {%endif%}
+
+            {%if (not warden_metadata['old_new_df_new'].empty)%}
+
+            <h6 class='text-success'>New Addresses were found since the previous checkpoint</h6>
+            <table class="table table-sm small-text">
+                <thead class="thead-light">
+                    <tr class='text-left'>
+                        <th>
+                            Wallet
+                        </th>
+                        <th class='text-right'>
+                            TxID
+                        </th>
+                        <th class='text-right'>
+                            Balance
+                        </th>
+                        <th class='text-right'>
+                            Confirmations
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%for element in warden_metadata['old_new_df_new'].iterrows()%}
+                    <tr>
+                        <td class='text-left'>
+                            {{element[1]['trade_account']}}
+                        </td>
+                        <td class='text-right'>
+                            <a href="http://mynode.local:3002/tx/{{element[1]['trade_blockchain_id']}}" target="_blank">
+                                {{element[1]['trade_blockchain_id'][0:3]}}..{{element[1]['trade_blockchain_id'][-4:-1]}}
+                            </a>
+                        </td>
+                        <td class='text-right'>
+                            {{element[1]['Amount'] | jformat(4)}}
+                        </td>
+                        <td class='text-right'>
+                            {{element[1]['Confirmations']}}
+                        </td>
+                    </tr>
+                    {%endfor%}
+                </tbody>
+            </table>
+
+            {%endif%}
+
+        </div>
+        {%endif%}
+        <!-- END ALERTS -->
+
+
+        <!-- START SPECTER Wallet List + Transactions  -->
+        <div class="content-section table-responsive">
+            <div class="row" style='padding-bottom: 20px;'>
+                <div class="col-sm-12">
+                    <div class="lead">&#8383 Wallets</div>
+                </div>
+            </div>
+
+
+            <table id="positionstable" class="table table-sm small-text" style="border-collapse:collapse;">
+                <thead class="thead-light">
+                    <tr class='text-right'>
+                        <th></th>
+                        <th class='text-left'> Name </th>
+                        <th> Device(s) </th>
+                        <th> Position </th>
+                        <th> # </th>
+                        <th> Sigs Required </th>
+                        <th> Address Type </th>
+                        <th> Pending PBSTs </th>
+                        <th> Last Activity </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%for wallet in warden_metadata['wallet_list']%}
+                    {%set alias = warden_metadata['wallet_info'][wallet]['alias']%}
+                    {%if warden_metadata['txs'][alias]['df'].empty%}
+
+                    <div class="alert alert-info" role="alert"><i class="fas fa-info-circle"></i>&nbsp;&nbsp;
+                        No Txs Found for Wallet {{warden_metadata['wallet_info'][wallet]['name']}}</div>
+                    {%else%}
+                    <tr class='text-right' data-toggle="collapse" data-target="#txs_{{alias}}" class="accordion-toggle">
+                        <td>
+                            <i class="far fa-plus-square"></i>
+                        </td>
+                        <td class='text-left'>
+                            {{warden_metadata['wallet_info'][wallet]['name']}}
+                        </td>
+                        <td>
+                            {%for device in warden_metadata['wallet_info'][wallet]['devices']%}
+                            {{device}}&nbsp;&nbsp;
+                            {%endfor%}
+                        </td>
+                        <td class='text-right'>
+                            {{warden_metadata['txs'][alias]['df']['Amount'].sum() | jformat(4)}}
+                        </td>
+                        <td class='text-right'>
+                            {{warden_metadata['txs'][alias]['df']['Amount'].count() | jformat(0)}}
+                        </td>
+                        <td>
+                            {{warden_metadata['wallet_info'][wallet]['sigs_required']}}
+                        </td>
+                        <td>
+                            {{warden_metadata['wallet_info'][wallet]['address_type']}}
+                        </td>
+                        <td>
+                            {% if warden_metadata['wallet_info'][wallet]['pending_psbts'] == {}%}
+                            None
+                            {%else%}
+                            {{warden_metadata['wallet_info'][wallet]['pending_psbts']}}
+                            {%endif%}
+                        </td>
+                        <td>
+                            {{warden_metadata['txs'][alias]['df']['clean_date'].max() | time_ago}}
+                        </td>
+                    </tr>
+                    <tr data-toggle="collapse" data-target="#txs_{{alias}}" class="accordion-toggle">
+                        <td colspan="10" class="hiddenRow">
+                            <div id="txs_{{alias}}" class="accordian-body collapse" style='padding-top: 15px;'>
+                                <div class="alert alert-secondary" role="alert">Transactions&nbsp;<i
+                                        class="fas fa-exchange-alt"></i></div>
+
+
+                                <table id="positionstable" class="table table-sm small-text"
+                                    style="border-collapse:collapse;">
+                                    <thead class="thead-light">
+                                        <tr class='text-right'>
+                                            <th>Date</th>
+                                            <th> Address </th>
+                                            <th> TX id </th>
+                                            <th> Confirmations </th>
+                                            <th> Amount (&#8383)</th>
+                                            <th> Price</th>
+                                            <th> Cash ({{FX}})</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {%for tx in warden_metadata['full_df'][warden_metadata['full_df']['trade_account'] == alias].iterrows()%}
+                                        {%set color=''%}
+                                        {%set message=''%}
+                                        {%if tx[1]['TxID'] in warden_metadata['old_new_df_old']['TXID']%}
+                                        {%set color='lightred'%}
+                                        {%set message='Balance Changed'%}
+                                        {%elif tx[1]['TxID'] in warden_metadata['old_new_df_new']['TXID']%}
+                                        {%set color='lightgreen'%}
+                                        {%set message='New Address'%}
+                                        {%endif%}
+                                        <tr style='background-color: {{color}};'>
+
+                                            <td>
+                                                {% if message == ''%}
+                                                {{tx[1]['trade_date']}}
+                                                {%else%}
+                                                {{message}}
+                                                {%endif%}
+                                            </td>
+                                            <td class='text-right'>
+                                                <a href="http://mynode.local:3002/address/{{tx[1]['Address']}}"
+                                                    target="_blank">
+                                                    {{tx[1]['Address'][0:3]}}...{{tx[1]['Address'][-4:-1]}}
+                                                </a>
+                                            </td>
+                                            <td class='text-right'>
+                                                <a href="http://mynode.local:3002/tx/{{tx[1]['TxID']}}" target="_blank">
+                                                    {{tx[1]['TxID'][0:3]}}...{{tx[1]['TxID'][-4:-1]}}
+                                                </a>
+                                            </td>
+                                            <td class='text-right'>
+                                                {{tx[1]['Confirmations']}}
+                                            </td>
+                                            <td class='text-right'>
+                                                {{tx[1]['Amount'] | jformat(4)}}
+                                            </td>
+                                            <td class='text-right'>
+                                                {{tx[1]['trade_price'] | jformat(2)}}
+                                            </td>
+                                            <td class='text-right'>
+                                                {{tx[1]['cash_value'] | jformat(2)}}
+                                            </td>
+                                        </tr>
+                                        {%endfor%}
+                                    </tbody>
+                                </table>
+
+
+                            </div>
+
+                        </td>
+                    </tr>
+                    {%endif%}
+                    {%endfor%}
+                </tbody>
+
+            </table>
+        </div>
+
+
+
+        <!-- START Cost Analysis section -->
+        <div class="content-section table-responsive">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div id="cost_title" class="lead">Cost Analysis</div>
+                </div>
+            </div>
+
+            <span class="fifo_costtable">
+                <table id="fifo_costtable" class="table table-sm small-text">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">
+                                Ticker
+                            </th>
+
+                            <th class="text-right">
+                                Position
+                            </th>
+
+                            <th class="text-right">
+                                Fees
+                            </th>
+                            <th class="text-right">
+                                Total PnL
+                            </th>
+                            <th class="text-right">
+                                Breakeven
+                            </th>
+                            <th>
+                            </th>
+
+
+                        </tr>
+                    </thead>
+
+                    <tbody id="portfolio">
+                        {% for position in portfolio_data %}
+                        {% if position != "TOTAL" %}
+                        <tr id="tickerfifo_{{position}}">
+
+                            <th class="align-middle">{{position}}</th>
+
+                            <td class="text-right align-middle">
+                                <span id="{{position}}_F_position">
+                                    <img src='{{url_for('warden.static', filename='images/loading_small.gif')}}'
+                                        width="30" height="30"></img>
+                                </span>
+
+                            </td>
+
+
+                            <td class="text-right align-middle">
+                                <span id="{{position}}_F_trade_fees_fx">
+                                    <img src='{{url_for('warden.static', filename='images/loading_small.gif')}}'
+                                        width="30" height="30"></img>
+                                </span>
+
+                            </td>
+
+                            <td class="text-right align-middle redgreen">
+                                <span id="{{position}}_F_pnl_net">
+                                    <img src='{{url_for('warden.static', filename='images/loading_small.gif')}}'
+                                        width="30" height="30"></img>
+                                </span>
+
+                            </td>
+                            <td class="text-right align-middle">
+                                <span id="{{position}}_F_breakeven">
+                                    <img src='{{url_for('warden.static', filename='images/loading_small.gif')}}'
+                                        width="30" height="30"></img>
+                                </span>
+                            </td>
+                            <td class="text-right align-middle">
+                                <span id="{{position}}_be_calculator_FIFO">
+                                    <a style="color: lightslategray; position: relative; cursor: pointer;" tabindex="0"
+                                        data-toggle="popover" class="cost_popover" data-trigger="focus"
+                                        data-accounting='LIFO' title="Cost calculations for {{position}}"
+                                        data-placement="bottom" data-content="<span class='text-center'><img src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width='30'
+                                    height='30'></img></span>" data-html="true" data-ticker={{position}}>
+                                        <i class="fas fa-calculator"></i>
+                                    </a>
+                                </span>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+
+                        <tr id="tickerTOTAL" class="table-dark">
+                            <th class="align-middle" scope="row">TOTAL</th>
+
+                            <td class="text-right align-middle">
+                                <span id="F_total">
+                                    <img src='{{url_for('warden.static', filename='images/loading_small.gif')}}'
+                                        width="30" height="30"></img>
+                                </span>
+
+                            </td>
+
+                            <td class="text-right align-middle">
+                                <span id="F_fees">
+                                    <img src='{{url_for('warden.static', filename='images/loading_small.gif')}}'
+                                        width="30" height="30"></img>
+                                </span>
+                            </td>
+
+                            <td class="text-right align-middle">
+                                <span id="F_pnl">
+                                    <img src='{{url_for('warden.static', filename='images/loading_small.gif')}}'
+                                        width="30" height="30"></img>
+                                </span>
+                            </td>
+                            <td class="text-right small align-middle">
+                            </td>
+                            <td class="text-right small align-middle">
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </span>
+        </div>
+        <!-- END Cost Analysis Section -->
+
+        <!-- START Market Data Section -->
+        <div class="content-section table-responsive">
+            <div class="lead">Market Data</div>
+            <table id="marketdatatable" class="table table-sm small-text">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col">
+                            Ticker
+                        </th>
+
+                        <th class="text-right">
+                            Price ({{FX | fxsymbol}})
+                        </th>
+
+                        <th class="text-right small">
+                            24hr Chg
+                        </th>
+                        <th class="text-center small">
+                            24hr Price Range
+                        </th>
+                        <th class="text-right small">
+                            24hr Volume
+                        </th>
+                        <th class="text-right small">
+                            Mkt Cap
+                        </th>
+
+                        <th class="text-right small">
+                            Last Update
+                        </th>
+
+                        <th class="text-right small">
+                            Source
+                        </th>
+
+                    </tr>
+                </thead>
+
+                <tbody id="portfolio">
+                    {% for position in portfolio_data %}
+
+                    {% if position != "TOTAL" %}
+
+
+                    <tr id="tickerdata_{{position}}">
+
+
+                        <th class="align-middle" scope="row">
+                            {{position}}
+                        </th>
+
+                        <td class="text-right align-middle hinumbersmall">
+                            <strong>
+                                <span id="{{position}}_mkt_price">
+                                    <img src='{{url_for('warden.static', filename='images/loading_small.gif')}}'
+                                        width="30" height="30"></img>
+                                </span>
+
+
+                            </strong>
+                        </td>
+
+                        <td class="text-right align-middle small redgreen">
+                            <span id="{{position}}_24h_change">
+                                <img src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                    height="30"></img>
+                            </span>
+                        </td>
+
+                        <td class="text-center small">
+                            <span id="{{position}}_24h_range">
+                                <img src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                    height="30"></img>
+                            </span>
+
+                        </td>
+
+
+                        <td class="text-right align-middle small">
+                            <span id="{{position}}_volume">
+                                <img src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                    height="30"></img>
+                            </span>
+                        </td>
+
+
+                        <td class="text-right align-middle small">
+                            <span id="{{position}}_mktcap">
+                                <img src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                    height="30"></img>
+                            </span>
+
+                        </td>
+
+                        <td class="text-right align-middle small">
+                            <span id="{{position}}_lastupdate">
+                                <img src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                    height="30"></img>
+                            </span>
+                        </td>
+
+
+                        <td class="text-right align-middle small">
+                            <span id="{{position}}_source">
+                                <img src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                    height="30"></img>
+                            </span>
+
+                        </td>
+                        {%endif%}
+
+                    </tr>
+
+                    {% endfor %}
+
+
+                </tbody>
+            </table>
+        </div>
+        <!-- END Market Data Section -->
+        <!-- START charts -->
+        <div class="row">
+            <div class='col-sm-12'>
+                <div>
+                    <!-- NAV Chart -->
+                    <div id="navchart" style="height: 350px; margin: 0 auto">
+                        <span class="loadanim">&nbsp;Loading NAV Chart</span>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <!-- END Charts -->
+
+        </br>
+
+
+    </div>
+
+
+    <div class="col-sm-4">
+        <!-- START Portfolio Statistics section -->
+
+
+
+        <div class="content-section">
+
+            <span class="lead">Summary Stats </span></br>
+            <span id='stats_dates_txt' class="small text-muted"></span>
+
+            <table id="positionstable" class="table table-sm small-text">
+                <tbody>
+                    <tr>
+                        <td>Current NAV</td>
+                        <td id='end_nav' class="text-right"> <img
+                                src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                height="30"></img> </td>
+                    </tr>
+                    <tr>
+                        <td>Highest NAV</td>
+                        <td id='max_nav' class="text-right"> <img
+                                src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                height="30"></img> </td>
+                    </tr>
+                    <tr>
+                        <td>Lowest NAV</td>
+                        <td id='min_nav' class="text-right"> <img
+                                src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                height="30"></img> </td>
+                    </tr>
+                    {% if FX!='USD'%}
+                    <tr>
+                        {%else%}
+                    <tr hidden>
+                        {%endif%}
+                        <td>Portfolio Value (USD)</td>
+                        <td id='end_portvalue_usd' class="text-right"> <img
+                                src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                height="30"></img> </td>
+                    </tr>
+
+                    <tr>
+                        <td>Portfolio Value</td>
+                        <td class="text-right">
+                            {{FX | fxsymbol}}
+                            <span id='end_portvalue'> <img
+                                    src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                    height="30"></img>
+                            </span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Highest Value</td>
+                        <td class="text-right">
+                            {{FX | fxsymbol}}
+                            <span id='max_portvalue'>
+                                <img src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                    height="30"></img>
+                            </span>
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <th colspan="2">NAV Returns</th>
+                    </tr>
+
+                    <tr>
+                        <td>Since last 'close'</td>
+                        <td id='return_1d' class="text-right redgreen"> <img
+                                src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                height="30">
+                            </img> </td>
+                    </tr>
+                    <tr>
+                        <td>1 week</td>
+                        <td id='return_1wk' class="text-right redgreen"> <img
+                                src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                height="30"></img> </td>
+                    </tr>
+                    <tr>
+                        <td>30 days</td>
+                        <td id='return_30d' class="text-right redgreen"> <img
+                                src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                height="30"></img> </td>
+                    </tr>
+                    <tr>
+                        <td>90 days</td>
+                        <td id='return_90d' class="text-right redgreen"> <img
+                                src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                height="30"></img> </td>
+                    </tr>
+                    <tr>
+                        <td>Since ATH</td>
+                        <td id='return_ATH' class="text-right redgreen"> <img
+                                src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                height="30"></img> </td>
+                    </tr>
+                    <tr>
+                        <td>Since inception</td>
+                        <td id='return_SI' class="text-right redgreen"> <img
+                                src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                height="30"></img> </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <!-- END Portfolio Statistics section -->
+
+        <!-- START Bitcoin Address Summary -->
+
+        <div class="content-section" id="bitcoin_addresses_section">
+
+            <span class="lead">Bitcoin Node Status</span>
+            <span class="float-right">
+                <a href="/bitcoind" style="text-decoration: none; color:gray;">
+                    <i class="fas fa-external-link-square-alt fa-lg"></i>
+                </a>
+            </span>
+            </br>
+
+            <table id="btctable" class="table table-sm small-text">
+                <tbody>
+                    <tr>
+                        <td>Node Status</td>
+                        <td class="text-right">
+                            <span id='bitcoind_status'> <img
+                                    src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                    height="30"></img> </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Latest Block</td>
+                        <td id='current_block' class="text-right"> <img
+                                src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                height="30"></img> </td>
+                    </tr>
+                    <tr>
+                        <td>Verification Progress</td>
+                        <td id='verificationprogress' class="text-right"> <img
+                                src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                height="30"></img> </td>
+                    </tr>
+
+                    <tr>
+                        <td>Size on Disk</td>
+                        <td id='size_on_disk' class="text-right"> <img
+                                src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                height="30"></img> </td>
+                    </tr>
+                    <tr>
+                        <td>Difficulty</td>
+                        <td id='difficulty' class="text-right"> <img
+                                src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                height="30"></img> </td>
+                    </tr>
+                    <tr>
+                        <td>Bitcoin Core Version</td>
+                        <td id='difficulty' class="text-right">
+                            {{warden_metadata['node_info'][1][2]}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Connection Count</td>
+                        <td id='difficulty' class="text-right">
+                            {{warden_metadata['node_info'][2][2]}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Mempool Size</td>
+                        <td id='difficulty' class="text-right">
+                            {{warden_metadata['node_info'][7][2]}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Node Uptime</td>
+                        <td id='difficulty' class="text-right">
+                            {{warden_metadata['node_info'][8][2]}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+
+                </tbody>
+            </table>
+
+            <span class="lead">Specter Server Status</span>
+            <span class="float-right">
+                <a href="https://mynode.local:25441/" style="text-decoration: none; color:gray;">
+                    <i class="fas fa-external-link-square-alt fa-lg"></i>
+                </a>
+            </span>
+            </br>
+            <table id="btctable" class="table table-sm small-text">
+                <tbody>
+                    <tr>
+                        <td>Specter Status</td>
+                        <td id='specter_status' class="text-right"> <img
+                                src='{{url_for('warden.static', filename='images/loading_small.gif')}}' width="30"
+                                height="30"></img> </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <span id='bitcoin_check'>
+
+            </span>
+
+
+        </div>
+
+
+
+        <!-- END Bitcoin Address Summary -->
+
+
+
+        <div class='row'>
+            <div class="container-fluid small">
+                <i>
+                    <sup>1</sup> All returns in this page are in {{FX}}.
+                    <br>
+                    {%if FX != 'USD'%}
+                    This means that the returns include the asset returns plus the currency return in the period.
+                    <br>For example, if Bitcoin in USD is up 5% and the {{FX}} is
+                    up
+                    1%, the
+                    return will be 6.05% in {{FX}}.
+                    {%endif%}
+                </i>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+
+</br>
+
+{% endblock content %}
+
+
+{%block modals%}
+<!-- Modal for FIFO Transactions -->
+<div class="modal fade" id="FIFOLIFOModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" style="min-width:65%;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Cost basis calculation for open positions</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id='accounting_transactions'>
+                <p><strong>Below is a list of transactions being used to calculate your unrealized PnL</strong></p>
+
+
+                <div class='row' id='accounting_table' style='justify-content: center;'>
+                    <div class="spinner-grow spinner-grow-sm" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div></img>
+                </div>
+
+                <div>
+                    <h5 class='border-bottom'>Calculation of unrealized PnL</h5>
+                    <p>The <strong>Unrealized Breakeven price</strong> is calculated as a weighted average of all
+                        the
+                        transactions above.
+                    </p>
+                    <p>These transactions are the ones associated with your current open position. The
+                        (<code>Q(acum)</code>)
+                        column shows the cumulative quantity until it totals the current position.</p>
+                    <p>For FIFO, these are the newest transactions. Old ones are considered realized PnL.</p>
+
+                    <p>For LIFO, these are the oldest transactions.</p>
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock modals %}

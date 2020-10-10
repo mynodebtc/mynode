@@ -1,0 +1,48 @@
+{% extends "warden/warden_layout.html" %}
+{% block content %}
+
+<!--  High Charts -->
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<!-- <script src="https://code.highcharts.com/highcharts.js"></script> -->
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<!-- JS for page -->
+<script src="{{url_for('warden.static', filename='js/highcharts.js')}}"></script>
+<script src="{{url_for('warden.static', filename='js/navchart.js')}}"></script>
+
+<!-- Prepare variables coming from Python so they can be used in jQuery -->
+<script>
+  var navchartjs = {{ navchart | tojson | safe}};
+  var fx = {{ fx | tojson | safe}};
+  var portchartjs = {{ port_value_chart | tojson | safe}};
+</script>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12">
+      <div id="portchart" style="min-width: 310px; height: 700px; margin: 0 auto">
+      </div>
+
+    </div>
+  </div>
+</div>
+</br></br>
+
+<div class='row'>
+  <div class="container-fluid">
+    <div class="small">
+      <sup>1</sup> All returns in this page are in {{current_user.fx_rate_data()['name_plural']}}.
+      <br>
+      {%if current_user.fx_rate_data()['name'] != 'US Dollar'%}
+      This means that the returns include the asset returns plus the currency return in the period.
+      <br>For example, if Bitcoin in USD is up 5% and the {{current_user.fx_rate_data()['name']}} is up 1%, the
+      return will be 6.05% in {{current_user.fx_rate_data()['name_plural']}}.
+      {%endif%}
+    </div>
+  </div>
+</div>
+</br></br>
+
+
+{% endblock content %}
