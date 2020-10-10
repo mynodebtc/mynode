@@ -1,0 +1,228 @@
+/*!
+ * Start Bootstrap - Simple Sidebar (https://startbootstrap.com/)
+ * Copyright 2013-2016 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
+ */
+
+/* Toggle Styles */
+
+#wrapper {
+  flex-grow: 1;
+  min-height: 100%;
+  overflow: auto;
+  overflow-y: auto;
+  flex-grow: 100;
+  padding-left: 0;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+  width: 100vw;
+}
+
+#wrapper.toggled {
+  padding-left: 250px;
+  height: 100%;
+}
+
+#sidebar-wrapper {
+  display: flex;
+  flex-grow: 100;
+  position: fixed;
+  left: 0px;
+  width: 230px;
+  height: 95%;
+  margin-left: 0px;
+  margin-top: 0px;
+  margin-bottom: 100px;
+  overflow-y: auto;
+  background: #353535;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+  width: 220px;
+}
+
+#page-content-wrapper {
+  position: absolute;
+  padding: 0px;
+  margin-left: 30px;
+  width: auto;
+  height: 100%;
+}
+
+#wrapper.toggled #page-content-wrapper {
+  position: absolute;
+  margin-right: -250px;
+  width: auto;
+  height: 100%;
+}
+
+/* Sidebar Styles */
+
+.sidebar-nav {
+  position: absolute;
+  top: 5px;
+  width: 220px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sidebar-nav li {
+  text-indent: 10px;
+  line-height: 60px;
+}
+
+.sidebar-nav li a {
+  display: block;
+  text-decoration: none;
+  color: #ffbf8f;
+}
+
+.sidebar-nav li a:hover {
+  text-decoration: none;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.sidebar-nav li a:active,
+.sidebar-nav li a:focus {
+  text-decoration: none;
+}
+
+.sidebar-nav>.sidebar-brand {
+  height: 65px;
+  font-size: 18px;
+  line-height: 60px;
+}
+
+.sidebar-nav>.sidebar-brand a {
+  color: #999999;
+}
+
+.sidebar-nav>.sidebar-brand a:hover {
+  color: #fff;
+  background: none;
+}
+
+.sidebar-subitem li a:active,
+.sidebar-subitem li a:focus {
+  text-decoration: none;
+}
+
+.sidebar-subitem {
+  font-size: 13px;
+  text-indent: 15px;
+  line-height: 35px;
+  display: block;
+  text-decoration: none;
+  color: #fff;
+}
+
+.sidebar-subitem:hover {
+  text-decoration: none;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+@media {
+  #wrapper {
+    padding-left: 250px;
+    width: 100%;
+    display: flex;
+    flex-grow: 100;
+    overflow-y: scroll;
+    overflow: scroll;
+    height: 100%;
+  }
+
+  #wrapper.toggled {
+    padding-left: 0;
+    overflow-y: scroll;
+    height: 100%;
+  }
+
+  #wrapper.toggled #sidebar-wrapper {
+    width: 0;
+  }
+
+  #page-content-wrapper {
+    height: 100%;
+    overflow-y: scroll;
+    padding: 40px;
+    padding-top: 0px;
+    padding-bottom: 150px;
+    position: fixed;
+    top: 70px;
+    right: 0px;
+    left: 170px;
+    -moz-transition: all 0.25s linear;
+    -webkit-transition: all 0.25s linear;
+    transition: all 0.25s linear;
+  }
+
+  #wrapper.toggled #page-content-wrapper {
+    height: 100%;
+    overflow-y: scroll;
+    margin-right: 0;
+    position: fixed;
+    top: 45px;
+    right: 0px;
+    left: 0px;
+    height: 100%;
+    -moz-transition: all 0.4s linear;
+    -webkit-transition: all 0.4s linear;
+    transition: all 0.4s linear;
+  }
+}
+
+.rotate {
+  -moz-transition: all 0.5s linear;
+  -webkit-transition: all 0.5s linear;
+  transition: all 0.5s linear;
+}
+
+.rotate.down {
+  -ms-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -webkit-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+
+.modal-content {
+  top: 200px;
+}
+
+.navbar-font {
+  font-size: 12px;
+  vertical-align: bottom;
+  padding-right: 40px;
+}
+
+.hiddenRow {
+  padding: 0 !important;
+}
+
+iframe {
+  height: 40px;
+  min-height: 40px;
+}
+
+.popover {
+  max-width: 400px;
+}
+
+.modal-dialog {
+  position: relative;
+  display: table;
+  /* This is important */
+  overflow-y: auto;
+  overflow-x: auto;
+  width: auto;
+  min-width: 300px;
+}

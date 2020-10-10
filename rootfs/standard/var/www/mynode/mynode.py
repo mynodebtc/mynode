@@ -1,4 +1,5 @@
-
+from warden.routes import warden
+from warden.warden import warden_metadata
 from config import *
 from flask import Flask, render_template, Markup, send_from_directory, redirect, request, url_for
 from user_management import *
@@ -40,6 +41,8 @@ import psutil
 import time
 
 # Proxy class to redirect to HTTP or HTTPS depending on connection
+
+
 class ReverseProxied(object):
     def __init__(self, app):
         self.app = app
@@ -52,7 +55,8 @@ class ReverseProxied(object):
 
 
 app = Flask(__name__)
-app.config['DEBUG'] = False
+# Change to False before production and uncomment lines
+app.config['DEBUG'] = True
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024     # 32 MB upload file max
 app.config['UPLOAD_FOLDER'] = "/tmp/flask_uploads"
@@ -63,12 +67,12 @@ app.register_error_handler(LoginError, handle_login_exception)
 
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 
-my_logger = logging.getLogger('FlaskLogger')
-my_logger.setLevel(logging.DEBUG)
-handler = logging.handlers.RotatingFileHandler(filename='/var/log/flask', maxBytes=2000000, backupCount=2)
-my_logger.addHandler(handler)
-app.logger.addHandler(my_logger)
-app.logger.setLevel(logging.INFO)
+# my_logger = logging.getLogger('FlaskLogger')
+# my_logger.setLevel(logging.DEBUG)
+# handler = logging.handlers.RotatingFileHandler(filename='/var/log/flask', maxBytes=2000000, backupCount=2)
+# my_logger.addHandler(handler)
+# app.logger.addHandler(my_logger)
+# app.logger.setLevel(logging.INFO)
 
 app.register_blueprint(mynode_bitcoind)
 app.register_blueprint(mynode_lnd)
@@ -81,27 +85,39 @@ app.register_blueprint(mynode_tor)
 app.register_blueprint(mynode_electrum_server)
 app.register_blueprint(mynode_vpn)
 app.register_blueprint(mynode_settings)
+# ----------------- WARden include code -----------------
+# Warden Import Routes & Blueprint
+app.register_blueprint(warden, url_prefix='/warden',
+                       static_folder='static',
+                       template_folder='templates',
+                       static_url_path='warden/static')
+# ----------------- End WARden include code -----------------
 
-### Definitions
-MYNODE_DIR =    "/mnt/hdd/mynode"
-BITCOIN_DIR =   "/mnt/hdd/mynode/bitcoin"
-LN_DIR =        "/mnt/hdd/mynode/lnd"
 
-### Global Variables
+# Definitions
+MYNODE_DIR = "/mnt/hdd/mynode"
+BITCOIN_DIR = "/mnt/hdd/mynode/bitcoin"
+LN_DIR = "/mnt/hdd/mynode/lnd"
+
+# Global Variables
 need_to_stop = False
 threads = []
 
 # Exception to throw on exit
+
+
 class ServiceExit(Exception):
     pass
 
 # Function to run on exit
+
+
 def on_shutdown(signum, frame):
     app.logger.info('Caught signal %d' % signum)
     raise ServiceExit
 
 
-### Flask Page Processing
+# Flask Page Processing
 @app.route("/")
 def index():
     check_logged_in()
@@ -115,7 +131,7 @@ def index():
 
     # Show uploader page if we are marked as an uploader
     if is_uploader():
-        status=""
+        status = ""
         try:
             status = subprocess.check_output(["mynode-get-quicksync-status"])
         except:
@@ -224,8 +240,8 @@ def index():
         return redirect("/product-key")
     elif status == STATE_QUICKSYNC_COPY:
         try:
-            current = subprocess.check_output(["du","-m","--max-depth=0","/mnt/hdd/mynode/bitcoin/"]).split()[0]
-            total = subprocess.check_output(["du","-m","--max-depth=0","/mnt/hdd/mynode/quicksync/"]).split()[0]
+            current = subprocess.check_output(["du", "-m", "--max-depth=0", "/mnt/hdd/mynode/bitcoin/"]).split()[0]
+            total = subprocess.check_output(["du", "-m", "--max-depth=0", "/mnt/hdd/mynode/quicksync/"]).split()[0]
         except:
             current = 0.0
             total = 100.0
@@ -235,7 +251,7 @@ def index():
         if percent >= 99.99:
             percent = 99.99
 
-        message = "<div class='small_message'>{}</<div>".format( get_message() )
+        message = "<div class='small_message'>{}</<div>".format(get_message())
 
         subheader_msg = Markup("Copying files... This will take several hours.<br/>{:.2f}%{}".format(percent, message))
 
@@ -266,7 +282,7 @@ def index():
             include_funny = False
             if dl_rate > 3.0:
                 include_funny = True
-            message = "<div class='small_message'>{}</<div>".format( get_message(include_funny) )
+            message = "<div class='small_message'>{}</<div>".format(get_message(include_funny))
 
             subheader = Markup("Downloading...<br/>{:.2f}%</br>{:.2f} MB/s{}".format(complete, dl_rate, message))
         except Exception as e:
@@ -301,7 +317,7 @@ def index():
             error_message = ""
             if bitcoind_status_code != 0 and uptime_in_seconds > 600:
                 error_message = "Bitcoin has experienced an error. Please check the logs."
-            message = "<div class='small_message'>{}</<div>".format( get_message(include_funny=True) )
+            message = "<div class='small_message'>{}</<div>".format(get_message(include_funny=True))
             templateData = {
                 "title": "myNode Status",
                 "header_text": "Starting...",
@@ -325,7 +341,7 @@ def index():
         if not is_bitcoind_synced():
             subheader = Markup("Syncing...")
             if bitcoin_block_height != None:
-                message = "<div class='small_message'>{}</<div>".format( get_message(include_funny=True) )
+                message = "<div class='small_message'>{}</<div>".format(get_message(include_funny=True))
 
                 remaining = bitcoin_block_height - mynode_block_height
                 subheader = Markup("Syncing...<br/>Block {} of {}{}".format(mynode_block_height, bitcoin_block_height, message))
@@ -499,7 +515,8 @@ def index():
         }
         return render_template('state.html', **templateData)
 
-@app.route("/product-key", methods=['GET','POST'])
+
+@app.route("/product-key", methods=['GET', 'POST'])
 def page_product_key():
     check_logged_in()
 
@@ -522,7 +539,7 @@ def page_product_key():
             delete_product_key_error()
             set_skipped_product_key()
             return redirect("/")
-        
+
         # Save product key
         if submit != None and product_key != None:
             unset_skipped_product_key()
@@ -537,6 +554,7 @@ def page_product_key():
 
         return "Error"
 
+
 @app.route("/ignore-warning")
 def page_ignore_warning():
     check_logged_in()
@@ -544,6 +562,7 @@ def page_ignore_warning():
         warning = request.args.get('warning')
         skip_warning(warning)
     return redirect("/")
+
 
 @app.route("/toggle-lndhub")
 def page_toggle_lndhub():
@@ -554,6 +573,7 @@ def page_toggle_lndhub():
         enable_lndhub()
     return redirect("/")
 
+
 @app.route("/toggle-thunderhub")
 def page_toggle_thunderhub():
     check_logged_in()
@@ -562,6 +582,7 @@ def page_toggle_thunderhub():
     else:
         enable_thunderhub()
     return redirect("/")
+
 
 @app.route("/toggle-electrs")
 def page_toggle_electrs():
@@ -572,6 +593,7 @@ def page_toggle_electrs():
         enable_electrs()
     return redirect("/")
 
+
 @app.route("/toggle-rtl")
 def page_toggle_rtl():
     check_logged_in()
@@ -580,6 +602,7 @@ def page_toggle_rtl():
     else:
         enable_rtl()
     return redirect("/")
+
 
 @app.route("/toggle-lnbits")
 def page_toggle_lnbits():
@@ -590,6 +613,7 @@ def page_toggle_lnbits():
         enable_lnbits()
     return redirect("/")
 
+
 @app.route("/toggle-btcrpcexplorer")
 def page_toggle_btcrpcexplorer():
     check_logged_in()
@@ -598,6 +622,7 @@ def page_toggle_btcrpcexplorer():
     else:
         enable_btcrpcexplorer()
     return redirect("/")
+
 
 @app.route("/toggle-mempoolspace")
 def page_toggle_mempoolspace():
@@ -608,6 +633,7 @@ def page_toggle_mempoolspace():
         enable_mempoolspace()
     return redirect("/")
 
+
 @app.route("/toggle-btcpayserver")
 def page_toggle_btcpayserver():
     check_logged_in()
@@ -616,6 +642,7 @@ def page_toggle_btcpayserver():
     else:
         enable_btcpayserver()
     return redirect("/")
+
 
 @app.route("/toggle-caravan")
 def page_toggle_caravan():
@@ -626,6 +653,7 @@ def page_toggle_caravan():
         enable_caravan()
     return redirect("/")
 
+
 @app.route("/toggle-specter")
 def page_toggle_specter():
     check_logged_in()
@@ -634,6 +662,7 @@ def page_toggle_specter():
     else:
         enable_specter()
     return redirect("/")
+
 
 @app.route("/toggle-vpn")
 def page_toggle_vpn():
@@ -644,6 +673,7 @@ def page_toggle_vpn():
         enable_vpn()
     return redirect("/")
 
+
 @app.route("/toggle-whirlpool")
 def page_toggle_whirlpool():
     check_logged_in()
@@ -652,6 +682,7 @@ def page_toggle_whirlpool():
     else:
         enable_whirlpool()
     return redirect("/")
+
 
 @app.route("/toggle-dojo")
 def page_toggle_dojo():
@@ -662,6 +693,7 @@ def page_toggle_dojo():
         enable_dojo()
     return redirect("/")
 
+
 @app.route("/toggle-dojo-install")
 def page_toggle_dojo_install():
     check_logged_in()
@@ -671,7 +703,7 @@ def page_toggle_dojo_install():
 
     if is_dojo_installed():
         # Mark app as not installed
-        uninstall_dojo()        
+        uninstall_dojo()
 
         # Re-install app (this will uninstall and not re-install after reboot since install file is missing)
         t = Timer(1.0, reinstall_app, ["dojo"])
@@ -704,13 +736,15 @@ def page_toggle_dojo_install():
 
     return redirect("/")
 
+
 @app.route("/clear-fsck-error")
 def page_clear_fsck_error():
     check_logged_in()
     clear_fsck_error()
     return redirect("/")
 
-@app.route("/login", methods=["GET","POST"])
+
+@app.route("/login", methods=["GET", "POST"])
 def page_login():
     templateData = {
         "has_changed_password": has_changed_password(),
@@ -726,10 +760,12 @@ def page_login():
         flash(get_login_error_message(), category="error")
         return redirect("/login")
 
+
 @app.route("/logout")
 def page_logout():
     logout()
     return redirect("/")
+
 
 @app.route("/about")
 def page_about():
@@ -737,13 +773,16 @@ def page_about():
     templateData = {"ui_settings": read_ui_settings()}
     return render_template('about.html', **templateData)
 
+
 @app.route("/help")
 def page_help():
     check_logged_in()
     templateData = {"ui_settings": read_ui_settings()}
     return render_template('help.html', **templateData)
 
-## Error handlers
+# Error handlers
+
+
 @app.errorhandler(404)
 def not_found_error(error):
     templateData = {
@@ -753,6 +792,7 @@ def not_found_error(error):
         "ui_settings": read_ui_settings()
     }
     return render_template('state.html', **templateData), 404
+
 
 @app.errorhandler(500)
 def internal_error(error):
@@ -765,6 +805,8 @@ def internal_error(error):
     return render_template('state.html', **templateData), 500
 
 # Check for forced HTTPS
+
+
 @app.before_request
 def before_request():
     if is_https_forced():
@@ -776,6 +818,8 @@ def before_request():
             return redirect(url, code=code)
 
 # Disable browser caching
+
+
 @app.after_request
 def set_response_headers(response):
     # Prevents 301 from saving forever
@@ -787,6 +831,7 @@ def set_response_headers(response):
     #response.headers['Expires'] = '0'
     return response
 
+
 @app.before_first_request
 def before_first_request():
     app.logger.info("BEFORE_FIRST_REQUEST START")
@@ -794,7 +839,7 @@ def before_first_request():
     # Need to do anything here?
 
     app.logger.info("BEFORE_FIRST_REQUEST END")
-    
+
 
 def start_threads():
     global threads
@@ -816,11 +861,12 @@ def start_threads():
     drive_thread = BackgroundThread(update_device_info, 60)
     drive_thread.start()
     threads.append(drive_thread)
-    public_ip_thread = BackgroundThread(find_public_ip, 60*60*12) # 12-hour repeat
+    public_ip_thread = BackgroundThread(find_public_ip, 60*60*12)  # 12-hour repeat
     public_ip_thread.start()
     threads.append(public_ip_thread)
 
     app.logger.info("STARTED {} THREADS".format(len(threads)))
+
 
 def stop_threads():
     global threads
@@ -830,6 +876,7 @@ def stop_threads():
     for t in threads:
         app.logger.info("Killing {}".format(t.pid))
         os.kill(t.pid, signal.SIGKILL)
+
 
 def stop_app():
     app.logger.info("STOP_APP START")
@@ -844,6 +891,7 @@ def stop_app():
         func()
 
     app.logger.info("STOP_APP END")
+
 
 if __name__ == "__main__":
 

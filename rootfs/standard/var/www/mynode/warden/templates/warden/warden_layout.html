@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="icon" href="{{url_for('warden.static', filename='images/favicon-bitcoin.ico')}}" class="invert">
+
+<head>
+    <!-- Style Sheets -->
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{{url_for('warden.static', filename='dependencies/bootstrap/css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('warden.static', filename='dependencies/font-awesome/css/all.css')}}">
+    <!-- JQuery UI -->
+    <link rel="stylesheet" href="{{url_for('warden.static', filename='dependencies/jquery/themes/flicker.css')}}">
+    <link rel="stylesheet" href="{{url_for('warden.static', filename='css/warden_main.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{url_for('warden.static', filename='css/warden_layout.css')}}">
+
+    <!-- End Style Sheets -->
+
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {% if title %}
+    <title>The WARDen | {{ title }}</title>
+    {% else %}
+    <title>The WARDen</title>
+    {% endif %}
+</head>
+
+<body>
+    <!-- JavaScript Loaders -->
+    <!-- JQuery -->
+    <script src="{{url_for('warden.static', filename='dependencies/jquery/jquery-3.4.1.js')}}"></script>
+    <!-- Popper -->
+    <script src="{{url_for('warden.static', filename='dependencies/popper/popper.js')}}">
+    </script>
+    <script src="{{url_for('warden.static', filename='dependencies/popper/tooltip.js')}}">
+    </script>
+    <!-- Bootstrap -->
+    <script src="{{url_for('warden.static', filename='dependencies/jquery-ui/jquery-ui.js')}}"></script>
+    <script src="{{url_for('warden.static', filename='dependencies/bootstrap/js/bootstrap.js')}}"></script>
+
+    <!-- END JavaScript Loaders -->
+
+    <header>
+        <nav class="navbar navbar-dark bg-steel navbar-expand-lg navbar-font justify-content-end">
+
+            <a class="navbar-brand" href="/warden"> <img
+                    src="{{url_for('warden.static', filename='images/logo_flat.png')}}" width="180" height="40"
+                    alt="Home">
+            </a>
+
+            <div class="rightfloater">
+                <span class="statusbox text-white">
+                    Powered by
+                    <img src='{{url_for('warden.static', filename='images/logo.png')}}' height="20">
+                </span>
+
+                <span class="statusbox text-white">
+                    Connected to Specter Wallet
+                    <img src='{{url_for('warden.static', filename='images/specter_icon.png')}}' width="20">
+                </span>
+
+                <span class="statusbox text-white">
+                    <span id="tor_span" data-html="true">
+                        <span class="loadanim small">Checking TOR</span>
+                    </span>
+                </span>
+
+                <span class="statusbox text-white">
+                    BTC $
+                    <span id="btc_usd">
+                        <span class="loadanim small">loading</span>
+                    </span>
+                </span>
+            </div>
+        </nav>
+    </header>
+
+
+    <body>
+
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav small">
+
+                <!-- TRANSACTIONS MENU + SUBMENUS -->
+                <li>
+                    <a data-toggle="collapse" href="#collapse_transactions" role="button" aria-expanded="true"
+                        aria-controls="collapse_transactions">
+                        <i class="fas fa-coins fa-lg"></i>
+                        &nbsp;&nbsp;&nbsp;&nbsp;Portfolio
+                        <i class="fas fa-caret-down"></i></a>
+                </li>
+                <div class="collapse show" id="collapse_transactions"">
+                    <div class=" list-group bg-transparent text-white">
+                    <a class="sidebar-subitem" href="/warden"><i
+                            class="fas fa-table fa-lg"></i>&nbsp;&nbsp;Dashboard</a>
+
+                    <a class="sidebar-subitem" href="/warden/navchart"><i
+                            class="fas fa-chart-area fa-lg"></i>&nbsp;&nbsp;NAV
+                        and Cost Chart</a>
+
+                </div>
+
+                <li>
+                    <a href="/" class="text-muted">
+                        <i class="fas fa-sign-out-alt fa-lg"></i>&nbsp;&nbsp;&nbsp;&nbsp;Back to MyNode
+                    </a>
+                </li>
+
+
+
+                <li class="border-top text-center">
+
+                    <div id='Donate' style='color: #DFE0E1; padding-left: 10px; padding-top: 40px;'>
+                        {%if donated == True%}
+                        <a href="/warden/donated" class="btn btn-secondary btn-block" role="button"
+                            class="btn btn-light btn-sm">
+                            Premium Supporter</a>
+                        {%else%}
+
+                        <h6>Donate to WARden</h6>
+
+                        <button type="button" class="btn btn-primary btn-block" data-toggle="modal"
+                            data-target="#exampleModal">
+                            Donate
+                        </button>
+
+
+                        <a href="/warden/donated" class="btn btn-secondary btn-block" role="button">
+                            I've donated</a>
+                        {%endif%}
+
+                    </div>
+
+                </li>
+            </ul>
+
+
+        </div>
+
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Main Content -->
+        <div id="page-content-wrapper">
+            <main role=" main">
+                <div style='padding-top: 30px;'>
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    <div class='row'>
+                        <div id='alertsection' class='col-12'>
+
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                            {% set printed_messages = dict() %}
+                            {% for category, message in messages %}
+                            {% if message not in printed_messages %}
+                            <div id="messagealert" class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                            {% set x = printed_messages.__setitem__(message, "value")  %}
+                            {% endif %}
+                            {% endfor %}
+                            {% endif %}
+                            {% endwith %}
+
+                        </div>
+                    </div>
+                    {% endwith %}
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            </main>
+        </div>
+
+
+        <!-- Footer -->
+        <footer class="site-footer bg-steel small fixed-bottom">
+            <div class="container text-right text-light align-middle">
+
+                <div class="row" style="vertical-align: bottom;">
+                    <div class="col-sm-6 text-left">
+                        <span class="text-white">
+                            <br>
+                            <i class="fab fa-github fa-2x" style="vertical-align: middle;"></i>
+                            &nbsp;&nbsp;<a style="text-decoration : none" href='https://github.com/pxsocs/mynode'
+                                class='text-white'>
+                                Open Source code available at GitHub</a>
+                        </span>
+                    </div>
+
+                    <div class="col-sm-6 text-right">
+                        <a style="text-decoration : none" href="https://twitter.com/alphaazeta"> <i
+                                class="text-white fab fa-twitter fa-xlg"></i>
+                            <span class="text-white">@AlphaaZeta&nbsp;</span></a><br>
+                        <i class="fab fa-bitcoin fa-xlg"></i> #StackingSats
+                        #NotYourKeysNotYourCoins
+                        <br><br>
+                    </div>
+                </div>
+
+            </div>
+        </footer>
+
+        <!-- END OF WRAPPER -->
+
+
+
+    </body>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content" style="height: 1200px; margin-top: -200px; width:600px;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Contribute to the WARden</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="width: auto; height: auto; max-height: 100%;">
+                    <h6 class="text-info">New features will be added as we get sats</h6>
+                    <h6>This is a community based software. We believe Open Source is the future of development for
+                        bitcoin. There is no other way when transparency and privacy are critical.</h6>
+
+                    <iframe src="https://hexawallet.io/donate/?donationid=f2f801d86997e87" width="100%"
+                        style="height: 800px;" frameborder="0" style="border: 0px;"></iframe>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+    {%block modals%}
+
+    {%endblock%}
+    <script src="{{url_for('warden.static', filename='js/warden_layout.js')}}"></script>
+
+</html>
