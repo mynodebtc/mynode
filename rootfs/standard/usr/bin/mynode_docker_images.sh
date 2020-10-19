@@ -47,8 +47,8 @@ while true; do
 
     # Upgrade mempool
     echo "Checking for new mempool..."
-    MEMPOOLSPACE_UPGRADE_VERSION=8835c399e9b00c2579ed0bbd72f8cca4c5823dad
-    MEMPOOLSPACE_UPGRADE_URL=https://github.com/mempool-space/mempool.space/archive/${MEMPOOLSPACE_UPGRADE_VERSION}.zip
+    MEMPOOLSPACE_UPGRADE_VERSION=v1.0.1
+    MEMPOOLSPACE_UPGRADE_URL=https://github.com/mempool/mempool/archive/${MEMPOOLSPACE_UPGRADE_VERSION}.zip
     MEMPOOLSPACE_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/mempoolspace_url
     CURRENT=""
     if [ -f $MEMPOOLSPACE_UPGRADE_URL_FILE ]; then
