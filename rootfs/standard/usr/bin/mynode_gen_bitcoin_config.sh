@@ -24,19 +24,25 @@ else
         sed -i "s/maxmempool=.*/maxmempool=50/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
     elif [ "$TOTAL_RAM_GB" -le "2" ]; then
         sed -i "s/dbcache=.*/dbcache=500/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
-        sed -i "s/maxmempool=.*/maxmempool=50/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
-    elif [ "$TOTAL_RAM_GB" -le "3" ]; then
-        sed -i "s/dbcache=.*/dbcache=750/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
         sed -i "s/maxmempool=.*/maxmempool=100/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    elif [ "$TOTAL_RAM_GB" -le "3" ]; then
+        sed -i "s/dbcache=.*/dbcache=700/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        sed -i "s/maxmempool=.*/maxmempool=150/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
     elif [ "$TOTAL_RAM_GB" -le "4" ]; then
-        sed -i "s/dbcache=.*/dbcache=1250/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
-        sed -i "s/maxmempool=.*/maxmempool=250/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        sed -i "s/dbcache=.*/dbcache=1100/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        sed -i "s/maxmempool=.*/maxmempool=400/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
     elif [ "$TOTAL_RAM_GB" -le "6" ]; then
         sed -i "s/dbcache=.*/dbcache=2000/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
         sed -i "s/maxmempool=.*/maxmempool=400/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
     elif [ "$TOTAL_RAM_GB" -le "8" ]; then
         sed -i "s/dbcache=.*/dbcache=2500/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
         sed -i "s/maxmempool=.*/maxmempool=500/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    elif [ "$TOTAL_RAM_GB" -le "12" ]; then
+        sed -i "s/dbcache=.*/dbcache=4000/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        sed -i "s/maxmempool=.*/maxmempool=800/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    elif [ "$TOTAL_RAM_GB" -le "16" ]; then
+        sed -i "s/dbcache=.*/dbcache=5000/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        sed -i "s/maxmempool=.*/maxmempool=800/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
     else
         echo "UNKNOWN RAM AMMOUNT: $TOTAL_RAM_GB"
         sed -i "s/dbcache=.*/dbcache=500/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
