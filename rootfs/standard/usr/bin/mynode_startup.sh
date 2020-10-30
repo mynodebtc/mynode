@@ -503,8 +503,8 @@ systemctl enable check_in || true
 
 
 # Check for new versions
-torify wget $LATEST_VERSION_URL -O /usr/share/mynode/latest_version || true
-torify wget $LATEST_BETA_VERSION_URL -O /usr/share/mynode/latest_beta_version || true
+torify wget $LATEST_VERSION_URL --timeout=30 -O /usr/share/mynode/latest_version || true
+torify wget $LATEST_BETA_VERSION_URL --timeout=30 -O /usr/share/mynode/latest_beta_version || true
 
 # Update current state
 if [ -f $QUICKSYNC_DIR/.quicksync_complete ]; then
