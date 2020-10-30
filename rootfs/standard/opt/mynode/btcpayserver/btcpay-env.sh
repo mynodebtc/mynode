@@ -1,5 +1,5 @@
 #!/bin/bash
-export COMPOSE_HTTP_TIMEOUT="180"
+export COMPOSE_HTTP_TIMEOUT="300"
 export BTCPAYGEN_OLD_PREGEN="false"
 export BTCPAYGEN_CRYPTO1="btc"
 export BTCPAYGEN_CRYPTO2=""
