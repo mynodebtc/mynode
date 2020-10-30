@@ -44,6 +44,9 @@ elif [ "$APP" = "mempoolspace" ]; then
     rm -f /mnt/hdd/mynode/settings/mempoolspace_url
     systemctl stop mempoolspace
     docker rmi mempoolspace
+elif [ "$APP" = "btcpayserver" ]; then
+    . "/opt/mynode/btcpayserver/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY" && . helpers.sh && btcpay_remove
+    cd ~
 elif [ "$APP" = "rtl" ]; then
     rm -f $RTL_VERSION_FILE
 elif [ "$APP" = "specter" ]; then
