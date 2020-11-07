@@ -3,7 +3,7 @@
 # DEPRECATED DEVICES: raspi3
 
 # Make each device
-for i in 'rock64' 'rockpro64' 'raspi4' 'debian'; do
+for i in 'raspi4' 'rock64' 'rockpro64' 'debian'; do
 	echo Creating root file system for $i
 	mkdir -p out/rootfs_$i/
 	rsync -r -u rootfs/standard/* out/rootfs_$i/
