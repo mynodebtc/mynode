@@ -12,6 +12,10 @@ LOOP_VERSION="v0.11.0-beta"
 LOOP_VERSION_FILE=/home/bitcoin/.mynode/loop_version
 LOOP_LATEST_VERSION_FILE=/home/bitcoin/.mynode/loop_version_latest
 
+POOL_VERSION="v0.3.2-alpha" 
+POOL_VERSION_FILE=/home/bitcoin/.mynode/pool_version
+POOL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/pool_version_latest
+
 LNDHUB_VERSION="v1.2.0"
 LNDHUB_VERSION_FILE=/home/bitcoin/.mynode/lndhub_version
 LNDHUB_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lndhub_version_latest
