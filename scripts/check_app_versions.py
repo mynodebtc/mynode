@@ -4,17 +4,17 @@ from tabulate import tabulate
 import json
 
 apps = [{"name": "bitcoin/bitcoin",                         "current_version": "v0.20.1"},
-        {"name": "lightningnetwork/lnd",                    "current_version": "v0.11.0-beta"},
-        {"name": "lightninglabs/loop",                      "current_version": "v0.8.1-beta"},
+        {"name": "lightningnetwork/lnd",                    "current_version": "v0.11.1-beta"},
+        {"name": "lightninglabs/loop",                      "current_version": "v0.11.0-beta"},
         {"name": "romanz/electrs",                          "current_version": "v0.8.5"},
-        {"name": "Ride-The-Lightning/RTL",                  "current_version": "v0.9.0"},
+        {"name": "Ride-The-Lightning/RTL",                  "current_version": "v0.9.3"},
         {"name": "janoside/btc-rpc-explorer",               "current_version": "v2.0.2"},
         {"name": "BlueWallet/LndHub",                       "current_version": "v1.2.0"},
         {"name": "btcpayserver/btcpayserver",               "current_version": "v1.0.5.5"},
         {"name": "unchained-capital/caravan",               "current_version": "v0.3.3"},
-        {"name": "cryptoadvance/specter-desktop",           "current_version": "v0.8.0"},
+        {"name": "cryptoadvance/specter-desktop",           "current_version": "v0.9.2"},
         {"name": "lnbits/lnbits",                           "current_version": "6cf4881"},
-        {"name": "apotdevin/thunderhub",                    "current_version": "v0.9.15"}
+        {"name": "apotdevin/thunderhub",                    "current_version": "v0.10.1"}
 ]
 
 # Apps that don't work or are not on GitHub
