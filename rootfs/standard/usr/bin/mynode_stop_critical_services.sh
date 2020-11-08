@@ -10,7 +10,7 @@ touch /tmp/shutting_down
 # Stop additional services
 systemctl stop glances lndhub netdata rtl webssh2 whirlpool dojo
 systemctl stop btcpayserver btc_rpc_explorer specter caravan lnbits
-systemctl stop thunderhub
+systemctl stop thunderhub mempoolspace
 
 
 # Manually stop services (backup)
