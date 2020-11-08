@@ -4,6 +4,7 @@ import subprocess
 import os
 import time
 import re
+from flask import current_app as app
 from threading import Timer
 from bitcoin_info import *
 from systemctl_info import *
@@ -145,7 +146,8 @@ def lnd_get(path):
         headers = {"Grpc-Metadata-macaroon":macaroon}
         r = requests.get("https://localhost:"+LND_REST_PORT+"/v1"+path, verify=TLS_CERT_FILE,headers=headers)
     except Exception as e:
-        return str(e)
+        app.logger.info("ERROR in lnd_get: "+str(e))
+        return {"error": str(e)}
     return r.json()
 
 def gen_new_wallet_seed():
