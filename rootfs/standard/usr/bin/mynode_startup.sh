@@ -253,6 +253,8 @@ if [ -f /home/bitcoin/.mynode/.hashedpw ]; then
     HASH=$(cat /home/bitcoin/.mynode/.hashedpw)
     sed -i "s/\"multiPassHashed\":.*/\"multiPassHashed\": \"$HASH\",/g" /mnt/hdd/mynode/rtl/RTL-Config.json
 fi
+# Update API URLs to HTTPS
+sed -i "s/http:/https:/g" /mnt/hdd/mynode/rtl/RTL-Config.json
 
 # BTC RPC Explorer Config
 cp /usr/share/mynode/btc_rpc_explorer_env /opt/mynode/btc-rpc-explorer/.env
