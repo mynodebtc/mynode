@@ -5,7 +5,7 @@ import json
 
 apps = [{"name": "bitcoin/bitcoin",                         "current_version": "v0.20.1"},
         {"name": "lightningnetwork/lnd",                    "current_version": "v0.11.1-beta"},
-        {"name": "lightninglabs/loop",                      "current_version": "v0.11.0-beta"},
+        {"name": "lightninglabs/loop",                      "current_version": "v0.9.0-beta"},
         {"name": "romanz/electrs",                          "current_version": "v0.8.5"},
         {"name": "Ride-The-Lightning/RTL",                  "current_version": "v0.9.3"},
         {"name": "janoside/btc-rpc-explorer",               "current_version": "v2.0.2"},
