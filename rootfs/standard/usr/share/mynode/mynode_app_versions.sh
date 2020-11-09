@@ -8,7 +8,9 @@ LND_VERSION="v0.11.1-beta"
 LND_VERSION_FILE=/home/bitcoin/.mynode/lnd_version
 LND_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnd_version_latest
 
-LOOP_VERSION="v0.11.0-beta" 
+# DELAY UPGRADING TO v0.10.0+ UNTIL RTL SUPPORTS MACAROON AUTH
+# https://github.com/Ride-The-Lightning/RTL/issues/515
+LOOP_VERSION="v0.9.0-beta" 
 LOOP_VERSION_FILE=/home/bitcoin/.mynode/loop_version
 LOOP_LATEST_VERSION_FILE=/home/bitcoin/.mynode/loop_version_latest
 

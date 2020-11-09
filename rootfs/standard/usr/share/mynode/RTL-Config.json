@@ -23,7 +23,7 @@
                 "channelBackupPath": "/mnt/hdd/mynode/rtl_backup/",
                 "enableLogging": true,
                 "lnServerUrl": "https://localhost:10080/v1",
-                "swapServerUrl": "http://localhost:8081/v1",
+                "swapServerUrl": "https://localhost:8081/v1",
                 "fiatConversion": false
             }
         }
