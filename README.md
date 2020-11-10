@@ -39,7 +39,7 @@ Each myNode device comes with a number of wonderful features:
 - Specter Desktop (v0.9.2)
 - Thunderhub (v0.10.1)
 - BTC RPC Explorer (v2.0.2)
-- Mempool.Space - Mempool local visualizer for the Bitcoin blockchain (v1.0)
+- Mempool.Space - Mempool local visualizer for the Bitcoin blockchain (v1.0.1)
 - LND Hub - Lightning Wallet Server (v1.2.0)
 - Lndmanage (v0.11.0)
 - Lightning Loop - A Non-Custodial Off/On Chain Bridge (v0.9.0-beta)
