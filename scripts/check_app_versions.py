@@ -10,7 +10,7 @@ apps = [{"name": "bitcoin/bitcoin",                         "current_version": "
         {"name": "Ride-The-Lightning/RTL",                  "current_version": "v0.9.3"},
         {"name": "janoside/btc-rpc-explorer",               "current_version": "v2.0.2"},
         {"name": "BlueWallet/LndHub",                       "current_version": "v1.2.0"},
-        {"name": "btcpayserver/btcpayserver",               "current_version": "v1.0.5.5"},
+        {"name": "btcpayserver/btcpayserver",               "current_version": "v1.0.5.9"},
         {"name": "unchained-capital/caravan",               "current_version": "v0.3.3"},
         {"name": "cryptoadvance/specter-desktop",           "current_version": "v0.9.2"},
         {"name": "lnbits/lnbits",                           "current_version": "6cf4881"},
