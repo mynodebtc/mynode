@@ -30,19 +30,19 @@ https://mynodebtc.com/order_now
 Each myNode device comes with a number of wonderful features:
 
 - Bitcoin Node (Bitcoin Core v0.20.1)
-- Lightning Node (LND v0.11.0-beta)
+- Lightning Node (LND v0.11.1-beta)
 - Electrum Server (Electrum Rust Server aka Electrs 0.8.5)
 - BTCPay Server (v1.0.5.9)
-- RTL (Ride the Lightning) - Lightning Wallet (v0.9.0-beta)
+- RTL (Ride the Lightning) - Lightning Wallet (v0.9.3-beta)
 - Samourai Dojo (v1.8.0)
 - Samourai Whirlpool (whirlpool-client-cli v0.10.8)
-- Specter Desktop (v0.8.0)
-- Thunderhub (v0.9.8)
+- Specter Desktop (v0.9.2)
+- Thunderhub (v0.10.1)
 - BTC RPC Explorer (v2.0.2)
-- Mempool.Space - Mempool local visualizer for the Bitcoin blockchain (v1.0)
+- Mempool.Space - Mempool local visualizer for the Bitcoin blockchain (v1.0.1)
 - LND Hub - Lightning Wallet Server (v1.2.0)
 - Lndmanage (v0.11.0)
-- Lightning Loop - A Non-Custodial Off/On Chain Bridge (v0.8.1-beta)
+- Lightning Loop - A Non-Custodial Off/On Chain Bridge (v0.9.0-beta)
 - LNBits (Raspiblitz version)
 - Caravan (v0.3.3)
 - Tor
@@ -53,7 +53,7 @@ Each myNode device comes with a number of wonderful features:
 - Bitcoin CLI
 - QuickSync - Quickly sync Bitcoin blockchain
 - LN Channel Backup
-- Docker support (v19.03.6) (containers inside: Netdata Monitor, Glances, WebSSH2 (Linux Terminal), BTCPay Server)
+- Docker support (v19.03.13) (containers inside: Netdata Monitor, Glances, WebSSH2 (Linux Terminal), BTCPay Server)
 - Simple UI / Web Interface
 - Dark Mode interface
 - Dedicated hardware keeps you constantly and securely connected!
