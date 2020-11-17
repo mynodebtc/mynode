@@ -9,7 +9,7 @@ After=lnd.service
 [Service]
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_lnd.sh
-ExecStart=/usr/local/bin/loopd
+ExecStart=/usr/local/bin/loopd --loopdir=/mnt/hdd/mynode/loop
 
 User=bitcoin
 Group=bitcoin

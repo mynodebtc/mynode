@@ -121,6 +121,8 @@ mkdir -p /mnt/hdd/mynode/settings
 mkdir -p /mnt/hdd/mynode/.config
 mkdir -p /mnt/hdd/mynode/bitcoin
 mkdir -p /mnt/hdd/mynode/lnd
+mkdir -p /mnt/hdd/mynode/loop
+mkdir -p /mnt/hdd/mynode/pool
 mkdir -p /mnt/hdd/mynode/quicksync
 mkdir -p /mnt/hdd/mynode/redis
 mkdir -p /mnt/hdd/mynode/mongodb
@@ -363,6 +365,14 @@ fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/lnd)
 if [ "$USER" != "bitcoin" ]; then
     chown -R bitcoin:bitcoin /mnt/hdd/mynode/lnd
+fi
+USER=$(stat -c '%U' /mnt/hdd/mynode/loop)
+if [ "$USER" != "bitcoin" ]; then
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/loop
+fi
+USER=$(stat -c '%U' /mnt/hdd/mynode/pool)
+if [ "$USER" != "bitcoin" ]; then
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/pool
 fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/whirlpool)
 if [ "$USER" != "bitcoin" ]; then
