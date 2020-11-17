@@ -416,6 +416,24 @@ def get_mynode_status():
     return status
 
 #==================================
+# Log functions (non-systemd based)
+#==================================
+def get_file_log(file_path):
+    status_log = ""
+
+    if not os.path.isfile("file_path"):
+        return "MISSING FILE"
+
+    try:
+        status_log = subprocess.check_output(["tail","-n","200",file_path]).decode("utf8")
+        lines = status_log.split('\n')
+        lines.reverse()
+        status_log = '\n'.join(lines)
+    except:
+        status_log = "ERROR"
+    return status_log
+
+#==================================
 # Specific Service Status / Colors
 #==================================
 def get_bitcoin_status_and_color():
