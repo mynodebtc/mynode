@@ -421,7 +421,7 @@ def get_mynode_status():
 def get_file_log(file_path):
     status_log = ""
 
-    if not os.path.isfile("file_path"):
+    if not os.path.isfile(file_path):
         return "MISSING FILE"
 
     try:
