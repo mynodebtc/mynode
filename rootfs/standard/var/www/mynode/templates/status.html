@@ -81,6 +81,11 @@
                     $("#netdata_status").show();
                 });
 
+                $("#show_whirlpool_status").on("click", function() {
+                    $("#show_whirlpool_status").hide(0);
+                    $("#whirlpool_status").show();
+                });
+
                 $("#show_dojo_status").on("click", function() {
                     $("#show_dojo_status").hide(0);
                     $("#dojo_status").show();
@@ -321,6 +326,15 @@
             </div>
             <button id="show_docker_image_build_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="docker_image_build_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_image_build_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Whirlpool Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ whirlpool_status_color }}"></div>
+                {{ whirlpool_status }}
+            </div>
+            <button id="show_whirlpool_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="whirlpool_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{whirlpool_status_log}}</pre></div>
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Dojo Status</div>
