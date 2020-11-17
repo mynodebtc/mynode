@@ -31,6 +31,11 @@
                     $("#loopd_status").show();
                 });
 
+                $("#show_poold_status").on("click", function() {
+                    $("#show_poold_status").hide(0);
+                    $("#poold_status").show();
+                });
+
                 $("#show_lndhub_status").on("click", function() {
                     $("#show_lndhub_status").hide(0);
                     $("#lndhub_status").show();
@@ -241,6 +246,17 @@
             </div>
             <button id="show_loopd_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="loopd_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{loopd_status_log}}</pre></div>
+            <div class="divider"></div>
+            {% endif %}
+
+            {% if lnd_wallet_exists %}
+            <div class="settings_block_subheader">Pool Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ poold_status_color }}"></div>
+                {{ poold_status }}
+            </div>
+            <button id="show_poold_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="poold_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{poold_status_log}}</pre></div>
             <div class="divider"></div>
             {% endif %}
 

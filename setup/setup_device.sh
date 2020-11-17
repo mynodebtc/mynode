@@ -773,6 +773,7 @@ systemctl enable bitcoind
 systemctl enable seed_bitcoin_peers
 systemctl enable lnd
 systemctl enable loopd
+systemctl enable poold
 systemctl enable lnd_unlock
 systemctl enable lnd_backup
 systemctl enable lnd_admin_files

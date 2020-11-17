@@ -158,18 +158,16 @@ def page_status():
             quicksync_status_log = "ERROR"
 
     # Get Bitcoin Status
-    bitcoin_status_log = ""
-    try:
-        bitcoin_status_log = subprocess.check_output(["tail","-n","200","/mnt/hdd/mynode/bitcoin/debug.log"]).decode("utf8")
-        lines = bitcoin_status_log.split('\n')
-        lines.reverse()
-        bitcoin_status_log = '\n'.join(lines)
-    except:
-        bitcoin_status_log = "ERROR"
+    bitcoin_status_log = get_file_log("/mnt/hdd/mynode/bitcoin/debug.log")
+    # GET lnd, loopd, poold logs from file???
+    #lnd_status_log = get_file_log("/mnt/hdd/mynode/lnd/logs/bitcoin/mainnet/lnd.log")
+    #loopd_status_log = get_file_log("/mnt/hdd/mynode/loop/logs/mainnet/loopd.log")
+    #poold_status_log = get_file_log("/mnt/hdd/mynode/pool/logs/mainnet/poold.log")
 
     # Get Status
     lnd_status_log = get_journalctl_log("lnd")
     loopd_status_log = get_journalctl_log("loopd")
+    poold_status_log = get_journalctl_log("poold")
     lndhub_status_log = get_journalctl_log("lndhub")
     tor_status_log = get_journalctl_log("tor@default")
     electrs_status_log = get_journalctl_log("electrs")
@@ -219,6 +217,9 @@ def page_status():
         "loopd_status_log": loopd_status_log,
         "loopd_status": get_service_status_basic_text("loopd"),
         "loopd_status_color": get_service_status_color("loopd"),
+        "poold_status_log": poold_status_log,
+        "poold_status": get_service_status_basic_text("poold"),
+        "poold_status_color": get_service_status_color("poold"),
         "tor_status_log": tor_status_log,
         "tor_status": get_service_status_basic_text("tor@default"),
         "tor_status_color": get_service_status_color("tor@default"),

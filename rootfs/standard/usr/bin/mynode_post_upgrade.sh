@@ -687,6 +687,7 @@ systemctl enable glances
 systemctl enable webssh2
 systemctl enable tor
 systemctl enable loopd
+systemctl enable poold
 systemctl enable rotate_logs
 systemctl enable corsproxy_btcrpc
 
