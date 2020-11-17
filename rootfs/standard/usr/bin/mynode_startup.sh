@@ -236,6 +236,18 @@ source /usr/bin/mynode_gen_bitcoin_config.sh
 # LND Config
 source /usr/bin/mynode_gen_lnd_config.sh
 
+# Loop Config (symlink so admin user can run loop commands)
+if [ ! -L /home/admin/.loop ]; then
+    mv /home/admin/.loop /home/admin/.loop_backup || true
+    ln -s /mnt/hdd/mynode/loop /home/admin/.loop
+fi
+
+# Pool Config (symlink so admin user can run pool commands)
+if [ ! -L /home/admin/.pool ]; then
+    mv /home/admin/.pool /home/admin/.pool_backup || true
+    ln -s /mnt/hdd/mynode/pool /home/admin/.pool
+fi
+
 # RTL config
 sudo -u bitcoin mkdir -p /opt/mynode/RTL
 sudo -u bitcoin mkdir -p /mnt/hdd/mynode/rtl
