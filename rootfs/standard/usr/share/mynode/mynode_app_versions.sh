@@ -18,6 +18,10 @@ POOL_VERSION="v0.3.2-alpha"
 POOL_VERSION_FILE=/home/bitcoin/.mynode/pool_version
 POOL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/pool_version_latest
 
+ELECTRS_VERSION="v0.8.6" 
+ELECTRS_VERSION_FILE=/home/bitcoin/.mynode/electrs_version
+ELECTRS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/electrs_version_latest
+
 LNDHUB_VERSION="v1.2.0"
 LNDHUB_VERSION_FILE=/home/bitcoin/.mynode/lndhub_version
 LNDHUB_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lndhub_version_latest
@@ -52,11 +56,11 @@ LNBITS_VERSION=dd2a282158d5774c2a3c85c164a10709c13ef7b4         # Github hash to
 LNBITS_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version
 LNBITS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version_latest
 
-SPECTER_VERSION="0.9.2"
+SPECTER_VERSION="0.10.1"
 SPECTER_VERSION_FILE=/home/bitcoin/.mynode/specter_version
 SPECTER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/specter_version_latest
 
-THUNDERHUB_VERSION="v0.10.1"
+THUNDERHUB_VERSION="v0.10.5"
 THUNDERHUB_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version
 THUNDERHUB_LATEST_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version_latest
 
