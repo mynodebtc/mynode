@@ -396,6 +396,30 @@ fi
 cd ~
 
 
+# Upgrade electrs
+# ELECTRS_UPGRADE_URL=https://github.com/romanz/electrs/archive/$ELECTRS_VERSION.tar.gz
+# CURRENT=""
+# if [ -f $ELECTRS_VERSION_FILE ]; then
+#     CURRENT=$(cat $ELECTRS_VERSION_FILE)
+# fi
+# if [ "$CURRENT" != "$ELECTRS_VERSION" ]; then
+#     cd /opt/mynode
+#     rm -rf electrs
+
+#     rm -f electrs.tar.gz
+#     wget $ELECTRS_UPGRADE_URL -O electrs.tar.gz
+#     tar -xzf electrs.tar.gz
+#     rm -f electrs.tar.gz
+#     mv electrs-* electrs
+
+#     cd electrs
+#     cargo build --release
+#     install -g root -o root target/release/electrs /usr/bin/electrs
+#     echo $ELECTRS_VERSION > $ELECTRS_VERSION_FILE
+# fi
+# cd ~
+
+
 # Install recent version of secp256k1
 echo "Installing secp256k1..."
 if [ ! -f /usr/include/secp256k1_ecdh.h ]; then
