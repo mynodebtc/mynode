@@ -21,8 +21,10 @@ if [ "$APP" = "bitcoin" ]; then
     rm -f $BTC_VERSION_FILE
 elif [ "$APP" = "lnd" ]; then
     rm -f $LND_VERSION_FILE
-elif [ "$APP" = "loopd" ]; then
+elif [ "$APP" = "loop" ]; then
     rm -f $LOOP_VERSION_FILE
+elif [ "$APP" = "pool" ]; then
+    rm -f $POOL_VERSION_FILE
 elif [ "$APP" = "btcrpcexplorer" ]; then
     rm -f $BTCRPCEXPLORER_VERSION_FILE
 elif [ "$APP" = "caravan" ]; then
