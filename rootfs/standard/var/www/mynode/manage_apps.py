@@ -19,6 +19,7 @@ def caravan_page():
     apps.append({"name":"Bitcoin",              "short_name": "bitcoin"})
     apps.append({"name":"LND",                  "short_name": "lnd"})
     apps.append({"name":"Loop",                 "short_name": "loop"})
+    apps.append({"name":"Pool",                 "short_name": "pool"})
     #apps.append({"name":"Electrum Server",      "short_name": "electrs"})
     apps.append({"name":"BTC RPC Explorer",     "short_name": "btcrpcexplorer"})
     apps.append({"name":"Corsproxy",            "short_name": "corsproxy"})
