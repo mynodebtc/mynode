@@ -43,6 +43,7 @@ Each myNode device comes with a number of wonderful features:
 - LND Hub - Lightning Wallet Server (v1.2.0)
 - Lndmanage (v0.11.0)
 - Lightning Loop - A Non-Custodial Off/On Chain Bridge (v0.9.0-beta)
+- Lightning Pool - A non-custodial auction for liquidity where bids are kept private and trades clear periodically (0.3.2-alpha)
 - LNBits (Raspiblitz version)
 - Caravan (v0.3.3)
 - Tor
