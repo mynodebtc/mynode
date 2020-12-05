@@ -3,6 +3,8 @@
 - Upgrade electrs to v0.8.6
 - Upgrade Specter to v0.10.1
 - Upgrade Thunderhub to v0.10.5
+- Add Whirlpool log to status page
+- Move loop files to external drive
 
 === v0.2.18 ===
 - Upgrade LND to v0.11.1
