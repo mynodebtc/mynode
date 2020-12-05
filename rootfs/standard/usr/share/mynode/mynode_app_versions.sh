@@ -56,11 +56,11 @@ LNBITS_VERSION=dd2a282158d5774c2a3c85c164a10709c13ef7b4         # Github hash to
 LNBITS_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version
 LNBITS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version_latest
 
-SPECTER_VERSION="0.10.1"
+SPECTER_VERSION="0.10.2"
 SPECTER_VERSION_FILE=/home/bitcoin/.mynode/specter_version
 SPECTER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/specter_version_latest
 
-THUNDERHUB_VERSION="v0.10.5"
+THUNDERHUB_VERSION="v0.11.0"
 THUNDERHUB_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version
 THUNDERHUB_LATEST_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version_latest
 
