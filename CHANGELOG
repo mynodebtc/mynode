@@ -1,3 +1,10 @@
+=== v0.2.20 ===
+- Upgrade Specter to v0.10.4
+- Upgrade Thunderhub to v0.11.0
+- Upgrade Whirlpool CLI to v0.10.9
+- Upgrade BTCPay Server to v1.0.6.2
+- Bug fixes
+
 === v0.2.19 ===
 - Add Pool
 - Upgrade electrs to v0.8.6
