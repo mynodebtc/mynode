@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Catch ctrl-c to exit script - otherwise, loop just runs again
+trap ctrl_c INT
+function ctrl_c() {
+    echo "Exiting..."
+    exit 0
+}
+
+# Clear out any old rootfs copies
 rm -rf $(dirname $0)/out/rootfs_*
 
 # Did not work well on Linux.... works on OSX :-/
