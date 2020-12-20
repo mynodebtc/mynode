@@ -41,6 +41,7 @@ def page_tor():
     v3_services.append({"service": "Thunderhub", "url": general_onion_url,"port": "3030 / 3031","guide":""})
     v3_services.append({"service": "Mempool", "url": general_onion_url,"port": "4080 / 4081","guide":""})
     v3_services.append({"service": "LNbits", "url": general_onion_url,"port": "5000 / 5001","guide":""})
+    v3_services.append({"service": "Whirlpool", "url": general_onion_url,"port": "8899","guide":""})
     v3_services.append({"service": "Netdata", "url": general_onion_url,"port": "19999 / 20000","guide":""})
     v3_services.append({"service": "Specter Desktop", "url": general_onion_url,"port": "25441","guide":""})
     v3_services.append({"service": "Glances", "url": general_onion_url,"port": "61208 / 61209","guide":""})
