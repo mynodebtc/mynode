@@ -48,7 +48,7 @@ RTL_VERSION="v0.9.3"
 RTL_VERSION_FILE=/home/bitcoin/.mynode/rtl_version
 RTL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/rtl_version_latest
 
-BTCRPCEXPLORER_VERSION="v2.0.2"
+BTCRPCEXPLORER_VERSION="v2.1.0"
 BTCRPCEXPLORER_VERSION_FILE=/home/bitcoin/.mynode/btcrpcexplorer_version
 BTCRPCEXPLORER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/btcrpcexplorer_version_latest
 
