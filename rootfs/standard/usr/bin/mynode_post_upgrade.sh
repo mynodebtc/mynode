@@ -59,6 +59,7 @@ fi
 set +e
 curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
 curl https://keybase.io/bitconner/pgp_keys.asc | gpg --import
+curl https://keybase.io/guggero/pgp_keys.asc | gpg --import # Pool
 curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
 curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
@@ -293,7 +294,7 @@ if [ $IS_X86 = 1 ]; then
 fi
 POOL_UPGRADE_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/$POOL_ARCH-$POOL_VERSION.tar.gz
 POOL_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/manifest-$POOL_VERSION.txt
-POOL_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/manifest-$POOL_VERSION.txt.sig
+POOL_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/manifest-$POOL_VERSION.txt.asc
 CURRENT=""
 if [ -f $POOL_VERSION_FILE ]; then
     CURRENT=$(cat $POOL_VERSION_FILE)
@@ -308,7 +309,7 @@ if [ "$CURRENT" != "$POOL_VERSION" ]; then
     wget $POOL_UPGRADE_MANIFEST_URL
     wget $POOL_UPGRADE_MANIFEST_SIG_URL
 
-    gpg --verify manifest-*.txt.sig
+    gpg --verify manifest-*.txt.asc
     if [ $? == 0 ]; then
         # Install Pool
         tar -xzf pool-*.tar.gz

@@ -108,6 +108,7 @@ fi
 # Import Keys
 curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
 curl https://keybase.io/bitconner/pgp_keys.asc | gpg --import
+curl https://keybase.io/guggero/pgp_keys.asc | gpg --import # Pool
 curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
 curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
