@@ -263,13 +263,17 @@ fi
 if [ ! -f /mnt/hdd/mynode/rtl/RTL-Config.json ]; then
     cp -f /usr/share/mynode/RTL-Config.json /mnt/hdd/mynode/rtl/RTL-Config.json
 fi
+# Force update of RTL config file (increment to force new update)
+RTL_CONFIG_UPDATE_NUM=1
+if [ ! -f /mnt/hdd/mynode/rtl/update_settings_$RTL_CONFIG_UPDATE_NUM ]; then
+    cp -f /usr/share/mynode/RTL-Config.json /mnt/hdd/mynode/rtl/RTL-Config.json
+    touch /mnt/hdd/mynode/rtl/update_settings_$RTL_CONFIG_UPDATE_NUM
+fi
 # Update RTL config file to use mynode pw
 if [ -f /home/bitcoin/.mynode/.hashedpw ]; then
     HASH=$(cat /home/bitcoin/.mynode/.hashedpw)
     sed -i "s/\"multiPassHashed\":.*/\"multiPassHashed\": \"$HASH\",/g" /mnt/hdd/mynode/rtl/RTL-Config.json
 fi
-# Update API URLs to HTTPS
-sed -i "s/http:/https:/g" /mnt/hdd/mynode/rtl/RTL-Config.json
 
 # BTC RPC Explorer Config
 cp /usr/share/mynode/btc_rpc_explorer_env /opt/mynode/btc-rpc-explorer/.env

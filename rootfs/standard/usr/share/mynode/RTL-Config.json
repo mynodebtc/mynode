@@ -14,7 +14,8 @@
             "lnImplementation": "LND",
             "Authentication": {
                 "macaroonPath": "/home/bitcoin/.lnd/data/chain/bitcoin/mainnet",
-                "configPath": "/home/bitcoin/.lnd/lnd.conf"
+                "configPath": "/home/bitcoin/.lnd/lnd.conf",
+                "swapMacaroonPath": "/mnt/hdd/mynode/loop/mainnet"
             },
             "Settings": {
                 "userPersona": "MERCHANT",
@@ -22,8 +23,8 @@
                 "themeColor": "PURPLE",
                 "channelBackupPath": "/mnt/hdd/mynode/rtl_backup/",
                 "enableLogging": true,
-                "lnServerUrl": "https://localhost:10080/v1",
-                "swapServerUrl": "https://localhost:8081/v1",
+                "lnServerUrl": "https://localhost:10080",
+                "swapServerUrl": "https://localhost:8081",
                 "fiatConversion": false
             }
         }
