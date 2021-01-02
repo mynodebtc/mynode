@@ -2,6 +2,7 @@
 
 set -e
 set -x 
+shopt -s nullglob
 
 source /usr/share/mynode/mynode_config.sh
 source /usr/share/mynode/mynode_app_versions.sh
@@ -79,7 +80,7 @@ umount /mnt/hdd || true
 set +e
 if [ $IS_X86 = 0 ]; then
     touch /tmp/repairing_drive
-    for d in /dev/sd*1; do
+    for d in /dev/sd*1 /dev/hd*1 /dev/vd*1 /dev/nvme*p1; do
         echo "Repairing drive $d ...";
         fsck -y $d > /tmp/fsck_results 2>&1
         RC=$?
