@@ -50,11 +50,23 @@ sysctl -w net.ipv6.conf.all.disable_ipv6=1
 sysctl -w net.ipv6.conf.default.disable_ipv6=1
 sysctl -w net.ipv6.conf.lo.disable_ipv6=1
 
-# Set DNS for install
-echo "" > /etc/resolv.conf
-echo "nameserver 1.1.1.1" >> /etc/resolv.conf
-echo "nameserver 9.9.9.9" >> /etc/resolv.conf
-echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+# Set DNS for install (old)
+#echo "" > /etc/resolv.conf
+#echo "nameserver 1.1.1.1" >> /etc/resolv.conf
+#echo "nameserver 9.9.9.9" >> /etc/resolv.conf
+#echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+
+# Set DNS for install (new)
+echo "" >> /etc/dhcp/dhclient.conf
+echo "append domain-name-servers 1.1.1.1, 208.67.222.222, 8.8.8.8;" >> /etc/dhcp/dhclient.conf
+dhclient -r
+
+# Test DNS resolution issues (may have only seen issues on bad device)
+#ping -c 2 raspberrypi.org
+#ping -c 2 raspbian.raspberrypi.org
+#ping -c 2 pythonhosted.org
+#ping -c 2 python.org
+#ping -c 2 piwheels.org
 
 
 # Make sure FS is expanded for armbian
@@ -100,10 +112,10 @@ DEBIAN_VERSION=$(lsb_release -c | awk '{ print $2 }')
 grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
 grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
 # Raspbian mirrors
-if [ $IS_RASPI = 1 ]; then
-    grep -qxF "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
-    grep -qxF "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
-fi
+# if [ $IS_RASPI = 1 ]; then
+#     grep -qxF "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+#     grep -qxF "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+# fi
 
 # Import Keys
 curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
