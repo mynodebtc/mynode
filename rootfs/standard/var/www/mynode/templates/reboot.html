@@ -28,9 +28,32 @@
                         hasShutdown = 1
                     })
                 }
-                
+
                 checkStatus()
                 setInterval(checkStatus, 2500);
+
+                {% if show_upgrade_log is defined and show_upgrade_log %}
+                function update_upgrade_log () {
+                    console.log("Updating upgrade log...");
+                    $.get("/settings/get-upgrade-log-raw", function(data) {
+                        //console.log(data)
+                        data = data.split("\n");
+                        data.reverse();
+                        log = data.join("\n")
+                        console.log("Displaying " + data.length + " lines")
+                        $("#upgrade_log_contents").html(log)
+                    });
+                }
+                $("#show_upgrade_log").on("click", function() {
+                    $("#show_upgrade_log").hide(0);
+                    $("#loading_spinner").hide(0);
+
+                    update_upgrade_log()
+                    setInterval(update_upgrade_log, 4000);
+
+                    $("#upgrade_log").show();
+                });
+                {% endif %}
             });
         </script>
 
@@ -46,8 +69,16 @@
             <br/>
             <p class="shutoff_warning">please do not power off or unplug device</p>
             
+            <br/>
+            <img id="loading_spinner" class="loading_image" src="{{ url_for('static', filename="images/loading.gif")}}"/>
             <br/><br/>
-            <img class="loading_image" src="{{ url_for('static', filename="images/loading.gif")}}"/>
+
+            {% if show_upgrade_log is defined and show_upgrade_log %}
+            <button id="show_upgrade_log" class="ui-button ui-widget ui-corner-all settings_button_small">Show Upgrade Log</button>
+            <div class="cli_contents" id="upgrade_log" style="display: none; height: 300px; max-height: 300px;">
+                <pre id="upgrade_log_contents" style="text-align: left; font-size: 10px;"></pre>
+            </div>
+            {% endif %}
         </div>
 
      </body>
