@@ -427,7 +427,10 @@
                 <tr>
                     <td>Latest Version</td>
                     <td>{{latest_version}}</td>
-                    <td>&nbsp;<a href="/settings/get-latest-version" class="ui-button ui-widget ui-corner-all settings_button_small">Check for Updates</a></td>
+                    <td>
+                        &nbsp;<a href="/settings/get-latest-version" class="ui-button ui-widget ui-corner-all settings_button_small">Check for Updates</a>
+                        &nbsp;<button id="show_upgrade_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Upgrade Log</button>
+                    </td>
                 </tr>
             </table>
             {% if current_version != latest_version and latest_version != "" %}
@@ -440,9 +443,8 @@
             {% elif not product_key_skipped and upgrade_error %}
                 <p style="color: red;">It appears a recent upgrade may not have fully completed.</p>
                 <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Retry Upgrade</button>
-                <button id="show_upgrade_status" class="ui-button ui-widget ui-corner-all settings_button">Show Upgrade Logs</button>
-                <div id="upgrade_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{upgrade_logs}}</pre></div>
             {% endif %}
+            <div id="upgrade_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{upgrade_logs}}</pre></div>
 
             <div class="divider"></div>
 

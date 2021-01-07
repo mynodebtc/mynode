@@ -321,6 +321,16 @@ def upgrade_beta_page():
     }
     return render_template('reboot.html', **templateData)
 
+@mynode_settings.route("/settings/get-upgrade-log")
+def get_upgrade_log_page():
+    check_logged_in()
+
+    log = get_file_contents("/home/admin/upgrade_logs/upgrade_log_latest.txt")
+    if (log == "ERROR"):
+        log = "No log file found"
+    
+    return log
+
 @mynode_settings.route("/settings/get-latest-version")
 def get_latest_version_page():
     check_logged_in()
