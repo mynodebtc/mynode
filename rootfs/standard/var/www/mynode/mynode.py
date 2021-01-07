@@ -279,6 +279,24 @@ def index():
             "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
+    elif status == STATE_UPGRADING:
+        templateData = {
+            "title": "myNode Upgrading",
+            "header_text": "Upgrading...",
+            "subheader_text": "This may take a while...",
+            "refresh_rate": 120,
+            "ui_settings": read_ui_settings()
+        }
+        return render_template('state.html', **templateData)
+    elif status == STATE_SHUTTING_DOWN or is_shutting_down():
+        templateData = {
+            "title": "myNode Reboot",
+            "header_text": "Restarting",
+            "subheader_text": "This will take several minutes...",
+            "refresh_rate": 120,
+            "ui_settings": read_ui_settings()
+        }
+        return render_template('state.html', **templateData)
     elif status == STATE_STABLE:
         bitcoind_status_code = get_service_status_code("bitcoind")
         lnd_status_code = get_service_status_code("lnd")
