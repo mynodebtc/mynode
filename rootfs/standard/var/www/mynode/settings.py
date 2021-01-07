@@ -298,6 +298,7 @@ def upgrade_page():
         "title": "myNode Upgrade",
         "header_text": "Upgrading",
         "subheader_text": "This may take a while...",
+        "show_upgrade_log": True,
         "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
@@ -317,11 +318,12 @@ def upgrade_beta_page():
         "title": "myNode Upgrade",
         "header_text": "Upgrading",
         "subheader_text": "This may take a while...",
+        "show_upgrade_log": True,
         "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
 
-@mynode_settings.route("/settings/get-upgrade-log")
+@mynode_settings.route("/settings/get-upgrade-log-raw")
 def get_upgrade_log_page():
     check_logged_in()
 
@@ -330,6 +332,20 @@ def get_upgrade_log_page():
         log = "No log file found"
     
     return log
+
+@mynode_settings.route("/settings/upgrade-test")
+def upgrade_page_test():
+    check_logged_in()
+
+    # Display wait page
+    templateData = {
+        "title": "myNode Upgrade",
+        "header_text": "Upgrading",
+        "subheader_text": "This may take a while...",
+        "show_upgrade_log": True,
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('reboot.html', **templateData)
 
 @mynode_settings.route("/settings/get-latest-version")
 def get_latest_version_page():
