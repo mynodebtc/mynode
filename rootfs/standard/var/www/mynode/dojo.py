@@ -63,30 +63,44 @@ def get_dojo_tracker_status():
         elif "Processing active Mempool" in line:
             tracker_status = "Active"
             break
-
-
     return tracker_status
 
+def get_dojo_version():
+    version = "Unknown"
+    try:
+        version = subprocess.check_output("cat /opt/mynode/dojo/docker/my-dojo/.env | grep -i DOJO_VERSION_TAG", shell=True)
+        version = version.split("=")[1]
+        version = version.strip()
+    except:
+        version = 'error'
+    return version
+
+def get_dojo_admin_key():
+    key = 'Not found'
+    try:
+        key = subprocess.check_output("cat /opt/mynode/dojo/docker/my-dojo/conf/docker-node.conf | grep -i NODE_ADMIN_KEY= | cut -c 16-", shell=True)
+        key = key.strip()
+    except:
+        key = 'error'
+    return key
+
+def get_dojo_addr():
+    addr = 'Not found'
+    try:
+        addr = subprocess.check_output("docker exec tor cat /var/lib/tor/hsv3dojo/hostname", shell=True)
+        page = '/admin'
+        addr = addr.strip() + page
+    except:
+        addr = 'error'
+    return addr
 
 ### Page functions
 @mynode_dojo.route("/dojo")
 def dojo_page():
     check_logged_in()
 
-    NODE_ADMIN_KEY = 'Not found'
-    try:
-        NODE_ADMIN_KEY = subprocess.check_output("cat /opt/mynode/dojo/docker/my-dojo/conf/docker-node.conf | grep -i NODE_ADMIN_KEY= | cut -c 16-", shell=True)
-        NODE_ADMIN_KEY = NODE_ADMIN_KEY.strip()
-    except:
-        NODE_ADMIN_KEY = 'error'
-
-    DOJO_V3_ADDR = 'Not found'
-    try:
-        DOJO_V3_ADDR = subprocess.check_output("docker exec tor cat /var/lib/tor/hsv3dojo/hostname", shell=True)
-        PAGE = '/admin'
-        DOJO_V3_ADDR = DOJO_V3_ADDR.strip() + PAGE
-    except:
-        DOJO_V3_ADDR = 'error'
+    admin_key = get_dojo_admin_key()
+    dojo_v3_addr = get_dojo_addr()
 
     dojo_status, dojo_status_color, dojo_initialized = get_dojo_status()
 
@@ -96,13 +110,14 @@ def dojo_page():
         "ui_settings": read_ui_settings(),
         "is_dojo_installed": is_dojo_installed(),
         "dojo_status": dojo_status,
+        "dojo_version": get_dojo_version(),
         "dojo_status_color": dojo_status_color,
         "dojo_enabled": is_dojo_enabled(),
         "dojo_initialized": dojo_initialized,
         "dojo_tracker_status": get_dojo_tracker_status(),
         "electrs_status": get_electrs_status(),
-        "NODE_ADMIN_KEY": NODE_ADMIN_KEY,
-        "DOJO_V3_ADDR": DOJO_V3_ADDR
+        "NODE_ADMIN_KEY": admin_key,
+        "DOJO_V3_ADDR": dojo_v3_addr
     }
     return render_template('dojo.html', **templateData)
 
