@@ -173,7 +173,9 @@ def upgrade_device():
 
         # Upgrade
         os.system("mkdir -p /home/admin/upgrade_logs")
-        cmd = "/usr/bin/mynode_upgrade.sh > /home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt 2>&1".format(get_current_version())
+        file1 = "/home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt".format(get_current_version())
+        file2 = "/home/admin/upgrade_logs/upgrade_log_latest.txt"
+        cmd = "/usr/bin/mynode_upgrade.sh 2>&1 | tee {} {}".format(file1, file2)
         subprocess.call(cmd, shell=True)
         
         # Sync
@@ -189,7 +191,9 @@ def upgrade_device_beta():
 
         # Upgrade
         os.system("mkdir -p /home/admin/upgrade_logs")
-        cmd = "/usr/bin/mynode_upgrade.sh beta > /home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt 2>&1".format(get_current_version())
+        file1 = "/home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt".format(get_current_version())
+        file2 = "/home/admin/upgrade_logs/upgrade_log_latest.txt"
+        cmd = "/usr/bin/mynode_upgrade.sh beta 2>&1 | tee {} {}".format(file1, file2)
         subprocess.call(cmd, shell=True)
         
         # Sync
