@@ -9,6 +9,9 @@ set -e
 # Make sure time is in the log
 date
 
+# Mark we are upgrading
+echo "upgrading" > $MYNODE_STATUS_FILE
+
 # Shut down main services to save memory and CPU
 /usr/bin/mynode_stop_critical_services.sh
 

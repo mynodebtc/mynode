@@ -55,6 +55,9 @@ def shutdown_device():
     os.system("/usr/bin/mynode_stop_critical_services.sh")
     os.system("shutdown -h now")
 
+def is_shutting_down():
+    return os.path.isfile("/tmp/shutting_down")
+
 def factory_reset():
     # Reset subsystems that have local data
     delete_quicksync_data()
@@ -386,6 +389,8 @@ STATE_QUICKSYNC_RESET =       "quicksync_reset"
 STATE_STABLE =                "stable"
 STATE_ROOTFS_READ_ONLY =      "rootfs_read_only"
 STATE_HDD_READ_ONLY =         "hdd_read_only"
+STATE_SHUTTING_DOWN =         "shutting_down"
+STATE_UPGRADING =             "upgrading"
 STATE_UNKNOWN =               "unknown"
 
 def get_mynode_status():
