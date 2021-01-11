@@ -162,7 +162,6 @@
                     $("#factory_reset_form").submit();
                     factory_reset_dialog.dialog( "close" );
                 }
-
                 factory_reset_dialog = $( "#factory-reset-dialog" ).dialog({
                     autoOpen: false,
                     resizable: false,
@@ -180,9 +179,33 @@
                         $("#password_factory_reset").val("")
                     }
                 });
-
                 $("#factory-reset").on("click", function() {
                     factory_reset_dialog.dialog( "open" );
+                });
+
+                function formatExternalDrive() {
+                    $("#format_external_drive_form").submit();
+                    format_external_drive_dialog.dialog( "close" );
+                }
+                format_external_drive_dialog = $( "#format-external-drive-dialog" ).dialog({
+                    autoOpen: false,
+                    resizable: false,
+                    height: "auto",
+                    width: 600,
+                    modal: true,
+                    position: { my: "center top", at: "center top", of: window, collision: "none" },
+                    buttons: {
+                        "Format Drive": formatExternalDrive,
+                        Cancel: function() {
+                            format_external_drive_dialog.dialog( "close" );
+                        }
+                    },
+                    open: function() {
+                        $("#password_factory_reset").val("")
+                    }
+                });
+                $("#format-external-drive").on("click", function() {
+                    format_external_drive_dialog.dialog( "open" );
                 });
 
                 $("#reset_docker_button").button();
@@ -837,10 +860,23 @@
             
             <div class="divider"></div>
 
-            <div class="settings_block_subheader">Factory Reset</div>
-            This will factory reset your mynode and all storage will be completely reset.
+            <div class="settings_block_subheader">Remount External Drive</div>
+            This will attempt to remount your external drive as read/write if it is read-only.
             <br/>
-            Make sure you have backed up all your keys and wallets!
+            <a href="/settings/remount-external-drive" class="ui-button ui-widget ui-corner-all settings_button">Remount Drive</a>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Format External Drive</div>
+            This will reboot your device and re-prompt for formatting the drive. If your external drive has been corrupted, this 
+            may help and will be slightly less destructive than a factory reset. Make sure you have backed up all your keys and wallets!
+            <br/>
+            <button id="format-external-drive" class="ui-button ui-widget ui-corner-all settings_button">Format Drive</button>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Factory Reset</div>
+            This will factory reset your mynode and all storage will be completely reset. Make sure you have backed up all your keys and wallets!
             <br/>
             <button id="factory-reset" class="ui-button ui-widget ui-corner-all settings_button">Factory Reset</button>
         </div>
@@ -944,6 +980,21 @@
                 <b>Password:</b>
                 <br/>
                 <input type="password" name="password_factory_reset" id="password_factory_reset" value="" class="text ui-widget-content ui-corner-all">
+            
+                <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </form>
+        </div>
+
+        <div id="format-external-drive-dialog" title="Format Drive" style="display:none;">
+            <form id="format_external_drive_form" name="format_external_drive_form" action="/settings/format-external-drive" method="POST">
+                <p>Formatting your drive will revert most storage to the initial state.</p>
+                <p class='red_text'>BACKUP ALL KEYS AND WALLETS BEFORE RESETTING YOUR DEVICE!</p>
+                <p>This will reboot your device.</p>
+                <p>Would you still like to format the external drive?</p>
+                <b>Password:</b>
+                <br/>
+                <input type="password" name="password_format_external_drive" id="password_format_external_drive" value="" class="text ui-widget-content ui-corner-all">
             
                 <!-- Allow form submission with keyboard without duplicating the dialog button -->
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">

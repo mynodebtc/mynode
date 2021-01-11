@@ -59,6 +59,9 @@ def is_shutting_down():
     return os.path.isfile("/tmp/shutting_down")
 
 def factory_reset():
+    # Try and make sure drive is r/w
+    os.system("mount -o remount,rw /mnt/hdd")
+    
     # Reset subsystems that have local data
     delete_quicksync_data()
 
