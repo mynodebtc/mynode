@@ -412,6 +412,25 @@ def reboot_device_page():
     }
     return render_template('reboot.html', **templateData)
 
+@mynode_settings.route("/settings/reboot-device-no-format")
+def reboot_device_no_format_page():
+    check_logged_in()
+
+    os.system("rm -f /home/bitcoin/.mynode/force_format_prompt")
+
+    # Trigger reboot
+    t = Timer(1.0, reboot_device)
+    t.start()
+
+    # Wait until device is restarted
+    templateData = {
+        "title": "myNode Reboot",
+        "header_text": "Restarting",
+        "subheader_text": "This will take several minutes...",
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('reboot.html', **templateData)
+
 @mynode_settings.route("/settings/shutdown-device")
 def shutdown_device_page():
     check_logged_in()
@@ -490,6 +509,33 @@ def reset_firewall_page():
     t.start()
     flash("Firewall Reset", category="message")
     return redirect("/settings")
+
+@mynode_settings.route("/settings/remount-external-drive")
+def remount_external_drive_page():
+    os.system("mount -o remount,rw /mnt/hdd")
+    flash("Remounted External Drive", category="message")
+    return redirect("/settings")
+
+@mynode_settings.route("/settings/format-external-drive", methods=['POST'])
+def format_external_drive_page():
+    check_logged_in()
+    p = pam.pam()
+    pw = request.form.get('password_format_external_drive')
+    if pw == None or p.authenticate("admin", pw) == False:
+        flash("Invalid Password", category="error")
+        return redirect(url_for(".page_settings"))
+    else:
+        check_and_mark_reboot_action("format_external_drive")
+
+        os.system("touch /home/bitcoin/.mynode/force_format_prompt")
+
+        templateData = {
+            "title": "myNode",
+            "header_text": "Rebooting",
+            "subheader_text": "This will take several minutes...",
+            "ui_settings": read_ui_settings()
+        }
+        return render_template('reboot.html', **templateData)
 
 @mynode_settings.route("/settings/factory-reset", methods=['POST'])
 def factory_reset_page():

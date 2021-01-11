@@ -20,12 +20,16 @@ proc checkPartitionForExistingMyNodeFs {partition} {
 proc checkPartitionsForExistingMyNodeFs {partitionsName} {
     upvar $partitionsName partitions
     runCommand mkdir -p /mnt/hdd
+
+    # Check if we are skipping the check (to reformat drive)
+    if { [file exists /home/bitcoin/.mynode/force_format_prompt] } {
+        return 0
+    }
+
+    # Check each partition
     foreach partition $partitions {
         if [checkPartitionForExistingMyNodeFs $partition] {
-            # Remove this partition from the list so we don't try to
-            # use it as the config drive later on.
-            set partitions [lsearch -all -inline -not -exact $partitions $partition]
-
+            # set partitions [lsearch -all -inline -not -exact $partitions $partition]
             return 1
         }
     }
