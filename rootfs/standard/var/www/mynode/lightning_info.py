@@ -13,7 +13,8 @@ from systemctl_info import *
 lightning_info = None
 lnd_ready = False
 lnd_version = None
-loopd_version = None
+loop_version = None
+pool_version = None
 lightning_peers = None
 lightning_channels = None
 lightning_channel_balance = None
@@ -273,11 +274,17 @@ def get_lnd_version():
         lnd_version = subprocess.check_output("lnd --version | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+' | head -n 1", shell=True)
     return "v{}".format(lnd_version)
 
-def get_loopd_version():
-    global loopd_version
-    if loopd_version == None:
-        loopd_version = subprocess.check_output("loopd --version | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+' | head -n 1", shell=True)
-    return "v{}".format(loopd_version)
+def get_loop_version():
+    global loop_version
+    if loop_version == None:
+        loop_version = subprocess.check_output("loopd --version | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+' | head -n 1", shell=True)
+    return "v{}".format(loop_version)
+
+def get_pool_version():
+    global pool_version
+    if pool_version == None:
+        pool_version = subprocess.check_output("poold --version | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+' | head -n 1", shell=True)
+    return "v{}".format(pool_version)
 
 def get_default_lnd_config():
     try:
