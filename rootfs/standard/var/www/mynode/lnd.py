@@ -67,7 +67,8 @@ def page_lnd():
             "wallet_exists": wallet_exists,
             "wallet_logged_in": wallet_logged_in,
             "version": get_lnd_version(),
-            "loopd_version": get_loopd_version(),
+            "loop_version": get_loop_version(),
+            "pool_version": get_pool_version(),
             "status": status,
             "ui_settings": read_ui_settings()
         }
@@ -81,7 +82,8 @@ def page_lnd():
             "alias": alias,
             "status": get_lnd_status(),
             "version": get_lnd_version(),
-            "loopd_version": get_loopd_version(),
+            "loop_version": get_loop_version(),
+            "pool_version": get_pool_version(),
             "ui_settings": read_ui_settings()
         }
         return render_template('lnd.html', **templateData)
@@ -162,7 +164,8 @@ def page_lnd():
         "wallet_exists": wallet_exists,
         "wallet_logged_in": wallet_logged_in,
         "version": get_lnd_version(),
-        "loopd_version": get_loopd_version(),
+        "loop_version": get_loop_version(),
+        "pool_version": get_pool_version(),
         "channel_backup_exists": channel_backup_exists,
         "status": status,
         "height": height,
