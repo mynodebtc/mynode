@@ -33,7 +33,12 @@
                 setInterval(checkStatus, 2500);
 
                 {% if show_upgrade_log is defined and show_upgrade_log %}
+                showing_log=0;
                 function update_upgrade_log () {
+                    if (showing_log == 0) {
+                        return;
+                    }
+
                     console.log("Updating upgrade log...");
                     $.get("/settings/get-upgrade-log-raw", function(data) {
                         //console.log(data)
@@ -45,13 +50,20 @@
                     });
                 }
                 $("#show_upgrade_log").on("click", function() {
-                    $("#show_upgrade_log").hide(0);
-                    $("#loading_spinner").hide(0);
+                    if (!showing_log) {
+                        $("#show_upgrade_log").html("Hide Upgrade Log");
+                        $("#loading_spinner").hide(0);
+                        $("#upgrade_log").show();
+                        update_upgrade_log();
+                        showing_log=1;
+                    } else {
+                        $("#show_upgrade_log").html("Show Upgrade Log");
+                        $("#loading_spinner").show();
+                        $("#upgrade_log").hide(0);
+                        showing_log=0;
+                    }
 
-                    update_upgrade_log()
                     setInterval(update_upgrade_log, 4000);
-
-                    $("#upgrade_log").show();
                 });
                 {% endif %}
             });
@@ -71,13 +83,15 @@
             
             <br/>
             <img id="loading_spinner" class="loading_image" src="{{ url_for('static', filename="images/loading.gif")}}"/>
-            <br/><br/>
 
             {% if show_upgrade_log is defined and show_upgrade_log %}
-            <button id="show_upgrade_log" class="ui-button ui-widget ui-corner-all settings_button_small">Show Upgrade Log</button>
             <div class="cli_contents" id="upgrade_log" style="display: none; height: 300px; max-height: 300px;">
                 <pre id="upgrade_log_contents" style="text-align: left; font-size: 10px;"></pre>
             </div>
+
+            <br/><br/>
+
+            <button id="show_upgrade_log" class="ui-button ui-widget ui-corner-all settings_button_small">Show Upgrade Log</button>
             {% endif %}
         </div>
 
