@@ -563,7 +563,7 @@ def get_btcrpcexplorer_status_and_color_and_ready():
                     ready = True
             else:
                 color = "yellow"
-                status = "Waiting on electrs..."
+                status = "Waiting on Electrum..."
         else:
             color = "yellow"
             status = "Waiting on bitcoin..."

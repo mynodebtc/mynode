@@ -34,7 +34,7 @@ def get_dojo_status():
                 dojo_status = "Running"
                 dojo_status_color = "green"
             else:
-                dojo_status = "Waiting on electrs..."
+                dojo_status = "Waiting on Electrum..."
                 dojo_status_color = "yellow"
         else:
             dojo_status = "Issue Starting"
