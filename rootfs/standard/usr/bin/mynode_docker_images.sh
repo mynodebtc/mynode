@@ -91,10 +91,10 @@ while true; do
             CURRENT=$(cat $DOJO_UPGRADE_URL_FILE)
         fi
         if [ "$CURRENT" != "$DOJO_UPGRADE_URL" ]; then
-            sudo mkdir -p /opt/mynode/.dojo
-            sudo mkdir -p /opt/mynode/dojo
-            sudo rm -rf /opt/mynode/.dojo/*
-            cd /opt/mynode/.dojo
+            sudo mkdir -p /opt/download/dojo
+            sudo mkdir -p /mnt/hdd/mynode/dojo
+            sudo rm -rf /opt/download/dojo/*
+            cd /opt/download/dojo
             sudo wget -O dojo.tar.gz $DOJO_UPGRADE_URL
 
             # verify tar file
@@ -102,15 +102,15 @@ while true; do
             sha256sum --check /tmp/dojo_hash
 
             sudo tar -zxvf dojo.tar.gz
-            sudo cp -r samourai-dojo*/* /opt/mynode/dojo
+            sudo cp -r samourai-dojo*/* /mnt/hdd/mynode/dojo
             cd /usr/bin
-            sudo rm -rf /opt/mynode/.dojo/*
+            sudo rm -rf /opt/download/dojo/*
 
             # Configure Dojo for MyNode
             sudo ./mynode_gen_dojo_config.sh
 
             # Run Dojo Install or Upgrade
-            cd /opt/mynode/dojo/docker/my-dojo
+            cd /mnt/hdd/mynode/dojo/docker/my-dojo
             INSTALL_PID=0
             if [ "$INSTALL" = "true" ]; then
                 yes | sudo ./dojo.sh install &

@@ -249,6 +249,12 @@ if [ ! -L /home/admin/.pool ]; then
     ln -s /mnt/hdd/mynode/pool /home/admin/.pool
 fi
 
+# Dojo - move to HDD
+if [ -d /opt/mynode/dojo ] && [ ! -d /mnt/hdd/mynode/dojo ] ; then
+    mv /opt/mynode/dojo /mnt/hdd/mynode/dojo
+fi
+
+
 # RTL config
 sudo -u bitcoin mkdir -p /opt/mynode/RTL
 sudo -u bitcoin mkdir -p /mnt/hdd/mynode/rtl

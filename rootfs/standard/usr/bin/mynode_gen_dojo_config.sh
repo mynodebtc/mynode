@@ -6,8 +6,8 @@ set -e
 source /usr/share/mynode/mynode_config.sh
 
 # replace Dojo bitcoind.conf.tpl with custom conf for MyNode
-rm -rf /opt/mynode/dojo/docker/my-dojo/conf/docker-bitcoind.conf.tpl
-touch /opt/mynode/dojo/docker/my-dojo/conf/docker-bitcoind.conf.tpl
+rm -rf /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-bitcoind.conf.tpl
+touch /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-bitcoind.conf.tpl
 
 RPC_PASS=$(cat /mnt/hdd/mynode/settings/.btcrpc_environment | cut -c 18- )
 
@@ -75,63 +75,63 @@ BITCOIND_ZMQ_RAWTXS=28333
 # Port exposing ZMQ notifications for block hashes Set value to 9502 if
 # BITCOIND_INSTALL is set to 'on' Type: integer
 BITCOIND_ZMQ_BLK_HASH=28334
-" | sudo tee -a /opt/mynode/dojo/docker/my-dojo/conf/docker-bitcoind.conf.tpl
+" | sudo tee -a /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-bitcoind.conf.tpl
 
 # Turn off explorer for MyNode
-sed -i 's|EXPLORER_INSTALL=on|EXPLORER_INSTALL=off|' /opt/mynode/dojo/docker/my-dojo/conf/docker-explorer.conf.tpl
+sed -i 's|EXPLORER_INSTALL=on|EXPLORER_INSTALL=off|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-explorer.conf.tpl
 
 # Enable electrs
-sed -i 's|INDEXER_IP=.*|INDEXER_IP=172.28.0.1|' /opt/mynode/dojo/docker/my-dojo/conf/docker-indexer.conf.tpl
-sed -i 's|NODE_ACTIVE_INDEXER=.*|NODE_ACTIVE_INDEXER=local_indexer|' /opt/mynode/dojo/docker/my-dojo/conf/docker-node.conf.tpl
+sed -i 's|INDEXER_IP=.*|INDEXER_IP=172.28.0.1|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-indexer.conf.tpl
+sed -i 's|NODE_ACTIVE_INDEXER=.*|NODE_ACTIVE_INDEXER=local_indexer|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-node.conf.tpl
 
 
 # check if configuration files have been previously created and skip if yes
-if [ -f /opt/mynode/dojo/docker/my-dojo/conf/docker-node.conf ]; then
+if [ -f /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-node.conf ]; then
   echo "File present - skip docker-node.conf"
 else
   # Modify node.conf to enter random generated passwords
   NODE_API_KEY=$(< /dev/urandom tr -dc 'a-zA-Z0-9' | head -c${1:-64})
-  sed -i 's|NODE_API_KEY=.*|NODE_API_KEY='$NODE_API_KEY'|' /opt/mynode/dojo/docker/my-dojo/conf/docker-node.conf.tpl
+  sed -i 's|NODE_API_KEY=.*|NODE_API_KEY='$NODE_API_KEY'|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-node.conf.tpl
 
   NODE_ADMIN_KEY=$(< /dev/urandom tr -dc 'a-zA-Z0-9' | head -c${1:-48})
-  sed -i 's|NODE_ADMIN_KEY=.*|NODE_ADMIN_KEY='$NODE_ADMIN_KEY'|' /opt/mynode/dojo/docker/my-dojo/conf/docker-node.conf.tpl
+  sed -i 's|NODE_ADMIN_KEY=.*|NODE_ADMIN_KEY='$NODE_ADMIN_KEY'|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-node.conf.tpl
 
   NODE_JWT_SECRET=$(< /dev/urandom tr -dc 'a-zA-Z0-9' | head -c${1:-48})
-  sed -i 's|NODE_JWT_SECRET=.*|NODE_JWT_SECRET='$NODE_JWT_SECRET'|' /opt/mynode/dojo/docker/my-dojo/conf/docker-node.conf.tpl
+  sed -i 's|NODE_JWT_SECRET=.*|NODE_JWT_SECRET='$NODE_JWT_SECRET'|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-node.conf.tpl
 fi
 
 # check if configuration files have been previously created and skip if yes
-if [ -f /opt/mynode/dojo/docker/my-dojo/conf/docker-mysql.conf ]; then
+if [ -f /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-mysql.conf ]; then
   echo "File present - skip docker-mysql.conf"
 else
   # Modify mysql.conf to enter random generated passwords
   MYSQL_ROOT_PASSWORD=$(< /dev/urandom tr -dc 'a-zA-Z0-9' | head -c${1:-64})
-  sed -i 's|MYSQL_ROOT_PASSWORD=.*|MYSQL_ROOT_PASSWORD='$MYSQL_ROOT_PASSWORD'|' /opt/mynode/dojo/docker/my-dojo/conf/docker-mysql.conf.tpl
+  sed -i 's|MYSQL_ROOT_PASSWORD=.*|MYSQL_ROOT_PASSWORD='$MYSQL_ROOT_PASSWORD'|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-mysql.conf.tpl
 
   MYSQL_USER=mynode
-  sed -i 's|MYSQL_USER=.*|MYSQL_USER='$MYSQL_USER'|' /opt/mynode/dojo/docker/my-dojo/conf/docker-mysql.conf.tpl
+  sed -i 's|MYSQL_USER=.*|MYSQL_USER='$MYSQL_USER'|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-mysql.conf.tpl
 
   MYSQL_PASSWORD=$(< /dev/urandom tr -dc 'a-zA-Z0-9' | head -c${1:-64})
-  sed -i 's|MYSQL_PASSWORD=.*|MYSQL_PASSWORD='$MYSQL_PASSWORD'|' /opt/mynode/dojo/docker/my-dojo/conf/docker-mysql.conf.tpl
+  sed -i 's|MYSQL_PASSWORD=.*|MYSQL_PASSWORD='$MYSQL_PASSWORD'|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-mysql.conf.tpl
 fi
 
 # Modify for Raspbian devices
 if [ $IS_RASPI = 1 ]; then
   # Modify mysql Dockerfile for Raspbian devices
-  sed -i 's|FROM.*|FROM    hypriot/rpi-mysql:latest|' /opt/mynode/dojo/docker/my-dojo/mysql/Dockerfile
+  sed -i 's|FROM.*|FROM    hypriot/rpi-mysql:latest|' /mnt/hdd/mynode/dojo/docker/my-dojo/mysql/Dockerfile
   # Modify Tor Dockerfile for ARMv6/7 devices
-  sed -i 's|ENV     GOLANG_ARCHIVE.*|ENV     GOLANG_ARCHIVE      go1.13.6.linux-armv6l.tar.gz|' /opt/mynode/dojo/docker/my-dojo/tor/Dockerfile
-  sed -i 's|ENV     GOLANG_SHA256.*|ENV     GOLANG_SHA256       37a1a83e363dcf146a67fa839d170fd1afb13009585fdd493d0a3370fbe6f785|' /opt/mynode/dojo/docker/my-dojo/tor/Dockerfile
+  sed -i 's|ENV     GOLANG_ARCHIVE.*|ENV     GOLANG_ARCHIVE      go1.13.6.linux-armv6l.tar.gz|' /mnt/hdd/mynode/dojo/docker/my-dojo/tor/Dockerfile
+  sed -i 's|ENV     GOLANG_SHA256.*|ENV     GOLANG_SHA256       37a1a83e363dcf146a67fa839d170fd1afb13009585fdd493d0a3370fbe6f785|' /mnt/hdd/mynode/dojo/docker/my-dojo/tor/Dockerfile
 fi
 
 # Modify for Rock64 devices
 if [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ]; then
   # Modify mysql Dockerfile for Rock64 devices
-  sed -i 's|FROM.*|FROM    mariadb:latest|' /opt/mynode/dojo/docker/my-dojo/mysql/Dockerfile
+  sed -i 's|FROM.*|FROM    mariadb:latest|' /mnt/hdd/mynode/dojo/docker/my-dojo/mysql/Dockerfile
   # Modify Tor Dockerfile for ARMv8 devices
-  sed -i 's|ENV     GOLANG_ARCHIVE.*|ENV     GOLANG_ARCHIVE      go1.13.6.linux-arm64.tar.gz|' /opt/mynode/dojo/docker/my-dojo/tor/Dockerfile
-  sed -i 's|ENV     GOLANG_SHA256.*|ENV     GOLANG_SHA256       0a18125c4ed80f9c3045cf92384670907c4796b43ed63c4307210fe93e5bbca5|' /opt/mynode/dojo/docker/my-dojo/tor/Dockerfile
+  sed -i 's|ENV     GOLANG_ARCHIVE.*|ENV     GOLANG_ARCHIVE      go1.13.6.linux-arm64.tar.gz|' /mnt/hdd/mynode/dojo/docker/my-dojo/tor/Dockerfile
+  sed -i 's|ENV     GOLANG_SHA256.*|ENV     GOLANG_SHA256       0a18125c4ed80f9c3045cf92384670907c4796b43ed63c4307210fe93e5bbca5|' /mnt/hdd/mynode/dojo/docker/my-dojo/tor/Dockerfile
 fi
 
 # Modify restart policy
-sed -i 's|restart:.*|restart: on-failure|' /opt/mynode/dojo/docker/my-dojo/docker-compose.yaml 
+sed -i 's|restart:.*|restart: on-failure|' /mnt/hdd/mynode/dojo/docker/my-dojo/docker-compose.yaml 

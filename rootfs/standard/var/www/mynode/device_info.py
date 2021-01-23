@@ -61,7 +61,7 @@ def is_shutting_down():
 def factory_reset():
     # Try and make sure drive is r/w
     os.system("mount -o remount,rw /mnt/hdd")
-    
+
     # Reset subsystems that have local data
     delete_quicksync_data()
 
@@ -835,8 +835,8 @@ def reset_docker():
     os.system("rm -f /mnt/hdd/mynode/settings/dojo_url")
 
     # Delete Dojo files
-    os.system("rm -rf /opt/mynode/.dojo")
-    os.system("rm -rf /opt/mynode/dojo")
+    os.system("rm -rf /opt/download/dojo")
+    os.system("rm -rf /mnt/hdd/mynode/dojo")
 
     os.system("sync")
     reboot_device()
