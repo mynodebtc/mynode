@@ -26,6 +26,7 @@ from device_info import *
 from device_warnings import *
 from systemctl_info import *
 import pam
+import re
 import json
 import random
 import logging
@@ -374,6 +375,13 @@ def index():
         lnd_status = get_lnd_status()
         lnd_status_color = get_lnd_status_color()
 
+        # Find drive usage
+        drive_usage = get_drive_usage()
+        low_drive_space_error = False
+        if int(re.sub("[^0-9]", "", drive_usage)) > 95:
+            low_drive_space_error = True
+
+
         # Find lndhub status
         lndhub_status, lndhub_status_color = get_lndhub_status_and_color()
 
@@ -498,7 +506,8 @@ def index():
             "fsck_error": has_fsck_error(),
             "fsck_results": get_fsck_results(),
             "sd_rw_error": has_sd_rw_error(),
-            "drive_usage": get_drive_usage(),
+            "drive_usage": drive_usage,
+            "low_drive_space_error": low_drive_space_error,
             "cpu_usage": get_cpu_usage(),
             "ram_usage": get_ram_usage(),
             "swap_usage": get_swap_usage(),
