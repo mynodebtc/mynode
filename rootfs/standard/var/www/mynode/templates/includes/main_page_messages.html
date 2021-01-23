@@ -16,6 +16,15 @@
 </div>
 {% endif %}
 
+{% if low_drive_space_error %}
+<div class="main_page_error_block">
+    <center>
+    <p>Your drive is {{drive_usage}} full and free space is running very low. You may need to upgrade to a larger drive.</p>
+    <p>If QuickSync is enabled, try disabling it to save some space.</p>
+    </center>
+</div>
+{% endif %}
+
 {% if not has_changed_password %}
 <div class="upgrade_ad_main_page">
     <p style="text-align: center;"><b>Warning!</b><br/>You appear to be using the default password! You should change it to something else on the <a href="/settings">settings</a> page.</p>
