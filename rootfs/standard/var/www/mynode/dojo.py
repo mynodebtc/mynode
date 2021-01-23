@@ -68,7 +68,7 @@ def get_dojo_tracker_status():
 def get_dojo_version():
     version = "Unknown"
     try:
-        version = subprocess.check_output("cat /opt/mynode/dojo/docker/my-dojo/.env | grep -i DOJO_VERSION_TAG", shell=True)
+        version = subprocess.check_output("cat /mnt/hdd/mynode/dojo/docker/my-dojo/.env | grep -i DOJO_VERSION_TAG", shell=True)
         version = version.split("=")[1]
         version = version.strip()
     except:
@@ -78,7 +78,7 @@ def get_dojo_version():
 def get_dojo_admin_key():
     key = 'Not found'
     try:
-        key = subprocess.check_output("cat /opt/mynode/dojo/docker/my-dojo/conf/docker-node.conf | grep -i NODE_ADMIN_KEY= | cut -c 16-", shell=True)
+        key = subprocess.check_output("cat /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-node.conf | grep -i NODE_ADMIN_KEY= | cut -c 16-", shell=True)
         key = key.strip()
     except:
         key = 'error'

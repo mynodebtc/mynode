@@ -69,15 +69,15 @@ elif [ "$APP" = "whirlpool" ]; then
     rm -f $WHIRLPOOL_VERSION_FILE
 elif [ "$APP" = "dojo" ]; then
     rm -f /mnt/hdd/mynode/settings/dojo_url
-    cd /opt/mynode/dojo/docker/my-dojo/
+    cd /mnt/hdd/mynode/dojo/docker/my-dojo/
 
     # Stop and uninstall
     yes | ./dojo.sh uninstall
 
     # Reset config files
     cd ~
-    rm -rf /opt/mynode/.dojo
-    rm -rf /opt/mynode/dojo
+    rm -rf /opt/download/dojo
+    rm -rf /mnt/hdd/mynode/dojo
 else
     echo "UNKNOWN APP: $APP"
     exit 1

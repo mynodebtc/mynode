@@ -16,19 +16,19 @@ MYSQL_DATABASE=samourai-main
 while [ $counter != $target ]
 do
 
-  source /opt/mynode/dojo/docker/my-dojo/conf/docker-mysql.conf || exit 0
+  source /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-mysql.conf || exit 0
 
   # Check if dojo mysql db is running (check the db container)
   isRunning=$(docker inspect --format="{{.State.Running}}" db)
   if [ "$isRunning" == "true" ]; then
     sleep 60s
     if [ $IS_RASPI == 1 ]; then
-        docker exec -i db bash -c "mysql -h db -u root -p$MYSQL_ROOT_PASSWORD $MYSQL_DATABASE" </opt/mynode/dojo/db-scripts/1_db.sql
+        docker exec -i db bash -c "mysql -h db -u root -p$MYSQL_ROOT_PASSWORD $MYSQL_DATABASE" </mnt/hdd/mynode/dojo/db-scripts/1_db.sql
     fi
     echo "dojo mysql db initalized"
     sleep 5s
     # Stop dojo after install/update and initalization is complete
-    cd /opt/mynode/dojo/docker/my-dojo
+    cd /mnt/hdd/mynode/dojo/docker/my-dojo
     sudo ./dojo.sh stop
     counter=$target
   else

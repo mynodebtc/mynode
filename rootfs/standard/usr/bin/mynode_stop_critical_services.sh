@@ -14,7 +14,7 @@ systemctl stop thunderhub mempoolspace
 
 
 # Manually stop services (backup)
-/opt/mynode/dojo/docker/my-dojo/dojo.sh stop || true
+/mnt/hdd/mynode/dojo/docker/my-dojo/dojo.sh stop || true
 
 
 # Stop core services
