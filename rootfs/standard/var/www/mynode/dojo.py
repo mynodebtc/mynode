@@ -63,6 +63,9 @@ def get_dojo_tracker_status():
         elif "Processing active Mempool" in line:
             tracker_status = "Active"
             break
+        elif "ER_ACCESS_DENIED_ERROR" in line:
+            tracker_status = "MYSQL Connection Error"
+            break
     return tracker_status
 
 def get_dojo_version():
