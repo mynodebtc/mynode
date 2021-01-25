@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+# set -e # Stop on error (skip for now with new logic to allow an attempt to install each container)
 set -x
 
 source /usr/share/mynode/mynode_config.sh
@@ -41,8 +41,9 @@ while true; do
         mv webssh2-* webssh2
         cd webssh2
         docker build -t webssh2 .
-
-        echo $WEBSSH2_UPGRADE_URL > $WEBSSH2_UPGRADE_URL_FILE
+        if [ $? == 0 ]; then
+            echo $WEBSSH2_UPGRADE_URL > $WEBSSH2_UPGRADE_URL_FILE
+        fi
     fi
 
     # Upgrade mempool
@@ -65,10 +66,15 @@ while true; do
         mv mempool* mempoolspace
         cd mempoolspace
         sync
+
+        # myNode Hack - Force use of specific alpine image source
+        sed -i "s/alpine:latest/alpine:3.12.3/g" Dockerfile
+
         sleep 3s
         docker build -t mempoolspace .
-
-        echo $MEMPOOLSPACE_UPGRADE_URL > $MEMPOOLSPACE_UPGRADE_URL_FILE
+        if [ $? == 0 ]; then
+            echo $MEMPOOLSPACE_UPGRADE_URL > $MEMPOOLSPACE_UPGRADE_URL_FILE
+        fi
     fi
 
     # Install Dojo
@@ -91,6 +97,7 @@ while true; do
             CURRENT=$(cat $DOJO_UPGRADE_URL_FILE)
         fi
         if [ "$CURRENT" != "$DOJO_UPGRADE_URL" ]; then
+            MARK_DOJO_COMPLETE=1
             sudo mkdir -p /opt/download/dojo
             sudo mkdir -p /mnt/hdd/mynode/dojo
             sudo rm -rf /opt/download/dojo/*
@@ -103,11 +110,10 @@ while true; do
 
             sudo tar -zxvf dojo.tar.gz
             sudo cp -r samourai-dojo*/* /mnt/hdd/mynode/dojo
-            cd /usr/bin
             sudo rm -rf /opt/download/dojo/*
 
             # Configure Dojo for MyNode
-            sudo ./mynode_gen_dojo_config.sh
+            sudo /usr/bin/mynode_gen_dojo_config.sh || MARK_DOJO_COMPLETE=0
 
             # Run Dojo Install or Upgrade
             cd /mnt/hdd/mynode/dojo/docker/my-dojo
@@ -121,16 +127,19 @@ while true; do
             fi
 
             #Check for install/upgrade to finish to initialize Dojo mysql db
-            cd /usr/bin
-            sudo ./mynode_post_dojo.sh
+            sudo /usr/bin/mynode_post_dojo.sh
 
             # Wait for install script to finish
-            wait $INSTALL_PID
+            wait $INSTALL_PID || MARK_DOJO_COMPLETE=0
+
 
             # Try and start dojo (if upgraded and already enabled)
-            systemctl restart dojo || true
+            systemctl restart dojo &
 
-            echo $DOJO_UPGRADE_URL > $DOJO_UPGRADE_URL_FILE
+            # Mark dojo install complete
+            if [ $MARK_DOJO_COMPLETE = 1 ]; then
+                echo $DOJO_UPGRADE_URL > $DOJO_UPGRADE_URL_FILE
+            fi
         fi
     fi
 
