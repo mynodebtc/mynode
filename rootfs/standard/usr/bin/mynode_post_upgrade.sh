@@ -730,3 +730,7 @@ systemctl daemon-reload
 
 # Sync FS
 sync
+
+# Done!
+echo "UPGRADE COMPLETE!!!"
+date
