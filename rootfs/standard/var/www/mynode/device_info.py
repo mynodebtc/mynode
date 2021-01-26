@@ -1035,3 +1035,9 @@ def get_firewall_rules():
     except:
         rules = "ERROR"
     return rules
+
+#==================================
+# BTC RPC Explorer Functions
+#==================================
+def get_btcrpcexplorer_sso_token():
+    return get_file_contents("/opt/mynode/btc-rpc-explorer/token")
