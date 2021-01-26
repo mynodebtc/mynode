@@ -477,6 +477,7 @@ def index():
             "btcrpcexplorer_status_color": btcrpcexplorer_status_color,
             "btcrpcexplorer_status": btcrpcexplorer_status,
             "btcrpcexplorer_enabled": is_btcrpcexplorer_enabled(),
+            "btcrpcexplorer_sso_token": get_btcrpcexplorer_sso_token(),
             "caravan_status_color": caravan_status_color,
             "caravan_status": caravan_status,
             "caravan_enabled": is_caravan_enabled(),

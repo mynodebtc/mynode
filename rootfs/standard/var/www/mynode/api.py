@@ -84,6 +84,7 @@ def api_get_service_status():
         data["status"], data["color"] = get_lndhub_status_and_color()
     elif service == "btcrpcexplorer":
         data["status"], data["color"], data["ready"] = get_btcrpcexplorer_status_and_color_and_ready()
+        data["sso_token"] = get_btcrpcexplorer_sso_token()
     elif service == "caravan":
         data["status"], data["color"] = get_caravan_status_and_color()
     elif service == "specter":

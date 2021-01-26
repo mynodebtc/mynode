@@ -41,6 +41,7 @@
             // Update page function
             var lnd_ready = {% if lnd_ready %}true{% else %}false{% endif %};
             var btcrpcexplorer_ready = {% if btcrpcexplorer_ready %}true{% else %}false{% endif %};
+            var btcrpcexplorer_sso_token = "{{btcrpcexplorer_sso_token}}";
             var is_installing_docker_images = {% if is_installing_docker_images %}true{% else %}false{% endif %};
             function update_page() {
                 // Update Bitcoin Info
@@ -132,6 +133,9 @@
                 $.getJSON("/api/get_service_status?service=btcrpcexplorer", function( data ) {
                     update_status("btcrpcexplorer_status", data);
                     update_status_icon("btcrpcexplorer_status_icon", data);
+                    if ("sso_token" in data && data["sso_token"] != null) {
+                        btcrpcexplorer_sso_token = data["sso_token"]
+                    }
                     if ("ready" in data && data["ready"] != null && btcrpcexplorer_ready != data["ready"]) {
                         refresh_page();
                     }
@@ -246,7 +250,7 @@
                     if (location.protocol == "https:") {
                         port="3003"
                     }
-                    url = location.protocol+'//'+location.hostname+':'+port
+                    url = location.protocol+'//'+location.hostname+':'+port+'/?'+'token='+btcrpcexplorer_sso_token
                     window.open(url,'_blank');
                 })
 
