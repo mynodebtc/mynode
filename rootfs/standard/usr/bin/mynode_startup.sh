@@ -116,6 +116,15 @@ if [ -f /home/bitcoin/reset_docker ]; then
 fi
 
 
+# Check drive usage
+usage=$(df -h /mnt/hdd | grep /dev | awk '{print $5}' | cut -d'%' -f1)
+while [ $usage -ge 98 ]; do
+    echo "drive_full" > $MYNODE_STATUS_FILE
+    sleep 10s
+    usage=$(df -h /mnt/hdd | grep /dev | awk '{print $5}' | cut -d'%' -f1)
+done
+
+
 # Setup Drive
 mkdir -p /mnt/hdd/mynode
 mkdir -p /mnt/hdd/mynode/settings

@@ -212,6 +212,20 @@ def index():
             "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
+    elif status == STATE_DRIVE_FULL:
+        message  = "Your drive is full!<br/><br/>"
+        message += "<p style='font-size: 16px; width: 800px; margin: auto;'>"
+        message += "To prevent corrupting any data, your device has stopped running most apps until more free space is available. "
+        message += "Please free up some space or attach a larger drive.<br/><br/>"
+        message += "If enabled, disabling QuickSync can save a large amount of space."
+        message += "</p>"
+        templateData = {
+            "title": "myNode Drive Full",
+            "header_text": "Drive Full",
+            "subheader_text": Markup(message),
+            "ui_settings": read_ui_settings()
+        }
+        return render_template('state.html', **templateData)
     elif status == STATE_GEN_DHPARAM:
         templateData = {
             "title": "myNode Generating Data",
