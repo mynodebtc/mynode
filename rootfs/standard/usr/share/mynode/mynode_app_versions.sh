@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BTC_VERSION="0.20.1"
+BTC_VERSION="0.21.0"
 BTC_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version
 BTC_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version_latest
 
