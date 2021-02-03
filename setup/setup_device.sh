@@ -160,7 +160,7 @@ apt-get -y install libffi-dev libssl-dev glances python3-bottle automake libtool
 apt -y -qq install apt-transport-https ca-certificates
 apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
 apt-get -y install zlib1g-dev libudev-dev libusb-1.0-0-dev python3-venv gunicorn
-apt-get -y install libsqlite3-dev torsocks python3-requests
+apt-get -y install libsqlite3-dev torsocks python3-requests libsystemd-dev
 
 
 # Make sure some software is removed
@@ -227,6 +227,7 @@ pip3 install docker-compose
 pip3 install pipenv
 pip3 install pysocks
 pip3 install redis
+pip3 install systemd
 
 
 # Install Rust
@@ -321,7 +322,7 @@ if [ $IS_X86 = 1 ]; then
 fi
 LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/$LND_ARCH-$LND_VERSION.tar.gz
 LND_UPGRADE_MANIFEST_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
-LND_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt.sig
+LND_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-roasbeef-$LND_VERSION.txt.asc
 CURRENT=""
 if [ -f $LND_VERSION_FILE ]; then
     CURRENT=$(cat $LND_VERSION_FILE)
@@ -335,7 +336,7 @@ if [ "$CURRENT" != "$LND_VERSION" ]; then
     wget $LND_UPGRADE_MANIFEST_URL
     wget $LND_UPGRADE_MANIFEST_SIG_URL
 
-    gpg --verify manifest-*.txt.sig
+    gpg --verify manifest-*.txt.asc
 
     tar -xzf lnd-*.tar.gz
     mv $LND_ARCH-$LND_VERSION lnd

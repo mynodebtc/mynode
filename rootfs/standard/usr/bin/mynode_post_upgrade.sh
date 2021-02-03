@@ -95,7 +95,7 @@ $TORIFY apt-get -y -qq install apt-transport-https ca-certificates
 $TORIFY apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
 $TORIFY apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
 $TORIFY apt-get -y install libudev-dev libusb-1.0-0-dev python3-venv gunicorn libsqlite3-dev
-$TORIFY apt-get -y install torsocks python3-requests
+$TORIFY apt-get -y install torsocks python3-requests libsystemd-dev
 
 # Make sure some software is removed
 apt-get -y purge ntp # (conflicts with systemd-timedatectl)
@@ -144,6 +144,7 @@ pip3 install pipenv --no-cache-dir
 pip3 install bcrypt --no-cache-dir
 pip3 install pysocks --no-cache-dir
 pip3 install redis --no-cache-dir
+pip3 install systemd --no-cache-dir
 
 
 # Install Docker
@@ -223,7 +224,7 @@ if [ $IS_X86 = 1 ]; then
 fi
 LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/$LND_ARCH-$LND_VERSION.tar.gz
 LND_UPGRADE_MANIFEST_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
-LND_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt.sig
+LND_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-roasbeef-$LND_VERSION.txt.asc
 CURRENT=""
 if [ -f $LND_VERSION_FILE ]; then
     CURRENT=$(cat $LND_VERSION_FILE)
@@ -238,7 +239,7 @@ if [ "$CURRENT" != "$LND_VERSION" ]; then
     wget $LND_UPGRADE_MANIFEST_URL
     wget $LND_UPGRADE_MANIFEST_SIG_URL
 
-    gpg --verify manifest-*.txt.sig
+    gpg --verify manifest-*.txt.asc
     if [ $? == 0 ]; then
         # Install LND
         tar -xzf lnd-*.tar.gz
