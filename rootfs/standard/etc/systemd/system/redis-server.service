@@ -1,6 +1,6 @@
 [Unit]
 Description=Redis In-Memory Data Store
-After=network.target lnd.target
+After=mynode.service network.target lnd.target
 
 [Service]
 User=redis
