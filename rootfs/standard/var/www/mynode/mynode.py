@@ -217,7 +217,8 @@ def index():
         message += "<p style='font-size: 16px; width: 800px; margin: auto;'>"
         message += "To prevent corrupting any data, your device has stopped running most apps until more free space is available. "
         message += "Please free up some space or attach a larger drive.<br/><br/>"
-        message += "If enabled, disabling QuickSync can save a large amount of space."
+        message += "If enabled, disabling <a href='/settings#quicksync'>QuickSync</a> can save a large amount of space.<br/><br/>"
+        message += "To move to larger drive, try the <a href='/settings#clone_tool'>Clone Tool</a>."
         message += "</p>"
         templateData = {
             "title": "myNode Drive Full",
@@ -226,6 +227,74 @@ def index():
             "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
+    elif status == STATE_DRIVE_CLONE:
+        clone_state = get_clone_state()
+        if clone_state == CLONE_STATE_DETECTING:
+            templateData = {
+                "title": "myNode Clone Tool",
+                "header_text": "Cloning Tool",
+                "subheader_text": Markup("Detecting Drives..."),
+                "ui_settings": read_ui_settings(),
+                "refresh_rate": 10
+            }
+            return render_template('state.html', **templateData)
+        elif clone_state == CLONE_STATE_ERROR:
+            error = get_clone_error()
+            templateData = {
+                "title": "myNode Clone Tool",
+                "header_text": "Cloning Tool",
+                "subheader_text": Markup("Clone Error<br/></br>" + error + "<br/><br/><br/><small>Retrying in one minute."),
+                "ui_settings": read_ui_settings(),
+                "refresh_rate": 10
+            }
+            return render_template('state.html', **templateData)
+        elif clone_state == CLONE_STATE_NEED_CONFIRM:
+            # Clone was confirmed
+            if request.args.get('clone_confirm'):
+                os.system("touch /tmp/.clone_confirm")
+                time.sleep(3)
+                return redirect("/")
+
+            source_drive = get_clone_source_drive()
+            target_drive = get_clone_target_drive()
+            target_drive_has_mynode = get_clone_target_drive_has_mynode()
+            source_drive_info = get_drive_info(source_drive)
+            target_drive_info = get_drive_info(target_drive)
+            templateData = {
+                "title": "myNode Clone Tool",
+                "header_text": "Cloning Tool",
+                "target_drive_has_mynode": target_drive_has_mynode,
+                "source_drive_info": source_drive_info,
+                "target_drive_info": target_drive_info,
+                "ui_settings": read_ui_settings(),
+            }
+            return render_template('clone_confirm.html', **templateData)
+        elif clone_state == CLONE_STATE_IN_PROGRESS:
+            progress = get_clone_progress()
+            templateData = {
+                "title": "myNode Clone Tool",
+                "header_text": "Cloning Tool",
+                "subheader_text": Markup("Cloning...<br/><br/>" + progress),
+                "ui_settings": read_ui_settings(),
+                "refresh_rate": 5
+            }
+            return render_template('state.html', **templateData)
+        elif clone_state == CLONE_STATE_COMPLETE:
+            templateData = {
+                "title": "myNode Clone Tool",
+                "header_text": "Cloning Tool",
+                "subheader_text": Markup("Clone Complete!"),
+                "ui_settings": read_ui_settings(),
+            }
+            return render_template('clone_complete.html', **templateData)
+        else:
+            templateData = {
+                "title": "myNode Clone Tool",
+                "header_text": "Cloning Tool",
+                "subheader_text": "Unknown Clone State: " + clone_state,
+                "ui_settings": read_ui_settings()
+            }
+            return render_template('state.html', **templateData)
     elif status == STATE_GEN_DHPARAM:
         templateData = {
             "title": "myNode Generating Data",

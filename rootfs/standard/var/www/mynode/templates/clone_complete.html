@@ -1,0 +1,37 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        {% include 'includes/head.html' %}
+
+        {% if refresh_rate is defined and refresh_rate is not none %}  
+        <meta http-equiv="refresh" content="{{ refresh_rate }}"> 
+        {% else %}
+        <meta http-equiv="refresh" content="30">
+        {% endif %}
+
+        <script>
+            $(document).ready(function() {
+                $("#reboot-device").on("click", function() {
+                    window.location.href="/settings/reboot-device"
+                });
+            });
+        </script>
+     </head>
+
+    <body>
+        {% include 'includes/logo_header.html' %}
+        
+        <div class="state_header">{{ header_text }}</div>
+
+        <div class="state_subheader">Clone Complete!</div>
+
+        <div class="format_div" style="width: 600px;">
+            <p>Remove the original drive now and click Reboot.</p>
+            <br/><br/>
+            <button id="reboot-device" value="Login" class="ui-button ui-widget ui-corner-all format_button">Reboot</button>
+
+            <br/><br/>
+        <div style="height: 40px;">&nbsp;</div>
+        {% include 'includes/footer.html' %}
+     </body>
+</html>

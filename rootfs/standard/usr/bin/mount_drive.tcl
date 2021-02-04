@@ -125,11 +125,12 @@ proc runCommand {args} {
 
 proc mountFileSystems {} {
     findBlockDevices hardDrives
+    set drive_count [llength $hardDrives]
+    puts "Found these $drive_count drives: ${hardDrives}"
 
-    puts "Found these harddrives: ${hardDrives}"
 
     findAllPartitionsForBlockDevices $hardDrives partitions
-    puts "Found these existing harddrive partitions: ${partitions}"
+    puts "Found these existing drive partitions: ${partitions}"
 
     if {![checkPartitionsForExistingMyNodeFs partitions]} {
         puts "No existing drive found. Creating new one."
