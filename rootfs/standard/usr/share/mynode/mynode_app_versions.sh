@@ -32,7 +32,7 @@ CORSPROXY_VERSION="v1.7.0"
 CORSPROXY_VERSION_FILE=/home/bitcoin/.mynode/corsproxy_version
 CORSPROXY_LATEST_VERSION_FILE=/home/bitcoin/.mynode/corsproxy_version_latest
 
-JOINMARKET_VERSION="v0.7.0"
+JOINMARKET_VERSION="v0.8.0"
 JOINMARKET_VERSION_FILE=/home/bitcoin/.mynode/joinmarket_version
 JOINMARKET_LATEST_VERSION_FILE=/home/bitcoin/.mynode/joinmarket_version_latest
 
@@ -54,7 +54,7 @@ LNBITS_VERSION=dd2a282158d5774c2a3c85c164a10709c13ef7b4         # Github hash to
 LNBITS_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version
 LNBITS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version_latest
 
-SPECTER_VERSION="1.0.0"
+SPECTER_VERSION="1.1.0"
 SPECTER_VERSION_FILE=/home/bitcoin/.mynode/specter_version
 SPECTER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/specter_version_latest
 
