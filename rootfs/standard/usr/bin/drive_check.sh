@@ -17,10 +17,10 @@ while [ $? -eq 0 ]; do
     #echo "$drive still found..."
 
     # Check drive usage
-    usage=$(df -h /mnt/hdd | grep /dev | awk '{print $5}' | cut -d'%' -f1)
-    echo "Usage $usage"
-    if [ $usage -ge 99 ]; then
+    mb_available=$(df --block-size=M /mnt/hdd | grep /dev | awk '{print $4}' | cut -d'M' -f1)
+    if [ $mb_available -le 1000 ]; then
         # Usage is 99%+, reboot to get into drive_full state with services stopped
+        echo "High Drive Usage: $mb_available MB available"
         /usr/bin/mynode-reboot
     fi
 

@@ -76,9 +76,23 @@ if [ $IS_RASPI -eq 1 ] || [ $IS_ROCK64 -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
 fi
 umount /mnt/hdd || true
 
-# Check drive
+
+# If multiple drives detected, start clone tool
+drive_count=$(ls /sys/block/ | egrep "hd.*|vd.*|sd.*|nvme.*" | wc -l)
+if [ "$drive_count" -gt 1 ] || [ -f /home/bitcoin/open_clone_tool ]; then
+    rm -f /home/bitcoin/open_clone_tool
+    echo "drive_clone" > $MYNODE_STATUS_FILE
+    sync
+    while [ 1 ]; do
+        python3 /usr/bin/clone_drive.py || true
+        sleep 60s
+    done
+fi
+
+
+# Check drive (only if exactly 1 is found)
 set +e
-if [ $IS_X86 = 0 ]; then
+if [ $IS_X86 = 0 ] && [ "$drive_count" -eq 1 ]; then
     touch /tmp/repairing_drive
     for d in /dev/sd*1 /dev/hd*1 /dev/vd*1 /dev/nvme*p1; do
         echo "Repairing drive $d ...";
@@ -95,13 +109,13 @@ rm -f /tmp/repairing_drive
 set -e
 
 
-# Mount HDD (format if necessary)
+# Mount HDD (normal boot, format if necessary)
 while [ ! -f /mnt/hdd/.mynode ]
 do
-    # Clear status
-    rm -f $MYNODE_STATUS_FILE
+    # Normal boot - find drive 
+    rm -f $MYNODE_STATUS_FILE # Clear status
     mount_drive.tcl || true
-    sleep 5
+    sleep 5s
 done
 
 
@@ -117,12 +131,12 @@ fi
 
 
 # Check drive usage
-usage=$(df -h /mnt/hdd | grep /dev | awk '{print $5}' | cut -d'%' -f1)
-while [ $usage -ge 98 ]; do
+mb_available=$(df --block-size=M /mnt/hdd | grep /dev | awk '{print $4}' | cut -d'M' -f1)
+if [ $mb_available -le 1200 ]; then
     echo "drive_full" > $MYNODE_STATUS_FILE
     sleep 10s
-    usage=$(df -h /mnt/hdd | grep /dev | awk '{print $5}' | cut -d'%' -f1)
-done
+    mb_available=$(df --block-size=M /mnt/hdd | grep /dev | awk '{print $4}' | cut -d'M' -f1)
+fi
 
 
 # Setup Drive

@@ -438,6 +438,7 @@
 
         <br/>
         <div class="settings_block">
+            <a id="mynode"></a>
             <div class="settings_block_header">myNode</div>
             
             <div class="settings_block_subheader">Version</div>
@@ -509,6 +510,7 @@
 
 
         <div class="settings_block">
+            <a id="applications"></a>
             <div class="settings_block_header">Applications</div>
 
             <div class="settings_block_subheader">Manage Applications</div>
@@ -519,6 +521,7 @@
 
 
         <div class="settings_block">
+            <a id="ui"></a>
             <div class="settings_block_header">User Interface</div>
 
             <div class="settings_block_subheader">Dark Mode</div>
@@ -541,13 +544,11 @@
             </label>
             <br/><br/>
             <button id="https_forced" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
-
-            
-
         </div>
 
 
         <div class="settings_block">
+            <a id="device"></a>
             <div class="settings_block_header">Device</div>
 
             <div class="settings_block_subheader">Reboot Device</div>
@@ -576,6 +577,7 @@
 
 
         <div class="settings_block">
+            <a id="firewall"></a>
             <div class="settings_block_header">Firewall</div>
 
             <div class="settings_block_subheader">Rules</div>
@@ -595,6 +597,7 @@
 
 
         <div class="settings_block">
+            <a id="quicksync"></a>
             <div class="settings_block_header">QuickSync</div>
 
             <div class="settings_block_subheader">Toggle QuickSync</div>
@@ -645,6 +648,7 @@
 
 
         <div class="settings_block">
+            <a id="bitcoin"></a>
             <div class="settings_block_header">Bitcoin</div>
 
             <div class="settings_block_subheader">Edit Config</div>
@@ -688,6 +692,7 @@
 
 
         <div class="settings_block">
+            <a id="lightning"></a>
             <div class="settings_block_header">Lightning</div>
 
             <div class="settings_block_subheader">Download Channel Backup</div>
@@ -719,6 +724,7 @@
 
 
         <div class="settings_block">
+            <a id="electrum"></a>
             <div class="settings_block_header">Electrum Server</div>
             
             <div class="settings_block_subheader">Reset Electrum Server</div>
@@ -737,6 +743,7 @@
 
 
         <div class="settings_block">
+            <a id="tor"></a>
             <div class="settings_block_header">Tor</div>
 
             <div class="settings_block_subheader">Use Tor for Bitcoin and Lightning</div>
@@ -776,6 +783,7 @@
         </div>
 
         <div class="settings_block">
+            <a id="services"></a>
             <div class="settings_block_header">Services</div>
             
             <div class="settings_block_subheader">Netdata</div>
@@ -790,6 +798,7 @@
         </div>
 
         <div class="settings_block">
+            <a id="docker"></a>
             <div class="settings_block_header">Docker</div>
             
             <div class="settings_block_subheader">Reset Docker</div>
@@ -799,6 +808,17 @@
         </div>
 
         <div class="settings_block">
+            <a id="clone_tool"></a>
+            <div class="settings_block_header">Clone Tool</div>
+            
+            <div class="settings_block_subheader">Clone Tool</div>
+            This will reboot your device and open the clone tool. It can be used to migrate to a larger external drive.
+            <br/>
+            <a href="/settings/open-clone-tool" class="ui-button ui-widget ui-corner-all settings_button">Open Clone Tool</a>
+        </div>
+
+        <div class="settings_block">
+            <a id="advanced"></a>
             <div class="settings_block_header">Advanced</div>
 
             <div class="settings_block_subheader">Reset HTTPS Certificates</div>
@@ -883,6 +903,7 @@
 
 
         <div class="settings_block">
+            <a id="developer"></a>
             <div class="settings_block_header">Developer</div>
 
             {% if not product_key_skipped %}

@@ -389,6 +389,7 @@ STATE_DRIVE_MISSING =         "drive_missing"
 STATE_DRIVE_CONFIRM_FORMAT =  "drive_format_confirm"
 STATE_DRIVE_FORMATTING =      "drive_formatting"
 STATE_DRIVE_MOUNTED =         "drive_mounted"
+STATE_DRIVE_CLONE =           "drive_clone"
 STATE_DRIVE_FULL =            "drive_full"
 STATE_GEN_DHPARAM =           "gen_dhparam"
 STATE_QUICKSYNC_DOWNLOAD =    "quicksync_download"
@@ -406,16 +407,7 @@ def get_mynode_status():
         status_file = "/tmp/.mynode_status"
         status = STATE_UNKNOWN
 
-        # If its been a while, check for error conditions
-        uptime_in_sec = get_system_uptime_in_seconds()
-        if uptime_in_sec > 120:
-            # Check for read-only sd card
-            if is_mount_read_only("/"):
-                return STATE_ROOTFS_READ_ONLY
-            if is_mount_read_only("/mnt/hdd"):
-                return STATE_HDD_READ_ONLY
-
-        # Get status stored on drive
+        # Get status
         if (os.path.isfile(status_file)):
             try:
                 with open(status_file, "r") as f:
@@ -424,9 +416,60 @@ def get_mynode_status():
                 status = STATE_DRIVE_MISSING
         else:
             status = STATE_DRIVE_MISSING
+
+        # If its been a while, check for error conditions
+        uptime_in_sec = get_system_uptime_in_seconds()
+        if uptime_in_sec > 120:
+            # Check for read-only sd card
+            if is_mount_read_only("/"):
+                return STATE_ROOTFS_READ_ONLY
+            # Check for read-only drive (unless cloning - it purposefully mounts read only)
+            if is_mount_read_only("/mnt/hdd") and status != STATE_DRIVE_CLONE:
+                return STATE_HDD_READ_ONLY
     except:
         status = STATE_UNKNOWN
     return status
+
+#==================================
+# myNode Clone Tool
+#==================================
+CLONE_STATE_DETECTING       = "detecting"
+CLONE_STATE_ERROR           = "error"
+CLONE_STATE_NEED_CONFIRM    = "need_confirm"
+CLONE_STATE_IN_PROGRESS     = "in_progress"
+CLONE_STATE_COMPLETE        = "complete"
+
+def get_clone_state():
+    return get_file_contents("/tmp/.clone_state")
+
+def get_clone_error():
+    return get_file_contents("/tmp/.clone_error")
+
+def get_clone_progress():
+    return get_file_contents("/tmp/.clone_progress")
+
+def get_clone_source_drive():
+    return get_file_contents("/tmp/.clone_source")
+
+def get_clone_target_drive():
+    return get_file_contents("/tmp/.clone_target")
+
+def get_clone_target_drive_has_mynode():
+    return os.path.isfile("/tmp/.clone_target_drive_has_mynode")
+
+def get_drive_info(drive):
+    data = {}
+    data["name"] = "NOT_FOUND"
+    try:
+        lsblk_output = subprocess.check_output("lsblk -io KNAME,TYPE,SIZE,MODEL,VENDOR /dev/{} | grep disk".format(drive), shell=True).decode("utf-8") 
+        parts = lsblk_output.split()
+        data["name"] = parts[0]
+        data["size"] = parts[2]
+        data["model"] = parts[3]
+        data["vendor"] = parts[4]
+    except:
+        pass
+    return data
 
 #==================================
 # Log functions (non-systemd based)

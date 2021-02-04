@@ -483,6 +483,27 @@ def reset_docker_page():
     }
     return render_template('reboot.html', **templateData)
 
+@mynode_settings.route("/settings/open-clone-tool")
+def open_clone_tool_page():
+    check_logged_in()
+
+    check_and_mark_reboot_action("open_clone_tool")
+
+    os.system("touch /home/bitcoin/open_clone_tool")
+    os.system("sync")
+
+    # Trigger reboot
+    t = Timer(1.0, reboot_device)
+    t.start()
+
+    # Display wait page
+    templateData = {
+        "title": "myNode Reboot",
+        "header_text": "Restarting",
+        "subheader_text": "Restarting to Open Clone Tool....",
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('reboot.html', **templateData)
 
 @mynode_settings.route("/settings/reset-electrs")
 def reset_electrs_page():
