@@ -134,6 +134,7 @@ while true; do
 
 
             # Try and start dojo (if upgraded and already enabled)
+            systemctl enable dojo &
             systemctl restart dojo &
 
             # Mark dojo install complete
