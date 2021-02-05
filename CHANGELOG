@@ -1,3 +1,12 @@
+=== v0.2.24 ===
+- Upgrade Bitcoin to v0.21.0
+- Upgrade LND to v0.12.0
+- Upgrade JoinMarket to v0.8.0
+- Upgrade Specter to v1.1.0
+- Add Clone Tool
+- Add drive space warnings
+- Bug fixes and minor UI improvements
+
 === v0.2.23 ===
 - Update BTC RPC Explorer to v2.2.0
 - Use SSO for securing BTC RPC Explorer access
