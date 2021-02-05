@@ -1,3 +1,6 @@
+=== v0.2.25 ===
+- Improve drive detection for Clone Tool
+
 === v0.2.24 ===
 - Upgrade Bitcoin to v0.21.0
 - Upgrade LND to v0.12.0
