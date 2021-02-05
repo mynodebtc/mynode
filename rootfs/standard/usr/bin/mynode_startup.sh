@@ -78,7 +78,12 @@ umount /mnt/hdd || true
 
 
 # If multiple drives detected, start clone tool
-drive_count=$(ls /sys/block/ | egrep "hd.*|vd.*|sd.*|nvme.*" | wc -l)
+drive_count=0
+drives=$(ls /sys/block/ | egrep "hd.*|vd.*|sd.*|nvme.*")
+for d in $drives; do
+    grep -qs "/dev/$d" /proc/mounts || drive_count=$((drive_count+1))
+done
+echo "External Drives Found: $drive_count"
 if [ "$drive_count" -gt 1 ] || [ -f /home/bitcoin/open_clone_tool ]; then
     rm -f /home/bitcoin/open_clone_tool
     echo "drive_clone" > $MYNODE_STATUS_FILE

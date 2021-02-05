@@ -93,11 +93,25 @@ def find_partitions_for_drive(drive):
         pass
     return partitions
 
+def is_drive_mounted(d):
+    mounted = True
+    try:
+        # Command fails and throws exception if not mounted
+        ls_output = subprocess.check_output(f"grep -qs '/dev/{d}' /proc/mounts", shell=True).decode("utf-8") 
+    except:
+        mounted = False
+    return mounted
+
 def find_drives():
     drives = []
     try:
         ls_output = subprocess.check_output("ls /sys/block/ | egrep 'hd.*|vd.*|sd.*|nvme.*'", shell=True).decode("utf-8") 
-        drives = ls_output.split()
+        all_drives = ls_output.split()
+
+        # Only return drives that are not mounted (VM may have /dev/sda as OS drive)
+        for d in all_drives:
+            if not is_drive_mounted(d):
+                drives.append(d)
     except:
         pass
     return drives
@@ -134,6 +148,15 @@ def main():
 
         if len(partitions) == 0:
             # No partition found - must be target drive since its empty
+            if target_found:
+                set_clone_state("error")
+                set_clone_error("Two target drives found. Is myNode drive missing?")
+                return
+            else:
+                target_found = True
+                target_drive = d
+        elif len(partitions) > 1:
+            # Multiple partitions found - myNode only uses one, so must be target
             if target_found:
                 set_clone_state("error")
                 set_clone_error("Two target drives found. Is myNode drive missing?")
