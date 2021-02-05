@@ -698,6 +698,15 @@ rm -f /etc/update-motd.d/41-armbian-config || true
 rm -f /etc/update-motd.d/98-armbian-autoreboot-warn || true
 
 
+# Random Cleanup
+if [ -f /etc/apt/sources.list.d/vscode.list ]; then
+    sed -i "s/^deb/#deb/g" /etc/apt/sources.list.d/vscode.list
+fi
+if [ -f /etc/apt/trusted.gpg.d/microsoft.gpg ]; then
+    rm /etc/apt/trusted.gpg.d/microsoft.gpg
+fi
+
+
 # Clean apt-cache
 apt-get clean
 
