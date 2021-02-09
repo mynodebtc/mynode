@@ -84,7 +84,8 @@ for d in $drives; do
     grep -qs "/dev/$d" /proc/mounts || drive_count=$((drive_count+1))
 done
 echo "External Drives Found: $drive_count"
-if [ "$drive_count" -gt 1 ] || [ -f /home/bitcoin/open_clone_tool ]; then
+#if [ "$drive_count" -gt 1 ] || [ -f /home/bitcoin/open_clone_tool ]; then
+if [ -f /home/bitcoin/open_clone_tool ]; then
     rm -f /home/bitcoin/open_clone_tool
     echo "drive_clone" > $MYNODE_STATUS_FILE
     sync
@@ -162,6 +163,8 @@ mkdir -p /mnt/hdd/mynode/rtl_backup
 mkdir -p /mnt/hdd/mynode/whirlpool
 mkdir -p /mnt/hdd/mynode/lnbits
 mkdir -p /mnt/hdd/mynode/specter
+mkdir -p /mnt/hdd/mynode/ckbunker
+mkdir -p /mnt/hdd/mynode/sphinx-relay
 mkdir -p /tmp/flask_uploads
 echo "drive_mounted" > $MYNODE_STATUS_FILE
 chmod 777 $MYNODE_STATUS_FILE
@@ -441,6 +444,14 @@ USER=$(stat -c '%U' /mnt/hdd/mynode/specter)
 if [ "$USER" != "bitcoin" ]; then
     chown -R bitcoin:bitcoin /mnt/hdd/mynode/specter
 fi
+USER=$(stat -c '%U' /mnt/hdd/mynode/ckbunker)
+if [ "$USER" != "bitcoin" ]; then
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/ckbunker
+fi
+USER=$(stat -c '%U' /mnt/hdd/mynode/sphinx-relay)
+if [ "$USER" != "bitcoin" ]; then
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/sphinx-relay
+fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/redis)
 if [ "$USER" != "redis" ]; then
     chown -R redis:redis /mnt/hdd/mynode/redis
@@ -558,6 +569,8 @@ echo $LNBITS_VERSION > $LNBITS_LATEST_VERSION_FILE
 echo $SPECTER_VERSION > $SPECTER_LATEST_VERSION_FILE
 echo $THUNDERHUB_VERSION > $THUNDERHUB_LATEST_VERSION_FILE
 echo $LNDCONNECT_VERSION > $LNDCONNECT_LATEST_VERSION_FILE
+echo $CKBUNKER_VERSION > $CKBUNKER_LATEST_VERSION_FILE
+echo $SPHINX_RELAY_VERSION > $SPHINX_RELAY_LATEST_VERSION_FILE
 
 
 # Weird hacks
