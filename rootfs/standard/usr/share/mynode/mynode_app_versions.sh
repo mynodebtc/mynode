@@ -66,3 +66,10 @@ LNDCONNECT_VERSION="v0.2.0"
 LNDCONNECT_VERSION_FILE=/home/bitcoin/.mynode/lndconnect_version
 LNDCONNECT_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lndconnect_version_latest
 
+CKBUNKER_VERSION="v0.9"
+CKBUNKER_VERSION_FILE=/home/bitcoin/.mynode/ckbunker_version
+CKBUNKER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/ckbunker_version_latest
+
+SPHINX_RELAY_VERSION="v1.3.8"
+SPHINX_RELAY_VERSION_FILE=/home/bitcoin/.mynode/sphinx_relay_version
+SPHINX_RELAY_LATEST_VERSION_FILE=/home/bitcoin/.mynode/sphinx_relay_version_latest
