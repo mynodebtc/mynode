@@ -240,10 +240,15 @@ def index():
             return render_template('state.html', **templateData)
         elif clone_state == CLONE_STATE_ERROR:
             error = get_clone_error()
+            msg  = ""
+            msg += "Clone Error<br/></br>"
+            msg += error
+            msg += "<br/><br/><br/><small>Retrying in one minute.<br/><br/><br/>"
+            msg += "<a class='ui-button ui-widget ui-corner-all mynode_button_small' href='/settings/reboot-device'>Exit Clone Tool</a>"
             templateData = {
                 "title": "myNode Clone Tool",
                 "header_text": "Cloning Tool",
-                "subheader_text": Markup("Clone Error<br/></br>" + error + "<br/><br/><br/><small>Retrying in one minute."),
+                "subheader_text": Markup(msg),
                 "ui_settings": read_ui_settings(),
                 "refresh_rate": 10
             }
@@ -252,6 +257,10 @@ def index():
             # Clone was confirmed
             if request.args.get('clone_confirm'):
                 os.system("touch /tmp/.clone_confirm")
+                time.sleep(3)
+                return redirect("/")
+            if request.args.get('clone_rescan'):
+                os.system("touch /tmp/.clone_rescan")
                 time.sleep(3)
                 return redirect("/")
 

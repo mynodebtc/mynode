@@ -1,0 +1,26 @@
+# CKBunker service
+# /etc/systemd/system/ckbunker.service
+
+[Unit]
+Description=CKBunker
+Wants=bitcoind.service
+After=bitcoind.service
+
+[Service]
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/usr/bin/wait_on_bitcoin.sh
+WorkingDirectory=/opt/mynode/ckbunker
+ExecStart=/bin/bash -c  'source env/bin/activate && ck-bunker run -c /mnt/hdd/mynode/ckbunker/settings.yaml'
+
+User=bitcoin
+Group=bitcoin
+Type=simple
+TimeoutSec=120
+Restart=always
+RestartSec=30
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=specter
+
+[Install]
+WantedBy=multi-user.target

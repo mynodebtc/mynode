@@ -94,7 +94,7 @@ $TORIFY apt-get -y install libatlas-base-dev libffi-dev libssl-dev glances pytho
 $TORIFY apt-get -y -qq install apt-transport-https ca-certificates
 $TORIFY apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
 $TORIFY apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
-$TORIFY apt-get -y install libudev-dev libusb-1.0-0-dev python3-venv gunicorn libsqlite3-dev
+$TORIFY apt-get -y install libudev-dev libusb-1.0-0-dev python3-venv gunicorn sqlite3 libsqlite3-dev
 $TORIFY apt-get -y install torsocks python3-requests libsystemd-dev
 
 # Make sure some software is removed
@@ -667,6 +667,54 @@ if [ ! -f /usr/bin/ngrok  ]; then
     wget $NGROK_URL
     unzip ngrok-*.zip
     cp ngrok /usr/bin/
+fi
+
+
+# Upgrade CKbunker
+CKBUNKER_UPGRADE_URL=https://github.com/Coldcard/ckbunker/archive/$CKBUNKER_VERSION.tar.gz
+CURRENT=""
+if [ -f $CKBUNKER_VERSION_FILE ]; then
+    CURRENT=$(cat $CKBUNKER_VERSION_FILE)
+fi
+if [ "$CURRENT" != "$CKBUNKER_VERSION" ]; then
+    cd /opt/mynode
+    sudo -u bitcoin wget $CKBUNKER_UPGRADE_URL -O ckbunker.tar.gz
+    sudo -u bitcoin tar -xvf ckbunker.tar.gz
+    sudo -u bitcoin rm ckbunker.tar.gz
+    sudo -u bitcoin mv ckbunker-* ckbunker
+    cd ckbunker
+
+    # Make venv
+    if [ ! -d env ]; then
+        sudo -u bitcoin python3 -m venv env
+    fi
+    source env/bin/activate
+    pip3 install -r requirements.txt
+    pip3 install --editable .
+    deactivate
+
+    echo $CKBUNKER_VERSION > $CKBUNKER_VERSION_FILE
+fi
+
+
+# Upgrade Sphinx Relay
+SPHINX_RELAY_UPGRADE_URL=https://github.com/stakwork/sphinx-relay/archive/$SPHINX_RELAY_VERSION.tar.gz
+CURRENT=""
+if [ -f $SPHINX_RELAY_VERSION_FILE ]; then
+    CURRENT=$(cat $SPHINX_RELAY_VERSION_FILE)
+fi
+if [ "$CURRENT" != "$SPHINX_RELAY_VERSION" ]; then
+    cd /opt/mynode
+    rm -rf sphinx-relay
+    sudo -u bitcoin wget $SPHINX_RELAY_UPGRADE_URL -O sphinx-relay.tar.gz
+    sudo -u bitcoin tar -xvf sphinx-relay.tar.gz
+    sudo -u bitcoin rm sphinx-relay.tar.gz
+    sudo -u bitcoin mv sphinx-relay-* sphinx-relay
+    cd sphinx-relay
+
+    sudo -u bitcoin npm install
+
+    echo $SPHINX_RELAY_VERSION > $SPHINX_RELAY_VERSION_FILE
 fi
 
 

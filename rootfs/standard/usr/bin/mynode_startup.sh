@@ -77,14 +77,7 @@ fi
 umount /mnt/hdd || true
 
 
-# If multiple drives detected, start clone tool
-drive_count=0
-drives=$(ls /sys/block/ | egrep "hd.*|vd.*|sd.*|nvme.*")
-for d in $drives; do
-    grep -qs "/dev/$d" /proc/mounts || drive_count=$((drive_count+1))
-done
-echo "External Drives Found: $drive_count"
-#if [ "$drive_count" -gt 1 ] || [ -f /home/bitcoin/open_clone_tool ]; then
+# Clone tool was opened
 if [ -f /home/bitcoin/open_clone_tool ]; then
     rm -f /home/bitcoin/open_clone_tool
     echo "drive_clone" > $MYNODE_STATUS_FILE
@@ -98,7 +91,7 @@ fi
 
 # Check drive (only if exactly 1 is found)
 set +e
-if [ $IS_X86 = 0 ] && [ "$drive_count" -eq 1 ]; then
+if [ $IS_X86 = 0 ]; then
     touch /tmp/repairing_drive
     for d in /dev/sd*1 /dev/hd*1 /dev/vd*1 /dev/nvme*p1; do
         echo "Repairing drive $d ...";
@@ -360,6 +353,35 @@ if [ -f /mnt/hdd/mynode/thunderhub/thub_config.yaml ]; then
     fi
 fi
 chown -R bitcoin:bitcoin /mnt/hdd/mynode/thunderhub
+
+# Setup CKBunker
+CKBUNKER_CONFIG_UPDATE_NUM=1
+if [ ! -f /mnt/hdd/mynode/ckbunker/update_settings_$CKBUNKER_CONFIG_UPDATE_NUM ]; then
+    cp -f /usr/share/mynode/ckbunker_settings.yaml /mnt/hdd/mynode/ckbunker/settings.yaml
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/ckbunker/settings.yaml
+
+    touch /mnt/hdd/mynode/ckbunker/update_settings_$CKBUNKER_CONFIG_UPDATE_NUM
+fi
+
+# Setup Sphinx Relay
+SPHINX_RELAY_CONFIG_UPDATE_NUM=1
+if [ ! -f /mnt/hdd/mynode/sphinx-relay/update_settings_$SPHINX_RELAY_CONFIG_UPDATE_NUM ]; then
+    cp -f /usr/share/mynode/sphinx_app.json /mnt/hdd/mynode/sphinx-relay/app.json
+    cp -f /usr/share/mynode/sphinx_config.json /mnt/hdd/mynode/sphinx-relay/config.json
+    chown -R bitcoin:bitcoin /opt/mynode/sphinx-relay/config/*
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/sphinx-relay
+
+    touch /mnt/hdd/mynode/sphinx-relay/update_settings_$SPHINX_RELAY_CONFIG_UPDATE_NUM
+fi
+if [ -d /opt/mynode/sphinx-relay/config ]; then
+    if [ ! -L /opt/mynode/sphinx-relay/config/app.json ] || [ ! -L /opt/mynode/sphinx-relay/config/config.json ]; then
+        rm -f /opt/mynode/sphinx-relay/config/app.json
+        rm -f /opt/mynode/sphinx-relay/config/config.json
+        sudo -u bitcoin ln -s /mnt/hdd/mynode/sphinx-relay/app.json /opt/mynode/sphinx-relay/config/app.json
+        sudo -u bitcoin ln -s /mnt/hdd/mynode/sphinx-relay/config.json /opt/mynode/sphinx-relay/config/config.json
+        chown -R bitcoin:bitcoin /opt/mynode/sphinx-relay/config/*
+    fi
+fi
 
 # Setup udev
 chown root:root /etc/udev/rules.d/* || true
