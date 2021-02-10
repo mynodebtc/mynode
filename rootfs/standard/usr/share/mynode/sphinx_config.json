@@ -1,0 +1,18 @@
+{
+    "development": {
+      "dialect": "sqlite",
+      "storage": "/Users/Shared/sphinx.db"
+    },
+    "docker_development": {
+      "dialect": "sqlite",
+      "storage": "./sphinx.db"
+    },
+    "test": {
+      "dialect": "sqlite",
+      "storage": "/home/ubuntu/sphinx.db"
+    },
+    "production": {
+      "dialect": "sqlite",
+      "storage": "/mnt/hdd/mynode/sphinx-relay/sphinx.db"
+    }
+  }

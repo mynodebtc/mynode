@@ -1,0 +1,49 @@
+{
+    "development": {
+      "senza_url": "http://localhost:3000/api/v2",
+      "macaroon_location": "/Users/evanfeenstra/code/lnd-dev/alice/data/chain/bitcoin/simnet/admin.macaroon",
+      "tls_location": "/Users/evanfeenstra/Library/Application Support/Lnd/tls.cert",
+      "node_ip": "127.0.0.1",
+      "lnd_ip": "127.0.0.1",
+      "lnd_port": "10001",
+      "node_http_protocol": "http",
+      "node_http_port": "3001",
+      "hub_api_url": "http://lvh.me/api/v1",
+      "hub_url": "http://lvh.me/ping",
+      "hub_invite_url": "http://lvh.me/invites",
+      "hub_check_invite_url": "http://lvh.me/check_invite",
+      "media_host": "localhost:5000",
+      "tribes_host": "tribes.sphinx.chat",
+      "public_url": "",
+      "connection_string_path": "connection_string.txt",
+      "ssl": {
+        "enabled": false,
+        "save": true,
+        "port": "80"
+      }
+    },
+    "production": {
+      "senza_url": "https://staging.senza.us/api/v2/",
+      "macaroon_location": "/home/bitcoin/.lnd/data/chain/bitcoin/mainnet/admin.macaroon",
+      "tls_location": "/home/bitcoin/.lnd/tls.cert",
+      "lnd_log_location": "/home/bitcoin/.lnd/logs/bitcoin/mainnet/lnd.log",
+      "node_ip": "localhost",
+      "lnd_ip": "localhost",
+      "node_http_protocol": "http",
+      "node_http_port": "53001",
+      "lnd_port": "10009",
+      "hub_api_url": "https://hub.sphinx.chat/api/v1",
+      "hub_url": "https://hub.sphinx.chat/ping",
+      "hub_invite_url": "https://hub.sphinx.chat/invites",
+      "hub_check_invite_url": "https://hub.sphinx.chat/check_invite",
+      "media_host": "memes.sphinx.chat",
+      "tribes_host": "tribes.sphinx.chat",
+      "public_url": "",
+      "connection_string_path": "connection_string.txt",
+      "ssl": {
+        "enabled": false,
+        "save": true,
+        "port": "80"
+      }
+    }
+  }

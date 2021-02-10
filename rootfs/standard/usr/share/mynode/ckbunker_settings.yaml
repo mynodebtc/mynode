@@ -1,0 +1,15 @@
+ALLOW_REBOOTS: true
+DATA_FILES: /mnt/hdd/mynode/ckbunker
+EASY_CAPTCHA: false
+#EXPLORA: http://explorerzydxu5ecjrkwceayqybizmpjjznk5izmitf2modhcusuqlid.onion
+MASTER_PW: bolt
+MAX_IDLE_TIME: 600
+MAX_LOGIN_WAIT_TIME: 300
+PING_RATE: 15
+PLACEHOLDER_KEY: !!binary |
+  YWJhYmFiYWJhYmFiYWJhYmFiYWJhYmFiYWJhYmFiYWI=
+PORT_NUMBER: 9823
+RECONNECT_DELAY: 10
+SIMULATOR_SOCK: /tmp/ckcc-simulator.sock
+TORD_PORT: default
+TOR_SOCKS: socks5h://127.0.0.1:9150
