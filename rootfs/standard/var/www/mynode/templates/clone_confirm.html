@@ -21,6 +21,9 @@
                 $("#format-confirm").on("click", function() {
                     window.location.href="/?clone_confirm=1"
                 });
+                $("#rescan-drives").on("click", function() {
+                    window.location.href="/?clone_rescan=1"
+                });
                 $("#reboot-device").on("click", function() {
                     window.location.href="/settings/reboot-device"
                 });
@@ -81,9 +84,11 @@
             <p>It is highly recommended that both drives be externally powered. Running two drives from USB power on the device can cause clone failures.</p>
 
             <br/>
-            <button id="format-confirm" value="Login" class="ui-button ui-widget ui-corner-all format_button">Confirm Clone</button>
+            <button id="format-confirm" value="Confirm Clone" class="ui-button ui-widget ui-corner-all format_button">Confirm Clone</button>
             <br/><br/>
-            <button id="reboot-device" value="Login" class="ui-button ui-widget ui-corner-all format_button">Reboot</button>
+            <button id="rescan-drives" value="Rescan Drives" class="ui-button ui-widget ui-corner-all format_button">Rescan Drives</button>
+            <br/><br/>
+            <button id="reboot-device" value="Reboot" class="ui-button ui-widget ui-corner-all format_button">Reboot</button>
 
             <br/><br/>
         </div>

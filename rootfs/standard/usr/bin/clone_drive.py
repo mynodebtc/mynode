@@ -33,6 +33,9 @@ def reset_clone_error():
 def reset_clone_confirm():
     os.system("rm /tmp/.clone_confirm")
 
+def reset_clone_rescan():
+    os.system("rm /tmp/.clone_rescan")
+
 def set_clone_error(error_msg):
     print_and_log("Clone Error: {}".format(error_msg))
     try:
@@ -93,6 +96,16 @@ def find_partitions_for_drive(drive):
         pass
     return partitions
 
+def is_drive_detected_by_fdisk(d):
+    detected = False
+    try:
+        # Command fails and throws exception if not mounted
+        ls_output = subprocess.check_output(f"fdisk -l /dev/{d}", shell=True).decode("utf-8")
+        detected = True
+    except:
+        pass
+    return detected
+
 def is_drive_mounted(d):
     mounted = True
     try:
@@ -110,7 +123,7 @@ def find_drives():
 
         # Only return drives that are not mounted (VM may have /dev/sda as OS drive)
         for d in all_drives:
-            if not is_drive_mounted(d):
+            if is_drive_detected_by_fdisk(d) and not is_drive_mounted(d):
                 drives.append(d)
     except:
         pass
@@ -121,6 +134,7 @@ def main():
     set_clone_state("detecting")
     reset_clone_error()
     reset_clone_confirm()
+    reset_clone_rescan()
     os.system("umount /mnt/hdd")
     os.system("rm /tmp/.clone_target_drive_has_mynode")
 
@@ -204,8 +218,13 @@ def main():
     os.system(f"echo {mynode_drive} > /tmp/.clone_source")
     os.system(f"echo {target_drive} > /tmp/.clone_target")
     set_clone_state("need_confirm")
-    while not os.path.isfile("/tmp/.clone_confirm"):
+    while not os.path.isfile("/tmp/.clone_confirm") and not os.path.isfile("/tmp/.clone_rescan"):
         time.sleep(1)
+
+    # User asked for rescan - recursively call main
+    if os.path.isfile("/tmp/.clone_rescan"):
+        main()
+        return
 
     # Clone drives
     set_clone_state("in_progress")
