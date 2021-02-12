@@ -93,6 +93,10 @@ def api_get_service_status():
         data["status"], data["color"] = get_lnbits_status_and_color()
     elif service == "thunderhub":
         data["status"], data["color"] = get_thunderhub_status_and_color()
+    elif service == "ckbunker":
+        data["status"], data["color"] = get_ckbunker_status_and_color()
+    elif service == "sphinxrelay":
+        data["status"], data["color"] = get_sphinxrelay_status_and_color()
     elif service == "tor":
         data["status"] = "Private Connections"
         data["color"] = get_service_status_color("tor@default")

@@ -71,6 +71,26 @@ def disable_thunderhub():
     os.system("systemctl disable thunderhub --no-pager")
 
 
+def is_ckbunker_enabled():
+    return is_service_enabled("ckbunker")
+def enable_ckbunker():
+    os.system("systemctl enable ckbunker --no-pager")
+    os.system("systemctl start ckbunker --no-pager")
+def disable_ckbunker():
+    os.system("systemctl stop ckbunker --no-pager")
+    os.system("systemctl disable ckbunker --no-pager")
+
+
+def is_sphinxrelay_enabled():
+    return is_service_enabled("thunderhub")
+def enable_sphinxrelay():
+    os.system("systemctl enable sphinx-relay --no-pager")
+    os.system("systemctl start sphinx-relay --no-pager")
+def disable_sphinxrelay():
+    os.system("systemctl stop sphinx-relay --no-pager")
+    os.system("systemctl disable sphinx-relay --no-pager")
+
+
 def is_btcrpcexplorer_enabled():
     if os.path.isfile(BTCRPCEXPLORER_ENABLED_FILE):
         return True

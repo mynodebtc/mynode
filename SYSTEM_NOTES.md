@@ -1,6 +1,6 @@
 # myNode System Notes
 
-Various restrictions and behaviors of myNode and the various applications will be documented below.
+Various restrictions and behaviors of myNode and the various applications are documented below.
 
 ## Thunderhub
 
@@ -9,3 +9,12 @@ Various restrictions and behaviors of myNode and the various applications will b
 ## BTC Pay Server
 
 - The upgrade button within BTC Pay Server will not work on myNode. Upgrades are performed as part of the myNode upgrade process.
+
+## CKBunker
+
+- On some occasions, the CKBunker application will stop detecting a ColdCard that has been attached for a significant period of time.
+-- Workaround: Run these commands as root.
+    echo 0 > /sys/bus/usb/devices/<coldcard device>/authorized
+    echo 1 > /sys/bus/usb/devices/<coldcard device>/authorized
+- CKBunker uses a separate password that starts as "bolt" and can be updated within the app
+- The password is stored in plaintext on the myNode drive
