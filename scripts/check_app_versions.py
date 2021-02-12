@@ -15,10 +15,13 @@ apps = [{"name": "bitcoin/bitcoin",                         "current_version_var
         {"name": "btcpayserver/btcpayserver",               "current_version":          "v1.0.6.2"},
         {"name": "unchained-capital/caravan",               "current_version_variable": "CARAVAN_VERSION"},
         {"name": "cryptoadvance/specter-desktop",           "current_version_variable": "SPECTER_VERSION"},
+        {"name": "Coldcard/ckbunker",                       "current_version_variable": "CKBUNKER_VERSION"},
         {"name": "lnbits/lnbits",                           "current_version":          "6cf4881"},
         {"name": "apotdevin/thunderhub",                    "current_version_variable": "THUNDERHUB_VERSION"},
+        {"name": "stakwork/sphinx-relay",                   "current_version_variable": "SPHINX_RELAY_VERSION"},
         {"name": "whirlpool/whirlpool-client-cli",          "current_version":          "v0.10.9"},
-        {"name": "dojo/samourai-dojo",                      "current_version":          "v1.8.0"}
+        {"name": "dojo/samourai-dojo",                      "current_version":          "v1.8.0"},
+        {"name": "JoinMarket-Org/joinmarket-clientserver",  "current_version_variable": "JOINMARKET_VERSION"}
 ]
 
 # Apps that don't work or are not on GitHub
