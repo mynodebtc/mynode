@@ -466,6 +466,11 @@ if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
         mv joinmarket-clientserver-* joinmarket-clientserver
 
         cd joinmarket-clientserver
+
+        # Apply Patch to fix cryptography dependency
+        sed -i "s/'txtorcon', 'pyopenssl'/'txtorcon', 'cryptography==3.3.2', 'pyopenssl'/g" jmdaemon/setup.py || true
+
+        # Install
         yes | ./install.sh --without-qt
 
         echo $JOINMARKET_VERSION > $JOINMARKET_VERSION_FILE
