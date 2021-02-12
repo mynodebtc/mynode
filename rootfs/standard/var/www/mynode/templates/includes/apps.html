@@ -1,4 +1,6 @@
 <div class="main_header">Apps</div>
+
+<!-- ROW 1 -->
 <div class="app_tile_row">
     <div class="app_tile">
         <div class="app_status_icon {{ rtl_status_color }}" id="rtl_status_icon"></div>
@@ -49,6 +51,26 @@
         </div>
     </div>
     <div class="app_tile">
+        <div class="app_status_icon {{mempoolspace_status_color}}" id="mempoolspace_status_icon"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/mempoolspace.png")}}"/></div>
+        <div class="app_title">Mempool</div>
+        <div class="app_status" id="mempoolspace_status">{{ mempoolspace_status }}</div>
+        <div class="app_contents">
+            {% if product_key_skipped %}
+                Premium Feature
+            {% else %}
+                {% if not is_installing_docker_images %}
+                    {% if mempoolspace_enabled %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="mempoolspace">View</a>
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-mempoolspace">Disable</a>
+                    {% else %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-mempoolspace">Enable</a>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="app_tile">
         <div class="app_status_icon {{ lndhub_status_color }}" id="lndhub_status_icon"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lndhub.png")}}"/></div>
         <div class="app_title">LND Hub</div>
@@ -62,21 +84,10 @@
             {% endif %}
         </div>
     </div>
-    <!--
-    <div class="app_tile">
-        <div class="app_status_icon {{ lndconnect_status_color }}" id="lndconnect_status_icon"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lndconnect.png")}}"/></div>
-        <div class="app_title">LND Connect</div>
-        <div class="app_status">{% if not lnd_ready %}Waiting on LND...{% else %}Lightning Tool{% endif %}</div>
-        <div class="app_contents">
-            {% if lnd_ready %}
-            <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lndconnect">LND Connect</a>
-            {% endif %}
-        </div>
-    </div>
-    -->
 </div>
 
+
+<!-- ROW 2 -->
 <div class="app_tile_row">
     <div class="app_tile">
         <div class="app_status_icon {{ btcrpcexplorer_status_color }}" id="btcrpcexplorer_status_icon"></div>
@@ -133,20 +144,40 @@
     </div>
     {% endif %}
     <div class="app_tile">
-        <div class="app_status_icon {{mempoolspace_status_color}}" id="mempoolspace_status_icon"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/mempoolspace.png")}}"/></div>
-        <div class="app_title">Mempool</div>
-        <div class="app_status" id="mempoolspace_status">{{ mempoolspace_status }}</div>
+        <div class="app_status_icon {{ thunderhub_status_color }}" id="thunderhub_status_icon"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/thunderhub.png")}}"/></div>
+        <div class="app_title">Thunderhub</div>
+        <div class="app_status" id="thunderhub_status">{{ thunderhub_status }}</div>
         <div class="app_contents">
             {% if product_key_skipped %}
                 Premium Feature
             {% else %}
-                {% if not is_installing_docker_images %}
-                    {% if mempoolspace_enabled %}
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="mempoolspace">View</a>
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-mempoolspace">Disable</a>
+                {% if lnd_ready %}
+                    {% if thunderhub_enabled %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="thunderhub">Thunderhub</a>
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-thunderhub">Disable</a>
                     {% else %}
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-mempoolspace">Enable</a>
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-thunderhub">Enable</a>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="app_tile">
+        <div class="app_status_icon {{ lnbits_status_color }}" id="lnbits_status_icon"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lnbits.png")}}"/></div>
+        <div class="app_title">LNbits</div>
+        <div class="app_status" id="lnbits_status">{{ lnbits_status }}</div>
+        <div class="app_contents">
+            {% if product_key_skipped %}
+                Premium Feature
+            {% else %}
+                {% if lnd_ready %}
+                    {% if lnbits_enabled %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lnbits">LNbits</a>
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-lnbits">Disable</a>
+                    {% else %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-lnbits">Enable</a>
                     {% endif %}
                 {% endif %}
             {% endif %}
@@ -154,6 +185,8 @@
     </div>
 </div>
 
+
+<!-- ROW 3 -->
 <div class="app_tile_row">
     <div class="app_tile">
         <div class="app_status_icon {{ caravan_status_color }}" id="caravan_status_icon"></div>
@@ -192,41 +225,21 @@
         </div>
     </div>
     <div class="app_tile">
-        <div class="app_status_icon {{ lnbits_status_color }}" id="lnbits_status_icon"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lnbits.png")}}"/></div>
-        <div class="app_title">LNbits</div>
-        <div class="app_status" id="lnbits_status">{{ lnbits_status }}</div>
+        <div class="app_status_icon {{ ckbunker_status_color }}" id="ckbunker_status_icon"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/ckbunker.png")}}"/></div>
+        <img class="app_beta_tag_image" src="{{ url_for('static', filename="images/beta.png")}}"/>
+        
+        <div class="app_title">CKBunker</div>
+        <div class="app_status" id="ckbunker_status">{{ ckbunker_status }}</div>
         <div class="app_contents">
             {% if product_key_skipped %}
                 Premium Feature
             {% else %}
-                {% if lnd_ready %}
-                    {% if lnbits_enabled %}
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lnbits">LNbits</a>
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-lnbits">Disable</a>
-                    {% else %}
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-lnbits">Enable</a>
-                    {% endif %}
-                {% endif %}
-            {% endif %}
-        </div>
-    </div>
-    <div class="app_tile">
-        <div class="app_status_icon {{ thunderhub_status_color }}" id="thunderhub_status_icon"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/thunderhub.png")}}"/></div>
-        <div class="app_title">Thunderhub</div>
-        <div class="app_status" id="thunderhub_status">{{ thunderhub_status }}</div>
-        <div class="app_contents">
-            {% if product_key_skipped %}
-                Premium Feature
-            {% else %}
-                {% if lnd_ready %}
-                    {% if thunderhub_enabled %}
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="thunderhub">Thunderhub</a>
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-thunderhub">Disable</a>
-                    {% else %}
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-thunderhub">Enable</a>
-                    {% endif %}
+                {% if ckbunker_enabled %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="ckbunker">CKBunker</a>
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-ckbunker">Disable</a>
+                {% else %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-ckbunker">Enable</a>
                 {% endif %}
             {% endif %}
         </div>

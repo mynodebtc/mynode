@@ -565,6 +565,30 @@ def get_thunderhub_status_and_color():
         status = "Waiting on LND..."
     return status,color
 
+def get_ckbunker_status_and_color():
+    status = "Coldcard Signing Tool"
+    color = "gray"
+    if is_bitcoind_synced():
+        if is_ckbunker_enabled():
+            color = get_service_status_color("lndhub")
+    else:
+        status = "Waiting on Bitcoin..."
+    return status,color
+
+def get_sphinxrelay_status_and_color():
+    color = "gray"
+    status = "Chat"
+    if is_lnd_ready():
+        if is_sphinxrelay_enabled():
+            status_code = get_service_status_code("sphinxrelay")
+            if status_code != 0:
+                color = "red"
+            else:
+                color = "green"
+    else:
+        status = "Waiting on LND..."
+    return status,color
+
 def get_lndhub_status_and_color():
     status = "BlueWallet Backend"
     color = "gray"

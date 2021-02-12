@@ -197,7 +197,7 @@ td {
     position: relative;
     border: none;
     border-radius: 10px;
-    width: 300px;
+    width: 385px;
     height: 180px;
     padding: 10px;
     margin: 6px 10px 6px 10px;
@@ -209,7 +209,7 @@ td {
     position: relative;
     border: none;
     border-radius: 10px;
-    width: 640px;
+    width: 810px;
     height: 120px;
     padding: 10px;
     margin: 6px 10px 6px 10px;
@@ -307,6 +307,13 @@ td {
 .app_status {
     font-size: 12px;
     line-height: 130%;
+}
+.app_beta_tag_image {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    left: 110px;
+    top: 0px;
 }
 .app_contents {
     font-size: 12px;
@@ -532,7 +539,7 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     color: #333333;
     border: 3px solid orange;
     background-color: rgb(255, 250, 238);
-    width: 600px;
+    width: 800px;
     border-radius: 25px;
     text-align: justify;
     display: block;
@@ -546,7 +553,7 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     color: #333333;
     border: 3px solid red;
     background-color: rgb(255, 238, 238);
-    width: 600px;
+    width: 800px;
     border-radius: 25px;
     text-align: justify;
     display: block;
@@ -560,21 +567,6 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     margin: auto;
     padding-bottom: 10px;
     text-align: center;
-}
-
-.upgrade_ad_main_page {
-    color: #333333;
-    border: 3px solid orange;
-    background-color: rgb(255, 250, 238);
-    width: 600px;
-    border-radius: 25px;
-    text-align: justify;
-    display: block;
-    font-size: 12px;
-    padding: 5px;
-    padding-left: 12px;
-    margin: auto;
-    margin-bottom: 20px;
 }
 
 .port_forwarded_icon {

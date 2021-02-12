@@ -486,6 +486,12 @@ def index():
         # Find Thunderhub status
         thunderhub_status, thunderhub_status_color = get_thunderhub_status_and_color()
 
+        # Find CKBunker status
+        ckbunker_status, ckbunker_status_color = get_ckbunker_status_and_color()
+
+        # Find Sphinx Relay status
+        sphinxrelay_status, sphinxrelay_status_color = get_sphinxrelay_status_and_color()
+
         # Find electrs status
         electrs_status, electrs_status_color = get_electrs_status_and_color()
 
@@ -562,6 +568,12 @@ def index():
             "thunderhub_status_color": thunderhub_status_color,
             "thunderhub_status": thunderhub_status,
             "thunderhub_enabled": is_thunderhub_enabled(),
+            "ckbunker_status_color": ckbunker_status_color,
+            "ckbunker_status": ckbunker_status,
+            "ckbunker_enabled": is_ckbunker_enabled(),
+            "sphinxrelay_status_color": sphinxrelay_status_color,
+            "sphinxrelay_status": sphinxrelay_status,
+            "sphinxrelay_enabled": is_sphinxrelay_enabled(),
             "lndhub_status_color": lndhub_status_color,
             "lndhub_status": lndhub_status,
             "lndhub_enabled": is_lndhub_enabled(),
@@ -681,6 +693,24 @@ def page_toggle_thunderhub():
         disable_thunderhub()
     else:
         enable_thunderhub()
+    return redirect("/")
+
+@app.route("/toggle-ckbunker")
+def page_toggle_ckbunker():
+    check_logged_in()
+    if is_ckbunker_enabled():
+        disable_ckbunker()
+    else:
+        enable_ckbunker()
+    return redirect("/")
+
+@app.route("/toggle-sphinxrelay")
+def page_toggle_sphinxrelay():
+    check_logged_in()
+    if is_sphinxrelay_enabled():
+        disable_sphinxrelay()
+    else:
+        enable_sphinxrelay()
     return redirect("/")
 
 @app.route("/toggle-electrs")
@@ -921,10 +951,10 @@ def start_threads():
     app.logger.info("STARTING THREADS")
 
     # Start threads
-    btc_thread1 = BackgroundThread(update_bitcoin_main_info_thread, 10)
+    btc_thread1 = BackgroundThread(update_bitcoin_main_info_thread, 15)
     btc_thread1.start()
     threads.append(btc_thread1)
-    btc_thread2 = BackgroundThread(update_bitcoin_other_info_thread, 30)
+    btc_thread2 = BackgroundThread(update_bitcoin_other_info_thread, 60)
     btc_thread2.start()
     threads.append(btc_thread2)
     electrs_info_thread = BackgroundThread(update_electrs_info_thread, 60)

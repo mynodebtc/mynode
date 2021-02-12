@@ -156,6 +156,14 @@
                     update_status("thunderhub_status", data);
                     update_status_icon("thunderhub_status_icon", data);
                 });
+                $.getJSON("/api/get_service_status?service=ckbunker", function( data ) {
+                    update_status("ckbunker_status", data);
+                    update_status_icon("ckbunker_status_icon", data);
+                });
+                $.getJSON("/api/get_service_status?service=sphinxrelay", function( data ) {
+                    update_status("sphinxrelay_status", data);
+                    update_status_icon("sphinxrelay_status_icon", data);
+                });
                 $.getJSON("/api/get_service_status?service=tor", function( data ) {
                     update_status("tor_status", data);
                     update_status_icon("tor_status_icon", data);
@@ -243,6 +251,19 @@
                     }
                     url = location.protocol+'//'+location.hostname+':'+port
                     window.open(url,'_blank');
+                })
+
+                $("#ckbunker").on("click", function() {
+                    port="9823"
+                    if (location.protocol == "https:") {
+                        port="9824"
+                    }
+                    url = location.protocol+'//'+location.hostname+':'+port
+                    window.open(url,'_blank');
+                })
+
+                $("#sphinxrelay").on("click", function() {
+                    alert("TODO???")
                 })
 
                 $("#btcrpcexplorer").on("click", function() {
@@ -349,6 +370,14 @@
                         window.location.href="/toggle-thunderhub"
                 });
 
+                $("#toggle-ckbunker").on("click", function() {
+                        window.location.href="/toggle-ckbunker"
+                });
+
+                $("#toggle-sphinxrelay").on("click", function() {
+                        window.location.href="/toggle-sphinxrelay"
+                });
+
                 function lndconnect() {
                     $("#lndconnect_form").submit();
                     lndconnect_dialog.dialog( "close" );
@@ -413,7 +442,7 @@
         
         <div class="mynode_top_right_div">
             {% if upgrade_available %}
-            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/settings"><span class="ui-icon ui-icon-notice"></span>upgrade available&nbsp;</a>
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/settings"><span class="ui-icon ui-icon-notice"></span>upgrade&nbsp;</a>
             {% endif %}
             <a class="ui-button ui-widget ui-corner-all mynode_back" id="https" title="Use HTTPS" style="display: none;" href="#">&nbsp;<span class="ui-icon ui-icon-locked"></span>&nbsp;</a>
             <a class="ui-button ui-widget ui-corner-all mynode_back" href="/logout" title="Logout"><span class="ui-icon ui-icon-close"></span>&nbsp;</a>
@@ -446,7 +475,7 @@
 
         {% if product_key_skipped %}
         <div class="main_header">Community Edition</div>
-        <div class="upgrade_ad_main_page">
+        <div class="main_page_warning_block" style="padding-left: 15px;">
             <p>
                 You are currently running myNode Community Edition. Upgrading to myNode Premium provides:
                 <br/>
@@ -518,7 +547,7 @@
         </div>
 
         {% if product_key_skipped %}
-        <div class="upgrade_ad_main_page">
+        <div class="main_page_warning_block">
             <p style="text-align: center;"><b>Tip Address</b><br/>bc1q75z4fj946pqucfu9gasxdrzma0z4seh8f58sfd</p>
         </div>
         {% endif %}
