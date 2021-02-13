@@ -157,7 +157,7 @@ mkdir -p /mnt/hdd/mynode/whirlpool
 mkdir -p /mnt/hdd/mynode/lnbits
 mkdir -p /mnt/hdd/mynode/specter
 mkdir -p /mnt/hdd/mynode/ckbunker
-mkdir -p /mnt/hdd/mynode/sphinx-relay
+mkdir -p /mnt/hdd/mynode/sphinxrelay
 mkdir -p /tmp/flask_uploads
 echo "drive_mounted" > $MYNODE_STATUS_FILE
 chmod 777 $MYNODE_STATUS_FILE
@@ -364,22 +364,21 @@ if [ ! -f /mnt/hdd/mynode/ckbunker/update_settings_$CKBUNKER_CONFIG_UPDATE_NUM ]
 fi
 
 # Setup Sphinx Relay
-SPHINX_RELAY_CONFIG_UPDATE_NUM=1
-if [ ! -f /mnt/hdd/mynode/sphinx-relay/update_settings_$SPHINX_RELAY_CONFIG_UPDATE_NUM ]; then
-    cp -f /usr/share/mynode/sphinx_app.json /mnt/hdd/mynode/sphinx-relay/app.json
-    cp -f /usr/share/mynode/sphinx_config.json /mnt/hdd/mynode/sphinx-relay/config.json
-    chown -R bitcoin:bitcoin /opt/mynode/sphinx-relay/config/*
-    chown -R bitcoin:bitcoin /mnt/hdd/mynode/sphinx-relay
+SPHINXRELAY_CONFIG_UPDATE_NUM=1
+if [ ! -f /mnt/hdd/mynode/sphinxrelay/update_settings_$SPHINXRELAY_CONFIG_UPDATE_NUM ]; then
+    cp -f /usr/share/mynode/sphinxrelay_app.json /mnt/hdd/mynode/sphinxrelay/app.json
+    cp -f /usr/share/mynode/sphinxrelay_config.json /mnt/hdd/mynode/sphinxrelay/config.json
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/sphinxrelay
 
-    touch /mnt/hdd/mynode/sphinx-relay/update_settings_$SPHINX_RELAY_CONFIG_UPDATE_NUM
+    touch /mnt/hdd/mynode/sphinxrelay/update_settings_$SPHINXRELAY_CONFIG_UPDATE_NUM
 fi
-if [ -d /opt/mynode/sphinx-relay/config ]; then
-    if [ ! -L /opt/mynode/sphinx-relay/config/app.json ] || [ ! -L /opt/mynode/sphinx-relay/config/config.json ]; then
-        rm -f /opt/mynode/sphinx-relay/config/app.json
-        rm -f /opt/mynode/sphinx-relay/config/config.json
-        sudo -u bitcoin ln -s /mnt/hdd/mynode/sphinx-relay/app.json /opt/mynode/sphinx-relay/config/app.json
-        sudo -u bitcoin ln -s /mnt/hdd/mynode/sphinx-relay/config.json /opt/mynode/sphinx-relay/config/config.json
-        chown -R bitcoin:bitcoin /opt/mynode/sphinx-relay/config/*
+if [ -d /opt/mynode/sphinxrelay/config ]; then
+    if [ ! -L /opt/mynode/sphinxrelay/config/app.json ] || [ ! -L /opt/mynode/sphinxrelay/config/config.json ]; then
+        rm -f /opt/mynode/sphinxrelay/config/app.json
+        rm -f /opt/mynode/sphinxrelay/config/config.json
+        sudo -u bitcoin ln -s /mnt/hdd/mynode/sphinxrelay/app.json /opt/mynode/sphinxrelay/config/app.json
+        sudo -u bitcoin ln -s /mnt/hdd/mynode/sphinxrelay/config.json /opt/mynode/sphinxrelay/config/config.json
+        chown -R bitcoin:bitcoin /opt/mynode/sphinxrelay/config/*
     fi
 fi
 
@@ -470,9 +469,9 @@ USER=$(stat -c '%U' /mnt/hdd/mynode/ckbunker)
 if [ "$USER" != "bitcoin" ]; then
     chown -R bitcoin:bitcoin /mnt/hdd/mynode/ckbunker
 fi
-USER=$(stat -c '%U' /mnt/hdd/mynode/sphinx-relay)
+USER=$(stat -c '%U' /mnt/hdd/mynode/sphinxrelay)
 if [ "$USER" != "bitcoin" ]; then
-    chown -R bitcoin:bitcoin /mnt/hdd/mynode/sphinx-relay
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/sphinxrelay
 fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/redis)
 if [ "$USER" != "redis" ]; then
@@ -592,7 +591,7 @@ echo $SPECTER_VERSION > $SPECTER_LATEST_VERSION_FILE
 echo $THUNDERHUB_VERSION > $THUNDERHUB_LATEST_VERSION_FILE
 echo $LNDCONNECT_VERSION > $LNDCONNECT_LATEST_VERSION_FILE
 echo $CKBUNKER_VERSION > $CKBUNKER_LATEST_VERSION_FILE
-echo $SPHINX_RELAY_VERSION > $SPHINX_RELAY_LATEST_VERSION_FILE
+echo $SPHINXRELAY_VERSION > $SPHINXRELAY_LATEST_VERSION_FILE
 
 
 # Weird hacks

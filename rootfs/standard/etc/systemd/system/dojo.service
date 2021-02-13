@@ -17,7 +17,7 @@ ExecStop=/mnt/hdd/mynode/dojo/docker/my-dojo/dojo.sh stop
 User=root
 Group=root
 KillMode=control-group
-TimeoutSec=900
+TimeoutSec=180
 Restart=always
 RestartSec=60
 

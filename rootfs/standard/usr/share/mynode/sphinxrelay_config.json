@@ -13,6 +13,6 @@
     },
     "production": {
       "dialect": "sqlite",
-      "storage": "/mnt/hdd/mynode/sphinx-relay/sphinx.db"
+      "storage": "/mnt/hdd/mynode/sphinxrelay/sphinx.db"
     }
   }

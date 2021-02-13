@@ -228,7 +228,6 @@
         <div class="app_status_icon {{ ckbunker_status_color }}" id="ckbunker_status_icon"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/ckbunker.png")}}"/></div>
         <img class="app_beta_tag_image" src="{{ url_for('static', filename="images/beta.png")}}"/>
-        
         <div class="app_title">CKBunker</div>
         <div class="app_status" id="ckbunker_status">{{ ckbunker_status }}</div>
         <div class="app_contents">
@@ -244,6 +243,27 @@
             {% endif %}
         </div>
     </div>
+    <!--
+    <div class="app_tile">
+        <div class="app_status_icon {{ sphinxrelay_status_color }}" id="sphinxrelay_status_icon"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/sphinx.png")}}"/></div>
+        <img class="app_beta_tag_image" src="{{ url_for('static', filename="images/beta.png")}}"/>
+        <div class="app_title">Sphinx Relay</div>
+        <div class="app_status" id="sphinxrelay_status">{{ sphinxrelay_status }}</div>
+        <div class="app_contents">
+            {% if product_key_skipped %}
+                Premium Feature
+            {% else %}
+                {% if sphinxrelay_enabled %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="/sphinxrelay">Info</a>
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-sphinxrelay">Disable</a>
+                {% else %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-sphinxrelay">Enable</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    -->
 </div>
 
 <!-- BETA APPS -->

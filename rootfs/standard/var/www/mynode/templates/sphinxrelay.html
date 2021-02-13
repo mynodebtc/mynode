@@ -1,0 +1,48 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        {% include 'includes/head.html' %}
+    </head>
+    <body>
+        {% include 'includes/logo_header.html' %}
+        <div class="mynode_back_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        </div>
+
+        <div class="main_header">Sphinx Relay</div>
+        <br/>
+        
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Status</div>
+                <div class="info_tile_contents">{{sphinxrelay_status}}</div>
+            </div>
+        </div>
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Connection String</div>
+                <div class="info_tile_contents">{{sphinxrelay_connection_string}}</div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <div class="instructions-header">Instructions to setup Sphinx Relay</div>
+            <ol class="instructions-steps">
+                <li>Ensure that Sphinx Relay is enabled and you see "Running" on the status tile.</li>
+                <li>Download and install Sphinx from <a href="https://sphinx.chat/" target="_blank">sphinx.chat</a>.</li>
+                <li>...</li>
+                <li>...</li>
+                <li>...</li>
+                <li>...</li>
+                <li>...</li>
+                <li>...</li>
+                <li>...</li>
+                <li>...</li>
+                <li>Enjoy!</li>
+            </ol>
+
+            <br/><br/>
+
+        </div>
+    </body>
+</html>

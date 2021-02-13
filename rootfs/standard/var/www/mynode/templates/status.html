@@ -106,6 +106,16 @@
                     $("#caravan_status").show();
                 });
 
+                $("#show_ckbunker_status").on("click", function() {
+                    $("#show_ckbunker_status").hide(0);
+                    $("#ckbunker_status").show();
+                });
+
+                $("#show_sphinxrelay_status").on("click", function() {
+                    $("#show_sphinxrelay_status").hide(0);
+                    $("#sphinxrelay_status").show();
+                });
+
                 $("#show_upgrade_status").on("click", function() {
                     $("#show_upgrade_status").hide(0);
                     $("#upgrade_status").show();
@@ -391,6 +401,26 @@
             <button id="show_caravan_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="caravan_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{caravan_status_log}}</pre></div>
             <div class="divider"></div>
+
+            <div class="settings_block_subheader">CKBunker Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ ckbunker_status_color }}"></div>
+                {{ ckbunker_status }}
+            </div>
+            <button id="show_ckbunker_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="ckbunker_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{ckbunker_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            {% if lnd_wallet_exists %}
+            <div class="settings_block_subheader">Sphinx Relay Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ sphinxrelay_status_color }}"></div>
+                {{ sphinxrelay_status }}
+            </div>
+            <button id="show_sphinxrelay_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="sphinxrelay_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{sphinxrelay_status_log}}</pre></div>
+            <div class="divider"></div>
+            {% endif %}
 
             {% if is_netdata_enabled %}
             <div class="settings_block_subheader">Netdata Status</div>

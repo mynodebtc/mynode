@@ -27,6 +27,7 @@
       "macaroon_location": "/home/bitcoin/.lnd/data/chain/bitcoin/mainnet/admin.macaroon",
       "tls_location": "/home/bitcoin/.lnd/tls.cert",
       "lnd_log_location": "/home/bitcoin/.lnd/logs/bitcoin/mainnet/lnd.log",
+      "lncli_location": "/home/bitcoin/go/bin",
       "node_ip": "localhost",
       "lnd_ip": "localhost",
       "node_http_protocol": "http",

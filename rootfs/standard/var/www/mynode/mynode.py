@@ -7,6 +7,7 @@ from bitcoind import mynode_bitcoind
 from whirlpool import mynode_whirlpool, get_whirlpool_status
 from dojo import mynode_dojo, get_dojo_status
 from caravan import mynode_caravan
+from sphinxrelay import mynode_sphinxrelay
 from manage_apps import mynode_manage_apps
 from tor import mynode_tor
 from vpn import mynode_vpn
@@ -77,6 +78,7 @@ app.register_blueprint(mynode_api)
 app.register_blueprint(mynode_whirlpool)
 app.register_blueprint(mynode_dojo)
 app.register_blueprint(mynode_caravan)
+app.register_blueprint(mynode_sphinxrelay)
 app.register_blueprint(mynode_manage_apps)
 app.register_blueprint(mynode_tor)
 app.register_blueprint(mynode_electrum_server)

@@ -57,8 +57,8 @@ elif [ "$APP" = "thunderhub" ]; then
     rm -f $THUNDERHUB_VERSION_FILE
 elif [ "$APP" = "ckbunker" ]; then
     rm -f $CKBUNKER_VERSION_FILE
-elif [ "$APP" = "sphinx-relay" ]; then
-    rm -f $SPHINX_RELAY_VERSION_FILE
+elif [ "$APP" = "sphinxrelay" ]; then
+    rm -f $SPHINXRELAY_VERSION_FILE
 elif [ "$APP" = "tor" ]; then
     apt-get remove -y tor
     apt-get install -y tor
