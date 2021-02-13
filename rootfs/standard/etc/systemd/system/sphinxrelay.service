@@ -1,5 +1,5 @@
-# sphinx-relay service
-# /etc/systemd/system/sphinx-relay.service
+# sphinxrelay service
+# /etc/systemd/system/sphinxrelay.service
 
 [Unit]
 Description=Sphinx Relay
@@ -9,7 +9,7 @@ After=lnd.service
 [Service]
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_lnd.sh
-WorkingDirectory=/opt/mynode/sphinx-relay
+WorkingDirectory=/opt/mynode/sphinxrelay
 ExecStart=npm run prod
 
 User=bitcoin
@@ -21,7 +21,7 @@ Restart=always
 RestartSec=60
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=sphinx-relay
+SyslogIdentifier=sphinxrelay
 
 [Install]
 WantedBy=multi-user.target

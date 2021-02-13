@@ -18,7 +18,7 @@ apps = [{"name": "bitcoin/bitcoin",                         "current_version_var
         {"name": "Coldcard/ckbunker",                       "current_version_variable": "CKBUNKER_VERSION"},
         {"name": "lnbits/lnbits",                           "current_version":          "6cf4881"},
         {"name": "apotdevin/thunderhub",                    "current_version_variable": "THUNDERHUB_VERSION"},
-        {"name": "stakwork/sphinx-relay",                   "current_version_variable": "SPHINX_RELAY_VERSION"},
+        {"name": "stakwork/sphinx-relay",                   "current_version_variable": "SPHINXRELAY_VERSION"},
         {"name": "whirlpool/whirlpool-client-cli",          "current_version":          "v0.10.9"},
         {"name": "dojo/samourai-dojo",                      "current_version":          "v1.8.0"},
         {"name": "JoinMarket-Org/joinmarket-clientserver",  "current_version_variable": "JOINMARKET_VERSION"}

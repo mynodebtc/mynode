@@ -82,13 +82,13 @@ def disable_ckbunker():
 
 
 def is_sphinxrelay_enabled():
-    return is_service_enabled("thunderhub")
+    return is_service_enabled("sphinxrelay")
 def enable_sphinxrelay():
-    os.system("systemctl enable sphinx-relay --no-pager")
-    os.system("systemctl start sphinx-relay --no-pager")
+    os.system("systemctl enable sphinxrelay --no-pager")
+    os.system("systemctl start sphinxrelay --no-pager")
 def disable_sphinxrelay():
-    os.system("systemctl stop sphinx-relay --no-pager")
-    os.system("systemctl disable sphinx-relay --no-pager")
+    os.system("systemctl stop sphinxrelay --no-pager")
+    os.system("systemctl disable sphinxrelay --no-pager")
 
 
 def is_btcrpcexplorer_enabled():

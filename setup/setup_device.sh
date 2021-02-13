@@ -786,23 +786,23 @@ fi
 
 
 # Upgrade Sphinx Relay
-SPHINX_RELAY_UPGRADE_URL=https://github.com/stakwork/sphinx-relay/archive/$SPHINX_RELAY_VERSION.tar.gz
+SPHINXRELAY_UPGRADE_URL=https://github.com/stakwork/sphinx-relay/archive/$SPHINXRELAY_VERSION.tar.gz
 CURRENT=""
-if [ -f $SPHINX_RELAY_VERSION_FILE ]; then
-    CURRENT=$(cat $SPHINX_RELAY_VERSION_FILE)
+if [ -f $SPHINXRELAY_VERSION_FILE ]; then
+    CURRENT=$(cat $SPHINXRELAY_VERSION_FILE)
 fi
-if [ "$CURRENT" != "$SPHINX_RELAY_VERSION" ]; then
+if [ "$CURRENT" != "$SPHINXRELAY_VERSION" ]; then
     cd /opt/mynode
-    rm -rf sphinx-relay
-    sudo -u bitcoin wget $SPHINX_RELAY_UPGRADE_URL -O sphinx-relay.tar.gz
+    rm -rf sphinxrelay
+    sudo -u bitcoin wget $SPHINXRELAY_UPGRADE_URL -O sphinx-relay.tar.gz
     sudo -u bitcoin tar -xvf sphinx-relay.tar.gz
     sudo -u bitcoin rm sphinx-relay.tar.gz
-    sudo -u bitcoin mv sphinx-relay-* sphinx-relay
-    cd sphinx-relay
+    sudo -u bitcoin mv sphinx-relay-* sphinxrelay
+    cd sphinxrelay
 
     sudo -u bitcoin npm install
 
-    echo $SPHINX_RELAY_VERSION > $SPHINX_RELAY_VERSION_FILE
+    echo $SPHINXRELAY_VERSION > $SPHINXRELAY_VERSION_FILE
 fi
 
 

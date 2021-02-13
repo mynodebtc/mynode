@@ -8,9 +8,13 @@ touch /tmp/shutting_down
 
 
 # Stop additional services
+date
 systemctl stop glances lndhub netdata rtl webssh2 whirlpool dojo
+date
 systemctl stop btcpayserver btc_rpc_explorer specter caravan lnbits
+date
 systemctl stop thunderhub mempoolspace
+date
 
 
 # Manually stop services (backup)
@@ -20,8 +24,12 @@ fi
 
 
 # Stop core services
+date
 systemctl stop electrs loopd lnd quicksync bitcoind
+date
 
 
 # Sync filesystem
 sync
+
+echo "Done stopping services."
