@@ -29,7 +29,7 @@ while true; do
 
     # Find URLs
     LND_TOR_ADDR=$(cat /var/lib/tor/mynode_lnd/hostname)
-    LOCAL_IP_ADDR=$(hostname -I | head -n 1)
+    LOCAL_IP_ADDR=$(hostname -I | head -n 1 | cut -d' ' -f1)
 
     # Generate QR Codes
     lndconnect --lnddir=/mnt/hdd/mynode/lnd -o --bitcoin.mainnet --host=$LOCAL_IP_ADDR

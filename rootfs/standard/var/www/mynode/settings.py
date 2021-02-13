@@ -175,6 +175,8 @@ def page_status():
     rtl_status_log = get_journalctl_log("rtl")
     lnbits_status_log = get_journalctl_log("lnbits")
     thunderhub_status_log = get_journalctl_log("thunderhub")
+    ckbunker_status_log = get_journalctl_log("ckbunker")
+    sphinxrelay_status_log = get_journalctl_log("sphinxrelay")
     docker_status_log = get_journalctl_log("docker")
     docker_image_build_status_log = get_journalctl_log("docker_images")
 
