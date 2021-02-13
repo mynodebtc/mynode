@@ -1,3 +1,11 @@
+=== v0.2.26 ===
+- Add CKBunker v0.9 (beta)
+- Add Sphinx Relay v1.3.8 (beta)
+- Upgrade Thunderhub to v0.12.7
+- Upgrade JoinMarket to v0.8.1
+- Improve drive detection for Clone Tool
+- Bug Fixes
+
 === v0.2.25 ===
 - Improve drive detection for Clone Tool
 
