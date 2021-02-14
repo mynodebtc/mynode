@@ -271,7 +271,9 @@ def reinstall_app(app):
 
         # Upgrade
         os.system("mkdir -p /home/admin/upgrade_logs")
-        cmd = "/usr/bin/mynode_reinstall_app.sh {} > /home/admin/upgrade_logs/reinstall_{}.txt 2>&1".format(app,app)
+        file1 = "/home/admin/upgrade_logs/reinstall_{}.txt".format(app)
+        file2 = "/home/admin/upgrade_logs/upgrade_log_latest.txt"
+        cmd = "/usr/bin/mynode_reinstall_app.sh {} 2>&1 | tee {} {}".format(app,file1, file2)
         subprocess.call(cmd, shell=True)
         
         # Sync
