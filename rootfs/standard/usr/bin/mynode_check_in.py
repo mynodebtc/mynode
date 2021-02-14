@@ -46,6 +46,16 @@ def get_product_key():
     except:
         product_key = "product_key_error"
     return product_key
+def get_drive_size():
+    size = "-1"
+    size = subprocess.check_output("df /mnt/hdd | grep /dev | awk '{print $2}'", shell=True).strip()
+    size = int(size) / 1000 / 1000
+    return size
+def get_quicksync_enabled():
+    enabled = 1
+    if os.path.isfile("/mnt/hdd/mynode/settings/quicksync_disabled"):
+        enabled = 0
+    return enabled
 
 # Checkin every 24 hours
 def check_in():
@@ -56,7 +66,9 @@ def check_in():
         "serial": get_device_serial(),
         "device_type": get_device_type(),
         "version": get_current_version(),
-        "product_key": product_key
+        "product_key": product_key,
+        "drive_size": get_drive_size(),
+        "quicksync_enabled": get_quicksync_enabled(),
     }
 
     # Check for new version
