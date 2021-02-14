@@ -792,6 +792,7 @@ def reinstall_app_page():
         "title": "myNode Install",
         "header_text": "Installing",
         "subheader_text": "This may take a while...",
+        "show_upgrade_log": True,
         "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
