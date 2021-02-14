@@ -90,7 +90,7 @@ fi
 # Run post upgrade script
 for i in {1..3}
 do
-    /bin/bash /usr/bin/mynode_post_upgrade.sh > /home/admin/upgrade_logs/reinstall_app_${APP}_post_${i}.txt 2>&1
+    /bin/bash /usr/bin/mynode_post_upgrade.sh 2>&1 | tee /home/admin/upgrade_logs/reinstall_app_${APP}_post_${i}.txt
     RC=$?
     if [ "${RC}" -eq "0" ]; then
         rm -f $UPGRADE_ERROR_FILE
