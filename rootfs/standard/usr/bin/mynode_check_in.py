@@ -47,9 +47,12 @@ def get_product_key():
         product_key = "product_key_error"
     return product_key
 def get_drive_size():
-    size = "-1"
-    size = subprocess.check_output("df /mnt/hdd | grep /dev | awk '{print $2}'", shell=True).strip()
-    size = int(size) / 1000 / 1000
+    size = -1
+    try:
+        size = subprocess.check_output("df /mnt/hdd | grep /dev | awk '{print $2}'", shell=True).strip()
+        size = int(size) / 1000 / 1000
+    except Exception as e:
+        size = -2
     return size
 def get_quicksync_enabled():
     enabled = 1

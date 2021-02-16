@@ -35,6 +35,8 @@ def caravan_page():
         apps.append({"name":"LNbits",               "short_name": "lnbits"})
         apps.append({"name":"Caravan",              "short_name": "caravan"})
         apps.append({"name":"Specter",              "short_name": "specter"})
+        apps.append({"name":"CKBunker",             "short_name": "ckbunker"})
+        apps.append({"name":"Sphinx Relay",         "short_name": "sphinxrelay"})
 
     for app in apps:
         app["current_version"] = get_app_current_version(app["short_name"])
