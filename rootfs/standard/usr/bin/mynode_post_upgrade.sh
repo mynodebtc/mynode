@@ -683,6 +683,8 @@ if [ -f $CKBUNKER_VERSION_FILE ]; then
 fi
 if [ "$CURRENT" != "$CKBUNKER_VERSION" ]; then
     cd /opt/mynode
+    rm -rf ckbunker
+
     sudo -u bitcoin wget $CKBUNKER_UPGRADE_URL -O ckbunker.tar.gz
     sudo -u bitcoin tar -xvf ckbunker.tar.gz
     sudo -u bitcoin rm ckbunker.tar.gz
@@ -711,6 +713,7 @@ fi
 if [ "$CURRENT" != "$SPHINXRELAY_VERSION" ]; then
     cd /opt/mynode
     rm -rf sphinxrelay
+    
     sudo -u bitcoin wget $SPHINXRELAY_UPGRADE_URL -O sphinx-relay.tar.gz
     sudo -u bitcoin tar -xvf sphinx-relay.tar.gz
     sudo -u bitcoin rm sphinx-relay.tar.gz
