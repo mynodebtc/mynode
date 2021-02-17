@@ -1,3 +1,12 @@
+[![myNode](https://mynodebtc.github.io/images/logo.png)](https://github.com/mynodebtc/mynode)
+
+[![Version](https://img.shields.io/github/v/tag/mynodebtc/mynode?label=version&color=green)](https://github.com/mynodebtc/mynode/tag)
+[![Community Chat](https://img.shields.io/badge/community%20chat-telegram-blue)](https://t.me/mynode_btc)
+
+[![Twitter](https://img.shields.io/twitter/follow/mynodebtc?style=social)](https://twitter.com/mynodebtc)
+[![Reddit](https://img.shields.io/reddit/subreddit-subscribers/mynode?label=Subscribe%20%2Fr%2Fmynodebtc&style=social)](https://reddit.com/r/mynodebtc)
+
+
 # myNode
 The easiest way to run Bitcoin and Lightning!
 
@@ -6,7 +15,7 @@ myNode aims to be the easiest way to run a dedicated, easy to use, Bitcoin Node 
 Website: https://mynodebtc.com
 
 
-## GUI
+## User Interface
 ![](images/1.png)
 
 ## Overview
