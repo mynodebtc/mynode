@@ -25,7 +25,10 @@ fi
 
 # Stop core services
 date
-systemctl stop electrs loopd lnd quicksync bitcoind
+systemctl stop electrs loopd lnd quicksync
+date
+killall bitcoind || true
+systemctl stop bitcoind
 date
 
 

@@ -36,6 +36,10 @@ JOINMARKET_VERSION="v0.8.1"
 JOINMARKET_VERSION_FILE=/home/bitcoin/.mynode/joinmarket_version
 JOINMARKET_LATEST_VERSION_FILE=/home/bitcoin/.mynode/joinmarket_version_latest
 
+JOININBOX_VERSION="v0.2.0"
+JOININBOX_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version
+JOININBOX_LATEST_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version_latest
+
 WHIRLPOOL_VERSION="0.10.9"
 WHIRLPOOL_UPLOAD_FILE_ID="602666c59f95ce72f1466f72d9c853e3"
 WHIRLPOOL_UPLOAD_SIG_ID="b072f024fad9609f3c659cd7620f51fa"
