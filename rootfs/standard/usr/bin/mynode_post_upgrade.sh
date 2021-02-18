@@ -27,6 +27,7 @@ fi
 useradd -m -s /bin/bash joinmarket || true
 
 # User updates and settings
+adduser admin bitcoin
 grep "joinmarket" /etc/sudoers || (echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo)
 
 # Check if upgrades use tor
@@ -256,77 +257,41 @@ if [ "$CURRENT" != "$LND_VERSION" ]; then
     fi
 fi
 
-# Upgrade Loop
-echo "Upgrading loopd..."
-LOOP_ARCH="loop-linux-armv7"
+
+# Upgrade Lightning Terminal
+echo "Upgrading lit..."
+LIT_ARCH="lightning-terminal-linux-armv7"
 if [ $IS_X86 = 1 ]; then
-    LOOP_ARCH="loop-linux-amd64"
+    LIT_ARCH="lightning-terminal-linux-amd64"
 fi
-LOOP_UPGRADE_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/$LOOP_ARCH-$LOOP_VERSION.tar.gz
-LOOP_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt
-LOOP_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt.sig
+LIT_UPGRADE_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/$LIT_ARCH-$LIT_VERSION.tar.gz
+LIT_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-$LIT_VERSION.txt
+LIT_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-$LIT_VERSION.txt.asc
 CURRENT=""
-if [ -f $LOOP_VERSION_FILE ]; then
-    CURRENT=$(cat $LOOP_VERSION_FILE)
+if [ -f $LIT_VERSION_FILE ]; then
+    CURRENT=$(cat $LIT_VERSION_FILE)
 fi
-if [ "$CURRENT" != "$LOOP_VERSION" ]; then
-    # Download and install Loop
+if [ "$CURRENT" != "$LIT_VERSION" ]; then
+    # Download and install lit
     rm -rf /opt/download
     mkdir -p /opt/download
     cd /opt/download
 
-    wget $LOOP_UPGRADE_URL
-    wget $LOOP_UPGRADE_MANIFEST_URL
-    wget $LOOP_UPGRADE_MANIFEST_SIG_URL
+    wget $LIT_UPGRADE_URL
+    wget $LIT_UPGRADE_MANIFEST_URL
+    wget $LIT_UPGRADE_MANIFEST_SIG_URL
 
-    gpg --verify manifest-*.txt.sig
+    gpg --verify manifest-*.txt.asc
     if [ $? == 0 ]; then
-        # Install Loop
-        tar -xzf loop-*.tar.gz
-        mv $LOOP_ARCH-$LOOP_VERSION loop
-        install -m 0755 -o root -g root -t /usr/local/bin loop/*
+        # Install lit
+        tar -xzf lightning-terminal-*.tar.gz
+        mv $LIT_ARCH-$LIT_VERSION lightning-terminal
+        install -m 0755 -o root -g root -t /usr/local/bin lightning-terminal/*
 
         # Mark current version
-        echo $LOOP_VERSION > $LOOP_VERSION_FILE
+        echo $LIT_VERSION > $LIT_VERSION_FILE
     else
-        echo "ERROR UPGRADING LOOP - GPG FAILED"
-    fi
-fi
-
-# Upgrade Pool
-echo "Upgrading pool..."
-POOL_ARCH="pool-linux-armv7"
-if [ $IS_X86 = 1 ]; then
-    POOL_ARCH="pool-linux-amd64"
-fi
-POOL_UPGRADE_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/$POOL_ARCH-$POOL_VERSION.tar.gz
-POOL_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/manifest-$POOL_VERSION.txt
-POOL_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/manifest-$POOL_VERSION.txt.sig
-CURRENT=""
-if [ -f $POOL_VERSION_FILE ]; then
-    CURRENT=$(cat $POOL_VERSION_FILE)
-fi
-if [ "$CURRENT" != "$POOL_VERSION" ]; then
-    # Download and install pool
-    rm -rf /opt/download
-    mkdir -p /opt/download
-    cd /opt/download
-
-    wget $POOL_UPGRADE_URL
-    wget $POOL_UPGRADE_MANIFEST_URL
-    wget $POOL_UPGRADE_MANIFEST_SIG_URL
-
-    gpg --verify manifest-*.txt.sig
-    if [ $? == 0 ]; then
-        # Install Pool
-        tar -xzf pool-*.tar.gz
-        mv $POOL_ARCH-$POOL_VERSION pool
-        install -m 0755 -o root -g root -t /usr/local/bin pool/*
-
-        # Mark current version
-        echo $POOL_VERSION > $POOL_VERSION_FILE
-    else
-        echo "ERROR UPGRADING POOL - GPG FAILED"
+        echo "ERROR UPGRADING LIT - GPG FAILED"
     fi
 fi
 
@@ -813,6 +778,7 @@ systemctl enable docker
 systemctl enable bitcoind
 systemctl enable seed_bitcoin_peers
 systemctl enable lnd
+systemctl enable litd
 systemctl enable firewall
 systemctl enable invalid_block_check
 systemctl enable usb_driver_check
@@ -820,8 +786,6 @@ systemctl enable docker_images
 systemctl enable glances
 systemctl enable webssh2
 systemctl enable tor
-systemctl enable loopd
-systemctl enable poold
 systemctl enable rotate_logs
 systemctl enable corsproxy_btcrpc
 
@@ -830,6 +794,8 @@ systemctl disable hitch || true
 systemctl disable mongodb || true
 systemctl disable lnd_admin || true
 systemctl disable dhcpcd || true
+systemctl disable loopd || true
+systemctl disable poold || true
 
 # Reload service settings
 systemctl daemon-reload

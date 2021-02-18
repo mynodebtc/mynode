@@ -171,8 +171,6 @@ rm -rf $MYNODE_DIR/.mynode_bitcoind_synced
 mkdir -p /run/tor
 mkdir -p /var/run/tor
 mkdir -p /home/bitcoin/.mynode/
-mkdir -p /home/admin/.bitcoin/
-chown admin:admin /home/admin/.bitcoin/
 rm -rf /etc/motd # Remove simple motd for update-motd.d
 
 # Sync product key (SD preferred)
@@ -184,6 +182,7 @@ useradd -m -s /bin/bash pivpn || true
 useradd -m -s /bin/bash joinmarket || true
 
 # User updates and settings
+adduser admin bitcoin
 grep "joinmarket" /etc/sudoers || (echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo)
 
 # Regen SSH keys (check if force regen or keys are missing / empty)
@@ -273,8 +272,9 @@ source /usr/bin/mynode_gen_lit_config.sh
 
 
 # Setup symlinks for bitcoin user so they have access to commands
+#   lnd MUST NOT be a symlink for admin user (see manage_lnd_admin_files.sh)
 users="bitcoin admin"
-services="bitcoin lnd lit loop pool faraday"
+services="bitcoin lit loop pool faraday"
 for u in $users; do
     for s in $services; do
         if [ ! -L /home/$u/.$s ]; then
@@ -284,26 +284,6 @@ for u in $users; do
             sudo -u $u ln -s /mnt/hdd/mynode/$s /home/$u/.$s
         fi
     done
-    # if [ ! -L /home/$u/.bitcoin ]; then
-    #     mv /home/$u/.bitcoin /home/$u/.bitcoin_backup || true # Backup just in case
-    #     sudo -u $u ln -s /mnt/hdd/mynode/bitcoin /home/$u/.bitcoin
-    # fi
-    # if [ ! -L /home/$u/.lnd ]; then
-    #     mv /home/$u/.lnd /home/$u/.lnd_backup || true # Backup just in case
-    #     sudo -u $u ln -s /mnt/hdd/mynode/lnd /home/$u/.lnd
-    # fi
-    # if [ ! -L /home/$u/.loop ]; then
-    #     mv /home/$u/.loop /home/$u/.loop_backup || true # Backup just in case
-    #     sudo -u $u ln -s /mnt/hdd/mynode/loop /home/$u/.loop
-    # fi
-    # if [ ! -L /home/$u/.pool ]; then
-    #     mv /home/$u/.pool /home/$u/.pool_backup || true # Backup just in case
-    #     sudo -u $u ln -s /mnt/hdd/mynode/pool /home/$u/.pool
-    # fi
-    # if [ ! -L /home/$u/.faraday ]; then
-    #     mv /home/$u/.faraday /home/$u/.faraday_backup || true # Backup just in case
-    #     sudo -u $u ln -s /mnt/hdd/mynode/faraday /home/$u/.faraday
-    # fi
 done
 
 
@@ -455,13 +435,14 @@ fi
 if [ -f /mnt/hdd/mynode/joinmarket/joinmarket.cfg ]; then
     sed -i "s/rpc_password = .*/rpc_password = $BTCRPCPW/g" /mnt/hdd/mynode/joinmarket/joinmarket.cfg
 fi
+if [ -f /mnt/hdd/mynode/lit/lit.conf ]; then
+    sed -i "s/faraday.bitcoin.password=.*/faraday.bitcoin.password=$BTCRPCPW/g" /mnt/hdd/mynode/lit/lit.conf
+fi
 echo "BTC_RPC_PASSWORD=$BTCRPCPW" > /mnt/hdd/mynode/settings/.btcrpc_environment
 chown bitcoin:bitcoin /mnt/hdd/mynode/settings/.btcrpc_environment
 if [ -f /mnt/hdd/mynode/bitcoin/bitcoin.conf ]; then
     sed -i "s/rpcauth=.*/$RPCAUTH/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
 fi
-cp -f /mnt/hdd/mynode/bitcoin/bitcoin.conf /home/admin/.bitcoin/bitcoin.conf
-chown admin:admin /home/admin/.bitcoin/bitcoin.conf
 
 
 # Reset BTCARGS
@@ -644,8 +625,7 @@ systemctl restart nginx || true
 # Update latest version files
 echo $BTC_VERSION > $BTC_LATEST_VERSION_FILE
 echo $LND_VERSION > $LND_LATEST_VERSION_FILE
-echo $LOOP_VERSION > $LOOP_LATEST_VERSION_FILE
-echo $POOL_VERSION > $POOL_LATEST_VERSION_FILE
+echo $LIT_VERSION > $LIT_LATEST_VERSION_FILE
 echo $ELECTRS_VERSION > $ELECTRS_LATEST_VERSION_FILE
 echo $LNDHUB_VERSION > $LNDHUB_LATEST_VERSION_FILE
 echo $CARAVAN_VERSION > $CARAVAN_LATEST_VERSION_FILE

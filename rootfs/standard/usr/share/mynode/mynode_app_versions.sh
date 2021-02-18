@@ -16,6 +16,10 @@ POOL_VERSION="v0.4.1-alpha"
 POOL_VERSION_FILE=/home/bitcoin/.mynode/pool_version
 POOL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/pool_version_latest
 
+LIT_VERSION="v0.4.0-alpha" 
+LIT_VERSION_FILE=/home/bitcoin/.mynode/lit_version
+LIT_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lit_version_latest
+
 ELECTRS_VERSION="v0.8.6" 
 ELECTRS_VERSION_FILE=/home/bitcoin/.mynode/electrs_version
 ELECTRS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/electrs_version_latest

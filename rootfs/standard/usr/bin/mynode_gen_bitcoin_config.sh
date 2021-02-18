@@ -62,6 +62,4 @@ RPCAUTH=$(gen_rpcauth.py mynode $PW)
 #sed -i "s/rpcpassword=.*/rpcpassword=$PW/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
 sed -i "s/rpcauth=.*/$RPCAUTH/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
 
-cp -f /mnt/hdd/mynode/bitcoin/bitcoin.conf /home/admin/.bitcoin/bitcoin.conf
 chown bitcoin:bitcoin /mnt/hdd/mynode/bitcoin/bitcoin.conf
-chown admin:admin /home/admin/.bitcoin/bitcoin.conf
