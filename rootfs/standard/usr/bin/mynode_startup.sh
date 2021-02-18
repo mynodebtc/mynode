@@ -158,6 +158,7 @@ mkdir -p /mnt/hdd/mynode/lnbits
 mkdir -p /mnt/hdd/mynode/specter
 mkdir -p /mnt/hdd/mynode/ckbunker
 mkdir -p /mnt/hdd/mynode/sphinxrelay
+mkdir -p /mnt/hdd/mynode/joinmarket
 mkdir -p /tmp/flask_uploads
 echo "drive_mounted" > $MYNODE_STATUS_FILE
 chmod 777 $MYNODE_STATUS_FILE
@@ -178,6 +179,10 @@ cp -f /mnt/hdd/mynode/settings/.product_key* home/bitcoin/.mynode/ || true
 
 # Make any users we need to
 useradd -m -s /bin/bash pivpn || true
+useradd -m -s /bin/bash joinmarket || true
+
+# User updates and settings
+grep "joinmarket" /etc/sudoers || (echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo)
 
 # Regen SSH keys (check if force regen or keys are missing / empty)
 while [ ! -f /home/bitcoin/.mynode/.gensshkeys ] || 
@@ -382,6 +387,25 @@ if [ -d /opt/mynode/sphinxrelay/config ]; then
     fi
 fi
 
+# Setup JoinMarket
+if [ ! -L /home/joinmarket/.joinmarket ]; then
+    rm -rf /home/joinmarket/.joinmarket
+    sudo -u joinmarket ln -s /mnt/hdd/mynode/joinmarket /home/joinmarket/.joinmarket
+fi
+# Migrate data from bitcoin user? - Might be confusing later if an old copy of wallet is used
+# if [ -f /home/bitcoin/.joinmarket/joinmarket.cfg ] && [ ! -f /mnt/hdd/mynode/joinmarket/joinmarket.cfg ]; then
+#     cp /home/bitcoin/.joinmarket/joinmarket.cfg /mnt/hdd/mynode/joinmarket/joinmarket.cfg
+# fi
+# for f in wallets logs cmtdata; do
+#     if [ -d /home/bitcoin/.joinmarket/$f ] && [ ! -d /mnt/hdd/mynode/joinmarket/$f ]; then
+#         cp -r /home/bitcoin/.joinmarket/$f /home/joinmarket/.joinmarket/
+#     fi
+# done
+if [ ! -f /mnt/hdd/mynode/joinmarket/joinmarket.cfg ]; then
+    cp /usr/share/mynode/joinmarket.cfg /mnt/hdd/mynode/joinmarket/joinmarket.cfg
+fi
+chown -R joinmarket:joinmarket /mnt/hdd/mynode/joinmarket
+
 # Setup udev
 chown root:root /etc/udev/rules.d/* || true
 udevadm trigger
@@ -398,6 +422,9 @@ if [ -f /opt/mynode/LndHub/config.js ]; then
 fi
 if [ -f /opt/mynode/btc-rpc-explorer/.env ]; then
     sed -i "s/BTCEXP_BITCOIND_PASS=.*/BTCEXP_BITCOIND_PASS=$BTCRPCPW/g" /opt/mynode/btc-rpc-explorer/.env
+fi
+if [ -f /mnt/hdd/mynode/joinmarket/joinmarket.cfg ]; then
+    sed -i "s/rpc_password = .*/rpc_password = $BTCRPCPW/g" /mnt/hdd/mynode/joinmarket/joinmarket.cfg
 fi
 echo "BTC_RPC_PASSWORD=$BTCRPCPW" > /mnt/hdd/mynode/settings/.btcrpc_environment
 chown bitcoin:bitcoin /mnt/hdd/mynode/settings/.btcrpc_environment
@@ -472,6 +499,10 @@ fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/sphinxrelay)
 if [ "$USER" != "bitcoin" ]; then
     chown -R bitcoin:bitcoin /mnt/hdd/mynode/sphinxrelay
+fi
+USER=$(stat -c '%U' /mnt/hdd/mynode/joinmarket)
+if [ "$USER" != "joinmarket" ]; then
+    chown -R joinmarket:joinmarket /mnt/hdd/mynode/joinmarket
 fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/redis)
 if [ "$USER" != "redis" ]; then
@@ -583,6 +614,7 @@ echo $LNDHUB_VERSION > $LNDHUB_LATEST_VERSION_FILE
 echo $CARAVAN_VERSION > $CARAVAN_LATEST_VERSION_FILE
 echo $CORSPROXY_VERSION > $CORSPROXY_LATEST_VERSION_FILE
 echo $JOINMARKET_VERSION > $JOINMARKET_LATEST_VERSION_FILE
+echo $JOININBOX_VERSION > $JOININBOX_LATEST_VERSION_FILE
 echo $WHIRLPOOL_VERSION > $WHIRLPOOL_LATEST_VERSION_FILE
 echo $RTL_VERSION > $RTL_LATEST_VERSION_FILE
 echo $BTCRPCEXPLORER_VERSION > $BTCRPCEXPLORER_LATEST_VERSION_FILE

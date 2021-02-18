@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# mynode-joininbox
+# This script needs to be run with sudo so it can run as the joinmarket user
+
+sudo -u joinmarket bash -c "cd /home/joinmarket/; ./menu.sh"

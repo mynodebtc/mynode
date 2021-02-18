@@ -24,7 +24,10 @@ if [ $IS_RASPI = 1 ]; then
 fi
 
 # Create any necessary users
+useradd -m -s /bin/bash joinmarket || true
 
+# User updates and settings
+grep "joinmarket" /etc/sudoers || (echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo)
 
 # Check if upgrades use tor
 TORIFY=""
@@ -95,7 +98,7 @@ $TORIFY apt-get -y -qq install apt-transport-https ca-certificates
 $TORIFY apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
 $TORIFY apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
 $TORIFY apt-get -y install libudev-dev libusb-1.0-0-dev python3-venv gunicorn sqlite3 libsqlite3-dev
-$TORIFY apt-get -y install torsocks python3-requests libsystemd-dev libjpeg-dev zlib1g-dev
+$TORIFY apt-get -y install torsocks python3-requests libsystemd-dev libjpeg-dev zlib1g-dev psmisc
 
 # Make sure some software is removed
 apt-get -y purge ntp # (conflicts with systemd-timedatectl)
@@ -441,41 +444,78 @@ if [ ! -f /usr/include/secp256k1_ecdh.h ]; then
 fi
 
 # Upgrade JoinMarket
-echo "Upgrading JoinMarket..."
+# echo "Upgrading JoinMarket..."
+# if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
+#     JOINMARKET_UPGRADE_URL=https://github.com/JoinMarket-Org/joinmarket-clientserver/archive/$JOINMARKET_VERSION.tar.gz
+#     CURRENT=""
+#     if [ -f $JOINMARKET_VERSION_FILE ]; then
+#         CURRENT=$(cat $JOINMARKET_VERSION_FILE)
+#     fi
+#     if [ "$CURRENT" != "$JOINMARKET_VERSION" ]; then
+#         # Download and build JoinMarket
+#         cd /opt/mynode
+
+#         # Backup old version in case config / wallet was stored within folder
+#         if [ ! -d /opt/mynode/jm_backup ] && [ -d /opt/mynode/joinmarket-clientserver ]; then
+#             cp -R /opt/mynode/joinmarket-clientserver /opt/mynode/jm_backup
+#             chown -R bitcoin:bitcoin /opt/mynode/jm_backup
+#         fi
+
+#         rm -rf joinmarket-clientserver
+
+#         sudo -u joinmarket wget $JOINMARKET_UPGRADE_URL -O joinmarket.tar.gz
+#         sudo -u joinmarket tar -xvf joinmarket.tar.gz
+#         sudo -u joinmarket rm joinmarket.tar.gz
+#         mv joinmarket-clientserver-* joinmarket-clientserver
+
+#         cd joinmarket-clientserver
+
+#         # Apply Patch to fix cryptography dependency
+#         sed -i "s/'txtorcon', 'pyopenssl'/'txtorcon', 'cryptography==3.3.2', 'pyopenssl'/g" jmdaemon/setup.py || true
+
+#         # Install
+#         yes | ./install.sh --without-qt
+
+#         echo $JOINMARKET_VERSION > $JOINMARKET_VERSION_FILE
+#     fi
+# fi
+
+echo "Upgrading JoinInBox..."
 if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
-    JOINMARKET_UPGRADE_URL=https://github.com/JoinMarket-Org/joinmarket-clientserver/archive/$JOINMARKET_VERSION.tar.gz
+    JOININBOX_UPGRADE_URL=https://github.com/openoms/joininbox/archive/$JOININBOX_VERSION.tar.gz
     CURRENT=""
-    if [ -f $JOINMARKET_VERSION_FILE ]; then
-        CURRENT=$(cat $JOINMARKET_VERSION_FILE)
+    if [ -f $JOININBOX_VERSION_FILE ]; then
+        CURRENT=$(cat $JOININBOX_VERSION_FILE)
     fi
-    if [ "$CURRENT" != "$JOINMARKET_VERSION" ]; then
-        # Download and build JoinMarket
-        cd /opt/mynode
+    if [ "$CURRENT" != "$JOININBOX_VERSION" ]; then
+        # Download and build JoinInBox
+        cd /home/joinmarket
+        
+        # Delete all non-hidden files
+        rm -rf *
+        rm -rf joininbox-*
 
-        # Backup old version in case config / wallet was stored within folder
-        if [ ! -d /opt/mynode/jm_backup ] && [ -d /opt/mynode/joinmarket-clientserver ]; then
-            cp -R /opt/mynode/joinmarket-clientserver /opt/mynode/jm_backup
-            chown -R bitcoin:bitcoin /opt/mynode/jm_backup
-        fi
+        sudo -u joinmarket wget $JOININBOX_UPGRADE_URL -O joininbox.tar.gz
+        sudo -u joinmarket tar -xvf joininbox.tar.gz
+        sudo -u joinmarket rm joininbox.tar.gz
+        mv joininbox-* joininbox
 
-        rm -rf joinmarket-clientserver
+        chmod -R +x ./joininbox/
+        sudo -u joinmarket cp -rf ./joininbox/scripts/* .
 
-        sudo -u bitcoin wget $JOINMARKET_UPGRADE_URL -O joinmarket.tar.gz
-        sudo -u bitcoin tar -xvf joinmarket.tar.gz
-        sudo -u bitcoin rm joinmarket.tar.gz
-        mv joinmarket-clientserver-* joinmarket-clientserver
-
-        cd joinmarket-clientserver
-
-        # Apply Patch to fix cryptography dependency
-        sed -i "s/'txtorcon', 'pyopenssl'/'txtorcon', 'cryptography==3.3.2', 'pyopenssl'/g" jmdaemon/setup.py || true
+        # Apply patches
+        echo "" > set.password.sh
+        echo "" > standalone/expand.rootfs.sh
+        sudo -u joinmarket cp /usr/share/joininbox/menu.update.sh /home/joinmarket/menu.update.sh
+        sudo -u joinmarket sed -i "s|/home/joinmarket/menu.config.sh|echo 'mynode skip config'|g" /home/joinmarket/start.joininbox.sh
 
         # Install
-        yes | ./install.sh --without-qt
+        sudo -u joinmarket bash -c "cd /home/joinmarket/; ./install.joinmarket.sh install" || true
 
-        echo $JOINMARKET_VERSION > $JOINMARKET_VERSION_FILE
+        echo $JOININBOX_VERSION > $JOININBOX_VERSION_FILE
     fi
 fi
+
 
 # Install Whirlpool
 WHIRLPOOL_UPGRADE_URL=https://code.samourai.io/whirlpool/whirlpool-client-cli/uploads/$WHIRLPOOL_UPLOAD_FILE_ID/whirlpool-client-cli-$WHIRLPOOL_VERSION-run.jar
@@ -713,7 +753,7 @@ fi
 if [ "$CURRENT" != "$SPHINXRELAY_VERSION" ]; then
     cd /opt/mynode
     rm -rf sphinxrelay
-    
+
     sudo -u bitcoin wget $SPHINXRELAY_UPGRADE_URL -O sphinx-relay.tar.gz
     sudo -u bitcoin tar -xvf sphinx-relay.tar.gz
     sudo -u bitcoin rm sphinx-relay.tar.gz

@@ -100,7 +100,7 @@ source /tmp/mynode_app_versions.sh
 
 
 # Create any necessary users
-
+useradd -m -s /bin/bash joinmarket || true
 
 # Update sources
 apt-get -y update
@@ -161,7 +161,7 @@ apt -y -qq install apt-transport-https ca-certificates
 apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
 apt-get -y install zlib1g-dev libudev-dev libusb-1.0-0-dev python3-venv gunicorn
 apt-get -y install sqlite3 libsqlite3-dev torsocks python3-requests libsystemd-dev
-apt-get -y install libjpeg-dev zlib1g-dev
+apt-get -y install libjpeg-dev zlib1g-dev psmisc
 
 
 # Make sure some software is removed
@@ -540,28 +540,36 @@ if [ ! -f /usr/include/secp256k1_ecdh.h ]; then
     cp -f include/* /usr/include/
 fi
 
-# Install JoinMarket
-echo "Install JoinMarket..."
+echo "Installing JoinInBox..."
 if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
-    JOINMARKET_UPGRADE_URL=https://github.com/JoinMarket-Org/joinmarket-clientserver/archive/$JOINMARKET_VERSION.tar.gz
+    JOININBOX_UPGRADE_URL=https://github.com/openoms/joininbox/archive/$JOININBOX_VERSION.tar.gz
     CURRENT=""
-    if [ -f $JOINMARKET_VERSION_FILE ]; then
-        CURRENT=$(cat $JOINMARKET_VERSION_FILE)
+    if [ -f $JOININBOX_VERSION_FILE ]; then
+        CURRENT=$(cat $JOININBOX_VERSION_FILE)
     fi
-    if [ "$CURRENT" != "$JOINMARKET_VERSION" ]; then
-        # Download and build JoinMarket
-        cd /opt/mynode
-        rm -rf joinmarket-clientserver
+    if [ "$CURRENT" != "$JOININBOX_VERSION" ]; then
+        # Download and build JoinInBox
+        cd /home/joinmarket
+        
+        # Delete all non-hidden files
+        rm -rf *
+        rm -rf joininbox-*
 
-        sudo -u bitcoin wget $JOINMARKET_UPGRADE_URL -O joinmarket.tar.gz
-        sudo -u bitcoin tar -xvf joinmarket.tar.gz
-        sudo -u bitcoin rm joinmarket.tar.gz
-        mv joinmarket-clientserver-* joinmarket-clientserver
+        sudo -u joinmarket wget $JOININBOX_UPGRADE_URL -O joininbox.tar.gz
+        sudo -u joinmarket tar -xvf joininbox.tar.gz
+        sudo -u joinmarket rm joininbox.tar.gz
+        mv joininbox-* joininbox
 
-        cd joinmarket-clientserver
-        yes | ./install.sh --without-qt
+        chmod -R +x ./joininbox/
+        sudo -u joinmarket cp -rf ./joininbox/scripts/* .
 
-        echo $JOINMARKET_VERSION > $JOINMARKET_VERSION_FILE
+        # Apply patches
+        echo "" > set.password.sh
+        echo "" > standalone/expand.rootfs.sh
+        sudo -u joinmarket cp /usr/share/joininbox/menu.update.sh /home/joinmarket/menu.update.sh
+        sudo -u joinmarket sed -i "s|/home/joinmarket/menu.config.sh|echo 'mynode skip config'|g" /home/joinmarket/start.joininbox.sh
+
+        echo $JOININBOX_VERSION > $JOININBOX_VERSION_FILE
     fi
 fi
 
