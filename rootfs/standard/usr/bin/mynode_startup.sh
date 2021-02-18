@@ -146,6 +146,8 @@ mkdir -p /mnt/hdd/mynode/bitcoin
 mkdir -p /mnt/hdd/mynode/lnd
 mkdir -p /mnt/hdd/mynode/loop
 mkdir -p /mnt/hdd/mynode/pool
+mkdir -p /mnt/hdd/mynode/faraday
+mkdir -p /mnt/hdd/mynode/lit
 mkdir -p /mnt/hdd/mynode/quicksync
 mkdir -p /mnt/hdd/mynode/redis
 mkdir -p /mnt/hdd/mynode/mongodb
@@ -266,17 +268,44 @@ source /usr/bin/mynode_gen_bitcoin_config.sh
 # LND Config
 source /usr/bin/mynode_gen_lnd_config.sh
 
-# Loop Config (symlink so admin user can run loop commands)
-if [ ! -L /home/admin/.loop ]; then
-    mv /home/admin/.loop /home/admin/.loop_backup || true
-    ln -s /mnt/hdd/mynode/loop /home/admin/.loop
-fi
+# Lightning Terminal Config
+source /usr/bin/mynode_gen_lit_config.sh
 
-# Pool Config (symlink so admin user can run pool commands)
-if [ ! -L /home/admin/.pool ]; then
-    mv /home/admin/.pool /home/admin/.pool_backup || true
-    ln -s /mnt/hdd/mynode/pool /home/admin/.pool
-fi
+
+# Setup symlinks for bitcoin user so they have access to commands
+users="bitcoin admin"
+services="bitcoin lnd lit loop pool faraday"
+for u in $users; do
+    for s in $services; do
+        if [ ! -L /home/$u/.$s ]; then
+            if [ -d /home/$u/.$s ]; then
+                mv /home/$u/.$s /home/$u/.${s}_backup || true # Backup just in case
+            fi
+            sudo -u $u ln -s /mnt/hdd/mynode/$s /home/$u/.$s
+        fi
+    done
+    # if [ ! -L /home/$u/.bitcoin ]; then
+    #     mv /home/$u/.bitcoin /home/$u/.bitcoin_backup || true # Backup just in case
+    #     sudo -u $u ln -s /mnt/hdd/mynode/bitcoin /home/$u/.bitcoin
+    # fi
+    # if [ ! -L /home/$u/.lnd ]; then
+    #     mv /home/$u/.lnd /home/$u/.lnd_backup || true # Backup just in case
+    #     sudo -u $u ln -s /mnt/hdd/mynode/lnd /home/$u/.lnd
+    # fi
+    # if [ ! -L /home/$u/.loop ]; then
+    #     mv /home/$u/.loop /home/$u/.loop_backup || true # Backup just in case
+    #     sudo -u $u ln -s /mnt/hdd/mynode/loop /home/$u/.loop
+    # fi
+    # if [ ! -L /home/$u/.pool ]; then
+    #     mv /home/$u/.pool /home/$u/.pool_backup || true # Backup just in case
+    #     sudo -u $u ln -s /mnt/hdd/mynode/pool /home/$u/.pool
+    # fi
+    # if [ ! -L /home/$u/.faraday ]; then
+    #     mv /home/$u/.faraday /home/$u/.faraday_backup || true # Backup just in case
+    #     sudo -u $u ln -s /mnt/hdd/mynode/faraday /home/$u/.faraday
+    # fi
+done
+
 
 # Dojo - move to HDD
 if [ -d /opt/mynode/dojo ] && [ ! -d /mnt/hdd/mynode/dojo ] ; then
@@ -475,6 +504,14 @@ fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/pool)
 if [ "$USER" != "bitcoin" ]; then
     chown -R bitcoin:bitcoin /mnt/hdd/mynode/pool
+fi
+USER=$(stat -c '%U' /mnt/hdd/mynode/faraday)
+if [ "$USER" != "bitcoin" ]; then
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/faraday
+fi
+USER=$(stat -c '%U' /mnt/hdd/mynode/lit)
+if [ "$USER" != "bitcoin" ]; then
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/lit
 fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/whirlpool)
 if [ "$USER" != "bitcoin" ]; then
