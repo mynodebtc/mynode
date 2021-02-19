@@ -268,9 +268,6 @@ source /usr/bin/mynode_gen_bitcoin_config.sh
 # LND Config
 source /usr/bin/mynode_gen_lnd_config.sh
 
-# Lightning Terminal Config
-source /usr/bin/mynode_gen_lit_config.sh
-
 
 # Setup symlinks for bitcoin user so they have access to commands
 users="bitcoin"
