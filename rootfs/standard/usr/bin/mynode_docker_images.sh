@@ -48,33 +48,31 @@ while true; do
 
     # Upgrade mempool
     echo "Checking for new mempool..."
-    MEMPOOLSPACE_UPGRADE_VERSION=v1.0.1
-    MEMPOOLSPACE_UPGRADE_URL=https://github.com/mempool/mempool/archive/${MEMPOOLSPACE_UPGRADE_VERSION}.zip
-    MEMPOOLSPACE_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/mempoolspace_url
+    MEMPOOL_UPGRADE_VERSION=v2.1.0
+    MEMPOOL_UPGRADE_URL=https://github.com/mempool/mempool/archive/${MEMPOOL_UPGRADE_VERSION}.zip
+    MEMPOOL_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/mempoolspace_url
     CURRENT=""
-    if [ -f $MEMPOOLSPACE_UPGRADE_URL_FILE ]; then
-        CURRENT=$(cat $MEMPOOLSPACE_UPGRADE_URL_FILE)
+    if [ -f $MEMPOOL_UPGRADE_URL_FILE ]; then
+        CURRENT=$(cat $MEMPOOL_UPGRADE_URL_FILE)
     fi
-    if [ "$CURRENT" != "$MEMPOOLSPACE_UPGRADE_URL" ]; then
-        docker rmi mempoolspace || true
+    if [ "$CURRENT" != "$MEMPOOL_UPGRADE_URL" ]; then
+        docker rmi mempoolspace || true     # Remove old v1 image
 
-        cd /opt/mynode
-        rm -rf mempoolspace
-        wget $MEMPOOLSPACE_UPGRADE_URL -O mempool.zip
-        unzip -o mempool.zip
-        rm mempool.zip
-        mv mempool* mempoolspace
-        cd mempoolspace
-        sync
+        cd /mnt/hdd/mynode/mempool
+        mkdir -p data mysql/data mysql/db-scripts
+        cp -f /usr/share/mynode/mempool-docker-compose.yml /mnt/hdd/mynode/docker-compose.yml
 
-        # myNode Hack - Force use of specific alpine image source
-        sed -i "s/alpine:latest/alpine:3.12.3/g" Dockerfile
+        cd /tmp/
+        wget $MEMPOOL_UPGRADE_URL -O mempool.tar.gz
+        tar -xvf mempool.tar.gz
+        rm mempool.tar.gz
+        mv mempool-* mempool
+        cp -f mempool/mariadb-structure.sql /mnt/hdd/mynode/mempool/mysql/db-scripts/mariadb-structure.sql
 
-        sleep 3s
-        docker build -t mempoolspace .
-        if [ $? == 0 ]; then
-            echo $MEMPOOLSPACE_UPGRADE_URL > $MEMPOOLSPACE_UPGRADE_URL_FILE
-        fi
+        # Update env variable to use latest version
+        sed -i "s/VERSION=.*/VERSION=$MEMPOOL_UPGRADE_VERSION/g" /mnt/hdd/mynode/mempool/.env
+
+        echo $MEMPOOL_UPGRADE_URL > $MEMPOOL_UPGRADE_URL_FILE
     fi
 
     # Install Dojo

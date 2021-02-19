@@ -161,6 +161,7 @@ mkdir -p /mnt/hdd/mynode/specter
 mkdir -p /mnt/hdd/mynode/ckbunker
 mkdir -p /mnt/hdd/mynode/sphinxrelay
 mkdir -p /mnt/hdd/mynode/joinmarket
+mkdir -p /mnt/hdd/mynode/mempool
 mkdir -p /tmp/flask_uploads
 echo "drive_mounted" > $MYNODE_STATUS_FILE
 chmod 777 $MYNODE_STATUS_FILE
@@ -421,6 +422,15 @@ if [ ! -f /mnt/hdd/mynode/joinmarket/joinmarket.cfg ]; then
 fi
 chown -R joinmarket:joinmarket /mnt/hdd/mynode/joinmarket
 
+# Setup Mempool
+cp -f /usr/share/mynode/mempool-docker-compose.yml /mnt/hdd/mynode/mempool/docker-compose.yml
+if [ ! -f /mnt/hdd/mynode/mempool/.env ]; then
+    cp -f /usr/share/mynode/mempool.env /mnt/hdd/mynode/mempool/.env
+fi
+if [ $IS_RASPI -eq 1 ]; then
+    sed -i "s|MARIA_DB_IMAGE=.*|MARIA_DB_IMAGE=hypriot/rpi-mysql:latest|g" /mnt/hdd/mynode/mempool/.env
+fi
+
 # Setup udev
 chown root:root /etc/udev/rules.d/* || true
 udevadm trigger
@@ -440,6 +450,9 @@ if [ -f /opt/mynode/btc-rpc-explorer/.env ]; then
 fi
 if [ -f /mnt/hdd/mynode/joinmarket/joinmarket.cfg ]; then
     sed -i "s/rpc_password = .*/rpc_password = $BTCRPCPW/g" /mnt/hdd/mynode/joinmarket/joinmarket.cfg
+fi
+if [ -f /mnt/hdd/mynode/mempool/.env ]; then
+    sed -i "s/BITCOIN_RPC_PASS=.*/BITCOIN_RPC_PASS=$BTCRPCPW/g" /mnt/hdd/mynode/mempool/.env
 fi
 echo "BTC_RPC_PASSWORD=$BTCRPCPW" > /mnt/hdd/mynode/settings/.btcrpc_environment
 chown bitcoin:bitcoin /mnt/hdd/mynode/settings/.btcrpc_environment
