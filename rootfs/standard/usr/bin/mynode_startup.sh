@@ -146,6 +146,8 @@ mkdir -p /mnt/hdd/mynode/bitcoin
 mkdir -p /mnt/hdd/mynode/lnd
 mkdir -p /mnt/hdd/mynode/loop
 mkdir -p /mnt/hdd/mynode/pool
+mkdir -p /mnt/hdd/mynode/faraday
+mkdir -p /mnt/hdd/mynode/lit
 mkdir -p /mnt/hdd/mynode/quicksync
 mkdir -p /mnt/hdd/mynode/redis
 mkdir -p /mnt/hdd/mynode/mongodb
@@ -266,16 +268,32 @@ source /usr/bin/mynode_gen_bitcoin_config.sh
 # LND Config
 source /usr/bin/mynode_gen_lnd_config.sh
 
-# Loop Config (symlink so admin user can run loop commands)
-if [ ! -L /home/admin/.loop ]; then
-    mv /home/admin/.loop /home/admin/.loop_backup || true
-    ln -s /mnt/hdd/mynode/loop /home/admin/.loop
-fi
+# Lightning Terminal Config
+source /usr/bin/mynode_gen_lit_config.sh
 
-# Pool Config (symlink so admin user can run pool commands)
-if [ ! -L /home/admin/.pool ]; then
+
+# Setup symlinks for bitcoin user so they have access to commands
+users="bitcoin"
+services="bitcoin lnd lit loop pool faraday"
+for u in $users; do
+    for s in $services; do
+        if [ ! -L /home/$u/.$s ]; then
+            if [ -d /home/$u/.$s ]; then
+                mv /home/$u/.$s /home/$u/.${s}_backup || true # Backup just in case
+            fi
+            sudo -u $u ln -s /mnt/hdd/mynode/$s /home/$u/.$s
+        fi
+    done
+done
+
+# Setup symlinks for adming (need to be careful here - lnd,bitcoin can't be symlinked)
+if [ ! -L /home/admin/.pool ]; then     # Pool Config (symlink so admin user can run pool commands)
     mv /home/admin/.pool /home/admin/.pool_backup || true
     ln -s /mnt/hdd/mynode/pool /home/admin/.pool
+fi
+if [ ! -L /home/admin/.loop ]; then     # Loop Config (symlink so admin user can run loop commands)
+    mv /home/admin/.loop /home/admin/.loop_backup || true
+    ln -s /mnt/hdd/mynode/loop /home/admin/.loop
 fi
 
 # Dojo - move to HDD
@@ -475,6 +493,14 @@ fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/pool)
 if [ "$USER" != "bitcoin" ]; then
     chown -R bitcoin:bitcoin /mnt/hdd/mynode/pool
+fi
+USER=$(stat -c '%U' /mnt/hdd/mynode/faraday)
+if [ "$USER" != "bitcoin" ]; then
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/faraday
+fi
+USER=$(stat -c '%U' /mnt/hdd/mynode/lit)
+if [ "$USER" != "bitcoin" ]; then
+    chown -R bitcoin:bitcoin /mnt/hdd/mynode/lit
 fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/whirlpool)
 if [ "$USER" != "bitcoin" ]; then
