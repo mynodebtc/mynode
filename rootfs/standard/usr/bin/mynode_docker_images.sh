@@ -48,8 +48,8 @@ while true; do
 
     # Upgrade mempool
     echo "Checking for new mempool..."
-    MEMPOOL_UPGRADE_VERSION=v2.1.0
-    MEMPOOL_UPGRADE_URL=https://github.com/mempool/mempool/archive/${MEMPOOL_UPGRADE_VERSION}.zip
+    MEMPOOL_UPGRADE_VERSION=v2.1.2
+    MEMPOOL_UPGRADE_URL=https://github.com/mempool/mempool/archive/${MEMPOOL_UPGRADE_VERSION}.tar.gz
     MEMPOOL_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/mempoolspace_url
     CURRENT=""
     if [ -f $MEMPOOL_UPGRADE_URL_FILE ]; then
@@ -62,7 +62,9 @@ while true; do
         mkdir -p data mysql/data mysql/db-scripts
         cp -f /usr/share/mynode/mempool-docker-compose.yml /mnt/hdd/mynode/docker-compose.yml
 
-        cd /tmp/
+        rm -rf /opt/download/mempool
+        mkdir -p /opt/download/mempool
+        cd /opt/download/mempool
         wget $MEMPOOL_UPGRADE_URL -O mempool.tar.gz
         tar -xvf mempool.tar.gz
         rm mempool.tar.gz
@@ -71,6 +73,11 @@ while true; do
 
         # Update env variable to use latest version
         sed -i "s/VERSION=.*/VERSION=$MEMPOOL_UPGRADE_VERSION/g" /mnt/hdd/mynode/mempool/.env
+
+        enabled=$(systemctl is-enabled mempoolspace)
+        if [ "$enabled" = "enabled" ]; then
+            systemctl restart mempoolspace &
+        fi
 
         echo $MEMPOOL_UPGRADE_URL > $MEMPOOL_UPGRADE_URL_FILE
     fi
@@ -143,6 +150,7 @@ while true; do
     fi
 
     rm -f /tmp/installing_docker_images
+    touch /tmp/installing_docker_images_completed_once
 
     # Wait a day
     sleep 1d
