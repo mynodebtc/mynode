@@ -859,6 +859,17 @@ def toggle_darkmode_page():
         enable_darkmode()
     return redirect("/settings")
 
+@mynode_settings.route("/settings/toggle-darkmode-home")
+def toggle_darkmode_page_home():
+    check_logged_in()
+
+    if is_darkmode_enabled():
+        disable_darkmode()
+    else:
+        enable_darkmode()
+    return redirect("/")
+
+
 @mynode_settings.route("/settings/toggle-netdata")
 def toggle_netdata_page():
     check_logged_in()
