@@ -1,4 +1,5 @@
 === v0.2.26 ===
+- Released: 02/13/21
 - Add CKBunker v0.9 (beta)
 - Add Sphinx Relay v1.3.8 (beta)
 - Upgrade Thunderhub to v0.12.7
@@ -7,9 +8,11 @@
 - Bug Fixes
 
 === v0.2.25 ===
+- Released: 02/05/21
 - Improve drive detection for Clone Tool
 
 === v0.2.24 ===
+- Released: 02/04/21
 - Upgrade Bitcoin to v0.21.0
 - Upgrade LND to v0.12.0
 - Upgrade JoinMarket to v0.8.0
@@ -19,6 +22,7 @@
 - Bug fixes and minor UI improvements
 
 === v0.2.23 ===
+- Released: 01/25/21
 - Update BTC RPC Explorer to v2.2.0
 - Use SSO for securing BTC RPC Explorer access
 - Move all Dojo files to external drive
@@ -26,6 +30,7 @@
 - Bug Fixes
 
 === v0.2.22 ===
+- Released: 01/16/21
 - Upgrade Caravan to v0.3.5
 - Fix issue with Mempool on HTTPS
 - Upgrade Specter to v1.0.0
@@ -34,6 +39,7 @@
 - Bug Fixes
 
 === v0.2.21 ===
+- Released: 01/02/21
 - Update Loop to v0.11.2
 - Upgrade RTL to v0.10.0
 - Upgrade Thunderhub to v0.12.2
@@ -44,6 +50,7 @@
 - Add Onion URL for Whirlpool
 
 === v0.2.20 ===
+- Released: 12/20/20
 - Upgrade Specter to v0.10.4
 - Upgrade Thunderhub to v0.11.0
 - Upgrade Whirlpool CLI to v0.10.9
@@ -51,6 +58,7 @@
 - Bug fixes
 
 === v0.2.19 ===
+- Released: 11/27/20
 - Add Pool
 - Upgrade electrs to v0.8.6
 - Upgrade Specter to v0.10.1
