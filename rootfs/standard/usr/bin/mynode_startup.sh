@@ -463,6 +463,13 @@ cp -f /mnt/hdd/mynode/bitcoin/bitcoin.conf /home/admin/.bitcoin/bitcoin.conf
 chown admin:admin /home/admin/.bitcoin/bitcoin.conf
 
 
+# Append bitcoin UID and GID to btcrpc_environment
+BITCOIN_UID=$(id -u bitcoin)
+BITCOIN_GID=$(id -g bitcoin)
+echo "BITCOIN_UID=$BITCOIN_UID" >> /mnt/hdd/mynode/settings/.btcrpc_environment
+echo "BITCOIN_GID=$BITCOIN_GID" >> /mnt/hdd/mynode/settings/.btcrpc_environment
+
+
 # Reset BTCARGS
 echo "BTCARGS=" > /mnt/hdd/mynode/bitcoin/env
 

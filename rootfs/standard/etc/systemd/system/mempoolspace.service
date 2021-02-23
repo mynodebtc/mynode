@@ -12,8 +12,9 @@ EnvironmentFile=/mnt/hdd/mynode/settings/.btcrpc_environment
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_bitcoin.sh
 ExecStartPre=/usr/bin/wait_on_docker_image_install.sh
-
 ExecStart=/usr/local/bin/docker-compose up
+ExecStartPost=/usr/bin/mynode_post_mempool.sh
+
 ExecStop=/usr/local/bin/docker-compose down
 
 # Old v1
@@ -23,9 +24,9 @@ ExecStop=/usr/local/bin/docker-compose down
 User=root
 Group=root
 Type=simple
-TimeoutSec=240
+TimeoutSec=120
 Restart=always
-RestartSec=120
+RestartSec=30
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=mempoolspace

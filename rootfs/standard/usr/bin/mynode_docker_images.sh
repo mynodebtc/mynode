@@ -74,6 +74,9 @@ while true; do
         # Update env variable to use latest version
         sed -i "s/VERSION=.*/VERSION=$MEMPOOL_UPGRADE_VERSION/g" /mnt/hdd/mynode/mempool/.env
 
+        docker pull mempool/frontend:${MEMPOOL_UPGRADE_VERSION}
+        docker pull mempool/backend:${MEMPOOL_UPGRADE_VERSION}
+
         enabled=$(systemctl is-enabled mempoolspace)
         if [ "$enabled" = "enabled" ]; then
             systemctl restart mempoolspace &

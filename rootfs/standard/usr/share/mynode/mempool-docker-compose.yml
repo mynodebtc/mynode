@@ -3,7 +3,6 @@ version: "3.7"
 services:
   web:
     image: mempool/frontend:${VERSION}
-    user: "1000:1000"
     restart: on-failure
     stop_grace_period: 1m
     command: "./wait-for db:3306 --timeout=720 -- nginx -g 'daemon off;'"
@@ -14,12 +13,12 @@ services:
       BACKEND_MAINNET_HTTP_HOST: "api"
   api:
     image: mempool/backend:${VERSION}
-    user: "1000:1000"
+    user: 0:0
     restart: on-failure
     stop_grace_period: 1m
     command: "./wait-for-it.sh db:3306 --timeout=720 --strict -- ./start.sh"
     volumes:
-      - ./data:/backend/cache
+      - /mnt/hdd/mynode/mempool/data:/backend/cache
     environment:
       RPC_HOST: "172.17.0.1"
       RPC_PORT: "8332"
@@ -36,12 +35,11 @@ services:
       CACHE_DIR: "/backend/cache/"
   db:
     image: ${MARIA_DB_IMAGE}
-    #user: "1000:1000"
     restart: on-failure
     stop_grace_period: 1m
     volumes:
-      - ./mysql/data:/var/lib/mysql
-      - ./mysql/db-scripts:/docker-entrypoint-initdb.d
+      - /mnt/hdd/mynode/mempool/mysql/data:/var/lib/mysql
+      - /mnt/hdd/mynode/mempool/mysql/db-scripts:/docker-entrypoint-initdb.d
     environment:
       MYSQL_DATABASE: "mempool"
       MYSQL_USER: "mempool"
