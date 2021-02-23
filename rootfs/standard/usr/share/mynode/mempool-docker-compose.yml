@@ -1,0 +1,47 @@
+version: "3.7"
+
+services:
+  web:
+    image: mempool/frontend:${VERSION}
+    restart: on-failure
+    stop_grace_period: 1m
+    command: "./wait-for db:3306 --timeout=720 -- nginx -g 'daemon off;'"
+    ports:
+      - 4080:8080
+    environment:
+      FRONTEND_HTTP_PORT: "8080"
+      BACKEND_MAINNET_HTTP_HOST: "api"
+  api:
+    image: mempool/backend:${VERSION}
+    user: 0:0
+    restart: on-failure
+    stop_grace_period: 1m
+    command: "./wait-for-it.sh db:3306 --timeout=720 --strict -- ./start.sh"
+    volumes:
+      - /mnt/hdd/mynode/mempool/data:/backend/cache
+    environment:
+      RPC_HOST: "172.17.0.1"
+      RPC_PORT: "8332"
+      RPC_USER: "mynode"
+      RPC_PASS: "${BITCOIN_RPC_PASS}"
+      ELECTRS_HOST: "172.17.0.1"
+      ELECTRS_PORT: "50001"
+      MYSQL_HOST: "db"
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: "mempool"
+      MYSQL_USER: "mempool"
+      MYSQL_PASS: "mempool"
+      BACKEND_MAINNET_HTTP_PORT: "8999"
+      CACHE_DIR: "/backend/cache/"
+  db:
+    image: ${MARIA_DB_IMAGE}
+    restart: on-failure
+    stop_grace_period: 1m
+    volumes:
+      - /mnt/hdd/mynode/mempool/mysql/data:/var/lib/mysql
+      - /mnt/hdd/mynode/mempool/mysql/db-scripts:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_DATABASE: "mempool"
+      MYSQL_USER: "mempool"
+      MYSQL_PASSWORD: "mempool"
+      MYSQL_ROOT_PASSWORD: "admin"

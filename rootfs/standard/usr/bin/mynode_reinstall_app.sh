@@ -45,7 +45,8 @@ elif [ "$APP" = "netdata" ]; then
 elif [ "$APP" = "mempoolspace" ]; then
     rm -f /mnt/hdd/mynode/settings/mempoolspace_url
     systemctl stop mempoolspace
-    docker rmi mempoolspace
+    docker rmi mempoolspace || true
+    rm -rf /mnt/hdd/mynode/mempool/*
 elif [ "$APP" = "btcpayserver" ]; then
     . "/opt/mynode/btcpayserver/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY" && . helpers.sh && btcpay_remove
     cd ~

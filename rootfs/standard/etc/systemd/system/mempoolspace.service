@@ -7,19 +7,26 @@ Wants=www.service docker_images.service
 After=www.service docker_images.service
 
 [Service]
+WorkingDirectory=/mnt/hdd/mynode/mempool
 EnvironmentFile=/mnt/hdd/mynode/settings/.btcrpc_environment
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_bitcoin.sh
 ExecStartPre=/usr/bin/wait_on_docker_image_install.sh
-ExecStart=/usr/bin/docker run --rm --name mempoolspace -p 4080:80 -e BITCOIN_NODE_HOST=172.17.0.1 -e BITCOIN_NODE_USER=mynode -e BITCOIN_NODE_PASS=${BTC_RPC_PASSWORD} -e MEMPOOL_REFRESH_RATE_MS=10000 mempoolspace
-ExecStop=/usr/bin/docker stop -t 2 mempoolspace
+ExecStart=/usr/local/bin/docker-compose up
+ExecStartPost=/usr/bin/mynode_post_mempool.sh
+
+ExecStop=/usr/local/bin/docker-compose down
+
+# Old v1
+#ExecStart=/usr/bin/docker run --rm --name mempoolspace -p 4080:80 -e BITCOIN_NODE_HOST=172.17.0.1 -e BITCOIN_NODE_USER=mynode -e BITCOIN_NODE_PASS=${BTC_RPC_PASSWORD} -e MEMPOOL_REFRESH_RATE_MS=10000 mempoolspace
+#ExecStop=/usr/bin/docker stop -t 2 mempoolspace
 
 User=root
 Group=root
 Type=simple
-TimeoutSec=240
+TimeoutSec=120
 Restart=always
-RestartSec=120
+RestartSec=30
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=mempoolspace
