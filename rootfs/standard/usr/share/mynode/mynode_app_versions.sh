@@ -8,7 +8,7 @@ LND_VERSION="v0.12.0-beta"
 LND_VERSION_FILE=/home/bitcoin/.mynode/lnd_version
 LND_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnd_version_latest
 
-LOOP_VERSION="v0.11.2-beta" 
+LOOP_VERSION="v0.11.4-beta" 
 LOOP_VERSION_FILE=/home/bitcoin/.mynode/loop_version
 LOOP_LATEST_VERSION_FILE=/home/bitcoin/.mynode/loop_version_latest
 
