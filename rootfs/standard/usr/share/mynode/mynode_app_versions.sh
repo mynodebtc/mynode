@@ -46,7 +46,7 @@ WHIRLPOOL_UPLOAD_SIG_ID="b072f024fad9609f3c659cd7620f51fa"
 WHIRLPOOL_VERSION_FILE=/home/bitcoin/.mynode/whirlpool_version
 WHIRLPOOL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/whirlpool_version_latest
 
-RTL_VERSION="v0.10.0"
+RTL_VERSION="v0.10.1"
 RTL_VERSION_FILE=/home/bitcoin/.mynode/rtl_version
 RTL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/rtl_version_latest
 
