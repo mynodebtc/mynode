@@ -5,9 +5,9 @@ Various restrictions and behaviors of myNode and the various applications are do
 ## General
 - Not all applications can be enabled at once on most hardware. It will overload the system resources and cause unstable
 behavior. If this happens, try disabling some applications. Some examples of this are:
--- Applications crashing, especially Bitcoin, and it will appear like blocks are lost and need to be re-synced
--- The Bitcoin log may show numerous "RPC Work Queue" errors
--- Electrum may stop syncing at a specific block until the device is rebooted.
+  - Applications crashing, especially Bitcoin, and it will appear like blocks are lost and need to be re-synced
+  - The Bitcoin log may show numerous "RPC Work Queue" errors
+  - Electrum may stop syncing at a specific block until the device is rebooted.
 
 
 ## Thunderhub
@@ -21,9 +21,9 @@ behavior. If this happens, try disabling some applications. Some examples of thi
 ## CKBunker
 
 - On some occasions, the CKBunker application will stop detecting a ColdCard that has been attached for a significant period of time.
--- Workaround: Run these commands as root.
-    echo 0 > /sys/bus/usb/devices/<coldcard device>/authorized
-    echo 1 > /sys/bus/usb/devices/<coldcard device>/authorized
+  - Workaround: Run these commands as root.
+    - echo 0 > /sys/bus/usb/devices/<coldcard device>/authorized
+    - echo 1 > /sys/bus/usb/devices/<coldcard device>/authorized
 - CKBunker uses a separate password that starts as "bolt" and can be updated within the app
 - The password is stored in plaintext on the myNode drive
 
