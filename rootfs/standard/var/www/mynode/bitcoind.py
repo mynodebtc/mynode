@@ -39,6 +39,11 @@ def bitcoind_status_page():
         version = get_bitcoin_version()
         rpc_password = get_bitcoin_rpc_password()
 
+        # Whitepaper
+        bitcoin_whitepaper_exists = False
+        if os.path.isfile("/mnt/hdd/mynode/bitcoin/bitcoin_whitepaper.pdf"):
+            bitcoin_whitepaper_exists = True
+
         # Mempool info
         mempool = get_bitcoin_mempool_info()
 
@@ -117,15 +122,21 @@ def bitcoind_status_page():
         "mempool_size": "{:.3} MB".format(float(mempool["bytes"]) / 1000 / 1000),
         "confirmed_balance": walletinfo["balance"],
         "unconfirmed_balance": walletinfo["unconfirmed_balance"],
+        "bitcoin_whitepaper_exists": bitcoin_whitepaper_exists,
         "version": version,
         "ui_settings": read_ui_settings()
     }
     return render_template('bitcoind_status.html', **templateData)
 
 @mynode_bitcoind.route("/bitcoind/wallet.dat")
-def lnd_tls_cert():
+def bitcoin_wallet_dat():
     check_logged_in()
     return send_from_directory(directory="/mnt/hdd/mynode/bitcoin/", filename="wallet.dat")
+
+@mynode_bitcoind.route("/bitcoind/bitcoin_whitepaper.pdf")
+def bitcoin_whitepaper_pdf():
+    check_logged_in()
+    return send_from_directory(directory="/mnt/hdd/mynode/bitcoin/", filename="bitcoin_whitepaper.pdf")
 
 @mynode_bitcoind.route("/bitcoind/reset_config")
 def bitcoin_reset_config_page():
