@@ -2,6 +2,14 @@
 
 Various restrictions and behaviors of myNode and the various applications are documented below.
 
+## General
+- Not all applications can be enabled at once on most hardware. It will overload the system resources and cause unstable
+behavior. If this happens, try disabling some applications. Some examples of this are:
+-- Applications crashing, especially Bitcoin, and it will appear like blocks are lost and need to be re-synced
+-- The Bitcoin log may show numerous "RPC Work Queue" errors
+-- Electrum may stop syncing at a specific block until the device is rebooted.
+
+
 ## Thunderhub
 
 - When Thunderhub is first installed, logging in will be disabled. You must either change your password or log out and log back in of the the myNode UI before using Thunderhub. At that point, Thunderhub will use the same password as myNode.
@@ -22,3 +30,12 @@ Various restrictions and behaviors of myNode and the various applications are do
 ## Sphinx Relay
 
 - Connection strings may only work a single time but are re-generated on each reboot. Since myNode does not know which string was used to successfully connect, they continue to be displayed in the UI, even though they may no longer be valid.
+
+## Mempool
+
+- Mempool can be resource intensive on some hardware. If the device runs slowly, try disabling some applications.
+
+## Specter
+
+- Specter authentication is off by default, but it will store and use its own password.
+- It is highly recommended to enable authentication.

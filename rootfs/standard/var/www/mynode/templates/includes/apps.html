@@ -56,16 +56,12 @@
         <div class="app_title">Mempool</div>
         <div class="app_status" id="mempoolspace_status">{{ mempoolspace_status }}</div>
         <div class="app_contents">
-            {% if product_key_skipped %}
-                Premium Feature
-            {% else %}
-                {% if not is_installing_docker_images %}
-                    {% if mempoolspace_enabled %}
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="mempoolspace">View</a>
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-mempoolspace">Disable</a>
-                    {% else %}
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-mempoolspace">Enable</a>
-                    {% endif %}
+            {% if not is_installing_docker_images %}
+                {% if mempoolspace_enabled %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="mempoolspace">View</a>
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-mempoolspace">Disable</a>
+                {% else %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-mempoolspace">Enable</a>
                 {% endif %}
             {% endif %}
         </div>
