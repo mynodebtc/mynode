@@ -1,3 +1,13 @@
+=== v0.2.27 ===
+- Released: 02/24/21
+- Add JoininBox v0.2.0
+- Add Bitcoin whitepaper download
+- Upgrade Mempool to v2.1.2
+- Upgrade Loop to v0.11.4
+- Upgrade RTL to v0.10.1
+- Upgrade Specter to v1.2.2
+- Upgrade LND to v0.12.1
+
 === v0.2.26 ===
 - Released: 02/13/21
 - Add CKBunker v0.9 (beta)
