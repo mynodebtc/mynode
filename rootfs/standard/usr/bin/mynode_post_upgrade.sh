@@ -226,8 +226,6 @@ if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
 fi
 LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/$LND_ARCH-$LND_VERSION.tar.gz
-LND_UPGRADE_MANIFEST_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
-LND_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-roasbeef-$LND_VERSION.txt.asc
 CURRENT=""
 if [ -f $LND_VERSION_FILE ]; then
     CURRENT=$(cat $LND_VERSION_FILE)
@@ -239,10 +237,10 @@ if [ "$CURRENT" != "$LND_VERSION" ]; then
     cd /opt/download
 
     wget $LND_UPGRADE_URL
-    wget $LND_UPGRADE_MANIFEST_URL
-    wget $LND_UPGRADE_MANIFEST_SIG_URL
+    wget $LND_UPGRADE_MANIFEST_URL -O manifest.txt
+    wget $LND_UPGRADE_MANIFEST_SIG_URL -O manifest.txt.sig
 
-    gpg --verify manifest-*.txt.asc
+    gpg --verify manifest.txt.sig manifest.txt
     if [ $? == 0 ]; then
         # Install LND
         tar -xzf lnd-*.tar.gz
@@ -263,8 +261,6 @@ if [ $IS_X86 = 1 ]; then
     LOOP_ARCH="loop-linux-amd64"
 fi
 LOOP_UPGRADE_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/$LOOP_ARCH-$LOOP_VERSION.tar.gz
-LOOP_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt
-LOOP_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt.sig
 CURRENT=""
 if [ -f $LOOP_VERSION_FILE ]; then
     CURRENT=$(cat $LOOP_VERSION_FILE)
@@ -276,10 +272,10 @@ if [ "$CURRENT" != "$LOOP_VERSION" ]; then
     cd /opt/download
 
     wget $LOOP_UPGRADE_URL
-    wget $LOOP_UPGRADE_MANIFEST_URL
-    wget $LOOP_UPGRADE_MANIFEST_SIG_URL
+    wget $LOOP_UPGRADE_MANIFEST_URL -O manifest.txt
+    wget $LOOP_UPGRADE_MANIFEST_SIG_URL -O manifest.txt.sig
 
-    gpg --verify manifest-*.txt.sig
+    gpg --verify manifest.txt.sig manifest.txt
     if [ $? == 0 ]; then
         # Install Loop
         tar -xzf loop-*.tar.gz
@@ -300,8 +296,6 @@ if [ $IS_X86 = 1 ]; then
     POOL_ARCH="pool-linux-amd64"
 fi
 POOL_UPGRADE_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/$POOL_ARCH-$POOL_VERSION.tar.gz
-POOL_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/manifest-$POOL_VERSION.txt
-POOL_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/manifest-$POOL_VERSION.txt.sig
 CURRENT=""
 if [ -f $POOL_VERSION_FILE ]; then
     CURRENT=$(cat $POOL_VERSION_FILE)
@@ -313,10 +307,10 @@ if [ "$CURRENT" != "$POOL_VERSION" ]; then
     cd /opt/download
 
     wget $POOL_UPGRADE_URL
-    wget $POOL_UPGRADE_MANIFEST_URL
-    wget $POOL_UPGRADE_MANIFEST_SIG_URL
+    wget $POOL_UPGRADE_MANIFEST_URL -O manifest.txt
+    wget $POOL_UPGRADE_MANIFEST_SIG_URL -O manifest.txt.sig
 
-    gpg --verify manifest-*.txt.sig
+    gpg --verify manifest.txt.sig manifest.txt
     if [ $? == 0 ]; then
         # Install Pool
         tar -xzf pool-*.tar.gz

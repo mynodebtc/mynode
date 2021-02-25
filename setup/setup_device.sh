@@ -322,8 +322,6 @@ if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
 fi
 LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/$LND_ARCH-$LND_VERSION.tar.gz
-LND_UPGRADE_MANIFEST_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
-LND_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-roasbeef-$LND_VERSION.txt.asc
 CURRENT=""
 if [ -f $LND_VERSION_FILE ]; then
     CURRENT=$(cat $LND_VERSION_FILE)
@@ -357,8 +355,6 @@ if [ $IS_X86 = 1 ]; then
     LOOP_ARCH="loop-linux-amd64"
 fi
 LOOP_UPGRADE_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/$LOOP_ARCH-$LOOP_VERSION.tar.gz
-LOOP_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt
-LOOP_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt.sig
 CURRENT=""
 if [ -f $LOOP_VERSION_FILE ]; then
     CURRENT=$(cat $LOOP_VERSION_FILE)
@@ -394,8 +390,6 @@ if [ $IS_X86 = 1 ]; then
     POOL_ARCH="pool-linux-amd64"
 fi
 POOL_UPGRADE_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/$POOL_ARCH-$POOL_VERSION.tar.gz
-POOL_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/manifest-$POOL_VERSION.txt
-POOL_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/manifest-$POOL_VERSION.txt.sig
 CURRENT=""
 if [ -f $POOL_VERSION_FILE ]; then
     CURRENT=$(cat $POOL_VERSION_FILE)
