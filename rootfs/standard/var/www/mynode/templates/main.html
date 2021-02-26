@@ -444,6 +444,11 @@
             {% if upgrade_available %}
             <a class="ui-button ui-widget ui-corner-all mynode_back" href="/settings"><span class="ui-icon ui-icon-notice"></span>upgrade&nbsp;</a>
             {% endif %}
+            {% if ui_settings['darkmode'] %}
+                <a class="ui-button ui-widget ui-corner-all mynode_back" href="/settings/toggle-darkmode-home" title="Disable Darkmode">&nbsp;<span class="ui-icon ui-icon-lightbulb"></span>&nbsp;</a>
+            {% else %}
+                <a class="ui-button ui-widget ui-corner-all mynode_back" href="/settings/toggle-darkmode-home" title="Enable Darkmode">&nbsp;<span class="ui-icon ui-icon-lightbulb"></span>&nbsp;</a>
+            {% endif %}
             <a class="ui-button ui-widget ui-corner-all mynode_back" id="https" title="Use HTTPS" style="display: none;" href="#">&nbsp;<span class="ui-icon ui-icon-locked"></span>&nbsp;</a>
             <a class="ui-button ui-widget ui-corner-all mynode_back" href="/logout" title="Logout"><span class="ui-icon ui-icon-close"></span>&nbsp;</a>
             <a class="ui-button ui-widget ui-corner-all mynode_back" id="power_button" title="Reboot or Shutdown"><span class="ui-icon ui-icon-power"></span>&nbsp;</a> 
