@@ -60,6 +60,16 @@ if [ ! -f /var/lib/mynode/.expanded_rootfs ]; then
     fi
 fi
 
+
+# Setup SD Card (if necessary)
+mkdir -p /run/tor
+mkdir -p /var/run/tor
+mkdir -p /home/bitcoin/.mynode/
+mkdir -p /home/admin/.bitcoin/
+chown admin:admin /home/admin/.bitcoin/
+rm -rf /etc/motd # Remove simple motd for update-motd.d
+
+
 # Customize logo for resellers
 if [ -f /opt/mynode/custom/logo_custom.png ]; then
     cp -f /opt/mynode/custom/logo_custom.png /var/www/mynode/static/images/logo_custom.png 
@@ -75,6 +85,16 @@ if [ $IS_RASPI -eq 1 ] || [ $IS_ROCK64 -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
     dphys-swapfile uninstall || true
 fi
 umount /mnt/hdd || true
+
+
+# Generate myNode serial number
+while [ ! -f /home/bitcoin/.mynode/mynode_serial ] || [ ! -s /home/bitcoin/.mynode/mynode_serial ]
+do
+    # Generate random serial for backup devices that don't have serial numbers
+    sleep 10s
+    < /dev/urandom tr -dc a-f0-9 | head -c${1:-16} > /home/bitcoin/.mynode/mynode_serial
+    chmod 644 /home/bitcoin/.mynode/mynode_serial
+done
 
 
 # Clone tool was opened
@@ -168,14 +188,6 @@ chmod 777 $MYNODE_STATUS_FILE
 rm -rf $MYNODE_DIR/.mynode_bitcoind_synced
 
 
-# Setup SD Card (if necessary)
-mkdir -p /run/tor
-mkdir -p /var/run/tor
-mkdir -p /home/bitcoin/.mynode/
-mkdir -p /home/admin/.bitcoin/
-chown admin:admin /home/admin/.bitcoin/
-rm -rf /etc/motd # Remove simple motd for update-motd.d
-
 # Sync product key (SD preferred)
 cp -f /home/bitcoin/.mynode/.product_key* /mnt/hdd/mynode/settings/ || true
 cp -f /mnt/hdd/mynode/settings/.product_key* home/bitcoin/.mynode/ || true
@@ -219,6 +231,7 @@ if [ ! -f /root/.ssh/id_rsa_btcpay ]; then
     echo "# Key used by BTCPay Server" >> /root/.ssh/authorized_keys
     cat /root/.ssh/id_rsa_btcpay.pub >> /root/.ssh/authorized_keys
 fi
+
 
 # Randomize RPC password
 while [ ! -f /mnt/hdd/mynode/settings/.btcrpcpw ] || [ ! -s /mnt/hdd/mynode/settings/.btcrpcpw ]
