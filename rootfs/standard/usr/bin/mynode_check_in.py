@@ -46,8 +46,18 @@ def get_product_key():
     except:
         product_key = "product_key_error"
     return product_key
+def is_drive_mounted():
+    mounted = True
+    try:
+        # Command fails and throws exception if not mounted
+        output = subprocess.check_output(f"grep -qs '/mnt/hdd ext4' /proc/mounts", shell=True).decode("utf-8") 
+    except:
+        mounted = False
+    return mounted
 def get_drive_size():
     size = -1
+    if not is_drive_mounted():
+        return -3
     try:
         size = subprocess.check_output("df /mnt/hdd | grep /dev | awk '{print $2}'", shell=True).strip()
         size = int(size) / 1000 / 1000
@@ -56,6 +66,8 @@ def get_drive_size():
     return size
 def get_quicksync_enabled():
     enabled = 1
+    if not is_drive_mounted():
+        return -3
     if os.path.isfile("/mnt/hdd/mynode/settings/quicksync_disabled"):
         enabled = 0
     return enabled
@@ -123,6 +135,8 @@ def check_in():
 
 # Run check in every 24 hours
 if __name__ == "__main__":
+    delay = 120
     while True:
+        time.sleep(delay)   # Delay before first checkin so drive is likely mounted
         check_in()
-        time.sleep(60*60*24)
+        time.sleep(60*60*24 - delay)
