@@ -230,6 +230,8 @@ def get_lnd_status():
                 return "Opening DB..."
             elif "Database now open" in line:
                 return "DB open..."
+            elif "unable to create server" in line:
+                return "Network Error"
             elif "Waiting for wallet encryption password" in line:
                 return "Logging in..."
             elif "LightningWallet opened" in line:
