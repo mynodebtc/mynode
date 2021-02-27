@@ -5,7 +5,7 @@ import subprocess
 # Service Status, Enabled, Logs, etc...
 #==================================
 def is_service_enabled(service_name):
-    cmd = "systemctl is-enabled {}".format(service_name)
+    cmd = "systemctl is-enabled {} > /dev/null".format(service_name)
     try:
         subprocess.check_call(cmd, shell=True)
         return True
@@ -14,14 +14,14 @@ def is_service_enabled(service_name):
     return False
 
 def get_service_status_code(service_name):
-    code = os.system("systemctl status {} --no-pager".format(service_name))
+    code = os.system("systemctl status {} --no-pager > /dev/null".format(service_name))
     return code
 
 def get_service_status_basic_text(service_name):
     if not is_service_enabled(service_name):
         return "Disabled"
 
-    code = os.system("systemctl status {} --no-pager".format(service_name))
+    code = os.system("systemctl status {} --no-pager  > /dev/null".format(service_name))
     if code == 0:
         return "Running"
     return "Error"
@@ -30,7 +30,7 @@ def get_service_status_color(service_name):
     if not is_service_enabled(service_name):
         return "gray"
 
-    code = os.system("systemctl status {} --no-pager".format(service_name))
+    code = os.system("systemctl status {} --no-pager > /dev/null".format(service_name))
     if code == 0:
         return "green"
     return "red"
