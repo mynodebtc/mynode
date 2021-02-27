@@ -59,8 +59,16 @@ td {
     left: 20px;
 }
 
+.mynode_top_left_div {
+    position: fixed;
+    font-size: 14px;
+    top: 20px;
+    left: 20px;
+}
+
 .mynode_top_right_div {
     position: fixed;
+    font-size: 14px;
     top: 20px;
     right: 20px;
 }
