@@ -730,6 +730,12 @@ def enable_darkmode():
     ui_settings['darkmode'] = True
     write_ui_settings(ui_settings)
 
+def toggle_darkmode():
+    if is_darkmode_enabled():
+        disable_darkmode()
+    else:
+        enable_darkmode()
+
 def is_https_forced():
     return os.path.isfile('/home/bitcoin/.mynode/https_forced')
 

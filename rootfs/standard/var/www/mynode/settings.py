@@ -852,21 +852,13 @@ def ping_page():
 @mynode_settings.route("/settings/toggle-darkmode")
 def toggle_darkmode_page():
     check_logged_in()
-
-    if is_darkmode_enabled():
-        disable_darkmode()
-    else:
-        enable_darkmode()
+    toggle_darkmode()
     return redirect("/settings")
 
 @mynode_settings.route("/settings/toggle-darkmode-home")
 def toggle_darkmode_page_home():
     check_logged_in()
-
-    if is_darkmode_enabled():
-        disable_darkmode()
-    else:
-        enable_darkmode()
+    toggle_darkmode()
     return redirect("/")
 
 
