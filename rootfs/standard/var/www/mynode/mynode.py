@@ -971,6 +971,9 @@ def start_threads():
     public_ip_thread = BackgroundThread(find_public_ip, 60*60*12) # 12-hour repeat
     public_ip_thread.start()
     threads.append(public_ip_thread)
+    dmesg_thread = BackgroundThread(monitor_dmesg, 60) # Runs forever, restart after 60 if it fails 
+    dmesg_thread.start()
+    threads.append(dmesg_thread)
 
     app.logger.info("STARTED {} THREADS".format(len(threads)))
 
