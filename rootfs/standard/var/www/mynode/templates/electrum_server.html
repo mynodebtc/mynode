@@ -11,6 +11,9 @@
         </div>
 
         <div class="main_header">Electrum Server Status</div>
+
+        {% include 'includes/message_display.html' %}
+
         <br/>
         
         <div class="app_tile_row">
@@ -21,6 +24,12 @@
             <div class="info_tile">
                 <div class="info_tile_header">Current Block</div>
                 <div class="info_tile_contents">{{current_block}}</div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">Restart</div>
+                <div class="info_tile_contents">
+                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;" href="/restart-electrs">Restart</a>
+                </div>
             </div>
         </div>
 
