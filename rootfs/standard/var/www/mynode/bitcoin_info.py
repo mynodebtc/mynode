@@ -11,6 +11,7 @@ bitcoin_block_height = 570000
 mynode_block_height = 566000
 bitcoin_blockchain_info = None
 bitcoin_recent_blocks = None
+bitcoin_recent_blocks_last_cache_height = 566000
 bitcoin_peers = []
 bitcoin_network_info = None
 bitcoin_wallet_info = None
@@ -63,8 +64,10 @@ def update_bitcoin_main_info():
     return True
 
 def update_bitcoin_other_info():
+    global mynode_block_height
     global bitcoin_blockchain_info
     global bitcoin_recent_blocks
+    global bitcoin_recent_blocks_last_cache_height
     global bitcoin_peers
     global bitcoin_network_info
     global bitcoin_mempool
@@ -84,9 +87,11 @@ def update_bitcoin_other_info():
         # Get other less important info
         try:
             # Recent blocks
-            commands = [ [ "getblockhash", height] for height in range(mynode_block_height-9, mynode_block_height+1) ]
-            block_hashes = rpc_connection.batch_(commands)
-            bitcoin_recent_blocks = rpc_connection.batch_([ [ "getblock", h ] for h in block_hashes ])
+            if mynode_block_height != bitcoin_recent_blocks_last_cache_height:
+                commands = [ [ "getblockhash", height] for height in range(mynode_block_height-9, mynode_block_height+1) ]
+                block_hashes = rpc_connection.batch_(commands)
+                bitcoin_recent_blocks = rpc_connection.batch_([ [ "getblock", h ] for h in block_hashes ])
+                bitcoin_recent_blocks_last_cache_height = mynode_block_height
 
             # Get peers
             bitcoin_peers = rpc_connection.getpeerinfo()
