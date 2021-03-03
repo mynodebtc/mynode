@@ -546,9 +546,9 @@ def get_lnbits_status_and_color():
         if is_lnbits_enabled():
             status_code = get_service_status_code("lnbits")
             if status_code != 0:
-                lnbits_status_color = "red"
+                color = "red"
             else:
-                lnbits_status_color = "green"
+                color = "green"
     else:
         status = "Waiting on LND..."
     return status,color
@@ -874,6 +874,26 @@ def get_fsck_results():
 
 def has_sd_rw_error():
     return os.path.isfile("/tmp/sd_rw_error")
+
+
+#==================================
+# Out of Memory Error Functions
+#==================================
+def has_oom_error():
+    return os.path.isfile("/tmp/oom_error")
+def clear_oom_error():
+    os.system("rm -f /tmp/oom_error")
+    os.system("rm -f /tmp/oom_info")
+def set_oom_error(oom_error):
+    os.system("touch /tmp/oom_error")
+    set_file_contents("/tmp/oom_info", oom_error)
+def get_oom_error_info():
+    try:
+        with open("/tmp/oom_info", "r") as f:
+            return f.read()
+    except:
+        return "ERROR"
+    return "ERROR"
 
 
 #==================================
