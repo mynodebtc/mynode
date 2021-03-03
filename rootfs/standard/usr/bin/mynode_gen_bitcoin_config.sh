@@ -29,8 +29,8 @@ else
         sed -i "s/dbcache=.*/dbcache=700/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
         sed -i "s/maxmempool=.*/maxmempool=150/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
     elif [ "$TOTAL_RAM_GB" -le "4" ]; then
-        sed -i "s/dbcache=.*/dbcache=1100/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
-        sed -i "s/maxmempool=.*/maxmempool=400/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        sed -i "s/dbcache=.*/dbcache=1000/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        sed -i "s/maxmempool=.*/maxmempool=300/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
     elif [ "$TOTAL_RAM_GB" -le "6" ]; then
         sed -i "s/dbcache=.*/dbcache=2000/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
         sed -i "s/maxmempool=.*/maxmempool=400/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
