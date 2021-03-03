@@ -18,7 +18,7 @@
 {
 	rotate 2
 	daily
-    maxsize 3M
+    maxsize 2M
 	missingok
 	notifempty
 	postrotate
@@ -41,7 +41,7 @@
 {
 	rotate 2
 	daily
-    maxsize 3M
+    maxsize 2M
 	missingok
 	notifempty
 	sharedscripts
