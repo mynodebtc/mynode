@@ -1,8 +1,8 @@
-from flask import Blueprint, render_template, session, abort, Markup, request, redirect
+from flask import Blueprint, render_template, session, abort, Markup, request, redirect, flash
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from pprint import pprint, pformat
 from bitcoin_info import *
-from device_info import get_local_ip, skipped_product_key, get_onion_url_electrs, read_ui_settings
+from device_info import get_local_ip, skipped_product_key, get_onion_url_electrs, read_ui_settings, restart_electrs
 from user_management import check_logged_in
 from electrum_info import *
 import json
@@ -55,3 +55,10 @@ def electrum_server_page():
         "ui_settings": read_ui_settings()
     }
     return render_template('electrum_server.html', **templateData)
+
+@mynode_electrum_server.route("/restart-electrs")
+def page_restart_electrs():
+    check_logged_in()
+    restart_electrs()
+    flash("Restarting electrum server...", category="message")
+    return redirect("/electrum-server")

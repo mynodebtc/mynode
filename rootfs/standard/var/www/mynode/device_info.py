@@ -999,6 +999,13 @@ def delete_lnd_data():
 def stop_electrs():
     os.system("systemctl stop electrs")
 
+def restart_electrs_actual():
+    os.system("systemctl restart electrs")
+
+def restart_electrs():
+    t = Timer(0.1, restart_electrs_actual)
+    t.start()
+
 def delete_electrs_data():
     os.system("rm -rf /mnt/hdd/mynode/electrs")
 
