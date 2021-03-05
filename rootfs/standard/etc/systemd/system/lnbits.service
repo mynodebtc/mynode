@@ -10,18 +10,20 @@ After=bitcoind.service lnd.service
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_lnd.sh
 ExecStartPre=/usr/bin/mynode_pre_lnbits.sh
-ExecStartPre=/bin/sh -c 'cd /opt/mynode/lnbits && /usr/local/bin/pipenv run flask migrate'
-Environment=FLASK_ENV=development
+#ExecStartPre=/bin/sh -c 'cd /opt/mynode/lnbits && /usr/local/bin/pipenv run flask migrate'
+
+ExecStartPre=/bin/sh -c 'cd /opt/mynode/lnbits && ./lnbits_venv/bin/quart migrate'
+#Environment=FLASK_ENV=development
 WorkingDirectory=/opt/mynode/lnbits
 
-ExecStart=/bin/sh -c 'cd /opt/mynode/lnbits && /usr/local/bin/pipenv run flask run --host 0.0.0.0'
+ExecStart=/bin/sh -c 'cd /opt/mynode/lnbits && ./lnbits_venv/bin/hypercorn -k trio --bind 0.0.0.0:5000 "lnbits.app:create_app()"'
 
 User=bitcoin
 Group=bitcoin
 Type=simple
-TimeoutSec=240
+TimeoutSec=120
 Restart=always
-RestartSec=60
+RestartSec=30
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=lnbits

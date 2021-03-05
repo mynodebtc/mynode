@@ -60,7 +60,7 @@ BTCRPCEXPLORER_VERSION="v2.2.0"
 BTCRPCEXPLORER_VERSION_FILE=/home/bitcoin/.mynode/btcrpcexplorer_version
 BTCRPCEXPLORER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/btcrpcexplorer_version_latest
 
-LNBITS_VERSION=dd2a282158d5774c2a3c85c164a10709c13ef7b4         # Github hash to download
+LNBITS_VERSION=503c981bc970f4ab894f50198dbd6833cae8f6e0         # Github hash to download
 LNBITS_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version
 LNBITS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version_latest
 

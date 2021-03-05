@@ -102,6 +102,10 @@ source /tmp/mynode_app_versions.sh
 # Create any necessary users
 useradd -m -s /bin/bash joinmarket || true
 
+# Setup bitcoin user folders
+mkdir -p /home/bitcoin/.mynode/
+chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+
 # Update sources
 apt-get -y update
 
@@ -310,8 +314,6 @@ if [ "$CURRENT" != "$BTC_VERSION" ]; then
         sudo -u bitcoin ln -s /mnt/hdd/mynode/lnd /home/bitcoin/.lnd
     fi
     mkdir -p /home/admin/.bitcoin
-    mkdir -p /home/bitcoin/.mynode/
-    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $BTC_VERSION > $BTC_VERSION_FILE
 fi
 cd ~
@@ -342,8 +344,6 @@ if [ "$CURRENT" != "$LND_VERSION" ]; then
     install -m 0755 -o root -g root -t /usr/local/bin lnd/*
     ln -s /bin/ip /usr/bin/ip || true
 
-    mkdir -p /home/bitcoin/.mynode/
-    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $LND_VERSION > $LND_VERSION_FILE
 fi
 cd ~
@@ -609,8 +609,6 @@ if [ "$CURRENT" != "$RTL_VERSION" ]; then
     cd RTL
     sudo -u bitcoin NG_CLI_ANALYTICS=false npm install --only=production
 
-    mkdir -p /home/bitcoin/.mynode/
-    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $RTL_VERSION > $RTL_VERSION_FILE
 fi
 
@@ -631,8 +629,6 @@ if [ "$CURRENT" != "$BTCRPCEXPLORER_VERSION" ]; then
     cd btc-rpc-explorer
     sudo -u bitcoin npm install --only=production
 
-    mkdir -p /home/bitcoin/.mynode/
-    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $BTCRPCEXPLORER_VERSION > $BTCRPCEXPLORER_VERSION_FILE
 fi
 
@@ -654,18 +650,15 @@ if [ "$CURRENT" != "$LNBITS_VERSION" ]; then
     cd lnbits
 
     # Copy over config file
-    #cp /usr/share/mynode/lnbits.env /opt/mynode/lnbits/.env
-    #chown bitcoin:bitcoin /opt/mynode/lnbits/.env
+    cp /usr/share/mynode/lnbits.env /opt/mynode/lnbits/.env
+    chown bitcoin:bitcoin /opt/mynode/lnbits/.env
 
-    # Install with python 3.7 (Only use "pipenv install --python 3.7" once or it will rebuild the venv!)
-    sudo -u bitcoin pipenv --python 3.7 install
-    sudo -u bitcoin pipenv run pip install python-dotenv
-    sudo -u bitcoin pipenv run pip install -r requirements.txt
-    #sudo -u bitcoin pipenv run pip install lnd-grpc # Using REST now (this install takes a LONG time)
-    sudo -u bitcoin pipenv run flask migrate || true
+    # Install lnbits
+    sudo -u bitcoin python3 -m venv lnbits_venv
+    sudo -u bitcoin ./lnbits_venv/bin/pip install -r requirements.txt
+    sudo -u bitcoin ./lnbits_venv/bin/quart assets
+    sudo -u bitcoin ./lnbits_venv/bin/quart migrate
 
-    mkdir -p /home/bitcoin/.mynode/
-    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $LNBITS_VERSION > $LNBITS_VERSION_FILE
 fi
 
@@ -742,8 +735,6 @@ if [ "$CURRENT" != "$LNDCONNECT_VERSION" ]; then
     mv lndconnect-* lndconnect
     install -m 0755 -o root -g root -t /usr/local/bin lndconnect/*
 
-    mkdir -p /home/bitcoin/.mynode/
-    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $LNDCONNECT_VERSION > $LNDCONNECT_VERSION_FILE
 fi
 
