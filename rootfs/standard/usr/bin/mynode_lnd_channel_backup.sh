@@ -10,6 +10,9 @@ while [ ! -f $LND_CHANNEL_FILE ]; do
 done
 echo "Channel backup found!"
 
+# Always copy once to make first backup
+cp -f $LND_CHANNEL_FILE $LND_CHANNEL_FILE_BACKUP
+
 while true; do
     # If file has been deleted, exit so we cat restart
     if [ ! -f $LND_CHANNEL_FILE ]; then
