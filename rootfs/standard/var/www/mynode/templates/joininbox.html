@@ -1,0 +1,51 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        {% include 'includes/head.html' %}
+    </head>
+    <body>
+        {% include 'includes/logo_header.html' %}
+        <div class="mynode_back_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        </div>
+
+        <div class="main_header">JoininBox / JoinMarket</div>
+        <br/>
+
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Status</div>
+                <div class="info_tile_contents">Ready</div>
+            </div>
+        </div>
+
+
+        <div class="instructions">
+            <div class="instructions-header">Instructions to setup JoininBox / JoinMarket</div>
+            <ol class="instructions-steps">
+                <li>JoinMarket is a mixing wallet for Bitcoin that can be used with a terminal interface via JoininBox.</li>
+                <li>To get started, you need access to the Linux terminal of your myNode device.</li>
+                <ul>
+                    <li>This may be advanced for some. Please be careful, myNode is not responsible for lost funds.</li>
+                    <li>A guide to access the Linux terminal is available on mynodebtc.com - <a href="https://mynodebtc.com/guide/debug_access_linux_terminal" target="_blank">guide</a></li>
+                </ul>
+                <li>Once you have terminal access, run the following command:</li>
+                <ul>
+                    <li><pre>sudo mynode-joininbox</pre></li>
+                </ul>
+                <li>Enter your myNode password when prompted.</li>
+                <li>The first time running JoininBox, it will install the necessary software.</li>
+                <li>Enjoy mixing your coins!</li>
+            </ol>
+
+            <br/><br/>
+
+            <!--
+            <div class="instructions-header">Tips and Notes</div>
+            <ul style="font-size: 12px;">
+                <li>Add tips and notes</li>
+            </ul>
+            -->
+        </div>
+    </body>
+</html>

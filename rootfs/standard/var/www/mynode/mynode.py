@@ -6,6 +6,7 @@ from api import mynode_api
 from bitcoind import mynode_bitcoind
 from whirlpool import mynode_whirlpool, get_whirlpool_status
 from dojo import mynode_dojo, get_dojo_status
+from joininbox import mynode_joininbox
 from caravan import mynode_caravan
 from sphinxrelay import mynode_sphinxrelay
 from manage_apps import mynode_manage_apps
@@ -77,6 +78,7 @@ app.register_blueprint(mynode_lnd)
 app.register_blueprint(mynode_api)
 app.register_blueprint(mynode_whirlpool)
 app.register_blueprint(mynode_dojo)
+app.register_blueprint(mynode_joininbox)
 app.register_blueprint(mynode_caravan)
 app.register_blueprint(mynode_sphinxrelay)
 app.register_blueprint(mynode_manage_apps)
@@ -553,6 +555,7 @@ def index():
             "lnd_channel_count": get_lightning_channel_count(),
             "lnd_balance_info": get_lightning_balance_info(),
             "lnd_version": get_lnd_version(),
+            "is_testnet_enabled": is_testnet_enabled(),
             "tor_status_color": tor_status_color,
             "tor_status": tor_status,
             "is_installing_docker_images": is_installing_docker_images(),
