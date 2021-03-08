@@ -140,6 +140,15 @@
     </div>
     {% endif %}
     <div class="app_tile">
+        <!--<div class="app_status_icon green" id="joininbox_status_icon"></div>-->
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/joininbox.png")}}"/></div>
+        <div class="app_title">JoininBox</div>
+        <div class="app_status" id="joininbox_status">JoinMarket Mixing</div>
+        <div class="app_contents">
+            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/joininbox">Info</a>
+        </div>
+    </div>
+    <div class="app_tile">
         <div class="app_status_icon {{ thunderhub_status_color }}" id="thunderhub_status_icon"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/thunderhub.png")}}"/></div>
         <div class="app_title">Thunderhub</div>
@@ -154,26 +163,6 @@
                         <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-thunderhub">Disable</a>
                     {% else %}
                         <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-thunderhub">Enable</a>
-                    {% endif %}
-                {% endif %}
-            {% endif %}
-        </div>
-    </div>
-    <div class="app_tile">
-        <div class="app_status_icon {{ lnbits_status_color }}" id="lnbits_status_icon"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lnbits.png")}}"/></div>
-        <div class="app_title">LNbits</div>
-        <div class="app_status" id="lnbits_status">{{ lnbits_status }}</div>
-        <div class="app_contents">
-            {% if product_key_skipped %}
-                Premium Feature
-            {% else %}
-                {% if lnd_ready %}
-                    {% if lnbits_enabled %}
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lnbits">LNbits</a>
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-lnbits">Disable</a>
-                    {% else %}
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-lnbits">Enable</a>
                     {% endif %}
                 {% endif %}
             {% endif %}
@@ -220,6 +209,7 @@
             {% endif %}
         </div>
     </div>
+
     <div class="app_tile">
         <div class="app_status_icon {{ ckbunker_status_color }}" id="ckbunker_status_icon"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/ckbunker.png")}}"/></div>
@@ -254,6 +244,26 @@
                     <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-sphinxrelay">Disable</a>
                 {% else %}
                     <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-sphinxrelay">Enable</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="app_tile">
+        <div class="app_status_icon {{ lnbits_status_color }}" id="lnbits_status_icon"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lnbits.png")}}"/></div>
+        <div class="app_title">LNbits</div>
+        <div class="app_status" id="lnbits_status">{{ lnbits_status }}</div>
+        <div class="app_contents">
+            {% if product_key_skipped %}
+                Premium Feature
+            {% else %}
+                {% if lnd_ready %}
+                    {% if lnbits_enabled %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lnbits">LNbits</a>
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-lnbits">Disable</a>
+                    {% else %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-lnbits">Enable</a>
+                    {% endif %}
                 {% endif %}
             {% endif %}
         </div>
