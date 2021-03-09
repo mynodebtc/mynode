@@ -62,6 +62,14 @@ LND_CHANNEL_FILE="/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/channel.backup"
 LND_CHANNEL_FILE_BACKUP="/home/bitcoin/lnd_backup/channel.backup"
 LND_ADMIN_MACAROON_FILE="/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon"
 PRODUCT_KEY_FILE="/home/bitcoin/.mynode/.product_key"
+IS_TESTNET_ENABLED_FILE="/mnt/hdd/mynode/settings/.testnet_enabled"
+
+if [ -f $IS_TESTNET_ENABLED_FILE ]; then
+    LND_WALLET_FILE="/mnt/hdd/mynode/lnd/data/chain/bitcoin/testnet/wallet.db"
+    LND_CHANNEL_FILE="/mnt/hdd/mynode/lnd/data/chain/bitcoin/testnet/channel.backup"
+    LND_CHANNEL_FILE_BACKUP="/home/bitcoin/lnd_backup/channel_testnet.backup"
+    LND_ADMIN_MACAROON_FILE="/mnt/hdd/mynode/lnd/data/chain/bitcoin/testnet/admin.macaroon"
+fi
 
 ELECTRS_ENABLED_FILE="/mnt/hdd/mynode/.mynode_electrs_enabled"
 LNDHUB_ENABLED_FILE="/mnt/hdd/mynode/.mynode_lndhub_enabled"

@@ -554,6 +554,7 @@ def index():
             "lnd_peer_count": get_lightning_peer_count(),
             "lnd_channel_count": get_lightning_channel_count(),
             "lnd_balance_info": get_lightning_balance_info(),
+            "lnd_wallet_exists": lnd_wallet_exists(),
             "lnd_version": get_lnd_version(),
             "is_testnet_enabled": is_testnet_enabled(),
             "tor_status_color": tor_status_color,

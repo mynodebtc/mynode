@@ -30,7 +30,7 @@
 }
 
 .bitcoind_table {
-    width: 800px;
+    width: 1000px;
     margin: auto;
     text-align: center;
     vertical-align: middle;
@@ -54,7 +54,7 @@ table.bitcoind_table tbody tr:nth-child(even) td{
 }
 
 table.bitcoind_table td {
-    padding: 20px 0;
+    padding: 10px 0;
     margin: 0px;
 }
 .bitcoind_dump_contents {

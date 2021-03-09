@@ -960,6 +960,11 @@ def get_bitcoin_rpc_password():
 def stop_bitcoind():
     os.system("systemctl stop bitcoind")
 
+def get_bitcoin_log_file():
+    if is_testnet_enabled():
+        return "/mnt/hdd/mynode/bitcoin/testnet3/debug.log"
+    return "/mnt/hdd/mynode/bitcoin/debug.log"
+
 def reset_bitcoin_env_file():
     os.system("echo 'BTCARGS=' > "+BITCOIN_ENV_FILE)
 
@@ -985,13 +990,29 @@ def restart_lnd():
     os.system("systemctl restart lnd")
 
 def delete_lnd_data():
-    #os.system("rm -f "+LND_WALLET_FILE)
     os.system("rm -rf "+LND_DATA_FOLDER)
     os.system("rm -rf /home/bitcoin/.lnd-admin/credentials.json")
     os.system("rm -rf /mnt/hdd/mynode/settings/.lndpw")
     os.system("rm -rf /home/admin/.lnd/")
     return True
 
+
+#==================================
+# Mainnet / Testnet Functions
+#==================================
+def is_testnet_enabled():
+    return os.path.isfile("/mnt/hdd/mynode/settings/.testnet_enabled")
+def enable_testnet():
+    os.system("touch /mnt/hdd/mynode/settings/.testnet_enabled")
+    os.system("sync")
+def disable_testnet():
+    os.system("rm -f /mnt/hdd/mynode/settings/.testnet_enabled")
+    os.system("sync")
+def toggle_testnet(): 
+    if is_testnet_enabled():
+        disable_testnet()
+    else:
+        enable_testnet()
 
 #==================================
 # Electrum Server Functions

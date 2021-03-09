@@ -120,6 +120,7 @@ def bitcoind_status_page():
         "disk_size": (int(info["size_on_disk"]) / 1000 / 1000 / 1000),
         "mempool_tx": mempool["size"],
         "mempool_size": "{:.3} MB".format(float(mempool["bytes"]) / 1000 / 1000),
+        "is_testnet_enabled": is_testnet_enabled(),
         "confirmed_balance": walletinfo["balance"],
         "unconfirmed_balance": walletinfo["unconfirmed_balance"],
         "bitcoin_whitepaper_exists": bitcoin_whitepaper_exists,

@@ -30,7 +30,7 @@ while true; do
     /usr/bin/expect /usr/bin/unlock_lnd.tcl
     if [ $? -eq 0 ]; then
         # Unlocked! Verify unlocked every time LND files change
-        inotifywait -t 600 -r -e modify -e create -e delete /mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/ /mnt/hdd/mynode/lnd/tls.cert
+        inotifywait -t 600 -r -e modify -e create -e delete /mnt/hdd/mynode/lnd/data/chain/bitcoin/ /mnt/hdd/mynode/lnd/tls.cert
         
         # Slow down check rate for next time around
         CHECK_RATE="60s"

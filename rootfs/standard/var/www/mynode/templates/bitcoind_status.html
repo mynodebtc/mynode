@@ -38,6 +38,12 @@
                 <div class="info_tile_header">Difficulty</div>
                 <div class="info_tile_contents">{{difficulty}}</div>
             </div>
+            {% if is_testnet_enabled %}
+            <div class="info_tile">
+                <div class="info_tile_header">Network</div>
+                <div class="info_tile_contents">Testnet</div>
+            </div>
+            {% endif %}
             <div class="info_tile">
                 <div class="info_tile_header">Version</div>
                 <div class="info_tile_contents">{{version}}</div>

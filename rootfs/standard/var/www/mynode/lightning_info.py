@@ -16,16 +16,14 @@ lnd_version = None
 loop_version = None
 pool_version = None
 lightning_peers = None
+lightning_peer_aliases = {}
 lightning_channels = None
 lightning_channel_balance = None
 lightning_wallet_balance = None
 lightning_desync_count = 0
 
 LND_FOLDER = "/mnt/hdd/mynode/lnd/"
-MACAROON_FILE = "/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon"
-WALLET_FILE = "/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/wallet.db"
 TLS_CERT_FILE = "/mnt/hdd/mynode/lnd/tls.cert"
-CHANNEL_BACKUP_FILE = "/home/bitcoin/lnd_backup/channel.backup"
 LND_REST_PORT = "10080"
 
 # Functions
@@ -88,6 +86,22 @@ def get_lightning_peers():
     global lightning_peers
     return copy.deepcopy(lightning_peers)
 
+def get_lightning_node_info(pubkey):
+    nodeinfo = lnd_get("/graph/node/{}".format(pubkey), timeout=2)
+    return nodeinfo
+
+def get_lightning_peer_alias(pubkey):
+    global lightning_peer_aliases
+    if pubkey in lightning_peer_aliases:
+        return lightning_peer_aliases[pubkey]
+
+    nodeinfo = get_lightning_node_info(pubkey)
+    if nodeinfo != None and "node" in nodeinfo:
+        if "alias" in nodeinfo["node"]:
+            lightning_peer_aliases[pubkey] = nodeinfo["node"]["alias"]
+            return nodeinfo["node"]["alias"]
+    return "UNKNOWN"
+
 def get_lightning_peer_count():
     info = get_lightning_info()
     num_peers = 0
@@ -141,11 +155,11 @@ def is_lnd_ready():
     global lnd_ready
     return lnd_ready
 
-def lnd_get(path):
+def lnd_get(path, timeout=10):
     try:
         macaroon = get_macaroon()
         headers = {"Grpc-Metadata-macaroon":macaroon}
-        r = requests.get("https://localhost:"+LND_REST_PORT+"/v1"+path, verify=TLS_CERT_FILE,headers=headers)
+        r = requests.get("https://localhost:"+LND_REST_PORT+"/v1"+path, verify=TLS_CERT_FILE,headers=headers, timeout=timeout)
     except Exception as e:
         app.logger.info("ERROR in lnd_get: "+str(e))
         return {"error": str(e)}
@@ -166,12 +180,25 @@ def restart_lnd():
     t = Timer(1.0, restart_lnd_actual)
     t.start()
 
+def is_testnet_enabled():
+    return os.path.isfile("/mnt/hdd/mynode/settings/.testnet_enabled")
+
+def get_lightning_wallet_file():
+    if is_testnet_enabled():
+        return "/mnt/hdd/mynode/lnd/data/chain/bitcoin/testnet/wallet.db"
+    return "/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/wallet.db"
+
+def get_lightning_macaroon_file():
+    if is_testnet_enabled():
+        return "/mnt/hdd/mynode/lnd/data/chain/bitcoin/testnet/admin.macaroon"
+    return "/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon"
+
 def get_macaroon():
-    m = subprocess.check_output("xxd -ps -u -c 1000 "+MACAROON_FILE, shell=True)
+    m = subprocess.check_output("xxd -ps -u -c 1000 " + get_lightning_macaroon_file(), shell=True)
     return m.strip()
 
 def lnd_wallet_exists():
-    return os.path.isfile(WALLET_FILE)
+    return os.path.isfile( get_lightning_wallet_file() )
 
 def create_wallet(seed):
     try:
@@ -196,8 +223,13 @@ def is_lnd_logged_in():
     except:
         return False
 
+def get_lnd_channel_backup_file():
+    if is_testnet_enabled():
+        return "/home/bitcoin/lnd_backup/channel_testnet.backup"
+    return "/home/bitcoin/lnd_backup/channel.backup"
+
 def lnd_channel_backup_exists():
-    return os.path.isfile(CHANNEL_BACKUP_FILE)
+    return os.path.isfile( get_lnd_channel_backup_file() )
 
 def get_lnd_status():
     if not lnd_wallet_exists():

@@ -5,7 +5,14 @@
 # It is intended to attempt a manual unlock of the lnd wallet
 set -e 
 
+source /usr/share/mynode/mynode_config.sh
+
+NETWORK=mainnet
+if [ -f $IS_TESTNET_ENABLED_FILE ]; then
+    NETWORK=testnet
+fi
+
 LND_PASS=$(cat /mnt/hdd/mynode/settings/.lndpw)
 LND_TLS_CERT="/home/bitcoin/.lnd/tls.cert"
-LND_MACAROON="/home/bitcoin/.lnd/data/chain/mainnet/admin.macaroon"
-echo $LND_PASS | lncli --tlscertpath $LND_TLS_CERT --macaroonpath $LND_MACAROON unlock --stdin
+LND_MACAROON="/home/bitcoin/.lnd/data/chain/$NETWORK/admin.macaroon"
+echo $LND_PASS | lncli --network=$NETWORK --tlscertpath $LND_TLS_CERT --macaroonpath $LND_MACAROON unlock --stdin

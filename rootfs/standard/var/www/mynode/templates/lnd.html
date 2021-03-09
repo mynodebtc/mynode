@@ -131,6 +131,12 @@
                 <div class="info_tile_header">Num Peers</div>
                 <div class="info_tile_contents">{{num_peers}}</div>
             </div>
+            {% if is_testnet_enabled %}
+            <div class="info_tile">
+                <div class="info_tile_header">Network</div>
+                <div class="info_tile_contents">Testnet</div>
+            </div>
+            {% endif %}
             <div class="info_tile">
                 <div class="info_tile_header">LND Version</div>
                 <div class="info_tile_contents">{{version}}</div>
@@ -278,7 +284,7 @@
     <div class="app_tile_row">
         <table class="bitcoind_table">
             <thead class="bitcoind_table_header">
-                <td>Chan ID</td>
+                <td>Peer Alias</td>
                 <td>Capacity</td>
                 <td>Local Capacity</td>
                 <td>Remote Capacity</td>
@@ -286,7 +292,7 @@
             <tbody>
                 {% for channel in channels %}
                     <tr>
-                        <td>{{ channel.chan_id }}</td>
+                        <td>{{ channel.remote_alias }}</td>
                         <td>{{ channel.capacity }}</td>
                         <td>{{ channel.local_balance }}</td>
                         <td>{{ channel.remote_balance }}</td>
@@ -301,22 +307,22 @@
     <div class="app_tile_row">
         <table class="bitcoind_table">
             <thead class="bitcoind_table_header">
+                <td>Alias</td>
                 <td>Pub Key</td>
-                <td>Address</td>
-                <td>TX (MB)</td>
-                <td>RX (MB)</td>
-                <td>Ping Time</td>
-                <td>Sync Type</td>
+                <!--<td>Address</td>-->
+                <td>Sats TX</td>
+                <td>Sats RX</td>
+                <!--<td>Sync Type</td>-->
             </thead>
             <tbody>
                 {% for peer in peers %}
                     <tr>
-                        <td>{{ peer.pub_key }}</td>
-                        <td>{{ peer.address }}</td>
-                        <td>{{ peer.bytes_sent }}</td>
-                        <td>{{ peer.bytes_recv }}</td>
-                        <td>{{ peer.ping_time }}</td>
-                        <td>{{ peer.sync_type }}</td>
+                        <td>{{ peer.alias }}</td>
+                        <td style="font-size: 10px;">{{ peer.pub_key }}</td>
+                        <!--<td>{{ peer.address }}</td>-->
+                        <td>{{ peer.sat_sent }}</td>
+                        <td>{{ peer.sat_recv }}</td>
+                        <!--<td>{{ peer.sync_type }}</td>-->
                     </tr>
                 {% endfor %}
             </tbody>
