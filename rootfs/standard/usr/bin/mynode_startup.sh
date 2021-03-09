@@ -287,6 +287,12 @@ source /usr/bin/mynode_gen_bitcoin_config.sh
 # LND Config
 source /usr/bin/mynode_gen_lnd_config.sh
 
+# Loop Config
+source /usr/bin/mynode_gen_loop_config.sh
+
+# Pool Config
+source /usr/bin/mynode_gen_pool_config.sh
+
 
 # Setup symlinks for bitcoin user so they have access to commands
 users="bitcoin"
@@ -318,6 +324,15 @@ if [ -d /opt/mynode/dojo ] && [ ! -d /mnt/hdd/mynode/dojo ] ; then
 fi
 
 
+# Setup electrs
+cp -f /usr/share/mynode/electrs.toml /mnt/hdd/mynode/electrs/electrs.toml
+# Update for testnet
+if [ -f /mnt/hdd/mynode/settings/.testnet_enabled ]; then
+    sed -i "s/bitcoin/testnet/g" /mnt/hdd/mynode/electrs/electrs.toml || true
+else
+    sed -i "s/testnet/bitcoin/g" /mnt/hdd/mynode/electrs/electrs.toml || true
+fi
+
 # RTL config
 sudo -u bitcoin mkdir -p /opt/mynode/RTL
 sudo -u bitcoin mkdir -p /mnt/hdd/mynode/rtl
@@ -342,6 +357,12 @@ fi
 if [ -f /home/bitcoin/.mynode/.hashedpw ]; then
     HASH=$(cat /home/bitcoin/.mynode/.hashedpw)
     sed -i "s/\"multiPassHashed\":.*/\"multiPassHashed\": \"$HASH\",/g" /mnt/hdd/mynode/rtl/RTL-Config.json
+fi
+# Update for testnet
+if [ -f /mnt/hdd/mynode/settings/.testnet_enabled ]; then
+    sed -i "s/mainnet/testnet/g" /mnt/hdd/mynode/rtl/RTL-Config.json || true
+else
+    sed -i "s/testnet/mainnet/g" /mnt/hdd/mynode/rtl/RTL-Config.json || true
 fi
 
 # BTC RPC Explorer Config
@@ -390,7 +411,13 @@ if [ -f /mnt/hdd/mynode/thunderhub/thub_config.yaml ]; then
         HASH_BCRYPT=$(cat /home/bitcoin/.mynode/.hashedpw_bcrypt)
         sed -i "s#masterPassword:.*#masterPassword: \"thunderhub-$HASH_BCRYPT\"#g" /mnt/hdd/mynode/thunderhub/thub_config.yaml
     fi
+    if [ -f /mnt/hdd/mynode/settings/.testnet_enabled ]; then
+        sed -i "s/mainnet/testnet/g" /mnt/hdd/mynode/thunderhub/thub_config.yaml || true
+    else
+        sed -i "s/testnet/mainnet/g" /mnt/hdd/mynode/thunderhub/thub_config.yaml || true
+    fi
 fi
+
 chown -R bitcoin:bitcoin /mnt/hdd/mynode/thunderhub
 
 # Setup CKBunker

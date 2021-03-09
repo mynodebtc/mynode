@@ -15,7 +15,6 @@ BITCOIN_ENV_FILE = "/mnt/hdd/mynode/bitcoin/env"
 BITCOIN_SYNCED_FILE = "/mnt/hdd/mynode/.mynode_bitcoind_synced"
 
 # LND Variables
-LND_WALLET_FILE = "/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/wallet.db"
 LND_DATA_FOLDER = "/mnt/hdd/mynode/lnd/data/"
 
 # Variables marking if app should be installed

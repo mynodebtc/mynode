@@ -9,7 +9,8 @@ After=lnd.service
 [Service]
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_lnd.sh
-ExecStart=/usr/local/bin/poold --basedir=/mnt/hdd/mynode/pool
+EnvironmentFile=/mnt/hdd/mynode/pool/env
+ExecStart=/usr/local/bin/poold --network=${NETWORK} --basedir=/mnt/hdd/mynode/pool 
 
 User=bitcoin
 Group=bitcoin

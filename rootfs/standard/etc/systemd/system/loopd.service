@@ -9,7 +9,8 @@ After=lnd.service
 [Service]
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_lnd.sh
-ExecStart=/usr/local/bin/loopd --loopdir=/mnt/hdd/mynode/loop
+EnvironmentFile=/mnt/hdd/mynode/loop/env
+ExecStart=/usr/local/bin/loopd --network=${NETWORK} --loopdir=/mnt/hdd/mynode/loop --lnd.macaroonpath=${LND_ADMIN_MACAROON_PATH}
 
 User=bitcoin
 Group=bitcoin

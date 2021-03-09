@@ -69,7 +69,7 @@ def page_lnd():
             "version": get_lnd_version(),
             "loop_version": get_loop_version(),
             "pool_version": get_pool_version(),
-            "status": status,
+            "status": "Please Create Wallet",
             "ui_settings": read_ui_settings()
         }
         return render_template('lnd.html', **templateData)
@@ -123,6 +123,10 @@ def page_lnd():
                     peer["bytes_sent"] = "N/A"
                 if "ping_time" not in p:
                     peer["ping_time"] = "N/A"
+                if "pub_key" in p:
+                    peer["alias"] = get_lightning_peer_alias( p["pub_key"] )
+                else:
+                    peer["alias"] = "Unknown"
                 peers.append(peer)
 
         channeldata = get_lightning_channels()
@@ -134,6 +138,10 @@ def page_lnd():
                     channel["local_balance"] = "0"
                 if "remote_balance" not in channel:
                     channel["remote_balance"] = "0"
+                if "remote_pubkey" in channel:
+                    channel["remote_alias"] = get_lightning_peer_alias( channel["remote_pubkey"] )
+                else:
+                    channel["remote_alias"] = "Unknown"
                 channels.append(channel)
 
         balance_info = get_lightning_balance_info()
@@ -166,6 +174,7 @@ def page_lnd():
         "version": get_lnd_version(),
         "loop_version": get_loop_version(),
         "pool_version": get_pool_version(),
+        "is_testnet_enabled": is_testnet_enabled(),
         "channel_backup_exists": channel_backup_exists,
         "status": status,
         "height": height,
@@ -209,25 +218,32 @@ def lnd_tls_cert():
 def lnd_admin_macaroon():
     check_logged_in()
 
+    folder = "mainnet"
+    if is_testnet_enabled():
+        folder = "testnet"
+
     # Download macaroon
-    return send_from_directory(directory="/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/", filename="admin.macaroon")
+    return send_from_directory(directory="/mnt/hdd/mynode/lnd/data/chain/bitcoin/{}/".format(folder), filename="admin.macaroon")
 
 @mynode_lnd.route("/lnd/readonly.macaroon")
 def lnd_readonly_macaroon():
     check_logged_in()
 
+    folder = "mainnet"
+    if is_testnet_enabled():
+        folder = "testnet"
+
     # Download macaroon
-    return send_from_directory(directory="/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/", filename="readonly.macaroon")
+    return send_from_directory(directory="/mnt/hdd/mynode/lnd/data/chain/bitcoin/{}/".format(folder), filename="readonly.macaroon")
 
 @mynode_lnd.route("/lnd/channel.backup")
 def lnd_channel_backup():
     check_logged_in()
 
-    # First, check for lnd file
-    if os.path.isfile('/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/channel.backup'):
-        return send_from_directory(directory="/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/", filename="channel.backup")
-    else:
-        return send_from_directory(directory="/home/bitcoin/lnd_backup/", filename="channel.backup")
+    scb_location = get_lnd_channel_backup_file()
+    parts = os.path.split(scb_location)
+
+    return send_from_directory(directory=parts[0]+"/", filename=parts[1])
 
 @mynode_lnd.route("/lnd/create_wallet")
 def page_lnd_create_wallet():

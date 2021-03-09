@@ -38,34 +38,6 @@ def page_settings():
     date = get_system_date()
     local_ip = get_local_ip()
 
-
-    # Get Startup Status
-    startup_status_log = get_journalctl_log("mynode")
-
-    # Get QuickSync Status
-    quicksync_enabled = is_quicksync_enabled()
-    quicksync_status = "Disabled"
-    quicksync_status_color = "gray"
-    quicksync_status_log = "DISABLED"
-    if quicksync_enabled:
-        quicksync_status = get_service_status_basic_text("quicksync")
-        quicksync_status_color = get_service_status_color("quicksync")
-        try:
-            quicksync_status_log = subprocess.check_output(["mynode-get-quicksync-status"]).decode("utf8")
-        except:
-            quicksync_status_log = "ERROR"
-
-    # Get Bitcoin Status
-    bitcoin_status_log = ""
-    try:
-        bitcoin_status_log = subprocess.check_output(["tail","-n","200","/mnt/hdd/mynode/bitcoin/debug.log"]).decode("utf8")
-        lines = bitcoin_status_log.split('\n')
-        lines.reverse()
-        bitcoin_status_log = '\n'.join(lines)
-    except:
-        bitcoin_status_log = "ERROR"
-
-
     # Get QuickSync Rates
     upload_rate = 100
     download_rate = 100
@@ -101,7 +73,8 @@ def page_settings():
         "is_bitcoin_synced": is_bitcoind_synced(),
         "is_installing_docker_images": is_installing_docker_images(),
         "firewall_rules": get_firewall_rules(),
-        "is_quicksync_disabled": not quicksync_enabled,
+        "is_testnet_enabled": is_testnet_enabled(),
+        "is_quicksync_disabled": not is_quicksync_enabled(),
         "is_netdata_enabled": is_netdata_enabled(),
         "is_uploader_device": is_uploader(),
         "download_rate": download_rate,
@@ -158,7 +131,7 @@ def page_status():
             quicksync_status_log = "ERROR"
 
     # Get Bitcoin Status
-    bitcoin_status_log = get_file_log("/mnt/hdd/mynode/bitcoin/debug.log")
+    bitcoin_status_log = get_file_log( get_bitcoin_log_file() )
     # GET lnd, loopd, poold logs from file???
     #lnd_status_log = get_file_log("/mnt/hdd/mynode/lnd/logs/bitcoin/mainnet/lnd.log")
     #loopd_status_log = get_file_log("/mnt/hdd/mynode/loop/logs/mainnet/loopd.log")
@@ -835,6 +808,28 @@ def toggle_quicksync_page():
     else:
         t = Timer(1.0, settings_enable_quicksync)
         t.start()
+
+    # Wait until device is restarted
+    templateData = {
+        "title": "myNode Reboot",
+        "header_text": "Restarting",
+        "subheader_text": "This will take several minutes...",
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('reboot.html', **templateData)
+
+@mynode_settings.route("/settings/toggle-testnet")
+def toggle_testnet_page():
+    check_logged_in()
+
+    check_and_mark_reboot_action("toggle_testnet")
+
+    # Toggle testnet
+    toggle_testnet()
+
+    # Trigger reboot
+    t = Timer(1.0, reboot_device)
+    t.start()
 
     # Wait until device is restarted
     templateData = {

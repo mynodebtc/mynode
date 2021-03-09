@@ -6,6 +6,9 @@
             <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/bitcoin.png")}}"/></div>
             <div class="app_title">Bitcoin</div>
             <div class="app_status" id="bitcoin_status">{{ bitcoind_status }}</div>
+            {% if is_testnet_enabled %}
+                <div class="app_status" style="color: green; margin-top: 3px;">Testnet</div>
+            {% endif %}
             <div class="app_contents">
                 <a class="ui-button ui-widget ui-corner-all mynode_button" href="/bitcoind">Manage</a>
             </div>
@@ -43,11 +46,18 @@
             <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lightning.png")}}"/></div>
             <div class="app_title">Lightning</div>
             <div class="app_status" id="lnd_status">{{ lnd_status }}</div>
+            {% if is_testnet_enabled %}
+                <div class="app_status" style="color: green; margin-top: 3px;">Testnet</div>
+            {% endif %}
             <div class="app_contents">
                 {% if lnd_ready %}
                 <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lndconnect">Pair Wallet</a>
                 {% endif %}
-                <a class="ui-button ui-widget ui-corner-all mynode_button" href="/lnd">Manage</a>
+                {% if lnd_wallet_exists %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="/lnd">Wallet</a>
+                {% else %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="/lnd">Create Wallet</a>
+                {% endif %}
             </div>
         </div>
         <div style="width: 230px; padding-left: 10px; float: right;">
