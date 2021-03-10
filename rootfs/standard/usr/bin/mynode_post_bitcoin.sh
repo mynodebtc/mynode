@@ -4,6 +4,11 @@ source /usr/share/mynode/mynode_config.sh
 
 set -x
 
+WALLET_FOLDER="/mnt/hdd/mynode/bitcoin/wallets"
+if [ -f $IS_TESTNET_ENABLED_FILE ]; then
+    WALLET_FOLDER="/mnt/hdd/mynode/bitcoin/wallets"
+fi
+
 sleep 60s
 
 # Give admin the ability to access the BTC cookie
@@ -17,7 +22,9 @@ if [ -f /mnt/hdd/mynode/bitcoin/testnet3/.cookie ]; then
 fi
 
 # Make default wallets
-bitcoin-cli createwallet joinmarket_wallet.dat > /dev/null  2>&1 || true
+if [ ! -d ${WALLET_FOLDER}/joinmarket_wallet.dat ]; then
+    bitcoin-cli createwallet joinmarket_wallet.dat > /dev/null  2>&1 || true
+fi
 bitcoin-cli loadwallet joinmarket_wallet.dat > /dev/null  2>&1 || true
 
 # Sync FS
