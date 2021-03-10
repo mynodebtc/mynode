@@ -3,4 +3,9 @@
 # mynode-joinmarket
 # This script needs to be run with sudo so it can run as the joinmarket user
 
-sudo -u joinmarket bash -c "cd /home/joinmarket/; ./menu.sh"
+sudo -u joinmarket bash -c "cd /home/joinmarket/joinmarket-clientserver; bash --rcfile <(echo '. ~/.bashrc; source ./jmvenv/bin/activate; cd scripts')"
+
+#sudo su joinmarket
+#cd ~/joinmarket-clientserver/
+#source jmvenv/bin/activate
+#cd scripts
