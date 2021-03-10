@@ -38,7 +38,7 @@ CORSPROXY_VERSION="v1.7.0"
 CORSPROXY_VERSION_FILE=/home/bitcoin/.mynode/corsproxy_version
 CORSPROXY_LATEST_VERSION_FILE=/home/bitcoin/.mynode/corsproxy_version_latest
 
-JOINMARKET_VERSION="v0.8.1"
+JOINMARKET_VERSION="v0.8.2"
 JOINMARKET_VERSION_FILE=/home/bitcoin/.mynode/joinmarket_version
 JOINMARKET_LATEST_VERSION_FILE=/home/bitcoin/.mynode/joinmarket_version_latest
 
