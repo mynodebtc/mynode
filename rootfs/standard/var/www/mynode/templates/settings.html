@@ -442,14 +442,14 @@
             <div class="settings_block_header">myNode</div>
             
             <div class="settings_block_subheader">Version</div>
-            <table border="0">
+            <table class="info_table">
                 <tr>
-                    <td class="td_left_header">Current Version</td>
+                    <th>Current Version</th>
                     <td>{{current_version}}</td>
                     <td></td>
                 </tr>
                 <tr>
-                    <td>Latest Version</td>
+                    <th>Latest Version</th>
                     <td>{{latest_version}}</td>
                     <td>
                         &nbsp;<a href="/settings/get-latest-version" class="ui-button ui-widget ui-corner-all settings_button_small">Check for Updates</a>
@@ -486,17 +486,17 @@
             This will change the password you use in the myNode GUI, the password for SSH, and the password for apps like RTL.
             <br/><br/>
             <form action="/settings/password" method="POST">
-                <table border="0">
+                <table class="info_table">
                     <tr>
-                        <td class="td_left_header">Current Password</td>
+                        <th>Current Password</th>
                         <td><input type="password" id="current_password" name="current_password" width="20" class="ui-corner-all settings_input"/></td>
                     </tr>
                     <tr>
-                        <td class="td_left_header">Password</td>
+                        <th>Password</th>
                         <td><input type="password" id="password1" name="password1" width="20" class="ui-corner-all settings_input"/></td>
                     </tr>
                     <tr>
-                        <td class="td_left_header">Repeat Password</td>
+                        <th>Repeat Password</th>
                         <td><input type="password" id="password2" name="password2" width="20" class="ui-corner-all settings_input"/></td>
                     </tr>
                 </table>
