@@ -57,7 +57,7 @@ def bitcoind_status_page():
                 block["size"] = int(b["size"] / 1000)
                 blocks.append(block)
             blocks.reverse()
-            blocks = blocks[:5] # Take top 5
+            #blocks = blocks[:5] # Take top 5
 
         # Peers
         peers = []
