@@ -1,7 +1,7 @@
 <div class="settings_block_subheader">Status</div>
-<table border="0">
+<table class="info_table">
     <tr>
-        <td class="td_left_header">Details</td>
+        <th>Details</th>
         <td>
             {% if is_netdata_enabled %}
                 {% if is_bitcoin_synced %}
@@ -18,35 +18,35 @@
         </td>
     </tr>
     <tr>
-        <td class="td_left_header">Manage</td>
+        <th>Manage</th>
         <td>
             <a id="linux_terminal" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Linux Terminal</a>
         </td>
     </tr>
     <tr>
-        <td class="td_left_header">Disk Usage</td>
+        <th>Disk Usage</th>
         <td>{{drive_usage}}</td>
     </tr>
     <tr>
-        <td class="td_left_header">CPU</td>
+        <th>CPU</th>
         <td>{{cpu_usage}}</td>
     </tr>
     <tr>
-        <td class="td_left_header">RAM</td>
+        <th>RAM</th>
         <td>{{ram_usage}}</td>
     </tr>
     {% if device_temp != '...' %}
     <tr>
-        <td class="td_left_header">Temperature</td>
+        <th>Temperature</th>
         <td>{{device_temp}} &deg;C</td>
     </tr>
     {% endif %}
     <tr>
-        <td class="td_left_header">Uptime</td>
+        <th>Uptime</th>
         <td>{{uptime}}</td>
     </tr>
     <tr>
-        <td class="td_left_header">Date</td>
+        <th>Date</th>
         <td>{{date}}</td>
     </tr>
 </table>
