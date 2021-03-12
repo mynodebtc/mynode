@@ -85,6 +85,8 @@ def page_settings():
         "date": date,
         "local_ip": local_ip,
         "throttled_data": get_throttled_data(),
+        "oom_error": has_oom_error(),
+        "oom_info": get_oom_error_info(),
         "drive_usage": get_drive_usage(),
         "cpu_usage": get_cpu_usage(),
         "ram_usage": get_ram_usage(),
@@ -256,6 +258,8 @@ def page_status():
         "date": date,
         "local_ip": local_ip,
         "throttled_data": get_throttled_data(),
+        "oom_error": has_oom_error(),
+        "oom_info": get_oom_error_info(),
         "drive_usage": get_drive_usage(),
         "cpu_usage": get_cpu_usage(),
         "ram_usage": get_ram_usage(),
@@ -888,3 +892,10 @@ def modify_swap_page():
         "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
+
+@mynode_settings.route("/settings/clear-oom-error")
+def page_clear_oom_error():
+    check_logged_in()
+    clear_oom_error()
+    flash("Warning Cleared", category="message")
+    return redirect("/settings")

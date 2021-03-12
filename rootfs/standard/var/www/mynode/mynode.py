@@ -616,8 +616,6 @@ def index():
             "product_key_error": pk_error,
             "fsck_error": has_fsck_error(),
             "fsck_results": get_fsck_results(),
-            "oom_error": has_oom_error(),
-            "oom_info": get_oom_error_info(),
             "sd_rw_error": has_sd_rw_error(),
             "drive_usage": drive_usage,
             "low_drive_space_error": low_drive_space_error,
@@ -866,12 +864,6 @@ def page_toggle_dojo_install():
 def page_clear_fsck_error():
     check_logged_in()
     clear_fsck_error()
-    return redirect("/")
-
-@app.route("/clear-oom-error")
-def page_clear_oom_error():
-    check_logged_in()
-    clear_oom_error()
     return redirect("/")
 
 @app.route("/login", methods=["GET","POST"])
