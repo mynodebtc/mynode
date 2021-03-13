@@ -60,6 +60,11 @@ def get_dojo_tracker_status():
             bitcoin_height = get_mynode_block_height()
             tracker_status = "Syncing... {} of {}".format(dojo_height, bitcoin_height)
             break
+        elif "Finished block" in line:
+            m = re.search("Finished block ([0-9]+)", line)
+            dojo_height = m.group(1)
+            bitcoin_height = get_mynode_block_height()
+            tracker_status = "Syncing... {} of {}".format(dojo_height, bitcoin_height)
         elif "Processing active Mempool" in line:
             tracker_status = "Active"
             break

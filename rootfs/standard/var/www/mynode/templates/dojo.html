@@ -11,62 +11,60 @@
 
         <div class="main_header">Samourai Dojo</div>
         </br>
+
         <div class="app_tile_row">
             <div class="info_tile">
                 <div class="info_tile_header">Status</div>
-                <div class="info_tile_contents">{{dojo_status}}</div>
-            </div>
-            {% if dojo_enabled %}
-            <div class="info_tile">
-                <div class="info_tile_header">Version</div>
-                <div class="info_tile_contents">{{dojo_version}}</div>
-            </div>
-            <div class="info_tile">
-                <div class="info_tile_header">Tracker Status</div>
-                <div class="info_tile_contents">{{dojo_tracker_status}}</div>
-            </div>
-            <div class="info_tile">
-                <div class="info_tile_header">Electrum Server Status</div>
-                <div class="info_tile_contents">{{electrs_status}}</div>
-            </div>
-            <div class="info_tile">
-                <div class="info_tile_header">Restart</div>
                 <div class="info_tile_contents">
-                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;" href="/restart-dojo">Restart</a>
-                </div>
-            </div>
-            {% endif %}
-            <div class="info_tile">
-                <div class="info_tile_header">Uninstall</div>
-                <div class="info_tile_contents">
-                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;" href="/toggle-dojo-install">Uninstall</a>
+                    <table class="info_table">
+                        <tr>
+                            <th>Status</th>
+                            <td>{{dojo_status}}</td>
+                        </tr>
+                        {% if dojo_enabled %}
+                        <tr>
+                            <th>Tracker Status</th>
+                            <td>{{dojo_tracker_status}}</td>
+                        </tr>
+                        <tr>
+                            <th>Electrum Server Status</th>
+                            <td>
+                                {{electrs_status}}
+                                {% if electrs_status != "Running" %}
+                                    <br/><small>Please enable electrum server and wait for it to sync...</small>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Version</th>
+                            <td>{{dojo_version}}</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <th>Actions</th>
+                            <td>
+                                {% if dojo_enabled %}
+                                <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/restart-dojo">Restart</a>
+                                {% endif %}
+                                <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/toggle-dojo-install">Uninstall</a>
+                            </td>
+                        </tr>
+                        {% if dojo_enabled and dojo_initialized and electrs_status == "Running" %}
+                        <tr>
+                            <th>Dojo V3 Onion Address</th>
+                            <td style="font-size: 12px;">{{DOJO_V3_ADDR}}</td>
+                        </tr>
+                        <tr>
+                            <th>Node Admin Key</th>
+                            <td style="font-size: 12px;">{{NODE_ADMIN_KEY}}</td>
+                        </tr>
+                        {% endif %}
+                    </table>
                 </div>
             </div>
         </div>
-        </br>
-        {% if dojo_enabled and dojo_initialized and electrs_status == "Running" %}
-            <div class="app_tile_row">
-                <div class="info_tile">
-                    <div class="info_tile_header">Dojo V3 Onion Address</div>
-                    <div class="info_tile_contents">{{DOJO_V3_ADDR}}</div>
-                </div>
-            </div>
-            </br>
-            <div class="app_tile_row">
-                <div class="info_tile">
-                    <div class="info_tile_header">NODE_ADMIN_KEY</div>
-                    <div class="info_tile_contents">{{NODE_ADMIN_KEY}}</div>
-                </div>
 
-            </div>
-        {% elif electrs_status != "Running" %}
-            <div class="app_tile_row">
-                <div class="info_tile">
-                    <div class="info_tile_header">Note</div>
-                    <div class="info_tile_contents">Please enable electrum server and wait for it to sync...</div>
-                </div>
-            </div>
-        {% endif %}
+
         <div class="instructions">
             <div class="instructions-header"><u><strong>Instructions to CONNECT Samourai Wallet to Dojo</u></strong></div>
             </br>
@@ -74,8 +72,8 @@
                 <li>Enable Samourai Dojo and come back to this page. The status must be "Running".</li>
                 <li>Download and install <a target="_blank" href="https://www.torproject.org/download/">Tor browser</a></li>
                 <li>You don't have to wait till your Dojo is synced, but all transactions in your wallet might be missing until it's completely synced.</li>
-                <li>Open Tor Browser and copy/paste the <b>Dojo V3 Onion Address</b> provided above onto the address bar. It should reach the <b>DOJO MAINTENANCE TOOL</b>.</li>
-                <li>On the login page, copy/paste your <b>NODE_ADMIN_KEY</b> onto the input box and press enter.</li>
+                <li>Open Tor Browser and copy/paste the <b>Dojo Onion Address</b> provided above onto the address bar. It should reach the <b>DOJO MAINTENANCE TOOL</b>.</li>
+                <li>On the login page, copy/paste your <b>Node Admin Key</b> onto the input box and press enter.</li>
                 <li>Once authenticated, the pairing tab with a QR code is shown.</li>
                 <li>Open Samourai mobile app. On the main wallet creation screen, click on the three dots on the top-right corner and select <b>Connect to existing Dojo</b>.</li>
                 <li><b>NOTE:</b> Currently, you must create a new wallet to pair to your Dojo. You must first delete your existing wallet using the instructions below.</li>
