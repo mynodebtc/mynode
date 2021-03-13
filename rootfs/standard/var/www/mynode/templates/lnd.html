@@ -70,24 +70,24 @@
                     window.open(url,'_blank');
                 })
 
+                function show_deposit_address(addr) {
+                    $("#new_address_text").html( addr );
+                    $("#new_address_qrcode").html( "" );
+                    var qrcode = new QRCode("new_address_qrcode", {
+                        text: addr,
+                        width: 150,
+                        height: 150,
+                        correctLevel : QRCode.CorrectLevel.H
+                    });
+                }
                 $("#gen_new_address_button").on("click", function() {
                     $.get( "/lnd/api/get_new_deposit_address", function( data ) {
                         $("#gen_new_address_button").hide();
-                        
-                        $("#new_address_desc").show();
-                        $("#new_address_qrcode").show();
-                        $("#new_address_text").show();
-                        $("#new_address_text").html( data );
-
-                        var qrcode = new QRCode("new_address_qrcode", {
-                            text: data,
-                            width: 180,
-                            height: 180,
-                            correctLevel : QRCode.CorrectLevel.H
-                        });
+                        show_deposit_address(data);
                     });
-                })
-
+                });
+                deposit_address = "{{lnd_deposit_address}}";
+                show_deposit_address(deposit_address);
             });
         </script>
      </head>
@@ -234,7 +234,7 @@
         <div class="app_tile_row">
             <div class="info_tile">
                 <div class="info_tile_header">URI</div>
-                <div class="info_tile_contents">{{uri}}</div>
+                <div class="info_tile_contents" style="font-size: 12px;">{{uri}}</div>
             </div>
         </div>
 {% endif %}
@@ -253,32 +253,43 @@
 {% if wallet_exists and wallet_logged_in %}
     <br/>
     <div class="main_header">Balances</div>
-    <div class="app_tile_row" style="display: block;">
-        <div id="new_address_desc" style="display: none;"><p><b>Deposit Address</b></p></div>
-        <div style="width: 100%; margin: auto;">
-            <div id="new_address_qrcode" style="height: 180px; width: 180px; display: none; margin: auto;"></div>
-        </div>
-        <br/>
-        <div id="new_address_text" style="display: none;">&nbsp;</div>
-        <button id="gen_new_address_button">Generate Deposit Address</button>
-    </div>
     <div class="app_tile_row">
-        <table class="bitcoind_table">
-            <thead class="bitcoind_table_header">
-                <td>On-chain Balance</td>
-                <td>On-chain Pending</td>
-                <td>Channel Balance</td>
-                <td>Channel Pending</td>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>{{ wallet_balance }}</td>
-                    <td>{{ wallet_pending }}</td>
-                    <td>{{ channel_balance }}</td>
-                    <td>{{ channel_pending }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="info_tile" style="min-width: 280px;">
+            <div class="info_tile_header">Deposit Address</div>
+            <div class="info_tile_contents">
+                <div id="new_address_qrcode" style="height: 150px; width: 150px; margin: auto;"></div>
+            
+                <br/>
+                <div id="new_address_text" style="font-size: 12px;">&nbsp;</div>
+                <button id="gen_new_address_button" class="ui-button ui-widget ui-corner-all mynode_button_small">Generate New Address</button>
+            </div>
+        </div>
+
+        <div class="info_tile">
+            <div class="info_tile_header">Balances</div>
+            <div class="info_tile_contents">
+                <table class="info_table">
+                    <tr>
+                        <th><b>On-chain Balance</b></th>
+                        <td>
+                            {{ wallet_balance }} sats
+                            {% if wallet_pending != "0" %}
+                            &nbsp;&nbsp;({{ wallet_pending }} pending)
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><b>Channel Balance</b></th>
+                        <td>
+                            {{ channel_balance }} sats
+                            {% if channel_pending != "0" %}
+                            &nbsp;&nbsp;({{ channel_pending }} pending)
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
 
     <br/>

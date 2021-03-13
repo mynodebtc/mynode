@@ -52,6 +52,7 @@ def page_lnd():
     uri = ""
     ip = ""
     status = "Starting..."
+    lnd_deposit_address = get_deposit_address()
     channel_balance = "N/A"
     channel_pending = "0"
     wallet_balance = "N/A"
@@ -121,6 +122,10 @@ def page_lnd():
                     peer["bytes_sent"] = "{:.2f}".format(float(p["bytes_sent"]) / 1000 / 1000)
                 else:
                     peer["bytes_sent"] = "N/A"
+                if "sat_sent" in p:
+                    peer["sat_sent"] = format_sat_amount(peer["sat_sent"])
+                if "sat_recv" in p:
+                    peer["sat_recv"] = format_sat_amount(peer["sat_recv"])
                 if "ping_time" not in p:
                     peer["ping_time"] = "N/A"
                 if "pub_key" in p:
@@ -134,10 +139,16 @@ def page_lnd():
         if channeldata != None and "channels" in channeldata:
             for c in channeldata["channels"]:
                 channel = c
+                if "capacity" in channel:
+                    channel["capacity"] = format_sat_amount(channel["capacity"])
                 if "local_balance" not in channel:
                     channel["local_balance"] = "0"
+                else:
+                    channel["local_balance"] = format_sat_amount(channel["local_balance"])
                 if "remote_balance" not in channel:
                     channel["remote_balance"] = "0"
+                else:
+                    channel["remote_balance"] = format_sat_amount(channel["remote_balance"])
                 if "remote_pubkey" in channel:
                     channel["remote_alias"] = get_lightning_peer_alias( channel["remote_pubkey"] )
                 else:
@@ -186,10 +197,11 @@ def page_lnd():
         "pubkey": pubkey,
         "uri": uri,
         "ip": ip,
-        "channel_balance": balance_info["channel_balance"],
-        "channel_pending": balance_info["channel_pending"],
-        "wallet_balance": balance_info["wallet_balance"],
-        "wallet_pending": balance_info["wallet_pending"],
+        "lnd_deposit_address": lnd_deposit_address,
+        "channel_balance": format_sat_amount(balance_info["channel_balance"]),
+        "channel_pending": format_sat_amount(balance_info["channel_pending"]),
+        "wallet_balance": format_sat_amount(balance_info["wallet_balance"]),
+        "wallet_pending": format_sat_amount(balance_info["wallet_pending"]),
         "peers": peers,
         "channels": channels,
         "ui_settings": read_ui_settings()
