@@ -240,7 +240,7 @@
 {% endif %}
 
 {% if wallet_exists and not wallet_logged_in %}
-        <!-- Statu Tile / Row (should be only shown short term) -->
+        <!-- Status Tile / Row (should be only shown short term) -->
         <div class="app_tile_row">
             <div class="info_tile">
                 <div class="info_tile_header">Status</div>
@@ -262,7 +262,7 @@
         <div id="new_address_text" style="display: none;">&nbsp;</div>
         <button id="gen_new_address_button">Generate Deposit Address</button>
     </div>
-    <div class="app_tile_row"></div>
+    <div class="app_tile_row">
         <table class="bitcoind_table">
             <thead class="bitcoind_table_header">
                 <td>On-chain Balance</td>
