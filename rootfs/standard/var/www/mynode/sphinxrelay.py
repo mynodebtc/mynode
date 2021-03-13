@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect
 from user_management import check_logged_in
-from device_info import read_ui_settings, get_file_contents
+from device_info import read_ui_settings
+from utilities import *
 from systemctl_info import *
 import subprocess
 import os

@@ -2,6 +2,7 @@ from config import *
 from threading import Timer
 from werkzeug.routing import RequestRedirect
 from flask import flash
+from utilities import *
 from enable_disable_functions import *
 from lightning_info import is_lnd_ready, get_lnd_status, get_lnd_status_color
 from systemctl_info import *
@@ -19,28 +20,6 @@ import redis
 local_ip = "unknown"
 cached_data = {}
 warning_data = {}
-
-#==================================
-# Utilities
-#==================================
-def get_file_contents(filename):
-    contents = "UNKNOWN"
-    try:
-        with open(filename, "r") as f:
-            contents = f.read().strip()
-    except:
-        contents = "ERROR"
-    return contents
-
-def set_file_contents(filename, data):
-    try:
-        with open(filename, "w") as f:
-            f.write(data)
-        os.system("sync")
-        return True
-    except:
-        return False
-    return False
 
 #==================================
 # Manage Device
@@ -473,23 +452,6 @@ def get_drive_info(drive):
         pass
     return data
 
-#==================================
-# Log functions (non-systemd based)
-#==================================
-def get_file_log(file_path):
-    status_log = ""
-
-    if not os.path.isfile(file_path):
-        return "MISSING FILE"
-
-    try:
-        status_log = subprocess.check_output(["tail","-n","200",file_path]).decode("utf8")
-        lines = status_log.split('\n')
-        lines.reverse()
-        status_log = '\n'.join(lines)
-    except:
-        status_log = "ERROR"
-    return status_log
 
 #==================================
 # Specific Service Status / Colors
@@ -666,18 +628,6 @@ def get_mempool_status_and_color():
             color = get_service_status_color("mempoolspace")
     return status,color
 
-#==================================
-# Data Storage Functions
-#==================================
-def set_data(key, value):
-    r = redis.Redis(host='localhost', port=6379, db=0)
-    mynode_key = "mynode_" + key
-    return r.set(mynode_key, value)
-
-def get_data(key):
-    r = redis.Redis(host='localhost', port=6379, db=0)
-    mynode_key = "mynode_" + key
-    return r.get(mynode_key)
 
 #==================================
 # UI Functions
@@ -753,6 +703,13 @@ def get_flask_secret_key():
         key = ''.join(random.choice(letters) for i in range(32))
         set_file_contents("/home/bitcoin/.mynode/flask_secret_key", key)
     return key
+
+
+#==================================
+# UI Format Functions
+#==================================
+def format_sat_amount(amount):
+    return "{:,}".format(int(amount))
 
 
 #==================================
@@ -991,6 +948,7 @@ def restart_lnd():
 
 def delete_lnd_data():
     os.system("rm -rf "+LND_DATA_FOLDER)
+    os.system("rm -rf /tmp/lnd_deposit_address")
     os.system("rm -rf /home/bitcoin/.lnd-admin/credentials.json")
     os.system("rm -rf /mnt/hdd/mynode/settings/.lndpw")
     os.system("rm -rf /home/admin/.lnd/")

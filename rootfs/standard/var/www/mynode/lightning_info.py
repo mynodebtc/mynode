@@ -6,6 +6,7 @@ import time
 import re
 from flask import current_app as app
 from threading import Timer
+from utilities import *
 from bitcoin_info import *
 from systemctl_info import *
 
@@ -68,11 +69,17 @@ def update_lightning_info():
     return True
 
 
+def get_deposit_address():
+    if os.path.isfile("/tmp/lnd_deposit_address"):
+        return get_file_contents("/tmp/lnd_deposit_address")
+    return get_new_deposit_address()
+
 def get_new_deposit_address():
     address = "NEW_ADDR"
     try:
         addressdata = lnd_get("/newaddress")
         address = addressdata["address"]
+        set_file_contents("/tmp/lnd_deposit_address", address)
     except:
         address = "ERROR"
     return address
