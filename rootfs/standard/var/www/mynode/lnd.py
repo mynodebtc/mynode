@@ -255,7 +255,7 @@ def page_lnd_create_wallet():
     except:
         templateData = {
             "title": "myNode Lightning Wallet",
-            "message": Markup("Waiting on lnd...<br/>Please try again in a minute."),
+            "message": Markup("Waiting on Lightning...<br/>Please try again in a minute."),
             "ui_settings": read_ui_settings()
         }
         return render_template('lnd_error.html', **templateData)

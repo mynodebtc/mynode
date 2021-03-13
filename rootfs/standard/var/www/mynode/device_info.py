@@ -536,7 +536,7 @@ def get_rtl_status_and_color():
             else:
                 color = "green"
     else:
-        status = "Waiting on LND..."
+        status = "Waiting on Lightning"
     return status,color
 
 def get_lnbits_status_and_color():
@@ -550,7 +550,7 @@ def get_lnbits_status_and_color():
             else:
                 color = "green"
     else:
-        status = "Waiting on LND..."
+        status = "Waiting on Lightning"
     return status,color
 
 def get_thunderhub_status_and_color():
@@ -564,7 +564,7 @@ def get_thunderhub_status_and_color():
             else:
                 color = "green"
     else:
-        status = "Waiting on LND..."
+        status = "Waiting on Lightning"
     return status,color
 
 def get_ckbunker_status_and_color():
@@ -574,7 +574,7 @@ def get_ckbunker_status_and_color():
         if is_ckbunker_enabled():
             color = get_service_status_color("lndhub")
     else:
-        status = "Waiting on Bitcoin..."
+        status = "Waiting on Bitcoin"
     return status,color
 
 def get_sphinxrelay_status_and_color():
@@ -588,7 +588,7 @@ def get_sphinxrelay_status_and_color():
             else:
                 color = "green"
     else:
-        status = "Waiting on LND..."
+        status = "Waiting on Lightning"
     return status,color
 
 def get_lndhub_status_and_color():
@@ -598,7 +598,7 @@ def get_lndhub_status_and_color():
         if is_lndhub_enabled():
             color = get_service_status_color("lndhub")
     else:
-        status = "Waiting on LND..."
+        status = "Waiting on Lightning"
     return status,color
 
 def get_btcpayserver_status_and_color():
@@ -607,7 +607,7 @@ def get_btcpayserver_status_and_color():
     if is_lnd_ready():
         color = get_service_status_color("btcpayserver")
     else:
-        status = "Waiting on LND..."
+        status = "Waiting on Lightning"
     return status,color
 
 def get_electrs_status_and_color():
@@ -633,10 +633,10 @@ def get_btcrpcexplorer_status_and_color_and_ready():
                     ready = True
             else:
                 color = "yellow"
-                status = "Waiting on Electrum..."
+                status = "Waiting on Electrum"
         else:
             color = "yellow"
-            status = "Waiting on bitcoin..."
+            status = "Waiting on Bitcoin"
     return status,color,ready
 
 def get_caravan_status_and_color():
