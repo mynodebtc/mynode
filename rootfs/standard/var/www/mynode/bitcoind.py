@@ -23,6 +23,8 @@ def runcmd(cmd):
         results = str(e)
     return results
 
+def cleanup_download_wallets():
+    os.system("rm -rf /tmp/download_wallets/*")
 
 ### Page functions
 @mynode_bitcoind.route("/bitcoind")
@@ -35,7 +37,7 @@ def bitcoind_status_page():
         blockdata = get_bitcoin_recent_blocks()
         peerdata  = get_bitcoin_peers()
         networkdata = get_bitcoin_network_info()
-        walletdata = get_bitcoin_wallet_info()
+        walletdata = get_bitcoin_wallets()
         version = get_bitcoin_version()
         rpc_password = get_bitcoin_rpc_password()
 
@@ -89,16 +91,6 @@ def bitcoind_status_page():
             if ("localaddresses" in networkdata) and (len(networkdata["localaddresses"]) > 0):
                 local_address = "{}:{}".format(networkdata["localaddresses"][0]["address"], networkdata["localaddresses"][0]["port"])
 
-        # Balance
-        walletinfo = {}
-        walletinfo["balance"] = 0.0
-        walletinfo["unconfirmed_balance"] = 0.0
-        if walletdata != None:
-            if "balance" in walletdata:
-                walletinfo["balance"] = walletdata["balance"]
-            if "unconfirmed_balance" in walletdata:
-                walletinfo["unconfirmed_balance"] = walletdata["unconfirmed_balance"]
-
     except Exception as e:
         templateData = {
             "title": "myNode Bitcoin Error",
@@ -121,18 +113,33 @@ def bitcoind_status_page():
         "mempool_tx": mempool["size"],
         "mempool_size": "{:.3} MB".format(float(mempool["bytes"]) / 1000 / 1000),
         "is_testnet_enabled": is_testnet_enabled(),
-        "confirmed_balance": walletinfo["balance"],
-        "unconfirmed_balance": walletinfo["unconfirmed_balance"],
+        "wallets": walletdata,
         "bitcoin_whitepaper_exists": bitcoin_whitepaper_exists,
         "version": version,
         "ui_settings": read_ui_settings()
     }
     return render_template('bitcoind_status.html', **templateData)
 
-@mynode_bitcoind.route("/bitcoind/wallet.dat")
-def bitcoin_wallet_dat():
+@mynode_bitcoind.route("/bitcoind/download_wallet", methods=["GET"])
+def bitcoin_download_wallet():
     check_logged_in()
-    return send_from_directory(directory="/mnt/hdd/mynode/bitcoin/", filename="wallet.dat")
+    wallet_name = request.args.get('wallet')
+    if wallet_name is None:
+        flash("Error finding wallet to download!", category="error")
+        return redirect("/bitcoind")
+
+    os.system("mkdir -p /tmp/download_wallets")
+    os.system("chmod 777 /tmp/download_wallets")
+    runcmd("-rpcwallet='"+wallet_name+"' dumpwallet '/tmp/download_wallets/"+wallet_name+"'")
+
+    if not os.path.isfile("/tmp/download_wallets/"+wallet_name):
+        flash("Error exporting wallet data for download", category="error")
+        return redirect("/bitcoind")
+
+    t = Timer(3.0, cleanup_download_wallets)
+    t.start()
+
+    return send_from_directory(directory="/tmp/download_wallets/", filename=wallet_name, as_attachment=True)
 
 @mynode_bitcoind.route("/bitcoind/bitcoin_whitepaper.pdf")
 def bitcoin_whitepaper_pdf():
