@@ -108,7 +108,7 @@
         <div class="app_title">Dojo</div>
         <div class="app_status" id="dojo_status">{{ dojo_status }}</div>
         <div class="app_contents">
-            {% if not is_installing_docker_images %}
+            {% if not is_installing_docker_images and not is_testnet_enabled %}
                 {% if is_dojo_installed %}
                     <a class="ui-button ui-widget ui-corner-all mynode_button" href="/dojo">Info</a>
                     {% if electrs_active %}
@@ -132,10 +132,12 @@
         <div class="app_title">Whirlpool</div>
         <div class="app_status" id="whirlpool_status">{{ whirlpool_status }}</div>
         <div class="app_contents">
-            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/whirlpool">Info</a>
-            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-whirlpool">
-                {% if whirlpool_enabled %}Disable{% else %}Enable{% endif %}
-            </a>
+            {% if not is_testnet_enabled %}
+                <a class="ui-button ui-widget ui-corner-all mynode_button" href="/whirlpool">Info</a>
+                <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-whirlpool">
+                    {% if whirlpool_enabled %}Disable{% else %}Enable{% endif %}
+                </a>
+            {% endif %}
         </div>
     </div>
     {% endif %}
