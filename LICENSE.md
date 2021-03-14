@@ -1,5 +1,6 @@
 myNode is licensed under a
-Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License.
+Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License 
+with some modifications in section 9.
 
 You should have received a copy of the license along with this
 work. If not, see <https://creativecommons.org/licenses/by-nc-nd/4.0/>.
@@ -331,6 +332,26 @@ Section 8 -- Interpretation.
      as a limitation upon, or waiver of, any privileges and immunities
      that apply to the Licensor or You, including from the legal
      processes of any jurisdiction or authority.
+
+Section 9 -- myNode License Additions
+
+  a. Distribution as source via GitHub forks is permitted under the
+     following conditions:
+
+       1. Modifications remain public and can be merged back into the 
+          main myNode repo.
+
+       2. Modifications to the licensing, product key, or access to
+          premium features is prohibited.
+
+       3. Addition of new applications and modifications to enable or
+          disable signaling of new features or forks for services like
+          Bitcoin is encouraged.
+
+       4. Distribution as binaries or images is prohibited.
+
+       5. Use of the myNode logo or brand material to act on behalf of
+          or impersonate myNode is prohibited.
 
 =======================================================================
 
