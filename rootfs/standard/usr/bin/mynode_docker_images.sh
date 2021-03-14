@@ -86,8 +86,8 @@ while true; do
     fi
 
     # Install Dojo
-    DOJO_VERSION="v1.8.0"
-    DOJO_TAR_HASH="4c1e41790b6839f26ec947e96b3dc4c94e0218f0003e292a2c3808b0a1182fe6"
+    DOJO_VERSION="v1.9.0"
+    DOJO_TAR_HASH="b9709c18bb58f514a2f1db948b421b691b22fbf7713f5a68ce9627f35fcbf306"
     DOJO_UPGRADE_URL=https://code.samourai.io/dojo/samourai-dojo/-/archive/$DOJO_VERSION/samourai-dojo-$DOJO_VERSION.tar.gz
     DOJO_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/dojo_url
     CURRENT=""
@@ -98,8 +98,8 @@ while true; do
         sync
         sleep 3s
     fi
-    # Only install Dojo if marked for installation
-    if [ -f /mnt/hdd/mynode/settings/mynode_dojo_install ]; then
+    # Only install Dojo if marked for installation and testnet not enabled
+    if [ -f /mnt/hdd/mynode/settings/mynode_dojo_install ] && [ ! -f $IS_TESTNET_ENABLED_FILE ]; then
         if [ -f $DOJO_UPGRADE_URL_FILE ]; then
             INSTALL=false
             CURRENT=$(cat $DOJO_UPGRADE_URL_FILE)
