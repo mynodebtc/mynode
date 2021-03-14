@@ -504,6 +504,8 @@ def get_rtl_status_and_color():
 def get_lnbits_status_and_color():
     color = "gray"
     status = "Lightning Wallet"
+    if is_testnet_enabled():
+        return "Requires Mainnet", "gray"
     if is_lnd_ready():
         if is_lnbits_enabled():
             status_code = get_service_status_code("lnbits")
@@ -556,6 +558,8 @@ def get_sphinxrelay_status_and_color():
 def get_lndhub_status_and_color():
     status = "BlueWallet Backend"
     color = "gray"
+    if is_testnet_enabled():
+        return "Requires Mainnet", "gray"
     if is_lnd_ready():
         if is_lndhub_enabled():
             color = get_service_status_color("lndhub")
@@ -566,6 +570,8 @@ def get_lndhub_status_and_color():
 def get_btcpayserver_status_and_color():
     status = "Merchant Tool"
     color = "gray"
+    if is_testnet_enabled():
+        return "Requires Mainnet", "gray"
     if is_lnd_ready():
         color = get_service_status_color("btcpayserver")
     else:

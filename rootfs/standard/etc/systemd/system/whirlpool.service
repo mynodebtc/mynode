@@ -5,6 +5,7 @@ After=tor.service
 [Service]
 WorkingDirectory=/mnt/hdd/mynode/whirlpool
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/usr/bin/is_mainnet.sh
 ExecStartPre=/usr/bin/wait_on_bitcoin.sh
 ExecStartPre=/usr/bin/mynode_pre_whirlpool.sh
 ExecStart=/usr/bin/java -jar /opt/mynode/whirlpool/whirlpool.jar --server=mainnet --resync --tor --auto-mix --mixs-target=3 --listen

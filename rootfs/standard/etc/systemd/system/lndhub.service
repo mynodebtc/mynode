@@ -8,6 +8,7 @@ After=lnd.service
 
 [Service]
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/usr/bin/is_mainnet.sh
 ExecStartPre=/usr/bin/wait_on_lnd.sh
 Environment=PORT=3000
 WorkingDirectory=/opt/mynode/LndHub
