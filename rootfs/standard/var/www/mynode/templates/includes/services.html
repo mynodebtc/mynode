@@ -16,23 +16,23 @@
         <div style="width: 230px; padding-left: 10px; float: right;">
             <table style="font-size: 10px; width: 100%;" cellpadding="0" cellspacing="0">
                 <tr>
-                    <td class="td_left_header">Height</td>
+                    <td class="service_table_td_left_header">Height</td>
                     <td id="current_block">{{ current_block }}</td>
                 </tr>
                 <tr>
-                    <td class="td_left_header">Peers</td>
+                    <td class="service_table_td_left_header">Peers</td>
                     <td id="bitcoin_peer_count">{{ bitcoin_peer_count }}</td>
                 </tr>
                 <tr>
-                    <td class="td_left_header">Difficulty</td>
+                    <td class="service_table_td_left_header">Difficulty</td>
                     <td id="bitcoin_difficulty">{{ bitcoin_difficulty }}</td>
                 </tr>
                 <tr>
-                    <td class="td_left_header">Mempool Size</td>
+                    <td class="service_table_td_left_header">Mempool Size</td>
                     <td id="bitcoin_mempool_size">{{ bitcoin_mempool_size }}</td>
                 </tr>
                 <tr>
-                    <td class="td_left_header">Version</td>
+                    <td class="service_table_td_left_header">Version</td>
                     <td id="bitcoin_version">{{ bitcoin_version }}</td>
                 </tr>
             </table>
@@ -62,26 +62,26 @@
         </div>
         <div style="width: 230px; padding-left: 10px; float: right;">
             <table style="font-size: 10px; width: 100%;" cellpadding="0" cellspacing="0">
+                {% if lnd_ready %}
                 <tr>
-                    <td class="td_left_header">Peers</td>
+                    <td class="service_table_td_left_header">On-chain Balance</td>
+                    <td>{{ lnd_balance_info['wallet_balance'] }} sats</td>
+                </tr>
+                <tr>
+                    <td class="service_table_td_left_header">Lightning Balance</td>
+                    <td>{{ lnd_balance_info['channel_balance'] }} sats</td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <td class="service_table_td_left_header">Peers</td>
                     <td id="lnd_peer_count">{{ lnd_peer_count }}</td>
                 </tr>
                 <tr>
-                    <td class="td_left_header">Channels</td>
+                    <td class="service_table_td_left_header">Channels</td>
                     <td id="lnd_channel_count">{{ lnd_channel_count }}</td>
                 </tr>
-                <!--
                 <tr>
-                    <td class="td_left_header">On-chain Balance</td>
-                    <td>{{ lnd_balance_info['wallet_balance'] }}</td>
-                </tr>
-                <tr>
-                    <td class="td_left_header">Lightning Balance</td>
-                    <td>{{ lnd_balance_info['channel_balance'] }}</td>
-                </tr>
-                -->
-                <tr>
-                    <td class="td_left_header">Version</td>
+                    <td class="service_table_td_left_header">Version</td>
                     <td>{{ lnd_version }}</td>
                 </tr>
             </table>

@@ -5,6 +5,7 @@ from bitcoin_info import *
 from lightning_info import *
 from settings import reboot_device, read_ui_settings
 from device_info import *
+from utilities import *
 from user_management import check_logged_in
 from werkzeug.utils import secure_filename
 import base64

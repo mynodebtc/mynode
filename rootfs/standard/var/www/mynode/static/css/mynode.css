@@ -49,8 +49,8 @@ td, th {
     border-collapse: collapse;
     border-top: #e7e7e7 1px solid;
 }
-.td_left_header {
-    padding-right: 40px;
+.service_table_td_left_header {
+    padding-right: 10px;
     min-width: 120px;
 }
 

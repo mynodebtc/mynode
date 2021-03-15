@@ -712,13 +712,6 @@ def get_flask_secret_key():
 
 
 #==================================
-# UI Format Functions
-#==================================
-def format_sat_amount(amount):
-    return "{:,}".format(int(amount))
-
-
-#==================================
 # Uploader Functions
 #==================================
 def is_uploader():

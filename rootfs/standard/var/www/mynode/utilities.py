@@ -54,3 +54,10 @@ def get_data(key):
     r = redis.Redis(host='localhost', port=6379, db=0)
     mynode_key = "mynode_" + key
     return r.get(mynode_key)
+
+
+#==================================
+# UI Format Functions
+#==================================
+def format_sat_amount(amount):
+    return "{:,}".format(int(amount))
