@@ -146,15 +146,15 @@ def get_lightning_balance_info():
 
     channel_balance_data = get_lightning_channel_balance()
     if channel_balance_data != None and "balance" in channel_balance_data:
-        balance_data["channel_balance"] = channel_balance_data["balance"]
+        balance_data["channel_balance"] = format_sat_amount( channel_balance_data["balance"] )
     if channel_balance_data != None and "pending_open_balance" in channel_balance_data:
-        balance_data["channel_pending"] = channel_balance_data["pending_open_balance"]
+        balance_data["channel_pending"] = format_sat_amount( channel_balance_data["pending_open_balance"] )
     
     wallet_balance_data = get_lightning_wallet_balance()
     if wallet_balance_data != None and "confirmed_balance" in wallet_balance_data:
-        balance_data["wallet_balance"] = wallet_balance_data["confirmed_balance"]
+        balance_data["wallet_balance"] = format_sat_amount( wallet_balance_data["confirmed_balance"] )
     if wallet_balance_data != None and "unconfirmed_balance" in wallet_balance_data:
-        balance_data["wallet_pending"] = wallet_balance_data["unconfirmed_balance"]
+        balance_data["wallet_pending"] = format_sat_amount( wallet_balance_data["unconfirmed_balance"] )
 
     return balance_data
 
