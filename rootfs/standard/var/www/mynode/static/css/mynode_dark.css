@@ -44,6 +44,7 @@ table,
 .app_tile_short,
 .app_tile_wide,
 .app_tile_bitcoin_recent_blocks,
+.app_tile_lightning_details,
 .info_tile {
     border: none;
 }
@@ -51,6 +52,7 @@ table,
 .app_tile,
 .app_tile_wide,
 .app_tile_bitcoin_recent_blocks,
+.app_tile_lightning_details,
 .app_tile_short {
   background-color: #121C21;
 }

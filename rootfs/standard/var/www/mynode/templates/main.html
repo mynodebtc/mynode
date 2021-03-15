@@ -38,6 +38,18 @@
                 showing_blocks = !showing_blocks;
             }
 
+            var showing_lightning_details = false;
+            function toggleLightningDetails() {
+                if (showing_lightning_details) {
+                    $("#lightning_details").slideUp(400);
+                    $('#show_lightning_details').attr('src', location.protocol+'//'+location.hostname+'/static/images/expand_down.png');
+                } else {
+                    $("#lightning_details").slideDown(400);
+                    $('#show_lightning_details').attr('src', location.protocol+'//'+location.hostname+'/static/images/expand_up.png');
+                }
+                showing_lightning_details = !showing_lightning_details;
+            }
+
             // Update page function
             var lnd_ready = {% if lnd_ready %}true{% else %}false{% endif %};
             var btcrpcexplorer_ready = {% if btcrpcexplorer_ready %}true{% else %}false{% endif %};
