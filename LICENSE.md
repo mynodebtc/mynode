@@ -339,7 +339,7 @@ Section 9 -- myNode License Additions
      following conditions:
 
        1. Modifications remain public and can be merged back into the 
-          main myNode repo.
+          main myNode repo without restriction.
 
        2. Modifications to the licensing, product key, or access to
           premium features is prohibited.
