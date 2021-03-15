@@ -234,6 +234,17 @@ td, th {
     margin: 6px 10px 6px 10px;
     background: #f0f0f0;
 }
+.app_tile_lightning_details {
+    display: inline-block;
+    position: relative;
+    border: none;
+    border-radius: 10px;
+    width: 810px;
+    
+    padding: 10px;
+    margin: 6px 10px 6px 10px;
+    background: #f0f0f0;
+}
 .bitcoin_block_set {
     margin-left: auto;
     margin-right: auto;

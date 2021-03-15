@@ -85,13 +85,17 @@
                     <td>{{ lnd_version }}</td>
                 </tr>
             </table>
+            <br/>
+            <!--
+            <img class="" id="show_lightning_details" style="margin: auto; width: 60px; cursor: pointer;" onclick="toggleLightningDetails();" src="{{ url_for('static', filename="images/expand_down.png")}}"/>
+            -->
         </div>
     </div>
 </div>
 
 <!-- Show Bitcoin Blocks -->
 <div class="app_tile_row">
-    <div class="app_tile_bitcoin_recent_blocks" id="bitcoin_blocks" style="display: None;">
+    <div class="app_tile_bitcoin_recent_blocks" id="bitcoin_blocks" style="display: none;">
         <div class="bitcoin_block_set"></div>
             <div class="bitcoin_block">
                 <div class="bitcoin_block_orange_square">
@@ -150,5 +154,23 @@
                 <div class="bitcoin_block_height" id="bitcoin_block_height_6">???</div>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- Show Lightning Details -->
+<div class="app_tile_row">
+    <div class="app_tile_lightning_details" id="lightning_details" style="display: none;">
+        blah<br/>
+        blah<br/>
+        blah<br/>
+        blah<br/>
+        blah<br/>
+        blah<br/>
+        blah<br/>
+        blah<br/>
+        blah<br/>
+        blah<br/>
+        blah<br/>
+        blah<br/>
     </div>
 </div>
