@@ -536,7 +536,7 @@ def get_ckbunker_status_and_color():
     color = "gray"
     if is_bitcoind_synced():
         if is_ckbunker_enabled():
-            color = get_service_status_color("lndhub")
+            color = get_service_status_color("ckbunker")
     else:
         status = "Waiting on Bitcoin"
     return status,color
