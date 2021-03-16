@@ -544,6 +544,8 @@ def get_ckbunker_status_and_color():
 def get_sphinxrelay_status_and_color():
     color = "gray"
     status = "Chat"
+    if is_testnet_enabled():
+        return "Requires Mainnet", "gray"
     if is_lnd_ready():
         if is_sphinxrelay_enabled():
             status_code = get_service_status_code("sphinxrelay")

@@ -241,11 +241,13 @@
             {% if product_key_skipped %}
                 Premium Feature
             {% else %}
-                {% if sphinxrelay_enabled %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="/sphinxrelay">Info</a>
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-sphinxrelay">Disable</a>
-                {% else %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-sphinxrelay">Enable</a>
+                {% if lnd_ready and not is_testnet_enabled %}
+                    {% if sphinxrelay_enabled %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="/sphinxrelay">Info</a>
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-sphinxrelay">Disable</a>
+                    {% else %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-sphinxrelay">Enable</a>
+                    {% endif %}
                 {% endif %}
             {% endif %}
         </div>
