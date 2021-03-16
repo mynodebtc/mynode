@@ -254,6 +254,7 @@
     <br/>
     <div class="main_header">Balances</div>
     <div class="app_tile_row">
+        {% if lnd_deposit_address != "ERROR" %}
         <div class="info_tile" style="min-width: 280px;">
             <div class="info_tile_header">Deposit Address</div>
             <div class="info_tile_contents">
@@ -264,6 +265,7 @@
                 <button id="gen_new_address_button" class="ui-button ui-widget ui-corner-all mynode_button_small">Generate New Address</button>
             </div>
         </div>
+        {% endif %}
 
         <div class="info_tile">
             <div class="info_tile_header">Balances</div>

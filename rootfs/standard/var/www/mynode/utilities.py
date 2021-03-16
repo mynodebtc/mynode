@@ -60,4 +60,8 @@ def get_data(key):
 # UI Format Functions
 #==================================
 def format_sat_amount(amount):
-    return "{:,}".format(int(amount))
+    try:
+        r = "{:,}".format(int(amount))
+    except:
+        r = amount
+    return r
