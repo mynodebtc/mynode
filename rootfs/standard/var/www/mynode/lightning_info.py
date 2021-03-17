@@ -69,12 +69,12 @@ def update_lightning_info():
     return True
 
 
-def get_deposit_address():
+def get_lnd_deposit_address():
     if os.path.isfile("/tmp/lnd_deposit_address"):
         return get_file_contents("/tmp/lnd_deposit_address")
-    return get_new_deposit_address()
+    return get_new_lnd_deposit_address()
 
-def get_new_deposit_address():
+def get_new_lnd_deposit_address():
     address = "NEW_ADDR"
     try:
         addressdata = lnd_get("/newaddress")
@@ -91,7 +91,31 @@ def get_lightning_info():
 
 def get_lightning_peers():
     global lightning_peers
-    return copy.deepcopy(lightning_peers)
+    peerdata = copy.deepcopy(lightning_peers)
+    peers = []
+    if peerdata != None and "peers" in peerdata:
+        for p in peerdata["peers"]:
+            peer = p
+            if "bytes_recv" in p:
+                peer["bytes_recv"] = "{:.2f}".format(float(p["bytes_recv"]) / 1000 / 1000)
+            else:
+                peer["bytes_recv"] = "N/A"
+            if "bytes_sent" in p:
+                peer["bytes_sent"] = "{:.2f}".format(float(p["bytes_sent"]) / 1000 / 1000)
+            else:
+                peer["bytes_sent"] = "N/A"
+            if "sat_sent" in p:
+                peer["sat_sent"] = format_sat_amount(peer["sat_sent"])
+            if "sat_recv" in p:
+                peer["sat_recv"] = format_sat_amount(peer["sat_recv"])
+            if "ping_time" not in p:
+                peer["ping_time"] = "N/A"
+            if "pub_key" in p:
+                peer["alias"] = get_lightning_peer_alias( p["pub_key"] )
+            else:
+                peer["alias"] = "Unknown"
+            peers.append(peer)
+    return peers
 
 def get_lightning_node_info(pubkey):
     nodeinfo = lnd_get("/graph/node/{}".format(pubkey), timeout=2)
@@ -118,13 +142,40 @@ def get_lightning_peer_count():
 
 def get_lightning_channels():
     global lightning_channels
-    return copy.deepcopy(lightning_channels)
+    channeldata = copy.deepcopy(lightning_channels)
+    channels = []
+    if channeldata != None and "channels" in channeldata:
+        for c in channeldata["channels"]:
+            channel = c
+
+            if "capacity" in channel:
+                channel["capacity"] = format_sat_amount(channel["capacity"])
+            else:
+                channel["capacity"] = "N/A"
+            if "local_balance" in channel and "remote_balance" in channel:
+                l = float(channel["local_balance"])
+                r = float(channel["remote_balance"])
+                channel["chan_percent"] = (l / (l+r)) * 100
+            else:
+                channel["chan_percent"] = "0"
+            if "local_balance" in channel:
+                channel["local_balance"] = format_sat_amount(channel["local_balance"])
+            else:
+                channel["local_balance"] = "0"
+            if "remote_balance" in channel:
+                channel["remote_balance"] = format_sat_amount(channel["remote_balance"])
+            else:
+                channel["remote_balance"] = "0"
+            if "remote_pubkey" in channel:
+                channel["remote_alias"] = get_lightning_peer_alias( channel["remote_pubkey"] )
+            else:
+                channel["remote_alias"] = "Unknown"
+            channels.append(channel)
+    return channels
 
 def get_lightning_channel_count():
-    channeldata = get_lightning_channels()
-    if channeldata != None and "channels" in channeldata:
-        return len(channeldata["channels"])
-    return 0
+    channels = get_lightning_channels()
+    return len(channels)
 
 def get_lightning_channel_balance():
     global lightning_channel_balance

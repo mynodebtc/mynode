@@ -53,7 +53,7 @@ def page_lnd():
     uri = ""
     ip = ""
     status = "Starting..."
-    lnd_deposit_address = get_deposit_address()
+    lnd_deposit_address = get_lnd_deposit_address()
     channel_balance = "N/A"
     channel_pending = "0"
     wallet_balance = "N/A"
@@ -110,52 +110,8 @@ def page_lnd():
             uri = "..."
             ip = "..."
 
-        peerdata = get_lightning_peers()
-        peers = []
-        if peerdata != None and "peers" in peerdata:
-            for p in peerdata["peers"]:
-                peer = p
-                if "bytes_recv" in p:
-                    peer["bytes_recv"] = "{:.2f}".format(float(p["bytes_recv"]) / 1000 / 1000)
-                else:
-                    peer["bytes_recv"] = "N/A"
-                if "bytes_sent" in p:
-                    peer["bytes_sent"] = "{:.2f}".format(float(p["bytes_sent"]) / 1000 / 1000)
-                else:
-                    peer["bytes_sent"] = "N/A"
-                if "sat_sent" in p:
-                    peer["sat_sent"] = format_sat_amount(peer["sat_sent"])
-                if "sat_recv" in p:
-                    peer["sat_recv"] = format_sat_amount(peer["sat_recv"])
-                if "ping_time" not in p:
-                    peer["ping_time"] = "N/A"
-                if "pub_key" in p:
-                    peer["alias"] = get_lightning_peer_alias( p["pub_key"] )
-                else:
-                    peer["alias"] = "Unknown"
-                peers.append(peer)
-
-        channeldata = get_lightning_channels()
-        channels = []
-        if channeldata != None and "channels" in channeldata:
-            for c in channeldata["channels"]:
-                channel = c
-                if "capacity" in channel:
-                    channel["capacity"] = format_sat_amount(channel["capacity"])
-                if "local_balance" not in channel:
-                    channel["local_balance"] = "0"
-                else:
-                    channel["local_balance"] = format_sat_amount(channel["local_balance"])
-                if "remote_balance" not in channel:
-                    channel["remote_balance"] = "0"
-                else:
-                    channel["remote_balance"] = format_sat_amount(channel["remote_balance"])
-                if "remote_pubkey" in channel:
-                    channel["remote_alias"] = get_lightning_peer_alias( channel["remote_pubkey"] )
-                else:
-                    channel["remote_alias"] = "Unknown"
-                channels.append(channel)
-
+        peers = get_lightning_peers()
+        channels = get_lightning_channels()
         balance_info = get_lightning_balance_info()
 
         channel_balance_data = get_lightning_channel_balance()
@@ -488,9 +444,9 @@ def lnd_config_page():
 ##############################################
 ## LND API Calls
 ##############################################
-@mynode_lnd.route("/lnd/api/get_new_deposit_address", methods=['GET'])
-def lnd_api_get_new_deposit_address_page():
+@mynode_lnd.route("/lnd/api/get_new_lnd_deposit_address", methods=['GET'])
+def lnd_api_get_new_lnd_deposit_address_page():
     check_logged_in()
 
-    address = get_new_deposit_address()
+    address = get_new_lnd_deposit_address()
     return address

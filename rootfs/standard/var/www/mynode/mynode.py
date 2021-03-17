@@ -556,6 +556,8 @@ def index():
             "lnd_balance_info": get_lightning_balance_info(),
             "lnd_wallet_exists": lnd_wallet_exists(),
             "lnd_version": get_lnd_version(),
+            "lnd_deposit_address": get_lnd_deposit_address(),
+            "lnd_channels": get_lightning_channels(),
             "is_testnet_enabled": is_testnet_enabled(),
             "tor_status_color": tor_status_color,
             "tor_status": tor_status,
