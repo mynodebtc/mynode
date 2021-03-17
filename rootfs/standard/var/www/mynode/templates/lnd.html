@@ -81,7 +81,7 @@
                     });
                 }
                 $("#gen_new_address_button").on("click", function() {
-                    $.get( "/lnd/api/get_new_deposit_address", function( data ) {
+                    $.get( "/lnd/api/get_new_lnd_deposit_address", function( data ) {
                         $("#gen_new_address_button").hide();
                         show_deposit_address(data);
                     });

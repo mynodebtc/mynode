@@ -290,6 +290,28 @@ td, th {
     width: 100%;
 }
 
+.lightning_channel {
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 20px;
+}
+.lightning_channel_bar {
+    margin: auto;
+}
+.lightning_channel_bar_label_left {
+    font-size: 12px;
+    float: left;
+}
+.lightning_channel_bar_label_right {
+    font-size: 12px;
+    float: right;}
+.lightning_channel_bar.ui-progressbar {
+    background: orange;
+}
+.lightning_channel_bar .ui-progressbar-value {
+    background: green;
+}
+
 
 .green { background-color: green; }
 .yellow { background-color: yellow; }

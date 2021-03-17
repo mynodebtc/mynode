@@ -86,9 +86,10 @@
                 </tr>
             </table>
             <br/>
-            <!--
+            
+            {% if lnd_wallet_exists and lnd_ready %}
             <img class="" id="show_lightning_details" style="margin: auto; width: 60px; cursor: pointer;" onclick="toggleLightningDetails();" src="{{ url_for('static', filename="images/expand_down.png")}}"/>
-            -->
+            {% endif %}
         </div>
     </div>
 </div>
@@ -160,17 +161,35 @@
 <!-- Show Lightning Details -->
 <div class="app_tile_row">
     <div class="app_tile_lightning_details" id="lightning_details" style="display: none;">
-        blah<br/>
-        blah<br/>
-        blah<br/>
-        blah<br/>
-        blah<br/>
-        blah<br/>
-        blah<br/>
-        blah<br/>
-        blah<br/>
-        blah<br/>
-        blah<br/>
-        blah<br/>
+        <!--
+        <table>
+            <tr>
+                <td>
+                    <div id="lnd_deposit_address_qrcode" style="height: 120px; width: 120px; display: inline;"></div>
+                </td>
+                <td>
+                    <b>Deposit Address:</b> {{lnd_deposit_address}}<br/>
+                    <b>On-chain Balance:</b> {{lnd_deposit_address}}<br/>
+                    <b>Channel Balance:</b> {{lnd_deposit_address}}<br/>
+                </td>
+            </tr>
+        </table>
+        -->
+        <b>Deposit Address</b><br/>
+        <div id="lnd_deposit_address_qrcode" style="height: 100px; width: 100px; margin: auto; margin-top: 5px; "></div>
+        <span style="font-size: 12px;">{{lnd_deposit_address}}</span>
+
+        {% if lnd_channels|length > 0 %}
+            <br/><br/>
+            <b>Channels</b><br/>
+            {% for c in lnd_channels %}
+                <div class="lightning_channel">
+                    <div style="text-align: left; font-weight: bold; margin-bottom: 5px;">{{ c.remote_alias }}</div>
+                    <div id="channel_bar_{{ c.chan_id }}" class="lightning_channel_bar"></div>
+                    <div class="lightning_channel_bar_label_left">{{c.local_balance}} sats</div>
+                    <div class="lightning_channel_bar_label_right">{{c.remote_balance}} sats</div>
+                </div>
+            {% endfor %}
+        {% endif %}
     </div>
 </div>
