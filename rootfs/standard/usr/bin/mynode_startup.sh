@@ -85,10 +85,11 @@ fi
 
 
 # Verify we are in a clean state
-if [ $IS_RASPI -eq 1 ] || [ $IS_ROCK64 -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
-    dphys-swapfile swapoff || true
-    dphys-swapfile uninstall || true
+if [ $IS_X86 = 0 ]; then
+    swapoff -a || true
 fi
+dphys-swapfile swapoff || true
+dphys-swapfile uninstall || true
 umount /mnt/hdd || true
 
 
@@ -621,12 +622,11 @@ else
     SWAP_MB=$(($SWAP * 1024))
     sed -i "s|CONF_SWAPSIZE=.*|CONF_SWAPSIZE=$SWAP_MB|" /etc/dphys-swapfile
 fi
-if [ $IS_RASPI -eq 1 ] || [ $IS_ROCK64 -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
-    SWAP=$(cat /mnt/hdd/mynode/settings/swap_size)
-    if [ "$SWAP" -ne "0" ]; then
-        dphys-swapfile install
-        dphys-swapfile swapon
-    fi
+
+SWAP=$(cat /mnt/hdd/mynode/settings/swap_size)
+if [ "$SWAP" -ne "0" ]; then
+    dphys-swapfile install || true
+    dphys-swapfile swapon || true
 fi
 
 
