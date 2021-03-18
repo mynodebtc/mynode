@@ -1,3 +1,17 @@
+=== v0.2.28 ===
+- Released: 03/17/21
+- Upgrade Dojo to v1.9.0
+- Upgrade Whirlpool to v0.10.10
+- Upgrade JoininBox to v0.3.0
+- Upgrade JoinMarket to v0.8.2
+- Upgrade lndhub to v1.3.0
+- Upgrade LNBits to v0.2.0
+- UI Improvements
+- Add Testnet toggle
+- Add app icon for JoininBox / JoinMarket
+- Add button to restart Electrum server
+- Bug fixes and performance improvements
+
 === v0.2.27 ===
 - Released: 02/24/21
 - Add JoininBox v0.2.0
