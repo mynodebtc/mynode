@@ -85,7 +85,7 @@ fi
 
 
 # Verify we are in a clean state
-if [ $IS_X86 = 0 ]; then
+if [ $IS_X86 = 1 ]; then
     swapoff -a || true
 fi
 dphys-swapfile swapoff || true
