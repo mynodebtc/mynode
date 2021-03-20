@@ -1,7 +1,7 @@
 /* mynode color: #f9c132 */
 /* dark grey for background: #303841 */
 /* lighter gray: #3a4750 */
-/* light gray: #eee */
+/* light gray: #ddd */
 
 body {
     background: #1b2127;
@@ -11,7 +11,7 @@ a:link,
 a:visited,
 a:hover,
 a:active {
-    color: #eee;
+    color: #ddd;
     text-decoration: underline solid #eeeeee5e;
 }
 
@@ -31,13 +31,14 @@ a:active {
 .instructions,
 .device_status_info,
 .bitcoin_block,
+.app_tile_lightning_details,
 .settings_block_subheader,
 .settings_block_subheader_status,
 .settings_block,
 table,
 #cli_contents,
 .small_message {
-    color: #eee;
+    color: #ddd;
 }
 
 .app_tile,
@@ -82,7 +83,7 @@ table,
     border-bottom: 1px solid #ffb7001c;
 }
 
-td {
+th td {
     border-top: #323640 1px solid;
 }
 
@@ -97,7 +98,7 @@ td {
 
 .main_page_warning_block,
 .halving_message_main_page {
-    color: #eee;
+    color: #ddd;
     border: 3px solid #f9c132;
     background-color: #3a4750;
 }
@@ -116,18 +117,18 @@ td {
 }
 
 input:checked + .slider {
-  background-color: #eee;
+  background-color: #ddd;
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #eee;
+  box-shadow: 0 0 1px #ddd;
 }
 
 .cli_contents {
     border: 2px solid #222222;
 }
 .config_textarea {
-	color: #eee;
+	color: #ddd;
 	background-color: #303841;
 }
 
