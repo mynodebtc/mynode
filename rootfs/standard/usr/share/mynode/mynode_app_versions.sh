@@ -10,7 +10,7 @@ LND_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnd_version_latest
 LND_UPGRADE_MANIFEST_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
 LND_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-roasbeef-$LND_VERSION.sig
 
-LOOP_VERSION="v0.11.4-beta" 
+LOOP_VERSION="v0.12.0-beta" 
 LOOP_VERSION_FILE=/home/bitcoin/.mynode/loop_version
 LOOP_LATEST_VERSION_FILE=/home/bitcoin/.mynode/loop_version_latest
 LOOP_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt
@@ -25,6 +25,8 @@ POOL_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/pool/releases/dow
 ELECTRS_VERSION="v0.8.6" 
 ELECTRS_VERSION_FILE=/home/bitcoin/.mynode/electrs_version
 ELECTRS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/electrs_version_latest
+
+MEMPOOL_VERSION="v2.1.2"
 
 LNDHUB_VERSION="v1.3.0"
 LNDHUB_VERSION_FILE=/home/bitcoin/.mynode/lndhub_version
@@ -51,6 +53,9 @@ WHIRLPOOL_UPLOAD_FILE_ID="e4a90d89e67b90b7c715a12264ebc8fd"
 WHIRLPOOL_UPLOAD_SIG_ID="c3478374cddfd78869a6b93f5c78d098"
 WHIRLPOOL_VERSION_FILE=/home/bitcoin/.mynode/whirlpool_version
 WHIRLPOOL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/whirlpool_version_latest
+
+DOJO_VERSION="v1.9.0"
+DOJO_TAR_HASH="b9709c18bb58f514a2f1db948b421b691b22fbf7713f5a68ce9627f35fcbf306"
 
 RTL_VERSION="v0.10.1"
 RTL_VERSION_FILE=/home/bitcoin/.mynode/rtl_version
@@ -83,3 +88,5 @@ CKBUNKER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/ckbunker_version_latest
 SPHINXRELAY_VERSION="v1.3.8"
 SPHINXRELAY_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version
 SPHINXRELAY_LATEST_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version_latest
+
+WEBSSH2_VERSION="v0.2.10-0"
