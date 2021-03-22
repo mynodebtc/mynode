@@ -1,7 +1,7 @@
 {
     "development": {
       "dialect": "sqlite",
-      "storage": "/Users/Shared/sphinx.db"
+      "storage": "/mnt/hdd/mynode/sphinxrelay/sphinx_dev.db"
     },
     "docker_development": {
       "dialect": "sqlite",
@@ -9,7 +9,7 @@
     },
     "test": {
       "dialect": "sqlite",
-      "storage": "/home/ubuntu/sphinx.db"
+      "storage": "/mnt/hdd/mynode/sphinxrelay/sphinx_test.db"
     },
     "production": {
       "dialect": "sqlite",
