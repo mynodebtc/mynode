@@ -4,6 +4,7 @@
 set -x
 
 source /usr/share/mynode/mynode_config.sh
+source /usr/share/mynode/mynode_app_versions.sh
 
 echo "Starting mynode_docker_images.sh ..."
 touch /tmp/installing_docker_images
@@ -22,9 +23,9 @@ while true; do
     # ???
 
     # Upgrade WebSSH2
+    
     echo "Checking for new webssh2..."
-    WEBSSH2_UPGRADE_VERSION=v0.2.10-0
-    WEBSSH2_UPGRADE_URL=https://github.com/billchurch/webssh2/archive/${WEBSSH2_UPGRADE_VERSION}.tar.gz
+    WEBSSH2_UPGRADE_URL=https://github.com/billchurch/webssh2/archive/${WEBSSH2_VERSION}.tar.gz
     WEBSSH2_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/webssh2_url
     CURRENT=""
     if [ -f $WEBSSH2_UPGRADE_URL_FILE ]; then
@@ -47,10 +48,9 @@ while true; do
     fi
 
     # Upgrade mempool
+    MEMPOOL_URL=https://github.com/mempool/mempool/archive/${MEMPOOL_VERSION}.tar.gz
+    MEMPOOL_URL_FILE=/mnt/hdd/mynode/settings/mempoolspace_url
     echo "Checking for new mempool..."
-    MEMPOOL_UPGRADE_VERSION=v2.1.2
-    MEMPOOL_UPGRADE_URL=https://github.com/mempool/mempool/archive/${MEMPOOL_UPGRADE_VERSION}.tar.gz
-    MEMPOOL_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/mempoolspace_url
     CURRENT=""
     if [ -f $MEMPOOL_UPGRADE_URL_FILE ]; then
         CURRENT=$(cat $MEMPOOL_UPGRADE_URL_FILE)
@@ -72,10 +72,10 @@ while true; do
         cp -f mempool/mariadb-structure.sql /mnt/hdd/mynode/mempool/mysql/db-scripts/mariadb-structure.sql
 
         # Update env variable to use latest version
-        sed -i "s/VERSION=.*/VERSION=$MEMPOOL_UPGRADE_VERSION/g" /mnt/hdd/mynode/mempool/.env
+        sed -i "s/VERSION=.*/VERSION=$MEMPOOL_VERSION/g" /mnt/hdd/mynode/mempool/.env
 
-        docker pull mempool/frontend:${MEMPOOL_UPGRADE_VERSION}
-        docker pull mempool/backend:${MEMPOOL_UPGRADE_VERSION}
+        docker pull mempool/frontend:${MEMPOOL_VERSION}
+        docker pull mempool/backend:${MEMPOOL_VERSION}
 
         enabled=$(systemctl is-enabled mempoolspace)
         if [ "$enabled" = "enabled" ]; then
@@ -86,8 +86,6 @@ while true; do
     fi
 
     # Install Dojo
-    DOJO_VERSION="v1.9.0"
-    DOJO_TAR_HASH="b9709c18bb58f514a2f1db948b421b691b22fbf7713f5a68ce9627f35fcbf306"
     DOJO_UPGRADE_URL=https://code.samourai.io/dojo/samourai-dojo/-/archive/$DOJO_VERSION/samourai-dojo-$DOJO_VERSION.tar.gz
     DOJO_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/dojo_url
     CURRENT=""
