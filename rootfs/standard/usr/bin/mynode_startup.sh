@@ -188,6 +188,7 @@ mkdir -p /mnt/hdd/mynode/ckbunker
 mkdir -p /mnt/hdd/mynode/sphinxrelay
 mkdir -p /mnt/hdd/mynode/joinmarket
 mkdir -p /mnt/hdd/mynode/mempool
+mkdir -p /mnt/hdd/mynode/tor_backup
 mkdir -p /tmp/flask_uploads
 echo "drive_mounted" > $MYNODE_STATUS_FILE
 chmod 777 $MYNODE_STATUS_FILE
@@ -477,6 +478,13 @@ if [ $IS_RASPI -eq 1 ]; then
     sed -i "s|MARIA_DB_IMAGE=.*|MARIA_DB_IMAGE=hypriot/rpi-mysql:latest|g" /mnt/hdd/mynode/mempool/.env
 fi
 
+# Backup Tor files
+for f in /var/lib/tor/mynode*; do
+    rsync --ignore-existing -r -avh $f /mnt/hdd/mynode/tor_backup/ || true
+done
+cp -a -f /mnt/hdd/mynode/tor_backup/. /var/lib/tor/ || true
+systemctl restart tor || true
+
 # Setup udev
 chown root:root /etc/udev/rules.d/* || true
 udevadm trigger
@@ -592,6 +600,10 @@ fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/joinmarket)
 if [ "$USER" != "joinmarket" ]; then
     chown -R joinmarket:joinmarket /mnt/hdd/mynode/joinmarket
+fi
+USER=$(stat -c '%U' /mnt/hdd/mynode/tor_backup)
+if [ "$USER" != "debian-tor" ]; then
+    chown -R debian-tor:debian-tor /mnt/hdd/mynode/tor_backup
 fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/redis)
 if [ "$USER" != "redis" ]; then
