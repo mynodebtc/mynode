@@ -51,8 +51,13 @@
             <div class="instructions-header">Instructions to setup Whirlpool</div>
             <ol class="instructions-steps">
                 <li>Ensure that whirlpool is enabled and you see "Waiting for initialization..." on status tile.</li>
-                <li>Download and install Whirlpool GUI v0.10.2 from <a href="https://samouraiwallet.com/download" target="_blank">https://samouraiwallet.com/download</a>.</li>
-                <li>On the installed Whirlpool GUI, select "Advanced: remote CLI". Type in https://mynode.local:8899 (or use the raw IP address) and click on "Connect".</li>
+                <li>Download and install the latest Whirlpool app from <a href="https://samouraiwallet.com/download" target="_blank">https://samouraiwallet.com/download</a>.</li>
+                <li>In the installed Whirlpool app, select "Advanced: remote CLI".</li>
+                <li>In the URL field, type in one of the following URLs and click "Connect".</li>
+                <ul>
+                    <li>https://mynode.local:8899</li>
+                    <li>https://{{local_ip}}:8899</li>
+                </ul>
                 <li>Follow the instructions and scan your payload. Use secure channels if you are copy/pasting the payload.</li>
                 <li>Once connected, enable Tor using the slider and click on "Initialize GUI".</li>
                 <li>It might take few seconds to initialize GUI or click on the retry button.</li>
