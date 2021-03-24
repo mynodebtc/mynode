@@ -1,9 +1,10 @@
-from flask import Blueprint, render_template, redirect
+from flask import Blueprint, render_template, redirect, flash
 from user_management import check_logged_in
-from device_info import read_ui_settings
+from device_info import read_ui_settings, reset_sphinxrelay
 from utilities import *
 from systemctl_info import *
 import subprocess
+import time
 import os
 
 mynode_sphinxrelay = Blueprint('mynode_sphinxrelay',__name__)
@@ -31,3 +32,13 @@ def sphinxrelay_page():
         "sphinxrelay_connection_string": get_connection_string(),
     }
     return render_template('sphinxrelay.html', **templateData)
+
+@mynode_sphinxrelay.route("/sphinxrelay/reset")
+def sphinxrelay_reset_page():
+    check_logged_in()
+
+    reset_sphinxrelay()
+    time.sleep(3)
+
+    flash("Sphinx Relay Data Reset", category="message")
+    return redirect("/sphinxrelay")
