@@ -2,6 +2,21 @@
     <head>
         <title>{{ title }}</title>
         {% include 'includes/head.html' %}
+
+        <script>
+        $(document).ready(function() {
+            $("#sphinxrelay_ui").on("click", function() {
+                url = 'http://'+location.hostname+':53001/static/'
+                window.open(url,'_blank');
+            });
+
+            $("#sphinxrelay_reset").on("click", function() {
+                if (confirm("Are you sure you want to reset sphinx relay? You will lose all chat data and accounts and you will need to re-pair your apps.")) {
+                    window.location.href='/sphinxrelay/reset';
+                }
+            });
+        });
+        </script>
     </head>
     <body>
         {% include 'includes/logo_header.html' %}
@@ -10,18 +25,36 @@
         </div>
 
         <div class="main_header">Sphinx Relay</div>
+
+        {% include 'includes/message_display.html' %}
         <br/>
-        
+
+
         <div class="app_tile_row">
             <div class="info_tile">
                 <div class="info_tile_header">Status</div>
-                <div class="info_tile_contents">{{sphinxrelay_status}}</div>
-            </div>
-        </div>
-        <div class="app_tile_row">
-            <div class="info_tile">
-                <div class="info_tile_header">Connection String</div>
-                <div class="info_tile_contents">{{sphinxrelay_connection_string}}</div>
+                <div class="info_tile_contents">
+                    <table class="info_table">
+                        <tr>
+                            <th>Status</th>
+                            <td>{{sphinxrelay_status}}</td>
+                        </tr>
+                        <tr>
+                            <th>Connection String</th>
+                            <td style="font-size: 12px;">{{sphinxrelay_connection_string}}</td>
+                        </tr>
+                        <tr>
+                            <th>Sphinx Relay Interface</th>
+                            <td><button id="sphinxrelay_ui" target="_blank" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;">Open</button></td>
+                        </tr>
+                        <tr>
+                            <th>Actions</th>
+                            <td>
+                                <button id="sphinxrelay_reset" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;">Reset Data</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </div>
 

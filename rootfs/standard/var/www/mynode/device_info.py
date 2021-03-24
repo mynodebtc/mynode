@@ -995,6 +995,28 @@ def reset_electrs():
     reboot_device()
 
 
+#==================================
+# Sphinx Relay Server Functions
+#==================================
+def stop_sphinxrelay():
+    os.system("systemctl stop sphinxrelay")
+
+def restart_sphinxrelay_actual():
+    os.system("systemctl restart sphinxrelay")
+
+def restart_sphinxrelay():
+    t = Timer(0.1, restart_sphinxrelay_actual)
+    t.start()
+
+def delete_sphinxrelay_data():
+    os.system("rm -rf /mnt/hdd/mynode/sphinxrelay/sphinx.db")
+    os.system("rm -rf /opt/mynode/sphinxrelay/connection_string.txt")
+
+def reset_sphinxrelay():
+    stop_sphinxrelay()
+    delete_sphinxrelay_data()
+    restart_sphinxrelay()
+
 
 #==================================
 # Tor Functions
