@@ -1001,6 +1001,7 @@ def reset_electrs():
 #==================================
 def reset_tor():
     os.system("rm -rf /var/lib/tor/*")
+    os.system("rm -rf /mnt/hdd/mynode/tor_backup/*")
     os.system("rm -rf /mnt/hdd/mynode/bitcoin/onion_private_key")
     os.system("rm -rf /mnt/hdd/mynode/lnd/v2_onion_private_key")
     os.system("rm -rf /mnt/hdd/mynode/lnd/v3_onion_private_key")
