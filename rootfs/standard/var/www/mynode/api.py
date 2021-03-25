@@ -51,6 +51,7 @@ def api_get_lightning_info():
     data["peer_count"] = get_lightning_peer_count()
     data["channel_count"] = get_lightning_channel_count()
     data["lnd_ready"] = is_lnd_ready()
+    data["channels"] = get_lightning_channels()
 
     return jsonify(data)
 
