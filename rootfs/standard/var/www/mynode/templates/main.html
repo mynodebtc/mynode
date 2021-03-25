@@ -121,6 +121,21 @@
                             refresh_page();
                         }
                     }
+                    if ("channels" in data && data["channels"] != null) {
+                        if (showing_lightning_details) {
+                            channels = data["channels"];
+                            for (i=0; i < channels.length; i++) {
+                                c = channels[i];
+                                //console.log(JSON.stringify(c))
+                                $("#channel_local_"+c["chan_id"]).html(c["local_balance"]+" sats");
+                                $("#channel_remote_"+c["chan_id"]).html(c["remote_balance"]+" sats");
+
+                                $("#channel_bar_"+c["chan_id"]).progressbar({
+                                    value: Math.floor( c["chan_percent"] )
+                                });
+                            }
+                        }
+                    }
                 });
 
                 // Update app status
