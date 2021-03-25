@@ -4,6 +4,7 @@ import subprocess
 import os
 import time
 import re
+import datetime
 from flask import current_app as app
 from threading import Timer
 from utilities import *
@@ -170,6 +171,16 @@ def get_lightning_channels():
                 channel["remote_alias"] = get_lightning_peer_alias( channel["remote_pubkey"] )
             else:
                 channel["remote_alias"] = "Unknown"
+            if "commit_fee" in channel:
+                channel["commit_fee"] = format_sat_amount(channel["commit_fee"])
+            else:
+                channel["commit_fee"] = "0"
+            if "lifetime" in channel:
+                seconds = int(channel["lifetime"])
+                channel["age"] = "{}".format(str(datetime.timedelta(seconds=seconds)))
+            else:
+                channel["age"] = "N/A"
+            
             channels.append(channel)
     return channels
 
@@ -346,19 +357,6 @@ def get_lnd_status_color():
         if lnd_status == "Logging in...":
             lnd_status_color = "yellow"
     return "green"
-
-def get_lnd_channels():
-    try:
-        macaroon = get_macaroon()
-        headers = {"Grpc-Metadata-macaroon":macaroon}
-        r = requests.get("https://localhost:"+LND_REST_PORT+"/v1/channels", verify=TLS_CERT_FILE,headers=headers)
-        if r.status_code == 200 and r.json():
-            data = r.json()
-            return data["channels"]
-        return False
-    except Exception as e:
-        print("EXCEPTION: {}".format(str(e)))
-        return False
 
 def get_lnd_version():
     global lnd_version
