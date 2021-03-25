@@ -88,6 +88,26 @@
                 });
                 deposit_address = "{{lnd_deposit_address}}";
                 show_deposit_address(deposit_address);
+
+                // Initialize channel balance bars and show/hide button
+                {% for c in channels %}
+                    $( "#channel_bar_{{ c.chan_id }}" ).progressbar({
+                        value: Math.floor( {{ c.chan_percent }} )
+                    });
+                    $('#channel_bar_{{ c.chan_id }}').height(15);
+
+                    show_channel_{{ c.chan_id }}_details = false;
+                    $("#show_channel_{{ c.chan_id }}").on("click", function() {
+                        if (show_channel_{{ c.chan_id }}_details == true) {
+                            $("#channel_table_{{ c.chan_id }}").slideUp(400);
+                            $("#show_channel_{{ c.chan_id }}").html("Show Details");
+                        } else {
+                            $("#channel_table_{{ c.chan_id }}").slideDown(400);
+                            $("#show_channel_{{ c.chan_id }}").html("Hide Details");
+                        }
+                        show_channel_{{ c.chan_id }}_details = ! show_channel_{{ c.chan_id }}_details;
+                    });
+                {% endfor %}     
             });
         </script>
      </head>
@@ -296,26 +316,48 @@
 
     <br/>
     <div class="main_header">Channels</div>
+
+    {% if channels|length > 0 %}
     <div class="app_tile_row">
-        <table class="bitcoind_table">
-            <thead class="bitcoind_table_header">
-                <td>Peer Alias</td>
-                <td>Capacity</td>
-                <td>Local Capacity</td>
-                <td>Remote Capacity</td>
-            </thead>
-            <tbody>
-                {% for channel in channels %}
-                    <tr>
-                        <td>{{ channel.remote_alias }}</td>
-                        <td>{{ channel.capacity }}</td>
-                        <td>{{ channel.local_balance }}</td>
-                        <td>{{ channel.remote_balance }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="lightning_channel_container" style="width: 1000px;">
+            {% for c in channels %}
+            <div class="lightning_channel">
+                <div class="lightning_channel_top_row">
+                    <div class="lightning_channel_label">{{ c.remote_alias }}</div>
+                    <button id="show_channel_{{ c.chan_id }}" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px; float: right;">Show Details</button>
+                </div>
+                <div id="channel_bar_{{ c.chan_id }}" class="lightning_channel_bar"></div>
+                <div id="channel_local_{{ c.chan_id }}" class="lightning_channel_bar_label_left">{{c.local_balance}} sats</div>
+                <div id="channel_remote_{{ c.chan_id }}" class="lightning_channel_bar_label_right">{{c.remote_balance}} sats</div>
+            </div>
+            <br/>
+
+            <div id="channel_table_{{ c.chan_id }}" style="display: none;">
+                <table  class="bitcoind_table" >
+                    <thead class="bitcoind_table_header">
+                        <td>Peer Alias</td>
+                        <td>Capacity</td>
+                        <td>Local Capacity</td>
+                        <td>Remote Capacity</td>
+                        <td>Commit Fee</td>
+                        <td>Age</td>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ c.remote_alias }}</td>
+                            <td>{{ c.capacity }}</td>
+                            <td>{{ c.local_balance }}</td>
+                            <td>{{ c.remote_balance }}</td>
+                            <td>{{ c.commit_fee }}</td>
+                            <td>{{ c.age }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            {% endfor %}
+        </div>
     </div>
+    {% endif %}
 
     <br/>
     <div class="main_header">Peers</div>

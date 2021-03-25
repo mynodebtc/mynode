@@ -290,6 +290,17 @@ td, th {
     width: 100%;
 }
 
+.lightning_channel_container {
+    width: 1000px;
+}
+.lightning_channel_top_row {
+    margin-bottom: 3px;
+    height: 25px;
+}
+.lightning_channel_label {
+    font-weight: bold;
+    float: left;
+}
 .lightning_channel {
     display: inline-block;
     width: 100%;
