@@ -119,7 +119,7 @@ echo "" > /etc/nginx/sites-available/default
 dpkg --configure -a
 
 # Install any pip software
-pip2 install tzupdate virtualenv pysocks redis --no-cache-dir
+pip2 install tzupdate virtualenv pysocks redis qrcode image --no-cache-dir
 
 
 # Update Python3 to 3.7.X
