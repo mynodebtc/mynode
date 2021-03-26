@@ -15,6 +15,7 @@ import subprocess
 import random
 import string
 import redis
+import qrcode
 
 # Globals
 local_ip = "unknown"
@@ -1142,8 +1143,24 @@ def get_firewall_rules():
         rules = "ERROR"
     return rules
 
+
 #==================================
 # BTC RPC Explorer Functions
 #==================================
 def get_btcrpcexplorer_sso_token():
     return get_file_contents("/opt/mynode/btc-rpc-explorer/token")
+
+
+#==================================
+# QR Code Functions
+#==================================
+def generate_qr_code(url):
+    qr = qrcode.QRCode(version=1,
+                       error_correction=qrcode.constants.ERROR_CORRECT_H,
+                       box_size=5,
+                       border=1)
+
+    qr.add_data(url)
+    qr.make(fit=True)
+    img = qr.make_image()
+    return img

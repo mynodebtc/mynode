@@ -1,5 +1,5 @@
 
-from flask import Blueprint, render_template, redirect, jsonify, request
+from flask import Blueprint, render_template, redirect, jsonify, request, send_file
 from flask import current_app as app
 from user_management import check_logged_in
 from bitcoin_info import *
@@ -10,6 +10,8 @@ from dojo import get_dojo_status
 from whirlpool import get_whirlpool_status
 from thread_functions import *
 from systemctl_info import *
+import qrcode
+import cStringIO
 import json
 import subprocess
 import re
@@ -138,3 +140,14 @@ def api_homepage_needs_refresh():
         data["needs_refresh"] = "yes"
 
     return jsonify(data)
+
+@mynode_api.route("/api/get_qr_code_image")
+def api_get_qr_code_image():
+    img_buf = cStringIO.StringIO()
+    url = "ERROR"
+    if request.args.get("url"):
+        url = request.args.get("url")
+    img = generate_qr_code(url)
+    img.save(img_buf)
+    img_buf.seek(0)
+    return send_file(img_buf, mimetype='image/png')

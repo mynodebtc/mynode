@@ -199,7 +199,7 @@ pip2 install --upgrade wheel
 pip2 install speedtest-cli transmissionrpc flask python-bitcoinrpc redis prometheus_client requests
 pip2 install python-pam python-bitcoinlib psutil
 pip2 install grpcio grpcio-tools googleapis-common-protos
-pip2 install tzupdate virtualenv pysocks redis
+pip2 install tzupdate virtualenv pysocks redis qrcode image
 
 
 # Update Python3 to 3.7.X
