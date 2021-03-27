@@ -96,6 +96,7 @@ def api_get_service_status():
         data["status"], data["color"] = get_lnbits_status_and_color()
     elif service == "thunderhub":
         data["status"], data["color"] = get_thunderhub_status_and_color()
+        data["sso_token"] = get_thunderhub_sso_token()
     elif service == "ckbunker":
         data["status"], data["color"] = get_ckbunker_status_and_color()
     elif service == "sphinxrelay":

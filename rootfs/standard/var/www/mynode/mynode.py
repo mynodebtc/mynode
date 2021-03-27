@@ -576,6 +576,7 @@ def index():
             "thunderhub_status_color": thunderhub_status_color,
             "thunderhub_status": thunderhub_status,
             "thunderhub_enabled": is_thunderhub_enabled(),
+            "thunderhub_sso_token": get_thunderhub_sso_token(),
             "ckbunker_status_color": ckbunker_status_color,
             "ckbunker_status": ckbunker_status,
             "ckbunker_enabled": is_ckbunker_enabled(),
