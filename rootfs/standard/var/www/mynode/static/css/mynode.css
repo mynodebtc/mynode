@@ -158,6 +158,14 @@ td, th {
     padding-bottom: 10px;
 }
 
+.large_error_message {
+    color: #BB4444;
+    text-align: center;
+    font-size: 28px;
+    font-family: Arial, Helvetica, sans-serif;
+    padding-top: 20px;
+}
+
 .app_tile_row_divider_left {
     width: 50%;
     float: left;
@@ -323,6 +331,34 @@ td, th {
     background: green;
 }
 
+.bitcoind_table {
+    width: 1000px;
+    margin: auto;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 14px;
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+}
+.bitcoind_table_header {
+    font-size: 16px;
+    background-color: #FFFFFF;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+table.bitcoind_table tbody tr:nth-child(odd) td{
+    background-color: #ffa5000d;
+}
+
+table.bitcoind_table tbody tr:nth-child(even) td{
+    background-color: #fff;
+}
+
+table.bitcoind_table td {
+    padding: 10px 0;
+    margin: 0px;
+}
 
 .green { background-color: green; }
 .yellow { background-color: yellow; }

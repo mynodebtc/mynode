@@ -3,7 +3,7 @@ from config import *
 from flask import Flask, render_template, Markup, send_from_directory, redirect, request, url_for
 from user_management import *
 from api import mynode_api
-from bitcoind import mynode_bitcoind
+from bitcoin import mynode_bitcoin
 from whirlpool import mynode_whirlpool, get_whirlpool_status
 from dojo import mynode_dojo, get_dojo_status
 from joininbox import mynode_joininbox
@@ -73,7 +73,7 @@ my_logger.addHandler(handler)
 app.logger.addHandler(my_logger)
 app.logger.setLevel(logging.INFO)
 
-app.register_blueprint(mynode_bitcoind)
+app.register_blueprint(mynode_bitcoin)
 app.register_blueprint(mynode_lnd)
 app.register_blueprint(mynode_api)
 app.register_blueprint(mynode_whirlpool)
