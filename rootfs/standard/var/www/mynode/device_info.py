@@ -8,6 +8,7 @@ from lightning_info import is_lnd_ready, get_lnd_status, get_lnd_status_color
 from systemctl_info import *
 from electrum_info import get_electrs_status, is_electrs_active
 from bitcoin_info import get_bitcoin_status, is_bitcoind_synced
+from datetime import timedelta
 import time
 import json
 import os
@@ -712,6 +713,20 @@ def get_flask_secret_key():
         key = ''.join(random.choice(letters) for i in range(32))
         set_file_contents("/home/bitcoin/.mynode/flask_secret_key", key)
     return key
+
+def get_flask_session_timeout():
+    try:
+        if os.path.isfile("/home/bitcoin/.mynode/flask_session_timeout"):
+            timeout = get_file_contents("/home/bitcoin/.mynode/flask_session_timeout")
+            parts = timeout.split(",")
+            d = parts[0]
+            h = parts[1]
+            return timedelta(days=d, hours=h)
+        else:
+            set_file_contents("/home/bitcoin/.mynode/flask_session_timeout", "90,0")
+            return timedelta(days=90, hours=0)
+    except:
+        return timedelta(days=90, hours=0)
 
 
 #==================================
