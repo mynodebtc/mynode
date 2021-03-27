@@ -121,7 +121,7 @@ def bitcoind_status_page():
     }
     return render_template('bitcoin.html', **templateData)
 
-@mynode_bitcoin.route("/download_wallet", methods=["GET"])
+@mynode_bitcoin.route("/bitcoin/download_wallet", methods=["GET"])
 def bitcoin_download_wallet():
     check_logged_in()
     wallet_name = request.args.get('wallet')

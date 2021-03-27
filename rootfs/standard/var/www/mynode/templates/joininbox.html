@@ -9,6 +9,8 @@
             <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
         </div>
 
+        {% include 'includes/message_display.html' %}
+
         <div class="main_header">JoininBox / JoinMarket</div>
         <br/>
 
@@ -18,6 +20,34 @@
                 <div class="info_tile_contents">Ready</div>
             </div>
         </div>
+
+
+        {% if wallets is not none and wallets|length > 0 %}
+        <br/>
+        <div class="main_header">Wallets</div>
+        <table class="bitcoind_table">
+            <thead class="bitcoind_table_header">
+                <td>Wallet</td>
+                <td>Actions</td>
+            </thead>
+            <tbody>
+                {% for wallet in wallets %}
+                    <tr>
+                        <td>{{ wallet.name }}</td>
+                        <td>
+                            <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/joininbox/download_wallet?wallet={{wallet.name|urlencode}}">download</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p style="font-size: 12px; color: gray; text-align: center;">
+            *These wallets are not your main lightning wallet. These have been created manually or via other applications.<br/>
+            **Wallet files may contain private keys and sensitive data. Be very cautious when downloading copies.<br/>
+            ***Wallet files may be encrypted and require a password to use.
+        </p>
+        <br/>
+        {% endif %}
 
 
         <div class="instructions">
