@@ -1167,6 +1167,13 @@ def get_btcrpcexplorer_sso_token():
 
 
 #==================================
+# Thunderhub Functions
+#==================================
+def get_thunderhub_sso_token():
+    return get_file_contents("/opt/mynode/thunderhub/.cookie")
+
+
+#==================================
 # QR Code Functions
 #==================================
 def generate_qr_code(url):
