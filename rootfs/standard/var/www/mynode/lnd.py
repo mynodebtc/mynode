@@ -130,10 +130,11 @@ def page_lnd():
     except Exception as e:
         templateData = {
             "title": "myNode Lightning Status",
+            "header": "Lightning Status",
             "message": str(e),
             "ui_settings": read_ui_settings()
         }
-        return render_template('lnd_error.html', **templateData)
+        return render_template('error.html', **templateData)
 
     templateData = {
         "title": "myNode Lightning Status",
@@ -224,10 +225,12 @@ def page_lnd_create_wallet():
     except:
         templateData = {
             "title": "myNode Lightning Wallet",
+            "show_lightning_back_button": True,
+            "header": "Lightning Status",
             "message": Markup("Waiting on Lightning...<br/>Please try again in a minute."),
             "ui_settings": read_ui_settings()
         }
-        return render_template('lnd_error.html', **templateData)
+        return render_template('error.html', **templateData)
 
     templateData = {
         "title": "myNode Lightning Wallet",

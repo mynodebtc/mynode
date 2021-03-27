@@ -12,7 +12,7 @@ import hashlib
 import json
 import time
 
-mynode_bitcoind = Blueprint('mynode_bitcoind',__name__)
+mynode_bitcoin = Blueprint('mynode_bitcoin',__name__)
 
 
 def runcmd(cmd):
@@ -27,7 +27,7 @@ def cleanup_download_wallets():
     os.system("rm -rf /tmp/download_wallets/*")
 
 ### Page functions
-@mynode_bitcoind.route("/bitcoind")
+@mynode_bitcoin.route("/bitcoin")
 def bitcoind_status_page():
     check_logged_in()
 
@@ -94,10 +94,11 @@ def bitcoind_status_page():
     except Exception as e:
         templateData = {
             "title": "myNode Bitcoin Error",
+            "header": "Bitcoin Status",
             "message": Markup("Error communicating with bitcoind. Node may be busy syncing.<br/><br/>{}".format(str(e))),
             "ui_settings": read_ui_settings()
         }
-        return render_template('bitcoind_status_error.html', **templateData)
+        return render_template('error.html', **templateData)
 
 
     templateData = {
@@ -118,15 +119,15 @@ def bitcoind_status_page():
         "version": version,
         "ui_settings": read_ui_settings()
     }
-    return render_template('bitcoind_status.html', **templateData)
+    return render_template('bitcoin.html', **templateData)
 
-@mynode_bitcoind.route("/bitcoind/download_wallet", methods=["GET"])
+@mynode_bitcoin.route("/download_wallet", methods=["GET"])
 def bitcoin_download_wallet():
     check_logged_in()
     wallet_name = request.args.get('wallet')
     if wallet_name is None:
         flash("Error finding wallet to download!", category="error")
-        return redirect("/bitcoind")
+        return redirect("/bitcoin")
 
     os.system("mkdir -p /tmp/download_wallets")
     os.system("chmod 777 /tmp/download_wallets")
@@ -134,19 +135,19 @@ def bitcoin_download_wallet():
 
     if not os.path.isfile("/tmp/download_wallets/"+wallet_name):
         flash("Error exporting wallet data for download", category="error")
-        return redirect("/bitcoind")
+        return redirect("/bitcoin")
 
     t = Timer(3.0, cleanup_download_wallets)
     t.start()
 
     return send_from_directory(directory="/tmp/download_wallets/", filename=wallet_name, as_attachment=True)
 
-@mynode_bitcoind.route("/bitcoind/bitcoin_whitepaper.pdf")
+@mynode_bitcoin.route("/bitcoin/bitcoin_whitepaper.pdf")
 def bitcoin_whitepaper_pdf():
     check_logged_in()
     return send_from_directory(directory="/mnt/hdd/mynode/bitcoin/", filename="bitcoin_whitepaper.pdf")
 
-@mynode_bitcoind.route("/bitcoind/reset_config")
+@mynode_bitcoin.route("/bitcoin/reset_config")
 def bitcoin_reset_config_page():
     check_logged_in()
 
@@ -165,7 +166,7 @@ def bitcoin_reset_config_page():
     }
     return render_template('reboot.html', **templateData)
 
-@mynode_bitcoind.route("/bitcoind/config", methods=['GET','POST'])
+@mynode_bitcoin.route("/bitcoin/config", methods=['GET','POST'])
 def bitcoind_config_page():
     check_logged_in()
 
@@ -197,9 +198,9 @@ def bitcoind_config_page():
         "bitcoin_config": bitcoin_config,
         "ui_settings": read_ui_settings()
     }
-    return render_template('bitcoind_config.html', **templateData)
+    return render_template('bitcoin_config.html', **templateData)
 
-@mynode_bitcoind.route("/bitcoind/cli")
+@mynode_bitcoin.route("/bitcoin/cli")
 def bitcoincli():
     check_logged_in()
 
@@ -210,7 +211,7 @@ def bitcoincli():
     }
     return render_template('bitcoin_cli.html', **templateData)
 
-@mynode_bitcoind.route("/bitcoind/cli-run", methods=['POST'])
+@mynode_bitcoin.route("/bitcoin/cli-run", methods=['POST'])
 def runcmd_page():
     check_logged_in()
     

@@ -8,11 +8,21 @@
         {% include 'includes/logo_header.html' %}
         <div class="mynode_back_div">
             <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+            {% if show_bitcoin_back_button is defined and show_bitcoin_back_button is not none %}
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/bitcoin"><span class="ui-icon ui-icon-info"></span>bitcoin&nbsp;</a>
+            {% endif %}
+            {% if show_lightning_back_button is defined and show_lightning_back_button is not none %}
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/lnd"><span class="ui-icon ui-icon-transfer-e-w"></span>lightning&nbsp;</a>
+            {% endif %}
         </div>
         
+        {% if header is defined and header is not none %}
+        <div class="main_header">{{header}}</div>
+        {% else %}
         <div class="main_header">myNode Error</div>
+        {% endif %}
 
-        <div class="bitcoind_error_message">{{message}}</div>
+        <div class="large_error_message">{{message}}</div>
 
         {% include 'includes/footer.html' %}
      </body>

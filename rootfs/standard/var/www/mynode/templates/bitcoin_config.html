@@ -8,7 +8,7 @@
         {% include 'includes/logo_header.html' %}
         <div class="mynode_back_div">
             <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
-            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/bitcoind"><span class="ui-icon ui-icon-arrowthick-1-w"></span>back&nbsp;</a>
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/bitcoin"><span class="ui-icon ui-icon-arrowthick-1-w"></span>back&nbsp;</a>
         </div>
 
         {% include 'includes/message_display.html' %}
@@ -27,11 +27,11 @@
             {% endif %}
         </div>
         <div class="centered_text_div">
-            <form action="/bitcoind/config" method="POST">
+            <form action="/bitcoin/config" method="POST">
                 <textarea class="config_textarea" name="custom_config" id="custom_config">{{ bitcoin_config }}</textarea>
                 <br/><br/>
                 <input class="ui-button ui-widget ui-corner-all" type="submit" value="Save"/>
-                <a href="/bitcoind/reset_config" class="ui-button ui-widget ui-corner-all">Reset Config</a>
+                <a href="/bitcoin/reset_config" class="ui-button ui-widget ui-corner-all">Reset Config</a>
             </form>
         </div>
 
