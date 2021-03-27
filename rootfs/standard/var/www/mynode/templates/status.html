@@ -111,6 +111,11 @@
                     $("#ckbunker_status").show();
                 });
 
+                $("#show_specter_status").on("click", function() {
+                    $("#show_specter_status").hide(0);
+                    $("#specter_status").show();
+                });
+
                 $("#show_sphinxrelay_status").on("click", function() {
                     $("#show_sphinxrelay_status").hide(0);
                     $("#sphinxrelay_status").show();
@@ -409,6 +414,15 @@
             </div>
             <button id="show_ckbunker_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="ckbunker_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{ckbunker_status_log}}</pre></div>
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Specter Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ specter_status_color }}"></div>
+                {{ specter_status }}
+            </div>
+            <button id="show_specter_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="specter_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{specter_status_log}}</pre></div>
             <div class="divider"></div>
 
             {% if lnd_wallet_exists %}
