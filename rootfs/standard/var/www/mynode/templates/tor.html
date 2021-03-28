@@ -3,8 +3,6 @@
         <title>{{ title }}</title>
         {% include 'includes/head.html' %}
 
-        <script src="{{ url_for('static', filename='js/qrcode.js')}}"></script>
-
         <script>
             $(document).ready(function() {
                 hidden=1
@@ -184,9 +182,11 @@
 
         <div id="fully-noded-qr-dialog" title="Fully Noded QR Code" style="display:none; width: 600px;">
             <p>Scan this QR code in Fully Noded to pair your myNode.</p>
-            <div id="fully_noded_qr_code" style="height:400px; width: 400px; margin: auto;"></div>
-            <br/><br/>
             <center>
+            <img style="height:400px; width: 400px; margin: auto;" src="/api/get_qr_code_image?url={{ fully_noded_link|urlencode }}"/>
+
+            <br/><br/>
+            
             <span style="font-size: 8px;">{{fully_noded_link}}</span>
             <br/><br/>
             <a class="ui-button ui-widget ui-corner-all mynode_button" style="margin:auto;" href="{{ fully_noded_link }}" target="_blank">Link</a>

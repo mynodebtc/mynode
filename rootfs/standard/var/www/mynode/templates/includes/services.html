@@ -165,7 +165,7 @@
         <table>
             <tr>
                 <td>
-                    <div id="lnd_deposit_address_qrcode" style="height: 120px; width: 120px; display: inline;"></div>
+                    <img style='width: 120px; height: 120px; display: inline;' src='/api/get_qr_code_image?url={{ lnd_deposit_address }}' title="{{ lnd_deposit_address }}"/>
                 </td>
                 <td>
                     <b>Deposit Address:</b> {{lnd_deposit_address}}<br/>
@@ -176,7 +176,8 @@
         </table>
         -->
         <b>Deposit Address</b><br/>
-        <div id="lnd_deposit_address_qrcode" style="height: 100px; width: 100px; margin: auto; margin-top: 5px; "></div>
+        <img style='width: 120px; height: 120px; margin: auto; margin-top: 5px; margin-bottom: 5px;' src='/api/get_qr_code_image?url={{ lnd_deposit_address }}' title="{{ lnd_deposit_address }}"/>
+        <br/>
         <span style="font-size: 12px;">{{lnd_deposit_address}}</span>
 
         {% if lnd_channels|length > 0 %}
@@ -184,7 +185,10 @@
             <b>Channels</b><br/>
             {% for c in lnd_channels %}
                 <div class="lightning_channel">
-                    <div style="text-align: left; font-weight: bold; margin-bottom: 5px;"><span class="lightning_channel_status_icon {{ c.status_color }}"></span> {{ c.remote_alias }}</div>
+                    <div style="text-align: left; font-weight: bold; margin-bottom: 5px;">
+                        <span id="channel_status_icon_{{ c.chan_id }}" class="lightning_channel_status_icon {{ c.status_color }}"></span>
+                        {{ c.remote_alias }}
+                    </div>
                     <div id="channel_bar_{{ c.chan_id }}" class="lightning_channel_bar"></div>
                     <div id="channel_local_{{ c.chan_id }}" class="lightning_channel_bar_label_left">{{c.local_balance}} sats</div>
                     <div id="channel_remote_{{ c.chan_id }}" class="lightning_channel_bar_label_right">{{c.remote_balance}} sats</div>
