@@ -721,12 +721,23 @@ def get_flask_session_timeout():
             parts = timeout.split(",")
             d = parts[0]
             h = parts[1]
-            return timedelta(days=d, hours=h)
+            return int(d),int(h)
         else:
             set_file_contents("/home/bitcoin/.mynode/flask_session_timeout", "90,0")
-            return timedelta(days=90, hours=0)
+            return 90,0
     except:
-        return timedelta(days=90, hours=0)
+        return 90,0
+
+def set_flask_session_timeout(days, hours):
+    set_file_contents("/home/bitcoin/.mynode/flask_session_timeout", "{},{}".format(days, hours))
+    os.system("sync")
+
+
+#==================================
+# Uploader Functions
+#==================================
+def restart_flask():
+    os.system("systemctl restart www")
 
 
 #==================================

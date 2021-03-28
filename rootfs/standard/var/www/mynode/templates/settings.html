@@ -535,6 +535,30 @@
 
             <div class="divider"></div>
 
+            <div class="settings_block_subheader">Automatic Logout</div>
+            Your myNode will logout automatically after a period of time. It can be changed below.
+            <br/><br/>
+
+            <form action="/settings/logout_time" method="POST">
+                {% set logoutDays = [0,1,2,3,5,7,10,15,20,30,60,90] %}
+                {% set logoutHours = range(24) %}
+                Days: 
+                <select name="logout_days" id="logout_days">
+                    {% for d in logoutDays %}
+                    <option value="{{d}}" {% if logout_time_days == d %}selected{% endif %}>{{d}}</option>
+                    {% endfor %}
+                </select>
+                Hours: 
+                <select name="logout_hours" id="logout_hours">
+                    {% for h in logoutHours %}
+                    <option value="{{h}}" {% if logout_time_hours == h %}selected{% endif %}>{{h}}</option>
+                    {% endfor %}
+                </select>
+                <input type="submit" id="logout_save_button" value="Save" class="ui-button ui-widget ui-corner-all settings_button_small"/>
+            </form>
+
+            <div class="divider"></div>
+
             <div class="settings_block_subheader">Force HTTPS</div>
             You can force the myNode web interface to only use HTTPS.
             <br/><br/>
