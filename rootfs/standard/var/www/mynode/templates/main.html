@@ -4,8 +4,6 @@
         {% include 'includes/head.html' %}
         <meta http-equiv="refresh" content="{{ refresh_rate }}">
 
-        <script src="{{ url_for('static', filename='js/qrcode.js')}}"></script>
-
         <script>
             // Update status functions
             function update_status(status_name, data) {
@@ -21,6 +19,17 @@
                     $("#"+status_icon_name).removeClass("gray");
                     $("#"+status_icon_name).removeClass("blue");
                     $("#"+status_icon_name).addClass(data["color"]);
+                }
+            }
+
+            function update_channel_status_icon(channel) {
+                if (channel != null && "chan_id" in channel && "status_color" in channel) {
+                    $("#channel_status_icon_"+c["chan_id"]).removeClass("red");
+                    $("#channel_status_icon_"+c["chan_id"]).removeClass("yellow");
+                    $("#channel_status_icon_"+c["chan_id"]).removeClass("green");
+                    $("#channel_status_icon_"+c["chan_id"]).removeClass("gray");
+                    $("#channel_status_icon_"+c["chan_id"]).removeClass("blue");
+                    $("#channel_status_icon_"+c["chan_id"]).addClass(c["status_color"]);
                 }
             }
 
@@ -55,14 +64,6 @@
                         });
                         $('#channel_bar_{{ c.chan_id }}').height(15);
                     {% endfor %}
-
-                    $("#lnd_deposit_address_qrcode").html( "" );
-                    var qrcode = new QRCode("lnd_deposit_address_qrcode", {
-                        text: "{{lnd_deposit_address}}",
-                        width: 100,
-                        height: 100,
-                        correctLevel : QRCode.CorrectLevel.H
-                    });
                 }
                 showing_lightning_details = !showing_lightning_details;
             }
@@ -128,8 +129,10 @@
                             for (i=0; i < channels.length; i++) {
                                 c = channels[i];
                                 //console.log(JSON.stringify(c))
+                                update_channel_status_icon(c)
                                 $("#channel_local_"+c["chan_id"]).html(c["local_balance"]+" sats");
                                 $("#channel_remote_"+c["chan_id"]).html(c["remote_balance"]+" sats");
+
 
                                 $("#channel_bar_"+c["chan_id"]).progressbar({
                                     value: Math.floor( c["chan_percent"] )
