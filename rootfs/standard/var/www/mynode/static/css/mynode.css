@@ -309,6 +309,14 @@ td, th {
     font-weight: bold;
     float: left;
 }
+.lightning_channel_status_icon {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+}
 .lightning_channel {
     display: inline-block;
     width: 100%;
@@ -323,7 +331,8 @@ td, th {
 }
 .lightning_channel_bar_label_right {
     font-size: 12px;
-    float: right;}
+    float: right;
+}
 .lightning_channel_bar.ui-progressbar {
     background: orange;
 }

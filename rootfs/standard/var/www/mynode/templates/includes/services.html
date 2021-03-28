@@ -184,7 +184,7 @@
             <b>Channels</b><br/>
             {% for c in lnd_channels %}
                 <div class="lightning_channel">
-                    <div style="text-align: left; font-weight: bold; margin-bottom: 5px;">{{ c.remote_alias }}</div>
+                    <div style="text-align: left; font-weight: bold; margin-bottom: 5px;"><span class="lightning_channel_status_icon {{ c.status_color }}"></span> {{ c.remote_alias }}</div>
                     <div id="channel_bar_{{ c.chan_id }}" class="lightning_channel_bar"></div>
                     <div id="channel_local_{{ c.chan_id }}" class="lightning_channel_bar_label_left">{{c.local_balance}} sats</div>
                     <div id="channel_remote_{{ c.chan_id }}" class="lightning_channel_bar_label_right">{{c.remote_balance}} sats</div>
