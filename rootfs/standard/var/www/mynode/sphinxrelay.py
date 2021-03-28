@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, flash
 from user_management import check_logged_in
-from device_info import read_ui_settings, reset_sphinxrelay
+from device_info import read_ui_settings, reset_sphinxrelay, get_onion_url_sphinxrelay
 from utilities import *
 from systemctl_info import *
 import subprocess
@@ -30,6 +30,7 @@ def sphinxrelay_page():
         "ui_settings": read_ui_settings(),
         "sphinxrelay_status": sphinxrelay_status,
         "sphinxrelay_connection_string": get_connection_string(),
+        "sphinxrelay_onion_url": get_onion_url_sphinxrelay(),
     }
     return render_template('sphinxrelay.html', **templateData)
 
