@@ -49,6 +49,7 @@ def page_settings():
         upload_rate = 100
         download_rate = 100
 
+    logout_time_days, logout_time_hours = get_flask_session_timeout()
 
     templateData = {
         "title": "myNode Settings",
@@ -69,6 +70,8 @@ def page_settings():
         "product_key_error": pk_error,
         "changelog": changelog,
         "is_https_forced": is_https_forced(),
+        "logout_time_days": logout_time_days,
+        "logout_time_hours": logout_time_hours,
         "using_bitcoin_custom_config": using_bitcoin_custom_config(),
         "using_lnd_custom_config": using_lnd_custom_config(),
         "is_bitcoin_synced": is_bitcoind_synced(),
@@ -612,6 +615,29 @@ def change_quicksync_rates_page():
     os.system("systemctl restart bandwidth")
 
     flash("QuickSync Rates Updated!", category="message")
+    return redirect(url_for(".page_settings"))
+
+
+@mynode_settings.route("/settings/logout_time", methods=['POST'])
+def change_logout_time_page():
+    check_logged_in()
+    if not request:
+        return redirect("/settings")
+
+    d = request.form.get('logout_days')
+    h = request.form.get('logout_hours')
+
+    if d == "0" and h == "0":
+        flash("Logout time cannot be 0 hours and 0 days", category="error")
+        return redirect(url_for(".page_settings"))
+
+    set_flask_session_timeout(d, h)
+    
+    # Trigger reboot
+    t = Timer(3.0, restart_flask)
+    t.start()
+
+    flash("Automatic logout time updated!", category="message")
     return redirect(url_for(".page_settings"))
 
 
