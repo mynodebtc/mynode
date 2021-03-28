@@ -1131,6 +1131,15 @@ def get_onion_url_btcpay():
         pass
     return "error"
 
+def get_onion_url_sphinxrelay():
+    try:
+        if os.path.isfile("/var/lib/tor/mynode_sphinx/hostname"):
+            with open("/var/lib/tor/mynode_sphinx/hostname") as f:
+                return f.read().strip()
+    except:
+        pass
+    return "error"
+
 def get_onion_info_btc_v2():
     info = {}
     info["url"] = "unknown"

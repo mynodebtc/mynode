@@ -49,6 +49,7 @@ def page_tor():
     lnd_onion_url = get_onion_url_lnd()
     electrs_onion_url = get_onion_url_electrs()
     btcpay_onion_url = get_onion_url_btcpay()
+    sphinxrelay_onion_url = get_onion_url_sphinxrelay()
 
     btc_info_v2 = get_onion_info_btc_v2()
 
@@ -75,6 +76,7 @@ def page_tor():
     v3_services.append(create_v3_service("SSH", ssh_onion_url, "22022", False, ""))
     v3_services.append(create_v3_service("Electrum Server", electrs_onion_url, "50001", False, "https://mynodebtc.com/guide/electrum_server_tor"))
     v3_services.append(create_v3_service("Electrum Server", electrs_onion_url, "50002", False, "https://mynodebtc.com/guide/electrum_server_tor"))
+    v3_services.append(create_v3_service("Sphinx Relay", sphinxrelay_onion_url, "53001", True, ""))
     
     v2_services = []
     v2_services.append({"service": "Bitcoin API (REST)", "url": btc_info_v2["url"], "password": btc_info_v2["pass"], "port": "8332","guide":""})
