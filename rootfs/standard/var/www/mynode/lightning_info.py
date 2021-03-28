@@ -149,6 +149,12 @@ def get_lightning_channels():
         for c in channeldata["channels"]:
             channel = c
 
+            channel["status_color"] = "gray"
+            if "active" in channel:
+                if channel["active"]:
+                    channel["status_color"] = "green"
+                else:
+                    channel["status_color"] = "yellow"
             if "capacity" in channel:
                 channel["capacity"] = format_sat_amount(channel["capacity"])
             else:

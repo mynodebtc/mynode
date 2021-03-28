@@ -323,7 +323,7 @@
             {% for c in channels %}
             <div class="lightning_channel">
                 <div class="lightning_channel_top_row">
-                    <div class="lightning_channel_label">{{ c.remote_alias }}</div>
+                    <div class="lightning_channel_label"><span class="lightning_channel_status_icon {{ c.status_color }}"></span> {{ c.remote_alias }}</div>
                     <button id="show_channel_{{ c.chan_id }}" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px; float: right;">Show Details</button>
                 </div>
                 <div id="channel_bar_{{ c.chan_id }}" class="lightning_channel_bar"></div>
@@ -336,6 +336,7 @@
                 <table  class="bitcoind_table" >
                     <thead class="bitcoind_table_header">
                         <td>Peer Alias</td>
+                        <td>Active</td>
                         <td>Capacity</td>
                         <td>Local Capacity</td>
                         <td>Remote Capacity</td>
@@ -345,6 +346,7 @@
                     <tbody>
                         <tr>
                             <td>{{ c.remote_alias }}</td>
+                            <td>{{ c.active }}</td>
                             <td>{{ c.capacity }}</td>
                             <td>{{ c.local_balance }}</td>
                             <td>{{ c.remote_balance }}</td>
