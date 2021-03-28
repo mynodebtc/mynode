@@ -145,6 +145,8 @@ def api_homepage_needs_refresh():
 
 @mynode_api.route("/api/get_qr_code_image")
 def api_get_qr_code_image():
+    check_logged_in()
+    
     img_buf = cStringIO.StringIO()
     url = "ERROR"
     if request.args.get("url"):

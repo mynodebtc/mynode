@@ -723,10 +723,10 @@ def get_flask_session_timeout():
             h = parts[1]
             return int(d),int(h)
         else:
-            set_file_contents("/home/bitcoin/.mynode/flask_session_timeout", "90,0")
-            return 90,0
+            set_file_contents("/home/bitcoin/.mynode/flask_session_timeout", "7,0")
+            return 7,0
     except:
-        return 90,0
+        return 7,0
 
 def set_flask_session_timeout(days, hours):
     set_file_contents("/home/bitcoin/.mynode/flask_session_timeout", "{},{}".format(days, hours))
