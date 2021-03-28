@@ -118,6 +118,15 @@
                     if ("peer_count" in data && data["peer_count"] != null) {
                         $("#lnd_peer_count").html(data["peer_count"]);
                     }
+                    if ("balances" in data && data["balances"] != null) {
+                        balances = data["balances"]
+                        if ("wallet_balance" in balances && balances["wallet_balance"] != null) {
+                            $("#lnd_wallet_balance").html(balances["wallet_balance"]);
+                        }
+                        if ("channel_balance" in balances && balances["channel_balance"] != null) {
+                            $("#lnd_channel_balance").html(balances["channel_balance"]);
+                        }
+                    }
                     if ("lnd_ready" in data && data["lnd_ready"] != null) {
                         if (lnd_ready != data["lnd_ready"]) {
                             refresh_page();
