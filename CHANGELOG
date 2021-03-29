@@ -1,3 +1,16 @@
+=== v0.2.29 ===
+- Released: 03/28/21
+- Sphinx Relay uses Tor (new pairings only)
+- Update Electrum Rust Server to v0.8.9
+- Onion URLs are backed up on the external drive
+- Live updates for channel information
+- Upgrade Sphinx Relay to v2.0.6
+- Upgrade Thunderhub to v0.12.12
+- Upgrade Loop to v0.12.1
+- Add configurable session timeouts
+- UI Improvements
+- Bug Fixes
+
 === v0.2.28 ===
 - Released: 03/17/21
 - Upgrade Dojo to v1.9.0
