@@ -102,8 +102,12 @@ source /tmp/mynode_app_versions.sh
 # Create any necessary users
 useradd -m -s /bin/bash joinmarket || true
 
-# User udpates
+# User updates
 adduser admin bitcoin
+
+# Setup bitcoin user folders
+mkdir -p /home/bitcoin/.mynode/
+chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
 
 # Update sources
 apt-get -y update
@@ -164,7 +168,7 @@ apt -y -qq install apt-transport-https ca-certificates
 apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
 apt-get -y install zlib1g-dev libudev-dev libusb-1.0-0-dev python3-venv gunicorn
 apt-get -y install sqlite3 libsqlite3-dev torsocks python3-requests libsystemd-dev
-apt-get -y install libjpeg-dev zlib1g-dev psmisc
+apt-get -y install libjpeg-dev zlib1g-dev psmisc hexyl
 
 
 # Make sure some software is removed
@@ -198,7 +202,7 @@ pip2 install --upgrade wheel
 pip2 install speedtest-cli transmissionrpc flask python-bitcoinrpc redis prometheus_client requests
 pip2 install python-pam python-bitcoinlib psutil
 pip2 install grpcio grpcio-tools googleapis-common-protos
-pip2 install tzupdate virtualenv pysocks redis
+pip2 install tzupdate virtualenv pysocks redis qrcode image
 
 
 # Update Python3 to 3.7.X
@@ -313,9 +317,7 @@ if [ "$CURRENT" != "$BTC_VERSION" ]; then
     if [ ! -L /home/bitcoin/.lnd ]; then
         sudo -u bitcoin ln -s /mnt/hdd/mynode/lnd /home/bitcoin/.lnd
     fi
-    
-    mkdir -p /home/bitcoin/.mynode/
-    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+    mkdir -p /home/admin/.bitcoin
     echo $BTC_VERSION > $BTC_VERSION_FILE
 fi
 cd ~
@@ -326,8 +328,6 @@ if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
 fi
 LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/$LND_ARCH-$LND_VERSION.tar.gz
-LND_UPGRADE_MANIFEST_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
-LND_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-roasbeef-$LND_VERSION.txt.asc
 CURRENT=""
 if [ -f $LND_VERSION_FILE ]; then
     CURRENT=$(cat $LND_VERSION_FILE)
@@ -348,12 +348,79 @@ if [ "$CURRENT" != "$LND_VERSION" ]; then
     install -m 0755 -o root -g root -t /usr/local/bin lnd/*
     ln -s /bin/ip /usr/bin/ip || true
 
-    mkdir -p /home/bitcoin/.mynode/
-    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $LND_VERSION > $LND_VERSION_FILE
 fi
 cd ~
 
+# Install Loop
+echo "Installing loop..."
+LOOP_ARCH="loop-linux-armv7"
+if [ $IS_X86 = 1 ]; then
+    LOOP_ARCH="loop-linux-amd64"
+fi
+LOOP_UPGRADE_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/$LOOP_ARCH-$LOOP_VERSION.tar.gz
+CURRENT=""
+if [ -f $LOOP_VERSION_FILE ]; then
+    CURRENT=$(cat $LOOP_VERSION_FILE)
+fi
+if [ "$CURRENT" != "$LOOP_VERSION" ]; then
+    # Download and install Loop
+    rm -rf /opt/download
+    mkdir -p /opt/download
+    cd /opt/download
+
+    wget $LOOP_UPGRADE_URL
+    wget $LOOP_UPGRADE_MANIFEST_URL
+    wget $LOOP_UPGRADE_MANIFEST_SIG_URL
+
+    gpg --verify manifest-*.txt.sig
+    if [ $? == 0 ]; then
+        # Install Loop
+        tar -xzf loop-*.tar.gz
+        mv $LOOP_ARCH-$LOOP_VERSION loop
+        install -m 0755 -o root -g root -t /usr/local/bin loop/*
+
+        # Mark current version
+        echo $LOOP_VERSION > $LOOP_VERSION_FILE
+    else
+        echo "ERROR UPGRADING LND - GPG FAILED"
+    fi
+fi
+
+# Install Pool
+echo "Installing pool..."
+POOL_ARCH="pool-linux-armv7"
+if [ $IS_X86 = 1 ]; then
+    POOL_ARCH="pool-linux-amd64"
+fi
+POOL_UPGRADE_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/$POOL_ARCH-$POOL_VERSION.tar.gz
+CURRENT=""
+if [ -f $POOL_VERSION_FILE ]; then
+    CURRENT=$(cat $POOL_VERSION_FILE)
+fi
+if [ "$CURRENT" != "$POOL_VERSION" ]; then
+    # Download and install pool
+    rm -rf /opt/download
+    mkdir -p /opt/download
+    cd /opt/download
+
+    wget $POOL_UPGRADE_URL
+    wget $POOL_UPGRADE_MANIFEST_URL
+    wget $POOL_UPGRADE_MANIFEST_SIG_URL
+
+    gpg --verify manifest-*.txt.sig
+    if [ $? == 0 ]; then
+        # Install Pool
+        tar -xzf pool-*.tar.gz
+        mv $POOL_ARCH-$POOL_VERSION pool
+        install -m 0755 -o root -g root -t /usr/local/bin pool/*
+
+        # Mark current version
+        echo $POOL_VERSION > $POOL_VERSION_FILE
+    else
+        echo "ERROR UPGRADING POOL - GPG FAILED"
+    fi
+fi
 
 # Install Lightning Terminal
 echo "Installing lit..."
@@ -383,7 +450,7 @@ if [ "$CURRENT" != "$LIT_VERSION" ]; then
         # Install lit
         tar -xzf lightning-terminal-*.tar.gz
         mv $LIT_ARCH-$LIT_VERSION lightning-terminal
-        install -m 0755 -o root -g root -t /usr/local/bin lightning-terminal/*
+        install -m 0755 -o root -g root -t /usr/local/bin lightning-terminal/lit*
 
         # Mark current version
         echo $LIT_VERSION > $LIT_VERSION_FILE
@@ -584,8 +651,6 @@ if [ "$CURRENT" != "$RTL_VERSION" ]; then
     cd RTL
     sudo -u bitcoin NG_CLI_ANALYTICS=false npm install --only=production
 
-    mkdir -p /home/bitcoin/.mynode/
-    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $RTL_VERSION > $RTL_VERSION_FILE
 fi
 
@@ -606,8 +671,6 @@ if [ "$CURRENT" != "$BTCRPCEXPLORER_VERSION" ]; then
     cd btc-rpc-explorer
     sudo -u bitcoin npm install --only=production
 
-    mkdir -p /home/bitcoin/.mynode/
-    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $BTCRPCEXPLORER_VERSION > $BTCRPCEXPLORER_VERSION_FILE
 fi
 
@@ -629,18 +692,15 @@ if [ "$CURRENT" != "$LNBITS_VERSION" ]; then
     cd lnbits
 
     # Copy over config file
-    #cp /usr/share/mynode/lnbits.env /opt/mynode/lnbits/.env
-    #chown bitcoin:bitcoin /opt/mynode/lnbits/.env
+    cp /usr/share/mynode/lnbits.env /opt/mynode/lnbits/.env
+    chown bitcoin:bitcoin /opt/mynode/lnbits/.env
 
-    # Install with python 3.7 (Only use "pipenv install --python 3.7" once or it will rebuild the venv!)
-    sudo -u bitcoin pipenv --python 3.7 install
-    sudo -u bitcoin pipenv run pip install python-dotenv
-    sudo -u bitcoin pipenv run pip install -r requirements.txt
-    #sudo -u bitcoin pipenv run pip install lnd-grpc # Using REST now (this install takes a LONG time)
-    sudo -u bitcoin pipenv run flask migrate || true
+    # Install lnbits
+    sudo -u bitcoin python3 -m venv lnbits_venv
+    sudo -u bitcoin ./lnbits_venv/bin/pip install -r requirements.txt
+    sudo -u bitcoin ./lnbits_venv/bin/quart assets
+    sudo -u bitcoin ./lnbits_venv/bin/quart migrate
 
-    mkdir -p /home/bitcoin/.mynode/
-    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $LNBITS_VERSION > $LNBITS_VERSION_FILE
 fi
 
@@ -717,8 +777,6 @@ if [ "$CURRENT" != "$LNDCONNECT_VERSION" ]; then
     mv lndconnect-* lndconnect
     install -m 0755 -o root -g root -t /usr/local/bin lndconnect/*
 
-    mkdir -p /home/bitcoin/.mynode/
-    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $LNDCONNECT_VERSION > $LNDCONNECT_VERSION_FILE
 fi
 

@@ -5,6 +5,7 @@ from bitcoin_info import *
 from lightning_info import *
 from settings import reboot_device, read_ui_settings
 from device_info import *
+from utilities import *
 from user_management import check_logged_in
 from werkzeug.utils import secure_filename
 import base64
@@ -52,6 +53,7 @@ def page_lnd():
     uri = ""
     ip = ""
     status = "Starting..."
+    lnd_deposit_address = get_lnd_deposit_address()
     channel_balance = "N/A"
     channel_pending = "0"
     wallet_balance = "N/A"
@@ -69,7 +71,7 @@ def page_lnd():
             "version": get_lnd_version(),
             "loop_version": get_loop_version(),
             "pool_version": get_pool_version(),
-            "status": status,
+            "status": "Please Create Wallet",
             "ui_settings": read_ui_settings()
         }
         return render_template('lnd.html', **templateData)
@@ -108,34 +110,8 @@ def page_lnd():
             uri = "..."
             ip = "..."
 
-        peerdata = get_lightning_peers()
-        peers = []
-        if peerdata != None and "peers" in peerdata:
-            for p in peerdata["peers"]:
-                peer = p
-                if "bytes_recv" in p:
-                    peer["bytes_recv"] = "{:.2f}".format(float(p["bytes_recv"]) / 1000 / 1000)
-                else:
-                    peer["bytes_recv"] = "N/A"
-                if "bytes_sent" in p:
-                    peer["bytes_sent"] = "{:.2f}".format(float(p["bytes_sent"]) / 1000 / 1000)
-                else:
-                    peer["bytes_sent"] = "N/A"
-                if "ping_time" not in p:
-                    peer["ping_time"] = "N/A"
-                peers.append(peer)
-
-        channeldata = get_lightning_channels()
-        channels = []
-        if channeldata != None and "channels" in channeldata:
-            for c in channeldata["channels"]:
-                channel = c
-                if "local_balance" not in channel:
-                    channel["local_balance"] = "0"
-                if "remote_balance" not in channel:
-                    channel["remote_balance"] = "0"
-                channels.append(channel)
-
+        peers = get_lightning_peers()
+        channels = get_lightning_channels()
         balance_info = get_lightning_balance_info()
 
         channel_balance_data = get_lightning_channel_balance()
@@ -154,10 +130,11 @@ def page_lnd():
     except Exception as e:
         templateData = {
             "title": "myNode Lightning Status",
+            "header": "Lightning Status",
             "message": str(e),
             "ui_settings": read_ui_settings()
         }
-        return render_template('lnd_error.html', **templateData)
+        return render_template('error.html', **templateData)
 
     templateData = {
         "title": "myNode Lightning Status",
@@ -166,6 +143,7 @@ def page_lnd():
         "version": get_lnd_version(),
         "loop_version": get_loop_version(),
         "pool_version": get_pool_version(),
+        "is_testnet_enabled": is_testnet_enabled(),
         "channel_backup_exists": channel_backup_exists,
         "status": status,
         "height": height,
@@ -177,10 +155,11 @@ def page_lnd():
         "pubkey": pubkey,
         "uri": uri,
         "ip": ip,
-        "channel_balance": balance_info["channel_balance"],
-        "channel_pending": balance_info["channel_pending"],
-        "wallet_balance": balance_info["wallet_balance"],
-        "wallet_pending": balance_info["wallet_pending"],
+        "lnd_deposit_address": lnd_deposit_address,
+        "channel_balance": format_sat_amount(balance_info["channel_balance"]),
+        "channel_pending": format_sat_amount(balance_info["channel_pending"]),
+        "wallet_balance": format_sat_amount(balance_info["wallet_balance"]),
+        "wallet_pending": format_sat_amount(balance_info["wallet_pending"]),
         "peers": peers,
         "channels": channels,
         "ui_settings": read_ui_settings()
@@ -209,25 +188,32 @@ def lnd_tls_cert():
 def lnd_admin_macaroon():
     check_logged_in()
 
+    folder = "mainnet"
+    if is_testnet_enabled():
+        folder = "testnet"
+
     # Download macaroon
-    return send_from_directory(directory="/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/", filename="admin.macaroon")
+    return send_from_directory(directory="/mnt/hdd/mynode/lnd/data/chain/bitcoin/{}/".format(folder), filename="admin.macaroon")
 
 @mynode_lnd.route("/lnd/readonly.macaroon")
 def lnd_readonly_macaroon():
     check_logged_in()
 
+    folder = "mainnet"
+    if is_testnet_enabled():
+        folder = "testnet"
+
     # Download macaroon
-    return send_from_directory(directory="/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/", filename="readonly.macaroon")
+    return send_from_directory(directory="/mnt/hdd/mynode/lnd/data/chain/bitcoin/{}/".format(folder), filename="readonly.macaroon")
 
 @mynode_lnd.route("/lnd/channel.backup")
 def lnd_channel_backup():
     check_logged_in()
 
-    # First, check for lnd file
-    if os.path.isfile('/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/channel.backup'):
-        return send_from_directory(directory="/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/", filename="channel.backup")
-    else:
-        return send_from_directory(directory="/home/bitcoin/lnd_backup/", filename="channel.backup")
+    scb_location = get_lnd_channel_backup_file()
+    parts = os.path.split(scb_location)
+
+    return send_from_directory(directory=parts[0]+"/", filename=parts[1])
 
 @mynode_lnd.route("/lnd/create_wallet")
 def page_lnd_create_wallet():
@@ -239,10 +225,12 @@ def page_lnd_create_wallet():
     except:
         templateData = {
             "title": "myNode Lightning Wallet",
-            "message": Markup("Waiting on lnd...<br/>Please try again in a minute."),
+            "show_lightning_back_button": True,
+            "header": "Lightning Status",
+            "message": Markup("Waiting on Lightning...<br/>Please try again in a minute."),
             "ui_settings": read_ui_settings()
         }
-        return render_template('lnd_error.html', **templateData)
+        return render_template('error.html', **templateData)
 
     templateData = {
         "title": "myNode Lightning Wallet",
@@ -459,9 +447,9 @@ def lnd_config_page():
 ##############################################
 ## LND API Calls
 ##############################################
-@mynode_lnd.route("/lnd/api/get_new_deposit_address", methods=['GET'])
-def lnd_api_get_new_deposit_address_page():
+@mynode_lnd.route("/lnd/api/get_new_lnd_deposit_address", methods=['GET'])
+def lnd_api_get_new_lnd_deposit_address_page():
     check_logged_in()
 
-    address = get_new_deposit_address()
+    address = get_new_lnd_deposit_address()
     return address

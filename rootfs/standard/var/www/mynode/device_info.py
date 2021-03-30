@@ -2,11 +2,13 @@ from config import *
 from threading import Timer
 from werkzeug.routing import RequestRedirect
 from flask import flash
+from utilities import *
 from enable_disable_functions import *
 from lightning_info import is_lnd_ready, get_lnd_status, get_lnd_status_color
 from systemctl_info import *
 from electrum_info import get_electrs_status, is_electrs_active
 from bitcoin_info import get_bitcoin_status, is_bitcoind_synced
+from datetime import timedelta
 import time
 import json
 import os
@@ -14,33 +16,12 @@ import subprocess
 import random
 import string
 import redis
+import qrcode
 
 # Globals
 local_ip = "unknown"
 cached_data = {}
 warning_data = {}
-
-#==================================
-# Utilities
-#==================================
-def get_file_contents(filename):
-    contents = "UNKNOWN"
-    try:
-        with open(filename, "r") as f:
-            contents = f.read().strip()
-    except:
-        contents = "ERROR"
-    return contents
-
-def set_file_contents(filename, data):
-    try:
-        with open(filename, "w") as f:
-            f.write(data)
-        os.system("sync")
-        return True
-    except:
-        return False
-    return False
 
 #==================================
 # Manage Device
@@ -473,23 +454,6 @@ def get_drive_info(drive):
         pass
     return data
 
-#==================================
-# Log functions (non-systemd based)
-#==================================
-def get_file_log(file_path):
-    status_log = ""
-
-    if not os.path.isfile(file_path):
-        return "MISSING FILE"
-
-    try:
-        status_log = subprocess.check_output(["tail","-n","200",file_path]).decode("utf8")
-        lines = status_log.split('\n')
-        lines.reverse()
-        status_log = '\n'.join(lines)
-    except:
-        status_log = "ERROR"
-    return status_log
 
 #==================================
 # Specific Service Status / Colors
@@ -536,21 +500,23 @@ def get_rtl_status_and_color():
             else:
                 color = "green"
     else:
-        status = "Waiting on LND..."
+        status = "Waiting on Lightning"
     return status,color
 
 def get_lnbits_status_and_color():
     color = "gray"
     status = "Lightning Wallet"
+    if is_testnet_enabled():
+        return "Requires Mainnet", "gray"
     if is_lnd_ready():
         if is_lnbits_enabled():
             status_code = get_service_status_code("lnbits")
             if status_code != 0:
-                lnbits_status_color = "red"
+                color = "red"
             else:
-                lnbits_status_color = "green"
+                color = "green"
     else:
-        status = "Waiting on LND..."
+        status = "Waiting on Lightning"
     return status,color
 
 def get_thunderhub_status_and_color():
@@ -564,7 +530,7 @@ def get_thunderhub_status_and_color():
             else:
                 color = "green"
     else:
-        status = "Waiting on LND..."
+        status = "Waiting on Lightning"
     return status,color
 
 def get_ckbunker_status_and_color():
@@ -572,14 +538,16 @@ def get_ckbunker_status_and_color():
     color = "gray"
     if is_bitcoind_synced():
         if is_ckbunker_enabled():
-            color = get_service_status_color("lndhub")
+            color = get_service_status_color("ckbunker")
     else:
-        status = "Waiting on Bitcoin..."
+        status = "Waiting on Bitcoin"
     return status,color
 
 def get_sphinxrelay_status_and_color():
     color = "gray"
     status = "Chat"
+    if is_testnet_enabled():
+        return "Requires Mainnet", "gray"
     if is_lnd_ready():
         if is_sphinxrelay_enabled():
             status_code = get_service_status_code("sphinxrelay")
@@ -588,26 +556,30 @@ def get_sphinxrelay_status_and_color():
             else:
                 color = "green"
     else:
-        status = "Waiting on LND..."
+        status = "Waiting on Lightning"
     return status,color
 
 def get_lndhub_status_and_color():
     status = "BlueWallet Backend"
     color = "gray"
+    if is_testnet_enabled():
+        return "Requires Mainnet", "gray"
     if is_lnd_ready():
         if is_lndhub_enabled():
             color = get_service_status_color("lndhub")
     else:
-        status = "Waiting on LND..."
+        status = "Waiting on Lightning"
     return status,color
 
 def get_btcpayserver_status_and_color():
     status = "Merchant Tool"
     color = "gray"
+    if is_testnet_enabled():
+        return "Requires Mainnet", "gray"
     if is_lnd_ready():
         color = get_service_status_color("btcpayserver")
     else:
-        status = "Waiting on LND..."
+        status = "Waiting on Lightning"
     return status,color
 
 def get_electrs_status_and_color():
@@ -633,10 +605,10 @@ def get_btcrpcexplorer_status_and_color_and_ready():
                     ready = True
             else:
                 color = "yellow"
-                status = "Waiting on Electrum..."
+                status = "Waiting on Electrum"
         else:
             color = "yellow"
-            status = "Waiting on bitcoin..."
+            status = "Waiting on Bitcoin"
     return status,color,ready
 
 def get_caravan_status_and_color():
@@ -666,18 +638,6 @@ def get_mempool_status_and_color():
             color = get_service_status_color("mempoolspace")
     return status,color
 
-#==================================
-# Data Storage Functions
-#==================================
-def set_data(key, value):
-    r = redis.Redis(host='localhost', port=6379, db=0)
-    mynode_key = "mynode_" + key
-    return r.set(mynode_key, value)
-
-def get_data(key):
-    r = redis.Redis(host='localhost', port=6379, db=0)
-    mynode_key = "mynode_" + key
-    return r.get(mynode_key)
 
 #==================================
 # UI Functions
@@ -730,6 +690,12 @@ def enable_darkmode():
     ui_settings['darkmode'] = True
     write_ui_settings(ui_settings)
 
+def toggle_darkmode():
+    if is_darkmode_enabled():
+        disable_darkmode()
+    else:
+        enable_darkmode()
+
 def is_https_forced():
     return os.path.isfile('/home/bitcoin/.mynode/https_forced')
 
@@ -747,6 +713,31 @@ def get_flask_secret_key():
         key = ''.join(random.choice(letters) for i in range(32))
         set_file_contents("/home/bitcoin/.mynode/flask_secret_key", key)
     return key
+
+def get_flask_session_timeout():
+    try:
+        if os.path.isfile("/home/bitcoin/.mynode/flask_session_timeout"):
+            timeout = get_file_contents("/home/bitcoin/.mynode/flask_session_timeout")
+            parts = timeout.split(",")
+            d = parts[0]
+            h = parts[1]
+            return int(d),int(h)
+        else:
+            set_file_contents("/home/bitcoin/.mynode/flask_session_timeout", "7,0")
+            return 7,0
+    except:
+        return 7,0
+
+def set_flask_session_timeout(days, hours):
+    set_file_contents("/home/bitcoin/.mynode/flask_session_timeout", "{},{}".format(days, hours))
+    os.system("sync")
+
+
+#==================================
+# Uploader Functions
+#==================================
+def restart_flask():
+    os.system("systemctl restart www")
 
 
 #==================================
@@ -871,6 +862,26 @@ def has_sd_rw_error():
 
 
 #==================================
+# Out of Memory Error Functions
+#==================================
+def has_oom_error():
+    return os.path.isfile("/tmp/oom_error")
+def clear_oom_error():
+    os.system("rm -f /tmp/oom_error")
+    os.system("rm -f /tmp/oom_info")
+def set_oom_error(oom_error):
+    os.system("touch /tmp/oom_error")
+    set_file_contents("/tmp/oom_info", oom_error)
+def get_oom_error_info():
+    try:
+        with open("/tmp/oom_info", "r") as f:
+            return f.read()
+    except:
+        return "ERROR"
+    return "ERROR"
+
+
+#==================================
 # Docker Functions
 #==================================
 def is_installing_docker_images():
@@ -934,6 +945,11 @@ def get_bitcoin_rpc_password():
 def stop_bitcoind():
     os.system("systemctl stop bitcoind")
 
+def get_bitcoin_log_file():
+    if is_testnet_enabled():
+        return "/mnt/hdd/mynode/bitcoin/testnet3/debug.log"
+    return "/mnt/hdd/mynode/bitcoin/debug.log"
+
 def reset_bitcoin_env_file():
     os.system("echo 'BTCARGS=' > "+BITCOIN_ENV_FILE)
 
@@ -959,8 +975,8 @@ def restart_lnd():
     os.system("systemctl restart lnd")
 
 def delete_lnd_data():
-    #os.system("rm -f "+LND_WALLET_FILE)
     os.system("rm -rf "+LND_DATA_FOLDER)
+    os.system("rm -rf /tmp/lnd_deposit_address")
     os.system("rm -rf /home/bitcoin/.lnd-admin/credentials.json")
     os.system("rm -rf /mnt/hdd/mynode/settings/.lndpw")
     os.system("rm -rf /home/admin/.lnd/")
@@ -968,10 +984,34 @@ def delete_lnd_data():
 
 
 #==================================
+# Mainnet / Testnet Functions
+#==================================
+def is_testnet_enabled():
+    return os.path.isfile("/mnt/hdd/mynode/settings/.testnet_enabled")
+def enable_testnet():
+    os.system("touch /mnt/hdd/mynode/settings/.testnet_enabled")
+    os.system("sync")
+def disable_testnet():
+    os.system("rm -f /mnt/hdd/mynode/settings/.testnet_enabled")
+    os.system("sync")
+def toggle_testnet(): 
+    if is_testnet_enabled():
+        disable_testnet()
+    else:
+        enable_testnet()
+
+#==================================
 # Electrum Server Functions
 #==================================
 def stop_electrs():
     os.system("systemctl stop electrs")
+
+def restart_electrs_actual():
+    os.system("systemctl restart electrs")
+
+def restart_electrs():
+    t = Timer(0.1, restart_electrs_actual)
+    t.start()
 
 def delete_electrs_data():
     os.system("rm -rf /mnt/hdd/mynode/electrs")
@@ -982,12 +1022,35 @@ def reset_electrs():
     reboot_device()
 
 
+#==================================
+# Sphinx Relay Server Functions
+#==================================
+def stop_sphinxrelay():
+    os.system("systemctl stop sphinxrelay")
+
+def restart_sphinxrelay_actual():
+    os.system("systemctl restart sphinxrelay")
+
+def restart_sphinxrelay():
+    t = Timer(0.1, restart_sphinxrelay_actual)
+    t.start()
+
+def delete_sphinxrelay_data():
+    os.system("rm -rf /mnt/hdd/mynode/sphinxrelay/sphinx.db")
+    os.system("rm -rf /opt/mynode/sphinxrelay/connection_string.txt")
+
+def reset_sphinxrelay():
+    stop_sphinxrelay()
+    delete_sphinxrelay_data()
+    restart_sphinxrelay()
+
 
 #==================================
 # Tor Functions
 #==================================
 def reset_tor():
     os.system("rm -rf /var/lib/tor/*")
+    os.system("rm -rf /mnt/hdd/mynode/tor_backup/*")
     os.system("rm -rf /mnt/hdd/mynode/bitcoin/onion_private_key")
     os.system("rm -rf /mnt/hdd/mynode/lnd/v2_onion_private_key")
     os.system("rm -rf /mnt/hdd/mynode/lnd/v3_onion_private_key")
@@ -1068,6 +1131,15 @@ def get_onion_url_btcpay():
         pass
     return "error"
 
+def get_onion_url_sphinxrelay():
+    try:
+        if os.path.isfile("/var/lib/tor/mynode_sphinx/hostname"):
+            with open("/var/lib/tor/mynode_sphinx/hostname") as f:
+                return f.read().strip()
+    except:
+        pass
+    return "error"
+
 def get_onion_info_btc_v2():
     info = {}
     info["url"] = "unknown"
@@ -1106,8 +1178,31 @@ def get_firewall_rules():
         rules = "ERROR"
     return rules
 
+
 #==================================
 # BTC RPC Explorer Functions
 #==================================
 def get_btcrpcexplorer_sso_token():
     return get_file_contents("/opt/mynode/btc-rpc-explorer/token")
+
+
+#==================================
+# Thunderhub Functions
+#==================================
+def get_thunderhub_sso_token():
+    return get_file_contents("/opt/mynode/thunderhub/.cookie")
+
+
+#==================================
+# QR Code Functions
+#==================================
+def generate_qr_code(url):
+    qr = qrcode.QRCode(version=1,
+                       error_correction=qrcode.constants.ERROR_CORRECT_H,
+                       box_size=5,
+                       border=1)
+
+    qr.add_data(url)
+    qr.make(fit=True)
+    img = qr.make_image()
+    return img

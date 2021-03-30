@@ -41,7 +41,7 @@
             {% if product_key_skipped %}
                 Premium Feature
             {% else %}
-                {% if lnd_ready %}
+                {% if lnd_ready and not is_testnet_enabled %}
                     {% if btcpayserver_enabled %}
                     <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="btcpayserver">BTCPay Server</a>
                     {% endif %}
@@ -56,16 +56,12 @@
         <div class="app_title">Mempool</div>
         <div class="app_status" id="mempoolspace_status">{{ mempoolspace_status }}</div>
         <div class="app_contents">
-            {% if product_key_skipped %}
-                Premium Feature
-            {% else %}
-                {% if not is_installing_docker_images %}
-                    {% if mempoolspace_enabled %}
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="mempoolspace">View</a>
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-mempoolspace">Disable</a>
-                    {% else %}
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-mempoolspace">Enable</a>
-                    {% endif %}
+            {% if not is_installing_docker_images %}
+                {% if mempoolspace_enabled %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="mempoolspace">View</a>
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-mempoolspace">Disable</a>
+                {% else %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-mempoolspace">Enable</a>
                 {% endif %}
             {% endif %}
         </div>
@@ -76,7 +72,7 @@
         <div class="app_title">LND Hub</div>
         <div class="app_status" id="lndhub_status">{{ lndhub_status }}</div>
         <div class="app_contents">
-            {% if lnd_ready %}
+            {% if lnd_ready and not is_testnet_enabled %}
                 {% if lndhub_enabled %}
                 <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lndhub">LND Hub</a>
                 {% endif %}
@@ -112,7 +108,7 @@
         <div class="app_title">Dojo</div>
         <div class="app_status" id="dojo_status">{{ dojo_status }}</div>
         <div class="app_contents">
-            {% if not is_installing_docker_images %}
+            {% if not is_installing_docker_images and not is_testnet_enabled %}
                 {% if is_dojo_installed %}
                     <a class="ui-button ui-widget ui-corner-all mynode_button" href="/dojo">Info</a>
                     {% if electrs_active %}
@@ -136,13 +132,24 @@
         <div class="app_title">Whirlpool</div>
         <div class="app_status" id="whirlpool_status">{{ whirlpool_status }}</div>
         <div class="app_contents">
-            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/whirlpool">Info</a>
-            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-whirlpool">
-                {% if whirlpool_enabled %}Disable{% else %}Enable{% endif %}
-            </a>
+            {% if not is_testnet_enabled %}
+                <a class="ui-button ui-widget ui-corner-all mynode_button" href="/whirlpool">Info</a>
+                <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-whirlpool">
+                    {% if whirlpool_enabled %}Disable{% else %}Enable{% endif %}
+                </a>
+            {% endif %}
         </div>
     </div>
     {% endif %}
+    <div class="app_tile">
+        <!--<div class="app_status_icon green" id="joininbox_status_icon"></div>-->
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/joininbox.png")}}"/></div>
+        <div class="app_title">JoininBox</div>
+        <div class="app_status" id="joininbox_status">JoinMarket Mixing</div>
+        <div class="app_contents">
+            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/joininbox">Info</a>
+        </div>
+    </div>
     <div class="app_tile">
         <div class="app_status_icon {{ thunderhub_status_color }}" id="thunderhub_status_icon"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/thunderhub.png")}}"/></div>
@@ -158,26 +165,6 @@
                         <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-thunderhub">Disable</a>
                     {% else %}
                         <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-thunderhub">Enable</a>
-                    {% endif %}
-                {% endif %}
-            {% endif %}
-        </div>
-    </div>
-    <div class="app_tile">
-        <div class="app_status_icon {{ lnbits_status_color }}" id="lnbits_status_icon"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lnbits.png")}}"/></div>
-        <div class="app_title">LNbits</div>
-        <div class="app_status" id="lnbits_status">{{ lnbits_status }}</div>
-        <div class="app_contents">
-            {% if product_key_skipped %}
-                Premium Feature
-            {% else %}
-                {% if lnd_ready %}
-                    {% if lnbits_enabled %}
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lnbits">LNbits</a>
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-lnbits">Disable</a>
-                    {% else %}
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-lnbits">Enable</a>
                     {% endif %}
                 {% endif %}
             {% endif %}
@@ -224,6 +211,7 @@
             {% endif %}
         </div>
     </div>
+
     <div class="app_tile">
         <div class="app_status_icon {{ ckbunker_status_color }}" id="ckbunker_status_icon"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/ckbunker.png")}}"/></div>
@@ -246,18 +234,39 @@
     <div class="app_tile">
         <div class="app_status_icon {{ sphinxrelay_status_color }}" id="sphinxrelay_status_icon"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/sphinx.png")}}"/></div>
-        <img class="app_beta_tag_image" src="{{ url_for('static', filename="images/beta.png")}}"/>
         <div class="app_title">Sphinx Relay</div>
         <div class="app_status" id="sphinxrelay_status">{{ sphinxrelay_status }}</div>
         <div class="app_contents">
             {% if product_key_skipped %}
                 Premium Feature
             {% else %}
-                {% if sphinxrelay_enabled %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="/sphinxrelay">Info</a>
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-sphinxrelay">Disable</a>
-                {% else %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-sphinxrelay">Enable</a>
+                {% if lnd_ready and not is_testnet_enabled %}
+                    {% if sphinxrelay_enabled %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="/sphinxrelay">Info</a>
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-sphinxrelay">Disable</a>
+                    {% else %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-sphinxrelay">Enable</a>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="app_tile">
+        <div class="app_status_icon {{ lnbits_status_color }}" id="lnbits_status_icon"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lnbits.png")}}"/></div>
+        <div class="app_title">LNbits</div>
+        <div class="app_status" id="lnbits_status">{{ lnbits_status }}</div>
+        <div class="app_contents">
+            {% if product_key_skipped %}
+                Premium Feature
+            {% else %}
+                {% if lnd_ready and not is_testnet_enabled %}
+                    {% if lnbits_enabled %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lnbits">LNbits</a>
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-lnbits">Disable</a>
+                    {% else %}
+                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-lnbits">Enable</a>
+                    {% endif %}
                 {% endif %}
             {% endif %}
         </div>

@@ -22,6 +22,17 @@
                 }
             }
 
+            function update_channel_status_icon(channel) {
+                if (channel != null && "chan_id" in channel && "status_color" in channel) {
+                    $("#channel_status_icon_"+c["chan_id"]).removeClass("red");
+                    $("#channel_status_icon_"+c["chan_id"]).removeClass("yellow");
+                    $("#channel_status_icon_"+c["chan_id"]).removeClass("green");
+                    $("#channel_status_icon_"+c["chan_id"]).removeClass("gray");
+                    $("#channel_status_icon_"+c["chan_id"]).removeClass("blue");
+                    $("#channel_status_icon_"+c["chan_id"]).addClass(c["status_color"]);
+                }
+            }
+
             function refresh_page() {
                 window.location.href=location.protocol+'//'+location.hostname+"/";
             }
@@ -38,10 +49,32 @@
                 showing_blocks = !showing_blocks;
             }
 
+            var showing_lightning_details = false;
+            function toggleLightningDetails() {
+                if (showing_lightning_details) {
+                    $("#lightning_details").slideUp(400);
+                    $('#show_lightning_details').attr('src', location.protocol+'//'+location.hostname+'/static/images/expand_down.png');
+                } else {
+                    $("#lightning_details").slideDown(400);
+                    $('#show_lightning_details').attr('src', location.protocol+'//'+location.hostname+'/static/images/expand_up.png');
+                    {% for c in lnd_channels %}
+                        // Initialize channel balance bars
+                        $( "#channel_bar_{{ c.chan_id }}" ).progressbar({
+                            value: Math.floor( {{ c.chan_percent }} )
+                        });
+                        $('#channel_bar_{{ c.chan_id }}').height(15);
+                    {% endfor %}
+                }
+                showing_lightning_details = !showing_lightning_details;
+            }
+            
+            
+
             // Update page function
             var lnd_ready = {% if lnd_ready %}true{% else %}false{% endif %};
             var btcrpcexplorer_ready = {% if btcrpcexplorer_ready %}true{% else %}false{% endif %};
             var btcrpcexplorer_sso_token = "{{btcrpcexplorer_sso_token}}";
+            var thunderhub_sso_token = "{{thunderhub_sso_token}}";
             var is_installing_docker_images = {% if is_installing_docker_images %}true{% else %}false{% endif %};
             function update_page() {
                 // Update Bitcoin Info
@@ -85,9 +118,35 @@
                     if ("peer_count" in data && data["peer_count"] != null) {
                         $("#lnd_peer_count").html(data["peer_count"]);
                     }
+                    if ("balances" in data && data["balances"] != null) {
+                        balances = data["balances"]
+                        if ("wallet_balance" in balances && balances["wallet_balance"] != null) {
+                            $("#lnd_wallet_balance").html(balances["wallet_balance"]);
+                        }
+                        if ("channel_balance" in balances && balances["channel_balance"] != null) {
+                            $("#lnd_channel_balance").html(balances["channel_balance"]);
+                        }
+                    }
                     if ("lnd_ready" in data && data["lnd_ready"] != null) {
                         if (lnd_ready != data["lnd_ready"]) {
                             refresh_page();
+                        }
+                    }
+                    if ("channels" in data && data["channels"] != null) {
+                        if (showing_lightning_details) {
+                            channels = data["channels"];
+                            for (i=0; i < channels.length; i++) {
+                                c = channels[i];
+                                //console.log(JSON.stringify(c))
+                                update_channel_status_icon(c)
+                                $("#channel_local_"+c["chan_id"]).html(c["local_balance"]+" sats");
+                                $("#channel_remote_"+c["chan_id"]).html(c["remote_balance"]+" sats");
+
+
+                                $("#channel_bar_"+c["chan_id"]).progressbar({
+                                    value: Math.floor( c["chan_percent"] )
+                                });
+                            }
                         }
                     }
                 });
@@ -155,6 +214,9 @@
                 $.getJSON("/api/get_service_status?service=thunderhub", function( data ) {
                     update_status("thunderhub_status", data);
                     update_status_icon("thunderhub_status_icon", data);
+                    if ("sso_token" in data && data["sso_token"] != null) {
+                        thunderhub_sso_token = data["sso_token"]
+                    }
                 });
                 $.getJSON("/api/get_service_status?service=ckbunker", function( data ) {
                     update_status("ckbunker_status", data);
@@ -249,7 +311,9 @@
                     if (location.protocol == "https:") {
                         port="3031"
                     }
+                    // Swap to use SSO (make optional? - needing password is safer)
                     url = location.protocol+'//'+location.hostname+':'+port
+                    //url = location.protocol+'//'+location.hostname+':'+port+'/sso?'+'token='+thunderhub_sso_token
                     window.open(url,'_blank');
                 })
 
@@ -440,9 +504,21 @@
     <body>
         {% include 'includes/logo_header.html' %}
         
+        <div class="mynode_top_left_div">
+            <!-- Nothing yet -->
+            {% if upgrade_available %}
+                <a class="ui-button ui-widget ui-corner-all mynode_back" href="/settings" title="Upgrade Available"><span class="ui-icon ui-icon-arrowthick-1-n"></span>upgrade available&nbsp;</a>
+            {% endif %}
+        </div>
+
         <div class="mynode_top_right_div">
             {% if upgrade_available %}
-            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/settings"><span class="ui-icon ui-icon-notice"></span>upgrade&nbsp;</a>
+                <a class="ui-button ui-widget ui-corner-all mynode_back" href="/settings" title="Upgrade Available">&nbsp;<span class="ui-icon ui-icon-arrowthick-1-n"></span>&nbsp;</a>
+            {% endif %}
+            {% if ui_settings['darkmode'] %}
+                <a class="ui-button ui-widget ui-corner-all mynode_back" href="/settings/toggle-darkmode-home" title="Disable Darkmode">&nbsp;<span class="ui-icon ui-icon-lightbulb"></span>&nbsp;</a>
+            {% else %}
+                <a class="ui-button ui-widget ui-corner-all mynode_back" href="/settings/toggle-darkmode-home" title="Enable Darkmode">&nbsp;<span class="ui-icon ui-icon-lightbulb"></span>&nbsp;</a>
             {% endif %}
             <a class="ui-button ui-widget ui-corner-all mynode_back" id="https" title="Use HTTPS" style="display: none;" href="#">&nbsp;<span class="ui-icon ui-icon-locked"></span>&nbsp;</a>
             <a class="ui-button ui-widget ui-corner-all mynode_back" href="/logout" title="Logout"><span class="ui-icon ui-icon-close"></span>&nbsp;</a>

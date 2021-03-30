@@ -1,7 +1,7 @@
 from config import *
 from flask import Blueprint, render_template, session, abort, Markup, request, redirect, send_from_directory, url_for, flash, current_app
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
-from bitcoind import is_bitcoind_synced
+from bitcoin import is_bitcoind_synced
 from bitcoin_info import using_bitcoin_custom_config
 from lightning_info import using_lnd_custom_config
 from pprint import pprint, pformat
@@ -10,6 +10,7 @@ from thread_functions import *
 from user_management import check_logged_in
 from lightning_info import *
 from thread_functions import *
+from utilities import *
 import pam
 import time
 import os
@@ -38,34 +39,6 @@ def page_settings():
     date = get_system_date()
     local_ip = get_local_ip()
 
-
-    # Get Startup Status
-    startup_status_log = get_journalctl_log("mynode")
-
-    # Get QuickSync Status
-    quicksync_enabled = is_quicksync_enabled()
-    quicksync_status = "Disabled"
-    quicksync_status_color = "gray"
-    quicksync_status_log = "DISABLED"
-    if quicksync_enabled:
-        quicksync_status = get_service_status_basic_text("quicksync")
-        quicksync_status_color = get_service_status_color("quicksync")
-        try:
-            quicksync_status_log = subprocess.check_output(["mynode-get-quicksync-status"]).decode("utf8")
-        except:
-            quicksync_status_log = "ERROR"
-
-    # Get Bitcoin Status
-    bitcoin_status_log = ""
-    try:
-        bitcoin_status_log = subprocess.check_output(["tail","-n","200","/mnt/hdd/mynode/bitcoin/debug.log"]).decode("utf8")
-        lines = bitcoin_status_log.split('\n')
-        lines.reverse()
-        bitcoin_status_log = '\n'.join(lines)
-    except:
-        bitcoin_status_log = "ERROR"
-
-
     # Get QuickSync Rates
     upload_rate = 100
     download_rate = 100
@@ -76,6 +49,7 @@ def page_settings():
         upload_rate = 100
         download_rate = 100
 
+    logout_time_days, logout_time_hours = get_flask_session_timeout()
 
     templateData = {
         "title": "myNode Settings",
@@ -96,12 +70,15 @@ def page_settings():
         "product_key_error": pk_error,
         "changelog": changelog,
         "is_https_forced": is_https_forced(),
+        "logout_time_days": logout_time_days,
+        "logout_time_hours": logout_time_hours,
         "using_bitcoin_custom_config": using_bitcoin_custom_config(),
         "using_lnd_custom_config": using_lnd_custom_config(),
         "is_bitcoin_synced": is_bitcoind_synced(),
         "is_installing_docker_images": is_installing_docker_images(),
         "firewall_rules": get_firewall_rules(),
-        "is_quicksync_disabled": not quicksync_enabled,
+        "is_testnet_enabled": is_testnet_enabled(),
+        "is_quicksync_disabled": not is_quicksync_enabled(),
         "is_netdata_enabled": is_netdata_enabled(),
         "is_uploader_device": is_uploader(),
         "download_rate": download_rate,
@@ -112,6 +89,8 @@ def page_settings():
         "date": date,
         "local_ip": local_ip,
         "throttled_data": get_throttled_data(),
+        "oom_error": has_oom_error(),
+        "oom_info": get_oom_error_info(),
         "drive_usage": get_drive_usage(),
         "cpu_usage": get_cpu_usage(),
         "ram_usage": get_ram_usage(),
@@ -158,7 +137,7 @@ def page_status():
             quicksync_status_log = "ERROR"
 
     # Get Bitcoin Status
-    bitcoin_status_log = get_file_log("/mnt/hdd/mynode/bitcoin/debug.log")
+    bitcoin_status_log = get_file_log( get_bitcoin_log_file() )
     # GET lnd, loopd, poold logs from file???
     #lnd_status_log = get_file_log("/mnt/hdd/mynode/lnd/logs/bitcoin/mainnet/lnd.log")
     #loopd_status_log = get_file_log("/mnt/hdd/mynode/loop/logs/mainnet/loopd.log")
@@ -270,6 +249,9 @@ def page_status():
         "caravan_status_log": get_journalctl_log("caravan"),
         "caravan_status": get_service_status_basic_text("caravan"),
         "caravan_status_color": get_service_status_color("caravan"),
+        "specter_status_log": get_journalctl_log("specter"),
+        "specter_status": get_service_status_basic_text("specter"),
+        "specter_status_color": get_service_status_color("specter"),
         "nginx_status_log": get_journalctl_log("nginx"),
         "nginx_status": get_service_status_basic_text("nginx"),
         "nginx_status_color": get_service_status_color("nginx"),
@@ -283,6 +265,8 @@ def page_status():
         "date": date,
         "local_ip": local_ip,
         "throttled_data": get_throttled_data(),
+        "oom_error": has_oom_error(),
+        "oom_info": get_oom_error_info(),
         "drive_usage": get_drive_usage(),
         "cpu_usage": get_cpu_usage(),
         "ram_usage": get_ram_usage(),
@@ -634,6 +618,29 @@ def change_quicksync_rates_page():
     return redirect(url_for(".page_settings"))
 
 
+@mynode_settings.route("/settings/logout_time", methods=['POST'])
+def change_logout_time_page():
+    check_logged_in()
+    if not request:
+        return redirect("/settings")
+
+    d = request.form.get('logout_days')
+    h = request.form.get('logout_hours')
+
+    if d == "0" and h == "0":
+        flash("Logout time cannot be 0 hours and 0 days", category="error")
+        return redirect(url_for(".page_settings"))
+
+    set_flask_session_timeout(d, h)
+    
+    # Trigger reboot
+    t = Timer(3.0, restart_flask)
+    t.start()
+
+    flash("Automatic logout time updated!", category="message")
+    return redirect(url_for(".page_settings"))
+
+
 @mynode_settings.route("/settings/delete-lnd-wallet", methods=['POST'])
 def page_lnd_delete_wallet():
     check_logged_in()
@@ -845,6 +852,28 @@ def toggle_quicksync_page():
     }
     return render_template('reboot.html', **templateData)
 
+@mynode_settings.route("/settings/toggle-testnet")
+def toggle_testnet_page():
+    check_logged_in()
+
+    check_and_mark_reboot_action("toggle_testnet")
+
+    # Toggle testnet
+    toggle_testnet()
+
+    # Trigger reboot
+    t = Timer(1.0, reboot_device)
+    t.start()
+
+    # Wait until device is restarted
+    templateData = {
+        "title": "myNode Reboot",
+        "header_text": "Restarting",
+        "subheader_text": "This will take several minutes...",
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('reboot.html', **templateData)
+
 @mynode_settings.route("/settings/ping")
 def ping_page():
     return "alive"
@@ -852,12 +881,15 @@ def ping_page():
 @mynode_settings.route("/settings/toggle-darkmode")
 def toggle_darkmode_page():
     check_logged_in()
-
-    if is_darkmode_enabled():
-        disable_darkmode()
-    else:
-        enable_darkmode()
+    toggle_darkmode()
     return redirect("/settings")
+
+@mynode_settings.route("/settings/toggle-darkmode-home")
+def toggle_darkmode_page_home():
+    check_logged_in()
+    toggle_darkmode()
+    return redirect("/")
+
 
 @mynode_settings.route("/settings/toggle-netdata")
 def toggle_netdata_page():
@@ -890,3 +922,10 @@ def modify_swap_page():
         "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
+
+@mynode_settings.route("/settings/clear-oom-error")
+def page_clear_oom_error():
+    check_logged_in()
+    clear_oom_error()
+    flash("Warning Cleared", category="message")
+    return redirect("/settings")

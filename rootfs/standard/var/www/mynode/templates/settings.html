@@ -442,14 +442,14 @@
             <div class="settings_block_header">myNode</div>
             
             <div class="settings_block_subheader">Version</div>
-            <table border="0">
+            <table class="info_table">
                 <tr>
-                    <td class="td_left_header">Current Version</td>
+                    <th>Current Version</th>
                     <td>{{current_version}}</td>
                     <td></td>
                 </tr>
                 <tr>
-                    <td>Latest Version</td>
+                    <th>Latest Version</th>
                     <td>{{latest_version}}</td>
                     <td>
                         &nbsp;<a href="/settings/get-latest-version" class="ui-button ui-widget ui-corner-all settings_button_small">Check for Updates</a>
@@ -486,17 +486,17 @@
             This will change the password you use in the myNode GUI, the password for SSH, and the password for apps like RTL.
             <br/><br/>
             <form action="/settings/password" method="POST">
-                <table border="0">
+                <table class="info_table">
                     <tr>
-                        <td class="td_left_header">Current Password</td>
+                        <th>Current Password</th>
                         <td><input type="password" id="current_password" name="current_password" width="20" class="ui-corner-all settings_input"/></td>
                     </tr>
                     <tr>
-                        <td class="td_left_header">Password</td>
+                        <th>Password</th>
                         <td><input type="password" id="password1" name="password1" width="20" class="ui-corner-all settings_input"/></td>
                     </tr>
                     <tr>
-                        <td class="td_left_header">Repeat Password</td>
+                        <th>Repeat Password</th>
                         <td><input type="password" id="password2" name="password2" width="20" class="ui-corner-all settings_input"/></td>
                     </tr>
                 </table>
@@ -532,6 +532,30 @@
             {% else %}
                 <a href="/settings/toggle-darkmode" class="ui-button ui-widget ui-corner-all settings_button">Enable</a>
             {% endif %}
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Automatic Logout</div>
+            Your myNode will logout automatically after a period of inactivity. It can be changed below.
+            <br/><br/>
+
+            <form action="/settings/logout_time" method="POST">
+                {% set logoutDays = [0,1,2,3,5,7,10,15,20,30,60,90] %}
+                {% set logoutHours = range(24) %}
+                Days: 
+                <select name="logout_days" id="logout_days">
+                    {% for d in logoutDays %}
+                    <option value="{{d}}" {% if logout_time_days == d %}selected{% endif %}>{{d}}</option>
+                    {% endfor %}
+                </select>
+                Hours: 
+                <select name="logout_hours" id="logout_hours">
+                    {% for h in logoutHours %}
+                    <option value="{{h}}" {% if logout_time_hours == h %}selected{% endif %}>{{h}}</option>
+                    {% endfor %}
+                </select>
+                <input type="submit" id="logout_save_button" value="Save" class="ui-button ui-widget ui-corner-all settings_button_small"/>
+            </form>
 
             <div class="divider"></div>
 
@@ -660,7 +684,7 @@
             <i>You are currently using a custom Bitcoin config.</i>
             <br/><br/>
             {% endif %}
-            <a href="/bitcoind/config" class="ui-button ui-widget ui-corner-all settings_button">Edit Config</a>
+            <a href="/bitcoin/config" class="ui-button ui-widget ui-corner-all settings_button">Edit Config</a>
 
             <div class="divider"></div>
 
@@ -676,7 +700,7 @@
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Rescan Blockchain</div>
-            Advanced: If you are having issues parsing the Bitcoin blockchain or blocks cannot be found, please try rescanning.
+            Advanced: If you are having issues seeing transactions in your wallets, try re-scanning the blockchain.
             <br/>
             <button id="rescan-blockchain" class="ui-button ui-widget ui-corner-all settings_button">Rescan Blockchain</button>
 
@@ -717,7 +741,7 @@
 
             <div class="settings_block_subheader">Delete Lightning Wallet</div>
             {{lnd_delete_message}}
-            Advanced: This will delete your Lightning Wallet.
+            Advanced: This will delete your Lightning Wallet. It will delete both mainnet and testnet wallets if you have them.
             <br/>
             <button id="delete_lnd_wallet" class="ui-button ui-widget ui-corner-all settings_button">Delete Wallet</button>
         </div>
@@ -821,6 +845,19 @@
             <a id="advanced"></a>
             <div class="settings_block_header">Advanced</div>
 
+            <div class="settings_block_subheader">Toggle Testnet</div>
+            Testnet can be enabled for Bitcoin and Lightning, which can be used to test various features, but may cause other applications to 
+            fail or become unstable if enabled. This testnet toggle does not work if you have customized your bitcoin or lnd configs. This will 
+            reboot your device.
+            <br/>
+            {% if not is_testnet_enabled %}
+                <a href="/settings/toggle-testnet" class="ui-button ui-widget ui-corner-all settings_button">Enable Testnet</a>
+            {% else %}
+                <a href="/settings/toggle-testnet" class="ui-button ui-widget ui-corner-all settings_button">Disable Testnet</a>
+            {% endif %}
+
+            <div class="divider"></div>
+
             <div class="settings_block_subheader">Reset HTTPS Certificates</div>
             This will regenerate your HTTPS certificates.
             <br/>
@@ -919,14 +956,14 @@
                 <div class="settings_block_subheader">Install Beta</div>
                 You can install beta releases of myNode software to help test. These may be less stable.
                 <br/><br/>
-                <table border="0">
+                <table class="info_table">
                     <tr>
-                        <td>Current Beta Version</td>
+                        <th>Current Beta Version</th>
                         <td>{{current_beta_version}}</td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>Latest Beta Version</td>
+                        <th>Latest Beta Version</th>
                         <td>{{latest_beta_version}}</td>
                         <td>&nbsp;<a href="/settings/get-latest-version" class="ui-button ui-widget ui-corner-all settings_button_small">Check for Updates</a></td>
                     </tr>

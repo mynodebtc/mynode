@@ -26,6 +26,18 @@
 </div>
 {% endif %}
 
+{% if oom_error %}
+<!--
+<div class="main_page_warning_block">
+    <center>
+    <p><b>Low Memory Warning</b><br/>Your device was running low on memory and a process has been killed. Please disable some applications and reboot the device.</p>
+    <p>{{ oom_info }}</p>
+    <a href="/clear-oom-error" class="ui-button ui-widget ui-corner-all settings_button_small">OK</a>
+    </center>
+</div>
+-->
+{% endif %}
+
 {% if not has_changed_password %}
 <div class="main_page_warning_block">
     <p style="text-align: center;"><b>Warning!</b><br/>You appear to be using the default password! You should change it to something else on the <a href="/settings">settings</a> page.</p>

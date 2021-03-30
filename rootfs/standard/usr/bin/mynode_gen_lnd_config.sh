@@ -13,11 +13,18 @@ else
     # Generate a default config
     cp -f /usr/share/mynode/lnd.conf /mnt/hdd/mynode/lnd/lnd.conf
 
-    # Append other sections
+    # Append Tor/IP section
     if [ -f /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled ]; then
         cat /usr/share/mynode/lnd_tor.conf >> /mnt/hdd/mynode/lnd/lnd.conf
     else
         cat /usr/share/mynode/lnd_ipv4.conf >> /mnt/hdd/mynode/lnd/lnd.conf
+    fi
+
+    # Append Mainnet/Testnet section
+    if [ -f /mnt/hdd/mynode/settings/.testnet_enabled ]; then
+        sed -i "s/bitcoin.mainnet=.*/bitcoin.mainnet=0/g" /mnt/hdd/mynode/lnd/lnd.conf
+        sed -i "s/bitcoin.testnet=.*/bitcoin.testnet=1/g" /mnt/hdd/mynode/lnd/lnd.conf
+        cat /usr/share/mynode/lnd_testnet.conf >> /mnt/hdd/mynode/lnd/lnd.conf
     fi
 fi
 

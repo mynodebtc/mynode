@@ -1,6 +1,6 @@
 
 from flask import Blueprint, render_template, redirect
-from device_info import read_ui_settings, is_installing_docker_images
+from device_info import read_ui_settings, is_installing_docker_images, is_testnet_enabled
 from user_management import check_logged_in
 from enable_disable_functions import is_dojo_enabled, enable_dojo, disable_dojo, is_dojo_installed
 from bitcoin_info import get_mynode_block_height
@@ -20,6 +20,12 @@ def get_dojo_status():
     if is_installing_docker_images():
         dojo_status = "Installing..."
         dojo_status_color = "yellow"
+        dojo_initialized = ""
+        return dojo_status, dojo_status_color, dojo_initialized
+
+    if is_testnet_enabled():
+        dojo_status = "Requires Mainnet"
+        dojo_status_color = "gray"
         dojo_initialized = ""
         return dojo_status, dojo_status_color, dojo_initialized
 
@@ -60,6 +66,11 @@ def get_dojo_tracker_status():
             bitcoin_height = get_mynode_block_height()
             tracker_status = "Syncing... {} of {}".format(dojo_height, bitcoin_height)
             break
+        elif "Finished block" in line:
+            m = re.search("Finished block ([0-9]+)", line)
+            dojo_height = m.group(1)
+            bitcoin_height = get_mynode_block_height()
+            tracker_status = "Syncing... {} of {}".format(dojo_height, bitcoin_height)
         elif "Processing active Mempool" in line:
             tracker_status = "Active"
             break

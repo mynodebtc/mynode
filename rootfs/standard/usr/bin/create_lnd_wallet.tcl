@@ -14,8 +14,13 @@ if { [file exists "/tmp/lnd_channel_backup"] == 1} {
 
 set tls_cert "/home/bitcoin/.lnd/tls.cert" 
 set macaroon "/home/bitcoin/.lnd/data/chain/mainnet/admin.macaroon"
+set network "--network=mainnet"
+if { [file exists "/mnt/hdd/mynode/settings/.testnet_enabled"] == 1} {
+    set macaroon "/home/bitcoin/.lnd/data/chain/testnet/admin.macaroon"
+    set network "--network=testnet"
+}
 
-spawn lncli --tlscertpath $tls_cert --macaroonpath $macaroon create $backup_args
+spawn lncli $network --tlscertpath $tls_cert --macaroonpath $macaroon create $backup_args
 expect {
         "recover funds from a static channel backup? (Enter y/n):" {
                 send -- "y\n"

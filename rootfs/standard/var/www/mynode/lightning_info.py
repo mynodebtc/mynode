@@ -4,8 +4,10 @@ import subprocess
 import os
 import time
 import re
+import datetime
 from flask import current_app as app
 from threading import Timer
+from utilities import *
 from bitcoin_info import *
 from systemctl_info import *
 
@@ -16,16 +18,14 @@ lnd_version = None
 loop_version = None
 pool_version = None
 lightning_peers = None
+lightning_peer_aliases = {}
 lightning_channels = None
 lightning_channel_balance = None
 lightning_wallet_balance = None
 lightning_desync_count = 0
 
 LND_FOLDER = "/mnt/hdd/mynode/lnd/"
-MACAROON_FILE = "/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon"
-WALLET_FILE = "/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/wallet.db"
 TLS_CERT_FILE = "/mnt/hdd/mynode/lnd/tls.cert"
-CHANNEL_BACKUP_FILE = "/home/bitcoin/lnd_backup/channel.backup"
 LND_REST_PORT = "10080"
 
 # Functions
@@ -70,11 +70,17 @@ def update_lightning_info():
     return True
 
 
-def get_new_deposit_address():
+def get_lnd_deposit_address():
+    if os.path.isfile("/tmp/lnd_deposit_address"):
+        return get_file_contents("/tmp/lnd_deposit_address")
+    return get_new_lnd_deposit_address()
+
+def get_new_lnd_deposit_address():
     address = "NEW_ADDR"
     try:
         addressdata = lnd_get("/newaddress")
         address = addressdata["address"]
+        set_file_contents("/tmp/lnd_deposit_address", address)
     except:
         address = "ERROR"
     return address
@@ -86,7 +92,47 @@ def get_lightning_info():
 
 def get_lightning_peers():
     global lightning_peers
-    return copy.deepcopy(lightning_peers)
+    peerdata = copy.deepcopy(lightning_peers)
+    peers = []
+    if peerdata != None and "peers" in peerdata:
+        for p in peerdata["peers"]:
+            peer = p
+            if "bytes_recv" in p:
+                peer["bytes_recv"] = "{:.2f}".format(float(p["bytes_recv"]) / 1000 / 1000)
+            else:
+                peer["bytes_recv"] = "N/A"
+            if "bytes_sent" in p:
+                peer["bytes_sent"] = "{:.2f}".format(float(p["bytes_sent"]) / 1000 / 1000)
+            else:
+                peer["bytes_sent"] = "N/A"
+            if "sat_sent" in p:
+                peer["sat_sent"] = format_sat_amount(peer["sat_sent"])
+            if "sat_recv" in p:
+                peer["sat_recv"] = format_sat_amount(peer["sat_recv"])
+            if "ping_time" not in p:
+                peer["ping_time"] = "N/A"
+            if "pub_key" in p:
+                peer["alias"] = get_lightning_peer_alias( p["pub_key"] )
+            else:
+                peer["alias"] = "Unknown"
+            peers.append(peer)
+    return peers
+
+def get_lightning_node_info(pubkey):
+    nodeinfo = lnd_get("/graph/node/{}".format(pubkey), timeout=2)
+    return nodeinfo
+
+def get_lightning_peer_alias(pubkey):
+    global lightning_peer_aliases
+    if pubkey in lightning_peer_aliases:
+        return lightning_peer_aliases[pubkey]
+
+    nodeinfo = get_lightning_node_info(pubkey)
+    if nodeinfo != None and "node" in nodeinfo:
+        if "alias" in nodeinfo["node"]:
+            lightning_peer_aliases[pubkey] = nodeinfo["node"]["alias"]
+            return nodeinfo["node"]["alias"]
+    return "UNKNOWN"
 
 def get_lightning_peer_count():
     info = get_lightning_info()
@@ -97,13 +143,56 @@ def get_lightning_peer_count():
 
 def get_lightning_channels():
     global lightning_channels
-    return copy.deepcopy(lightning_channels)
+    channeldata = copy.deepcopy(lightning_channels)
+    channels = []
+    if channeldata != None and "channels" in channeldata:
+        for c in channeldata["channels"]:
+            channel = c
+
+            channel["status_color"] = "gray"
+            if "active" in channel:
+                if channel["active"]:
+                    channel["status_color"] = "green"
+                else:
+                    channel["status_color"] = "yellow"
+            if "capacity" in channel:
+                channel["capacity"] = format_sat_amount(channel["capacity"])
+            else:
+                channel["capacity"] = "N/A"
+            if "local_balance" in channel and "remote_balance" in channel:
+                l = float(channel["local_balance"])
+                r = float(channel["remote_balance"])
+                channel["chan_percent"] = (l / (l+r)) * 100
+            else:
+                channel["chan_percent"] = "0"
+            if "local_balance" in channel:
+                channel["local_balance"] = format_sat_amount(channel["local_balance"])
+            else:
+                channel["local_balance"] = "0"
+            if "remote_balance" in channel:
+                channel["remote_balance"] = format_sat_amount(channel["remote_balance"])
+            else:
+                channel["remote_balance"] = "0"
+            if "remote_pubkey" in channel:
+                channel["remote_alias"] = get_lightning_peer_alias( channel["remote_pubkey"] )
+            else:
+                channel["remote_alias"] = "Unknown"
+            if "commit_fee" in channel:
+                channel["commit_fee"] = format_sat_amount(channel["commit_fee"])
+            else:
+                channel["commit_fee"] = "0"
+            if "lifetime" in channel:
+                seconds = int(channel["lifetime"])
+                channel["age"] = "{}".format(str(datetime.timedelta(seconds=seconds)))
+            else:
+                channel["age"] = "N/A"
+            
+            channels.append(channel)
+    return channels
 
 def get_lightning_channel_count():
-    channeldata = get_lightning_channels()
-    if channeldata != None and "channels" in channeldata:
-        return len(channeldata["channels"])
-    return 0
+    channels = get_lightning_channels()
+    return len(channels)
 
 def get_lightning_channel_balance():
     global lightning_channel_balance
@@ -125,15 +214,15 @@ def get_lightning_balance_info():
 
     channel_balance_data = get_lightning_channel_balance()
     if channel_balance_data != None and "balance" in channel_balance_data:
-        balance_data["channel_balance"] = channel_balance_data["balance"]
+        balance_data["channel_balance"] = format_sat_amount( channel_balance_data["balance"] )
     if channel_balance_data != None and "pending_open_balance" in channel_balance_data:
-        balance_data["channel_pending"] = channel_balance_data["pending_open_balance"]
+        balance_data["channel_pending"] = format_sat_amount( channel_balance_data["pending_open_balance"] )
     
     wallet_balance_data = get_lightning_wallet_balance()
     if wallet_balance_data != None and "confirmed_balance" in wallet_balance_data:
-        balance_data["wallet_balance"] = wallet_balance_data["confirmed_balance"]
+        balance_data["wallet_balance"] = format_sat_amount( wallet_balance_data["confirmed_balance"] )
     if wallet_balance_data != None and "unconfirmed_balance" in wallet_balance_data:
-        balance_data["wallet_pending"] = wallet_balance_data["unconfirmed_balance"]
+        balance_data["wallet_pending"] = format_sat_amount( wallet_balance_data["unconfirmed_balance"] )
 
     return balance_data
 
@@ -141,11 +230,11 @@ def is_lnd_ready():
     global lnd_ready
     return lnd_ready
 
-def lnd_get(path):
+def lnd_get(path, timeout=10):
     try:
         macaroon = get_macaroon()
         headers = {"Grpc-Metadata-macaroon":macaroon}
-        r = requests.get("https://localhost:"+LND_REST_PORT+"/v1"+path, verify=TLS_CERT_FILE,headers=headers)
+        r = requests.get("https://localhost:"+LND_REST_PORT+"/v1"+path, verify=TLS_CERT_FILE,headers=headers, timeout=timeout)
     except Exception as e:
         app.logger.info("ERROR in lnd_get: "+str(e))
         return {"error": str(e)}
@@ -166,12 +255,25 @@ def restart_lnd():
     t = Timer(1.0, restart_lnd_actual)
     t.start()
 
+def is_testnet_enabled():
+    return os.path.isfile("/mnt/hdd/mynode/settings/.testnet_enabled")
+
+def get_lightning_wallet_file():
+    if is_testnet_enabled():
+        return "/mnt/hdd/mynode/lnd/data/chain/bitcoin/testnet/wallet.db"
+    return "/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/wallet.db"
+
+def get_lightning_macaroon_file():
+    if is_testnet_enabled():
+        return "/mnt/hdd/mynode/lnd/data/chain/bitcoin/testnet/admin.macaroon"
+    return "/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon"
+
 def get_macaroon():
-    m = subprocess.check_output("xxd -ps -u -c 1000 "+MACAROON_FILE, shell=True)
+    m = subprocess.check_output("xxd -ps -u -c 1000 " + get_lightning_macaroon_file(), shell=True)
     return m.strip()
 
 def lnd_wallet_exists():
-    return os.path.isfile(WALLET_FILE)
+    return os.path.isfile( get_lightning_wallet_file() )
 
 def create_wallet(seed):
     try:
@@ -196,8 +298,13 @@ def is_lnd_logged_in():
     except:
         return False
 
+def get_lnd_channel_backup_file():
+    if is_testnet_enabled():
+        return "/home/bitcoin/lnd_backup/channel_testnet.backup"
+    return "/home/bitcoin/lnd_backup/channel.backup"
+
 def lnd_channel_backup_exists():
-    return os.path.isfile(CHANNEL_BACKUP_FILE)
+    return os.path.isfile( get_lnd_channel_backup_file() )
 
 def get_lnd_status():
     if not lnd_wallet_exists():
@@ -230,6 +337,8 @@ def get_lnd_status():
                 return "Opening DB..."
             elif "Database now open" in line:
                 return "DB open..."
+            elif "unable to create server" in line:
+                return "Network Error"
             elif "Waiting for wallet encryption password" in line:
                 return "Logging in..."
             elif "LightningWallet opened" in line:
@@ -254,19 +363,6 @@ def get_lnd_status_color():
         if lnd_status == "Logging in...":
             lnd_status_color = "yellow"
     return "green"
-
-def get_lnd_channels():
-    try:
-        macaroon = get_macaroon()
-        headers = {"Grpc-Metadata-macaroon":macaroon}
-        r = requests.get("https://localhost:"+LND_REST_PORT+"/v1/channels", verify=TLS_CERT_FILE,headers=headers)
-        if r.status_code == 200 and r.json():
-            data = r.json()
-            return data["channels"]
-        return False
-    except Exception as e:
-        print("EXCEPTION: {}".format(str(e)))
-        return False
 
 def get_lnd_version():
     global lnd_version

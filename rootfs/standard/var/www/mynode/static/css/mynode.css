@@ -43,14 +43,25 @@ table{
     border-collapse: collapse;
 }
 
-td {
-    padding-top: 9px;
+td, th {
+    padding-top: 8px;
     padding-bottom: 6px;
     border-collapse: collapse;
     border-top: #e7e7e7 1px solid;
 }
-.td_left_header {
-    padding-right: 40px;
+.service_table_td_left_header {
+    padding-right: 10px;
+    min-width: 120px;
+}
+
+.info_table {
+    font-size: 16px;
+}
+.info_table th {
+    font-weight: normal;
+    padding-right: 30px;
+    min-width: 100px;
+    text-align: left;
 }
 
 .mynode_back_div {
@@ -59,8 +70,16 @@ td {
     left: 20px;
 }
 
+.mynode_top_left_div {
+    position: fixed;
+    font-size: 14px;
+    top: 20px;
+    left: 20px;
+}
+
 .mynode_top_right_div {
     position: fixed;
+    font-size: 14px;
     top: 20px;
     right: 20px;
 }
@@ -102,7 +121,7 @@ td {
     margin-bottom: 5px;
 }
 .main_header_sub_text {
-    width: 600px;
+    width: 800px;
     color: #444444;
     margin: auto;
     text-align: center;
@@ -118,7 +137,7 @@ td {
     margin-bottom: 5px;
 }
 .sub_header_sub_text {
-    width: 600px;
+    width: 800px;
     color: #444444;
     margin: auto;
     text-align: center;
@@ -137,6 +156,14 @@ td {
     font-size: 16px;
     padding-top: 10px;
     padding-bottom: 10px;
+}
+
+.large_error_message {
+    color: #BB4444;
+    text-align: center;
+    font-size: 28px;
+    font-family: Arial, Helvetica, sans-serif;
+    padding-top: 20px;
 }
 
 .app_tile_row_divider_left {
@@ -215,6 +242,17 @@ td {
     margin: 6px 10px 6px 10px;
     background: #f0f0f0;
 }
+.app_tile_lightning_details {
+    display: inline-block;
+    position: relative;
+    border: none;
+    border-radius: 10px;
+    width: 810px;
+    
+    padding: 10px;
+    margin: 6px 10px 6px 10px;
+    background: #f0f0f0;
+}
 .bitcoin_block_set {
     margin-left: auto;
     margin-right: auto;
@@ -260,6 +298,76 @@ td {
     width: 100%;
 }
 
+.lightning_channel_container {
+    width: 1000px;
+}
+.lightning_channel_top_row {
+    margin-bottom: 3px;
+    height: 25px;
+}
+.lightning_channel_label {
+    font-weight: bold;
+    float: left;
+}
+.lightning_channel_status_icon {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+}
+.lightning_channel {
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 20px;
+}
+.lightning_channel_bar {
+    margin: auto;
+}
+.lightning_channel_bar_label_left {
+    font-size: 12px;
+    float: left;
+}
+.lightning_channel_bar_label_right {
+    font-size: 12px;
+    float: right;
+}
+.lightning_channel_bar.ui-progressbar {
+    background: orange;
+}
+.lightning_channel_bar .ui-progressbar-value {
+    background: green;
+}
+
+.bitcoind_table {
+    width: 1000px;
+    margin: auto;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 14px;
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+}
+.bitcoind_table_header {
+    font-size: 16px;
+    background-color: #FFFFFF;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+table.bitcoind_table tbody tr:nth-child(odd) td{
+    background-color: #ffa5000d;
+}
+
+table.bitcoind_table tbody tr:nth-child(even) td{
+    background-color: #fff;
+}
+
+table.bitcoind_table td {
+    padding: 10px 0;
+    margin: 0px;
+}
 
 .green { background-color: green; }
 .yellow { background-color: yellow; }
@@ -364,13 +472,14 @@ td {
     color: #444444;
     margin: auto;
     text-align: left;
-    font-size: 18px;
+    font-size: 16px;
     margin-bottom: 40px;
     margin-top: 40px;
 }
 
 .instructions-header {
     font-size: 18px;
+    font-weight: bold;
     text-align: center;
 }
 

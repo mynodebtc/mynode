@@ -11,71 +11,88 @@
         </div>
 
         <div class="main_header">Electrum Server Status</div>
+
+        {% include 'includes/message_display.html' %}
+
         <br/>
-        
+
         <div class="app_tile_row">
             <div class="info_tile">
                 <div class="info_tile_header">Status</div>
-                <div class="info_tile_contents">{{status}}</div>
+                <div class="info_tile_contents">
+                    <table class="info_table">
+                        <tr>
+                            <th>Status</th>
+                            <td>{{status}}</td>
+                        </tr>
+                        <tr>
+                            <th>Current Block</th>
+                            <td>{{current_block}}</td>
+                        </tr>
+                        <tr>
+                            <th>Actions</th>
+                            <td><a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/restart-electrs">Restart</a></td>
+                        </tr>
+                        <!--
+                        <tr>
+                            <th>CLI Command</th>
+                            <td>{{electrs_command}}</td>
+                        </tr>
+                        -->
+                    </table>
+                </div>
             </div>
+
             <div class="info_tile">
-                <div class="info_tile_header">Current Block</div>
-                <div class="info_tile_contents">{{current_block}}</div>
+                <div class="info_tile_header">Info</div>
+                <div class="info_tile_contents">
+                    <table class="info_table">
+                        <tr>
+                            <th>Electrum Server IP</th>
+                            <td>{{server_ip}}</td>
+                        </tr>
+                        <tr>
+                            <th>Standard Port</th>
+                            <td>{{server_standard_port}}</td>
+                        </tr>
+                        <tr>
+                            <th>Secure Port</th>
+                            <td>{{server_secure_port}}</td>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </div>
-
-        <div class="app_tile_row">
-            <div class="info_tile">
-                <div class="info_tile_header">Electrum Server IP</div>
-                <div class="info_tile_contents">{{server_ip}}</div>
-            </div>
-            <div class="info_tile">
-                <div class="info_tile_header">Standard Port</div>
-                <div class="info_tile_contents">{{server_standard_port}}</div>
-            </div>
-            <div class="info_tile">
-                <div class="info_tile_header">Secure Port</div>
-                <div class="info_tile_contents">{{server_secure_port}}</div>
-            </div>
-        </div>
-
-        <div class="app_tile_row">
-            <div class="info_tile">
-                <div class="info_tile_header">Electrum CLI Command</div>
-                <div class="info_tile_contents">{{electrs_command}}</div>
-            </div>
-        </div>
-
-        <div class="divider" style="width: 800px;"></div>
 
         <div class="app_tile_row">
             <div class="info_tile">
                 <div class="info_tile_header">Electrum Tor Service</div>
-                <div class="info_tile_contents">{% if not product_key_skipped %}Enabled{% else %}Premium Feature{% endif %}</div>
+                <div class="info_tile_contents">
+                    <table class="info_table">
+                        {% if product_key_skipped %}
+                        <tr>
+                            <th>Status</th>
+                            <td>Premium Feature</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <th>Hostname</th>
+                            <td style="font-size: 12px;">{{electrs_onion_hostname}}</td>
+                        </tr>
+                        <tr>
+                            <th>CLI Command</th>
+                            <td style="font-size: 12px;">{{electrs_onion_command}}</td>
+                        </tr>
+                        <tr>
+                            <th>Tor Help</th>
+                            <td><a href="http://docs.electrum.org/en/latest/tor.html" target="_blank">Link</a></td>
+                        </tr>
+                        {% endif %}
+                    </table>
+                </div>
             </div>
-{% if not product_key_skipped %}
-            <div class="info_tile">
-                <div class="info_tile_header">Electrum Tor Hostname</div>
-                <div class="info_tile_contents">{{electrs_onion_hostname}}</div>
-            </div>
-            <!--
-            <div class="info_tile">
-                <div class="info_tile_header">Electrum Tor Password</div>
-                <div class="info_tile_contents">{{electrs_onion_password}}</div>
-            </div>
-            -->
         </div>
-        <div class="app_tile_row">
-            <div class="info_tile">
-                <div class="info_tile_header">Electrum Tor Command</div>
-                <div class="info_tile_contents">{{electrs_onion_command}}</div>
-            </div>
-            <div class="info_tile">
-                <div class="info_tile_header">Electrum Tor Help</div>
-                <div class="info_tile_contents"><a href="http://docs.electrum.org/en/latest/tor.html" target="_blank">Link</a></div>
-            </div>
-{% endif %}
-        </div>
+
 
         <br/><br/>
         <div class="main_header">Using Electrum Wallets</div>

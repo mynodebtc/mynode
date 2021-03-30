@@ -3,9 +3,10 @@ from config import *
 from flask import Flask, render_template, Markup, send_from_directory, redirect, request, url_for
 from user_management import *
 from api import mynode_api
-from bitcoind import mynode_bitcoind
+from bitcoin import mynode_bitcoin
 from whirlpool import mynode_whirlpool, get_whirlpool_status
 from dojo import mynode_dojo, get_dojo_status
+from joininbox import mynode_joininbox
 from caravan import mynode_caravan
 from sphinxrelay import mynode_sphinxrelay
 from manage_apps import mynode_manage_apps
@@ -58,9 +59,11 @@ app.config['DEBUG'] = False
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024     # 32 MB upload file max
 app.config['UPLOAD_FOLDER'] = "/tmp/flask_uploads"
+app.config['SESSION_PERMANENT'] = True
 app.config["SESSION_COOKIE_NAME"] = "mynode_session_id"
 app.secret_key = get_flask_secret_key()
-app.permanent_session_lifetime = timedelta(days=90)
+timeout_days, timeout_hours = get_flask_session_timeout()
+app.permanent_session_lifetime = timedelta(days=timeout_days, hours=timeout_hours)
 app.register_error_handler(LoginError, handle_login_exception)
 
 app.wsgi_app = ReverseProxied(app.wsgi_app)
@@ -72,11 +75,12 @@ my_logger.addHandler(handler)
 app.logger.addHandler(my_logger)
 app.logger.setLevel(logging.INFO)
 
-app.register_blueprint(mynode_bitcoind)
+app.register_blueprint(mynode_bitcoin)
 app.register_blueprint(mynode_lnd)
 app.register_blueprint(mynode_api)
 app.register_blueprint(mynode_whirlpool)
 app.register_blueprint(mynode_dojo)
+app.register_blueprint(mynode_joininbox)
 app.register_blueprint(mynode_caravan)
 app.register_blueprint(mynode_sphinxrelay)
 app.register_blueprint(mynode_manage_apps)
@@ -552,7 +556,11 @@ def index():
             "lnd_peer_count": get_lightning_peer_count(),
             "lnd_channel_count": get_lightning_channel_count(),
             "lnd_balance_info": get_lightning_balance_info(),
+            "lnd_wallet_exists": lnd_wallet_exists(),
             "lnd_version": get_lnd_version(),
+            "lnd_deposit_address": get_lnd_deposit_address(),
+            "lnd_channels": get_lightning_channels(),
+            "is_testnet_enabled": is_testnet_enabled(),
             "tor_status_color": tor_status_color,
             "tor_status": tor_status,
             "is_installing_docker_images": is_installing_docker_images(),
@@ -570,6 +578,7 @@ def index():
             "thunderhub_status_color": thunderhub_status_color,
             "thunderhub_status": thunderhub_status,
             "thunderhub_enabled": is_thunderhub_enabled(),
+            "thunderhub_sso_token": get_thunderhub_sso_token(),
             "ckbunker_status_color": ckbunker_status_color,
             "ckbunker_status": ckbunker_status,
             "ckbunker_enabled": is_ckbunker_enabled(),
@@ -971,6 +980,9 @@ def start_threads():
     public_ip_thread = BackgroundThread(find_public_ip, 60*60*12) # 12-hour repeat
     public_ip_thread.start()
     threads.append(public_ip_thread)
+    dmesg_thread = BackgroundThread(monitor_dmesg, 60) # Runs forever, restart after 60 if it fails 
+    dmesg_thread.start()
+    threads.append(dmesg_thread)
 
     app.logger.info("STARTED {} THREADS".format(len(threads)))
 

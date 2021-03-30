@@ -26,6 +26,10 @@ fi
 # Create any necessary users
 useradd -m -s /bin/bash joinmarket || true
 
+# Setup bitcoin user folders
+mkdir -p /home/bitcoin/.mynode/
+chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+
 # User updates and settings
 adduser admin bitcoin
 grep "joinmarket" /etc/sudoers || (echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo)
@@ -100,6 +104,7 @@ $TORIFY apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
 $TORIFY apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
 $TORIFY apt-get -y install libudev-dev libusb-1.0-0-dev python3-venv gunicorn sqlite3 libsqlite3-dev
 $TORIFY apt-get -y install torsocks python3-requests libsystemd-dev libjpeg-dev zlib1g-dev psmisc
+$TORIFY apt-get -y install hexyl
 
 # Make sure some software is removed
 apt-get -y purge ntp # (conflicts with systemd-timedatectl)
@@ -115,7 +120,7 @@ echo "" > /etc/nginx/sites-available/default
 dpkg --configure -a
 
 # Install any pip software
-pip2 install tzupdate virtualenv pysocks redis --no-cache-dir
+pip2 install tzupdate virtualenv pysocks redis qrcode image --no-cache-dir
 
 
 # Update Python3 to 3.7.X
@@ -227,8 +232,6 @@ if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
 fi
 LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/$LND_ARCH-$LND_VERSION.tar.gz
-LND_UPGRADE_MANIFEST_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
-LND_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-roasbeef-$LND_VERSION.txt.asc
 CURRENT=""
 if [ -f $LND_VERSION_FILE ]; then
     CURRENT=$(cat $LND_VERSION_FILE)
@@ -240,10 +243,10 @@ if [ "$CURRENT" != "$LND_VERSION" ]; then
     cd /opt/download
 
     wget $LND_UPGRADE_URL
-    wget $LND_UPGRADE_MANIFEST_URL
-    wget $LND_UPGRADE_MANIFEST_SIG_URL
+    wget $LND_UPGRADE_MANIFEST_URL -O manifest.txt
+    wget $LND_UPGRADE_MANIFEST_SIG_URL -O manifest.txt.sig
 
-    gpg --verify manifest-*.txt.asc
+    gpg --verify manifest.txt.sig manifest.txt
     if [ $? == 0 ]; then
         # Install LND
         tar -xzf lnd-*.tar.gz
@@ -257,6 +260,75 @@ if [ "$CURRENT" != "$LND_VERSION" ]; then
     fi
 fi
 
+# Upgrade Loop
+echo "Upgrading loopd..."
+LOOP_ARCH="loop-linux-armv7"
+if [ $IS_X86 = 1 ]; then
+    LOOP_ARCH="loop-linux-amd64"
+fi
+LOOP_UPGRADE_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/$LOOP_ARCH-$LOOP_VERSION.tar.gz
+CURRENT=""
+if [ -f $LOOP_VERSION_FILE ]; then
+    CURRENT=$(cat $LOOP_VERSION_FILE)
+fi
+if [ "$CURRENT" != "$LOOP_VERSION" ]; then
+    # Download and install Loop
+    rm -rf /opt/download
+    mkdir -p /opt/download
+    cd /opt/download
+
+    wget $LOOP_UPGRADE_URL
+    wget $LOOP_UPGRADE_MANIFEST_URL -O manifest.txt
+    wget $LOOP_UPGRADE_MANIFEST_SIG_URL -O manifest.txt.sig
+
+    gpg --verify manifest.txt.sig manifest.txt
+    if [ $? == 0 ]; then
+        # Install Loop
+        tar -xzf loop-*.tar.gz
+        mv $LOOP_ARCH-$LOOP_VERSION loop
+        install -m 0755 -o root -g root -t /usr/local/bin loop/*
+
+        # Mark current version
+        echo $LOOP_VERSION > $LOOP_VERSION_FILE
+    else
+        echo "ERROR UPGRADING LOOP - GPG FAILED"
+    fi
+fi
+
+# Upgrade Pool
+echo "Upgrading pool..."
+POOL_ARCH="pool-linux-armv7"
+if [ $IS_X86 = 1 ]; then
+    POOL_ARCH="pool-linux-amd64"
+fi
+POOL_UPGRADE_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/$POOL_ARCH-$POOL_VERSION.tar.gz
+CURRENT=""
+if [ -f $POOL_VERSION_FILE ]; then
+    CURRENT=$(cat $POOL_VERSION_FILE)
+fi
+if [ "$CURRENT" != "$POOL_VERSION" ]; then
+    # Download and install pool
+    rm -rf /opt/download
+    mkdir -p /opt/download
+    cd /opt/download
+
+    wget $POOL_UPGRADE_URL
+    wget $POOL_UPGRADE_MANIFEST_URL -O manifest.txt
+    wget $POOL_UPGRADE_MANIFEST_SIG_URL -O manifest.txt.sig
+
+    gpg --verify manifest.txt.sig manifest.txt
+    if [ $? == 0 ]; then
+        # Install Pool
+        tar -xzf pool-*.tar.gz
+        mv $POOL_ARCH-$POOL_VERSION pool
+        install -m 0755 -o root -g root -t /usr/local/bin pool/*
+
+        # Mark current version
+        echo $POOL_VERSION > $POOL_VERSION_FILE
+    else
+        echo "ERROR UPGRADING POOL - GPG FAILED"
+    fi
+fi
 
 # Upgrade Lightning Terminal
 echo "Upgrading lit..."
@@ -286,7 +358,7 @@ if [ "$CURRENT" != "$LIT_VERSION" ]; then
         # Install lit
         tar -xzf lightning-terminal-*.tar.gz
         mv $LIT_ARCH-$LIT_VERSION lightning-terminal
-        install -m 0755 -o root -g root -t /usr/local/bin lightning-terminal/*
+        install -m 0755 -o root -g root -t /usr/local/bin lightning-terminal/lit*
 
         # Mark current version
         echo $LIT_VERSION > $LIT_VERSION_FILE
@@ -409,41 +481,41 @@ if [ ! -f /usr/include/secp256k1_ecdh.h ]; then
 fi
 
 # Upgrade JoinMarket
-# echo "Upgrading JoinMarket..."
-# if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
-#     JOINMARKET_UPGRADE_URL=https://github.com/JoinMarket-Org/joinmarket-clientserver/archive/$JOINMARKET_VERSION.tar.gz
-#     CURRENT=""
-#     if [ -f $JOINMARKET_VERSION_FILE ]; then
-#         CURRENT=$(cat $JOINMARKET_VERSION_FILE)
-#     fi
-#     if [ "$CURRENT" != "$JOINMARKET_VERSION" ]; then
-#         # Download and build JoinMarket
-#         cd /opt/mynode
+echo "Upgrading JoinMarket..." # Old
+if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
+    JOINMARKET_UPGRADE_URL=https://github.com/JoinMarket-Org/joinmarket-clientserver/archive/$JOINMARKET_VERSION.tar.gz
+    CURRENT=""
+    if [ -f $JOINMARKET_VERSION_FILE ]; then
+        CURRENT=$(cat $JOINMARKET_VERSION_FILE)
+    fi
+    if [ "$CURRENT" != "$JOINMARKET_VERSION" ]; then
+        # Download and build JoinMarket
+        cd /opt/mynode
 
-#         # Backup old version in case config / wallet was stored within folder
-#         if [ ! -d /opt/mynode/jm_backup ] && [ -d /opt/mynode/joinmarket-clientserver ]; then
-#             cp -R /opt/mynode/joinmarket-clientserver /opt/mynode/jm_backup
-#             chown -R bitcoin:bitcoin /opt/mynode/jm_backup
-#         fi
+        # Backup old version in case config / wallet was stored within folder
+        if [ ! -d /opt/mynode/jm_backup ] && [ -d /opt/mynode/joinmarket-clientserver ]; then
+            cp -R /opt/mynode/joinmarket-clientserver /opt/mynode/jm_backup
+            chown -R bitcoin:bitcoin /opt/mynode/jm_backup
+        fi
 
-#         rm -rf joinmarket-clientserver
+        rm -rf joinmarket-clientserver
 
-#         sudo -u joinmarket wget $JOINMARKET_UPGRADE_URL -O joinmarket.tar.gz
-#         sudo -u joinmarket tar -xvf joinmarket.tar.gz
-#         sudo -u joinmarket rm joinmarket.tar.gz
-#         mv joinmarket-clientserver-* joinmarket-clientserver
+        sudo -u bitcoin wget $JOINMARKET_UPGRADE_URL -O joinmarket.tar.gz
+        sudo -u bitcoin tar -xvf joinmarket.tar.gz
+        sudo -u bitcoin rm joinmarket.tar.gz
+        mv joinmarket-clientserver-* joinmarket-clientserver
 
-#         cd joinmarket-clientserver
+        cd joinmarket-clientserver
 
-#         # Apply Patch to fix cryptography dependency
-#         sed -i "s/'txtorcon', 'pyopenssl'/'txtorcon', 'cryptography==3.3.2', 'pyopenssl'/g" jmdaemon/setup.py || true
+        # Apply Patch to fix cryptography dependency
+        #sed -i "s/'txtorcon', 'pyopenssl'/'txtorcon', 'cryptography==3.3.2', 'pyopenssl'/g" jmdaemon/setup.py || true
 
-#         # Install
-#         yes | ./install.sh --without-qt
+        # Install
+        yes | ./install.sh --without-qt
 
-#         echo $JOINMARKET_VERSION > $JOINMARKET_VERSION_FILE
-#     fi
-# fi
+        echo $JOINMARKET_VERSION > $JOINMARKET_VERSION_FILE
+    fi
+fi
 
 echo "Upgrading JoinInBox..."
 if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
@@ -525,8 +597,6 @@ if [ "$CURRENT" != "$RTL_VERSION" ]; then
         cd RTL
         sudo -u bitcoin NG_CLI_ANALYTICS=false npm install --only=production
 
-        mkdir -p /home/bitcoin/.mynode/
-        chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
         echo $RTL_VERSION > $RTL_VERSION_FILE
     else
         echo "ERROR UPGRADING RTL - GPG FAILED"
@@ -549,8 +619,6 @@ if [ "$CURRENT" != "$BTCRPCEXPLORER_VERSION" ]; then
     cd btc-rpc-explorer
     sudo -u bitcoin npm install --only=production
 
-    mkdir -p /home/bitcoin/.mynode/
-    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $BTCRPCEXPLORER_VERSION > $BTCRPCEXPLORER_VERSION_FILE
 fi
 
@@ -575,15 +643,12 @@ if [ "$CURRENT" != "$LNBITS_VERSION" ]; then
     cp /usr/share/mynode/lnbits.env /opt/mynode/lnbits/.env
     chown bitcoin:bitcoin /opt/mynode/lnbits/.env
 
-    # Install with python 3.7 (Only use "pipenv install --python 3.7" once or it will rebuild the venv!)
-    sudo -u bitcoin pipenv --python 3.7 install
-    sudo -u bitcoin pipenv run pip install python-dotenv
-    sudo -u bitcoin pipenv run pip install -r requirements.txt
-    #sudo -u bitcoin pipenv run pip install lnd-grpc # Using REST now (this install takes a LONG time)
-    sudo -u bitcoin pipenv run flask migrate || true
+    # Install lnbits
+    sudo -u bitcoin python3 -m venv lnbits_venv
+    sudo -u bitcoin ./lnbits_venv/bin/pip install -r requirements.txt
+    sudo -u bitcoin ./lnbits_venv/bin/quart assets
+    sudo -u bitcoin ./lnbits_venv/bin/quart migrate
 
-    mkdir -p /home/bitcoin/.mynode/
-    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $LNBITS_VERSION > $LNBITS_VERSION_FILE
 fi
 
@@ -660,8 +725,6 @@ if [ "$CURRENT" != "$LNDCONNECT_VERSION" ]; then
     mv lndconnect-* lndconnect
     install -m 0755 -o root -g root -t /usr/local/bin lndconnect/*
 
-    mkdir -p /home/bitcoin/.mynode/
-    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
     echo $LNDCONNECT_VERSION > $LNDCONNECT_VERSION_FILE
 fi
 
@@ -732,12 +795,12 @@ fi
 
 
 # Upgrade Tor
-rm -f /usr/local/bin/tor || true
-TOR_VERSION=$(tor --version)
-if [[ "$TOR_VERSION" != *"Tor version 0.4"* ]]; then
-    $TORIFY apt-get remove -y tor
-    $TORIFY apt-get install -y tor
-fi
+#rm -f /usr/local/bin/tor || true
+#TOR_VERSION=$(tor --version)
+#if [[ "$TOR_VERSION" != *"Tor version 0.4"* ]]; then
+#    $TORIFY apt-get remove -y tor
+#    $TORIFY apt-get install -y tor
+#fi
 
 
 # Enable fan control

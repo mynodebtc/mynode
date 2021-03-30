@@ -3,8 +3,6 @@
         <title>{{ title }}</title>
         {% include 'includes/head.html' %}
 
-        <script src="{{ url_for('static', filename='js/qrcode.js')}}"></script>
-
         <script>
             $(document).ready(function() {
                 hidden=1
@@ -44,6 +42,10 @@
                     height: 400,
                     correctLevel : QRCode.CorrectLevel.H
                 });
+
+                {% for service in v3_services %}
+                $("#{{ service.id }}").tooltip({ content: "<img style='width: 300px; height: 300px;' src='/api/get_qr_code_image?url={{ service.link }}'/>" });
+                {% endfor %}
             });
         </script>
         <style>
@@ -89,6 +91,7 @@
             <br/><br/>
             <button id="show_onion_urls" class="ui-button ui-widget ui-corner-all">Show Onion URLs</button>
         </div>
+        <br/>
 
         <div class="sub_header">v3 Addresses</div>
         <table class="bitcoind_table">
@@ -96,6 +99,8 @@
                 <td>Service</td>
                 <td>Address</td>
                 <td>Port</td>
+                <td>Link</td>
+                <td></td>
                 <td>Guide</td>
             </thead>
             <tbody>
@@ -108,6 +113,16 @@
                         </td>
                         <td>{{ service.port }}</td>
                         <td>
+                            {% if service.show_link %}
+                                <a href="{{ service.link }}" target="_blank">Link</a>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if service.show_link %}
+                                <img id="{{ service.id }}" style="width: 18px;" title="" src="{{ url_for('static', filename="images/qr_code.png") }}"/>
+                            {% endif %}
+                        </td>
+                        <td>
                             {% if service.guide|length %}
                                 <a href="{{ service.guide }}" target="_blank">Guide</a>
                             {% endif %}
@@ -116,6 +131,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        <br/>
 
         <div class="sub_header">v2 Addresses</div>
         <table class="bitcoind_table">
@@ -166,9 +182,11 @@
 
         <div id="fully-noded-qr-dialog" title="Fully Noded QR Code" style="display:none; width: 600px;">
             <p>Scan this QR code in Fully Noded to pair your myNode.</p>
-            <div id="fully_noded_qr_code" style="height:400px; width: 400px; margin: auto;"></div>
-            <br/><br/>
             <center>
+            <img style="height:400px; width: 400px; margin: auto;" src="/api/get_qr_code_image?url={{ fully_noded_link|urlencode }}"/>
+
+            <br/><br/>
+            
             <span style="font-size: 8px;">{{fully_noded_link}}</span>
             <br/><br/>
             <a class="ui-button ui-widget ui-corner-all mynode_button" style="margin:auto;" href="{{ fully_noded_link }}" target="_blank">Link</a>

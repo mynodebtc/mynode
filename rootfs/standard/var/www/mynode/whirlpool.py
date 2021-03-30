@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect
 from user_management import check_logged_in
 from enable_disable_functions import is_whirlpool_enabled, enable_whirlpool, disable_whirlpool
-from device_info import read_ui_settings
+from device_info import read_ui_settings, is_testnet_enabled, get_local_ip
 from systemctl_info import *
 import subprocess
 import os
@@ -14,6 +14,12 @@ def get_whirlpool_status():
     whirlpool_status = "Disabled"
     whirlpool_status_color = "gray"
     whirlpool_initialized = os.path.isfile("/mnt/hdd/mynode/whirlpool/whirlpool-cli-config.properties")
+
+    if is_testnet_enabled():
+        whirlpool_status = "Requires Mainnet"
+        whirlpool_status_color = "gray"
+        return whirlpool_status, whirlpool_status_color, whirlpool_initialized
+
     if is_whirlpool_enabled():
         status_code = get_service_status_code("whirlpool")
         if status_code != 0:
@@ -45,6 +51,7 @@ def whirlpool_page():
     templateData = {
         "title": "myNode Whirlpool",
         "ui_settings": read_ui_settings(),
+        "local_ip": get_local_ip(),
         "whirlpool_status": whirlpool_status,
         "whirlpool_status_color": whirlpool_status_color,
         "whirlpool_enabled": is_whirlpool_enabled(),

@@ -1,0 +1,201 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        {% include 'includes/head.html' %}
+
+
+        <script>
+            $(document).ready(function() {
+
+                $("#show_rpc_password").on("click", function() {
+                    $("#show_rpc_password").hide(0);
+                    $("#rpc_password").show();
+                });
+
+            });
+        </script>
+     </head>
+
+    <body>
+        {% include 'includes/logo_header.html' %}
+        <div class="mynode_back_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        </div>
+
+        {% include 'includes/message_display.html' %}
+
+        <div class="main_header">Bitcoin Status</div>
+        <br/>
+
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Status</div>
+                <div class="info_tile_contents">
+                    <table class="info_table">
+                        <tr>
+                            <th>Blocks</th>
+                            <td>{{block_num}}</td>
+                        </tr>
+                        <tr>
+                            <th>Headers</th>
+                            <td>{{header_num}}</td>
+                        </tr>
+                        <tr>
+                            <th>Difficulty</th>
+                            <td>{{difficulty}}</td>
+                        </tr>
+                        {% if is_testnet_enabled %}
+                        <tr>
+                            <th>Network</th>
+                            <td>Testnet</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <th>Version</th>
+                            <td>{{version}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="info_tile">
+                <div class="info_tile_header">Info</div>
+                <div class="info_tile_contents">
+                    <table class="info_table">
+                        <tr>
+                            <th>Mempool TX</th>
+                            <td>{{mempool_tx}}</td>
+                        </tr>
+                        <tr>
+                            <th>Mempool Size</th>
+                            <td>{{mempool_size}}</td>
+                        </tr>
+                        <tr>
+                            <th>Disk Usage</th>
+                            <td>{{disk_size}} GB</td>
+                        </tr>
+                        <tr>
+                            <th>RPC Username</th>
+                            <td>mynode</td>
+                        </tr>
+                        <tr>
+                            <th>RPC Password</th>
+                            <td>
+                                <p id="rpc_password" style="display: none; margin: 0;">{{rpc_password}}</p>
+                                <a id="show_rpc_password" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;">show</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="info_tile">
+                <div class="info_tile_header">Bitcoin</div>
+                <div class="info_tile_contents">
+                    <table class="info_table">
+                        <tr>
+                            <th>Config</th>
+                            <td><a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/bitcoin/config">view / edit</a></td>
+                        </tr>
+                        <tr>
+                            <th>CLI</th>
+                            <td><a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/bitcoin/cli">CLI</a></td>
+                        </tr>
+                        <tr>
+                            <th>Whitepaper</th>
+                            <td><a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/bitcoin/bitcoin_whitepaper.pdf">download</a></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Local Bitcoin Address / Port</div>
+                <div class="info_tile_contents">{{local_address}}</div>
+            </div>
+        </div>
+
+        {% if wallets is not none %}
+        <br/>
+        <div class="main_header">Wallets</div>
+        <table class="bitcoind_table">
+            <thead class="bitcoind_table_header">
+                <td>Wallet</td>
+                <td>Balance</td>
+                <td>Actions</td>
+            </thead>
+            <tbody>
+                {% for wallet in wallets %}
+                    <tr>
+                        <td>{{ wallet.walletname }}</td>
+                        <td>
+                            {{ "%.8f"|format(wallet.balance) }}
+                            {% if wallet.unconfirmed_balance > 0 %}
+                                <br/>
+                                <span style="font-size: 12px;">{{ "%.8f"|format(wallet.unconfirmed_balance) }} pending</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/bitcoin/download_wallet?wallet={{wallet.walletname|urlencode}}">download</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p style="font-size: 12px; color: gray; text-align: center;">
+            *These wallets are not your main lightning wallet. These have been created manually or via other applications.<br/>
+            **Wallet files may contain private keys and sensitive data. Be very cautious when downloading copies.
+        </p>
+        {% endif %}
+
+        <br/>
+        <div class="main_header">Recent Blocks</div>
+        <table class="bitcoind_table">
+            <thead class="bitcoind_table_header">
+                <td>Height</td>
+                <td>Age</td>
+                <td>Transactions</td>
+                <td>Size (kB)</td>
+            </thead>
+            <tbody>
+                {% for block in blocks %}
+                    <tr>
+                        <td>{{ block.height }}</td>
+                        <td>{{ block.age }}</td>
+                        <td>{{ block.nTx }}</td>
+                        <td>{{ block.size }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <br/>
+        <div class="main_header">Peers</div>
+        <table class="bitcoind_table">
+            <thead class="bitcoind_table_header">
+                <td>ID</td>
+                <td>IP</td>
+                <td>Version</td>
+                <td>TX (MB)</td>
+                <td>RX (MB)</td>
+                <td>Ping (ms)</td>
+            </thead>
+            <tbody>
+                {% for peer in peers %}
+                    <tr>
+                        <td>{{ peer.id }}</td>
+                        <td>{{ peer.addr }}</td>
+                        <td>{{ peer.subver }}</td>
+                        <td>{{ peer.tx }}</td>
+                        <td>{{ peer.rx }}</td>
+                        <td>{{ peer.pingtime }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% include 'includes/footer.html' %}
+     </body>
+</html>

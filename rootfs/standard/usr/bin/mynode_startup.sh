@@ -30,11 +30,16 @@ chmod +t /tmp
 # fi
 
 # Add some DNS servers to make domain lookup more likely
-echo '' >> /etc/resolv.conf
-echo '# Added at myNode startup' >> /etc/resolv.conf
-echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
-echo 'nameserver 8.8.4.4' >> /etc/resolv.conf
-echo 'nameserver 1.1.1.1' >> /etc/resolv.conf
+needDns=0
+grep "Added at myNode startup" /etc/resolv.conf || needDns=1
+if [ $needDns = 1 ]; then
+    echo '' >> /etc/resolv.conf
+    echo '# Added at myNode startup' >> /etc/resolv.conf
+    echo 'nameserver 1.1.1.1' >> /etc/resolv.conf
+    echo 'nameserver 208.67.222.222' >> /etc/resolv.conf
+    echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
+    echo 'nameserver 8.8.4.4' >> /etc/resolv.conf
+fi
 
 # Disable autosuspend for USB drives
 if [ -d /sys/bus/usb/devices/ ]; then 
@@ -60,6 +65,16 @@ if [ ! -f /var/lib/mynode/.expanded_rootfs ]; then
     fi
 fi
 
+
+# Setup SD Card (if necessary)
+mkdir -p /run/tor
+mkdir -p /var/run/tor
+mkdir -p /home/bitcoin/.mynode/
+mkdir -p /home/admin/.bitcoin/
+chown admin:admin /home/admin/.bitcoin/
+rm -rf /etc/motd # Remove simple motd for update-motd.d
+
+
 # Customize logo for resellers
 if [ -f /opt/mynode/custom/logo_custom.png ]; then
     cp -f /opt/mynode/custom/logo_custom.png /var/www/mynode/static/images/logo_custom.png 
@@ -70,11 +85,22 @@ fi
 
 
 # Verify we are in a clean state
-if [ $IS_RASPI -eq 1 ] || [ $IS_ROCK64 -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
-    dphys-swapfile swapoff || true
-    dphys-swapfile uninstall || true
+if [ $IS_X86 = 1 ]; then
+    swapoff -a || true
 fi
+dphys-swapfile swapoff || true
+dphys-swapfile uninstall || true
 umount /mnt/hdd || true
+
+
+# Generate myNode serial number
+while [ ! -f /home/bitcoin/.mynode/mynode_serial ] || [ ! -s /home/bitcoin/.mynode/mynode_serial ]
+do
+    # Generate random serial for backup devices that don't have serial numbers
+    sleep 10s
+    < /dev/urandom tr -dc a-f0-9 | head -c${1:-16} > /home/bitcoin/.mynode/mynode_serial
+    chmod 644 /home/bitcoin/.mynode/mynode_serial
+done
 
 
 # Clone tool was opened
@@ -161,17 +187,13 @@ mkdir -p /mnt/hdd/mynode/specter
 mkdir -p /mnt/hdd/mynode/ckbunker
 mkdir -p /mnt/hdd/mynode/sphinxrelay
 mkdir -p /mnt/hdd/mynode/joinmarket
+mkdir -p /mnt/hdd/mynode/mempool
+mkdir -p /mnt/hdd/mynode/tor_backup
 mkdir -p /tmp/flask_uploads
 echo "drive_mounted" > $MYNODE_STATUS_FILE
 chmod 777 $MYNODE_STATUS_FILE
 rm -rf $MYNODE_DIR/.mynode_bitcoind_synced
 
-
-# Setup SD Card (if necessary)
-mkdir -p /run/tor
-mkdir -p /var/run/tor
-mkdir -p /home/bitcoin/.mynode/
-rm -rf /etc/motd # Remove simple motd for update-motd.d
 
 # Sync product key (SD preferred)
 cp -f /home/bitcoin/.mynode/.product_key* /mnt/hdd/mynode/settings/ || true
@@ -217,6 +239,7 @@ if [ ! -f /root/.ssh/id_rsa_btcpay ]; then
     echo "# Key used by BTCPay Server" >> /root/.ssh/authorized_keys
     cat /root/.ssh/id_rsa_btcpay.pub >> /root/.ssh/authorized_keys
 fi
+
 
 # Randomize RPC password
 while [ ! -f /mnt/hdd/mynode/settings/.btcrpcpw ] || [ ! -s /mnt/hdd/mynode/settings/.btcrpcpw ]
@@ -267,14 +290,18 @@ source /usr/bin/mynode_gen_bitcoin_config.sh
 # LND Config
 source /usr/bin/mynode_gen_lnd_config.sh
 
+# Loop Config
+source /usr/bin/mynode_gen_loop_config.sh
+
+# Pool Config
+source /usr/bin/mynode_gen_pool_config.sh
+
 # Lightning Terminal Config
 source /usr/bin/mynode_gen_lit_config.sh
 
-
 # Setup symlinks for bitcoin user so they have access to commands
-#   lnd MUST NOT be a symlink for admin user (see manage_lnd_admin_files.sh)
-users="bitcoin admin"
-services="bitcoin lit loop pool faraday"
+users="bitcoin"
+services="bitcoin lnd lit loop pool faraday"
 for u in $users; do
     for s in $services; do
         if [ ! -L /home/$u/.$s ]; then
@@ -286,12 +313,31 @@ for u in $users; do
     done
 done
 
+# Setup symlinks for admin (need to be careful here - lnd,bitcoin can't be symlinked)
+if [ ! -L /home/admin/.pool ]; then     # Pool Config (symlink so admin user can run pool commands)
+    mv /home/admin/.pool /home/admin/.pool_backup || true
+    ln -s /mnt/hdd/mynode/pool /home/admin/.pool
+fi
+if [ ! -L /home/admin/.loop ]; then     # Loop Config (symlink so admin user can run loop commands)
+    mv /home/admin/.loop /home/admin/.loop_backup || true
+    ln -s /mnt/hdd/mynode/loop /home/admin/.loop
+fi
+
 
 # Dojo - move to HDD
 if [ -d /opt/mynode/dojo ] && [ ! -d /mnt/hdd/mynode/dojo ] ; then
     mv /opt/mynode/dojo /mnt/hdd/mynode/dojo
 fi
 
+
+# Setup electrs
+cp -f /usr/share/mynode/electrs.toml /mnt/hdd/mynode/electrs/electrs.toml
+# Update for testnet
+if [ -f /mnt/hdd/mynode/settings/.testnet_enabled ]; then
+    sed -i "s/bitcoin/testnet/g" /mnt/hdd/mynode/electrs/electrs.toml || true
+else
+    sed -i "s/testnet/bitcoin/g" /mnt/hdd/mynode/electrs/electrs.toml || true
+fi
 
 # RTL config
 sudo -u bitcoin mkdir -p /opt/mynode/RTL
@@ -317,6 +363,12 @@ fi
 if [ -f /home/bitcoin/.mynode/.hashedpw ]; then
     HASH=$(cat /home/bitcoin/.mynode/.hashedpw)
     sed -i "s/\"multiPassHashed\":.*/\"multiPassHashed\": \"$HASH\",/g" /mnt/hdd/mynode/rtl/RTL-Config.json
+fi
+# Update for testnet
+if [ -f /mnt/hdd/mynode/settings/.testnet_enabled ]; then
+    sed -i "s/mainnet/testnet/g" /mnt/hdd/mynode/rtl/RTL-Config.json || true
+else
+    sed -i "s/testnet/mainnet/g" /mnt/hdd/mynode/rtl/RTL-Config.json || true
 fi
 
 # BTC RPC Explorer Config
@@ -360,12 +412,23 @@ fi
 if [ ! -f /mnt/hdd/mynode/thunderhub/thub_config.yaml ]; then
     cp -f /usr/share/mynode/thub_config.yaml /mnt/hdd/mynode/thunderhub/thub_config.yaml
 fi
+THUNDERHUB_CONFIG_UPDATE_NUM=1
+if [ ! -f /mnt/hdd/mynode/thunderhub/update_settings_$THUNDERHUB_CONFIG_UPDATE_NUM ]; then
+    cp -f /usr/share/mynode/thunderhub.env /mnt/hdd/mynode/thunderhub/.env.local
+    cp -f /usr/share/mynode/thub_config.yaml /mnt/hdd/mynode/thunderhub/thub_config.yaml
+fi
 if [ -f /mnt/hdd/mynode/thunderhub/thub_config.yaml ]; then
     if [ -f /home/bitcoin/.mynode/.hashedpw_bcrypt ]; then
         HASH_BCRYPT=$(cat /home/bitcoin/.mynode/.hashedpw_bcrypt)
         sed -i "s#masterPassword:.*#masterPassword: \"thunderhub-$HASH_BCRYPT\"#g" /mnt/hdd/mynode/thunderhub/thub_config.yaml
     fi
+    if [ -f /mnt/hdd/mynode/settings/.testnet_enabled ]; then
+        sed -i "s/mainnet/testnet/g" /mnt/hdd/mynode/thunderhub/thub_config.yaml || true
+    else
+        sed -i "s/testnet/mainnet/g" /mnt/hdd/mynode/thunderhub/thub_config.yaml || true
+    fi
 fi
+
 chown -R bitcoin:bitcoin /mnt/hdd/mynode/thunderhub
 
 # Setup CKBunker
@@ -415,6 +478,23 @@ if [ ! -f /mnt/hdd/mynode/joinmarket/joinmarket.cfg ]; then
 fi
 chown -R joinmarket:joinmarket /mnt/hdd/mynode/joinmarket
 
+# Setup Mempool
+cp -f /usr/share/mynode/mempool-docker-compose.yml /mnt/hdd/mynode/mempool/docker-compose.yml
+if [ ! -f /mnt/hdd/mynode/mempool/.env ]; then
+    cp -f /usr/share/mynode/mempool.env /mnt/hdd/mynode/mempool/.env
+fi
+if [ $IS_RASPI -eq 1 ]; then
+    sed -i "s|MARIA_DB_IMAGE=.*|MARIA_DB_IMAGE=hypriot/rpi-mysql:latest|g" /mnt/hdd/mynode/mempool/.env
+fi
+
+# Backup Tor files
+for f in /var/lib/tor/mynode*; do
+    rsync --ignore-existing -r -avh $f /mnt/hdd/mynode/tor_backup/ || true
+done
+cp -a -f /mnt/hdd/mynode/tor_backup/. /var/lib/tor/ || true
+chown debian-tor:debian-tor /var/lib/tor
+systemctl restart tor || true
+
 # Setup udev
 chown root:root /etc/udev/rules.d/* || true
 udevadm trigger
@@ -438,11 +518,21 @@ fi
 if [ -f /mnt/hdd/mynode/lit/lit.conf ]; then
     sed -i "s/faraday.bitcoin.password=.*/faraday.bitcoin.password=$BTCRPCPW/g" /mnt/hdd/mynode/lit/lit.conf
 fi
+if [ -f /mnt/hdd/mynode/mempool/.env ]; then
+    sed -i "s/BITCOIN_RPC_PASS=.*/BITCOIN_RPC_PASS=$BTCRPCPW/g" /mnt/hdd/mynode/mempool/.env
+fi
 echo "BTC_RPC_PASSWORD=$BTCRPCPW" > /mnt/hdd/mynode/settings/.btcrpc_environment
 chown bitcoin:bitcoin /mnt/hdd/mynode/settings/.btcrpc_environment
 if [ -f /mnt/hdd/mynode/bitcoin/bitcoin.conf ]; then
     sed -i "s/rpcauth=.*/$RPCAUTH/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
 fi
+
+
+# Append bitcoin UID and GID to btcrpc_environment
+BITCOIN_UID=$(id -u bitcoin)
+BITCOIN_GID=$(id -g bitcoin)
+echo "BITCOIN_UID=$BITCOIN_UID" >> /mnt/hdd/mynode/settings/.btcrpc_environment
+echo "BITCOIN_GID=$BITCOIN_GID" >> /mnt/hdd/mynode/settings/.btcrpc_environment
 
 
 # Reset BTCARGS
@@ -522,6 +612,10 @@ USER=$(stat -c '%U' /mnt/hdd/mynode/joinmarket)
 if [ "$USER" != "joinmarket" ]; then
     chown -R joinmarket:joinmarket /mnt/hdd/mynode/joinmarket
 fi
+USER=$(stat -c '%U' /mnt/hdd/mynode/tor_backup)
+if [ "$USER" != "debian-tor" ]; then
+    chown -R debian-tor:debian-tor /mnt/hdd/mynode/tor_backup
+fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/redis)
 if [ "$USER" != "redis" ]; then
     chown -R redis:redis /mnt/hdd/mynode/redis
@@ -551,12 +645,11 @@ else
     SWAP_MB=$(($SWAP * 1024))
     sed -i "s|CONF_SWAPSIZE=.*|CONF_SWAPSIZE=$SWAP_MB|" /etc/dphys-swapfile
 fi
-if [ $IS_RASPI -eq 1 ] || [ $IS_ROCK64 -eq 1 ] || [ $IS_ROCKPRO64 -eq 1 ]; then
-    SWAP=$(cat /mnt/hdd/mynode/settings/swap_size)
-    if [ "$SWAP" -ne "0" ]; then
-        dphys-swapfile install
-        dphys-swapfile swapon
-    fi
+
+SWAP=$(cat /mnt/hdd/mynode/settings/swap_size)
+if [ "$SWAP" -ne "0" ]; then
+    dphys-swapfile install || true
+    dphys-swapfile swapon || true
 fi
 
 

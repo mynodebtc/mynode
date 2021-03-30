@@ -31,21 +31,26 @@ while true; do
     LND_TOR_ADDR=$(cat /var/lib/tor/mynode_lnd/hostname)
     LOCAL_IP_ADDR=$(hostname -I | head -n 1 | cut -d' ' -f1)
 
+    net="--bitcoin.mainnet"
+    if [ -f /mnt/hdd/mynode/settings/.testnet_enabled ]; then
+        net="--bitcoin.testnet"
+    fi
+
     # Generate QR Codes
-    lndconnect --lnddir=/mnt/hdd/mynode/lnd -o --bitcoin.mainnet --host=$LOCAL_IP_ADDR
+    lndconnect --lnddir=/mnt/hdd/mynode/lnd -o $net --host=$LOCAL_IP_ADDR
     cp -f lndconnect-qr.png lndconnect_local_grpc.png
-    lndconnect --lnddir=/mnt/hdd/mynode/lnd -o --bitcoin.mainnet --host=$LOCAL_IP_ADDR -p 10080
+    lndconnect --lnddir=/mnt/hdd/mynode/lnd -o $net --host=$LOCAL_IP_ADDR -p 10080
     cp -f lndconnect-qr.png lndconnect_local_rest.png
-    lndconnect --lnddir=/mnt/hdd/mynode/lnd -o --bitcoin.mainnet --host=$LND_TOR_ADDR
+    lndconnect --lnddir=/mnt/hdd/mynode/lnd -o $net --host=$LND_TOR_ADDR
     cp -f lndconnect-qr.png lndconnect_tor_grpc.png
-    lndconnect --lnddir=/mnt/hdd/mynode/lnd -o --bitcoin.mainnet --host=$LND_TOR_ADDR -p 10080
+    lndconnect --lnddir=/mnt/hdd/mynode/lnd -o $net --host=$LND_TOR_ADDR -p 10080
     cp -f lndconnect-qr.png lndconnect_tor_rest.png
 
     # Generate Text Files
-    lndconnect --lnddir=/mnt/hdd/mynode/lnd -j --bitcoin.mainnet --host=$LOCAL_IP_ADDR > lndconnect_local_grpc.txt
-    lndconnect --lnddir=/mnt/hdd/mynode/lnd -j --bitcoin.mainnet --host=$LOCAL_IP_ADDR -p 10080 > lndconnect_local_rest.txt
-    lndconnect --lnddir=/mnt/hdd/mynode/lnd -j --bitcoin.mainnet --host=$LND_TOR_ADDR > lndconnect_tor_grpc.txt
-    lndconnect --lnddir=/mnt/hdd/mynode/lnd -j --bitcoin.mainnet --host=$LND_TOR_ADDR -p 10080 > lndconnect_tor_rest.txt
+    lndconnect --lnddir=/mnt/hdd/mynode/lnd -j $net --host=$LOCAL_IP_ADDR > lndconnect_local_grpc.txt
+    lndconnect --lnddir=/mnt/hdd/mynode/lnd -j $net --host=$LOCAL_IP_ADDR -p 10080 > lndconnect_local_rest.txt
+    lndconnect --lnddir=/mnt/hdd/mynode/lnd -j $net --host=$LND_TOR_ADDR > lndconnect_tor_grpc.txt
+    lndconnect --lnddir=/mnt/hdd/mynode/lnd -j $net --host=$LND_TOR_ADDR -p 10080 > lndconnect_tor_rest.txt
 
     echo "Done! Waiting until LND changes, then regen lndconnect codes! (or 24 hours)"
     inotifywait -t 86400 -e modify -e create -e delete $LND_TLS_CERT_FILE $LND_ADMIN_MACAROON_FILE

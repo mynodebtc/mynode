@@ -10,6 +10,29 @@ import subprocess
 
 mynode_tor = Blueprint('mynode_tor',__name__)
 
+def create_v3_service(name, url, port, show_link, guide, force_https=False):
+    service = {}
+    service["service"] = name
+    service["id"] = name.replace(" ","").replace("(","").replace(")","").lower()
+    service["url"] = url
+    service["port"] = port
+    service["show_link"] = show_link
+    service["link"] = ""
+    if show_link:
+        try:
+            if "/" in port:
+                p = port.split("/")[1].strip()
+                service["link"] = "https://"+url+":"+p
+            else:
+                if force_https:
+                    service["link"] = "https://"+url+":"+port
+                else:
+                    service["link"] = "http://"+url+":"+port
+        except:
+            service["link"] = "URL_ERROR"
+    service["guide"] = guide
+    return service
+
 ### Page functions
 @mynode_tor.route("/tor")
 def page_tor():
@@ -26,32 +49,34 @@ def page_tor():
     lnd_onion_url = get_onion_url_lnd()
     electrs_onion_url = get_onion_url_electrs()
     btcpay_onion_url = get_onion_url_btcpay()
+    sphinxrelay_onion_url = get_onion_url_sphinxrelay()
 
     btc_info_v2 = get_onion_info_btc_v2()
 
 
     # Services
     v3_services = []
-    v3_services.append({"service": "myNode Web", "url": general_onion_url, "port": "80","guide":""})
-    v3_services.append({"service": "WebSSH", "url": general_onion_url,"port": "2222 / 2223","guide":""})
-    v3_services.append({"service": "LND Hub", "url": general_onion_url,"port": "3000 / 3001","guide":""})
-    v3_services.append({"service": "BTC RPC Explorer", "url": general_onion_url,"port": "3002 / 3003","guide":""})
-    v3_services.append({"service": "Ride the Lightning", "url": general_onion_url,"port": "3010 / 3011","guide":""})
-    v3_services.append({"service": "Caravan", "url": general_onion_url,"port": "3020","guide":""})
-    v3_services.append({"service": "Thunderhub", "url": general_onion_url,"port": "3030 / 3031","guide":""})
-    v3_services.append({"service": "Mempool", "url": general_onion_url,"port": "4080 / 4081","guide":""})
-    v3_services.append({"service": "LNbits", "url": general_onion_url,"port": "5000 / 5001","guide":""})
-    v3_services.append({"service": "Whirlpool", "url": general_onion_url,"port": "8899","guide":""})
-    v3_services.append({"service": "Netdata", "url": general_onion_url,"port": "19999 / 20000","guide":""})
-    v3_services.append({"service": "Specter Desktop", "url": general_onion_url,"port": "25441","guide":""})
-    v3_services.append({"service": "Glances", "url": general_onion_url,"port": "61208 / 61209","guide":""})
-    v3_services.append({"service": "BTCPay Server", "url": btcpay_onion_url,"port": "49392 / 49393","guide":""})
-    v3_services.append({"service": "Bitcoin API (REST)", "url": btc_onion_url,"port": "8332","guide":""})
-    v3_services.append({"service": "LND API (gRPC)", "url": lnd_onion_url,"port": "10009","guide":""})
-    v3_services.append({"service": "LND API (REST)", "url": lnd_onion_url,"port": "10080","guide":""})
-    v3_services.append({"service": "SSH", "url": ssh_onion_url, "port": "22022","guide":""})
-    v3_services.append({"service": "Electrum Server", "url": electrs_onion_url,"port": "50001","guide":"https://mynodebtc.com/guide/electrum_server_tor"})
-    v3_services.append({"service": "Electrum Server", "url": electrs_onion_url,"port": "50002","guide":"https://mynodebtc.com/guide/electrum_server_tor"})
+    v3_services.append(create_v3_service("myNode Web", general_onion_url, "80", True, ""))
+    v3_services.append(create_v3_service("WebSSH", general_onion_url, "2222 / 2223", True, ""))
+    v3_services.append(create_v3_service("LND Hub", general_onion_url, "3000 / 3001", True, ""))
+    v3_services.append(create_v3_service("BTC RPC Explorer", general_onion_url, "3002 / 3003", False, ""))
+    v3_services.append(create_v3_service("Ride the Lightning", general_onion_url, "3010 / 3011", True, ""))
+    v3_services.append(create_v3_service("Caravan", general_onion_url, "3020", True, ""))
+    v3_services.append(create_v3_service("Thunderhub", general_onion_url, "3030 / 3031", True, ""))
+    v3_services.append(create_v3_service("Mempool", general_onion_url, "4080 / 4081", True, ""))
+    v3_services.append(create_v3_service("LNbits", general_onion_url, "5000 / 5001", True, ""))
+    v3_services.append(create_v3_service("Whirlpool", general_onion_url, "8899", False, ""))
+    v3_services.append(create_v3_service("Netdata", general_onion_url, "19999 / 20000", True, ""))
+    v3_services.append(create_v3_service("Specter Desktop", general_onion_url, "25441", True, "", force_https=True))
+    v3_services.append(create_v3_service("Glances", general_onion_url, "61208 / 61209", True, ""))
+    v3_services.append(create_v3_service("BTCPay Server", btcpay_onion_url, "49392 / 49393", True, ""))
+    v3_services.append(create_v3_service("Bitcoin API (REST)", btc_onion_url, "8332", False, ""))
+    v3_services.append(create_v3_service("LND API (gRPC)", lnd_onion_url, "10009", False, ""))
+    v3_services.append(create_v3_service("LND API (REST)", lnd_onion_url, "10080", False, ""))
+    v3_services.append(create_v3_service("SSH", ssh_onion_url, "22022", False, ""))
+    v3_services.append(create_v3_service("Electrum Server", electrs_onion_url, "50001", False, "https://mynodebtc.com/guide/electrum_server_tor"))
+    v3_services.append(create_v3_service("Electrum Server", electrs_onion_url, "50002", False, "https://mynodebtc.com/guide/electrum_server_tor"))
+    v3_services.append(create_v3_service("Sphinx Relay", sphinxrelay_onion_url, "53001", True, ""))
     
     v2_services = []
     v2_services.append({"service": "Bitcoin API (REST)", "url": btc_info_v2["url"], "password": btc_info_v2["pass"], "port": "8332","guide":""})

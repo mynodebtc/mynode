@@ -51,8 +51,8 @@ QUICKSYNC_TORRENT_URL="https://mynodebtc.com/device/blockchain.tar.gz.torrent"
 QUICKSYNC_TORRENT_BETA_URL="https://mynodebtc.com/device/blockchain_beta.tar.gz.torrent"
 QUICKSYNC_UPLOAD_RATE_FILE="/mnt/hdd/mynode/settings/quicksync_upload_rate"
 QUICKSYNC_BACKGROUND_DOWNLOAD_RATE_FILE="/mnt/hdd/mynode/settings/quicksync_background_download_rate"
-LATEST_VERSION_URL="http://www.mynodebtc.com/device_api/get_latest_version.php?type=${DEVICE_TYPE}"
-LATEST_BETA_VERSION_URL="http://www.mynodebtc.com/device_api/get_latest_version.php?type=${DEVICE_TYPE}&beta=1"
+LATEST_VERSION_URL="https://www.mynodebtc.com/device_api/get_latest_version.php?type=${DEVICE_TYPE}"
+LATEST_BETA_VERSION_URL="https://www.mynodebtc.com/device_api/get_latest_version.php?type=${DEVICE_TYPE}&beta=1"
 UPLOADER_FILE="/mnt/hdd/mynode/settings/uploader"
 UPGRADE_ERROR_FILE="/mnt/hdd/mynode/settings/upgrade_error"
 LND_BACKUP_FOLDER="/home/bitcoin/lnd_backup/"
@@ -62,6 +62,14 @@ LND_CHANNEL_FILE="/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/channel.backup"
 LND_CHANNEL_FILE_BACKUP="/home/bitcoin/lnd_backup/channel.backup"
 LND_ADMIN_MACAROON_FILE="/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon"
 PRODUCT_KEY_FILE="/home/bitcoin/.mynode/.product_key"
+IS_TESTNET_ENABLED_FILE="/mnt/hdd/mynode/settings/.testnet_enabled"
+
+if [ -f $IS_TESTNET_ENABLED_FILE ]; then
+    LND_WALLET_FILE="/mnt/hdd/mynode/lnd/data/chain/bitcoin/testnet/wallet.db"
+    LND_CHANNEL_FILE="/mnt/hdd/mynode/lnd/data/chain/bitcoin/testnet/channel.backup"
+    LND_CHANNEL_FILE_BACKUP="/home/bitcoin/lnd_backup/channel_testnet.backup"
+    LND_ADMIN_MACAROON_FILE="/mnt/hdd/mynode/lnd/data/chain/bitcoin/testnet/admin.macaroon"
+fi
 
 ELECTRS_ENABLED_FILE="/mnt/hdd/mynode/.mynode_electrs_enabled"
 LNDHUB_ENABLED_FILE="/mnt/hdd/mynode/.mynode_lndhub_enabled"
@@ -84,10 +92,10 @@ if [ -f $PRODUCT_KEY_FILE ]; then
     fi
 fi
 
-UPGRADE_DOWNLOAD_URL="http://www.mynodebtc.com/device_api/download_latest_standard.php?type=${DEVICE_TYPE}&product_key=${PRODUCT_KEY}"
-UPGRADE_DOWNLOAD_SIGNATURE_URL="http://www.mynodebtc.com/device_api/download_latest_standard.php?type=${DEVICE_TYPE}&product_key=${PRODUCT_KEY}&hash=1"
-UPGRADE_BETA_DOWNLOAD_URL="http://www.mynodebtc.com/device_api/download_latest_standard.php?type=${DEVICE_TYPE}&product_key=${PRODUCT_KEY}&beta=1"
-UPGRADE_BETA_DOWNLOAD_SIGNATURE_URL="http://www.mynodebtc.com/device_api/download_latest_standard.php?type=${DEVICE_TYPE}&product_key=${PRODUCT_KEY}&beta=1&hash=1"
+UPGRADE_DOWNLOAD_URL="https://www.mynodebtc.com/device_api/download_latest_standard.php?type=${DEVICE_TYPE}&product_key=${PRODUCT_KEY}"
+UPGRADE_DOWNLOAD_SIGNATURE_URL="https://www.mynodebtc.com/device_api/download_latest_standard.php?type=${DEVICE_TYPE}&product_key=${PRODUCT_KEY}&hash=1"
+UPGRADE_BETA_DOWNLOAD_URL="https://www.mynodebtc.com/device_api/download_latest_standard.php?type=${DEVICE_TYPE}&product_key=${PRODUCT_KEY}&beta=1"
+UPGRADE_BETA_DOWNLOAD_SIGNATURE_URL="https://www.mynodebtc.com/device_api/download_latest_standard.php?type=${DEVICE_TYPE}&product_key=${PRODUCT_KEY}&beta=1&hash=1"
 UPGRADE_PUBKEY_URL="https://raw.githubusercontent.com/mynodebtc/pubkey/master/mynode_release.pub"
 
 # Update settings for other devices

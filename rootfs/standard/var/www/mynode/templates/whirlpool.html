@@ -10,46 +10,54 @@
         </div>
 
         <div class="main_header">Samourai Whirlpool</div>
-        <div class="app_tile_row">
-            <div class="info_tile">
-              <div class="info_tile_header">Toggle</div>
-              <div class="info_tile_contents">
-                <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;" href="/toggle-whirlpool">
-                  {% if whirlpool_enabled %}Disable{% else %}Enable{% endif %}
-                </a>
-              </div>
-            </div>
+        <br/>
+
+         <div class="app_tile_row">
             <div class="info_tile">
                 <div class="info_tile_header">Status</div>
-                <div class="info_tile_contents">{{whirlpool_status}}</div>
-            </div>
-            {% if whirlpool_enabled and whirlpool_initialized %}
-            <div class="info_tile">
-                <div class="info_tile_header">API Key for Whirlpool GUI</div>
-                <div class="info_tile_contents">{{whirlpool_api_key}}</div>
-            </div>
-            <div class="info_tile">
-                <div class="info_tile_header">Reset Config</div>
                 <div class="info_tile_contents">
-                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;" href="/reset-whirlpool">Reset</a>
+                    <table class="info_table">
+                        <tr>
+                            <th>Status</th>
+                            <td>{{whirlpool_status}}</td>
+                        </tr>
+                        {% if whirlpool_enabled and whirlpool_initialized %}
+                        <tr>
+                            <th>API Key for Whirlpool GUI</th>
+                            <td>{{whirlpool_api_key}}</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <th>Actions</th>
+                            <td>
+                                <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/toggle-whirlpool">
+                                {% if whirlpool_enabled %}Disable{% else %}Enable{% endif %}
+                                </a>
+                                {% if whirlpool_enabled %}
+                                <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/restart-whirlpool">Restart</a>
+                                {% if whirlpool_initialized %}
+                                <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/reset-whirlpool">Reset Config</a>
+                                {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
                 </div>
             </div>
-            {% endif %}
-            {% if whirlpool_enabled %}
-            <div class="info_tile">
-                <div class="info_tile_header">Restart</div>
-                <div class="info_tile_contents">
-                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;" href="/restart-whirlpool">Restart</a>
-                </div>
-            </div>
-            {% endif %}
         </div>
+
+
         <div class="instructions">
             <div class="instructions-header">Instructions to setup Whirlpool</div>
             <ol class="instructions-steps">
-                <li>Ensure that whirlpool is enabled and you see "Waiting for initialization.." on status tile.</li>
-                <li>Download and install Whirlpool GUI v0.10.2 from <a href="https://samouraiwallet.com/download" target="_blank">https://samouraiwallet.com/download</a>.</li>
-                <li>On the installed Whirlpool GUI, select "Advanced: remote CLI". Type in https://mynode.local:8899 (or use the raw IP address) and click on "Connect".</li>
+                <li>Ensure that whirlpool is enabled and you see "Waiting for initialization..." on status tile.</li>
+                <li>Download and install the latest Whirlpool app from <a href="https://samouraiwallet.com/download" target="_blank">https://samouraiwallet.com/download</a>.</li>
+                <li>In the installed Whirlpool app, select "Advanced: remote CLI".</li>
+                <li>In the URL field, type in one of the following URLs and click "Connect".</li>
+                <ul>
+                    <li>https://mynode.local:8899</li>
+                    <li>https://{{local_ip}}:8899</li>
+                </ul>
                 <li>Follow the instructions and scan your payload. Use secure channels if you are copy/pasting the payload.</li>
                 <li>Once connected, enable Tor using the slider and click on "Initialize GUI".</li>
                 <li>It might take few seconds to initialize GUI or click on the retry button.</li>

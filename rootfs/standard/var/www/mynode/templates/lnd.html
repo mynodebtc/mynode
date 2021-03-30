@@ -3,8 +3,6 @@
         <title>{{ title }}</title>
         {% include 'includes/head.html' %}
 
-        <script src="{{ url_for('static', filename='js/qrcode.js')}}"></script>
-
         <script>
             $(document).ready(function() {
 
@@ -70,24 +68,37 @@
                     window.open(url,'_blank');
                 })
 
+                function show_deposit_address(addr) {
+                    $("#lnd_deposit_address_text").html( addr );
+                    $("#lnd_deposit_address_qrcode").attr("src", "/api/get_qr_code_image?url="+addr);
+                    $("#lnd_deposit_address_qrcode").attr("title", addr);
+                }
                 $("#gen_new_address_button").on("click", function() {
-                    $.get( "/lnd/api/get_new_deposit_address", function( data ) {
+                    $.get( "/lnd/api/get_new_lnd_deposit_address", function( data ) {
                         $("#gen_new_address_button").hide();
-                        
-                        $("#new_address_desc").show();
-                        $("#new_address_qrcode").show();
-                        $("#new_address_text").show();
-                        $("#new_address_text").html( data );
-
-                        var qrcode = new QRCode("new_address_qrcode", {
-                            text: data,
-                            width: 180,
-                            height: 180,
-                            correctLevel : QRCode.CorrectLevel.H
-                        });
+                        show_deposit_address(data);
                     });
-                })
+                });
 
+                // Initialize channel balance bars and show/hide button
+                {% for c in channels %}
+                    $( "#channel_bar_{{ c.chan_id }}" ).progressbar({
+                        value: Math.floor( {{ c.chan_percent }} )
+                    });
+                    $('#channel_bar_{{ c.chan_id }}').height(15);
+
+                    show_channel_{{ c.chan_id }}_details = false;
+                    $("#show_channel_{{ c.chan_id }}").on("click", function() {
+                        if (show_channel_{{ c.chan_id }}_details == true) {
+                            $("#channel_table_{{ c.chan_id }}").slideUp(400);
+                            $("#show_channel_{{ c.chan_id }}").html("Show Details");
+                        } else {
+                            $("#channel_table_{{ c.chan_id }}").slideDown(400);
+                            $("#show_channel_{{ c.chan_id }}").html("Hide Details");
+                        }
+                        show_channel_{{ c.chan_id }}_details = ! show_channel_{{ c.chan_id }}_details;
+                    });
+                {% endfor %}     
             });
         </script>
      </head>
@@ -103,220 +114,264 @@
         <div class="main_header">Lightning Status</div>
         <br/>
         
+{% if not wallet_exists %}
         <div class="app_tile_row">
             <div class="info_tile">
                 <div class="info_tile_header">Manage Wallet</div>
                 <div class="info_tile_contents" style="width: 280px;">
-{% if wallet_exists %}
-                    Wallet Created
-{% else %}
                     <a class="ui-button ui-widget ui-corner-all" style="width: 210px; margin-bottom: 15px;" href="/lnd/create_wallet">Create Wallet</a>
                     <a class="ui-button ui-widget ui-corner-all" style="width: 210px; margin-bottom: 15px;" href="/lnd/create_wallet_with_seed">Restore Wallet from Seed</a>
-{% endif %}
                 </div>
             </div>
         </div>
+{% endif %}
 
+
+        <div class="app_tile_row">
 {% if wallet_exists and wallet_logged_in %}
+            <!-- Status Tile -->
+            <div class="info_tile">
+                <div class="info_tile_header">Status</div>
+                <div class="info_tile_contents">
+                    <table class="info_table">
+                        <tr>
+                            <th>Status</th>
+                            <td>{{status}}</td>
+                        </tr>
+                        <tr>
+                            <th>Height</th>
+                            <td>{{height}}</td>
+                        </tr>
+                        <tr>
+                            <th>Num Peers</th>
+                            <td>{{num_peers}}</td>
+                        </tr>
+                        {% if is_testnet_enabled %}
+                        <tr>
+                            <th>Network</th>
+                            <td>Testnet</td>
+                        </tr>
+                        {% endif %}
+                        <th>Pair Wallet</th>
+                            <td>
+                                <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="lndconnect" style="width: 70%;" href="#">Pair Wallet</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+{% endif %}
+
+{% if wallet_exists or channel_backup_exists %}
+            <!-- Lightning Tile -->
+            <div class="info_tile">
+                <div class="info_tile_header">Lightning</div>
+                <div class="info_tile_contents">
+                    <table class="info_table">
+{% if wallet_exists %}
+                        <tr>
+                            <th>TLS Certification</th>
+                            <td>
+                                <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/lnd/tls.cert">download</a>
+                                <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/lnd/regen_tls_cert">regenerate</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Macaroon Download</th>
+                            <td>
+                                <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="admin_macaroon" href="/lnd/admin.macaroon">admin</a>
+                                <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="readonly_macaroon" href="/lnd/readonly.macaroon">readonly</a>
+                            </td>
+                        </tr>
+{% endif %}
+{% if channel_backup_exists %}
+                        <tr>
+                            <th>Channel Backup</th>
+                            <td>
+                                <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/lnd/channel.backup">download</a>
+                            </td>
+                        </tr>
+{% endif %}
+                        <tr>
+                            <th>Config</th>
+                            <td>
+                                <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/lnd/config">view / edit</a>
+                            </td>
+                        </tr>
+{% if wallet_exists %}
+                        <tr>
+                            <th>Alias</th>
+                            <td>
+                                <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="change_alias" href="#"><span class="ui-icon ui-icon-gear"></a>
+                                {{alias}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Ports (gRPC/REST)</th>
+                            <td>10009 / 10080</td>
+                        </tr>
+{% endif %}
+                    </table>
+                </div>
+            </div>
+
+{% if wallet_exists %}
+            <!-- Version Tile -->
+            <div class="info_tile">
+                <div class="info_tile_header">Versions</div>
+                <div class="info_tile_contents">
+                    <table class="info_table">
+                        <tr>
+                            <th>LND Version</th>
+                            <td>{{version}}</td>
+                        </tr>
+                        <tr>
+                            <th>Loop Version</th>
+                            <td>{{loop_version}}</td>
+                        </tr>
+                        <tr>
+                            <th>Pool Version</th>
+                            <td>{{pool_version}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+{% endif %}  
+{% endif %}
+        </div>
+
+{% if wallet_logged_in %}
+        <!-- URL Tile / Row -->
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">URI</div>
+                <div class="info_tile_contents" style="font-size: 12px;">{{uri}}</div>
+            </div>
+        </div>
+{% endif %}
+
+{% if wallet_exists and not wallet_logged_in %}
+        <!-- Status Tile / Row (should be only shown short term) -->
         <div class="app_tile_row">
             <div class="info_tile">
                 <div class="info_tile_header">Status</div>
                 <div class="info_tile_contents">{{status}}</div>
             </div>
-            <div class="info_tile">
-                <div class="info_tile_header">Height</div>
-                <div class="info_tile_contents">{{height}}</div>
-            </div>
-            <div class="info_tile">
-                <div class="info_tile_header">Num Peers</div>
-                <div class="info_tile_contents">{{num_peers}}</div>
-            </div>
-            <div class="info_tile">
-                <div class="info_tile_header">LND Version</div>
-                <div class="info_tile_contents">{{version}}</div>
-            </div>
-            <div class="info_tile">
-                <div class="info_tile_header">Loop Version</div>
-                <div class="info_tile_contents">{{loop_version}}</div>
-            </div>
-            <div class="info_tile">
-                <div class="info_tile_header">Pool Version</div>
-                <div class="info_tile_contents">{{pool_version}}</div>
-            </div>
         </div>
 {% endif %}
 
-{% if wallet_exists or channel_backup_exists %}
-        <div class="app_tile_row">
-{% if wallet_exists %}
-            <div class="info_tile">
-                <div class="info_tile_header">&nbsp;&nbsp;&nbsp;&nbsp;TLS Certificate&nbsp;&nbsp;&nbsp;&nbsp;</div>
-                <div class="info_tile_contents">
-                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 32%;" href="/lnd/tls.cert">download</a>
-                    
-                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 32%;" href="/lnd/regen_tls_cert">regenerate</a>
-                </div>
-            </div>
-            <div class="info_tile">
-                <div class="info_tile_header">Admin Macaroon</div>
-                <div class="info_tile_contents">
-                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="admin_macaroon" style="width: 70%;" href="/lnd/admin.macaroon">download</a>
-                </div>
-            </div>
-            <div class="info_tile">
-                <div class="info_tile_header">Read Only Macaroon</div>
-                <div class="info_tile_contents">
-                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="readonly_macaroon" style="width: 70%;" href="/lnd/readonly.macaroon">download</a>
-                </div>
-            </div>
-{% endif %}
-{% if channel_backup_exists %}
-            <div class="info_tile">
-                <div class="info_tile_header">Channel Backup</div>
-                <div class="info_tile_contents">
-                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;" href="/lnd/channel.backup">download</a>
-                </div>
-            </div>
-{% endif %}
-            <div class="info_tile">
-                <div class="info_tile_header">LND Config</div>
-                <div class="info_tile_contents">
-                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;" href="/lnd/config">view / edit</a>
-                </div>
-            </div>
-        </div>
-{% endif %}
-
-{% if wallet_exists %}
-    <div class="app_tile_row">
-        <div class="info_tile">
-            <div class="info_tile_header">Pair Wallet</div>
-            <div class="info_tile_contents">
-                <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="lndconnect" style="width: 70%;" href="#">Pair Wallet</a>
-            </div>
-        </div>
-        <div class="info_tile">
-            <div class="info_tile_header">Alias</div>
-            <div class="info_tile_contents">{{alias}} <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="change_alias" href="#"><span class="ui-icon ui-icon-gear"></a></div>
-        </div>
-        <div class="info_tile">
-            <div class="info_tile_header">Local gRPC Port</div>
-            <div class="info_tile_contents">10009</div>
-        </div>
-        <div class="info_tile">
-            <div class="info_tile_header">Local REST Port</div>
-            <div class="info_tile_contents">10080</div>
-        </div>
-    </div>
-{% endif %}
-
-{% if wallet_logged_in %}
-<!--
-    <div class="app_tile_row">
-        <div class="info_tile">
-            <div class="info_tile_header">Pubkey</div>
-            <div class="info_tile_contents">{{pubkey}}</div>
-        </div>
-        
-        <div class="info_tile">
-            <div class="info_tile_header">IP</div>
-            <div class="info_tile_contents">{{ip}}</div>
-        </div>
-        
-    </div>
--->
-    <div class="app_tile_row">
-        <div class="info_tile">
-            <div class="info_tile_header">URI</div>
-            <div class="info_tile_contents">{{uri}}</div>
-        </div>
-    </div>
-{% endif %}
-
-{% if not wallet_logged_in %}
-    <div class="app_tile_row">
-        <div class="info_tile">
-            <div class="info_tile_header">Status</div>
-            <div class="info_tile_contents">{{status}}</div>
-        </div>
-    </div>
-{% endif %}
 
 {% if wallet_exists and wallet_logged_in %}
     <br/>
     <div class="main_header">Balances</div>
-    <div class="app_tile_row" style="display: block;">
-        <div id="new_address_desc" style="display: none;"><p><b>Deposit Address</b></p></div>
-        <div style="width: 100%; margin: auto;">
-            <div id="new_address_qrcode" style="height: 180px; width: 180px; display: none; margin: auto;"></div>
+    <div class="app_tile_row">
+        {% if lnd_deposit_address != "ERROR" %}
+        <div class="info_tile" style="min-width: 280px;">
+            <div class="info_tile_header">Deposit Address</div>
+            <div class="info_tile_contents">
+                <img id="lnd_deposit_address_qrcode" style='width: 150px; height: 150px; margin: auto; margin-bottom: 5px;' src='/api/get_qr_code_image?url={{ lnd_deposit_address }}' title="{{ lnd_deposit_address }}"/>
+                <br/>
+                <div id="lnd_deposit_address_text" style="font-size: 12px; margin-bottom: 5px;">{{ lnd_deposit_address }}</div>
+                <button id="gen_new_address_button" class="ui-button ui-widget ui-corner-all mynode_button_small">Generate New Address</button>
+            </div>
         </div>
-        <br/>
-        <div id="new_address_text" style="display: none;">&nbsp;</div>
-        <button id="gen_new_address_button">Generate Deposit Address</button>
-    </div>
-    <div class="app_tile_row"></div>
-        <table class="bitcoind_table">
-            <thead class="bitcoind_table_header">
-                <td>On-chain Balance</td>
-                <td>On-chain Pending</td>
-                <td>Channel Balance</td>
-                <td>Channel Pending</td>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>{{ wallet_balance }}</td>
-                    <td>{{ wallet_pending }}</td>
-                    <td>{{ channel_balance }}</td>
-                    <td>{{ channel_pending }}</td>
-                </tr>
-            </tbody>
-        </table>
+        {% endif %}
+
+        <div class="info_tile">
+            <div class="info_tile_header">Balances</div>
+            <div class="info_tile_contents">
+                <table class="info_table">
+                    <tr>
+                        <th><b>On-chain Balance</b></th>
+                        <td>
+                            {{ wallet_balance }} sats
+                            {% if wallet_pending != "0" %}
+                            &nbsp;&nbsp;({{ wallet_pending }} pending)
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><b>Channel Balance</b></th>
+                        <td>
+                            {{ channel_balance }} sats
+                            {% if channel_pending != "0" %}
+                            &nbsp;&nbsp;({{ channel_pending }} pending)
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
 
     <br/>
     <div class="main_header">Channels</div>
+
+    {% if channels|length > 0 %}
     <div class="app_tile_row">
-        <table class="bitcoind_table">
-            <thead class="bitcoind_table_header">
-                <td>Chan ID</td>
-                <td>Capacity</td>
-                <td>Local Capacity</td>
-                <td>Remote Capacity</td>
-            </thead>
-            <tbody>
-                {% for channel in channels %}
-                    <tr>
-                        <td>{{ channel.chan_id }}</td>
-                        <td>{{ channel.capacity }}</td>
-                        <td>{{ channel.local_balance }}</td>
-                        <td>{{ channel.remote_balance }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="lightning_channel_container" style="width: 1000px;">
+            {% for c in channels %}
+            <div class="lightning_channel">
+                <div class="lightning_channel_top_row">
+                    <div class="lightning_channel_label"><span class="lightning_channel_status_icon {{ c.status_color }}"></span> {{ c.remote_alias }}</div>
+                    <button id="show_channel_{{ c.chan_id }}" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px; float: right;">Show Details</button>
+                </div>
+                <div id="channel_bar_{{ c.chan_id }}" class="lightning_channel_bar"></div>
+                <div id="channel_local_{{ c.chan_id }}" class="lightning_channel_bar_label_left">{{c.local_balance}} sats</div>
+                <div id="channel_remote_{{ c.chan_id }}" class="lightning_channel_bar_label_right">{{c.remote_balance}} sats</div>
+            </div>
+            <br/>
+
+            <div id="channel_table_{{ c.chan_id }}" style="display: none; margin-bottom: 40px;">
+                <table  class="bitcoind_table" >
+                    <thead class="bitcoind_table_header">
+                        <td>Peer Alias</td>
+                        <td>Active</td>
+                        <td>Capacity</td>
+                        <td>Local Capacity</td>
+                        <td>Remote Capacity</td>
+                        <td>Commit Fee</td>
+                        <td>Age</td>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ c.remote_alias }}</td>
+                            <td>{{ c.active }}</td>
+                            <td>{{ c.capacity }}</td>
+                            <td>{{ c.local_balance }}</td>
+                            <td>{{ c.remote_balance }}</td>
+                            <td>{{ c.commit_fee }}</td>
+                            <td>{{ c.age }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            {% endfor %}
+        </div>
     </div>
+    {% endif %}
 
     <br/>
     <div class="main_header">Peers</div>
     <div class="app_tile_row">
         <table class="bitcoind_table">
             <thead class="bitcoind_table_header">
+                <td>Alias</td>
                 <td>Pub Key</td>
-                <td>Address</td>
-                <td>TX (MB)</td>
-                <td>RX (MB)</td>
-                <td>Ping Time</td>
-                <td>Sync Type</td>
+                <!--<td>Address</td>-->
+                <td>Sats TX</td>
+                <td>Sats RX</td>
+                <!--<td>Sync Type</td>-->
             </thead>
             <tbody>
                 {% for peer in peers %}
                     <tr>
-                        <td>{{ peer.pub_key }}</td>
-                        <td>{{ peer.address }}</td>
-                        <td>{{ peer.bytes_sent }}</td>
-                        <td>{{ peer.bytes_recv }}</td>
-                        <td>{{ peer.ping_time }}</td>
-                        <td>{{ peer.sync_type }}</td>
+                        <td>{{ peer.alias }}</td>
+                        <td style="font-size: 12px;">{{ peer.pub_key }}</td>
+                        <!--<td>{{ peer.address }}</td>-->
+                        <td>{{ peer.sat_sent }}</td>
+                        <td>{{ peer.sat_recv }}</td>
+                        <!--<td>{{ peer.sync_type }}</td>-->
                     </tr>
                 {% endfor %}
             </tbody>

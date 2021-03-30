@@ -1,6 +1,7 @@
 from config import *
 from threading import Timer
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
+import urllib
 import subprocess
 import copy
 import time
@@ -11,9 +12,10 @@ bitcoin_block_height = 570000
 mynode_block_height = 566000
 bitcoin_blockchain_info = None
 bitcoin_recent_blocks = None
+bitcoin_recent_blocks_last_cache_height = 566000
 bitcoin_peers = []
 bitcoin_network_info = None
-bitcoin_wallet_info = None
+bitcoin_wallets = None
 bitcoin_mempool = None
 bitcoin_version = None
 
@@ -63,12 +65,14 @@ def update_bitcoin_main_info():
     return True
 
 def update_bitcoin_other_info():
+    global mynode_block_height
     global bitcoin_blockchain_info
     global bitcoin_recent_blocks
+    global bitcoin_recent_blocks_last_cache_height
     global bitcoin_peers
     global bitcoin_network_info
     global bitcoin_mempool
-    global bitcoin_wallet_info
+    global bitcoin_wallets
 
     while bitcoin_blockchain_info == None:
         # Wait until we have gotten the important info...
@@ -84,9 +88,11 @@ def update_bitcoin_other_info():
         # Get other less important info
         try:
             # Recent blocks
-            commands = [ [ "getblockhash", height] for height in range(mynode_block_height-9, mynode_block_height+1) ]
-            block_hashes = rpc_connection.batch_(commands)
-            bitcoin_recent_blocks = rpc_connection.batch_([ [ "getblock", h ] for h in block_hashes ])
+            if mynode_block_height != bitcoin_recent_blocks_last_cache_height:
+                commands = [ [ "getblockhash", height] for height in range(mynode_block_height-9, mynode_block_height+1) ]
+                block_hashes = rpc_connection.batch_(commands)
+                bitcoin_recent_blocks = rpc_connection.batch_([ [ "getblock", h ] for h in block_hashes ])
+                bitcoin_recent_blocks_last_cache_height = mynode_block_height
 
             # Get peers
             bitcoin_peers = rpc_connection.getpeerinfo()
@@ -98,7 +104,14 @@ def update_bitcoin_other_info():
             bitcoin_mempool = rpc_connection.getmempoolinfo()
 
             # Get wallet info
-            bitcoin_wallet_info = rpc_connection.getwalletinfo()
+            wallets = rpc_connection.listwallets()
+            wallet_data = []
+            for w in wallets:
+                wallet_name = urllib.pathname2url(w)
+                wallet_rpc_connection = AuthServiceProxy("http://%s:%s@127.0.0.1:8332/wallet/%s"%(rpc_user, rpc_pass, wallet_name), timeout=60)
+                wallet_info = wallet_rpc_connection.getwalletinfo()
+                wallet_data.append(wallet_info)
+            bitcoin_wallets = wallet_data
         except:
             pass
 
@@ -182,9 +195,9 @@ def get_bitcoin_mempool_size():
     size = float(info["bytes"]) / 1000 / 1000
     return "{:.3} MB".format(size)
 
-def get_bitcoin_wallet_info():
-    global bitcoin_wallet_info
-    return copy.deepcopy(bitcoin_wallet_info)
+def get_bitcoin_wallets():
+    global bitcoin_wallets
+    return copy.deepcopy(bitcoin_wallets)
 
 def get_default_bitcoin_config():
     try:

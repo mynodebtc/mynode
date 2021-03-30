@@ -9,6 +9,7 @@ apps = [{"name": "bitcoin/bitcoin",                         "current_version_var
         {"name": "lightninglabs/loop",                      "current_version_variable": "LOOP_VERSION"},
         {"name": "lightninglabs/pool",                      "current_version_variable": "POOL_VERSION"},
         {"name": "romanz/electrs",                          "current_version":          "v0.8.6"},
+        {"name": "mempool/mempool",                         "current_version_variable": "MEMPOOL_VERSION"},
         {"name": "Ride-The-Lightning/RTL",                  "current_version_variable": "RTL_VERSION"},
         {"name": "janoside/btc-rpc-explorer",               "current_version_variable": "BTCRPCEXPLORER_VERSION"},
         {"name": "BlueWallet/LndHub",                       "current_version_variable": "LNDHUB_VERSION"},
@@ -20,8 +21,8 @@ apps = [{"name": "bitcoin/bitcoin",                         "current_version_var
         {"name": "lnbits/lnbits",                           "current_version":          "6cf4881"},
         {"name": "apotdevin/thunderhub",                    "current_version_variable": "THUNDERHUB_VERSION"},
         {"name": "stakwork/sphinx-relay",                   "current_version_variable": "SPHINXRELAY_VERSION"},
-        {"name": "whirlpool/whirlpool-client-cli",          "current_version":          "v0.10.9"},
-        {"name": "dojo/samourai-dojo",                      "current_version":          "v1.8.0"},
+        {"name": "whirlpool/whirlpool-client-cli",          "current_version_variable": "WHIRLPOOL_VERSION"},
+        {"name": "dojo/samourai-dojo",                      "current_version_variable": "DOJO_VERSION"},
         {"name": "JoinMarket-Org/joinmarket-clientserver",  "current_version_variable": "JOINMARKET_VERSION"}
 ]
 

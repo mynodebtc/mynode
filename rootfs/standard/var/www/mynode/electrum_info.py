@@ -63,7 +63,7 @@ def get_electrs_status():
             return "Starting..."
         elif "opening DB at" in line or "enabling auto-compactions" in line:
             return "Starting..."
-        elif "downloading 100000 block headers" in line:
+        elif "downloading 100000 block headers" in line or "downloading new block headers" in line:
             return "Getting headers..."
         elif "starting full compaction" in line:
             return "Compressing..."

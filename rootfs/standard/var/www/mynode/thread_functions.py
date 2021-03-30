@@ -156,3 +156,36 @@ def find_public_ip():
 # Updated: Check ins now happen in different process. This will just restart the service to force a new check in.
 def check_in():
     os.system("systemctl restart check_in")
+
+
+def dmesg_log_clear():
+    f = open("/tmp/dmesg", "w")
+    f.write("")
+    f.close()
+def dmesg_log(msg):
+    print(msg)
+    f = open("/tmp/dmesg", "a")
+    f.write(msg)
+    f.close()
+
+# This will monitor dmesg for system errors or issues
+def monitor_dmesg():
+    dmesg_log_clear()
+    dmesg_log("Starting dmesg log monitor")
+    cmd = ["dmesg","--follow"]
+    dmesg = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    while True:
+        l = dmesg.stdout.readline()
+        try:
+            l = l.encode('utf-8', 'ignore').decode('utf-8')
+
+            #TODO: Check for things like OOM, etc...
+            if "Out of memory" in l:
+                set_oom_error(l)
+                dmesg_log(l)
+            else:
+                #dmesg_log(l)
+                pass
+        except Exception as e:
+            dmesg_log("dmesg exception: "+str(e))
+    
