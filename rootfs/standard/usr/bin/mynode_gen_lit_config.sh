@@ -19,6 +19,13 @@ else
     else
         cat /usr/share/mynode/lit_ipv4.conf >> /mnt/hdd/mynode/lit/lit.conf
     fi
+
+    # Append Mainnet/Testnet section
+    if [ -f /mnt/hdd/mynode/settings/.testnet_enabled ]; then
+        sed -i "s/mainnet/testnet/g" /mnt/hdd/mynode/lit/lnd.conf
+        sed -i "s/bitcoin.testnet=.*/bitcoin.testnet=1/g" /mnt/hdd/mynode/lnd/lnd.conf
+        cat /usr/share/mynode/lnd_testnet.conf >> /mnt/hdd/mynode/lnd/lnd.conf
+    fi
 fi
 
 # Append tor domain
