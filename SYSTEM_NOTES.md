@@ -20,6 +20,11 @@ have support or patial support.
  - Specter
  - Bitcoin RPC Explorer
 
+## Lightning Terminal
+
+- The Lightning Terminal password is randomized when it is installed. You can view it via the Lightning page.
+- The password may be updated to your myNode password in future version.
+
 ## Thunderhub
 
 - When Thunderhub is first installed, logging in will be disabled. You must either change your password or log out and log back in of the the myNode UI before using Thunderhub. At that point, Thunderhub will use the same password as myNode.
