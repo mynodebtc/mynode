@@ -102,6 +102,9 @@ source /tmp/mynode_app_versions.sh
 # Create any necessary users
 useradd -m -s /bin/bash joinmarket || true
 
+# User updates
+adduser admin bitcoin
+
 # Setup bitcoin user folders
 mkdir -p /home/bitcoin/.mynode/
 chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
@@ -307,6 +310,7 @@ if [ "$CURRENT" != "$BTC_VERSION" ]; then
     tar -xvf bitcoin-$BTC_VERSION-$ARCH.tar.gz
     mv bitcoin-$BTC_VERSION bitcoin
     install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
+    
     if [ ! -L /home/bitcoin/.bitcoin ]; then
         sudo -u bitcoin ln -s /mnt/hdd/mynode/bitcoin /home/bitcoin/.bitcoin
     fi
@@ -348,8 +352,8 @@ if [ "$CURRENT" != "$LND_VERSION" ]; then
 fi
 cd ~
 
-# Install Loopd
-echo "Installing loopd..."
+# Install Loop
+echo "Installing loop..."
 LOOP_ARCH="loop-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LOOP_ARCH="loop-linux-amd64"
@@ -417,6 +421,44 @@ if [ "$CURRENT" != "$POOL_VERSION" ]; then
         echo "ERROR UPGRADING POOL - GPG FAILED"
     fi
 fi
+
+# Install Lightning Terminal
+echo "Installing lit..."
+LIT_ARCH="lightning-terminal-linux-armv7"
+if [ $IS_X86 = 1 ]; then
+    LIT_ARCH="lightning-terminal-linux-amd64"
+fi
+LIT_UPGRADE_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/$LIT_ARCH-$LIT_VERSION.tar.gz
+LIT_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-$LIT_VERSION.txt
+LIT_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-$LIT_VERSION.txt.asc
+CURRENT=""
+if [ -f $LIT_VERSION_FILE ]; then
+    CURRENT=$(cat $LIT_VERSION_FILE)
+fi
+if [ "$CURRENT" != "$LIT_VERSION" ]; then
+    # Download and install lit
+    rm -rf /opt/download
+    mkdir -p /opt/download
+    cd /opt/download
+
+    wget $LIT_UPGRADE_URL
+    wget $LIT_UPGRADE_MANIFEST_URL
+    wget $LIT_UPGRADE_MANIFEST_SIG_URL
+
+    gpg --verify manifest-*.txt.asc
+    if [ $? == 0 ]; then
+        # Install lit
+        tar -xzf lightning-terminal-*.tar.gz
+        mv $LIT_ARCH-$LIT_VERSION lightning-terminal
+        install -m 0755 -o root -g root -t /usr/local/bin lightning-terminal/lit*
+
+        # Mark current version
+        echo $LIT_VERSION > $LIT_VERSION_FILE
+    else
+        echo "ERROR UPGRADING LIT - GPG FAILED"
+    fi
+fi
+cd ~
 
 
 # Setup "install" location for some apps

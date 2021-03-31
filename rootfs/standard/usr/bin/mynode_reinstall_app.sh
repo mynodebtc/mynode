@@ -25,6 +25,8 @@ elif [ "$APP" = "loop" ]; then
     rm -f $LOOP_VERSION_FILE
 elif [ "$APP" = "pool" ]; then
     rm -f $POOL_VERSION_FILE
+elif [ "$APP" = "lit" ]; then
+    rm -f $LIT_VERSION_FILE
 elif [ "$APP" = "btcrpcexplorer" ]; then
     rm -f $BTCRPCEXPLORER_VERSION_FILE
 elif [ "$APP" = "caravan" ]; then
@@ -33,6 +35,8 @@ elif [ "$APP" = "corsproxy" ]; then
     rm -f $CORSPROXY_VERSION_FILE
 elif [ "$APP" = "joinmarket" ]; then
     rm -f $JOINMARKET_VERSION_FILE
+elif [ "$APP" = "joininbox" ]; then
+    rm -f $JOININBOX_VERSION_FILE
 elif [ "$APP" = "lnbits" ]; then
     rm -f $LNBITS_VERSION_FILE
 elif [ "$APP" = "lndconnect" ]; then

@@ -232,6 +232,7 @@ HiddenServicePort 4080 127.0.0.1:4080
 HiddenServicePort 4081 127.0.0.1:4081
 HiddenServicePort 5000 127.0.0.1:5000
 HiddenServicePort 5001 127.0.0.1:5001
+HiddenServicePort 8443 127.0.0.1:8443
 HiddenServicePort 8899 127.0.0.1:8899
 HiddenServicePort 19999 127.0.0.1:19999
 HiddenServicePort 20000 127.0.0.1:20000

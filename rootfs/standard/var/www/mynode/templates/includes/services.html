@@ -51,7 +51,12 @@
             {% endif %}
             <div class="app_contents">
                 {% if lnd_ready %}
-                <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lndconnect">Pair Wallet</a>
+                <a style="width: 37px;" class="ui-button ui-widget ui-corner-all mynode_button" id="lit" href="#" title="Open Lightning Terminal">
+                    <img style="width: 16px;" src="{{ url_for('static', filename="images/lit.png")}}"/>
+                </a>
+                <a style="width: 37px;" class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lndconnect" title="Pair Wallet">
+                    <img style="width: 16px;" src="{{ url_for('static', filename="images/qr_code.png")}}"/>
+                </a>
                 {% endif %}
                 {% if lnd_wallet_exists %}
                     <a class="ui-button ui-widget ui-corner-all mynode_button" href="/lnd">Wallet</a>
