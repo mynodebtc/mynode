@@ -279,6 +279,11 @@
 
                 $( document ).tooltip();
 
+                $("#lit").on("click", function() {
+                    url = 'https://'+location.hostname+':8443'
+                    window.open(url,'_blank');
+                })
+
                 $("#lndhub").on("click", function() {
                     port="3000"
                     if (location.protocol == "https:") {
