@@ -17,6 +17,7 @@ lnd_ready = False
 lnd_version = None
 loop_version = None
 pool_version = None
+lit_version = None
 lightning_peers = None
 lightning_peer_aliases = {}
 lightning_channels = None
@@ -381,6 +382,13 @@ def get_pool_version():
     if pool_version == None:
         pool_version = subprocess.check_output("poold --version | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+' | head -n 1", shell=True)
     return "v{}".format(pool_version)
+
+def get_lit_version():
+    global lit_version
+    if lit_version == None:
+        #lit_version = subprocess.check_output("litd --version | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+' | head -n 1", shell=True)
+        lit_version = "TODO"
+    return "v{}".format(lit_version)
 
 def get_default_lnd_config():
     try:

@@ -337,8 +337,6 @@ if [ $IS_X86 = 1 ]; then
     LIT_ARCH="lightning-terminal-linux-amd64"
 fi
 LIT_UPGRADE_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/$LIT_ARCH-$LIT_VERSION.tar.gz
-LIT_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-$LIT_VERSION.txt
-LIT_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-$LIT_VERSION.txt.asc
 CURRENT=""
 if [ -f $LIT_VERSION_FILE ]; then
     CURRENT=$(cat $LIT_VERSION_FILE)
@@ -350,10 +348,10 @@ if [ "$CURRENT" != "$LIT_VERSION" ]; then
     cd /opt/download
 
     wget $LIT_UPGRADE_URL
-    wget $LIT_UPGRADE_MANIFEST_URL
-    wget $LIT_UPGRADE_MANIFEST_SIG_URL
+    wget $LIT_UPGRADE_MANIFEST_URL -O manifest.txt
+    wget $LIT_UPGRADE_MANIFEST_SIG_URL  -O manifest.txt.sig
 
-    gpg --verify manifest-*.txt.asc
+    gpg --verify manifest.txt.sig manifest.txt
     if [ $? == 0 ]; then
         # Install lit
         tar -xzf lightning-terminal-*.tar.gz
@@ -857,8 +855,6 @@ systemctl disable hitch || true
 systemctl disable mongodb || true
 systemctl disable lnd_admin || true
 systemctl disable dhcpcd || true
-systemctl disable loopd || true
-systemctl disable poold || true
 
 # Reload service settings
 systemctl daemon-reload
