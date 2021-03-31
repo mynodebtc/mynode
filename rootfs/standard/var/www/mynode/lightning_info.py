@@ -245,6 +245,9 @@ def gen_new_wallet_seed():
     seed = subprocess.check_output("python3 /usr/bin/gen_seed.py", shell=True)
     return seed
 
+def get_lnd_lit_password():
+    return get_file_contents("/mnt/hdd/mynode/settings/.litpw")
+
 def restart_lnd_actual():
     global lnd_ready
     lnd_ready = False

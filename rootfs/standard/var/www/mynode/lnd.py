@@ -155,6 +155,7 @@ def page_lnd():
         "pubkey": pubkey,
         "uri": uri,
         "ip": ip,
+        "lit_password": get_lnd_lit_password(),
         "lnd_deposit_address": lnd_deposit_address,
         "channel_balance": format_sat_amount(balance_info["channel_balance"]),
         "channel_pending": format_sat_amount(balance_info["channel_pending"]),
