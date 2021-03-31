@@ -17,6 +17,7 @@ lnd_ready = False
 lnd_version = None
 loop_version = None
 pool_version = None
+lit_version = None
 lightning_peers = None
 lightning_peer_aliases = {}
 lightning_channels = None
@@ -244,6 +245,9 @@ def gen_new_wallet_seed():
     seed = subprocess.check_output("python3 /usr/bin/gen_seed.py", shell=True)
     return seed
 
+def get_lnd_lit_password():
+    return get_file_contents("/mnt/hdd/mynode/settings/.litpw")
+
 def restart_lnd_actual():
     global lnd_ready
     lnd_ready = False
@@ -381,6 +385,13 @@ def get_pool_version():
     if pool_version == None:
         pool_version = subprocess.check_output("poold --version | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+' | head -n 1", shell=True)
     return "v{}".format(pool_version)
+
+def get_lit_version():
+    global lit_version
+    if lit_version == None:
+        #lit_version = subprocess.check_output("litd --version | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+' | head -n 1", shell=True)
+        lit_version = "TODO"
+    return "v{}".format(lit_version)
 
 def get_default_lnd_config():
     try:

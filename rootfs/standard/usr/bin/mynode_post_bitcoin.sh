@@ -12,8 +12,7 @@ fi
 sleep 60s
 
 # Give admin the ability to access the BTC cookie
-cp -f /mnt/hdd/mynode/bitcoin/.cookie /home/admin/.bitcoin/.cookie
-chown admin:admin /home/admin/.bitcoin/.cookie
+chmod 640 /mnt/hdd/mynode/bitcoin/.cookie
 
 if [ -f /mnt/hdd/mynode/bitcoin/testnet3/.cookie ]; then
     mkdir -p /mnt/hdd/mynode/bitcoin/testnet3

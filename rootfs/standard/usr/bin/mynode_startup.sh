@@ -204,6 +204,7 @@ useradd -m -s /bin/bash pivpn || true
 useradd -m -s /bin/bash joinmarket || true
 
 # User updates and settings
+adduser admin bitcoin
 grep "joinmarket" /etc/sudoers || (echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo)
 
 # Regen SSH keys (check if force regen or keys are missing / empty)
@@ -295,6 +296,8 @@ source /usr/bin/mynode_gen_loop_config.sh
 # Pool Config
 source /usr/bin/mynode_gen_pool_config.sh
 
+# Lightning Terminal Config
+source /usr/bin/mynode_gen_lit_config.sh
 
 # Setup symlinks for bitcoin user so they have access to commands
 users="bitcoin"
@@ -310,7 +313,7 @@ for u in $users; do
     done
 done
 
-# Setup symlinks for adming (need to be careful here - lnd,bitcoin can't be symlinked)
+# Setup symlinks for admin (need to be careful here - lnd,bitcoin can't be symlinked)
 if [ ! -L /home/admin/.pool ]; then     # Pool Config (symlink so admin user can run pool commands)
     mv /home/admin/.pool /home/admin/.pool_backup || true
     ln -s /mnt/hdd/mynode/pool /home/admin/.pool
@@ -319,6 +322,7 @@ if [ ! -L /home/admin/.loop ]; then     # Loop Config (symlink so admin user can
     mv /home/admin/.loop /home/admin/.loop_backup || true
     ln -s /mnt/hdd/mynode/loop /home/admin/.loop
 fi
+
 
 # Dojo - move to HDD
 if [ -d /opt/mynode/dojo ] && [ ! -d /mnt/hdd/mynode/dojo ] ; then
@@ -511,6 +515,9 @@ fi
 if [ -f /mnt/hdd/mynode/joinmarket/joinmarket.cfg ]; then
     sed -i "s/rpc_password = .*/rpc_password = $BTCRPCPW/g" /mnt/hdd/mynode/joinmarket/joinmarket.cfg
 fi
+if [ -f /mnt/hdd/mynode/lit/lit.conf ]; then
+    sed -i "s/faraday.bitcoin.password=.*/faraday.bitcoin.password=$BTCRPCPW/g" /mnt/hdd/mynode/lit/lit.conf
+fi
 if [ -f /mnt/hdd/mynode/mempool/.env ]; then
     sed -i "s/BITCOIN_RPC_PASS=.*/BITCOIN_RPC_PASS=$BTCRPCPW/g" /mnt/hdd/mynode/mempool/.env
 fi
@@ -519,8 +526,6 @@ chown bitcoin:bitcoin /mnt/hdd/mynode/settings/.btcrpc_environment
 if [ -f /mnt/hdd/mynode/bitcoin/bitcoin.conf ]; then
     sed -i "s/rpcauth=.*/$RPCAUTH/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
 fi
-cp -f /mnt/hdd/mynode/bitcoin/bitcoin.conf /home/admin/.bitcoin/bitcoin.conf
-chown admin:admin /home/admin/.bitcoin/bitcoin.conf
 
 
 # Append bitcoin UID and GID to btcrpc_environment
@@ -715,6 +720,7 @@ echo $BTC_VERSION > $BTC_LATEST_VERSION_FILE
 echo $LND_VERSION > $LND_LATEST_VERSION_FILE
 echo $LOOP_VERSION > $LOOP_LATEST_VERSION_FILE
 echo $POOL_VERSION > $POOL_LATEST_VERSION_FILE
+echo $LIT_VERSION > $LIT_LATEST_VERSION_FILE
 echo $ELECTRS_VERSION > $ELECTRS_LATEST_VERSION_FILE
 echo $LNDHUB_VERSION > $LNDHUB_LATEST_VERSION_FILE
 echo $CARAVAN_VERSION > $CARAVAN_LATEST_VERSION_FILE

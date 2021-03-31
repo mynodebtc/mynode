@@ -31,6 +31,7 @@ mkdir -p /home/bitcoin/.mynode/
 chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
 
 # User updates and settings
+adduser admin bitcoin
 grep "joinmarket" /etc/sudoers || (echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo)
 
 # Check if upgrades use tor
@@ -326,6 +327,41 @@ if [ "$CURRENT" != "$POOL_VERSION" ]; then
         echo $POOL_VERSION > $POOL_VERSION_FILE
     else
         echo "ERROR UPGRADING POOL - GPG FAILED"
+    fi
+fi
+
+# Upgrade Lightning Terminal
+echo "Upgrading lit..."
+LIT_ARCH="lightning-terminal-linux-armv7"
+if [ $IS_X86 = 1 ]; then
+    LIT_ARCH="lightning-terminal-linux-amd64"
+fi
+LIT_UPGRADE_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/$LIT_ARCH-$LIT_VERSION.tar.gz
+CURRENT=""
+if [ -f $LIT_VERSION_FILE ]; then
+    CURRENT=$(cat $LIT_VERSION_FILE)
+fi
+if [ "$CURRENT" != "$LIT_VERSION" ]; then
+    # Download and install lit
+    rm -rf /opt/download
+    mkdir -p /opt/download
+    cd /opt/download
+
+    wget $LIT_UPGRADE_URL
+    wget $LIT_UPGRADE_MANIFEST_URL -O manifest.txt
+    wget $LIT_UPGRADE_MANIFEST_SIG_URL  -O manifest.txt.sig
+
+    gpg --verify manifest.txt.sig manifest.txt
+    if [ $? == 0 ]; then
+        # Install lit
+        tar -xzf lightning-terminal-*.tar.gz
+        mv $LIT_ARCH-$LIT_VERSION lightning-terminal
+        install -m 0755 -o root -g root -t /usr/local/bin lightning-terminal/lit*
+
+        # Mark current version
+        echo $LIT_VERSION > $LIT_VERSION_FILE
+    else
+        echo "ERROR UPGRADING LIT - GPG FAILED"
     fi
 fi
 
@@ -803,6 +839,7 @@ systemctl enable docker
 systemctl enable bitcoind
 systemctl enable seed_bitcoin_peers
 systemctl enable lnd
+systemctl enable litd
 systemctl enable firewall
 systemctl enable invalid_block_check
 systemctl enable usb_driver_check
