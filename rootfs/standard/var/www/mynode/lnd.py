@@ -306,8 +306,8 @@ def page_lnd_create_wallet_confirm():
     return redirect(url_for(".page_lnd"))
 
 
-@mynode_lnd.route("/lnd/lndconnect", methods=["GET","POST"])
-def page_lnd_lndconnect():
+@mynode_lnd.route("/lnd/pair_wallet", methods=["GET","POST"])
+def page_lnd_pair_wallet():
     check_logged_in()
 
     # Load page
@@ -315,8 +315,8 @@ def page_lnd_lndconnect():
         return redirect(url_for(".page_lnd"))
 
     p = pam.pam()
-    pw = request.form.get('password_lndconnect')
-    from_homepage = request.form.get('lndconnect_from_homepage')
+    pw = request.form.get('password_pair_wallet')
+    from_homepage = request.form.get('pair_wallet_from_homepage')
     if pw == None or p.authenticate("admin", pw) == False:
         if from_homepage != None:
             flash("Invalid Password", category="error")
@@ -354,7 +354,7 @@ def page_lnd_lndconnect():
         "lndconnect_tor_rest_img": lndconnect_tor_rest_img,
         "ui_settings": read_ui_settings()
     }
-    return render_template('lndconnect.html', **templateData)
+    return render_template('pair_wallet.html', **templateData)
 
 
 @mynode_lnd.route("/lnd/change_alias", methods=["POST"])
