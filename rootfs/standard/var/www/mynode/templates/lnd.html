@@ -91,6 +91,21 @@
                     $("#lit_password").show();
                 });
 
+                $('#watchtower_enabled_checkbox').change(function () {
+                    $("#watchtower_enabled_save").show();
+                });
+                $("#watchtower_enabled_save").on("click", function() {
+                    enabled=$('#watchtower_enabled_checkbox').is(":checked")
+                    if (enabled)
+                    {
+                        window.location.href='/lnd/set_watchtower_enabled?enabled=1'
+                    }
+                    else
+                    {
+                        window.location.href='/lnd/set_watchtower_enabled?enabled=0'
+                    }
+                });
+
                 function show_deposit_address(addr) {
                     $("#lnd_deposit_address_text").html( addr );
                     $("#lnd_deposit_address_qrcode").attr("src", "/api/get_qr_code_image?url="+addr);
@@ -225,6 +240,17 @@
                             </td>
                         </tr>
 {% endif %}
+                        <tr>
+                            <th>Watchtower</th>
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox" id="watchtower_enabled_checkbox" {% if watchtower_enabled %}checked{% endif %}>
+                                    <span class="slider round"></span>
+                                </label>
+                                <br/>
+                                <button id="watchtower_enabled_save" style="display: none; margin-top: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                            </td>
+                        </tr>
                         <tr>
                             <th>Config</th>
                             <td>
@@ -465,16 +491,11 @@
 
         <div id="change-alias-dialog" title="Change LND Alias" style="display:none;">
             <form id="change_alias_form" name="change_alias_form" action="/lnd/change_alias" method="POST">
-                <p>The LND alias is a public name for your lightning node and you can modify it with the form below. Changing the alias will restart your myNode to take effect.</p>
-                <p>Please enter a new alias and your current password.</p>
+                <p>The LND alias is a public name for your lightning node and you can modify it with the form below.</p>
                 <b>New Alias:</b>
                 <br/>
                 <input type="text" name="alias" id="alias" value="" class="text ui-widget-content ui-corner-all" size="34" maxlength="34">
-                <br/><br/>
-                <b>Password:</b>
-                <br/>
-                <input type="password" name="password_change_alias" id="password_change_alias" value="" class="text ui-widget-content ui-corner-all">
-            
+
                 <!-- Allow form submission with keyboard without duplicating the dialog button -->
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
             </form>

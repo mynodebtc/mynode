@@ -14,6 +14,11 @@ else
     cp -f /usr/share/mynode/lnd.conf /mnt/hdd/mynode/lnd/lnd.conf
 
     # Append Tor/IP section
+    if [ -f /mnt/hdd/mynode/settings/.watchtower_enabled ]; then
+        cat /usr/share/mynode/lnd_watchtower.conf >> /mnt/hdd/mynode/lnd/lnd.conf
+    fi
+
+    # Append Tor/IP section
     if [ -f /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled ]; then
         cat /usr/share/mynode/lnd_tor.conf >> /mnt/hdd/mynode/lnd/lnd.conf
     else

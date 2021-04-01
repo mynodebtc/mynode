@@ -68,6 +68,7 @@ def page_lnd():
             "title": "myNode Lightning Wallet",
             "wallet_exists": wallet_exists,
             "wallet_logged_in": wallet_logged_in,
+            "watchtower_enabled": is_watchtower_enabled(),
             "version": get_lnd_version(),
             "loop_version": get_loop_version(),
             "pool_version": get_pool_version(),
@@ -81,6 +82,7 @@ def page_lnd():
             "title": "myNode Lightning Wallet",
             "wallet_exists": wallet_exists,
             "wallet_logged_in": wallet_logged_in,
+            "watchtower_enabled": is_watchtower_enabled(),
             "alias": alias,
             "status": get_lnd_status(),
             "version": get_lnd_version(),
@@ -155,6 +157,7 @@ def page_lnd():
         "pubkey": pubkey,
         "uri": uri,
         "ip": ip,
+        "watchtower_enabled": is_watchtower_enabled(),
         "lit_password": get_lnd_lit_password(),
         "lnd_deposit_address": lnd_deposit_address,
         "channel_balance": format_sat_amount(balance_info["channel_balance"]),
@@ -357,13 +360,6 @@ def page_lnd_lndconnect():
 @mynode_lnd.route("/lnd/change_alias", methods=["POST"])
 def page_lnd_change_alias():
     check_logged_in()
-    
-    # Load page
-    p = pam.pam()
-    pw = request.form.get('password_change_alias')
-    if pw == None or p.authenticate("admin", pw) == False:
-        flash("Invalid Password", category="error")
-        return redirect(url_for(".page_lnd"))
 
     # Change alias
     alias = request.form.get('alias')
@@ -378,18 +374,11 @@ def page_lnd_change_alias():
         f.write(utf8_alias)
         f.close()
 
-    # Reboot
-    t = Timer(1.0, reboot_device)
-    t.start()
+    # Restart LND
+    restart_lnd()
 
-    # Wait until device is restarted
-    templateData = {
-        "title": "myNode Reboot",
-        "header_text": "Restarting",
-        "subheader_text": "This will take several minutes...",
-        "ui_settings": read_ui_settings()
-    }
-    return render_template('reboot.html', **templateData)
+    flash("Alias updated!", category="message")
+    return redirect(url_for(".page_lnd"))
 
 @mynode_lnd.route("/lnd/reset_config")
 def lnd_reset_config_page():
@@ -444,6 +433,19 @@ def lnd_config_page():
     }
     return render_template('lnd_config.html', **templateData)
 
+@mynode_lnd.route("/lnd/set_watchtower_enabled")
+def lnd_set_watchtower_enabled_page():
+    check_logged_in()
+
+    if request.args.get("enabled") and request.args.get("enabled") == "1":
+        enable_watchtower()
+    else:
+        disable_watchtower()
+
+    restart_lnd()
+
+    flash("Watchtower settings updated!", category="message")
+    return redirect(url_for(".page_lnd"))
 
 ##############################################
 ## LND API Calls
