@@ -436,3 +436,16 @@ def get_lnd_alias_file_data():
     except:
         return "ERROR"
     return "ERROR"
+
+def is_watchtower_enabled():
+    if os.path.isfile("/mnt/hdd/mynode/settings/.watchtower_enabled"):
+        return True
+    return False
+
+def enable_watchtower():
+    os.system("touch /mnt/hdd/mynode/settings/.watchtower_enabled")
+    os.system("sync")
+
+def disable_watchtower():
+    os.system("rm /mnt/hdd/mynode/settings/.watchtower_enabled")
+    os.system("sync")
