@@ -447,11 +447,11 @@
                         window.location.href="/toggle-sphinxrelay"
                 });
 
-                function lndconnect() {
-                    $("#lndconnect_form").submit();
-                    lndconnect_dialog.dialog( "close" );
+                function pair_wallet_submit() {
+                    $("#pair_wallet_form").submit();
+                    pair_wallet_dialog.dialog( "close" );
                 }
-                lndconnect_dialog = $( "#lndconnect-dialog" ).dialog({
+                pair_wallet_dialog = $( "#pair-wallet-dialog" ).dialog({
                     autoOpen: false,
                     resizable: false,
                     height: "auto",
@@ -459,21 +459,21 @@
                     modal: true,
                     position: { my: "center top", at: "center top", of: window, collision: "none" },
                     buttons: {
-                        "View": lndconnect,
+                        "View": pair_wallet_submit,
                         Cancel: function() {
-                            lndconnect_dialog.dialog( "close" );
+                            pair_wallet_dialog.dialog( "close" );
                         }
                     },
                     open: function() {
-                        $("#password_lndconnect").val("")
+                        $("#password_pair_wallet").val("")
                     }
                 });
-                $("#lndconnect").on("click", function() {
-                    lndconnect_dialog.dialog( "open" );
+                $("#pair_wallet").on("click", function() {
+                    pair_wallet_dialog.dialog( "open" );
                 });
 
-                $("#lndconnect_form").on("submit", function() {
-                    lndconnect_dialog.dialog( "close" );
+                $("#pair_wallet_form").on("submit", function() {
+                    pair_wallet_dialog.dialog( "close" );
                 });
 
                 $("#https").on("click", function() {
@@ -636,15 +636,15 @@
         <div id="confirm-dialog"></div>
         <div id="info-dialog"></div>
 
-        <div id="lndconnect-dialog" title="Pair Wallet" style="display:none;">
-            <form id="lndconnect_form" name="lndconnect_form" action="/lnd/lndconnect" method="POST">
+        <div id="pair-wallet-dialog" title="Pair Wallet" style="display:none;">
+            <form id="pair_wallet_form" name="pair_wallet_form" action="/lnd/pair_wallet" method="POST">
                 <p>Pairing a wallet will give another device access to your Lightning Wallet! Do not share this info with others
                     or they will be able to control your funds.</p>
                 <p>Please enter your password to view your pairing information.</p>
                 <b>Password:</b>
                 <br/>
-                <input type="password" name="password_lndconnect" id="password_lndconnect" value="" class="text ui-widget-content ui-corner-all">
-                <input type="hidden" name="lndconnect_from_homepage" id="lndconnect_from_homepage" value="1"/>
+                <input type="password" name="password_pair_wallet" id="password_pair_wallet" value="" class="text ui-widget-content ui-corner-all">
+                <input type="hidden" name="pair_wallet_from_homepage" id="pair_wallet_from_homepage" value="1"/>
 
                 <!-- Allow form submission with keyboard without duplicating the dialog button -->
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
