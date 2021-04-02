@@ -1122,6 +1122,15 @@ def get_onion_url_electrs():
         pass
     return "error"
 
+def get_onion_url_lndhub():
+    try:
+        if os.path.isfile("/var/lib/tor/mynode_lndhub/hostname"):
+            with open("/var/lib/tor/mynode_lndhub/hostname") as f:
+                return f.read().strip()
+    except:
+        pass
+    return "error"
+
 def get_onion_url_btcpay():
     try:
         if os.path.isfile("/var/lib/tor/mynode_btcpay/hostname"):

@@ -47,6 +47,7 @@ def page_tor():
     general_onion_url = get_onion_url_general()
     btc_onion_url = get_onion_url_btc()
     lnd_onion_url = get_onion_url_lnd()
+    lndhub_onion_url = get_onion_url_lndhub()
     electrs_onion_url = get_onion_url_electrs()
     btcpay_onion_url = get_onion_url_btcpay()
     sphinxrelay_onion_url = get_onion_url_sphinxrelay()
@@ -58,7 +59,7 @@ def page_tor():
     v3_services = []
     v3_services.append(create_v3_service("myNode Web", general_onion_url, "80", True, ""))
     v3_services.append(create_v3_service("WebSSH", general_onion_url, "2222 / 2223", True, ""))
-    v3_services.append(create_v3_service("LND Hub", general_onion_url, "3000 / 3001", True, ""))
+    v3_services.append(create_v3_service("LND Hub", lndhub_onion_url, "3000 / 3001", True, ""))
     v3_services.append(create_v3_service("BTC RPC Explorer", general_onion_url, "3002 / 3003", False, ""))
     v3_services.append(create_v3_service("Ride the Lightning", general_onion_url, "3010 / 3011", True, ""))
     v3_services.append(create_v3_service("Caravan", general_onion_url, "3020", True, ""))
