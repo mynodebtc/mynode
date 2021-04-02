@@ -8,6 +8,7 @@ from device_info import *
 from utilities import *
 from user_management import check_logged_in
 from werkzeug.utils import secure_filename
+import urllib
 import traceback
 import base64
 import subprocess
@@ -38,6 +39,9 @@ def get_image_contents(filename):
     except:
         return "EXCEPTION"
     return "ERROR"
+
+def get_image_src_b64(filename):
+    return "data:image/png;base64," + get_image_contents(filename)
 
 # Flask Pages
 @mynode_lnd.route("/lnd")
@@ -315,6 +319,18 @@ def page_lnd_create_wallet_confirm():
     return redirect(url_for(".page_lnd"))
 
 
+def create_pair(name, image_src, text, premium):
+    pair = {}
+    pair["name"] = name
+    pair["id"] = name.replace(" ","").replace("+","").replace("(","").replace(")","").lower()
+    pair["image_src"] = image_src.strip()
+    pair["text"] = text.strip()
+    pair["premium"] = premium
+    if is_community_edition() and premium:
+        pair["image_src"] = get_image_src_b64("/var/www/mynode/static/images/dots.png")
+        pair["text"] = "Premium Feature"
+    return pair
+
 @mynode_lnd.route("/lnd/pair_wallet", methods=["GET","POST"])
 def page_lnd_pair_wallet():
     check_logged_in()
@@ -339,43 +355,48 @@ def page_lnd_pair_wallet():
     lndconnect_local_rest_text = get_text_contents("/tmp/mynode_lndconnect/lndconnect_local_rest.txt")
     lndconnect_tor_grpc_text = get_text_contents("/tmp/mynode_lndconnect/lndconnect_tor_grpc.txt")
     lndconnect_tor_rest_text = get_text_contents("/tmp/mynode_lndconnect/lndconnect_tor_rest.txt")
-    if is_community_edition():
-        lndconnect_tor_grpc_text = "Premium Feature"
-        lndconnect_tor_rest_text = "Premium Feature"
 
-    lndconnect_local_grpc_img = get_image_contents("/tmp/mynode_lndconnect/lndconnect_local_grpc.png")
-    lndconnect_local_rest_img = get_image_contents("/tmp/mynode_lndconnect/lndconnect_local_rest.png")
-    lndconnect_tor_grpc_img = get_image_contents("/tmp/mynode_lndconnect/lndconnect_tor_grpc.png")
-    lndconnect_tor_rest_img = get_image_contents("/tmp/mynode_lndconnect/lndconnect_tor_rest.png")
-    if is_community_edition():
-        lndconnect_tor_grpc_img = get_image_contents("/var/www/mynode/static/images/dots.png")
-        lndconnect_tor_rest_img = get_image_contents("/var/www/mynode/static/images/dots.png")
+    lndconnect_local_grpc_img = get_image_src_b64("/tmp/mynode_lndconnect/lndconnect_local_grpc.png")
+    lndconnect_local_rest_img = get_image_src_b64("/tmp/mynode_lndconnect/lndconnect_local_rest.png")
+    lndconnect_tor_grpc_img = get_image_src_b64("/tmp/mynode_lndconnect/lndconnect_tor_grpc.png")
+    lndconnect_tor_rest_img = get_image_src_b64("/tmp/mynode_lndconnect/lndconnect_tor_rest.png")
+
+    # Blue Wallet Data
+    electrs_onion_url = get_onion_url_electrs()
+    lndhub_onion_url = get_onion_url_lndhub()
+    local_ip = get_local_ip()
+    #LNDhub QR:
+    #bluewallet:setlndhuburl?url=http%3A%2F%2Fg45wix2qhsxtoz2k675ikmlt5ypmcoz4nyhy44teku7amb7vqoh7jyyd.onion:3001
+
+    #Electrum QR:
+    #bluewallet:setelectrumserver?server=v7gtzf7nua6hdmb2wtqaqioqmesdb4xrlly4zwr7bvayxv2bpg665pqd.onion%3A50001%3At
+    bluewallet_lndhub_local_text = "bluewallet:setlndhuburl?url=http://"+local_ip+":3000"
+    bluewallet_lndhub_local_img = "/api/get_qr_code_image?url="+urllib.quote_plus(bluewallet_lndhub_local_text)
+    bluewallet_lndhub_tor_text = "bluewallet:setlndhuburl?url=http://"+lndhub_onion_url+":3000"
+    bluewallet_lndhub_tor_img = "/api/get_qr_code_image?url="+urllib.quote_plus(bluewallet_lndhub_tor_text)
+    bluewallet_electrs_local_text = "bluewallet:setelectrumserver?server="+local_ip+":50002"
+    bluewallet_electrs_local_img = "/api/get_qr_code_image?url="+urllib.quote_plus(bluewallet_electrs_local_text)
+    bluewallet_electrs_tor_text = "bluewallet:setelectrumserver?server="+electrs_onion_url+":50002"
+    bluewallet_electrs_tor_img = "/api/get_qr_code_image?url="+urllib.quote_plus(bluewallet_electrs_tor_text)
+
 
     # Pairing options
     pairs = []
-    pairs.append({"name":"Zap (gRPC + Local IP)", "image_src":"","text":"","premium": False})
-    pairs.append({"name":"Zap (gRPC + Tor)", "image_src":"","text":"","premium": False})
-    pairs.append({"name":"Zap (REST + Local IP)", "image_src":"","text":"","premium": False})
-    pairs.append({"name":"Zap (REST + Tor)", "image_src":"","text":"","premium": False})
-    #pairs.append({"name":"Blue Wallet (LNDHub + Local IP)", "image_src":"","text":"","premium": False})
-    #pairs.append({"name":"Blue Wallet (LNDHub + Tor)", "image_src":"","text":"","premium": False})
-    #pairs.append({"name":"Blue Wallet (Electrum + Local IP)", "image_src":"","text":"","premium": False})
-    #pairs.append({"name":"Blue Wallet (Electrum + Tor)", "image_src":"","text":"","premium": False})
-    #pairs.append({"name":"Fully Noded (Tor)", "image_src":"","text":"","premium": False})
-
+    pairs.append( create_pair(name="Zap (gRPC + Local IP)", image_src=lndconnect_local_grpc_img,text=lndconnect_local_grpc_text,premium=False) )
+    pairs.append( create_pair(name="Zap (gRPC + Tor)", image_src=lndconnect_tor_grpc_img,text=lndconnect_tor_grpc_text,premium=True) )
+    pairs.append( create_pair(name="Zap (REST + Local IP)", image_src=lndconnect_local_rest_img,text=lndconnect_local_rest_text,premium=False) )
+    pairs.append( create_pair(name="Zap (REST + Tor)", image_src=lndconnect_tor_rest_img,text=lndconnect_tor_rest_text,premium=True) )
+    pairs.append( create_pair(name="Blue Wallet (LNDHub + Local IP)", image_src=bluewallet_lndhub_local_img,text=bluewallet_lndhub_local_text,premium=False) )
+    #pairs.append( create_pair(name="Blue Wallet (LNDHub + Tor)", image_src=bluewallet_lndhub_tor_img,text=bluewallet_lndhub_tor_text,premium=False) )
+    pairs.append( create_pair(name="Blue Wallet (Electrum + Local IP)", image_src=bluewallet_electrs_local_img,text=bluewallet_electrs_local_text,premium=False) )
+    #pairs.append( create_pair(name="Blue Wallet (Electrum + Tor)", image_src=bluewallet_electrs_tor_img,text=bluewallet_electrs_tor_text,premium=False) )
+    #pairs.append( create_pair(name="Fully Noded (Tor)", image_src="",text="",premium=True) ) # Maybe not? pairs diff wallet
     
 
     # Show lndconnect page
     templateData = {
         "title": "myNode Lightning Wallet",
-        "lndconnect_local_grpc_text": lndconnect_local_grpc_text,
-        "lndconnect_local_rest_text": lndconnect_local_rest_text,
-        "lndconnect_tor_grpc_text": lndconnect_tor_grpc_text,
-        "lndconnect_tor_rest_text": lndconnect_tor_rest_text,
-        "lndconnect_local_grpc_img": lndconnect_local_grpc_img,
-        "lndconnect_local_rest_img": lndconnect_local_rest_img,
-        "lndconnect_tor_grpc_img": lndconnect_tor_grpc_img,
-        "lndconnect_tor_rest_img": lndconnect_tor_rest_img,
+        "dots_img": get_image_src_b64("/var/www/mynode/static/images/dots.png"),
         "pairs": pairs,
         "ui_settings": read_ui_settings()
     }

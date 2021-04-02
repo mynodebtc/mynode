@@ -611,16 +611,16 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     margin: auto;
 }
 
-#lndconnect_tabs {
+.pair_wallet_text {
     margin: auto;
-    width: 500px;
+    width: 1000px;
     font-size: 10px;
     line-height: 1.2;
     word-wrap: break-word;
     text-align: center;
 }
-.lndconnect_qr_code {
-    width: 500px;
+.pair_wallet_qr_code {
+    width: 400px;
     margin: auto;
 }
 

@@ -8,6 +8,20 @@
     
                 $( "#lndconnect_tabs" ).tabs();
 
+                $("#choose_pair").selectmenu({
+                    change: function( event, data ) {
+                        choice = data.item.value;
+                        
+                        {% for p in pairs %}
+                        if (choice == "{{ p.id }}") {
+                            $("#pairing_text").html("{{ p.text }}");
+                            $("#pairing_qr_code").attr("src","{{ p.image_src }}");
+                            return;
+                        }
+                        {% endfor %}
+                    }
+                });
+
             });
         </script>
      </head>
@@ -26,31 +40,19 @@
         </div>
         <br/>
 
-        <div id="lndconnect_tabs" style="width: 800px;">
-            <ul>
-                <li><a href="#tabs-1">gRPC Local IP</a></li>
-                <li><a href="#tabs-2">REST Local IP</a></li>
-                <li><a href="#tabs-3">gRPC Tor</a></li>
-                <li><a href="#tabs-4">REST Tor</a></li>
-            </ul>
-            <div id="tabs-1">
-                <img class="lndconnect_qr_code" src="data:image/png;base64,{{lndconnect_local_grpc_img}}"/>
-                <p>{{ lndconnect_local_grpc_text }}</p>
-            </div>
-            <div id="tabs-2">
-                <img class="lndconnect_qr_code" src="data:image/png;base64,{{lndconnect_local_rest_img}}"/>
-                <p>{{ lndconnect_local_rest_text }}</p>
-            </div>
-            <div id="tabs-3">
-                <img class="lndconnect_qr_code" src="data:image/png;base64,{{lndconnect_tor_grpc_img}}"/>
-                <p>{{ lndconnect_tor_grpc_text }}</p>
-            </div>
-            <div id="tabs-4">
-                <img class="lndconnect_qr_code" src="data:image/png;base64,{{lndconnect_tor_rest_img}}"/>
-                <p>{{ lndconnect_tor_rest_text }}</p>
-            </div>
-        </div>
+        <center>
+            <select id="choose_pair" style="width: 500px;">
+                <option value="choose">Choose pairing option...</option>
+                {% for p in pairs %}
+                <option value="{{p.id}}">{{p.name}}</option>
+                {% endfor %}
+            </select>
 
+            <br/><br/>
+
+            <img id="pairing_qr_code" class="pair_wallet_qr_code" src="{{ dots_img }}"/>
+            <p id="pairing_text" class="pair_wallet_text">Choose pair type...</p>
+        </center>
 
         {% include 'includes/footer.html' %}
     </body>
