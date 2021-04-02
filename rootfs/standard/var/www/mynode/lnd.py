@@ -8,6 +8,7 @@ from device_info import *
 from utilities import *
 from user_management import check_logged_in
 from werkzeug.utils import secure_filename
+import traceback
 import base64
 import subprocess
 import json
@@ -128,12 +129,19 @@ def page_lnd():
         if wallet_balance_data != None and "unconfirmed_balance" in wallet_balance_data:
             wallet_pending = wallet_balance_data["unconfirmed_balance"]
 
+        watchtower_server_info = get_lightning_watchtower_server_info()
+        watchtower_uri = "..."
+        if watchtower_server_info != None:
+            if "uris" in watchtower_server_info and len(watchtower_server_info['uris']) > 0:
+                watchtower_uri = watchtower_server_info['uris'][0]
+
             
     except Exception as e:
         templateData = {
             "title": "myNode Lightning Status",
             "header": "Lightning Status",
-            "message": str(e),
+            #"message": str(e),
+            "message": traceback.format_exc(),
             "ui_settings": read_ui_settings()
         }
         return render_template('error.html', **templateData)
@@ -164,6 +172,7 @@ def page_lnd():
         "channel_pending": format_sat_amount(balance_info["channel_pending"]),
         "wallet_balance": format_sat_amount(balance_info["wallet_balance"]),
         "wallet_pending": format_sat_amount(balance_info["wallet_pending"]),
+        "watchtower_uri": watchtower_uri,
         "peers": peers,
         "channels": channels,
         "ui_settings": read_ui_settings()
@@ -325,6 +334,7 @@ def page_lnd_pair_wallet():
             flash("Invalid Password", category="error")
             return redirect(url_for(".page_lnd"))
 
+    # Lndconnect Data
     lndconnect_local_grpc_text = get_text_contents("/tmp/mynode_lndconnect/lndconnect_local_grpc.txt")
     lndconnect_local_rest_text = get_text_contents("/tmp/mynode_lndconnect/lndconnect_local_rest.txt")
     lndconnect_tor_grpc_text = get_text_contents("/tmp/mynode_lndconnect/lndconnect_tor_grpc.txt")
@@ -341,6 +351,20 @@ def page_lnd_pair_wallet():
         lndconnect_tor_grpc_img = get_image_contents("/var/www/mynode/static/images/dots.png")
         lndconnect_tor_rest_img = get_image_contents("/var/www/mynode/static/images/dots.png")
 
+    # Pairing options
+    pairs = []
+    pairs.append({"name":"Zap (gRPC + Local IP)", "image_src":"","text":"","premium": False})
+    pairs.append({"name":"Zap (gRPC + Tor)", "image_src":"","text":"","premium": False})
+    pairs.append({"name":"Zap (REST + Local IP)", "image_src":"","text":"","premium": False})
+    pairs.append({"name":"Zap (REST + Tor)", "image_src":"","text":"","premium": False})
+    #pairs.append({"name":"Blue Wallet (LNDHub + Local IP)", "image_src":"","text":"","premium": False})
+    #pairs.append({"name":"Blue Wallet (LNDHub + Tor)", "image_src":"","text":"","premium": False})
+    #pairs.append({"name":"Blue Wallet (Electrum + Local IP)", "image_src":"","text":"","premium": False})
+    #pairs.append({"name":"Blue Wallet (Electrum + Tor)", "image_src":"","text":"","premium": False})
+    #pairs.append({"name":"Fully Noded (Tor)", "image_src":"","text":"","premium": False})
+
+    
+
     # Show lndconnect page
     templateData = {
         "title": "myNode Lightning Wallet",
@@ -352,6 +376,7 @@ def page_lnd_pair_wallet():
         "lndconnect_local_rest_img": lndconnect_local_rest_img,
         "lndconnect_tor_grpc_img": lndconnect_tor_grpc_img,
         "lndconnect_tor_rest_img": lndconnect_tor_rest_img,
+        "pairs": pairs,
         "ui_settings": read_ui_settings()
     }
     return render_template('pair_wallet.html', **templateData)
