@@ -23,6 +23,7 @@ lightning_peer_aliases = {}
 lightning_channels = None
 lightning_channel_balance = None
 lightning_wallet_balance = None
+lightning_watchtower_server_info = None
 lightning_desync_count = 0
 
 LND_FOLDER = "/mnt/hdd/mynode/lnd/"
@@ -36,6 +37,7 @@ def update_lightning_info():
     global lightning_channels
     global lightning_channel_balance
     global lightning_wallet_balance
+    global lightning_watchtower_server_info
     global lightning_desync_count
     global lnd_ready
 
@@ -67,6 +69,7 @@ def update_lightning_info():
         lightning_channels = lnd_get("/channels")
         lightning_channel_balance = lnd_get("/balance/channels")
         lightning_wallet_balance = lnd_get("/balance/blockchain")
+        lightning_watchtower_server_info = lnd_get_v2("/watchtower/server")
 
     return True
 
@@ -227,6 +230,10 @@ def get_lightning_balance_info():
 
     return balance_data
 
+def get_lightning_watchtower_server_info():
+    global lightning_watchtower_server_info
+    return copy.deepcopy(lightning_watchtower_server_info)
+
 def is_lnd_ready():
     global lnd_ready
     return lnd_ready
@@ -238,6 +245,16 @@ def lnd_get(path, timeout=10):
         r = requests.get("https://localhost:"+LND_REST_PORT+"/v1"+path, verify=TLS_CERT_FILE,headers=headers, timeout=timeout)
     except Exception as e:
         app.logger.info("ERROR in lnd_get: "+str(e))
+        return {"error": str(e)}
+    return r.json()
+
+def lnd_get_v2(path, timeout=10):
+    try:
+        macaroon = get_macaroon()
+        headers = {'Grpc-Metadata-macaroon': macaroon}
+        r = requests.get("https://localhost:"+LND_REST_PORT+"/v2"+path, verify=TLS_CERT_FILE, headers=headers, timeout=timeout)
+    except Exception as e:
+        app.logger.info("ERROR in lnd_get_v2: "+str(e))
         return {"error": str(e)}
     return r.json()
 

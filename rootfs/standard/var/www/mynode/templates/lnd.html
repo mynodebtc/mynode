@@ -300,11 +300,21 @@
         </div>
 
 {% if wallet_logged_in %}
-        <!-- URL Tile / Row -->
+        <!-- URI Tile / Row -->
         <div class="app_tile_row">
             <div class="info_tile">
                 <div class="info_tile_header">URI</div>
                 <div class="info_tile_contents" style="font-size: 12px;">{{uri}}</div>
+            </div>
+        </div>
+{% endif %}
+
+{% if watchtower_enabled %}
+        <!-- URI Tile / Row -->
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Watchtower Server URI</div>
+                <div class="info_tile_contents" style="font-size: 12px;">{{watchtower_uri}}</div>
             </div>
         </div>
 {% endif %}
