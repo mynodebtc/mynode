@@ -179,6 +179,14 @@ td, th {
 
 }
 
+.app_tile_grid_container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-gap: 0px;
+    width: 850px;
+    margin: auto;
+}
+
 .app_tile_row {
     margin: auto;
     display: flex;
@@ -205,6 +213,7 @@ td, th {
     height: 180px;
     padding: 10px;
     margin: 6px 10px 6px 10px;
+    margin-bottom: 16px;
     background: #f0f0f0;
 }
 .app_tile_short {
@@ -415,6 +424,8 @@ table.bitcoind_table td {
 .app_status {
     font-size: 12px;
     line-height: 130%;
+    text-align: center;
+    width: 100%;
 }
 .app_beta_tag_image {
     width: 50px;

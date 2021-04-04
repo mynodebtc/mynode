@@ -1,7 +1,8 @@
 <div class="main_header">Apps</div>
 
 <!-- ROW 1 -->
-<div class="app_tile_row">
+<div class="app_tile_grid_container">
+
     <div class="app_tile">
         <div class="app_status_icon {{ rtl_status_color }}" id="rtl_status_icon"></div>
         <!--
@@ -20,6 +21,7 @@
             {% endif %}
         </div>
     </div>
+
     <div class="app_tile">
         <div class="app_status_icon {{ electrs_status_color }}" id="electrs_status_icon"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/electrum_logo.png")}}"/></div>
@@ -32,6 +34,7 @@
             <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-electrs">{% if electrs_enabled %}Disable{% else %}Enable{% endif %}</a>
         </div>
     </div>
+
     <div class="app_tile">
         <div class="app_status_icon {{ btcpayserver_status_color }}" id="btcpayserver_status_icon"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/btcpayserver.png")}}"/></div>
@@ -50,6 +53,7 @@
             {% endif %}
         </div>
     </div>
+
     <div class="app_tile">
         <div class="app_status_icon {{mempoolspace_status_color}}" id="mempoolspace_status_icon"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/mempoolspace.png")}}"/></div>
@@ -80,11 +84,7 @@
             {% endif %}
         </div>
     </div>
-</div>
 
-
-<!-- ROW 2 -->
-<div class="app_tile_row">
     <div class="app_tile">
         <div class="app_status_icon {{ btcrpcexplorer_status_color }}" id="btcrpcexplorer_status_icon"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/btc_rpc_explorer.png")}}"/></div>
@@ -101,6 +101,7 @@
             {% endif %}
         </div>
     </div>
+
     {% if not is_device_from_reseller %}
     <div class="app_tile">
         <div class="app_status_icon {{ dojo_status_color }}" id="dojo_status_icon"></div>
@@ -122,6 +123,7 @@
             {% endif %}
         </div>
     </div>
+
     <div class="app_tile">
         <div class="app_status_icon {{ whirlpool_status_color }}" id="whirlpool_status_icon"></div>
         {% if ui_settings['darkmode'] %}
@@ -141,6 +143,7 @@
         </div>
     </div>
     {% endif %}
+
     <div class="app_tile">
         <!--<div class="app_status_icon green" id="joininbox_status_icon"></div>-->
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/joininbox.png")}}"/></div>
@@ -150,6 +153,7 @@
             <a class="ui-button ui-widget ui-corner-all mynode_button" href="/joininbox">Info</a>
         </div>
     </div>
+
     <div class="app_tile">
         <div class="app_status_icon {{ thunderhub_status_color }}" id="thunderhub_status_icon"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/thunderhub.png")}}"/></div>
@@ -170,11 +174,7 @@
             {% endif %}
         </div>
     </div>
-</div>
 
-
-<!-- ROW 3 -->
-<div class="app_tile_row">
     <div class="app_tile">
         <div class="app_status_icon {{ caravan_status_color }}" id="caravan_status_icon"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/caravan.png")}}"/></div>
@@ -193,6 +193,7 @@
             {% endif %}
         </div>
     </div>
+
     <div class="app_tile">
         <div class="app_status_icon {{ specter_status_color }}" id="specter_status_icon"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/specter.png")}}"/></div>
@@ -231,6 +232,7 @@
             {% endif %}
         </div>
     </div>
+
     <div class="app_tile">
         <div class="app_status_icon {{ sphinxrelay_status_color }}" id="sphinxrelay_status_icon"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/sphinx.png")}}"/></div>
@@ -251,6 +253,7 @@
             {% endif %}
         </div>
     </div>
+
     <div class="app_tile">
         <div class="app_status_icon {{ lnbits_status_color }}" id="lnbits_status_icon"></div>
         <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lnbits.png")}}"/></div>
@@ -271,10 +274,9 @@
             {% endif %}
         </div>
     </div>
+    
 </div>
 
-<!-- BETA APPS -->
-<!-- <div class="main_header">Beta Apps</div> -->
 
 <!-- REMOTE SERVICES -->
 <div class="app_tile_row">
