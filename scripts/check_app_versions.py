@@ -8,7 +8,7 @@ apps = [{"name": "bitcoin/bitcoin",                         "current_version_var
         {"name": "lightningnetwork/lnd",                    "current_version_variable": "LND_VERSION"},
         {"name": "lightninglabs/loop",                      "current_version_variable": "LOOP_VERSION"},
         {"name": "lightninglabs/pool",                      "current_version_variable": "POOL_VERSION"},
-        {"name": "romanz/electrs",                          "current_version":          "v0.8.6"},
+        {"name": "romanz/electrs",                          "current_version":          "v0.8.9"},
         {"name": "mempool/mempool",                         "current_version_variable": "MEMPOOL_VERSION"},
         {"name": "Ride-The-Lightning/RTL",                  "current_version_variable": "RTL_VERSION"},
         {"name": "janoside/btc-rpc-explorer",               "current_version_variable": "BTCRPCEXPLORER_VERSION"},
