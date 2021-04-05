@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 #==================================
 # Utilities
@@ -37,8 +38,8 @@ def get_file_log(file_path):
         lines = status_log.split('\n')
         lines.reverse()
         status_log = '\n'.join(lines)
-    except:
-        status_log = "ERROR"
+    except Exception as e:
+        status_log = "ERROR ({})".format(str(e))
     return status_log
 
 
