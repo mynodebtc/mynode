@@ -47,7 +47,7 @@ while true; do
     fi
 
     # Upgrade mempool
-    MEMPOOL_URL=https://github.com/mempool/mempool/archive/${MEMPOOL_VERSION}.tar.gz
+    MEMPOOL_UPGRADE_URL=https://github.com/mempool/mempool/archive/${MEMPOOL_VERSION}.tar.gz
     echo "Checking for new mempool..."
     CURRENT=""
     if [ -f $MEMPOOL_VERSION_FILE ]; then
