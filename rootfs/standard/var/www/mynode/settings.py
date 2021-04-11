@@ -1,7 +1,7 @@
 from config import *
 from flask import Blueprint, render_template, session, abort, Markup, request, redirect, send_from_directory, url_for, flash, current_app
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
-from bitcoin import is_bitcoind_synced
+from bitcoin import is_bitcoin_synced
 from bitcoin_info import using_bitcoin_custom_config
 from lightning_info import using_lnd_custom_config
 from pprint import pprint, pformat
@@ -11,6 +11,7 @@ from user_management import check_logged_in
 from lightning_info import *
 from thread_functions import *
 from utilities import *
+from application_info import *
 import pam
 import time
 import os
@@ -53,6 +54,7 @@ def page_settings():
 
     templateData = {
         "title": "myNode Settings",
+        "apps": get_all_applications(order_by="alphabetic"),
         "password_message": "",
         "current_version": current_version,
         "latest_version": latest_version,
@@ -74,12 +76,12 @@ def page_settings():
         "logout_time_hours": logout_time_hours,
         "using_bitcoin_custom_config": using_bitcoin_custom_config(),
         "using_lnd_custom_config": using_lnd_custom_config(),
-        "is_bitcoin_synced": is_bitcoind_synced(),
+        "is_bitcoin_synced": is_bitcoin_synced(),
         "is_installing_docker_images": is_installing_docker_images(),
         "firewall_rules": get_firewall_rules(),
         "is_testnet_enabled": is_testnet_enabled(),
         "is_quicksync_disabled": not is_quicksync_enabled(),
-        "is_netdata_enabled": is_netdata_enabled(),
+        "netdata_enabled": is_service_enabled("netdata"),
         "is_uploader_device": is_uploader(),
         "download_rate": download_rate,
         "upload_rate": upload_rate,
@@ -102,6 +104,7 @@ def page_settings():
 @mynode_settings.route("/status")
 def page_status():
     check_logged_in()
+    t1 = get_system_time_in_ms()
 
     current_version = get_current_version()
     latest_version = get_latest_version()
@@ -138,15 +141,15 @@ def page_status():
 
     # Get Bitcoin Status
     bitcoin_status_log = get_file_log( get_bitcoin_log_file() )
-    # GET lnd, loopd, poold logs from file???
+    # GET lnd, loop, pool logs from file???
     #lnd_status_log = get_file_log("/mnt/hdd/mynode/lnd/logs/bitcoin/mainnet/lnd.log")
-    #loopd_status_log = get_file_log("/mnt/hdd/mynode/loop/logs/mainnet/loopd.log")
-    #poold_status_log = get_file_log("/mnt/hdd/mynode/pool/logs/mainnet/poold.log")
+    #loop_status_log = get_file_log("/mnt/hdd/mynode/loop/logs/mainnet/loopd.log")
+    #pool_status_log = get_file_log("/mnt/hdd/mynode/pool/logs/mainnet/poold.log")
 
     # Get Status
     lnd_status_log = get_journalctl_log("lnd")
-    loopd_status_log = get_journalctl_log("loopd")
-    poold_status_log = get_journalctl_log("poold")
+    loop_status_log = get_journalctl_log("loop")
+    pool_status_log = get_journalctl_log("pool")
     lndhub_status_log = get_journalctl_log("lndhub")
     tor_status_log = get_journalctl_log("tor@default")
     electrs_status_log = get_journalctl_log("electrs")
@@ -188,19 +191,22 @@ def page_status():
         "quicksync_status_log": quicksync_status_log,
         "quicksync_status": quicksync_status,
         "quicksync_status_color": quicksync_status_color,
-        "is_bitcoin_synced": is_bitcoind_synced(),
+        "is_bitcoin_synced": is_bitcoin_synced(),
         "bitcoin_status_log": bitcoin_status_log,
-        "bitcoin_status": get_service_status_basic_text("bitcoind"),
-        "bitcoin_status_color": get_service_status_color("bitcoind"),
+        "bitcoin_status": get_service_status_basic_text("bitcoin"),
+        "bitcoin_status_color": get_service_status_color("bitcoin"),
         "lnd_status_log": lnd_status_log,
         "lnd_status": get_service_status_basic_text("lnd"),
         "lnd_status_color": get_service_status_color("lnd"),
-        "loopd_status_log": loopd_status_log,
-        "loopd_status": get_service_status_basic_text("loopd"),
-        "loopd_status_color": get_service_status_color("loopd"),
-        "poold_status_log": poold_status_log,
-        "poold_status": get_service_status_basic_text("poold"),
-        "poold_status_color": get_service_status_color("poold"),
+        "loop_status_log": loop_status_log,
+        "loop_status": get_service_status_basic_text("loop"),
+        "loop_status_color": get_service_status_color("loop"),
+        "pool_status_log": pool_status_log,
+        "pool_status": get_service_status_basic_text("pool"),
+        "pool_status_color": get_service_status_color("pool"),
+        "lit_status_log": get_journalctl_log("lit"),
+        "lit_status": get_service_status_basic_text("lit"),
+        "lit_status_color": get_service_status_color("lit"),
         "tor_status_log": tor_status_log,
         "tor_status": get_service_status_basic_text("tor@default"),
         "tor_status_color": get_service_status_color("tor@default"),
@@ -243,9 +249,9 @@ def page_status():
         "btcpayserver_status_log": get_journalctl_log("btcpayserver"),
         "btcpayserver_status": get_service_status_basic_text("btcpayserver"),
         "btcpayserver_status_color": get_service_status_color("btcpayserver"),
-        "mempoolspace_status_log": get_journalctl_log("mempoolspace"),
-        "mempoolspace_status": get_service_status_basic_text("mempoolspace"),
-        "mempoolspace_status_color": get_service_status_color("mempoolspace"),
+        "mempool_status_log": get_journalctl_log("mempool"),
+        "mempool_status": get_service_status_basic_text("mempool"),
+        "mempool_status_color": get_service_status_color("mempool"),
         "caravan_status_log": get_journalctl_log("caravan"),
         "caravan_status": get_service_status_basic_text("caravan"),
         "caravan_status_color": get_service_status_color("caravan"),
@@ -260,7 +266,7 @@ def page_status():
         "firewall_status_color": get_service_status_color("ufw"),
         "firewall_rules": get_firewall_rules(),
         "is_quicksync_disabled": not quicksync_enabled,
-        "is_netdata_enabled": is_netdata_enabled(),
+        "netdata_enabled": is_service_enabled("netdata"),
         "uptime": uptime,
         "date": date,
         "local_ip": local_ip,
@@ -273,6 +279,8 @@ def page_status():
         "device_temp": get_device_temp(),
         "ui_settings": read_ui_settings()
     }
+    t2 = get_system_time_in_ms()
+    templateData["load_time"] = t2-t1
     return render_template('status.html', **templateData)
 
 @mynode_settings.route("/settings/upgrade")
@@ -443,7 +451,7 @@ def shutdown_device_page():
 def reindex_blockchain_page():
     check_logged_in()
     os.system("echo 'BTCARGS=-reindex-chainstate' > "+BITCOIN_ENV_FILE)
-    os.system("systemctl restart bitcoind")
+    os.system("systemctl restart bitcoin")
     t = Timer(30.0, reset_bitcoin_env_file)
     t.start()
     return redirect("/settings")
@@ -452,7 +460,7 @@ def reindex_blockchain_page():
 def rescan_blockchain_page():
     check_logged_in()
     os.system("echo 'BTCARGS=-rescan' > "+BITCOIN_ENV_FILE)
-    os.system("systemctl restart bitcoind")
+    os.system("systemctl restart bitcoin")
     t = Timer(30.0, reset_bitcoin_env_file)
     t.start()
     return redirect("/settings")
@@ -788,7 +796,16 @@ def reinstall_app_page():
 
     check_and_mark_reboot_action("reinstall_app")
 
-    app = request.args.get('app')
+    # Check application specified
+    if not request.args.get("app"):
+        flash("No application specified", category="error")
+        return redirect("/settings")
+    
+    # Check application name is valid
+    app = request.args.get("app")
+    if not is_application_valid(app):
+        flash("Application is invalid", category="error")
+        return redirect("/settings")
 
     # Re-install app
     t = Timer(1.0, reinstall_app, [app])
@@ -895,10 +912,10 @@ def toggle_darkmode_page_home():
 def toggle_netdata_page():
     check_logged_in()
 
-    if is_netdata_enabled():
-        disable_netdata()
+    if is_service_enabled("netdata"):
+        disable_service("netdata")
     else:
-        enable_netdata()
+        enable_service("netdata")
     return redirect("/settings")
 
 @mynode_settings.route("/settings/modify-swap")

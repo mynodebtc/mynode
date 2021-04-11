@@ -28,11 +28,13 @@ LIT_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lit_version_latest
 LIT_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-$LIT_VERSION.txt
 LIT_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-guggero-$LIT_VERSION.sig
 
-ELECTRS_VERSION="v0.8.6" 
+ELECTRS_VERSION="v0.8.9" 
 ELECTRS_VERSION_FILE=/home/bitcoin/.mynode/electrs_version
 ELECTRS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/electrs_version_latest
 
 MEMPOOL_VERSION="v2.1.2"
+MEMPOOL_VERSION_FILE=/mnt/hdd/mynode/settings/mempool_version
+MEMPOOL_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/mempool_version_latest
 
 LNDHUB_VERSION="v1.3.0"
 LNDHUB_VERSION_FILE=/home/bitcoin/.mynode/lndhub_version
@@ -62,10 +64,17 @@ WHIRLPOOL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/whirlpool_version_latest
 
 DOJO_VERSION="v1.9.0"
 DOJO_TAR_HASH="b9709c18bb58f514a2f1db948b421b691b22fbf7713f5a68ce9627f35fcbf306"
+DOJO_VERSION_FILE=/mnt/hdd/mynode/settings/dojo_version
+DOJO_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/dojo_version_latest
 
 RTL_VERSION="v0.10.1"
 RTL_VERSION_FILE=/home/bitcoin/.mynode/rtl_version
 RTL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/rtl_version_latest
+
+BTCPAYSERVER_VERSION="1.0.6.2"
+BTCPAYSERVER_NBXPLORER_VERSION="2.1.47"
+BTCPAYSERVER_VERSION_FILE=/home/bitcoin/.mynode/btcpayserver_version
+BTCPAYSERVER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/btcpayserver_version_latest
 
 BTCRPCEXPLORER_VERSION="v2.2.0"
 BTCRPCEXPLORER_VERSION_FILE=/home/bitcoin/.mynode/btcrpcexplorer_version
@@ -96,3 +105,5 @@ SPHINXRELAY_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version
 SPHINXRELAY_LATEST_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version_latest
 
 WEBSSH2_VERSION="v0.2.10-0"
+WEBSSH2_VERSION_FILE=/mnt/hdd/mynode/settings/webssh2_version
+WEBSSH2_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/webssh2_version_latest

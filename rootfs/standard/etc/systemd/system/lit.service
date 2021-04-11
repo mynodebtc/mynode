@@ -1,10 +1,10 @@
-# litd service
-# /etc/systemd/system/litd.service
+# lit service
+# /etc/systemd/system/lit.service
 
 [Unit]
 Description=Lightning Terminal
-Wants=bitcoind.service lnd.service
-After=bitcoind.service lnd.service
+Wants=bitcoin.service lnd.service
+After=bitcoin.service lnd.service
 
 [Service]
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
@@ -25,7 +25,7 @@ Restart=always
 RestartSec=1
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=litd
+SyslogIdentifier=lit
 
 [Install]
 WantedBy=multi-user.target  

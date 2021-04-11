@@ -202,7 +202,7 @@ pip2 install --upgrade wheel
 pip2 install speedtest-cli transmissionrpc flask python-bitcoinrpc redis prometheus_client requests
 pip2 install python-pam python-bitcoinlib psutil
 pip2 install grpcio grpcio-tools googleapis-common-protos
-pip2 install tzupdate virtualenv pysocks redis qrcode image
+pip2 install tzupdate virtualenv pysocks redis qrcode image subprocess32
 
 
 # Update Python3 to 3.7.X
@@ -882,11 +882,12 @@ systemctl enable firewall
 systemctl enable bandwidth
 systemctl enable www
 systemctl enable drive_check
-systemctl enable bitcoind
+systemctl enable bitcoin
 systemctl enable seed_bitcoin_peers
 systemctl enable lnd
-systemctl enable loopd
-systemctl enable poold
+systemctl enable loop
+systemctl enable pool
+systemctl enable lit
 systemctl enable lnd_unlock
 systemctl enable lnd_backup
 systemctl enable lnd_admin_files
@@ -895,7 +896,7 @@ systemctl enable redis-server
 #systemctl enable mongodb
 #systemctl enable electrs # DISABLED BY DEFAULT
 #systemctl enable lndhub # DISABLED BY DEFAULT
-#systemctl enable btc_rpc_explorer # DISABLED BY DEFAULT
+#systemctl enable btcrpcexplorer # DISABLED BY DEFAULT
 systemctl enable tls_proxy
 systemctl enable rtl
 systemctl enable tor

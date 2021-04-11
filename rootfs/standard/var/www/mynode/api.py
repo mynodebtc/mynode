@@ -138,7 +138,7 @@ def api_homepage_needs_refresh():
         data["needs_refresh"] = "yes"
     if not get_has_updated_btc_info():
         data["needs_refresh"] = "yes"
-    if not is_bitcoind_synced():
+    if not is_bitcoin_synced():
         data["needs_refresh"] = "yes"
 
     return jsonify(data)

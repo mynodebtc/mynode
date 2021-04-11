@@ -5,6 +5,56 @@
         <meta http-equiv="refresh" content="{{ refresh_rate }}">
 
         <script>
+            // Data
+            var application_data = {};
+            {% for app in apps %}
+            application_data["{{app.short_name}}"] = {};
+            application_data["{{app.short_name}}"]["name"] = "{{app.name}}";
+            application_data["{{app.short_name}}"]["short_name"] = "{{app.short_name}}";
+            application_data["{{app.short_name}}"]["is_enabled"] = {% if app.is_enabled %}true{% else %}false{% endif %};
+            {% endfor %}
+
+            // Toggle enable/disable functions
+            function get_custom_enable_message(short_name) {
+                message = "";
+                if (short_name == "electrs") {
+                    message = "Enabling Electrum Server will take several days to fully sync for \
+                               the first time. Your myNode may run slowly during this period.";
+                } else if (short_name == "vpn") {
+                    message = "Enabling VPN will set your IP to a static IP rather than a dynamic one via DHCP. \
+                               The initial setup may take about an hour.";
+                }
+                if (message != "") {
+                    message += "<br/><br/>";
+                }
+                return message;
+            }
+
+            function toggleEnabled(short_name) {
+                enabled = application_data[short_name]["is_enabled"];
+                full_name = application_data[short_name]["name"];
+                
+                if ( enabled ) {
+                    // Disabling
+                    openConfirmDialog("confirm-dialog", 
+                                      "Disable "+full_name, 
+                                      "Are you sure you want to disable "+full_name+"?",
+                                       function(){
+                                            window.location.href="/toggle-enabled?app="+short_name
+                                       });
+                } else {
+                    custom_message = "";
+                    // Enabling
+                    openConfirmDialog("confirm-dialog", 
+                                      "Enable "+full_name, 
+                                      get_custom_enable_message(short_name) +
+                                      "Are you sure you want to enable "+full_name+"?",
+                                       function(){
+                                            window.location.href="/toggle-enabled?app="+short_name
+                                       });
+                }
+            }
+
             // Update status functions
             function update_status(status_name, data) {
                 if (data != null && "status" in data && data["status"] != null) {
@@ -173,8 +223,8 @@
                     update_status_icon("rtl_status_icon", data);
                 });
                 $.getJSON("/api/get_service_status?service=mempool", function( data ) {
-                    update_status("mempoolspace_status", data);
-                    update_status_icon("mempoolspace_status_icon", data);
+                    update_status("mempool_status", data);
+                    update_status_icon("mempool_status_icon", data);
                 });
                 $.getJSON("/api/get_service_status?service=whirlpool", function( data ) {
                     update_status("whirlpool_status", data);
@@ -275,7 +325,7 @@
                 electrs_enabled = {% if electrs_enabled %}1{% else %}0{% endif %}
                 lndhub_enabled = {% if lndhub_enabled %}1{% else %}0{% endif %}
                 vpn_enabled = {% if vpn_enabled %}1{% else %}0{% endif %}
-                mempoolspace_enabled = {% if mempoolspace_enabled %}1{% else %}0{% endif %}
+                mempool_enabled = {% if mempool_enabled %}1{% else %}0{% endif %}
 
                 $( document ).tooltip();
 
@@ -349,7 +399,7 @@
                     window.open(url,'_blank');
                 })
 
-                $("#mempoolspace").on("click", function() {
+                $("#mempool").on("click", function() {
                     port="4080"
                     if (location.protocol == "https:") {
                         port="4081"
@@ -366,86 +416,6 @@
                     url = location.protocol+'//'+location.hostname+':'+port
                     window.open(url,'_blank');
                 })
-
-                $("#toggle-electrs").on("click", function() {
-                    if (electrs_enabled)
-                    {
-                        // Disable electrs
-                        window.location.href="/toggle-electrs"
-                    }
-                    else
-                    {
-                        // Enable electrs
-                        var okFunction = function() {
-                            window.location.href="/toggle-electrs"
-                        }
-                        openConfirmDialog("confirm-dialog", 
-                                          "Enable Electrum Server", 
-                                          "Enabling Electrum Server will take several days to fully sync for \
-                                           the first time. Your myNode may run slowly during this period.<br/><br/> \
-                                           Would you like to enable electrum server?",
-                                           okFunction)
-                    }
-                    return false
-                });
-
-                $("#toggle-vpn").on("click", function() {
-                    if (vpn_enabled)
-                    {
-                        // Disable vpn
-                        window.location.href="/toggle-vpn"
-                    }
-                    else
-                    {
-                        // Enable vpn
-                        var okFunction = function() {
-                            window.location.href="/toggle-vpn"
-                        }
-                        openConfirmDialog("confirm-dialog", 
-                                          "Enable VPN", 
-                                          "Enabling VPN will set your IP to a static IP rather than a dynamic one via DHCP. \
-                                           The initial setup may take about an hour.<br/><br/> \
-                                           Would you like to enable VPN?",
-                                           okFunction)
-                    }
-                    return false
-                });
-
-                $("#toggle-btcrpcexplorer").on("click", function() {
-                        window.location.href="/toggle-btcrpcexplorer"
-                });
-
-                $("#toggle-mempoolspace").on("click", function() {
-                        window.location.href="/toggle-mempoolspace"
-                });
-
-                $("#toggle-btcpayserver").on("click", function() {
-                        window.location.href="/toggle-btcpayserver"
-                });
-
-                $("#toggle-caravan").on("click", function() {
-                        window.location.href="/toggle-caravan"
-                });
-
-                $("#toggle-specter").on("click", function() {
-                        window.location.href="/toggle-specter"
-                });
-
-                $("#toggle-lnbits").on("click", function() {
-                        window.location.href="/toggle-lnbits"
-                });
-
-                $("#toggle-thunderhub").on("click", function() {
-                        window.location.href="/toggle-thunderhub"
-                });
-
-                $("#toggle-ckbunker").on("click", function() {
-                        window.location.href="/toggle-ckbunker"
-                });
-
-                $("#toggle-sphinxrelay").on("click", function() {
-                        window.location.href="/toggle-sphinxrelay"
-                });
 
                 function pair_wallet_submit() {
                     $("#pair_wallet_form").submit();

@@ -2,10 +2,10 @@
 <div class="app_tile_row">
     <div class="app_tile_wide">
         <div style="width: 130px; float: left;">
-            <div class="app_status_icon {{ bitcoind_status_color }}" id="bitcoin_status_icon"></div>
+            <div class="app_status_icon {{ bitcoin_status_color }}" id="bitcoin_status_icon"></div>
             <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/bitcoin.png")}}"/></div>
             <div class="app_title">Bitcoin</div>
-            <div class="app_status" id="bitcoin_status">{{ bitcoind_status }}</div>
+            <div class="app_status" id="bitcoin_status">{{ bitcoin_status }}</div>
             {% if is_testnet_enabled %}
                 <div class="app_status" style="color: green; margin-top: 3px;">Testnet</div>
             {% endif %}

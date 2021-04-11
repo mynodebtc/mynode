@@ -36,7 +36,7 @@ def get_bitcoin_version():
         bitcoin_version = subprocess.check_output("bitcoind --version | egrep -o 'v[0-9]+\\.[0-9]+\\.[0-9]+'", shell=True)
     return bitcoin_version
 
-def is_bitcoind_synced():
+def is_bitcoin_synced():
     if os.path.isfile( BITCOIN_SYNCED_FILE ):
         return True
     return False
@@ -236,7 +236,7 @@ def delete_bitcoin_custom_config():
     os.system("rm -f /mnt/hdd/mynode/settings/bitcoin_custom.conf")
 
 def restart_bitcoin_actual():
-    os.system("systemctl restart bitcoind")
+    os.system("systemctl restart bitcoin")
 
 def restart_bitcoin():
     t = Timer(1.0, restart_bitcoin_actual)

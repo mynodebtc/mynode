@@ -1,5 +1,5 @@
-# bitcoind service
-# /etc/systemd/system/bitcoind.service
+# bitcoin service
+# /etc/systemd/system/bitcoin.service
 
 [Unit]
 Description=Bitcoin daemon
@@ -10,9 +10,9 @@ ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_uploader.sh
 ExecStartPre=/bin/sh -c 'cat /mnt/hdd/mynode/quicksync/.quicksync_complete'
 EnvironmentFile=/mnt/hdd/mynode/bitcoin/env
-ExecStart=/usr/local/bin/bitcoind -daemon $BTCARGS -deprecatedrpc=accounts -par=-1 -conf=/home/bitcoin/.bitcoin/bitcoin.conf -printtoconsole -pid=/home/bitcoin/.bitcoin/bitcoind.pid
+ExecStart=/usr/local/bin/bitcoind -daemon $BTCARGS -deprecatedrpc=accounts -par=-1 -conf=/home/bitcoin/.bitcoin/bitcoin.conf -printtoconsole -pid=/home/bitcoin/.bitcoin/bitcoin.pid
 ExecStartPost=+/usr/bin/mynode_post_bitcoin.sh
-PIDFile=/home/bitcoin/.bitcoin/bitcoind.pid
+PIDFile=/home/bitcoin/.bitcoin/bitcoin.pid
 User=bitcoin
 Group=bitcoin
 Type=forking
@@ -25,7 +25,7 @@ TimeoutSec=300
 RestartSec=30
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=bitcoind
+SyslogIdentifier=bitcoin
 
 [Install]
 WantedBy=multi-user.target

@@ -4,20 +4,25 @@
         {% include 'includes/head.html' %}
 
         <script>
-
-            function upgrade(name, short_name) {
-                if ( confirm("Are you sure you want to upgrade "+name+"? This will reboot your device.") ) {
-                    window.location.href='/settings/reinstall-app?app='+short_name;
-                }
-            }
-
-            function reinstall(name, short_name) {
-                if ( confirm("Are you sure you want to re-install "+name+"? This will reboot your device.") ) {
-                    window.location.href='/settings/reinstall-app?app='+short_name;
-                }
-            }
-
             $(document).ready(function() {
+
+                function upgrade(name, short_name) {
+                    if ( confirm("Are you sure you want to upgrade "+name+"? This will reboot your device.") ) {
+                        window.location.href='/settings/reinstall-app?app='+short_name;
+                    }
+                }
+
+                function reinstall(name, short_name) {
+                    if ( confirm("Are you sure you want to re-install "+name+"? This will reboot your device.") ) {
+                        window.location.href='/settings/reinstall-app?app='+short_name;
+                    }
+                }
+
+                function uninstall(name, short_name) {
+                    if ( confirm("Are you sure you want to uninstall "+name+"? This will reboot your device.") ) {
+                        window.location.href='/settings/uninstall-app?app='+short_name;
+                    }
+                }
 
             });
         </script>
@@ -30,30 +35,47 @@
 
         <div class="main_header">Manage Applications</div>
         </br>
-        
+        <!-- {{ load_time }} ms -->
         <br/><br/>
-        <table class="bitcoind_table">
-            <thead class="bitcoind_table_header">
+        <table class="bitcoin_table">
+            <thead class="bitcoin_table_header">
                 <td>Application</td>
                 <td>Current Version</td>
                 <td>Latest Version</td>
+                <td><!-- Enabled Icon --></td>
                 <td colspan="2">Actions</td>
             </thead>
             <tbody>
                 {% for app in apps %}
-                    <tr>
-                        <td>{{ app.name }}</td>
-                        <td>{{ app.current_version }}</td>
-                        <td>{{ app.latest_version }}</td>
-                        <td>
-                            {% if app.current_version != app.latest_version %}
-                            <button class="ui-button ui-widget ui-corner-all mynode_button_small" onclick="upgrade('{{ app.name }}', '{{ app.short_name }}');">Upgrade</button>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <button class="ui-button ui-widget ui-corner-all mynode_button_small" onclick="reinstall('{{ app.name }}', '{{ app.short_name }}');">Reinstall</button>
-                        </td>
-                    </tr>
+                    {% if app.show_on_application_page %}
+                    {% if not product_key_skipped or product_key_skipped and not app.is_premium %}
+                        <tr>
+                            <td>{{ app.name }}</td>
+                            <td>{{ app.current_version }}</td>
+                            <td>{{ app.latest_version }}</td>
+                            <td>
+                                {% if app.is_enabled %}<img style="width: 20px;" title="Enabled" src="{{ url_for('static', filename="images/running.png")}}"/>{% endif %}
+                            </td>
+                            <td>
+                                {% if app.is_installed %}
+                                    {% if app.current_version != app.latest_version %}
+                                    <button class="ui-button ui-widget ui-corner-all mynode_button_small" onclick="upgrade('{{ app.name }}', '{{ app.short_name }}');">Upgrade</button>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if app.is_installed %}
+                                    {% if app.can_reinstall %}
+                                    <button class="ui-button ui-widget ui-corner-all mynode_button_small" onclick="reinstall('{{ app.name }}', '{{ app.short_name }}');">Reinstall</button>
+                                    {% endif %}
+                                    {% if app.can_uninstall %}
+                                    <button class="ui-button ui-widget ui-corner-all mynode_button_small" onclick="uninstall('{{ app.name }}', '{{ app.short_name }}');">Uninstall</button>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                    {% endif %}
                 {% endfor %}
             </tbody>
         </table>

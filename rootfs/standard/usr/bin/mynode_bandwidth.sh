@@ -50,7 +50,7 @@ while true; do
         transmission-remote -u $UPLOAD_RATE
         transmission-remote -D
         transmission-remote -t 1 --peers 10
-    elif [ ! -f "/mnt/hdd/mynode/.mynode_bitcoind_synced" ]; then
+    elif [ ! -f "/mnt/hdd/mynode/.mynode_bitcoin_synced" ]; then
         echo "Bitcoin not synced, stopping upload, stopping download"
         transmission-remote -u 0
         transmission-remote -d 0

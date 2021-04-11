@@ -7,8 +7,8 @@
 
 [Unit]
 Description=Proxy for Secure Electrs
-Wants=mynode.service bitcoind.service
-After=mynode.service bitcoind.service
+Wants=mynode.service bitcoin.service
+After=mynode.service bitcoin.service
 
 [Service]
 Type=simple

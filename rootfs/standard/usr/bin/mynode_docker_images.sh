@@ -26,12 +26,11 @@ while true; do
     
     echo "Checking for new webssh2..."
     WEBSSH2_UPGRADE_URL=https://github.com/billchurch/webssh2/archive/${WEBSSH2_VERSION}.tar.gz
-    WEBSSH2_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/webssh2_url
     CURRENT=""
-    if [ -f $WEBSSH2_UPGRADE_URL_FILE ]; then
-        CURRENT=$(cat $WEBSSH2_UPGRADE_URL_FILE)
+    if [ -f $WEBSSH2_VERSION_FILE ]; then
+        CURRENT=$(cat $WEBSSH2_VERSION_FILE)
     fi
-    if [ "$CURRENT" != "$WEBSSH2_UPGRADE_URL" ]; then
+    if [ "$CURRENT" != "$WEBSSH2_VERSION" ]; then
         docker rmi webssh2 || true
 
         cd /tmp/
@@ -43,19 +42,18 @@ while true; do
         cd webssh2
         docker build -t webssh2 .
         if [ $? == 0 ]; then
-            echo $WEBSSH2_UPGRADE_URL > $WEBSSH2_UPGRADE_URL_FILE
+            echo $WEBSSH2_VERSION > $WEBSSH2_VERSION_FILE
         fi
     fi
 
     # Upgrade mempool
     MEMPOOL_URL=https://github.com/mempool/mempool/archive/${MEMPOOL_VERSION}.tar.gz
-    MEMPOOL_URL_FILE=/mnt/hdd/mynode/settings/mempoolspace_url
     echo "Checking for new mempool..."
     CURRENT=""
-    if [ -f $MEMPOOL_UPGRADE_URL_FILE ]; then
-        CURRENT=$(cat $MEMPOOL_UPGRADE_URL_FILE)
+    if [ -f $MEMPOOL_VERSION_FILE ]; then
+        CURRENT=$(cat $MEMPOOL_VERSION_FILE)
     fi
-    if [ "$CURRENT" != "$MEMPOOL_UPGRADE_URL" ]; then
+    if [ "$CURRENT" != "$MEMPOOL_VERSION" ]; then
         docker rmi mempoolspace || true     # Remove old v1 image
 
         cd /mnt/hdd/mynode/mempool
@@ -77,12 +75,12 @@ while true; do
         docker pull mempool/frontend:${MEMPOOL_VERSION}
         docker pull mempool/backend:${MEMPOOL_VERSION}
 
-        enabled=$(systemctl is-enabled mempoolspace)
+        enabled=$(systemctl is-enabled mempool)
         if [ "$enabled" = "enabled" ]; then
-            systemctl restart mempoolspace &
+            systemctl restart mempool &
         fi
 
-        echo $MEMPOOL_UPGRADE_URL > $MEMPOOL_UPGRADE_URL_FILE
+        echo $MEMPOOL_VERSION > $MEMPOOL_VERSION_FILE
     fi
 
     # Install Dojo
@@ -91,18 +89,22 @@ while true; do
     CURRENT=""
     INSTALL=true
     # If Upgrade file existed, mark "install" choice for legacy devices
-    if [ -f $DOJO_UPGRADE_URL_FILE ]; then
+    if [ -f /mnt/hdd/mynode/settings/dojo_url ]; then
         touch /mnt/hdd/mynode/settings/mynode_dojo_install
         sync
         sleep 3s
     fi
     # Only install Dojo if marked for installation and testnet not enabled
     if [ -f /mnt/hdd/mynode/settings/mynode_dojo_install ] && [ ! -f $IS_TESTNET_ENABLED_FILE ]; then
-        if [ -f $DOJO_UPGRADE_URL_FILE ]; then
-            INSTALL=false
-            CURRENT=$(cat $DOJO_UPGRADE_URL_FILE)
+        if [ -f $DOJO_UPGRADE_URL_FILE ] && [ ! -f $DOJO_VERSION_FILE ]; then
+            echo $DOJO_VERSION > $DOJO_VERSION_FILE
+            sync
         fi
-        if [ "$CURRENT" != "$DOJO_UPGRADE_URL" ]; then
+        if [ -f $DOJO_VERSION_FILE ]; then
+            INSTALL=false
+            CURRENT=$(cat $DOJO_VERSION_FILE)
+        fi
+        if [ "$CURRENT" != "$DOJO_VERSION" ]; then
             MARK_DOJO_COMPLETE=1
             sudo mkdir -p /opt/download/dojo
             sudo mkdir -p /mnt/hdd/mynode/dojo
@@ -145,7 +147,7 @@ while true; do
 
             # Mark dojo install complete
             if [ $MARK_DOJO_COMPLETE = 1 ]; then
-                echo $DOJO_UPGRADE_URL > $DOJO_UPGRADE_URL_FILE
+                echo $DOJO_VERSION > $DOJO_VERSION_FILE
             fi
         fi
     fi

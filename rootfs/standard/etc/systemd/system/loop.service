@@ -1,8 +1,8 @@
-# loopd service
-# /etc/systemd/system/loopd.service
+# loop service
+# /etc/systemd/system/loop.service
 
 [Unit]
-Description=loopd
+Description=loop
 Wants=lnd.service
 After=lnd.service
 
@@ -21,7 +21,7 @@ Restart=always
 RestartSec=60
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=loopd
+SyslogIdentifier=loop
 
 [Install]
 WantedBy=multi-user.target

@@ -120,7 +120,7 @@ echo "" > /etc/nginx/sites-available/default
 dpkg --configure -a
 
 # Install any pip software
-pip2 install tzupdate virtualenv pysocks redis qrcode image --no-cache-dir
+pip2 install tzupdate virtualenv pysocks redis qrcode image subprocess32 --no-cache-dir
 
 
 # Update Python3 to 3.7.X
@@ -261,7 +261,7 @@ if [ "$CURRENT" != "$LND_VERSION" ]; then
 fi
 
 # Upgrade Loop
-echo "Upgrading loopd..."
+echo "Upgrading loop..."
 LOOP_ARCH="loop-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LOOP_ARCH="loop-linux-amd64"
@@ -461,6 +461,7 @@ cd ~
 #     echo $ELECTRS_VERSION > $ELECTRS_VERSION_FILE
 # fi
 # cd ~
+echo $ELECTRS_VERSION > $ELECTRS_VERSION_FILE
 
 
 # Install recent version of secp256k1
@@ -836,10 +837,10 @@ apt-get clean
 systemctl enable check_in
 systemctl enable background
 systemctl enable docker
-systemctl enable bitcoind
+systemctl enable bitcoin
 systemctl enable seed_bitcoin_peers
 systemctl enable lnd
-systemctl enable litd
+systemctl enable lit
 systemctl enable firewall
 systemctl enable invalid_block_check
 systemctl enable usb_driver_check
@@ -847,16 +848,26 @@ systemctl enable docker_images
 systemctl enable glances
 systemctl enable webssh2
 systemctl enable tor
-systemctl enable loopd
-systemctl enable poold
+systemctl enable loop
+systemctl enable pool
 systemctl enable rotate_logs
 systemctl enable corsproxy_btcrpc
 
 # Disable any old services
+systemctl disable bitcoind || true
+systemctl disable poold || true
+systemctl disable loopd || true
+systemctl disable btc_rpc_explorer || true
+systemctl disable mempoolspace || true
 systemctl disable hitch || true
 systemctl disable mongodb || true
 systemctl disable lnd_admin || true
 systemctl disable dhcpcd || true
+rm /etc/systemd/system/bitcoind.service || true
+rm /etc/systemd/system/btc_rpc_explorer.service || true
+rm /etc/systemd/system/mempoolspace.service || true
+rm /etc/systemd/system/poold.service || true
+rm /etc/systemd/system/loopd.service || true
 
 # Reload service settings
 systemctl daemon-reload
