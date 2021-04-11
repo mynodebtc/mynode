@@ -106,6 +106,11 @@ $TORIFY apt-get -y install libudev-dev libusb-1.0-0-dev python3-venv gunicorn sq
 $TORIFY apt-get -y install torsocks python3-requests libsystemd-dev libjpeg-dev zlib1g-dev psmisc
 $TORIFY apt-get -y install hexyl libbz2-dev
 
+# Install device specific packages
+if [ $IS_X86 = 1 ]; then
+    $TORIFY apt-get -y install cloud-init
+fi
+
 # Make sure some software is removed
 apt-get -y purge ntp # (conflicts with systemd-timedatectl)
 apt-get -y purge chrony # (conflicts with systemd-timedatectl)
