@@ -7,7 +7,7 @@ from enable_disable_functions import *
 from lightning_info import is_lnd_ready, get_lnd_status, get_lnd_status_color
 from systemctl_info import *
 from electrum_info import get_electrs_status, is_electrs_active
-from bitcoin_info import get_bitcoin_status, is_bitcoind_synced
+from bitcoin_info import get_bitcoin_status, is_bitcoin_synced
 from datetime import timedelta
 import time
 import json
@@ -17,6 +17,11 @@ import random
 import string
 import redis
 import qrcode
+
+try:
+    import subprocess32
+except:
+    pass
 
 # Globals
 local_ip = "unknown"
@@ -55,7 +60,7 @@ def factory_reset():
     # Disable services
     os.system("systemctl disable electrs --no-pager")
     os.system("systemctl disable lndhub --no-pager")
-    os.system("systemctl disable btc_rpc_explorer --no-pager")
+    os.system("systemctl disable btcrpcexplorer --no-pager")
     os.system("systemctl disable vpn --no-pager")
 
     # Trigger drive to be reformatted on reboot
@@ -461,7 +466,7 @@ def get_drive_info(drive):
 def get_bitcoin_status_and_color():
     status = ""
     color = "gray"
-    if get_service_status_code("bitcoind") == 0:
+    if get_service_status_code("bitcoin") == 0:
         status = get_bitcoin_status()
         color = "green"
     else:
@@ -477,7 +482,7 @@ def get_lnd_status_and_color():
 def get_vpn_status_and_color():
     status = ""
     color = "gray"
-    if is_vpn_enabled():
+    if is_service_enabled("vpn"):
         color = get_service_status_color("vpn")
         status_code = get_service_status_code("vpn")
         if status_code != 0:
@@ -493,7 +498,7 @@ def get_rtl_status_and_color():
     status = "Lightning Wallet"
     color = "gray"
     if is_lnd_ready():
-        if is_rtl_enabled():
+        if is_service_enabled("rtl"):
             status_code = get_service_status_code("rtl")
             if status_code != 0:
                 color = "red"
@@ -509,7 +514,7 @@ def get_lnbits_status_and_color():
     if is_testnet_enabled():
         return "Requires Mainnet", "gray"
     if is_lnd_ready():
-        if is_lnbits_enabled():
+        if is_service_enabled("lnbits"):
             status_code = get_service_status_code("lnbits")
             if status_code != 0:
                 color = "red"
@@ -523,7 +528,7 @@ def get_thunderhub_status_and_color():
     color = "gray"
     status = "Lightning Wallet"
     if is_lnd_ready():
-        if is_thunderhub_enabled():
+        if is_service_enabled("thunderhub"):
             status_code = get_service_status_code("thunderhub")
             if status_code != 0:
                 color = "red"
@@ -536,8 +541,8 @@ def get_thunderhub_status_and_color():
 def get_ckbunker_status_and_color():
     status = "Coldcard Signing Tool"
     color = "gray"
-    if is_bitcoind_synced():
-        if is_ckbunker_enabled():
+    if is_bitcoin_synced():
+        if is_service_enabled("ckbunker"):
             color = get_service_status_color("ckbunker")
     else:
         status = "Waiting on Bitcoin"
@@ -549,7 +554,7 @@ def get_sphinxrelay_status_and_color():
     if is_testnet_enabled():
         return "Requires Mainnet", "gray"
     if is_lnd_ready():
-        if is_sphinxrelay_enabled():
+        if is_service_enabled("sphinxrelay"):
             status_code = get_service_status_code("sphinxrelay")
             if status_code != 0:
                 color = "red"
@@ -565,7 +570,7 @@ def get_lndhub_status_and_color():
     if is_testnet_enabled():
         return "Requires Mainnet", "gray"
     if is_lnd_ready():
-        if is_lndhub_enabled():
+        if is_service_enabled("lndhub"):
             color = get_service_status_color("lndhub")
     else:
         status = "Waiting on Lightning"
@@ -585,7 +590,7 @@ def get_btcpayserver_status_and_color():
 def get_electrs_status_and_color():
     status = ""
     color = "gray"
-    if is_electrs_enabled():
+    if is_service_enabled("electrs"):
         status_code = get_service_status_code("electrs")
         color = get_service_status_color("electrs")
         if status_code == 0:
@@ -596,11 +601,11 @@ def get_btcrpcexplorer_status_and_color_and_ready():
     status = "BTC RPC Explorer"
     color = "gray"
     ready = False
-    if is_btcrpcexplorer_enabled():
-        if is_bitcoind_synced():
+    if is_service_enabled("btcrpcexplorer"):
+        if is_bitcoin_synced():
             if is_electrs_active():
-                color = get_service_status_color("btc_rpc_explorer")
-                status_code = get_service_status_code("btc_rpc_explorer")
+                color = get_service_status_color("btcrpcexplorer")
+                status_code = get_service_status_code("btcrpcexplorer")
                 if status_code == 0:
                     ready = True
             else:
@@ -614,7 +619,7 @@ def get_btcrpcexplorer_status_and_color_and_ready():
 def get_caravan_status_and_color():
     status = ""
     color = "gray"
-    if is_caravan_enabled():
+    if is_service_enabled("caravan"):
         color = get_service_status_color("caravan")
         status = "Running"
     return status,color
@@ -622,7 +627,7 @@ def get_caravan_status_and_color():
 def get_specter_status_and_color():
     status = ""
     color = "gray"
-    if is_specter_enabled():
+    if is_service_enabled("specter"):
         color = get_service_status_color("specter")
         status = "Running"
     return status,color
@@ -630,12 +635,12 @@ def get_specter_status_and_color():
 def get_mempool_status_and_color():
     status = "Mempool Viewer"
     color = "gray"
-    if is_mempoolspace_enabled():
+    if is_service_enabled("mempool"):
         if is_installing_docker_images():
             color = "yellow"
             status = "Installing..."
         else:
-            color = get_service_status_color("mempoolspace")
+            color = get_service_status_color("mempool")
     return status,color
 
 
@@ -764,14 +769,14 @@ def enable_quicksync():
 
 def settings_disable_quicksync():
     disable_quicksync()
-    stop_bitcoind()
+    stop_bitcoin()
     stop_quicksync()
     disable_quicksync() # Try disable again (some users had disable fail)
     delete_quicksync_data()
     reboot_device()
 
 def settings_enable_quicksync():
-    stop_bitcoind()
+    stop_bitcoin()
     stop_quicksync()
     enable_quicksync()
     delete_quicksync_data()
@@ -787,7 +792,7 @@ def stop_quicksync():
 
 def restart_quicksync():
     os.system('echo "quicksync_reset" > /tmp/.mynode_status')
-    stop_bitcoind()
+    stop_bitcoin()
     stop_quicksync()
     delete_bitcoin_data()
     delete_quicksync_data()
@@ -911,9 +916,9 @@ def reset_docker():
     os.system("touch /home/bitcoin/reset_docker")
 
     # Reset marker files
-    os.system("rm -f /mnt/hdd/mynode/settings/webssh2_url")
-    os.system("rm -f /mnt/hdd/mynode/settings/mempoolspace_url")
-    os.system("rm -f /mnt/hdd/mynode/settings/dojo_url")
+    os.system("rm -f /mnt/hdd/mynode/settings/webssh2_version")
+    os.system("rm -f /mnt/hdd/mynode/settings/mempool_version")
+    os.system("rm -f /mnt/hdd/mynode/settings/dojo_version")
 
     # Delete Dojo files
     os.system("rm -rf /opt/download/dojo")
@@ -925,10 +930,10 @@ def reset_docker():
 def get_docker_running_containers():
     containers = []
     try:
-        text = subprocess.check_output("docker ps --format '{{.Names}}'", shell=True, timeout=3).decode("utf8")
+        text = subprocess32.check_output("docker ps --format '{{.Names}}'", shell=True, timeout=3).decode("utf8")
         containers = text.splitlines()
-    except:
-        containers = ["ERROR"]
+    except Exception as e:
+        containers = [str(e)]
     return containers
 
 #==================================
@@ -942,8 +947,8 @@ def get_bitcoin_rpc_password():
         return "ERROR"
     return "ERROR"
 
-def stop_bitcoind():
-    os.system("systemctl stop bitcoind")
+def stop_bitcoin():
+    os.system("systemctl stop bitcoin")
 
 def get_bitcoin_log_file():
     if is_testnet_enabled():
@@ -960,7 +965,7 @@ def delete_bitcoin_data():
     os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpcpw")
 
 def reset_blockchain():
-    stop_bitcoind()
+    stop_bitcoin()
     delete_bitcoin_data()
     reboot_device()
 

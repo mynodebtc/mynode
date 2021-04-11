@@ -192,7 +192,7 @@ mkdir -p /mnt/hdd/mynode/tor_backup
 mkdir -p /tmp/flask_uploads
 echo "drive_mounted" > $MYNODE_STATUS_FILE
 chmod 777 $MYNODE_STATUS_FILE
-rm -rf $MYNODE_DIR/.mynode_bitcoind_synced
+rm -rf $MYNODE_DIR/.mynode_bitcoin_synced
 
 
 # Sync product key (SD preferred)
@@ -371,8 +371,15 @@ else
     sed -i "s/testnet/mainnet/g" /mnt/hdd/mynode/rtl/RTL-Config.json || true
 fi
 
+# BTCPay Server Setup
+if [ -f /opt/mynode/btcpayserver/.env ]; then
+    sed -i "s/REPLACE_BTCPAY_VERSION/$BTCPAYSERVER_VERSION/g" /opt/mynode/btcpayserver/.env || true
+    sed -i "s/REPLACE_NBXPLORER_VERSION/$BTCPAYSERVER_NBXPLORER_VERSION/g" /opt/mynode/btcpayserver/.env || true
+fi
+echo $BTCPAYSERVER_VERSION > $BTCPAYSERVER_VERSION_FILE
+
 # BTC RPC Explorer Config
-cp /usr/share/mynode/btc_rpc_explorer_env /opt/mynode/btc-rpc-explorer/.env
+cp /usr/share/mynode/btcrpcexplorer_env /opt/mynode/btc-rpc-explorer/.env
 chown bitcoin:bitcoin /opt/mynode/btc-rpc-explorer/.env
 
 # LNBits Config
@@ -655,6 +662,16 @@ fi
 
 # Make sure every enabled service is really enabled
 #   This can happen from full-SD card upgrades
+# FUTURE: Loop over service names with enable / disable possibility like
+# services=electrs lndhub btcrpcexplorer mempool btcpayserver vpn ...
+# for s in services; do
+#   if [ -f /mnt/hdd/mynode/settings/${s}_enabled ]; then
+#     if systemctl status $s | grep "disabled;"; then
+#       systemctl enable $s
+#       STARTUP_MODIFIED=1
+#     fi
+#   fi
+# done
 STARTUP_MODIFIED=0
 if [ -f $ELECTRS_ENABLED_FILE ]; then
     if systemctl status electrs | grep "disabled;"; then
@@ -669,14 +686,14 @@ if [ -f $LNDHUB_ENABLED_FILE ]; then
     fi
 fi
 if [ -f $BTCRPCEXPLORER_ENABLED_FILE ]; then
-    if systemctl status btc_rpc_explorer | grep "disabled;"; then
-        systemctl enable btc_rpc_explorer
+    if systemctl status btcrpcexplorer | grep "disabled;"; then
+        systemctl enable btcrpcexplorer
         STARTUP_MODIFIED=1
     fi
 fi
-if [ -f $MEMPOOLSPACE_ENABLED_FILE ]; then
-    if systemctl status mempoolspace | grep "disabled;"; then
-        systemctl enable mempoolspace
+if [ -f $MEMPOOL_ENABLED_FILE ]; then
+    if systemctl status mempool | grep "disabled;"; then
+        systemctl enable mempool
         STARTUP_MODIFIED=1
     fi
 fi
@@ -723,26 +740,32 @@ echo $POOL_VERSION > $POOL_LATEST_VERSION_FILE
 echo $LIT_VERSION > $LIT_LATEST_VERSION_FILE
 echo $ELECTRS_VERSION > $ELECTRS_LATEST_VERSION_FILE
 echo $LNDHUB_VERSION > $LNDHUB_LATEST_VERSION_FILE
+echo $MEMPOOL_VERSION > $MEMPOOL_LATEST_VERSION_FILE
 echo $CARAVAN_VERSION > $CARAVAN_LATEST_VERSION_FILE
 echo $CORSPROXY_VERSION > $CORSPROXY_LATEST_VERSION_FILE
 echo $JOINMARKET_VERSION > $JOINMARKET_LATEST_VERSION_FILE
 echo $JOININBOX_VERSION > $JOININBOX_LATEST_VERSION_FILE
 echo $WHIRLPOOL_VERSION > $WHIRLPOOL_LATEST_VERSION_FILE
+echo $DOJO_VERSION > $DOJO_LATEST_VERSION_FILE
 echo $RTL_VERSION > $RTL_LATEST_VERSION_FILE
 echo $BTCRPCEXPLORER_VERSION > $BTCRPCEXPLORER_LATEST_VERSION_FILE
+echo $BTCPAYSERVER_VERSION > $BTCPAYSERVER_LATEST_VERSION_FILE
 echo $LNBITS_VERSION > $LNBITS_LATEST_VERSION_FILE
 echo $SPECTER_VERSION > $SPECTER_LATEST_VERSION_FILE
 echo $THUNDERHUB_VERSION > $THUNDERHUB_LATEST_VERSION_FILE
 echo $LNDCONNECT_VERSION > $LNDCONNECT_LATEST_VERSION_FILE
 echo $CKBUNKER_VERSION > $CKBUNKER_LATEST_VERSION_FILE
 echo $SPHINXRELAY_VERSION > $SPHINXRELAY_LATEST_VERSION_FILE
-
+echo $WEBSSH2_VERSION > $WEBSSH2_LATEST_VERSION_FILE
 
 # Weird hacks
 chmod +x /usr/bin/electrs || true # Once, a device didn't have the execute bit set for electrs
 timedatectl set-ntp True || true # Make sure NTP is enabled for Tor and Bitcoin
 rm -f /var/swap || true # Remove old swap file to save SD card space
 systemctl enable check_in || true
+systemctl enable bitcoin || true                # Make sure new bitcoin service is used
+systemctl disable bitcoind || true              # Make sure new bitcoin service is used
+rm /etc/systemd/system/bitcoind.service || true # Make sure new bitcoin service is used
 
 
 # Check for new versions

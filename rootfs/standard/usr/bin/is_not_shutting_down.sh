@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Wait to see if bitcoind is synced
+# Wait to see if bitcoin is synced
 echo "Checking if device is shutting down..."
 if [ ! -f "/tmp/shutting_down" ]; then
     echo "Not shutting down!"

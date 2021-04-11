@@ -22,7 +22,7 @@ while true; do
     fi
 
     # Download bitcoin whitepaper
-    if [ -f "/mnt/hdd/mynode/.mynode_bitcoind_synced" ]; then
+    if [ -f "/mnt/hdd/mynode/.mynode_bitcoin_synced" ]; then
         if [ ! -f /mnt/hdd/mynode/bitcoin/bitcoin_whitepaper.pdf ]; then
             sudo -u bitcoin bitcoin-cli getrawtransaction 54e48e5f5c656b26c3bca14a8c95aa583d07ebe84dde3b7dd4a78f4e4186e713 true | \
                 jq -r '.vout[].scriptPubKey.asm' | cut -c3- | \

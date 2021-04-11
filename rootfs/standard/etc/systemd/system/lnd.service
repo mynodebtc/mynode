@@ -3,8 +3,8 @@
 
 [Unit]
 Description=LND Lightning Daemon
-Wants=bitcoind.service
-After=bitcoind.service
+Wants=bitcoin.service
+After=bitcoin.service
 
 [Service]
 ExecStartPre=/usr/bin/is_not_shutting_down.sh

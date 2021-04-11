@@ -17,53 +17,16 @@ APP="$1"
 /usr/bin/mynode_stop_critical_services.sh
 
 # Delete the app's version file so it will be re-installed
-if [ "$APP" = "bitcoin" ]; then
-    rm -f $BTC_VERSION_FILE
-elif [ "$APP" = "lnd" ]; then
-    rm -f $LND_VERSION_FILE
-elif [ "$APP" = "loop" ]; then
-    rm -f $LOOP_VERSION_FILE
-elif [ "$APP" = "pool" ]; then
-    rm -f $POOL_VERSION_FILE
-elif [ "$APP" = "lit" ]; then
-    rm -f $LIT_VERSION_FILE
-elif [ "$APP" = "btcrpcexplorer" ]; then
-    rm -f $BTCRPCEXPLORER_VERSION_FILE
-elif [ "$APP" = "caravan" ]; then
-    rm -f $CARAVAN_VERSION_FILE
-elif [ "$APP" = "corsproxy" ]; then
-    rm -f $CORSPROXY_VERSION_FILE
-elif [ "$APP" = "joinmarket" ]; then
-    rm -f $JOINMARKET_VERSION_FILE
-elif [ "$APP" = "joininbox" ]; then
-    rm -f $JOININBOX_VERSION_FILE
-elif [ "$APP" = "lnbits" ]; then
-    rm -f $LNBITS_VERSION_FILE
-elif [ "$APP" = "lndconnect" ]; then
-    rm -f  $LNDCONNECT_VERSION_FILE
-elif [ "$APP" = "lndhub" ]; then
-    rm -f $LNDHUB_VERSION_FILE
-elif [ "$APP" = "netdata" ]; then
+rm -f /home/bitcoin/.mynode/${APP}_version || true
+rm -f /mnt/hdd/mynode/settings/${APP}_version || true
+
+# Custom re-install steps
+if [ "$APP" = "netdata" ]; then
     systemctl stop netdata
     docker rmi netdata/netdata || true
-elif [ "$APP" = "mempoolspace" ]; then
-    rm -f /mnt/hdd/mynode/settings/mempoolspace_url
-    systemctl stop mempoolspace
-    docker rmi mempoolspace || true
-    rm -rf /mnt/hdd/mynode/mempool/*
 elif [ "$APP" = "btcpayserver" ]; then
     . "/opt/mynode/btcpayserver/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY" && . helpers.sh && btcpay_remove
     cd ~
-elif [ "$APP" = "rtl" ]; then
-    rm -f $RTL_VERSION_FILE
-elif [ "$APP" = "specter" ]; then
-    rm -f $SPECTER_VERSION_FILE
-elif [ "$APP" = "thunderhub" ]; then
-    rm -f $THUNDERHUB_VERSION_FILE
-elif [ "$APP" = "ckbunker" ]; then
-    rm -f $CKBUNKER_VERSION_FILE
-elif [ "$APP" = "sphinxrelay" ]; then
-    rm -f $SPHINXRELAY_VERSION_FILE
 elif [ "$APP" = "tor" ]; then
     apt-get remove -y tor
     apt-get install -y tor
@@ -71,7 +34,7 @@ elif [ "$APP" = "ufw" ]; then
     apt-get purge -y ufw
     apt-get install -y ufw
 elif [ "$APP" = "webssh2" ]; then
-    rm -f /mnt/hdd/mynode/settings/webssh2_url
+    rm -f /mnt/hdd/mynode/settings/webssh2_version
     systemctl stop webssh2
     docker rmi webssh2
 elif [ "$APP" = "whirlpool" ]; then
@@ -88,8 +51,7 @@ elif [ "$APP" = "dojo" ]; then
     rm -rf /opt/download/dojo
     rm -rf /mnt/hdd/mynode/dojo
 else
-    echo "UNKNOWN APP: $APP"
-    exit 1
+    echo "No custom re-install steps"
 fi
 
 # Run post upgrade script

@@ -11,9 +11,9 @@ touch /tmp/shutting_down
 date
 systemctl stop glances lndhub netdata rtl webssh2 whirlpool dojo
 date
-systemctl stop btcpayserver btc_rpc_explorer specter caravan lnbits
+systemctl stop btcpayserver btcrpcexplorer specter caravan lnbits
 date
-systemctl stop thunderhub mempoolspace
+systemctl stop thunderhub mempool
 date
 
 
@@ -25,10 +25,10 @@ fi
 
 # Stop core services
 date
-systemctl stop electrs loopd poold lnd quicksync
+systemctl stop electrs loop pool lnd quicksync
 date
 killall bitcoind || true
-systemctl stop bitcoind
+systemctl stop bitcoin
 date
 
 

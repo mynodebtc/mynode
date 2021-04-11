@@ -1,16 +1,26 @@
 import os
 import subprocess
 
+service_enabled_cache = {}
+
 #==================================
 # Service Status, Enabled, Logs, etc...
 #==================================
+def clear_service_enabled_cache():
+    global service_enabled_cache
+    service_enabled_cache = {}
+
 def is_service_enabled(service_name):
-    cmd = "systemctl is-enabled {} > /dev/null".format(service_name)
-    try:
-        subprocess.check_call(cmd, shell=True)
+    global service_enabled_cache
+
+    if service_name in service_enabled_cache:
+        return service_enabled_cache[service_name]
+
+    code = os.system("systemctl is-enabled {} > /dev/null".format(service_name))
+    if code == 0:
+        service_enabled_cache[service_name] = True
         return True
-    except:
-        return False
+    service_enabled_cache[service_name] = False
     return False
 
 def get_service_status_code(service_name):

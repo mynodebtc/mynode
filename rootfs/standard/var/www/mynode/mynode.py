@@ -27,6 +27,7 @@ from datetime import timedelta
 from device_info import *
 from device_warnings import *
 from systemctl_info import *
+from application_info import *
 import pam
 import re
 import json
@@ -397,26 +398,26 @@ def index():
         }
         return render_template('state.html', **templateData)
     elif status == STATE_STABLE:
-        bitcoind_status_code = get_service_status_code("bitcoind")
+        bitcoin_status_code = get_service_status_code("bitcoin")
         lnd_status_code = get_service_status_code("lnd")
         tor_status_color = "gray"
-        bitcoind_status_color = "red"
+        bitcoin_status_color = "red"
         lnd_status_color = "red"
         lnd_ready = is_lnd_ready()
         electrs_active = is_electrs_active()
-        bitcoind_status = "Inactive"
+        bitcoin_status = "Inactive"
         lnd_status = "Inactive"
         electrs_status = ""
         lndconnect_status_color = "gray"
         btcpayserver_status_color = "gray"
-        mempoolspace_status_color = "gray"
+        mempool_status_color = "gray"
         vpn_status_color = "gray"
         vpn_status = ""
         current_block = 1234
 
         if not get_has_updated_btc_info() or uptime_in_seconds < 180:
             error_message = ""
-            if bitcoind_status_code != 0 and uptime_in_seconds > 600:
+            if bitcoin_status_code != 0 and uptime_in_seconds > 600:
                 error_message = "Bitcoin has experienced an error. Please check the logs."
             message = "<div class='small_message'>{}</<div>".format( get_message(include_funny=True) )
             templateData = {
@@ -439,7 +440,7 @@ def index():
         #     return render_template('state.html', **templateData)
 
         # Display sync info if not synced
-        if not is_bitcoind_synced():
+        if not is_bitcoin_synced():
             subheader = Markup("Syncing...")
             if bitcoin_block_height != None:
                 message = "<div class='small_message'>{}</<div>".format( get_message(include_funny=True) )
@@ -459,14 +460,14 @@ def index():
         tor_status_color = get_service_status_color("tor@default")
         tor_status = "Private Connections"
 
-        # Find bitcoind status
+        # Find bitcoid status
         bitcoin_info = get_bitcoin_blockchain_info()
         bitcoin_peers = get_bitcoin_peers()
-        if bitcoind_status_code != 0:
-            bitcoind_status_color = "red"
+        if bitcoin_status_code != 0:
+            bitcoin_status_color = "red"
         else:
-            bitcoind_status_color = "green"
-            bitcoind_status = get_bitcoin_status()
+            bitcoin_status_color = "green"
+            bitcoin_status = get_bitcoin_status()
             current_block = get_mynode_block_height()
 
         # Find lnd status
@@ -505,7 +506,7 @@ def index():
         btcrpcexplorer_status, btcrpcexplorer_status_color, btcrpcexplorer_ready = get_btcrpcexplorer_status_and_color_and_ready()
 
         # Find mempool space status
-        mempoolspace_status, mempoolspace_status_color = get_mempool_status_and_color()
+        mempool_status, mempool_status_color = get_mempool_status_and_color()
 
         # Find btcpayserver status
         btcpayserver_status, btcpayserver_status_color = get_btcpayserver_status_and_color()
@@ -534,17 +535,18 @@ def index():
 
         # Refresh rate
         refresh_rate = 3600 * 24
-        if bitcoind_status_color == "red" or lnd_status_color == "red":
+        if bitcoin_status_color == "red" or lnd_status_color == "red":
             refresh_rate = 60
-        elif bitcoind_status_color == "yellow" or lnd_status_color == "yellow":
+        elif bitcoin_status_color == "yellow" or lnd_status_color == "yellow":
             refresh_rate = 120
 
         templateData = {
             "title": "myNode Home",
             "refresh_rate": refresh_rate,
             "config": CONFIG,
-            "bitcoind_status_color": bitcoind_status_color,
-            "bitcoind_status": Markup(bitcoind_status),
+            "apps": get_all_applications(order_by="alphabetic"),
+            "bitcoin_status_color": bitcoin_status_color,
+            "bitcoin_status": Markup(bitcoin_status),
             "current_block": current_block,
             "bitcoin_peer_count": get_bitcoin_peer_count(),
             "bitcoin_difficulty": get_bitcoin_difficulty(),
@@ -567,55 +569,55 @@ def index():
             "is_device_from_reseller": is_device_from_reseller(),
             "electrs_status_color": electrs_status_color,
             "electrs_status": Markup(electrs_status),
-            "electrs_enabled": is_electrs_enabled(),
+            "electrs_enabled": is_service_enabled("electrs"),
             "electrs_active": electrs_active,
             "rtl_status_color": rtl_status_color,
             "rtl_status": rtl_status,
-            "rtl_enabled": is_rtl_enabled(),
+            "rtl_enabled": is_service_enabled("rtl"),
             "lnbits_status_color": lnbits_status_color,
             "lnbits_status": lnbits_status,
-            "lnbits_enabled": is_lnbits_enabled(),
+            "lnbits_enabled": is_service_enabled("lnbits"),
             "thunderhub_status_color": thunderhub_status_color,
             "thunderhub_status": thunderhub_status,
-            "thunderhub_enabled": is_thunderhub_enabled(),
+            "thunderhub_enabled": is_service_enabled("thunderhub"),
             "thunderhub_sso_token": get_thunderhub_sso_token(),
             "ckbunker_status_color": ckbunker_status_color,
             "ckbunker_status": ckbunker_status,
-            "ckbunker_enabled": is_ckbunker_enabled(),
+            "ckbunker_enabled": is_service_enabled("ckbunker"),
             "sphinxrelay_status_color": sphinxrelay_status_color,
             "sphinxrelay_status": sphinxrelay_status,
-            "sphinxrelay_enabled": is_sphinxrelay_enabled(),
+            "sphinxrelay_enabled": is_service_enabled("sphinxrelay"),
             "lndhub_status_color": lndhub_status_color,
             "lndhub_status": lndhub_status,
-            "lndhub_enabled": is_lndhub_enabled(),
+            "lndhub_enabled": is_service_enabled("lndhub"),
             "btcrpcexplorer_ready": btcrpcexplorer_ready,
             "btcrpcexplorer_status_color": btcrpcexplorer_status_color,
             "btcrpcexplorer_status": btcrpcexplorer_status,
-            "btcrpcexplorer_enabled": is_btcrpcexplorer_enabled(),
+            "btcrpcexplorer_enabled": is_service_enabled("btcrpcexplorer"),
             "btcrpcexplorer_sso_token": get_btcrpcexplorer_sso_token(),
             "caravan_status_color": caravan_status_color,
             "caravan_status": caravan_status,
-            "caravan_enabled": is_caravan_enabled(),
+            "caravan_enabled": is_service_enabled("caravan"),
             "specter_status_color": specter_status_color,
             "specter_status": specter_status,
-            "specter_enabled": is_specter_enabled(),
-            "mempoolspace_status_color": mempoolspace_status_color,
-            "mempoolspace_status": mempoolspace_status,
-            "mempoolspace_enabled": is_mempoolspace_enabled(),
-            "btcpayserver_enabled": is_btcpayserver_enabled(),
+            "specter_enabled": is_service_enabled("specter"),
+            "mempool_status_color": mempool_status_color,
+            "mempool_status": mempool_status,
+            "mempool_enabled": is_service_enabled("mempool"),
+            "btcpayserver_enabled": is_service_enabled("btcpayserver"),
             "btcpayserver_status_color": btcpayserver_status_color,
             "btcpayserver_status": btcpayserver_status,
             "vpn_status_color": vpn_status_color,
             "vpn_status": vpn_status,
-            "vpn_enabled": is_vpn_enabled(),
+            "vpn_enabled": is_service_enabled("vpn"),
             "whirlpool_status": whirlpool_status,
             "whirlpool_status_color": whirlpool_status_color,
-            "whirlpool_enabled": is_whirlpool_enabled(),
+            "whirlpool_enabled": is_service_enabled("whirlpool"),
             "whirlpool_initialized": whirlpool_initialized,
             "is_dojo_installed": is_dojo_installed(),
             "dojo_status": dojo_status,
             "dojo_status_color": dojo_status_color,
-            "dojo_enabled": is_dojo_enabled(),
+            "dojo_enabled": is_service_enabled("dojo"),
             "dojo_initialized": dojo_initialized,
             "product_key_skipped": pk_skipped,
             "product_key_error": pk_error,
@@ -688,139 +690,26 @@ def page_ignore_warning():
         skip_warning(warning)
     return redirect("/")
 
-@app.route("/toggle-lndhub")
-def page_toggle_lndhub():
+@app.route("/toggle-enabled")
+def page_toggle_app():
     check_logged_in()
-    if is_lndhub_enabled():
-        disable_lndhub()
-    else:
-        enable_lndhub()
-    return redirect("/")
 
-@app.route("/toggle-thunderhub")
-def page_toggle_thunderhub():
-    check_logged_in()
-    if is_thunderhub_enabled():
-        disable_thunderhub()
-    else:
-        enable_thunderhub()
-    return redirect("/")
+    # Check application specified
+    if not request.args.get("app"):
+        flash("No application specified", category="error")
+        return redirect("/")
+    
+    # Check application name is valid
+    app_short_name = request.args.get("app")
+    if not is_application_valid(app_short_name):
+        flash("Application is invalid", category="error")
+        return redirect("/")
 
-@app.route("/toggle-ckbunker")
-def page_toggle_ckbunker():
-    check_logged_in()
-    if is_ckbunker_enabled():
-        disable_ckbunker()
+    # Toggle enabled/disabled
+    if is_service_enabled(app_short_name):
+        disable_service(app_short_name)
     else:
-        enable_ckbunker()
-    return redirect("/")
-
-@app.route("/toggle-sphinxrelay")
-def page_toggle_sphinxrelay():
-    check_logged_in()
-    if is_sphinxrelay_enabled():
-        disable_sphinxrelay()
-    else:
-        enable_sphinxrelay()
-    return redirect("/")
-
-@app.route("/toggle-electrs")
-def page_toggle_electrs():
-    check_logged_in()
-    if is_electrs_enabled():
-        disable_electrs()
-    else:
-        enable_electrs()
-    return redirect("/")
-
-@app.route("/toggle-rtl")
-def page_toggle_rtl():
-    check_logged_in()
-    if is_rtl_enabled():
-        disable_rtl()
-    else:
-        enable_rtl()
-    return redirect("/")
-
-@app.route("/toggle-lnbits")
-def page_toggle_lnbits():
-    check_logged_in()
-    if is_lnbits_enabled():
-        disable_lnbits()
-    else:
-        enable_lnbits()
-    return redirect("/")
-
-@app.route("/toggle-btcrpcexplorer")
-def page_toggle_btcrpcexplorer():
-    check_logged_in()
-    if is_btcrpcexplorer_enabled():
-        disable_btcrpcexplorer()
-    else:
-        enable_btcrpcexplorer()
-    return redirect("/")
-
-@app.route("/toggle-mempoolspace")
-def page_toggle_mempoolspace():
-    check_logged_in()
-    if is_mempoolspace_enabled():
-        disable_mempoolspace()
-    else:
-        enable_mempoolspace()
-    return redirect("/")
-
-@app.route("/toggle-btcpayserver")
-def page_toggle_btcpayserver():
-    check_logged_in()
-    if is_btcpayserver_enabled():
-        disable_btcpayserver()
-    else:
-        enable_btcpayserver()
-    return redirect("/")
-
-@app.route("/toggle-caravan")
-def page_toggle_caravan():
-    check_logged_in()
-    if is_caravan_enabled():
-        disable_caravan()
-    else:
-        enable_caravan()
-    return redirect("/")
-
-@app.route("/toggle-specter")
-def page_toggle_specter():
-    check_logged_in()
-    if is_specter_enabled():
-        disable_specter()
-    else:
-        enable_specter()
-    return redirect("/")
-
-@app.route("/toggle-vpn")
-def page_toggle_vpn():
-    check_logged_in()
-    if is_vpn_enabled():
-        disable_vpn()
-    else:
-        enable_vpn()
-    return redirect("/")
-
-@app.route("/toggle-whirlpool")
-def page_toggle_whirlpool():
-    check_logged_in()
-    if is_whirlpool_enabled():
-        disable_whirlpool()
-    else:
-        enable_whirlpool()
-    return redirect("/")
-
-@app.route("/toggle-dojo")
-def page_toggle_dojo():
-    check_logged_in()
-    if is_dojo_enabled():
-        disable_dojo()
-    else:
-        enable_dojo()
+        enable_service(app_short_name)
     return redirect("/")
 
 @app.route("/toggle-dojo-install")

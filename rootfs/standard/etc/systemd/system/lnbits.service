@@ -3,8 +3,8 @@
 
 [Unit]
 Description=LNBits
-Wants=bitcoind.service lnd.service
-After=bitcoind.service lnd.service
+Wants=bitcoin.service lnd.service
+After=bitcoin.service lnd.service
 
 [Service]
 ExecStartPre=/usr/bin/is_not_shutting_down.sh

@@ -1,8 +1,8 @@
-# poold service
-# /etc/systemd/system/poold.service
+# pool service
+# /etc/systemd/system/pool.service
 
 [Unit]
-Description=poold
+Description=pool
 Wants=lnd.service
 After=lnd.service
 
@@ -10,7 +10,7 @@ After=lnd.service
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_lnd.sh
 EnvironmentFile=/mnt/hdd/mynode/pool/env
-ExecStart=/usr/local/bin/poold --network=${NETWORK} --basedir=/mnt/hdd/mynode/pool 
+ExecStart=/usr/local/bin/pool --network=${NETWORK} --basedir=/mnt/hdd/mynode/pool 
 
 User=bitcoin
 Group=bitcoin
@@ -21,7 +21,7 @@ Restart=always
 RestartSec=60
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=poold
+SyslogIdentifier=pool
 
 [Install]
 WantedBy=multi-user.target

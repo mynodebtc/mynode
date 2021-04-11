@@ -1,5 +1,5 @@
 # Mempool service
-# /etc/systemd/system/mempoolspace.service
+# /etc/systemd/system/mempool.service
 
 [Unit]
 Description=Mempool
@@ -29,7 +29,7 @@ Restart=always
 RestartSec=30
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=mempoolspace
+SyslogIdentifier=mempool
 
 [Install]
 WantedBy=multi-user.target

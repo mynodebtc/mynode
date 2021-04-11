@@ -3,10 +3,10 @@
 set -x
 set -e
 
-# Try to get peer info - if it fails serice will restart until bitcoind is ready
+# Try to get peer info - if it fails serice will restart until bitcoin is ready
 bitcoin-cli getpeerinfo
 
-# Give bitcoind some time to start
+# Give bitcoin some time to start
 sleep 2m
 
 # Check if btc has peers

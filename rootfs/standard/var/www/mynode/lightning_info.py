@@ -331,7 +331,7 @@ def get_lnd_status():
     if not lnd_wallet_exists():
         return "Please create wallet..."
 
-    if not is_bitcoind_synced():
+    if not is_bitcoin_synced():
         return "Waiting..."
 
     if is_lnd_ready():
@@ -370,7 +370,7 @@ def get_lnd_status():
         return "Status Error"
 
 def get_lnd_status_color():
-    if not is_bitcoind_synced():
+    if not is_bitcoin_synced():
         return "yellow"
 
     if not lnd_wallet_exists():

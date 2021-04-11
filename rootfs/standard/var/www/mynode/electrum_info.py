@@ -1,6 +1,6 @@
 from bitcoin_info import get_bitcoin_block_height
 from prometheus_client.parser import text_string_to_metric_families
-from enable_disable_functions import is_electrs_enabled
+from systemctl_info import *
 import subprocess
 import requests
 import socket
@@ -37,7 +37,7 @@ def update_electrs_info():
 
 def is_electrs_active():
     global electrs_active
-    if not is_electrs_enabled():
+    if not is_service_enabled("electrs"):
         return False
     return electrs_active
 
@@ -45,7 +45,7 @@ def get_electrs_status():
     global electrum_server_current_block
     global electrs_active
 
-    if not is_electrs_enabled():
+    if not is_service_enabled("electrs"):
         return "Disabled"
 
     bitcoin_block_height = get_bitcoin_block_height()

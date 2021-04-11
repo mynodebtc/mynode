@@ -28,7 +28,7 @@ def cleanup_download_wallets():
 
 ### Page functions
 @mynode_bitcoin.route("/bitcoin")
-def bitcoind_status_page():
+def bitcoin_status_page():
     check_logged_in()
 
     # Get current information
@@ -95,7 +95,7 @@ def bitcoind_status_page():
         templateData = {
             "title": "myNode Bitcoin Error",
             "header": "Bitcoin Status",
-            "message": Markup("Error communicating with bitcoind. Node may be busy syncing.<br/><br/>{}".format(str(e))),
+            "message": Markup("Error communicating with bitcoin. Node may be busy syncing.<br/><br/>{}".format(str(e))),
             "ui_settings": read_ui_settings()
         }
         return render_template('error.html', **templateData)
@@ -167,7 +167,7 @@ def bitcoin_reset_config_page():
     return render_template('reboot.html', **templateData)
 
 @mynode_bitcoin.route("/bitcoin/config", methods=['GET','POST'])
-def bitcoind_config_page():
+def bitcoin_config_page():
     check_logged_in()
 
     # Handle form

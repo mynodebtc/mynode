@@ -2,7 +2,7 @@
 from flask import Blueprint, render_template, redirect
 from device_info import read_ui_settings, is_installing_docker_images, is_testnet_enabled
 from user_management import check_logged_in
-from enable_disable_functions import is_dojo_enabled, enable_dojo, disable_dojo, is_dojo_installed
+from enable_disable_functions import *
 from bitcoin_info import get_mynode_block_height
 from electrum_info import get_electrs_status, is_electrs_active
 import subprocess
@@ -34,7 +34,7 @@ def get_dojo_status():
         dojo_initialized = dojo_initialized.strip()
     except:
         dojo_initialized = ""
-    if is_dojo_enabled():
+    if is_service_enabled("dojo"):
         if dojo_initialized != "false":
             if is_electrs_active():
                 dojo_status = "Running"
@@ -126,7 +126,7 @@ def dojo_page():
         "dojo_status": dojo_status,
         "dojo_version": get_dojo_version(),
         "dojo_status_color": dojo_status_color,
-        "dojo_enabled": is_dojo_enabled(),
+        "dojo_enabled": is_service_enabled("dojo"),
         "dojo_initialized": dojo_initialized,
         "dojo_tracker_status": get_dojo_tracker_status(),
         "electrs_status": get_electrs_status(),
@@ -136,7 +136,7 @@ def dojo_page():
     return render_template('dojo.html', **templateData)
 
 @mynode_dojo.route("/restart-dojo")
-def page_toggle_dojo():
+def page_restart_dojo():
     check_logged_in()
     disable_dojo()
     enable_dojo()

@@ -93,7 +93,7 @@
                     }
                     openConfirmDialog("confirm-dialog",
                                       "Reset Bitcoin Blockchain",
-                                      "Resetting the blockchain will restart bitcoind from scratch or from QuickSync, " +
+                                      "Resetting the blockchain will restart bitcoin from scratch or from QuickSync, " +
                                       "depending on your settings. This may take a long time. "+
                                       "Would you still like to reset the bitcoin blockchain?",
                                       okFunction)
@@ -106,7 +106,7 @@
                     }
                     openConfirmDialog("confirm-dialog",
                                       "Reset QuickSync",
-                                      "<p>Restarting QuickSync will delete all current bitcoind blockchain data and redownload " +
+                                      "<p>Restarting QuickSync will delete all current bitcoin blockchain data and redownload " +
                                       "the pre-synced blockchain. This will take a while.</p>"+
                                       "<p>Would you still like to restart QuickSync?</p>",
                                       okFunction)
@@ -813,7 +813,7 @@
             <div class="settings_block_subheader">Netdata</div>
             This will enable or disable Netdata device monitoring.
             <br/>
-            {% if is_netdata_enabled %}
+            {% if netdata_enabled %}
                 <a href="/settings/toggle-netdata" class="ui-button ui-widget ui-corner-all settings_button">Disable</a>
             {% else %}
                 <a href="/settings/toggle-netdata" class="ui-button ui-widget ui-corner-all settings_button">Enable</a>
@@ -873,27 +873,11 @@
 
             <select name="reinstall_app" id="reinstall_app">
                 <option value="none" selected="selected">Choose...</option>
-                <option value="bitcoin">Bitcoin</option>
-                <option value="lnd">LND</option>
-                <option value="btcrpcexplorer">BTC RPC Explorer</option>
-                <option value="btcpayserver">BTCPay Server</option>
-                <option value="caravan">Caravan</option>
-                <option value="dojo">Dojo</option>
-                <option value="joinmarket">JoinMarket</option>
-                <option value="lnbits">Lnbits</option>
-                <option value="loop">Lightning Loop</option>
-                <option value="webssh2">Linux Terminal</option>
-                <option value="lndconnect">LND Connect</option>				
-                <option value="lndhub">LNDHub</option>
-                <option value="mempoolspace">Mempool</option>	
-                <option value="netdata">Netdata</option>
-                <option value="specter">Specter</option>			
-                <option value="rtl">RTL</option>
-                <option value="thunderhub">Thunderhub</option>
-                <option value="tor">Tor</option>
-                <option value="ufw">UFW</option>
-                <option value="whirlpool">Whirlpool</option>
-
+                {% for app in apps %}
+                    {% if app.can_reinstall %}
+                        <option value="{{app.short_name}}">{{app.name}}</option>
+                    {% endif %}
+                {% endfor %}
             </select>
             <button id="reinstall_button">Reinstall</button>
 

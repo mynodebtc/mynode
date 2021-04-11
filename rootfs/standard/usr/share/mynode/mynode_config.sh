@@ -75,10 +75,10 @@ ELECTRS_ENABLED_FILE="/mnt/hdd/mynode/.mynode_electrs_enabled"
 LNDHUB_ENABLED_FILE="/mnt/hdd/mynode/.mynode_lndhub_enabled"
 BTCRPCEXPLORER_ENABLED_FILE="/mnt/hdd/mynode/.mynode_btcrpceplorer_enabled"
 VPN_ENABLED_FILE="/mnt/hdd/mynode/.mynode_vpn_enabled"
-MEMPOOLSPACE_ENABLED_FILE="/mnt/hdd/mynode/.mynode_mempoolspace_enabled"
+MEMPOOL_ENABLED_FILE="/mnt/hdd/mynode/.mynode_mempoolspace_enabled"
 BTCPAYSERVER_ENABLED_FILE="/mnt/hdd/mynode/.mynode_btcpayserver_enabled"
 
-BITCOIN_SYNCED_FILE="/mnt/hdd/mynode/.mynode_bitcoind_synced"
+BITCOIN_SYNCED_FILE="/mnt/hdd/mynode/.mynode_bitcoin_synced"
 QUICKSYNC_COMPLETE_FILE="$QUICKSYNC_DIR/.quicksync_complete"
 
 IS_PREMIUM=0

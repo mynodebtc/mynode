@@ -3,8 +3,8 @@
 
 [Unit]
 Description=myNode Add Seed Peers
-Wants=bitcoind.service
-After=bitcoind.service
+Wants=bitcoin.service
+After=bitcoin.service
 
 [Service]
 Type=simple

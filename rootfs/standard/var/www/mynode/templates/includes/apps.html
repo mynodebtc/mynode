@@ -17,7 +17,9 @@
                 {% if rtl_enabled %}
                 <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="rtl">RTL</a>
                 {% endif %}
-                <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-rtl" id="toggle-rtl">{% if rtl_enabled %}Disable{% else %}Enable{% endif %}</a>
+                <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('rtl')">
+                    {% if rtl_enabled %}Disable{% else %}Enable{% endif %}
+                </a>
             {% endif %}
         </div>
     </div>
@@ -31,7 +33,9 @@
             {% if electrs_enabled %}
             <a class="ui-button ui-widget ui-corner-all mynode_button" href="/electrum-server">Info</a>
             {% endif %}
-            <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-electrs">{% if electrs_enabled %}Disable{% else %}Enable{% endif %}</a>
+            <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('electrs')">
+                {% if electrs_enabled %}Disable{% else %}Enable{% endif %}
+            </a>
         </div>
     </div>
 
@@ -48,25 +52,27 @@
                     {% if btcpayserver_enabled %}
                     <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="btcpayserver">BTCPay Server</a>
                     {% endif %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-btcpayserver" id="toggle-btcpayserver">{% if btcpayserver_enabled %}Disable{% else %}Enable{% endif %}</a>
-                    {% endif %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('btcpayserver')">
+                        {% if btcpayserver_enabled %}Disable{% else %}Enable{% endif %}
+                    </a>
+                {% endif %}
             {% endif %}
         </div>
     </div>
 
     <div class="app_tile">
-        <div class="app_status_icon {{mempoolspace_status_color}}" id="mempoolspace_status_icon"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/mempoolspace.png")}}"/></div>
+        <div class="app_status_icon {{mempool_status_color}}" id="mempool_status_icon"></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/mempool.png")}}"/></div>
         <div class="app_title">Mempool</div>
-        <div class="app_status" id="mempoolspace_status">{{ mempoolspace_status }}</div>
+        <div class="app_status" id="mempool_status">{{ mempool_status }}</div>
         <div class="app_contents">
             {% if not is_installing_docker_images %}
-                {% if mempoolspace_enabled %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="mempoolspace">View</a>
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-mempoolspace">Disable</a>
-                {% else %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-mempoolspace">Enable</a>
+                {% if mempool_enabled %}
+                <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="mempool">View</a>
                 {% endif %}
+                <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('mempool')">
+                    {% if mempool_enabled %}Disable{% else %}Enable{% endif %}
+                </a>
             {% endif %}
         </div>
     </div>
@@ -80,25 +86,25 @@
                 {% if lndhub_enabled %}
                 <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lndhub">LND Hub</a>
                 {% endif %}
-                <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-lndhub" id="toggle-lndhub">{% if lndhub_enabled %}Disable{% else %}Enable{% endif %}</a>
+                <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('lndhub')">
+                    {% if lndhub_enabled %}Disable{% else %}Enable{% endif %}
+                </a>
             {% endif %}
         </div>
     </div>
 
     <div class="app_tile">
         <div class="app_status_icon {{ btcrpcexplorer_status_color }}" id="btcrpcexplorer_status_icon"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/btc_rpc_explorer.png")}}"/></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/btcrpcexplorer.png")}}"/></div>
         <div class="app_title">Explorer</div>
         <div class="app_status">{{ btcrpcexplorer_status }}</div>
         <div class="app_contents">
-            {% if btcrpcexplorer_enabled %}
-                {% if btcrpcexplorer_ready %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="btcrpcexplorer">Explorer</a>
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-btcrpcexplorer">Disable</a>
-                {% endif %}
-            {% else %}
-                <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-btcrpcexplorer">Enable</a>
+            {% if btcrpcexplorer_enabled and btcrpcexplorer_ready %}
+            <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="btcrpcexplorer">Explorer</a>
             {% endif %}
+            <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('btcrpcexplorer')">
+                {% if btcrpcexplorer_enabled %}Disable{% else %}Enable{% endif %}
+            </a>
         </div>
     </div>
 
@@ -113,7 +119,7 @@
                 {% if is_dojo_installed %}
                     <a class="ui-button ui-widget ui-corner-all mynode_button" href="/dojo">Info</a>
                     {% if electrs_active %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-dojo">
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('dojo')">
                         {% if dojo_enabled %}Disable{% else %}Enable{% endif %}
                     </a>
                     {% endif %}
@@ -136,7 +142,7 @@
         <div class="app_contents">
             {% if not is_testnet_enabled %}
                 <a class="ui-button ui-widget ui-corner-all mynode_button" href="/whirlpool">Info</a>
-                <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-whirlpool">
+                <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('whirlpool')">
                     {% if whirlpool_enabled %}Disable{% else %}Enable{% endif %}
                 </a>
             {% endif %}
@@ -165,11 +171,11 @@
             {% else %}
                 {% if lnd_ready %}
                     {% if thunderhub_enabled %}
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="thunderhub">Thunderhub</a>
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-thunderhub">Disable</a>
-                    {% else %}
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-thunderhub">Enable</a>
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="thunderhub">Thunderhub</a>
                     {% endif %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('thunderhub')">
+                        {% if thunderhub_enabled %}Disable{% else %}Enable{% endif %}
+                    </a>
                 {% endif %}
             {% endif %}
         </div>
@@ -185,11 +191,11 @@
                 Premium Feature
             {% else %}
                 {% if caravan_enabled %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="/caravan">Info</a>
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-caravan">Disable</a>
-                {% else %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-caravan">Enable</a>
+                <a class="ui-button ui-widget ui-corner-all mynode_button" href="/caravan">Info</a>
                 {% endif %}
+                <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('caravan')">
+                    {% if caravan_enabled %}Disable{% else %}Enable{% endif %}
+                </a>
             {% endif %}
         </div>
     </div>
@@ -204,11 +210,11 @@
                 Premium Feature
             {% else %}
                 {% if specter_enabled %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="specter">Specter</a>
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-specter">Disable</a>
-                {% else %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-specter">Enable</a>
+                <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="specter">Specter</a>
                 {% endif %}
+                <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('specter')">
+                    {% if specter_enabled %}Disable{% else %}Enable{% endif %}
+                </a>
             {% endif %}
         </div>
     </div>
@@ -224,11 +230,11 @@
                 Premium Feature
             {% else %}
                 {% if ckbunker_enabled %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="ckbunker">CKBunker</a>
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-ckbunker">Disable</a>
-                {% else %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-ckbunker">Enable</a>
+                <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="ckbunker">CKBunker</a>
                 {% endif %}
+                <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('ckbunker')">
+                    {% if ckbunker_enabled %}Disable{% else %}Enable{% endif %}
+                </a>
             {% endif %}
         </div>
     </div>
@@ -245,10 +251,10 @@
                 {% if lnd_ready and not is_testnet_enabled %}
                     {% if sphinxrelay_enabled %}
                         <a class="ui-button ui-widget ui-corner-all mynode_button" href="/sphinxrelay">Info</a>
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-sphinxrelay">Disable</a>
-                    {% else %}
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-sphinxrelay">Enable</a>
                     {% endif %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('sphinxrelay')">
+                        {% if sphinxrelay_enabled %}Disable{% else %}Enable{% endif %}
+                    </a>
                 {% endif %}
             {% endif %}
         </div>
@@ -266,15 +272,15 @@
                 {% if lnd_ready and not is_testnet_enabled %}
                     {% if lnbits_enabled %}
                         <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lnbits">LNbits</a>
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-lnbits">Disable</a>
-                    {% else %}
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-lnbits">Enable</a>
                     {% endif %}
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('lnbits')">
+                        {% if lnbits_enabled %}Disable{% else %}Enable{% endif %}
+                    </a>
                 {% endif %}
             {% endif %}
         </div>
     </div>
-    
+
 </div>
 
 
@@ -308,7 +314,9 @@
                             {% if vpn_enabled %}
                             <a class="ui-button ui-widget ui-corner-all mynode_button" href="/vpn-info">Info</a>
                             {% endif %}
-                            <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="toggle-vpn">{% if vpn_enabled %}Disable{% else %}Enable{% endif %}</a>
+                            <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('vpn')">
+                                {% if vpn_enabled %}Disable{% else %}Enable{% endif %}
+                            </a>
                         {% endif %}
                     </div>
                 </div>

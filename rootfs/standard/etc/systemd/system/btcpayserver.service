@@ -3,8 +3,8 @@
 
 [Unit]
 Description=BTCPayServer service
-After=docker.service network-online.target bitcoind.service
-Requires=docker.service network-online.target bitcoind.service
+After=docker.service network-online.target bitcoin.service
+Requires=docker.service network-online.target bitcoin.service
 
 [Service]
 Type=oneshot

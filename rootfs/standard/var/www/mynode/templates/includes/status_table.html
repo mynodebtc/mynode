@@ -3,7 +3,7 @@
     <tr>
         <th>Details</th>
         <td>
-            {% if is_netdata_enabled %}
+            {% if netdata_enabled %}
                 {% if is_bitcoin_synced %}
                     {% if not is_installing_docker_images %}
                         <a id="netdata" class="ui-button ui-widget ui-corner-all settings_button_small" href="#">Open Netdata</a>

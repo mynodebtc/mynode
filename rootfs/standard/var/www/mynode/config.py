@@ -12,7 +12,7 @@ CHECKIN_URL = "https://www.mynodebtc.com/device_api/check_in.php"
 
 # Bitcoin Variables
 BITCOIN_ENV_FILE = "/mnt/hdd/mynode/bitcoin/env"
-BITCOIN_SYNCED_FILE = "/mnt/hdd/mynode/.mynode_bitcoind_synced"
+BITCOIN_SYNCED_FILE = "/mnt/hdd/mynode/.mynode_bitcoin_synced"
 
 # LND Variables
 LND_DATA_FOLDER = "/mnt/hdd/mynode/lnd/data/"
@@ -26,5 +26,5 @@ LNDHUB_ENABLED_FILE =   "/mnt/hdd/mynode/.mynode_lndhub_enabled"
 BTCRPCEXPLORER_ENABLED_FILE = "/mnt/hdd/mynode/.mynode_btcrpceplorer_enabled"
 VPN_ENABLED_FILE = "/mnt/hdd/mynode/.mynode_vpn_enabled"
 NETDATA_ENABLED_FILE = "/mnt/hdd/mynode/.mynode_netdata_enabled"
-MEMPOOLSPACE_ENABLED_FILE = "/mnt/hdd/mynode/.mynode_mempoolspace_enabled"
+MEMPOOL_ENABLED_FILE = "/mnt/hdd/mynode/.mynode_mempoolspace_enabled"
 BTCPAYSERVER_ENABLED_FILE = "/mnt/hdd/mynode/.mynode_btcpayserver_enabled"

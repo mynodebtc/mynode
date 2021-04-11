@@ -7,6 +7,7 @@ from bitcoin_info import *
 from lightning_info import *
 from device_info import *
 from enable_disable_functions import *
+from systemctl_info import *
 from electrum_info import update_electrs_info
 from requests import get
 import random
@@ -123,7 +124,7 @@ def update_bitcoin_other_info_thread():
 # Updates electrs info every 60 seconds
 def update_electrs_info_thread():
     try:
-        if is_electrs_enabled():
+        if is_service_enabled("electrs"):
             update_electrs_info()
     except Exception as e:
         print("CAUGHT update_electrs_info_thread EXCEPTION: " + str(e))
