@@ -124,43 +124,39 @@ def page_status():
 
 
     # Get Startup Status
-    startup_status_log = get_journalctl_log("mynode")
+    #startup_status_log = get_journalctl_log("mynode")
 
     # Get QuickSync Status
     quicksync_enabled = is_quicksync_enabled()
     quicksync_status = "Disabled"
     quicksync_status_color = "gray"
-    quicksync_status_log = "DISABLED"
+    quicksync_status_log = get_quicksync_log()
     if quicksync_enabled:
         quicksync_status = get_service_status_basic_text("quicksync")
         quicksync_status_color = get_service_status_color("quicksync")
-        try:
-            quicksync_status_log = subprocess.check_output(["mynode-get-quicksync-status"]).decode("utf8")
-        except:
-            quicksync_status_log = "ERROR"
 
     # Get Bitcoin Status
-    bitcoin_status_log = get_file_log( get_bitcoin_log_file() )
+    # bitcoin_status_log = get_file_log( get_bitcoin_log_file() )
     # GET lnd, loop, pool logs from file???
     #lnd_status_log = get_file_log("/mnt/hdd/mynode/lnd/logs/bitcoin/mainnet/lnd.log")
     #loop_status_log = get_file_log("/mnt/hdd/mynode/loop/logs/mainnet/loopd.log")
     #pool_status_log = get_file_log("/mnt/hdd/mynode/pool/logs/mainnet/poold.log")
 
     # Get Status
-    lnd_status_log = get_journalctl_log("lnd")
-    loop_status_log = get_journalctl_log("loop")
-    pool_status_log = get_journalctl_log("pool")
-    lndhub_status_log = get_journalctl_log("lndhub")
-    tor_status_log = get_journalctl_log("tor@default")
-    electrs_status_log = get_journalctl_log("electrs")
-    netdata_status_log = get_journalctl_log("netdata")
-    rtl_status_log = get_journalctl_log("rtl")
-    lnbits_status_log = get_journalctl_log("lnbits")
-    thunderhub_status_log = get_journalctl_log("thunderhub")
-    ckbunker_status_log = get_journalctl_log("ckbunker")
-    sphinxrelay_status_log = get_journalctl_log("sphinxrelay")
-    docker_status_log = get_journalctl_log("docker")
-    docker_image_build_status_log = get_journalctl_log("docker_images")
+    # lnd_status_log = get_journalctl_log("lnd")
+    # loop_status_log = get_journalctl_log("loop")
+    # pool_status_log = get_journalctl_log("pool")
+    # lndhub_status_log = get_journalctl_log("lndhub")
+    # tor_status_log = get_journalctl_log("tor@default")
+    # electrs_status_log = get_journalctl_log("electrs")
+    # netdata_status_log = get_journalctl_log("netdata")
+    # rtl_status_log = get_journalctl_log("rtl")
+    # lnbits_status_log = get_journalctl_log("lnbits")
+    # thunderhub_status_log = get_journalctl_log("thunderhub")
+    # ckbunker_status_log = get_journalctl_log("ckbunker")
+    # sphinxrelay_status_log = get_journalctl_log("sphinxrelay")
+    # docker_status_log = get_journalctl_log("docker")
+    # docker_image_build_status_log = get_journalctl_log("docker_images")
 
     # Find running containers
     running_containers = get_docker_running_containers()
@@ -185,85 +181,85 @@ def page_status():
         "lnd_wallet_exists": lnd_wallet_exists(),
         "is_installing_docker_images": is_installing_docker_images(),
         "running_containers": running_containers,
-        "startup_status_log": startup_status_log,
+        #"startup_status_log": startup_status_log,
         "startup_status": get_service_status_basic_text("mynode"),
         "startup_status_color": get_service_status_color("mynode"),
-        "quicksync_status_log": quicksync_status_log,
+        #"quicksync_status_log": quicksync_status_log,
         "quicksync_status": quicksync_status,
         "quicksync_status_color": quicksync_status_color,
         "is_bitcoin_synced": is_bitcoin_synced(),
-        "bitcoin_status_log": bitcoin_status_log,
+        #"bitcoin_status_log": bitcoin_status_log,
         "bitcoin_status": get_service_status_basic_text("bitcoin"),
         "bitcoin_status_color": get_service_status_color("bitcoin"),
-        "lnd_status_log": lnd_status_log,
+        #"lnd_status_log": lnd_status_log,
         "lnd_status": get_service_status_basic_text("lnd"),
         "lnd_status_color": get_service_status_color("lnd"),
-        "loop_status_log": loop_status_log,
+        #"loop_status_log": loop_status_log,
         "loop_status": get_service_status_basic_text("loop"),
         "loop_status_color": get_service_status_color("loop"),
-        "pool_status_log": pool_status_log,
+        #"pool_status_log": pool_status_log,
         "pool_status": get_service_status_basic_text("pool"),
         "pool_status_color": get_service_status_color("pool"),
-        "lit_status_log": get_journalctl_log("lit"),
+        #"lit_status_log": get_journalctl_log("lit"),
         "lit_status": get_service_status_basic_text("lit"),
         "lit_status_color": get_service_status_color("lit"),
-        "tor_status_log": tor_status_log,
+        #"tor_status_log": tor_status_log,
         "tor_status": get_service_status_basic_text("tor@default"),
         "tor_status_color": get_service_status_color("tor@default"),
-        "lndhub_status_log": lndhub_status_log,
+        #"lndhub_status_log": lndhub_status_log,
         "lndhub_status": get_service_status_basic_text("lndhub"),
         "lndhub_status_color": get_service_status_color("lndhub"),
-        "netdata_status_log": netdata_status_log,
+        #"netdata_status_log": netdata_status_log,
         "netdata_status": get_service_status_basic_text("netdata"),
         "netdata_status_color": get_service_status_color("netdata"),
-        "electrs_status_log": electrs_status_log,
+        #"electrs_status_log": electrs_status_log,
         "electrs_status": get_service_status_basic_text("electrs"),
         "electrs_status_color": get_service_status_color("electrs"),
-        "rtl_status_log": rtl_status_log,
+        #"rtl_status_log": rtl_status_log,
         "rtl_status": get_service_status_basic_text("rtl"),
         "rtl_status_color": get_service_status_color("rtl"),
-        "lnbits_status_log": lnbits_status_log,
+        #"lnbits_status_log": lnbits_status_log,
         "lnbits_status": get_service_status_basic_text("lnbits"),
         "lnbits_status_color": get_service_status_color("lnbits"),
-        "thunderhub_status_log": thunderhub_status_log,
+        #"thunderhub_status_log": thunderhub_status_log,
         "thunderhub_status": get_service_status_basic_text("thunderhub"),
         "thunderhub_status_color": get_service_status_color("thunderhub"),
-        "ckbunker_status_log": ckbunker_status_log,
+        #"ckbunker_status_log": ckbunker_status_log,
         "ckbunker_status": get_service_status_basic_text("ckbunker"),
         "ckbunker_status_color": get_service_status_color("ckbunker"),
-        "sphinxrelay_status_log": sphinxrelay_status_log,
+        #"sphinxrelay_status_log": sphinxrelay_status_log,
         "sphinxrelay_status": get_service_status_basic_text("sphinxrelay"),
         "sphinxrelay_status_color": get_service_status_color("sphinxrelay"),
-        "docker_status_log": docker_status_log,
+        #"docker_status_log": docker_status_log,
         "docker_status": get_service_status_basic_text("docker"),
         "docker_status_color": get_service_status_color("docker"),
-        "docker_image_build_status_log": docker_image_build_status_log,
+        #"docker_image_build_status_log": docker_image_build_status_log,
         "docker_image_build_status": get_docker_image_build_status(),
         "docker_image_build_status_color": get_docker_image_build_status_color(),
-        "whirlpool_status_log": get_journalctl_log("whirlpool"),
+        #"whirlpool_status_log": get_journalctl_log("whirlpool"),
         "whirlpool_status": get_service_status_basic_text("whirlpool"),
         "whirlpool_status_color": get_service_status_color("whirlpool"),
-        "dojo_status_log": get_journalctl_log("dojo"),
+        #"dojo_status_log": get_journalctl_log("dojo"),
         "dojo_status": get_service_status_basic_text("dojo"),
         "dojo_status_color": get_service_status_color("dojo"),
-        "btcpayserver_status_log": get_journalctl_log("btcpayserver"),
+        #"btcpayserver_status_log": get_journalctl_log("btcpayserver"),
         "btcpayserver_status": get_service_status_basic_text("btcpayserver"),
         "btcpayserver_status_color": get_service_status_color("btcpayserver"),
-        "mempool_status_log": get_journalctl_log("mempool"),
+        #"mempool_status_log": get_journalctl_log("mempool"),
         "mempool_status": get_service_status_basic_text("mempool"),
         "mempool_status_color": get_service_status_color("mempool"),
-        "caravan_status_log": get_journalctl_log("caravan"),
+        #"caravan_status_log": get_journalctl_log("caravan"),
         "caravan_status": get_service_status_basic_text("caravan"),
         "caravan_status_color": get_service_status_color("caravan"),
-        "specter_status_log": get_journalctl_log("specter"),
+        #"specter_status_log": get_journalctl_log("specter"),
         "specter_status": get_service_status_basic_text("specter"),
         "specter_status_color": get_service_status_color("specter"),
-        "nginx_status_log": get_journalctl_log("nginx"),
+        #"nginx_status_log": get_journalctl_log("nginx"),
         "nginx_status": get_service_status_basic_text("nginx"),
         "nginx_status_color": get_service_status_color("nginx"),
-        "firewall_status_log": get_journalctl_log("ufw"),
-        "firewall_status": get_service_status_basic_text("ufw"),
-        "firewall_status_color": get_service_status_color("ufw"),
+        #"ufw_status_log": get_journalctl_log("ufw"),
+        "ufw_status": get_service_status_basic_text("ufw"),
+        "ufw_status_color": get_service_status_color("ufw"),
         "firewall_rules": get_firewall_rules(),
         "is_quicksync_disabled": not quicksync_enabled,
         "netdata_enabled": is_service_enabled("netdata"),

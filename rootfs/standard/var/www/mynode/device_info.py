@@ -799,6 +799,17 @@ def restart_quicksync():
     enable_quicksync()
     reboot_device()
 
+def get_quicksync_log():
+    log = "UNKNOWN"
+    if is_quicksync_enabled():
+        try:
+            log = subprocess.check_output(["mynode-get-quicksync-status"]).decode("utf8")
+        except:
+            log = "ERROR"
+    else:
+        log = "Disabled"
+    return log
+
 
 #==================================
 # Product Key Functions

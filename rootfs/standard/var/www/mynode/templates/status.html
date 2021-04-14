@@ -11,7 +11,10 @@
                     $("#"+name+"_status").hide();
                 } else {
                     $("#show_"+name+"_status").html("Hide Log");
-                    $("#"+name+"_status").show();
+                    $.get( "/api/get_log?app="+name, function( data ) {
+                        $("#"+name+"_status").html("<pre>"+data["log"]+"</pre>");
+                        $("#"+name+"_status").show();
+                    });
                 }
             }
 
@@ -360,11 +363,11 @@
 
             <div class="settings_block_subheader">Firewall Status</div>
             <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ firewall_status_color }}"></div>
-                {{ firewall_status }}
+                <div class="settings_block_subheader_status_icon {{ ufw_status_color }}"></div>
+                {{ ufw_status }}
             </div>
-            <button id="show_firewall_status" onclick="showLog('firewall')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="firewall_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{firewall_status_log}}</pre></div>
+            <button id="show_ufw_status" onclick="showLog('ufw')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="ufw_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{ufw_status_log}}</pre></div>
         </div>
 
 
