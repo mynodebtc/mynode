@@ -25,7 +25,9 @@ def create_application(name="NAME",
                        show_on_application_page=True,
                        can_enable_disable=True,
                        icon="TODO",
-                       status="UNKNOWN"):
+                       status="UNKNOWN",
+                       log_file=None,
+                       journalctl_log_name=None):
     app = {}
     app["name"] = name
     app["short_name"] = short_name
@@ -42,6 +44,8 @@ def create_application(name="NAME",
     app["icon"] = icon
     #app["status"] = status # Should status be optional to include? Takes lots of time.
     #app["status_color"] = get_service_status_color(short_name)
+    app["log_file"] = log_file
+    app["journalctl_log_name"] = journalctl_log_name
     return app
 
 def update_application(app):
@@ -57,6 +61,7 @@ def initialize_applications():
     apps.append(create_application(
         name="Bitcoin",
         short_name="bitcoin",
+        log_file=get_bitcoin_log_file()
     ))
     apps.append(create_application(
         name="LND",
@@ -187,7 +192,8 @@ def initialize_applications():
     apps.append(create_application(
         name="Tor",
         short_name="tor",
-        show_on_application_page=False
+        show_on_application_page=False,
+        journalctl_log_name="tor@default"
     ))
     apps.append(create_application(
         name="VPN",
@@ -197,9 +203,15 @@ def initialize_applications():
         show_on_application_page=False
     ))
     apps.append(create_application(
+        name="NGINX",
+        short_name="nginx",
+        show_on_application_page=False
+    ))
+    apps.append(create_application(
         name="Firewall",
         short_name="ufw",
-        show_on_application_page=False
+        show_on_application_page=False,
+        journalctl_log_name="ufw"
     ))
     mynode_applications = copy.deepcopy(apps)
 
@@ -236,3 +248,26 @@ def is_application_valid(short_name):
         if app["short_name"] == short_name:
             return True
     return False
+
+# Application Functions
+def get_application_log(short_name):
+    app = get_application(short_name)
+    if app:
+        if app["log_file"] != None:
+            return get_file_log( app["log_file"] )
+        elif app["journalctl_log_name"] != None:
+            return get_journalctl_log( app["journalctl_log_name"] )            
+        else:
+            return get_journalctl_log(short_name)
+    else:
+        # Log may be custom / non-app service
+        if short_name == "startup":
+            return get_journalctl_log("mynode")
+        elif short_name == "quicksync":
+            return get_quicksync_log()
+        elif short_name == "docker":
+            return get_journalctl_log("docker")
+        elif short_name == "docker_image_build":
+            return get_journalctl_log("docker_images")
+        else:
+            return "ERROR: App or log not found ({})".format(short_name)

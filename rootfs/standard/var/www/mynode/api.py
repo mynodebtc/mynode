@@ -10,6 +10,7 @@ from dojo import get_dojo_status
 from whirlpool import get_whirlpool_status
 from thread_functions import *
 from systemctl_info import *
+from application_info import *
 import qrcode
 import cStringIO
 import json
@@ -141,6 +142,22 @@ def api_homepage_needs_refresh():
     if not is_bitcoin_synced():
         data["needs_refresh"] = "yes"
 
+    return jsonify(data)
+
+@mynode_api.route("/api/get_log")
+def api_get_log():
+    check_logged_in()
+
+    data = {}
+    data["log"] = "LOG MISSING"
+
+    if not request.args.get("app"):
+        data["log"] = "NO APP SPECIFIED"
+        return jsonify(data)
+
+    app_name = request.args.get("app")
+    data["log"] = get_application_log(app_name)
+    
     return jsonify(data)
 
 @mynode_api.route("/api/get_qr_code_image")
