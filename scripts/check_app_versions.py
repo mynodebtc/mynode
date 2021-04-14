@@ -13,7 +13,7 @@ apps = [{"name": "bitcoin/bitcoin",                         "current_version_var
         {"name": "Ride-The-Lightning/RTL",                  "current_version_variable": "RTL_VERSION"},
         {"name": "janoside/btc-rpc-explorer",               "current_version_variable": "BTCRPCEXPLORER_VERSION"},
         {"name": "BlueWallet/LndHub",                       "current_version_variable": "LNDHUB_VERSION"},
-        {"name": "btcpayserver/btcpayserver",               "current_version":          "v1.0.6.2"},
+        {"name": "btcpayserver/btcpayserver",               "current_version_variable": "BTCPAYSERVER_VERSION"},
         {"name": "openoms/joininbox",                       "current_version_variable": "JOININBOX_VERSION"},
         {"name": "unchained-capital/caravan",               "current_version_variable": "CARAVAN_VERSION"},
         {"name": "cryptoadvance/specter-desktop",           "current_version_variable": "SPECTER_VERSION"},
