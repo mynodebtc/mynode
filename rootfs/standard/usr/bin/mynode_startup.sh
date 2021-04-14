@@ -490,6 +490,9 @@ cp -f /usr/share/mynode/mempool-docker-compose.yml /mnt/hdd/mynode/mempool/docke
 if [ ! -f /mnt/hdd/mynode/mempool/.env ]; then
     cp -f /usr/share/mynode/mempool.env /mnt/hdd/mynode/mempool/.env
 fi
+if [ -f /mnt/hdd/mynode/mempool/.env ]; then
+    sed -i "s/VERSION=.*/VERSION=$MEMPOOL_VERSION/g" /mnt/hdd/mynode/mempool/.env
+fi
 if [ $IS_RASPI -eq 1 ]; then
     sed -i "s|MARIA_DB_IMAGE=.*|MARIA_DB_IMAGE=hypriot/rpi-mysql:latest|g" /mnt/hdd/mynode/mempool/.env
 fi
