@@ -4,26 +4,26 @@
         {% include 'includes/head.html' %}
 
         <script>
+            function upgrade(name, short_name) {
+                if ( confirm("Are you sure you want to upgrade "+name+"? This will reboot your device.") ) {
+                    window.location.href='/settings/reinstall-app?app='+short_name;
+                }
+            }
+
+            function reinstall(name, short_name) {
+                if ( confirm("Are you sure you want to re-install "+name+"? This will reboot your device.") ) {
+                    window.location.href='/settings/reinstall-app?app='+short_name;
+                }
+            }
+
+            function uninstall(name, short_name) {
+                if ( confirm("Are you sure you want to uninstall "+name+"? This will reboot your device.") ) {
+                    window.location.href='/settings/uninstall-app?app='+short_name;
+                }
+            }
+
             $(document).ready(function() {
-
-                function upgrade(name, short_name) {
-                    if ( confirm("Are you sure you want to upgrade "+name+"? This will reboot your device.") ) {
-                        window.location.href='/settings/reinstall-app?app='+short_name;
-                    }
-                }
-
-                function reinstall(name, short_name) {
-                    if ( confirm("Are you sure you want to re-install "+name+"? This will reboot your device.") ) {
-                        window.location.href='/settings/reinstall-app?app='+short_name;
-                    }
-                }
-
-                function uninstall(name, short_name) {
-                    if ( confirm("Are you sure you want to uninstall "+name+"? This will reboot your device.") ) {
-                        window.location.href='/settings/uninstall-app?app='+short_name;
-                    }
-                }
-
+                // TODO
             });
         </script>
     </head>
