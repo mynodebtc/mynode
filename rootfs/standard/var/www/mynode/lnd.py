@@ -382,10 +382,10 @@ def page_lnd_pair_wallet():
 
     # Pairing options
     pairs = []
-    pairs.append( create_pair(name="Zap (gRPC + Local IP)", image_src=lndconnect_local_grpc_img,text=lndconnect_local_grpc_text,premium=False) )
-    pairs.append( create_pair(name="Zap (gRPC + Tor)", image_src=lndconnect_tor_grpc_img,text=lndconnect_tor_grpc_text,premium=True) )
-    pairs.append( create_pair(name="Zap (REST + Local IP)", image_src=lndconnect_local_rest_img,text=lndconnect_local_rest_text,premium=False) )
-    pairs.append( create_pair(name="Zap (REST + Tor)", image_src=lndconnect_tor_rest_img,text=lndconnect_tor_rest_text,premium=True) )
+    pairs.append( create_pair(name="Lightning (gRPC + Local IP)", image_src=lndconnect_local_grpc_img,text=lndconnect_local_grpc_text,premium=False) )
+    pairs.append( create_pair(name="Lightning (gRPC + Tor)", image_src=lndconnect_tor_grpc_img,text=lndconnect_tor_grpc_text,premium=True) )
+    pairs.append( create_pair(name="Lightning (REST + Local IP)", image_src=lndconnect_local_rest_img,text=lndconnect_local_rest_text,premium=False) )
+    pairs.append( create_pair(name="Lightning (REST + Tor)", image_src=lndconnect_tor_rest_img,text=lndconnect_tor_rest_text,premium=True) )
     pairs.append( create_pair(name="Blue Wallet (LNDHub + Local IP)", image_src=bluewallet_lndhub_local_img,text=bluewallet_lndhub_local_text,premium=False) )
     #pairs.append( create_pair(name="Blue Wallet (LNDHub + Tor)", image_src=bluewallet_lndhub_tor_img,text=bluewallet_lndhub_tor_text,premium=True) )
     pairs.append( create_pair(name="Blue Wallet (Electrum + Local IP)", image_src=bluewallet_electrs_local_img,text=bluewallet_electrs_local_text,premium=False) )
