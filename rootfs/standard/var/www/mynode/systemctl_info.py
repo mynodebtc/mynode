@@ -47,7 +47,7 @@ def get_service_status_color(service_name):
 
 def get_journalctl_log(service_name):
     try:
-        log = subprocess.check_output("journalctl -r --unit={} --no-pager | head -n 200".format(service_name), shell=True).decode("utf8")
+        log = subprocess.check_output("journalctl -r --unit={} --no-pager | head -n 300".format(service_name), shell=True).decode("utf8")
     except:
         log = "ERROR"
     return log
