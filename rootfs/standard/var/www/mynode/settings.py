@@ -903,6 +903,18 @@ def toggle_darkmode_page_home():
     toggle_darkmode()
     return redirect("/")
 
+@mynode_settings.route("/settings/set-background", methods=['POST'])
+def set_background_page():
+    check_logged_in()
+
+    if not request.form.get('background'):
+        flash("No background specified", category="error")
+        return redirect("/settings")
+
+    bg = request.form.get('background')
+    set_background(bg)
+
+    return redirect("/settings")
 
 @mynode_settings.route("/settings/toggle-netdata")
 def toggle_netdata_page():

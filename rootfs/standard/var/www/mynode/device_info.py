@@ -701,6 +701,24 @@ def toggle_darkmode():
     else:
         enable_darkmode()
 
+def set_background(background):
+    ui_settings = read_ui_settings()
+    ui_settings['background'] = background
+    write_ui_settings(ui_settings)
+
+def get_background():
+    ui_settings = read_ui_settings()
+    return ui_settings['background']
+
+# def get_background_choices():
+#     choices = []
+#     choices.append("none")
+#     for filename in os.listdir("/var/www/mynode/static/images/backgrounds/"):
+#         if filename.endswith(".png") or filename.endswith(".jpg"):
+#             name = filename.replace(".png","").replace(".jpg","")
+#             choices.append(name)
+#     return choices
+
 def is_https_forced():
     return os.path.isfile('/home/bitcoin/.mynode/https_forced')
 

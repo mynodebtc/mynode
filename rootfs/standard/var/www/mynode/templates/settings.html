@@ -364,6 +364,11 @@
                     window.location.href='/settings/reinstall-app?app='+reinstall_app_choice
                 });
 
+                $("#logout_days").selectmenu({width: 70});
+                $("#logout_hours").selectmenu({width: 70});
+
+                $("#background").selectmenu();
+
                 var swap_choice="";
                 $("#swap_size").selectmenu( {
                     change: function( event, data ) {
@@ -535,6 +540,21 @@
 
             <div class="divider"></div>
 
+            <div class="settings_block_subheader">Background</div>
+            For fun, you can set a background image.
+            <br/><br/>
+
+            <form action="/settings/set-background" method="POST">
+                <select name="background" id="background">
+                    <option value="none" {% if not ui_settings['background'] or ui_settings['background'] == "none" %}selected{% endif %}>None</option>
+                    <option value="laser_eyes" {% if ui_settings['background'] == "laser_eyes" %}selected{% endif %}>Laser Eyes</option>
+                    <option value="moon" {% if ui_settings['background'] == "moon" %}selected{% endif %}>Moon</option>
+                </select>
+                <input type="submit" id="background_save_button" value="Save" class="ui-button ui-widget ui-corner-all"/>
+            </form>
+
+            <div class="divider"></div>
+
             <div class="settings_block_subheader">Automatic Logout</div>
             Your myNode will logout automatically after a period of inactivity. It can be changed below.
             <br/><br/>
@@ -554,7 +574,7 @@
                     <option value="{{h}}" {% if logout_time_hours == h %}selected{% endif %}>{{h}}</option>
                     {% endfor %}
                 </select>
-                <input type="submit" id="logout_save_button" value="Save" class="ui-button ui-widget ui-corner-all settings_button_small"/>
+                <input type="submit" id="logout_save_button" value="Save" class="ui-button ui-widget ui-corner-all"/>
             </form>
 
             <div class="divider"></div>
