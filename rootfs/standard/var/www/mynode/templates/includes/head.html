@@ -10,3 +10,14 @@
 <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js')}}"></script>
 <script src="{{ url_for('static', filename='jquery_ui/jquery-ui.js')}}"></script>
 <script src="{{ url_for('static', filename='js/mynode.js')}}"></script>
+
+{% if ui_settings['background'] and ui_settings['background'] != "none" %}
+<style>
+body {
+    background-image: url("{{ url_for('static', filename='images/backgrounds/')}}{{ui_settings['background']}}.png");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+}
+</style>
+{% endif %}
