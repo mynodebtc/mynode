@@ -40,6 +40,8 @@
                                       "Disable "+full_name, 
                                       "Are you sure you want to disable "+full_name+"?",
                                        function(){
+                                            $( this ).dialog( "close" );
+                                            $('#loading_spinner_overlay').fadeIn();
                                             window.location.href="/toggle-enabled?app="+short_name
                                        });
                 } else {
@@ -50,6 +52,8 @@
                                       get_custom_enable_message(short_name) +
                                       "Are you sure you want to enable "+full_name+"?",
                                        function(){
+                                            $( this ).dialog( "close" );
+                                            $('#loading_spinner_overlay').fadeIn();
                                             window.location.href="/toggle-enabled?app="+short_name
                                        });
                 }
@@ -628,6 +632,12 @@
                 <br/><br/>
                 <a href="/settings/shutdown-device" class="ui-button ui-widget ui-corner-all" style="width: 80%; margin: auto;">Shutdown</a>
             </center>
+        </div>
+
+        <div id="loading_spinner_overlay" class="loading_spinner_overlay" style="display:none;">
+            <img id="loading_spinner" class="loading_image" src="{{ url_for('static', filename="images/loading.gif")}}"/>
+            <br/>
+            Loading...
         </div>
         
         {% include 'includes/footer.html' %}

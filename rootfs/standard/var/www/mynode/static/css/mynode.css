@@ -820,6 +820,21 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     width: 128px;
 }
 
+.loading_spinner_overlay {
+    background: #ffffff;
+    color: #444444;
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    z-index: 5000;
+    top: 0;
+    left: 0;
+    float: left;
+    text-align: center;
+    padding-top: 25%;
+    opacity: .92;
+}
+
 .halving_message_main_page {
     color: #333333;
     border: 3px solid orange;
