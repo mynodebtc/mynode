@@ -110,6 +110,11 @@ th td {
   background-color: #3a4854;
 }
 
+.loading_spinner_overlay {
+    color: #ddd;
+    background-color: #303841;
+}
+
 .main_page_warning_block,
 .halving_message_main_page {
     color: #ddd;
