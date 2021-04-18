@@ -23,7 +23,7 @@ have support or patial support.
 ## Lightning Terminal
 
 - The Lightning Terminal password is randomized when it is installed. You can view it via the Lightning page.
-- The password may be updated to your myNode password in future version.
+- The password may be updated to your myNode password in future versions.
 
 ## Thunderhub
 
