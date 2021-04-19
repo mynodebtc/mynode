@@ -1,3 +1,16 @@
+=== v0.2.30 ===
+- Released: 04/18/21
+- Add Lightning Terminal v0.4.1
+- Upgrade Specter to v1.3.0
+- Upgrades to Pair Wallet UI
+- Upgrade Sphinx Relay to v2.0.11
+- Upgrade BTCPay Server to v1.0.7.2
+- Add Toggle for LND Watchtower
+- Show/Hide Toggle for Status Logs
+- Faster UI
+- Refactor backend for managing applications
+- Bug Fixes
+
 === v0.2.29 ===
 - Released: 03/28/21
 - Sphinx Relay uses Tor (new pairings only)
