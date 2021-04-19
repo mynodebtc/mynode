@@ -210,7 +210,7 @@
                     update_status("bitcoin_status", data);
                     update_status_icon("bitcoin_status_icon", data);
                 });
-                $.getJSON("/api/get_service_status?service=lightning", function( data ) {
+                $.getJSON("/api/get_service_status?service=lnd", function( data ) {
                     update_status("lnd_status", data);
                     update_status_icon("lnd_status_icon", data);
                 });

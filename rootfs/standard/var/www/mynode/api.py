@@ -73,8 +73,14 @@ def api_get_service_status():
         data["status"], data["color"] = get_electrs_status_and_color()
     elif service == "bitcoin":
         data["status"], data["color"] = get_bitcoin_status_and_color()
-    elif service == "lightning":
+    elif service == "lnd":
         data["status"], data["color"] = get_lnd_status_and_color()
+    elif service == "loop":
+        data["status"], data["color"] = get_loop_status_and_color()
+    elif service == "pool":
+        data["status"], data["color"] = get_pool_status_and_color()
+    elif service == "lit":
+        data["status"], data["color"] = get_lit_status_and_color()
     elif service == "dojo":
         data["status"], data["color"], dojo_initialized = get_dojo_status()
     elif service == "rtl":
@@ -87,6 +93,8 @@ def api_get_service_status():
         data["status"], data["color"] = get_btcpayserver_status_and_color()
     elif service == "lndhub":
         data["status"], data["color"] = get_lndhub_status_and_color()
+    elif service == "lndconnect":
+        data["status"], data["color"] = get_lndconnect_status_and_color()
     elif service == "btcrpcexplorer":
         data["status"], data["color"], data["ready"] = get_btcrpcexplorer_status_and_color_and_ready()
         data["sso_token"] = get_btcrpcexplorer_sso_token()
@@ -108,6 +116,8 @@ def api_get_service_status():
         data["color"] = get_service_status_color("tor@default")
     elif service == "vpn":
         data["status"], data["color"] = get_vpn_status_and_color()
+    elif service == "webssh2":
+        data["status"], data["color"] = get_webssh2_status_and_color()
     else:
         data["status"] = "unknown service"
 
