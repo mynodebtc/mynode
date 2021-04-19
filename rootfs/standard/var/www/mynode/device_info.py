@@ -479,6 +479,32 @@ def get_lnd_status_and_color():
     color = get_lnd_status_color()
     return status,color
 
+def get_loop_status_and_color():
+    status = "Not Displayed"
+    color = "gray"
+    if is_lnd_ready():
+        color = get_service_status_color("loop")
+    return status,color
+
+def get_pool_status_and_color():
+    status = "Not Displayed"
+    color = "gray"
+    if is_lnd_ready():
+        color = get_service_status_color("loop")
+    return status,color
+
+def get_lit_status_and_color():
+    status = "Not Displayed"
+    color = "gray"
+    if is_lnd_ready():
+        color = get_service_status_color("loop")
+    return status,color
+
+def get_lndconnect_status_and_color():
+    status = "Not Displayed"
+    color = get_service_status_color("lndconnect")
+    return status,color
+
 def get_vpn_status_and_color():
     status = ""
     color = "gray"
@@ -641,6 +667,17 @@ def get_mempool_status_and_color():
             status = "Installing..."
         else:
             color = get_service_status_color("mempool")
+    return status,color
+
+def get_webssh2_status_and_color():
+    status = "Web SSH"
+    color = "gray"
+    if is_service_enabled("webssh2"):
+        if is_installing_docker_images():
+            color = "yellow"
+            status = "Installing..."
+        else:
+            color = get_service_status_color("webssh2")
     return status,color
 
 

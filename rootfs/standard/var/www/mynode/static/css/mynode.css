@@ -689,6 +689,15 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     text-align: center;
 }
 
+.generic_status_icon {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+}
+
 .port_forwarded_icon {
     width: 26px;
     height: 24px;

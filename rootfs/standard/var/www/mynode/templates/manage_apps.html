@@ -4,26 +4,61 @@
         {% include 'includes/head.html' %}
 
         <script>
+            function restart(name, short_name) {
+                if ( confirm("Are you sure you want to restart "+name+"?\n\nRestarting services like Bitcoin or LND may have side effects. If so, restart the device.") ) {
+                    $('#loading_spinner_overlay').fadeIn();
+                    window.location.href='/apps/restart-app?app='+short_name;
+                }
+            }
+
             function upgrade(name, short_name) {
                 if ( confirm("Are you sure you want to upgrade "+name+"? This will reboot your device.") ) {
+                    $('#loading_spinner_overlay').fadeIn();
                     window.location.href='/settings/reinstall-app?app='+short_name;
                 }
             }
 
             function reinstall(name, short_name) {
                 if ( confirm("Are you sure you want to re-install "+name+"? This will reboot your device.") ) {
+                    $('#loading_spinner_overlay').fadeIn();
                     window.location.href='/settings/reinstall-app?app='+short_name;
                 }
             }
 
             function uninstall(name, short_name) {
                 if ( confirm("Are you sure you want to uninstall "+name+"? This will reboot your device.") ) {
+                    $('#loading_spinner_overlay').fadeIn();
                     window.location.href='/settings/uninstall-app?app='+short_name;
                 }
             }
 
             $(document).ready(function() {
-                // TODO
+                // Functions
+                function update_status_icon(status_icon_name, data) {
+                    if (data != null && "color" in data && data["color"] != null) {
+                        $("#"+status_icon_name).removeClass("red");
+                        $("#"+status_icon_name).removeClass("yellow");
+                        $("#"+status_icon_name).removeClass("green");
+                        $("#"+status_icon_name).removeClass("gray");
+                        $("#"+status_icon_name).removeClass("blue");
+                        $("#"+status_icon_name).addClass(data["color"]);
+                    }
+                }
+
+                // Update Status
+                function update_page() {
+                    {% for app in apps %}
+                        {% if app.show_on_application_page %}
+                        $.getJSON("/api/get_service_status?service={{ app.short_name }}", function( data ) {
+                            update_status_icon("{{ app.short_name }}_status_icon", data);
+                        });
+                        {% endif %}
+                    {% endfor %}
+                }
+
+                // Update info every 60 seconds
+                const update_interval = setInterval(update_page, 60000);
+                update_page();
             });
         </script>
     </head>
@@ -34,6 +69,9 @@
         </div>
 
         <div class="main_header">Manage Applications</div>
+
+        {% include 'includes/message_display.html' %}
+
         </br>
         <!-- {{ load_time }} ms -->
         <br/><br/>
@@ -42,8 +80,8 @@
                 <td>Application</td>
                 <td>Current Version</td>
                 <td>Latest Version</td>
-                <td><!-- Enabled Icon --></td>
-                <td colspan="2">Actions</td>
+                <td><!-- Status Icon --></td>
+                <td colspan="3">Actions</td>
             </thead>
             <tbody>
                 {% for app in apps %}
@@ -54,8 +92,12 @@
                             <td>{{ app.current_version }}</td>
                             <td>{{ app.latest_version }}</td>
                             <td>
-                                {% if app.is_enabled %}<img style="width: 20px;" title="Enabled" src="{{ url_for('static', filename="images/running.png")}}"/>{% endif %}
+                                <div class="generic_status_icon" id="{{app.short_name}}_status_icon"></div>
                             </td>
+                            <td>
+                                {% if app.is_enabled %}<button class="ui-button ui-widget ui-corner-all mynode_button_small" onclick="restart('{{ app.name }}', '{{ app.short_name }}');">Restart</button>{% endif %}
+                            </td>
+                            <!-- Start action cells -->
                             <td>
                                 {% if app.is_installed %}
                                     {% if app.current_version != app.latest_version %}
@@ -64,13 +106,13 @@
                                 {% endif %}
                             </td>
                             <td>
-                                {% if app.is_installed %}
-                                    {% if app.can_reinstall %}
-                                    <button class="ui-button ui-widget ui-corner-all mynode_button_small" onclick="reinstall('{{ app.name }}', '{{ app.short_name }}');">Reinstall</button>
-                                    {% endif %}
-                                    {% if app.can_uninstall %}
-                                    <button class="ui-button ui-widget ui-corner-all mynode_button_small" onclick="uninstall('{{ app.name }}', '{{ app.short_name }}');">Uninstall</button>
-                                    {% endif %}
+                                {% if app.is_installed and app.can_reinstall %}
+                                <button class="ui-button ui-widget ui-corner-all mynode_button_small" onclick="reinstall('{{ app.name }}', '{{ app.short_name }}');">Reinstall</button>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if app.is_installed and app.can_uninstall %}
+                                <button class="ui-button ui-widget ui-corner-all mynode_button_small" onclick="uninstall('{{ app.name }}', '{{ app.short_name }}');">Uninstall</button>
                                 {% endif %}
                             </td>
                         </tr>
@@ -79,6 +121,12 @@
                 {% endfor %}
             </tbody>
         </table>
+
+        <div id="loading_spinner_overlay" class="loading_spinner_overlay" style="display:none;">
+            <img id="loading_spinner" class="loading_image" src="{{ url_for('static', filename="images/loading.gif")}}"/>
+            <br/>
+            Loading...
+        </div>
 
         <br/><br/>
 

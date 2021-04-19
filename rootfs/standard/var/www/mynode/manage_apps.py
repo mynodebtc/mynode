@@ -1,5 +1,5 @@
 
-from flask import Blueprint, render_template, redirect
+from flask import Blueprint, render_template, redirect, request
 from user_management import check_logged_in
 from device_info import *
 from application_info import *
@@ -27,3 +27,25 @@ def manage_apps_page():
         "apps": apps
     }
     return render_template('manage_apps.html', **templateData)
+
+@mynode_manage_apps.route("/apps/restart-app")
+def restart_app_page():
+    check_logged_in()
+
+    # Check application specified
+    if not request.args.get("app"):
+        flash("No application specified", category="error")
+        return redirect("/apps")
+    
+    # Check application name is valid
+    app = request.args.get("app")
+    if not is_application_valid(app):
+        flash("Application is invalid", category="error")
+        return redirect("/apps")
+
+    if not restart_application(app):
+        flash("Error restarting application!", category="error")
+        return redirect("/apps")
+
+    flash("Application restarting!", category="message")
+    return redirect("/apps")

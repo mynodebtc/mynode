@@ -271,3 +271,10 @@ def get_application_log(short_name):
             return get_journalctl_log("docker_images")
         else:
             return "ERROR: App or log not found ({})".format(short_name)
+
+def restart_application(short_name):
+    try:
+        subprocess.check_output('systemctl restart {}'.format(short_name), shell=True)
+        return True
+    except Exception as e:
+        return False
