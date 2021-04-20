@@ -1,4 +1,4 @@
-/* mynode color: #f9c132 */
+/* mynode color: #f9c132  - not used in UI*/
 /* dark grey for background: #303841 */
 /* lighter gray: #3a4750 */
 /* light gray: #ddd */
@@ -67,7 +67,7 @@ table,
 
 .info_tile_header {
     color: #121C21;
-    background-color: #f9c132;
+    background-color: orange;
 }
 
 .bitcoin_table_header {
@@ -118,7 +118,7 @@ th td {
 .main_page_warning_block,
 .halving_message_main_page {
     color: #ddd;
-    border: 3px solid #f9c132;
+    border: 3px solid orange;
     background-color: #3a4750;
 }
 
