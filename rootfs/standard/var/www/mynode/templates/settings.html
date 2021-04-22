@@ -240,14 +240,30 @@
                     }
                 });
 
+                showing_upgrade_log=0;
                 $("#show_upgrade_status").on("click", function() {
-                    $("#show_upgrade_status").hide(0);
-                    $("#upgrade_status").show();
+                    if (showing_upgrade_log == 0) {
+                        $("#show_upgrade_status").html("Hide Upgrade Log");
+                        $("#upgrade_status").show();
+                        showing_upgrade_log = 1;
+                    } else {
+                        $("#show_upgrade_status").html("Show Upgrade Log");
+                        $("#upgrade_status").hide();
+                        showing_upgrade_log = 0;
+                    }
                 });
 
+                showing_upgrade_beta_log=0;
                 $("#show_upgrade_status_beta").on("click", function() {
-                    $("#show_upgrade_status_beta").hide(0);
-                    $("#upgrade_status_beta").show();
+                    if (showing_upgrade_beta_log == 0) {
+                        $("#show_upgrade_status_beta").html("Hide Upgrade Log");
+                        $("#upgrade_status_beta").show();
+                        showing_upgrade_beta_log = 1;
+                    } else {
+                        $("#show_upgrade_status_beta").html("Show Upgrade Log");
+                        $("#upgrade_status_beta").hide();
+                        showing_upgrade_beta_log = 0;
+                    }
                 });
 
                 $("#upgrade_changelog").on("click", function() {
