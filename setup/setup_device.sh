@@ -94,19 +94,21 @@ elif [ $IS_X86 = 1 ]; then
 fi
 wget http://${SERVER_IP}:8000/${TARBALL} -O /tmp/rootfs.tar.gz
 
-# Get mynode_app_versions.sh file
-wget http://${SERVER_IP}:8000/mynode_app_versions.sh -O /tmp/mynode_app_versions.sh
-source /tmp/mynode_app_versions.sh
+# Extract rootfs (so we can reference temporary files)
+tar -xvf /tmp/rootfs.tar.gz -C /tmp/upgrade/
+TMP_INSTALL_PATH="/tmp/upgrade/out/rootfs_*"
+
+# Source file containing app versions
+source /tmp/upgrade/out/rootfs_*/usr/share/mynode/mynode_app_versions.sh
 
 
 # Create any necessary users
+useradd -m -s /bin/bash bitcoin || true
 useradd -m -s /bin/bash joinmarket || true
-
-# User updates
-adduser admin bitcoin
 
 # Setup bitcoin user folders
 mkdir -p /home/bitcoin/.mynode/
+chown bitcoin:bitcoin /home/bitcoin
 chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
 
 # Update sources
@@ -193,10 +195,11 @@ echo "" > /etc/nginx/sites-available/default
 dpkg --configure -a
 
 
-# Add bitcoin users
-useradd -m -s /bin/bash bitcoin || true
+# Update users
 usermod -a -G debian-tor bitcoin
 
+# Make admin a member of bitcoin
+adduser admin bitcoin
 
 # Install pip packages
 pip2 install setuptools
@@ -342,10 +345,10 @@ if [ "$CURRENT" != "$LND_VERSION" ]; then
     cd /opt/download
 
     wget $LND_UPGRADE_URL
-    wget $LND_UPGRADE_MANIFEST_URL
-    wget $LND_UPGRADE_MANIFEST_SIG_URL
+    wget $LND_UPGRADE_MANIFEST_URL -O manifest.txt
+    wget $LND_UPGRADE_MANIFEST_SIG_URL -O manifest.txt.sig
 
-    gpg --verify manifest-*.txt.asc
+    gpg --verify manifest.txt.sig manifest.txt
 
     tar -xzf lnd-*.tar.gz
     mv $LND_ARCH-$LND_VERSION lnd
@@ -374,10 +377,10 @@ if [ "$CURRENT" != "$LOOP_VERSION" ]; then
     cd /opt/download
 
     wget $LOOP_UPGRADE_URL
-    wget $LOOP_UPGRADE_MANIFEST_URL
-    wget $LOOP_UPGRADE_MANIFEST_SIG_URL
+    wget $LOOP_UPGRADE_MANIFEST_URL -O manifest.txt
+    wget $LOOP_UPGRADE_MANIFEST_SIG_URL -O manifest.txt.sig
 
-    gpg --verify manifest-*.txt.sig
+    gpg --verify manifest.txt.sig manifest.txt
     if [ $? == 0 ]; then
         # Install Loop
         tar -xzf loop-*.tar.gz
@@ -409,10 +412,10 @@ if [ "$CURRENT" != "$POOL_VERSION" ]; then
     cd /opt/download
 
     wget $POOL_UPGRADE_URL
-    wget $POOL_UPGRADE_MANIFEST_URL
-    wget $POOL_UPGRADE_MANIFEST_SIG_URL
+    wget $POOL_UPGRADE_MANIFEST_URL -O manifest.txt
+    wget $POOL_UPGRADE_MANIFEST_SIG_URL -O manifest.txt.sig
 
-    gpg --verify manifest-*.txt.sig
+    gpg --verify manifest.txt.sig manifest.txt
     if [ $? == 0 ]; then
         # Install Pool
         tar -xzf pool-*.tar.gz
@@ -433,8 +436,6 @@ if [ $IS_X86 = 1 ]; then
     LIT_ARCH="lightning-terminal-linux-amd64"
 fi
 LIT_UPGRADE_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/$LIT_ARCH-$LIT_VERSION.tar.gz
-LIT_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-$LIT_VERSION.txt
-LIT_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-$LIT_VERSION.txt.asc
 CURRENT=""
 if [ -f $LIT_VERSION_FILE ]; then
     CURRENT=$(cat $LIT_VERSION_FILE)
@@ -446,10 +447,10 @@ if [ "$CURRENT" != "$LIT_VERSION" ]; then
     cd /opt/download
 
     wget $LIT_UPGRADE_URL
-    wget $LIT_UPGRADE_MANIFEST_URL
-    wget $LIT_UPGRADE_MANIFEST_SIG_URL
+    wget $LIT_UPGRADE_MANIFEST_URL -O manifest.txt
+    wget $LIT_UPGRADE_MANIFEST_SIG_URL  -O manifest.txt.sig
 
-    gpg --verify manifest-*.txt.asc
+    gpg --verify manifest.txt.sig manifest.txt
     if [ $? == 0 ]; then
         # Install lit
         tar -xzf lightning-terminal-*.tar.gz
@@ -606,7 +607,7 @@ if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
         # Apply patches
         echo "" > set.password.sh
         echo "" > standalone/expand.rootfs.sh
-        sudo -u joinmarket cp /usr/share/joininbox/menu.update.sh /home/joinmarket/menu.update.sh
+        sudo -u joinmarket cp $TMP_INSTALL_PATH/usr/share/joininbox/menu.update.sh /home/joinmarket/menu.update.sh # fails in setup since files are extracted yet
         sudo -u joinmarket sed -i "s|/home/joinmarket/menu.config.sh|echo 'mynode skip config'|g" /home/joinmarket/start.joininbox.sh
 
         echo $JOININBOX_VERSION > $JOININBOX_VERSION_FILE
@@ -696,14 +697,14 @@ if [ "$CURRENT" != "$LNBITS_VERSION" ]; then
     cd lnbits
 
     # Copy over config file
-    cp /usr/share/mynode/lnbits.env /opt/mynode/lnbits/.env
+    cp $TMP_INSTALL_PATH/usr/share/mynode/lnbits.env /opt/mynode/lnbits/.env
     chown bitcoin:bitcoin /opt/mynode/lnbits/.env
 
     # Install lnbits
     sudo -u bitcoin python3 -m venv lnbits_venv
     sudo -u bitcoin ./lnbits_venv/bin/pip install -r requirements.txt
     sudo -u bitcoin ./lnbits_venv/bin/quart assets
-    sudo -u bitcoin ./lnbits_venv/bin/quart migrate
+    #sudo -u bitcoin ./lnbits_venv/bin/quart migrate # Can't migrate since we don't have HDD in setup
 
     echo $LNBITS_VERSION > $LNBITS_VERSION_FILE
 fi
@@ -854,10 +855,7 @@ update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy || true
 #########################################################
 
 
-# Copy myNode rootfs (downloaded earlier)
-tar -xvf /tmp/rootfs.tar.gz -C /tmp/upgrade/
-
-# Install files
+# Install files (downloaded and extracted earlier)
 if [ $IS_X86 = 1 ]; then
     rsync -r -K /tmp/upgrade/out/rootfs_*/* /
 else

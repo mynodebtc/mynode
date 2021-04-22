@@ -769,7 +769,9 @@ systemctl enable check_in || true
 systemctl enable bitcoin || true                # Make sure new bitcoin service is used
 systemctl disable bitcoind || true              # Make sure new bitcoin service is used
 rm /etc/systemd/system/bitcoind.service || true # Make sure new bitcoin service is used
-
+if [ -f /usr/share/joininbox/menu.update.sh ] && [ -f /home/joinmarket/menu.update.sh ]; then
+    sudo -u joinmarket cp -f /usr/share/joininbox/menu.update.sh /home/joinmarket/menu.update.sh
+fi
 
 # Check for new versions
 torify wget $LATEST_VERSION_URL --timeout=30 -O /usr/share/mynode/latest_version || true
