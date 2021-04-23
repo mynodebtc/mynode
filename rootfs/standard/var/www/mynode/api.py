@@ -11,6 +11,7 @@ from whirlpool import get_whirlpool_status
 from thread_functions import *
 from systemctl_info import *
 from application_info import *
+from messages import *
 import qrcode
 import cStringIO
 import json
@@ -28,6 +29,7 @@ def api_get_bitcoin_info():
 
     data = {}
     data["current_block"] = get_mynode_block_height()
+    data["block_height"] = get_bitcoin_block_height()
     data["peer_count"] = get_bitcoin_peer_count()
     #data["difficulty"] = get_bitcoin_difficulty() # Dont send difficulty, it causes errors in jsonify
     data["mempool_size"] = get_bitcoin_mempool_size()
@@ -182,3 +184,15 @@ def api_get_qr_code_image():
     img.save(img_buf)
     img_buf.seek(0)
     return send_file(img_buf, mimetype='image/png')
+
+@mynode_api.route("/api/get_message")
+def api_get_message():
+    check_logged_in()
+    
+    funny = False
+    if request.args.get("funny"):
+        funny = True
+    
+    data = {}
+    data["message"] = get_message(funny)
+    return jsonify(data)

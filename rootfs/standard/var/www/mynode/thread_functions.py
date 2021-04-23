@@ -92,21 +92,35 @@ def update_bitcoin_main_info_thread():
     global has_updated_btc_info
 
     try:
-        # Get bitcoin info
-        if update_bitcoin_main_info():
-            # Mark on update complete
-            has_updated_btc_info = True
+        synced = False
+        while True:
+            # Get bitcoin info
+            if update_bitcoin_main_info():
+                # Mark on update complete
+                has_updated_btc_info = True
 
-            # Calculate sync status
-            bitcoin_block_height = get_bitcoin_block_height()
-            mynode_block_height = get_mynode_block_height()
-            remaining = bitcoin_block_height - mynode_block_height
-            if remaining == 0 and bitcoin_block_height > 670000:
-                if not os.path.isfile(BITCOIN_SYNCED_FILE):
-                    open(BITCOIN_SYNCED_FILE, 'a').close() # touch file
-            elif remaining > 18:
-                if os.path.isfile(BITCOIN_SYNCED_FILE):
-                    os.remove(BITCOIN_SYNCED_FILE)
+                # Calculate sync status
+                bitcoin_block_height = get_bitcoin_block_height()
+                mynode_block_height = get_mynode_block_height()
+                remaining = bitcoin_block_height - mynode_block_height
+                if remaining == 0 and bitcoin_block_height > 680000:
+                    synced = True
+                    if not os.path.isfile(BITCOIN_SYNCED_FILE):
+                        open(BITCOIN_SYNCED_FILE, 'a').close() # touch file
+                elif remaining > 18:
+                    synced = False
+                    if os.path.isfile(BITCOIN_SYNCED_FILE):
+                        os.remove(BITCOIN_SYNCED_FILE)
+
+                # Poll slower if synced
+                if synced:
+                    time.sleep(15)
+                else:
+                    time.sleep(3)
+
+            else:
+                # Failed - try again in 10s
+                time.sleep(10)
 
     except Exception as e:
         print("CAUGHT update_bitcoin_main_info_thread EXCEPTION: " + str(e))

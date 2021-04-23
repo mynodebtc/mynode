@@ -1,0 +1,76 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        {% include 'includes/head.html' %}
+
+        <script>
+        $(document).ready(function() {
+            current_block = {{mynode_block_height}};
+            block_height = {{bitcoin_block_height}};
+
+            function update_counts() {
+                // Update Bitcoin Info
+                $.getJSON("/api/get_bitcoin_info", function( data ) {
+                    //console.log("Bitcoin Data: " + JSON.stringify(data))
+                    if ("current_block" in data && data["current_block"] != null && 
+                        "block_height" in data && data["block_height"] != null) {
+                        if (current_block != parseInt(data["current_block"])) {
+                            $("#current_block").fadeOut(250, function() {
+                                $(this).text(data["current_block"]);
+                            }).fadeIn(250);
+                            current_block = parseInt(data["current_block"]);
+                        }
+                        if (block_height != parseInt(data["block_height"])) {
+                            $("#block_height").fadeOut(250, function() {
+                                $(this).text(data["block_height"]);
+                            }).fadeIn(250);
+                            block_height = parseInt(data["block_height"]);
+                        }
+
+                        // We're close, so do a full refresh to get to home page faster
+                        if (current_block > (block_height - 5)) {
+                            location.reload();
+                        }
+                    }
+                });
+            }
+
+            function update_message() {
+                // Update message
+                if (update_count % 12 == 0) {
+                    $.getJSON("/api/get_message", function( data ) {
+                        if ("message" in data && data["message"] != null) {
+                            $("#message").fadeOut(250, function() {
+                                $(this).text(data["message"]);
+                            }).fadeIn(250);
+                        }
+                    });
+                }
+            }
+
+            // Update info
+            const update_block_interval = setInterval(update_counts, 5000);
+            const update_message_interval = setInterval(update_message, 60000);
+        });
+        </script>
+
+        <!-- Refresh in 15 min, other updates async -->
+        <meta http-equiv="refresh" content="900">
+     </head>
+
+    <body>
+        {% include 'includes/logo_header.html' %}
+        
+        <div class="state_header">{{ header_text }}</div>
+
+        <div class="state_subheader">
+            Syncing... <br/>
+            <span id="current_block">{{mynode_block_height}}</span> of <span id="block_height">{{bitcoin_block_height}}</span>
+
+            <div id="message" class='small_message'>{{ message }}</div>
+        </div>
+
+        <div style="height: 40px;">&nbsp;</div>
+        {% include 'includes/footer.html' %}
+     </body>
+</html>

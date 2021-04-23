@@ -442,19 +442,19 @@ def index():
         # Display sync info if not synced
         if not is_bitcoin_synced():
             subheader = Markup("Syncing...")
-            if bitcoin_block_height != None:
-                message = "<div class='small_message'>{}</<div>".format( get_message(include_funny=True) )
-
-                remaining = bitcoin_block_height - mynode_block_height
-                subheader = Markup("Syncing...<br/>Block {} of {}{}".format(mynode_block_height, bitcoin_block_height, message))
+            if bitcoin_block_height == None:
+                bitcoin_block_height = 0
+            if mynode_block_height == None:
+                mynode_block_height = 0
             templateData = {
                 "title": "myNode Sync",
                 "header_text": "Bitcoin Blockchain",
-                "subheader_text": subheader,
-                "refresh_rate": 10,
+                "bitcoin_block_height": bitcoin_block_height,
+                "mynode_block_height": mynode_block_height,
+                "message": get_message(include_funny=True),
                 "ui_settings": read_ui_settings()
             }
-            return render_template('state.html', **templateData)
+            return render_template('syncing.html', **templateData)
 
         # Find tor status
         tor_status_color = get_service_status_color("tor@default")
@@ -851,7 +851,7 @@ def start_threads():
     app.logger.info("STARTING THREADS")
 
     # Start threads
-    btc_thread1 = BackgroundThread(update_bitcoin_main_info_thread, 15)
+    btc_thread1 = BackgroundThread(update_bitcoin_main_info_thread, 60) # Restart after 60, thread manages timing
     btc_thread1.start()
     threads.append(btc_thread1)
     btc_thread2 = BackgroundThread(update_bitcoin_other_info_thread, 60)
