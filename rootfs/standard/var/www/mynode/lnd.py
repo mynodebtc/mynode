@@ -387,9 +387,9 @@ def page_lnd_pair_wallet():
     pairs.append( create_pair(name="Lightning (REST + Local IP)", image_src=lndconnect_local_rest_img,text=lndconnect_local_rest_text,premium=False) )
     pairs.append( create_pair(name="Lightning (REST + Tor)", image_src=lndconnect_tor_rest_img,text=lndconnect_tor_rest_text,premium=True) )
     pairs.append( create_pair(name="Blue Wallet (LNDHub + Local IP)", image_src=bluewallet_lndhub_local_img,text=bluewallet_lndhub_local_text,premium=False) )
-    #pairs.append( create_pair(name="Blue Wallet (LNDHub + Tor)", image_src=bluewallet_lndhub_tor_img,text=bluewallet_lndhub_tor_text,premium=True) )
+    pairs.append( create_pair(name="Blue Wallet (LNDHub + Tor)", image_src=bluewallet_lndhub_tor_img,text=bluewallet_lndhub_tor_text,premium=True) )
     pairs.append( create_pair(name="Blue Wallet (Electrum + Local IP)", image_src=bluewallet_electrs_local_img,text=bluewallet_electrs_local_text,premium=False) )
-    #pairs.append( create_pair(name="Blue Wallet (Electrum + Tor)", image_src=bluewallet_electrs_tor_img,text=bluewallet_electrs_tor_text,premium=True) )
+    pairs.append( create_pair(name="Blue Wallet (Electrum + Tor)", image_src=bluewallet_electrs_tor_img,text=bluewallet_electrs_tor_text,premium=True) )
     #pairs.append( create_pair(name="Fully Noded (Tor)", image_src="",text="",premium=True) ) # Maybe not? pairs diff wallet
     
 
