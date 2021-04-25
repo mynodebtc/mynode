@@ -4,8 +4,8 @@ from flask import Flask, render_template, Markup, send_from_directory, redirect,
 from user_management import *
 from api import mynode_api
 from bitcoin import mynode_bitcoin
-from whirlpool import mynode_whirlpool, get_whirlpool_status
-from dojo import mynode_dojo, get_dojo_status
+from whirlpool import mynode_whirlpool
+from dojo import mynode_dojo
 from joininbox import mynode_joininbox
 from caravan import mynode_caravan
 from sphinxrelay import mynode_sphinxrelay
@@ -456,10 +456,6 @@ def index():
             }
             return render_template('syncing.html', **templateData)
 
-        # Find tor status
-        tor_status_color = get_service_status_color("tor@default")
-        tor_status = "Private Connections"
-
         # Find bitcoid status
         bitcoin_info = get_bitcoin_blockchain_info()
         bitcoin_peers = get_bitcoin_peers()
@@ -480,52 +476,6 @@ def index():
         if int(re.sub("[^0-9]", "", drive_usage)) > 95:
             low_drive_space_error = True
 
-
-        # Find lndhub status
-        lndhub_status, lndhub_status_color = get_lndhub_status_and_color()
-
-        # Find RTL status
-        rtl_status, rtl_status_color = get_rtl_status_and_color()
-
-        # Find LNbits status
-        lnbits_status, lnbits_status_color = get_lnbits_status_and_color()
-
-        # Find Thunderhub status
-        thunderhub_status, thunderhub_status_color = get_thunderhub_status_and_color()
-
-        # Find CKBunker status
-        ckbunker_status, ckbunker_status_color = get_ckbunker_status_and_color()
-
-        # Find Sphinx Relay status
-        sphinxrelay_status, sphinxrelay_status_color = get_sphinxrelay_status_and_color()
-
-        # Find electrs status
-        electrs_status, electrs_status_color = get_electrs_status_and_color()
-
-        # Find btc-rpc-explorer status
-        btcrpcexplorer_status, btcrpcexplorer_status_color, btcrpcexplorer_ready = get_btcrpcexplorer_status_and_color_and_ready()
-
-        # Find mempool space status
-        mempool_status, mempool_status_color = get_mempool_status_and_color()
-
-        # Find btcpayserver status
-        btcpayserver_status, btcpayserver_status_color = get_btcpayserver_status_and_color()
-
-        # Find VPN status
-        vpn_status, vpn_status_color = get_vpn_status_and_color()
-
-        # Find whirlpool status
-        whirlpool_status, whirlpool_status_color, whirlpool_initialized = get_whirlpool_status()
-
-        # Find dojo status
-        dojo_status, dojo_status_color, dojo_initialized = get_dojo_status()
-
-        # Find caravan status
-        caravan_status, caravan_status_color = get_caravan_status_and_color()
-
-        # Find specter status
-        specter_status, specter_status_color = get_specter_status_and_color()
-
         # Check for new version of software
         upgrade_available = False
         current = get_current_version()
@@ -544,7 +494,7 @@ def index():
             "title": "myNode Home",
             "refresh_rate": refresh_rate,
             "config": CONFIG,
-            "apps": get_all_applications(order_by="alphabetic"),
+            "apps": get_all_applications(order_by="homepage"),
             "bitcoin_status_color": bitcoin_status_color,
             "bitcoin_status": Markup(bitcoin_status),
             "current_block": current_block,
@@ -562,63 +512,10 @@ def index():
             "lnd_version": get_lnd_version(),
             "lnd_deposit_address": get_lnd_deposit_address(),
             "lnd_channels": get_lightning_channels(),
+            "electrs_active": electrs_active,
             "is_testnet_enabled": is_testnet_enabled(),
-            "tor_status_color": tor_status_color,
-            "tor_status": tor_status,
             "is_installing_docker_images": is_installing_docker_images(),
             "is_device_from_reseller": is_device_from_reseller(),
-            "electrs_status_color": electrs_status_color,
-            "electrs_status": Markup(electrs_status),
-            "electrs_enabled": is_service_enabled("electrs"),
-            "electrs_active": electrs_active,
-            "rtl_status_color": rtl_status_color,
-            "rtl_status": rtl_status,
-            "rtl_enabled": is_service_enabled("rtl"),
-            "lnbits_status_color": lnbits_status_color,
-            "lnbits_status": lnbits_status,
-            "lnbits_enabled": is_service_enabled("lnbits"),
-            "thunderhub_status_color": thunderhub_status_color,
-            "thunderhub_status": thunderhub_status,
-            "thunderhub_enabled": is_service_enabled("thunderhub"),
-            "thunderhub_sso_token": get_thunderhub_sso_token(),
-            "ckbunker_status_color": ckbunker_status_color,
-            "ckbunker_status": ckbunker_status,
-            "ckbunker_enabled": is_service_enabled("ckbunker"),
-            "sphinxrelay_status_color": sphinxrelay_status_color,
-            "sphinxrelay_status": sphinxrelay_status,
-            "sphinxrelay_enabled": is_service_enabled("sphinxrelay"),
-            "lndhub_status_color": lndhub_status_color,
-            "lndhub_status": lndhub_status,
-            "lndhub_enabled": is_service_enabled("lndhub"),
-            "btcrpcexplorer_ready": btcrpcexplorer_ready,
-            "btcrpcexplorer_status_color": btcrpcexplorer_status_color,
-            "btcrpcexplorer_status": btcrpcexplorer_status,
-            "btcrpcexplorer_enabled": is_service_enabled("btcrpcexplorer"),
-            "btcrpcexplorer_sso_token": get_btcrpcexplorer_sso_token(),
-            "caravan_status_color": caravan_status_color,
-            "caravan_status": caravan_status,
-            "caravan_enabled": is_service_enabled("caravan"),
-            "specter_status_color": specter_status_color,
-            "specter_status": specter_status,
-            "specter_enabled": is_service_enabled("specter"),
-            "mempool_status_color": mempool_status_color,
-            "mempool_status": mempool_status,
-            "mempool_enabled": is_service_enabled("mempool"),
-            "btcpayserver_enabled": is_service_enabled("btcpayserver"),
-            "btcpayserver_status_color": btcpayserver_status_color,
-            "btcpayserver_status": btcpayserver_status,
-            "vpn_status_color": vpn_status_color,
-            "vpn_status": vpn_status,
-            "vpn_enabled": is_service_enabled("vpn"),
-            "whirlpool_status": whirlpool_status,
-            "whirlpool_status_color": whirlpool_status_color,
-            "whirlpool_enabled": is_service_enabled("whirlpool"),
-            "whirlpool_initialized": whirlpool_initialized,
-            "is_dojo_installed": is_dojo_installed(),
-            "dojo_status": dojo_status,
-            "dojo_status_color": dojo_status_color,
-            "dojo_enabled": is_service_enabled("dojo"),
-            "dojo_initialized": dojo_initialized,
             "product_key_skipped": pk_skipped,
             "product_key_error": pk_error,
             "fsck_error": has_fsck_error(),

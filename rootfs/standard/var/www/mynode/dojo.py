@@ -5,6 +5,7 @@ from user_management import check_logged_in
 from enable_disable_functions import *
 from bitcoin_info import get_mynode_block_height
 from electrum_info import get_electrs_status, is_electrs_active
+from application_info import *
 import subprocess
 import re
 import os
@@ -12,6 +13,15 @@ import os
 mynode_dojo = Blueprint('mynode_dojo',__name__)
 
 ## Status and color
+def is_dojo_initialized():
+    try:
+        dojo_initialized = subprocess.check_output("docker inspect --format={{.State.Running}} db", shell=True)
+        dojo_initialized = dojo_initialized.strip()
+    except:
+        dojo_initialized = ""
+
+    return dojo_initialized == "true"
+
 def get_dojo_status():
     # Find dojo status
     dojo_status = "Disabled"
@@ -20,22 +30,17 @@ def get_dojo_status():
     if is_installing_docker_images():
         dojo_status = "Installing..."
         dojo_status_color = "yellow"
-        dojo_initialized = ""
-        return dojo_status, dojo_status_color, dojo_initialized
+        return dojo_status, dojo_status_color
 
     if is_testnet_enabled():
         dojo_status = "Requires Mainnet"
         dojo_status_color = "gray"
-        dojo_initialized = ""
-        return dojo_status, dojo_status_color, dojo_initialized
+        return dojo_status, dojo_status_color
 
-    try:
-        dojo_initialized = subprocess.check_output("docker inspect --format={{.State.Running}} db", shell=True)
-        dojo_initialized = dojo_initialized.strip()
-    except:
-        dojo_initialized = ""
+    init = is_dojo_initialized()
+
     if is_service_enabled("dojo"):
-        if dojo_initialized != "false":
+        if init:
             if is_electrs_active():
                 dojo_status = "Running"
                 dojo_status_color = "green"
@@ -45,9 +50,8 @@ def get_dojo_status():
         else:
             dojo_status = "Issue Starting"
             dojo_status_color = "red"
-            dojo_initialized = ""
 
-    return dojo_status, dojo_status_color, dojo_initialized
+    return dojo_status, dojo_status_color
 
 def get_dojo_tracker_status():
     try:
@@ -116,7 +120,12 @@ def dojo_page():
     admin_key = get_dojo_admin_key()
     dojo_v3_addr = get_dojo_addr()
 
-    dojo_status, dojo_status_color, dojo_initialized = get_dojo_status()
+    dojo_status = "Running"
+    dojo_status_code = get_service_status_code("dojo")
+    if not is_dojo_initialized():
+        dojo_status = "Issue Starting"
+    elif dojo_status_code != 0:
+        dojo_status = "Error"
 
     # Load page
     templateData = {
@@ -125,9 +134,7 @@ def dojo_page():
         "is_dojo_installed": is_dojo_installed(),
         "dojo_status": dojo_status,
         "dojo_version": get_dojo_version(),
-        "dojo_status_color": dojo_status_color,
         "dojo_enabled": is_service_enabled("dojo"),
-        "dojo_initialized": dojo_initialized,
         "dojo_tracker_status": get_dojo_tracker_status(),
         "electrs_status": get_electrs_status(),
         "NODE_ADMIN_KEY": admin_key,
@@ -138,6 +145,5 @@ def dojo_page():
 @mynode_dojo.route("/restart-dojo")
 def page_restart_dojo():
     check_logged_in()
-    disable_dojo()
-    enable_dojo()
+    restart_service("dojo")
     return redirect("/dojo")
