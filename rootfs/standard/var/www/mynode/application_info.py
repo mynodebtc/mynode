@@ -429,12 +429,12 @@ def get_application_status(short_name):
         return "Requires Mainnet"
     if app["requires_docker_image_installation"] and is_installing_docker_images():
         return "Installing..."
+    if app["requires_lightning"] and not is_lnd_ready():
+        return "Waiting on Lightning"
     if not app["is_enabled"]:
         return app["app_tile_default_status_text"]
     if app["requires_bitcoin"] and not is_bitcoin_synced():
         return "Waiting on Bitcoin"
-    if app["requires_lightning"] and not is_lnd_ready():
-        return "Waiting on Lightning"
     if app["requires_electrs"] and not is_electrs_active():
         return "Waiting on Electrum"
 
@@ -476,11 +476,11 @@ def get_application_status_color(short_name):
         return "gray"
     if app["requires_docker_image_installation"] and is_installing_docker_images():
         return "yellow"
+    if app["requires_lightning"] and not is_lnd_ready():
+        return "gray"
     if app["can_enable_disable"] and not app["is_enabled"]:
         return "gray"
     if app["requires_bitcoin"] and not is_bitcoin_synced():
-        return "yellow"
-    if app["requires_lightning"] and not is_lnd_ready():
         return "yellow"
     if app["requires_electrs"] and not is_electrs_active():
         return "yellow"
