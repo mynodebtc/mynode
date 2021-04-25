@@ -13,6 +13,9 @@
             application_data["{{app.short_name}}"]["short_name"] = "{{app.short_name}}";
             application_data["{{app.short_name}}"]["is_enabled"] = {% if app.is_enabled %}true{% else %}false{% endif %};
             {% endfor %}
+            var electrs_active = {% if electrs_active %}1{% else %}0{% endif %};
+            var lnd_ready = {% if lnd_ready %}true{% else %}false{% endif %};
+            var is_installing_docker_images = {% if is_installing_docker_images %}true{% else %}false{% endif %};
 
             // Toggle enable/disable functions
             function get_custom_enable_message(short_name) {
@@ -23,6 +26,8 @@
                 } else if (short_name == "vpn") {
                     message = "Enabling VPN will set your IP to a static IP rather than a dynamic one via DHCP. \
                                The initial setup may take about an hour.";
+                } else if (short_name == "dojo") {
+                    message = "Enabling Dojo for the first time will reboot your device and install Dojo.";
                 }
                 if (message != "") {
                     message += "<br/><br/>";
@@ -72,6 +77,7 @@
                     $("#"+status_icon_name).removeClass("green");
                     $("#"+status_icon_name).removeClass("gray");
                     $("#"+status_icon_name).removeClass("blue");
+                    $("#"+status_icon_name).removeClass("clear");
                     $("#"+status_icon_name).addClass(data["color"]);
                 }
             }
@@ -83,7 +89,14 @@
                     $("#channel_status_icon_"+c["chan_id"]).removeClass("green");
                     $("#channel_status_icon_"+c["chan_id"]).removeClass("gray");
                     $("#channel_status_icon_"+c["chan_id"]).removeClass("blue");
+                    $("#channel_status_icon_"+c["chan_id"]).removeClass("clear");
                     $("#channel_status_icon_"+c["chan_id"]).addClass(c["status_color"]);
+                }
+            }
+
+            function update_sso_token(short_name, data) {
+                if ("sso_token" in data && data["sso_token"] != null && data["sso_token"] != "") {
+                    application_data[short_name]["sso_token"] = data["sso_token"]
                 }
             }
 
@@ -125,11 +138,6 @@
             
 
             // Update page function
-            var lnd_ready = {% if lnd_ready %}true{% else %}false{% endif %};
-            var btcrpcexplorer_ready = {% if btcrpcexplorer_ready %}true{% else %}false{% endif %};
-            var btcrpcexplorer_sso_token = "{{btcrpcexplorer_sso_token}}";
-            var thunderhub_sso_token = "{{thunderhub_sso_token}}";
-            var is_installing_docker_images = {% if is_installing_docker_images %}true{% else %}false{% endif %};
             function update_page() {
                 // Update Bitcoin Info
                 $.getJSON("/api/get_bitcoin_info", function( data ) {
@@ -206,88 +214,15 @@
                 });
 
                 // Update app status
-                $.getJSON("/api/get_service_status?service=bitcoin", function( data ) {
-                    update_status("bitcoin_status", data);
-                    update_status_icon("bitcoin_status_icon", data);
-                });
-                $.getJSON("/api/get_service_status?service=lnd", function( data ) {
-                    update_status("lnd_status", data);
-                    update_status_icon("lnd_status_icon", data);
-                });
-                $.getJSON("/api/get_service_status?service=electrs", function( data ) {
-                    update_status("electrs_status", data);
-                    update_status_icon("electrs_status_icon", data);
-                });
-                $.getJSON("/api/get_service_status?service=dojo", function( data ) {
-                    update_status("dojo_status", data);
-                    update_status_icon("dojo_status_icon", data);
-                });
-                $.getJSON("/api/get_service_status?service=rtl", function( data ) {
-                    update_status("rtl_status", data);
-                    update_status_icon("rtl_status_icon", data);
-                });
-                $.getJSON("/api/get_service_status?service=mempool", function( data ) {
-                    update_status("mempool_status", data);
-                    update_status_icon("mempool_status_icon", data);
-                });
-                $.getJSON("/api/get_service_status?service=whirlpool", function( data ) {
-                    update_status("whirlpool_status", data);
-                    update_status_icon("whirlpool_status_icon", data);
-                });
-                $.getJSON("/api/get_service_status?service=btcpayserver", function( data ) {
-                    update_status("btcpayserver_status", data);
-                    update_status_icon("btcpayserver_status_icon", data);
-                });
-                $.getJSON("/api/get_service_status?service=lndhub", function( data ) {
-                    update_status("lndhub_status", data);
-                    update_status_icon("lndhub_status_icon", data);
-                });
-                // BTC RPC Explorer // TODO: Refresh page if btcexplorerready changes
-                $.getJSON("/api/get_service_status?service=btcrpcexplorer", function( data ) {
-                    update_status("btcrpcexplorer_status", data);
-                    update_status_icon("btcrpcexplorer_status_icon", data);
-                    if ("sso_token" in data && data["sso_token"] != null) {
-                        btcrpcexplorer_sso_token = data["sso_token"]
-                    }
-                    if ("ready" in data && data["ready"] != null && btcrpcexplorer_ready != data["ready"]) {
-                        refresh_page();
-                    }
-                });
-                $.getJSON("/api/get_service_status?service=caravan", function( data ) {
-                    update_status("caravan_status", data);
-                    update_status_icon("caravan_status_icon", data);
-                });
-                $.getJSON("/api/get_service_status?service=specter", function( data ) {
-                    update_status("specter_status", data);
-                    update_status_icon("specter_status_icon", data);
-                });
-                $.getJSON("/api/get_service_status?service=lnbits", function( data ) {
-                    update_status("lnbits_status", data);
-                    update_status_icon("lnbits_status_icon", data);
-                });
-                $.getJSON("/api/get_service_status?service=thunderhub", function( data ) {
-                    update_status("thunderhub_status", data);
-                    update_status_icon("thunderhub_status_icon", data);
-                    if ("sso_token" in data && data["sso_token"] != null) {
-                        thunderhub_sso_token = data["sso_token"]
-                    }
-                });
-                $.getJSON("/api/get_service_status?service=ckbunker", function( data ) {
-                    update_status("ckbunker_status", data);
-                    update_status_icon("ckbunker_status_icon", data);
-                });
-                $.getJSON("/api/get_service_status?service=sphinxrelay", function( data ) {
-                    update_status("sphinxrelay_status", data);
-                    update_status_icon("sphinxrelay_status_icon", data);
-                });
-                $.getJSON("/api/get_service_status?service=tor", function( data ) {
-                    update_status("tor_status", data);
-                    update_status_icon("tor_status_icon", data);
-                });
-                $.getJSON("/api/get_service_status?service=vpn", function( data ) {
-                    update_status("vpn_status", data);
-                    update_status_icon("vpn_status_icon", data);
-                });
+                {% for app in apps %}
+                    {% if app.show_on_homepage %}
+                        $.getJSON("/api/get_service_status?service={{app.short_name}}", function( data ) {
+                            update_status("{{app.short_name}}_status", data);
+                            update_status_icon("{{app.short_name}}_status_icon", data);
+                            update_sso_token("{{app.short_name}}", data);
+                        });
+                    {% endif %}
+                {% endfor %}
 
                 // Update device info
                 $.getJSON("/api/get_device_info", function( data ) {
@@ -312,6 +247,11 @@
                             refresh_page();
                         }
                     }
+                    if ("is_electrs_active" in data && data["is_electrs_active"] != null) {
+                        if (electrs_active != data["is_electrs_active"]) {
+                            refresh_page();
+                        }
+                    }
                 });
 
                 // Check if we need a full page refresh (errors, status changes, etc...)
@@ -326,11 +266,6 @@
 
             // Run when page ready
             $(document).ready(function() {
-                electrs_enabled = {% if electrs_enabled %}1{% else %}0{% endif %}
-                lndhub_enabled = {% if lndhub_enabled %}1{% else %}0{% endif %}
-                vpn_enabled = {% if vpn_enabled %}1{% else %}0{% endif %}
-                mempool_enabled = {% if mempool_enabled %}1{% else %}0{% endif %}
-
                 $( document ).tooltip();
 
                 $("#lit").on("click", function() {
@@ -372,7 +307,7 @@
                     }
                     // Swap to use SSO (make optional? - needing password is safer)
                     url = location.protocol+'//'+location.hostname+':'+port
-                    //url = location.protocol+'//'+location.hostname+':'+port+'/sso?'+'token='+thunderhub_sso_token
+                    //url = location.protocol+'//'+location.hostname+':'+port+'/sso?'+'token='+application_data["thunderhub"]["sso_token"]
                     window.open(url,'_blank');
                 })
 
@@ -385,16 +320,12 @@
                     window.open(url,'_blank');
                 })
 
-                $("#sphinxrelay").on("click", function() {
-                    alert("TODO???")
-                })
-
                 $("#btcrpcexplorer").on("click", function() {
                     port="3002"
                     if (location.protocol == "https:") {
                         port="3003"
                     }
-                    url = location.protocol+'//'+location.hostname+':'+port+'/?'+'token='+btcrpcexplorer_sso_token
+                    url = location.protocol+'//'+location.hostname+':'+port+'/?'+'token='+application_data["btcrpcexplorer"]["sso_token"]
                     window.open(url,'_blank');
                 })
 

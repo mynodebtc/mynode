@@ -1,286 +1,39 @@
 <div class="main_header">Apps</div>
 
-<!-- ROW 1 -->
-<div class="app_tile_grid_container">
-
-    <div class="app_tile">
-        <div class="app_status_icon {{ rtl_status_color }}" id="rtl_status_icon"></div>
-        <!--
-            Sample Help Tooltip for each app
-            <img class="app_tooltip" src="{{ url_for('static', filename="images/help_icon.png")}}" title="RTL is a web app for managing your lightning wallet"/>
-        -->
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/rtl.png")}}"/></div>
-        <div class="app_title">RTL</div>
-        <div class="app_status"id="rtl_status">{{ rtl_status }}</div>
-        <div class="app_contents">
-            {% if lnd_ready %}
-                {% if rtl_enabled %}
-                <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="rtl">RTL</a>
-                {% endif %}
-                <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('rtl')">
-                    {% if rtl_enabled %}Disable{% else %}Enable{% endif %}
-                </a>
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="app_tile">
-        <div class="app_status_icon {{ electrs_status_color }}" id="electrs_status_icon"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/electrum_logo.png")}}"/></div>
-        <div class="app_title">Electrum Server</div>
-        <div class="app_status" id="electrs_status">{{ electrs_status }}</div>
-        <div class="app_contents">
-            {% if electrs_enabled %}
-            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/electrum-server">Info</a>
-            {% endif %}
-            <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('electrs')">
-                {% if electrs_enabled %}Disable{% else %}Enable{% endif %}
-            </a>
-        </div>
-    </div>
-
-    <div class="app_tile">
-        <div class="app_status_icon {{ btcpayserver_status_color }}" id="btcpayserver_status_icon"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/btcpayserver.png")}}"/></div>
-        <div class="app_title">BTCPay Server</div>
-        <div class="app_status" id="btcpayserver_status">{{ btcpayserver_status }}</div>
-        <div class="app_contents">
-            {% if product_key_skipped %}
-                Premium Feature
-            {% else %}
-                {% if lnd_ready and not is_testnet_enabled %}
-                    {% if btcpayserver_enabled %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="btcpayserver">BTCPay Server</a>
+<div class="app_tile_grid_container">    
+    <!-- Dynamic App Display -->
+    {% for app in apps %}
+        {% if app.show_on_homepage and app.homepage_section == "apps" %}
+            <div class="app_tile">
+                <div class="app_status_icon {% if app.can_enable_disable %}clear{% endif %}" id="{{app.short_name}}_status_icon"></div>
+                <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/")}}{{app.short_name}}.png"/></div>
+                <div class="app_title">{{app.app_tile_name}}</div>
+                <div class="app_status"id="{{app.short_name}}_status"></div>
+                <div class="app_contents">
+                    {% if product_key_skipped and app.is_premium %}
+                        Premium Feature
+                    {% else %}
+                        {% if not is_testnet_enabled or is_testnet_enabled and app.supports_testnet %}
+                        {% if lnd_ready or ( not lnd_ready and not app.requires_lightning ) %}
+                        {% if electrs_active or ( not electrs_active and not app.requires_electrs ) %}
+                        {% if not is_installing_docker_images or ( is_installing_docker_images and not app.requires_docker_image_installation ) %}
+                            {% if app.is_enabled or not app.can_enable_disable %}
+                                <a class="ui-button ui-widget ui-corner-all mynode_button" href="{{app.app_tile_button_href}}" id="{{app.short_name}}">{{app.app_tile_button_text}}</a>
+                            {% endif %}
+                            {% if app.can_enable_disable %}
+                                <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('{{app.short_name}}')">
+                                    {% if app.is_enabled %}Disable{% else %}Enable{% endif %}
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                        {% endif %}
+                        {% endif %}
+                        {% endif %}
                     {% endif %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('btcpayserver')">
-                        {% if btcpayserver_enabled %}Disable{% else %}Enable{% endif %}
-                    </a>
-                {% endif %}
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="app_tile">
-        <div class="app_status_icon {{mempool_status_color}}" id="mempool_status_icon"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/mempool.png")}}"/></div>
-        <div class="app_title">Mempool</div>
-        <div class="app_status" id="mempool_status">{{ mempool_status }}</div>
-        <div class="app_contents">
-            {% if not is_installing_docker_images %}
-                {% if mempool_enabled %}
-                <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="mempool">View</a>
-                {% endif %}
-                <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('mempool')">
-                    {% if mempool_enabled %}Disable{% else %}Enable{% endif %}
-                </a>
-            {% endif %}
-        </div>
-    </div>
-    <div class="app_tile">
-        <div class="app_status_icon {{ lndhub_status_color }}" id="lndhub_status_icon"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lndhub.png")}}"/></div>
-        <div class="app_title">LND Hub</div>
-        <div class="app_status" id="lndhub_status">{{ lndhub_status }}</div>
-        <div class="app_contents">
-            {% if lnd_ready and not is_testnet_enabled %}
-                {% if lndhub_enabled %}
-                <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lndhub">LND Hub</a>
-                {% endif %}
-                <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('lndhub')">
-                    {% if lndhub_enabled %}Disable{% else %}Enable{% endif %}
-                </a>
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="app_tile">
-        <div class="app_status_icon {{ btcrpcexplorer_status_color }}" id="btcrpcexplorer_status_icon"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/btcrpcexplorer.png")}}"/></div>
-        <div class="app_title">Explorer</div>
-        <div class="app_status">{{ btcrpcexplorer_status }}</div>
-        <div class="app_contents">
-            {% if btcrpcexplorer_enabled and btcrpcexplorer_ready %}
-            <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="btcrpcexplorer">Explorer</a>
-            {% endif %}
-            <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('btcrpcexplorer')">
-                {% if btcrpcexplorer_enabled %}Disable{% else %}Enable{% endif %}
-            </a>
-        </div>
-    </div>
-
-    {% if not is_device_from_reseller %}
-    <div class="app_tile">
-        <div class="app_status_icon {{ dojo_status_color }}" id="dojo_status_icon"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/dojo.png")}}"/></div>
-        <div class="app_title">Dojo</div>
-        <div class="app_status" id="dojo_status">{{ dojo_status }}</div>
-        <div class="app_contents">
-            {% if not is_installing_docker_images and not is_testnet_enabled %}
-                {% if is_dojo_installed %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="/dojo">Info</a>
-                    {% if electrs_active %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('dojo')">
-                        {% if dojo_enabled %}Disable{% else %}Enable{% endif %}
-                    </a>
-                    {% endif %}
-                {% else %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="/toggle-dojo-install">Install</a>
-                {% endif %}
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="app_tile">
-        <div class="app_status_icon {{ whirlpool_status_color }}" id="whirlpool_status_icon"></div>
-        {% if ui_settings['darkmode'] %}
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/wp-white.png")}}"/></div>
-        {% else %}
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/wp-black.png")}}"/></div>
+                </div>
+            </div>
         {% endif %}
-        <div class="app_title">Whirlpool</div>
-        <div class="app_status" id="whirlpool_status">{{ whirlpool_status }}</div>
-        <div class="app_contents">
-            {% if not is_testnet_enabled %}
-                <a class="ui-button ui-widget ui-corner-all mynode_button" href="/whirlpool">Info</a>
-                <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('whirlpool')">
-                    {% if whirlpool_enabled %}Disable{% else %}Enable{% endif %}
-                </a>
-            {% endif %}
-        </div>
-    </div>
-    {% endif %}
-
-    <div class="app_tile">
-        <!--<div class="app_status_icon green" id="joininbox_status_icon"></div>-->
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/joininbox.png")}}"/></div>
-        <div class="app_title">JoininBox</div>
-        <div class="app_status" id="joininbox_status">JoinMarket Mixing</div>
-        <div class="app_contents">
-            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/joininbox">Info</a>
-        </div>
-    </div>
-
-    <div class="app_tile">
-        <div class="app_status_icon {{ thunderhub_status_color }}" id="thunderhub_status_icon"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/thunderhub.png")}}"/></div>
-        <div class="app_title">Thunderhub</div>
-        <div class="app_status" id="thunderhub_status">{{ thunderhub_status }}</div>
-        <div class="app_contents">
-            {% if product_key_skipped %}
-                Premium Feature
-            {% else %}
-                {% if lnd_ready %}
-                    {% if thunderhub_enabled %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="thunderhub">Thunderhub</a>
-                    {% endif %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('thunderhub')">
-                        {% if thunderhub_enabled %}Disable{% else %}Enable{% endif %}
-                    </a>
-                {% endif %}
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="app_tile">
-        <div class="app_status_icon {{ caravan_status_color }}" id="caravan_status_icon"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/caravan.png")}}"/></div>
-        <div class="app_title">Caravan</div>
-        <div class="app_status" id="caravan_status">{{ caravan_status }}</div>
-        <div class="app_contents">
-            {% if product_key_skipped %}
-                Premium Feature
-            {% else %}
-                {% if caravan_enabled %}
-                <a class="ui-button ui-widget ui-corner-all mynode_button" href="/caravan">Info</a>
-                {% endif %}
-                <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('caravan')">
-                    {% if caravan_enabled %}Disable{% else %}Enable{% endif %}
-                </a>
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="app_tile">
-        <div class="app_status_icon {{ specter_status_color }}" id="specter_status_icon"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/specter.png")}}"/></div>
-        <div class="app_title">Specter</div>
-        <div class="app_status" id="specter_status">{{ specter_status }}</div>
-        <div class="app_contents">
-            {% if product_key_skipped %}
-                Premium Feature
-            {% else %}
-                {% if specter_enabled %}
-                <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="specter">Specter</a>
-                {% endif %}
-                <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('specter')">
-                    {% if specter_enabled %}Disable{% else %}Enable{% endif %}
-                </a>
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="app_tile">
-        <div class="app_status_icon {{ ckbunker_status_color }}" id="ckbunker_status_icon"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/ckbunker.png")}}"/></div>
-        <img class="app_beta_tag_image" src="{{ url_for('static', filename="images/beta.png")}}"/>
-        <div class="app_title">CKBunker</div>
-        <div class="app_status" id="ckbunker_status">{{ ckbunker_status }}</div>
-        <div class="app_contents">
-            {% if product_key_skipped %}
-                Premium Feature
-            {% else %}
-                {% if ckbunker_enabled %}
-                <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="ckbunker">CKBunker</a>
-                {% endif %}
-                <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('ckbunker')">
-                    {% if ckbunker_enabled %}Disable{% else %}Enable{% endif %}
-                </a>
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="app_tile">
-        <div class="app_status_icon {{ sphinxrelay_status_color }}" id="sphinxrelay_status_icon"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/sphinx.png")}}"/></div>
-        <div class="app_title">Sphinx Relay</div>
-        <div class="app_status" id="sphinxrelay_status">{{ sphinxrelay_status }}</div>
-        <div class="app_contents">
-            {% if product_key_skipped %}
-                Premium Feature
-            {% else %}
-                {% if lnd_ready and not is_testnet_enabled %}
-                    {% if sphinxrelay_enabled %}
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="/sphinxrelay">Info</a>
-                    {% endif %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('sphinxrelay')">
-                        {% if sphinxrelay_enabled %}Disable{% else %}Enable{% endif %}
-                    </a>
-                {% endif %}
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="app_tile">
-        <div class="app_status_icon {{ lnbits_status_color }}" id="lnbits_status_icon"></div>
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lnbits.png")}}"/></div>
-        <div class="app_title">LNbits</div>
-        <div class="app_status" id="lnbits_status">{{ lnbits_status }}</div>
-        <div class="app_contents">
-            {% if product_key_skipped %}
-                Premium Feature
-            {% else %}
-                {% if lnd_ready and not is_testnet_enabled %}
-                    {% if lnbits_enabled %}
-                        <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="lnbits">LNbits</a>
-                    {% endif %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('lnbits')">
-                        {% if lnbits_enabled %}Disable{% else %}Enable{% endif %}
-                    </a>
-                {% endif %}
-            {% endif %}
-        </div>
-    </div>
-
+    {% endfor %}
 </div>
 
 
@@ -289,37 +42,38 @@
     <div>
         <div class="main_header">Remote Access Services</div>
             <div class="app_tile_row_section">
-                <div class="app_tile">
-                    <div class="app_status_icon {{ tor_status_color }}" id="tor_status_icon"></div>
-                    <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/tor.png")}}"/></div>
-                    <div class="app_title">Tor</div>
-                    <div class="app_status" id="tor_status">{{ tor_status }}</div>
-                    <div class="app_contents">
-                        {% if product_key_skipped %}
-                            Remote Access Premium Feature
-                        {% else %}
-                            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/tor">Tor Services</a>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="app_tile">
-                    <div class="app_status_icon {{ vpn_status_color }}" id="vpn_status_icon"></div>
-                    <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/vpn.png")}}"/></div>
-                    <div class="app_title">VPN</div>
-                    <div class="app_status" id="vpn_status">{{ vpn_status }}</div>
-                    <div class="app_contents">
-                        {% if product_key_skipped %}
-                            Premium Feature
-                        {% else %}
-                            {% if vpn_enabled %}
-                            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/vpn-info">Info</a>
-                            {% endif %}
-                            <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('vpn')">
-                                {% if vpn_enabled %}Disable{% else %}Enable{% endif %}
-                            </a>
-                        {% endif %}
-                    </div>
-                </div>
+                {% for app in apps %}
+                    {% if app.show_on_homepage and app.homepage_section == "remote_services" %}
+                        <div class="app_tile">
+                            <div class="app_status_icon {% if app.can_enable_disable %}clear{% endif %}" id="{{app.short_name}}_status_icon"></div>
+                            <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/")}}{{app.short_name}}.png"/></div>
+                            <div class="app_title">{{app.app_tile_name}}</div>
+                            <div class="app_status"id="{{app.short_name}}_status"></div>
+                            <div class="app_contents">
+                                {% if product_key_skipped and app.is_premium %}
+                                    Premium Feature
+                                {% else %}
+                                    {% if not is_testnet_enabled or is_testnet_enabled and app.supports_testnet %}
+                                    {% if lnd_ready or ( not lnd_ready and not app.requires_lightning ) %}
+                                    {% if electrs_active or ( not electrs_active and not app.requires_electrs ) %}
+                                    {% if not is_installing_docker_images or ( is_installing_docker_images and not app.requires_docker_image_installation ) %}
+                                        {% if app.is_enabled or not app.can_enable_disable %}
+                                            <a class="ui-button ui-widget ui-corner-all mynode_button" href="{{app.app_tile_button_href}}" id="{{app.short_name}}">{{app.app_tile_button_text}}</a>
+                                        {% endif %}
+                                        {% if app.can_enable_disable %}
+                                            <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('{{app.short_name}}')">
+                                                {% if app.is_enabled %}Disable{% else %}Enable{% endif %}
+                                            </a>
+                                        {% endif %}
+                                    {% endif %}
+                                    {% endif %}
+                                    {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
             </div>
         </div>
     </div>

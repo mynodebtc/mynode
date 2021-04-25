@@ -6,8 +6,6 @@ from bitcoin_info import *
 from lightning_info import *
 from electrum_info import *
 from device_info import *
-from dojo import get_dojo_status
-from whirlpool import get_whirlpool_status
 from thread_functions import *
 from systemctl_info import *
 from application_info import *
@@ -68,61 +66,14 @@ def api_get_service_status():
     data = {}
     data["status"] = "gray"
     data["color"] = ""
-    data["ready"] = None
+    data["sso_token"] = ""
 
     service = request.args.get('service')
-    if service == "electrs":
-        data["status"], data["color"] = get_electrs_status_and_color()
-    elif service == "bitcoin":
-        data["status"], data["color"] = get_bitcoin_status_and_color()
-    elif service == "lnd":
-        data["status"], data["color"] = get_lnd_status_and_color()
-    elif service == "loop":
-        data["status"], data["color"] = get_loop_status_and_color()
-    elif service == "pool":
-        data["status"], data["color"] = get_pool_status_and_color()
-    elif service == "lit":
-        data["status"], data["color"] = get_lit_status_and_color()
-    elif service == "dojo":
-        data["status"], data["color"], dojo_initialized = get_dojo_status()
-    elif service == "rtl":
-        data["status"], data["color"] = get_rtl_status_and_color()
-    elif service == "mempool":
-        data["status"], data["color"] = get_mempool_status_and_color()
-    elif service == "whirlpool":
-        data["status"], data["color"], whirlpool_initialized = get_whirlpool_status()
-    elif service == "btcpayserver":
-        data["status"], data["color"] = get_btcpayserver_status_and_color()
-    elif service == "lndhub":
-        data["status"], data["color"] = get_lndhub_status_and_color()
-    elif service == "lndconnect":
-        data["status"], data["color"] = get_lndconnect_status_and_color()
-    elif service == "btcrpcexplorer":
-        data["status"], data["color"], data["ready"] = get_btcrpcexplorer_status_and_color_and_ready()
-        data["sso_token"] = get_btcrpcexplorer_sso_token()
-    elif service == "caravan":
-        data["status"], data["color"] = get_caravan_status_and_color()
-    elif service == "specter":
-        data["status"], data["color"] = get_specter_status_and_color()
-    elif service == "lnbits":
-        data["status"], data["color"] = get_lnbits_status_and_color()
-    elif service == "thunderhub":
-        data["status"], data["color"] = get_thunderhub_status_and_color()
-        data["sso_token"] = get_thunderhub_sso_token()
-    elif service == "ckbunker":
-        data["status"], data["color"] = get_ckbunker_status_and_color()
-    elif service == "sphinxrelay":
-        data["status"], data["color"] = get_sphinxrelay_status_and_color()
-    elif service == "tor":
-        data["status"] = "Private Connections"
-        data["color"] = get_service_status_color("tor@default")
-    elif service == "vpn":
-        data["status"], data["color"] = get_vpn_status_and_color()
-    elif service == "webssh2":
-        data["status"], data["color"] = get_webssh2_status_and_color()
-    else:
-        data["status"] = "unknown service"
 
+    # Try standard status API
+    data["status"] = get_application_status(service)
+    data["color"] = get_application_status_color(service)
+    data["sso_token"] = get_application_sso_token(service)
     return jsonify(data)
 
 @mynode_api.route("/api/get_device_info")
@@ -135,6 +86,7 @@ def api_get_device_info():
     data["ram"] = get_ram_usage()
     data["temp"] = get_device_temp()
     data["is_installing_docker_images"] = is_installing_docker_images()
+    data["is_electrs_active"] = is_electrs_active()
 
     return jsonify(data)
 

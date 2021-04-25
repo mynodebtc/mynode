@@ -383,6 +383,7 @@ table.bitcoin_table td {
 .red { background-color: red; }
 .gray { background-color: gray; }
 .blue { background-color: blue; }
+.clear { opacity: 100%; }
 
 .green_text {color: green;}
 .yellow_text {color: yellow;}
