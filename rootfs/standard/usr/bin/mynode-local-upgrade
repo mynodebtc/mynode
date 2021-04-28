@@ -34,7 +34,7 @@ tar -xf /tmp/mynode_rootfs_${DEVICE_TYPE}.tar.gz -C /tmp/rootfs/
 echo Done!
 
 # Install files
-if [ $IS_X86 = 1 ]; then
+if [ $IS_X86 = 1 ] || [ $IS_RASPI4_ARM64 = 1 ]; then
     rsync -r -K /tmp/rootfs/out/rootfs_${DEVICE_TYPE}/* /
 else
     cp -rf /tmp/rootfs/out/rootfs_${DEVICE_TYPE}/* /
