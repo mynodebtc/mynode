@@ -188,6 +188,9 @@ echo "Upgrading BTC..."
 ARCH="UNKNOWN"
 if [ $IS_RASPI = 1 ]; then
     ARCH="arm-linux-gnueabihf"
+    if [ $IS_RASPI4_ARM64 = 1 ]; then
+        ARCH="aarch64-linux-gnu"
+    fi
 elif [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ]; then
     ARCH="aarch64-linux-gnu"
 elif [ $IS_X86 = 1 ]; then
@@ -236,6 +239,9 @@ LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
 fi
+if [ $IS_RASPI4_ARM64 = 1 ]; then
+    LND_ARCH="lnd-linux-arm64"
+fi
 LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/$LND_ARCH-$LND_VERSION.tar.gz
 CURRENT=""
 if [ -f $LND_VERSION_FILE ]; then
@@ -270,6 +276,9 @@ echo "Upgrading loop..."
 LOOP_ARCH="loop-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LOOP_ARCH="loop-linux-amd64"
+fi
+if [ $IS_RASPI4_ARM64 = 1 ]; then
+    LOOP_ARCH="loop-linux-arm64"
 fi
 LOOP_UPGRADE_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/$LOOP_ARCH-$LOOP_VERSION.tar.gz
 CURRENT=""
@@ -306,6 +315,9 @@ POOL_ARCH="pool-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     POOL_ARCH="pool-linux-amd64"
 fi
+if [ $IS_RASPI4_ARM64 = 1 ]; then
+    POOL_ARCH="pool-linux-arm64"
+fi
 POOL_UPGRADE_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/$POOL_ARCH-$POOL_VERSION.tar.gz
 CURRENT=""
 if [ -f $POOL_VERSION_FILE ]; then
@@ -340,6 +352,9 @@ echo "Upgrading lit..."
 LIT_ARCH="lightning-terminal-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LIT_ARCH="lightning-terminal-linux-amd64"
+fi
+if [ $IS_RASPI4_ARM64 = 1 ]; then
+    LIT_ARCH="lightning-terminal-linux-arm64"
 fi
 LIT_UPGRADE_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/$LIT_ARCH-$LIT_VERSION.tar.gz
 CURRENT=""

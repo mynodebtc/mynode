@@ -21,6 +21,7 @@ IS_ROCKPRO64=0
 IS_RASPI=0
 IS_RASPI3=0
 IS_RASPI4=0
+IS_RASPI4_ARM64=0
 IS_X86=0
 IS_UNKNOWN=0
 DEVICE_TYPE="unknown"
@@ -38,6 +39,10 @@ elif [[ $MODEL == *"Raspberry Pi 3"* ]]; then
 elif [[ $MODEL == *"Raspberry Pi 4"* ]]; then
     IS_RASPI=1
     IS_RASPI4=1
+    UNAME=$(uname -a)
+    if [[ $UNAME == *"aarch64"* ]]; then
+        IS_RASPI4_ARM64=1
+    fi
 fi
 
 if [ $IS_UNKNOWN = 1 ]; then
@@ -287,6 +292,9 @@ rm -rf /etc/update-motd.d/*
 ARCH="UNKNOWN"
 if [ $IS_RASPI = 1 ]; then
     ARCH="arm-linux-gnueabihf"
+    if [ $IS_RASPI4_ARM64 = 1 ]; then
+        ARCH="aarch64-linux-gnu"
+    fi
 elif [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ]; then
     ARCH="aarch64-linux-gnu"
 elif [ $IS_X86 = 1 ]; then
@@ -334,6 +342,9 @@ LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
 fi
+if [ $IS_RASPI4_ARM64 = 1 ]; then
+    LND_ARCH="lnd-linux-arm64"
+fi
 LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/$LND_ARCH-$LND_VERSION.tar.gz
 CURRENT=""
 if [ -f $LND_VERSION_FILE ]; then
@@ -364,6 +375,9 @@ echo "Installing loop..."
 LOOP_ARCH="loop-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LOOP_ARCH="loop-linux-amd64"
+fi
+if [ $IS_RASPI4_ARM64 = 1 ]; then
+    LOOP_ARCH="loop-linux-arm64"
 fi
 LOOP_UPGRADE_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/$LOOP_ARCH-$LOOP_VERSION.tar.gz
 CURRENT=""
@@ -400,6 +414,9 @@ POOL_ARCH="pool-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     POOL_ARCH="pool-linux-amd64"
 fi
+if [ $IS_RASPI4_ARM64 = 1 ]; then
+    POOL_ARCH="pool-linux-arm64"
+fi
 POOL_UPGRADE_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/$POOL_ARCH-$POOL_VERSION.tar.gz
 CURRENT=""
 if [ -f $POOL_VERSION_FILE ]; then
@@ -434,6 +451,9 @@ echo "Installing lit..."
 LIT_ARCH="lightning-terminal-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LIT_ARCH="lightning-terminal-linux-amd64"
+fi
+if [ $IS_RASPI4_ARM64 = 1 ]; then
+    LIT_ARCH="lightning-terminal-linux-arm64"
 fi
 LIT_UPGRADE_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/$LIT_ARCH-$LIT_VERSION.tar.gz
 CURRENT=""
@@ -856,7 +876,7 @@ update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy || true
 
 
 # Install files (downloaded and extracted earlier)
-if [ $IS_X86 = 1 ]; then
+if [ $IS_X86 = 1 ] || [ $IS_RASPI4_ARM64 ]; then
     rsync -r -K /tmp/upgrade/out/rootfs_*/* /
 else
     cp -rf /tmp/upgrade/out/rootfs_*/* /
