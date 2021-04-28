@@ -412,7 +412,6 @@ cd ~
 
 # Install Caravan
 CARAVAN_UPGRADE_URL=https://github.com/unchained-capital/caravan/archive/$CARAVAN_VERSION.tar.gz
-CARAVAN_SETTINGS_UPDATE_FILE=/home/bitcoin/.mynode/caravan_settings_1
 CURRENT=""
 if [ -f $CARAVAN_VERSION_FILE ]; then
     CURRENT=$(cat $CARAVAN_VERSION_FILE)
