@@ -192,6 +192,7 @@ def initialize_applications():
         app_tile_button_text="Info",
         app_tile_button_href="/dojo",
         app_tile_default_status_text="Mixing Tool",
+        app_tile_running_status_text="Running",
         show_on_application_page=True,
         show_on_homepage=True,
         requires_electrs=True,
@@ -204,6 +205,7 @@ def initialize_applications():
         app_tile_button_text="Info",
         app_tile_button_href="/whirlpool",
         app_tile_default_status_text="Mixing Tool",
+        app_tile_running_status_text="Running",
         show_on_homepage=True,
         homepage_order=23
     ))
