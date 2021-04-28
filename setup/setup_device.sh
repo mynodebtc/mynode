@@ -521,7 +521,7 @@ CURRENT=""
 if [ -f $CARAVAN_VERSION_FILE ]; then
     CURRENT=$(cat $CARAVAN_VERSION_FILE)
 fi
-if [ "$CURRENT" != "$CARAVAN_VERSION" ]; then
+if [ "$CURRENT" != "$CARAVAN_VERSION" ] || [ ! -f $CARAVAN_SETTINGS_UPDATE_FILE ]; then
     cd /opt/mynode
     rm -rf caravan
 
@@ -535,6 +535,7 @@ if [ "$CURRENT" != "$CARAVAN_VERSION" ]; then
     cd caravan
     sudo -u bitcoin npm install --only=production
     echo $CARAVAN_VERSION > $CARAVAN_VERSION_FILE
+    touch $CARAVAN_SETTINGS_UPDATE_FILE
 fi
 cd ~
 
