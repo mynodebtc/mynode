@@ -338,6 +338,15 @@ if [ -f /mnt/hdd/mynode/settings/.testnet_enabled ]; then
 else
     sed -i "s/testnet/bitcoin/g" /mnt/hdd/mynode/electrs/electrs.toml || true
 fi
+if [ $IS_RASPI4_ARM64 -eq 1 ]; then
+    if [ -f /usr/bin/electrs ] && [ -f /usr/bin/electrs_arm64 ]; then
+        MD5_1=$(md5sum /usr/bin/electrs | cut -d' ' -f 1)
+        MD5_2=$(md5sum /usr/bin/electrs_arm64 | cut -d' ' -f 1)
+        if [ "${MD5_1}" != "{$MD5_2}" ]; then
+            cp -f /usr/bin/electrs_arm64 /usr/bin/electrs
+        fi
+    fi
+fi
 
 # RTL config
 sudo -u bitcoin mkdir -p /opt/mynode/RTL

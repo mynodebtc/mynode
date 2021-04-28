@@ -9,7 +9,6 @@ After=bitcoin.service
 [Service]
 Type=simple
 KillMode=process
-EnvironmentFile=/mnt/hdd/mynode/settings/.btcrpc_environment
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_bitcoin.sh
 ExecStart=/usr/bin/electrs --conf=/mnt/hdd/mynode/electrs/electrs.toml -vvvv 
