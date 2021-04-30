@@ -5,6 +5,7 @@ import os
 import time
 import re
 import datetime
+import urllib
 from flask import current_app as app
 from threading import Timer
 from utilities import *
@@ -23,6 +24,9 @@ lightning_peer_aliases = {}
 lightning_channels = None
 lightning_channel_balance = None
 lightning_wallet_balance = None
+lightning_transactions = None
+lightning_payments = None
+lightning_invoices = None
 lightning_watchtower_server_info = None
 lightning_desync_count = 0
 
@@ -37,6 +41,9 @@ def update_lightning_info():
     global lightning_channels
     global lightning_channel_balance
     global lightning_wallet_balance
+    global lightning_transactions
+    global lightning_payments
+    global lightning_invoices
     global lightning_watchtower_server_info
     global lightning_desync_count
     global lnd_ready
@@ -69,10 +76,22 @@ def update_lightning_info():
         lightning_channels = lnd_get("/channels")
         lightning_channel_balance = lnd_get("/balance/channels")
         lightning_wallet_balance = lnd_get("/balance/blockchain")
+        #lightning_transactions = lnd_get("/transactions")
+        #lightning_payments = lnd_get("/payments")
+        #lightning_invoices = lnd_get("/invoices")
         lightning_watchtower_server_info = lnd_get_v2("/watchtower/server")
 
     return True
 
+def update_lightning_tx_info():
+    global lightning_transactions
+    global lightning_payments
+    global lightning_invoices
+    if is_lnd_ready():
+        tx_cache_limit = 50
+        lightning_transactions = lnd_get("/transactions")
+        lightning_payments = lnd_get("/payments", params={"reversed":"true", "index_offset": "0", "max_payments": tx_cache_limit})
+        lightning_invoices = lnd_get("/invoices", params={"reversed":"true", "index_offset": "0", "num_max_invoices": tx_cache_limit})
 
 def get_lnd_deposit_address():
     if os.path.isfile("/tmp/lnd_deposit_address"):
@@ -230,6 +249,49 @@ def get_lightning_balance_info():
 
     return balance_data
 
+def get_lightning_transactions():
+    global lightning_transactions
+    try:
+        transactions = []
+        data = copy.deepcopy(lightning_transactions)
+        for tx in data["transactions"]:
+            tx["amount_str"] = format_sat_amount(tx["amount"])
+            tx["date_str"] = time.strftime("%D %H:%M", time.localtime(int(tx["time_stamp"])))
+            transactions.append(tx)
+        return transactions
+    except:
+        return None
+
+def get_lightning_payments():
+    global lightning_payments
+    try:
+        payments = []
+        data = copy.deepcopy(lightning_payments)
+        for tx in data["payments"]:
+            tx["value_str"] = format_sat_amount(tx["value_sat"])
+            tx["fee_str"] = format_sat_amount(tx["fee"])
+            tx["date_str"] = time.strftime("%D %H:%M", time.localtime(int(tx["creation_date"])))
+            payments.append(tx)
+        payments.reverse()
+        return payments
+    except:
+        return None
+
+def get_lightning_invoices():
+    global lightning_invoices
+    try:
+        invoices = []
+        data = copy.deepcopy(lightning_invoices)
+        for tx in data["invoices"]:
+            tx["value_str"] = format_sat_amount(tx["value"])
+            tx["date_str"] = time.strftime("%D %H:%M", time.localtime(int(tx["creation_date"])))
+            tx["memo"] = urllib.unquote_plus(tx["memo"])
+            invoices.append(tx)
+        invoices.reverse()
+        return invoices
+    except:
+        return None
+
 def get_lightning_watchtower_server_info():
     global lightning_watchtower_server_info
     return copy.deepcopy(lightning_watchtower_server_info)
@@ -238,11 +300,11 @@ def is_lnd_ready():
     global lnd_ready
     return lnd_ready
 
-def lnd_get(path, timeout=10):
+def lnd_get(path, timeout=10, params={}):
     try:
         macaroon = get_macaroon()
         headers = {"Grpc-Metadata-macaroon":macaroon}
-        r = requests.get("https://localhost:"+LND_REST_PORT+"/v1"+path, verify=TLS_CERT_FILE,headers=headers, timeout=timeout)
+        r = requests.get("https://localhost:"+LND_REST_PORT+"/v1"+path, verify=TLS_CERT_FILE,headers=headers, params=params, timeout=timeout)
     except Exception as e:
         app.logger.info("ERROR in lnd_get: "+str(e))
         return {"error": str(e)}

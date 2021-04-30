@@ -8,6 +8,8 @@
 
                 alias="{{alias}}"
 
+                $( document ).tooltip();
+
                 function change_alias() {
                     $("#change_alias_form").submit();
                     change_alias_dialog.dialog( "close" );
@@ -372,6 +374,94 @@
             </div>
         </div>
     </div>
+
+    <br/>
+    <div class="main_header">Recent Transactions</div>
+    <div class="app_tile_row">
+    {% if transactions and transactions|length > 0 %}
+        <table style="font-size: 12px; width: 300px; margin: 10px;" class="bitcoin_table">
+            <thead class="bitcoin_table_header">
+                <td colspan=9 style="text-align: center;">On-chain TX</td>
+            </thead>
+            <thead class="bitcoin_table_header">
+                <td>Date</td>
+                <td>Amount</td>
+                <td>Confirmations</td>
+            </thead>
+            <tbody>
+                {% for tx in transactions[:tx_display_limit] %}
+                    <tr>
+                        <td>{{ tx.date_str }}</td>
+                        <td>{{ tx.amount_str }}</td>
+                        <td>{{ tx.num_confirmations }}</td>
+                    </tr>
+                {% endfor %}
+                {% if transactions|length >= tx_display_limit %}
+                    <td colspan=9>more...</td>
+                {% endif %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {% if payments and payments|length > 0 %}
+        <table style="font-size: 12px; width: 300px; margin: 10px;" class="bitcoin_table">
+            <thead class="bitcoin_table_header">
+                <td colspan=9 style="text-align: center;">Payments</td>
+            </thead>
+            <thead class="bitcoin_table_header">
+                <td>Date</td>
+                <td>Amount</td>
+                <td>Fee</td>
+                <!--<td>Status</td>-->
+            </thead>
+            <tbody>
+                {% for tx in payments[:tx_display_limit] %}
+                    <tr>
+                        <td>{{ tx.date_str }}</td>
+                        <td>{{ tx.value_str }}</td>
+                        <td>{{ tx.fee_str }}</td>
+                        <!--<td>{{ tx.status }}</td>-->
+                    </tr>
+                {% endfor %}
+                {% if payments|length >= tx_display_limit %}
+                    <td colspan=9>more...</td>
+                {% endif %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {% if invoices and invoices|length > 0 %}
+        <table style="font-size: 12px; width: 300px; margin: 10px;" class="bitcoin_table">
+            <thead class="bitcoin_table_header">
+                <td colspan=9 style="text-align: center;">Invoices</td>
+            </thead>
+            <thead class="bitcoin_table_header">
+                <td>Date</td>
+                <td>Amount</td>
+                <td>Memo</td>
+                <td>State</td>
+            </thead>
+            <tbody>
+                {% for tx in invoices[:tx_display_limit] %}
+                    <tr>
+                        <td>{{ tx.date_str }}</td>
+                        <td>{{ tx.value_str }}</td>
+                        <td>
+                            {% if tx.memo != "" %}
+                                <img style="width: 16px;" src="{{ url_for('static', filename="images/memo.png")}}" title="{{ tx.memo }}"/>
+                            {% endif %}
+                        </td>
+                        <td>{{ tx.state }}</td>
+                    </tr>
+                    {% if invoices|length >= tx_display_limit %}
+                        <td colspan=9>more...</td>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    </div>
+
 
     <br/>
     <div class="main_header">Channels</div>
