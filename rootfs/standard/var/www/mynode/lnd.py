@@ -133,6 +133,12 @@ def page_lnd():
         if wallet_balance_data != None and "unconfirmed_balance" in wallet_balance_data:
             wallet_pending = wallet_balance_data["unconfirmed_balance"]
 
+        # Update TX info
+        update_lightning_tx_info()
+        transactions = get_lightning_transactions()
+        payments = get_lightning_payments()
+        invoices = get_lightning_invoices()
+
         watchtower_server_info = get_lightning_watchtower_server_info()
         watchtower_uri = "..."
         if watchtower_server_info != None:
@@ -179,6 +185,10 @@ def page_lnd():
         "watchtower_uri": watchtower_uri,
         "peers": peers,
         "channels": channels,
+        "transactions": transactions,
+        "payments": payments,
+        "invoices": invoices,
+        "tx_display_limit": 8,
         "ui_settings": read_ui_settings()
     }
     return render_template('lnd.html', **templateData)
