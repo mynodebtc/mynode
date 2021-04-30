@@ -165,7 +165,10 @@ def upgrade_device():
         file1 = "/home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt".format(get_current_version())
         file2 = "/home/admin/upgrade_logs/upgrade_log_latest.txt"
         cmd = "/usr/bin/mynode_upgrade.sh 2>&1 | tee {} {}".format(file1, file2)
-        subprocess.call(cmd, shell=True)
+        ret = subprocess.call(cmd, shell=True)
+        if ret != 0:
+            # Try one more time....
+            subprocess.call(cmd, shell=True)
         
         # Sync
         os.system("sync")
@@ -183,7 +186,10 @@ def upgrade_device_beta():
         file1 = "/home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt".format(get_current_version())
         file2 = "/home/admin/upgrade_logs/upgrade_log_latest.txt"
         cmd = "/usr/bin/mynode_upgrade.sh beta 2>&1 | tee {} {}".format(file1, file2)
-        subprocess.call(cmd, shell=True)
+        ret = subprocess.call(cmd, shell=True)
+        if ret != 0:
+            # Try one more time....
+            subprocess.call(cmd, shell=True)
         
         # Sync
         os.system("sync")
