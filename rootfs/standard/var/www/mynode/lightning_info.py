@@ -29,6 +29,7 @@ lightning_payments = None
 lightning_invoices = None
 lightning_watchtower_server_info = None
 lightning_desync_count = 0
+lightning_update_count = 0
 
 LND_FOLDER = "/mnt/hdd/mynode/lnd/"
 TLS_CERT_FILE = "/mnt/hdd/mynode/lnd/tls.cert"
@@ -46,10 +47,17 @@ def update_lightning_info():
     global lightning_invoices
     global lightning_watchtower_server_info
     global lightning_desync_count
+    global lightning_update_count
     global lnd_ready
+
+    # Check logged in
+    #while not is_lnd_logged_in():
+    #    lnd_ready = False
+    #    time.sleep(10)
 
     # Get latest LN info
     lightning_info = lnd_get("/getinfo")
+    lightning_update_count = lightning_update_count + 1
 
     # Set is LND ready
     if lightning_info != None and "synced_to_chain" in lightning_info and lightning_info['synced_to_chain']:
@@ -76,10 +84,11 @@ def update_lightning_info():
         lightning_channels = lnd_get("/channels")
         lightning_channel_balance = lnd_get("/balance/channels")
         lightning_wallet_balance = lnd_get("/balance/blockchain")
-        #lightning_transactions = lnd_get("/transactions")
-        #lightning_payments = lnd_get("/payments")
-        #lightning_invoices = lnd_get("/invoices")
         lightning_watchtower_server_info = lnd_get_v2("/watchtower/server")
+
+        # Poll slower
+        if lightning_update_count % 2 == 0:
+            update_lightning_tx_info()
 
     return True
 
@@ -335,8 +344,10 @@ def restart_lnd_actual():
     os.system("systemctl restart lnd_admin")
 
 def restart_lnd():
-    t = Timer(1.0, restart_lnd_actual)
+    t = Timer(0.1, restart_lnd_actual)
     t.start()
+
+    time.sleep(1)
 
 def is_testnet_enabled():
     return os.path.isfile("/mnt/hdd/mynode/settings/.testnet_enabled")

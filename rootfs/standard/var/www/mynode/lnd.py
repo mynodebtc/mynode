@@ -49,6 +49,7 @@ def page_lnd():
     check_logged_in()
 
     height = 0
+    refresh_rate = 3600
     alias = get_lnd_alias_file_data()
     num_peers = "0"
     num_active_channels = "TODO"
@@ -93,6 +94,7 @@ def page_lnd():
             "version": get_lnd_version(),
             "loop_version": get_loop_version(),
             "pool_version": get_pool_version(),
+            "refresh_rate": 10,
             "ui_settings": read_ui_settings()
         }
         return render_template('lnd.html', **templateData)
@@ -152,9 +154,13 @@ def page_lnd():
             "header": "Lightning Status",
             #"message": str(e),
             "message": traceback.format_exc(),
+            "refresh_rate": 10,
             "ui_settings": read_ui_settings()
         }
         return render_template('error.html', **templateData)
+
+    if not is_lnd_ready():
+        refresh_rate = 15
 
     templateData = {
         "title": "myNode Lightning Status",
@@ -189,6 +195,7 @@ def page_lnd():
         "payments": payments,
         "invoices": invoices,
         "tx_display_limit": 8,
+        "refresh_rate": refresh_rate,
         "ui_settings": read_ui_settings()
     }
     return render_template('lnd.html', **templateData)
@@ -200,7 +207,7 @@ def lnd_regen_tls_cert():
     os.system("rm /mnt/hdd/mynode/lnd/tls.cert")
     os.system("rm /mnt/hdd/mynode/lnd/tls.key")
 
-    t = Timer(1.0, restart_lnd)
+    t = Timer(3.0, restart_lnd)
     t.start()
 
     flash("TLS Certificate Regenerated!", category="message")
