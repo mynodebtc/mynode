@@ -16,8 +16,11 @@ import subprocess
 import random
 import string
 import redis
-import qrcode
 
+try:
+    import qrcode
+except:
+    pass
 try:
     import subprocess32
 except:
@@ -824,12 +827,6 @@ def reset_blockchain():
 #==================================
 # LND Functions
 #==================================
-def stop_lnd():
-    os.system("systemctl stop lnd")
-
-def restart_lnd():
-    os.system("systemctl restart lnd")
-
 def delete_lnd_data():
     os.system("rm -rf "+LND_DATA_FOLDER)
     os.system("rm -rf /tmp/lnd_deposit_address")
@@ -1062,12 +1059,15 @@ def get_thunderhub_sso_token():
 # QR Code Functions
 #==================================
 def generate_qr_code(url):
-    qr = qrcode.QRCode(version=1,
-                       error_correction=qrcode.constants.ERROR_CORRECT_H,
-                       box_size=5,
-                       border=1)
+    try:
+        qr = qrcode.QRCode(version=1,
+                        error_correction=qrcode.constants.ERROR_CORRECT_H,
+                        box_size=5,
+                        border=1)
 
-    qr.add_data(url)
-    qr.make(fit=True)
-    img = qr.make_image()
-    return img
+        qr.add_data(url)
+        qr.make(fit=True)
+        img = qr.make_image()
+        return img
+    except:
+        return "ERROR"
