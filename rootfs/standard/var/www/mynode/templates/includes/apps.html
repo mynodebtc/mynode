@@ -7,6 +7,9 @@
             <div class="app_tile">
                 <div class="app_status_icon {% if app.can_enable_disable %}clear{% endif %}" id="{{app.short_name}}_status_icon"></div>
                 <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/")}}{{app.short_name}}.png"/></div>
+                {% if app.is_beta %}
+                    <img class="app_beta_tag_image" src="{{ url_for('static', filename="images/beta.png")}}"/>
+                {% endif %}
                 <div class="app_title">{{app.app_tile_name}}</div>
                 <div class="app_status"id="{{app.short_name}}_status"></div>
                 <div class="app_contents">
