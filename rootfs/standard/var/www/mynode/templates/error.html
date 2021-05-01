@@ -2,6 +2,10 @@
     <head>
         <title>{{ title }}</title>
         {% include 'includes/head.html' %}
+
+        {% if refresh_rate is defined and refresh_rate is not none %}  
+        <meta http-equiv="refresh" content="{{ refresh_rate }}"> 
+        {% endif %}
      </head>
 
     <body>
