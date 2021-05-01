@@ -10,7 +10,6 @@ from thread_functions import *
 from systemctl_info import *
 from application_info import *
 from messages import *
-import qrcode
 import cStringIO
 import json
 import subprocess
