@@ -86,8 +86,8 @@ def update_lightning_info():
         lightning_wallet_balance = lnd_get("/balance/blockchain")
         lightning_watchtower_server_info = lnd_get_v2("/watchtower/server")
 
-        # Poll slower
-        if lightning_update_count % 2 == 0:
+        # Poll slower (make sure we gather data early)
+        if lightning_update_count < 30 or lightning_update_count % 2 == 0:
             update_lightning_tx_info()
 
     return True
@@ -243,18 +243,26 @@ def get_lightning_balance_info():
     balance_data["channel_pending"] = "N/A"
     balance_data["wallet_balance"] = "N/A"
     balance_data["wallet_pending"] = "N/A"
+    balance_data["total_balance"] = "N/A"
+    channel_num = -1
+    wallet_num = -1
 
     channel_balance_data = get_lightning_channel_balance()
     if channel_balance_data != None and "balance" in channel_balance_data:
         balance_data["channel_balance"] = format_sat_amount( channel_balance_data["balance"] )
+        channel_num = int(channel_balance_data["balance"])
     if channel_balance_data != None and "pending_open_balance" in channel_balance_data:
         balance_data["channel_pending"] = format_sat_amount( channel_balance_data["pending_open_balance"] )
     
     wallet_balance_data = get_lightning_wallet_balance()
     if wallet_balance_data != None and "confirmed_balance" in wallet_balance_data:
         balance_data["wallet_balance"] = format_sat_amount( wallet_balance_data["confirmed_balance"] )
+        wallet_num = int(wallet_balance_data["confirmed_balance"])
     if wallet_balance_data != None and "unconfirmed_balance" in wallet_balance_data:
         balance_data["wallet_pending"] = format_sat_amount( wallet_balance_data["unconfirmed_balance"] )
+
+    if channel_num >= 0 and wallet_num >= 0:
+        balance_data["total_balance"] = format_sat_amount(channel_num + wallet_num)
 
     return balance_data
 
@@ -277,9 +285,11 @@ def get_lightning_payments():
         payments = []
         data = copy.deepcopy(lightning_payments)
         for tx in data["payments"]:
+            tx["type"] = "PAYMENT"
             tx["value_str"] = format_sat_amount(tx["value_sat"])
             tx["fee_str"] = format_sat_amount(tx["fee"])
             tx["date_str"] = time.strftime("%D %H:%M", time.localtime(int(tx["creation_date"])))
+            tx["memo"] = ""
             payments.append(tx)
         payments.reverse()
         return payments
@@ -292,6 +302,7 @@ def get_lightning_invoices():
         invoices = []
         data = copy.deepcopy(lightning_invoices)
         for tx in data["invoices"]:
+            tx["type"] = "INVOICE"
             tx["value_str"] = format_sat_amount(tx["value"])
             tx["date_str"] = time.strftime("%D %H:%M", time.localtime(int(tx["creation_date"])))
             tx["memo"] = urllib.unquote_plus(tx["memo"])
@@ -300,6 +311,40 @@ def get_lightning_invoices():
         return invoices
     except:
         return None
+
+def get_lightning_payments_and_invoices():
+    payments = get_lightning_payments()
+    invoices = get_lightning_invoices()
+    txs = []
+
+    if payments == None and invoices == None:
+        return None
+    elif payments == None and invoices != None:
+        return invoices
+    elif payments != None and invoices == None:
+        return payments
+    elif len(payments) == 0 and len(invoices) == 0:
+        return None
+
+    while len(payments) or len(invoices):
+        if len(payments) == 0:
+            txs.insert(0, invoices.pop())
+        elif len(invoices) == 0:
+            txs.insert(0, payments.pop())
+        else:
+            # Prepend oldest to list
+            p = payments[-1]
+            i = invoices[-1]
+            if int(p["creation_date"]) < int(i["creation_date"]):
+                txs.insert(0, payments.pop())
+            else:
+                txs.insert(0, invoices.pop())
+
+    for tx in txs:
+        if tx["type"] == "PAYMENT":
+            tx["value_str"] = "-" + tx["value_str"]
+
+    return txs
 
 def get_lightning_watchtower_server_info():
     global lightning_watchtower_server_info

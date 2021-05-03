@@ -180,11 +180,103 @@
             </tr>
         </table>
         -->
-        <b>Deposit Address</b><br/>
-        <img style='width: 120px; height: 120px; margin: auto; margin-top: 5px; margin-bottom: 5px;' src='/api/get_qr_code_image?url={{ lnd_deposit_address }}' title="{{ lnd_deposit_address }}"/>
-        <br/>
-        <span style="font-size: 12px;">{{lnd_deposit_address}}</span>
 
+
+        <!-- Top Wallet Section -->
+        <p style="font-size: 16px; font-weight: bold;">Wallet</p>
+        <div style="display: flex; margin: auto;">
+
+            <div>
+                <b>Balance</b><br/>
+                <span id="lnd_total_balance" style="font-size: 12px; margin-top: 5px;">{{lnd_balance_info['total_balance']}} sats</span>
+
+                <br/><br/>
+                <b>Deposit</b><br/>
+                <img style='width: 160px; height: 160px; margin: auto; margin-top: 5px; margin-bottom: 5px;' src='/api/get_qr_code_image?url={{ lnd_deposit_address }}' title="{{ lnd_deposit_address }}"/>
+                <br/>
+                <span style="font-size: 10px;">{{lnd_deposit_address}}</span>
+            </div>
+
+            
+            <div>
+                <b>On-chain Transactions</b>
+                <table style="font-size: 12px; width: 270px; margin: 10px;">
+                    <tr>
+                        <td>Date</td>
+                        <td>Amount</td>
+                        <td></td>
+                    </tr>
+                    {% if lnd_transactions and lnd_transactions|length > 0 %}
+                        {% for tx in lnd_transactions[:lnd_tx_display_limit] %}
+                            <tr>
+                                <td>{{ tx.date_str }}</td>
+                                <td>{{ tx.amount_str }}</td>
+                                <td>
+                                    {% if tx.num_confirmations < 1 %}
+                                        <img style="width: 16px;" src="{{ url_for('static', filename="images/")}}confirm_pending.png" title="pending transaction"/>
+                                    {% elif tx.num_confirmations <= 3 %}
+                                        <img style="width: 16px;" src="{{ url_for('static', filename="images/")}}confirm_bars_{{tx.num_confirmations}}.png" title="{{ tx.num_confirmations }} confirmations"/>
+                                    {% else %}
+                                        <img style="width: 16px;" src="{{ url_for('static', filename="images/")}}confirm_complete.png" title="{{ tx.num_confirmations }} confirmations"/>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        {% if lnd_transactions|length >= lnd_tx_display_limit %}
+                            <tr><td colspan=9>more...</td></tr>
+                        {% endif %}
+                    {% else %}
+                        <tr><td colspan=9 style="text-align: center;"><br/><br/>None yet!</td></tr>
+                    {% endif %}
+                </table>
+            </div> 
+
+            
+            <div>
+                <b>Lightning Transactions</b>
+                <table style="font-size: 12px; width: 270px; margin: 10px;">
+                    <tr>
+                        <td>Date</td>
+                        <td>Amount</td>
+                        <td></td>
+                    </tr>
+                    {% if lnd_payments_and_invoices and lnd_payments_and_invoices|length > 0 %}
+                        {% for tx in lnd_payments_and_invoices[:lnd_tx_display_limit] %}
+                            <tr>
+                                <td>{{ tx.date_str }}</td>
+                                <td>{{ tx.value_str }}</td>
+                                <td>
+                                    {% if tx.type == "PAYMENT" %}
+                                        <img style="width: 16px;" src="{{ url_for('static', filename="images/ln_send.png")}}" title="{{ tx.memo }}"/>
+                                    {% else %}
+                                        <img style="width: 16px;" src="{{ url_for('static', filename="images/ln_recv.png")}}" title="{{ tx.memo }}"/>
+                                    {% endif %}
+
+                                    {% if tx.state == "OPEN" %}
+                                        <img style="width: 16px;" src="{{ url_for('static', filename="images/")}}invoice_pending.png" title="open invoice"/>
+                                    {% elif tx.state == "SETTLED" %}
+                                        <img style="width: 16px;" src="{{ url_for('static', filename="images/")}}invoice_complete.png" title="settled invoice"/>
+                                    {% elif tx.state == "CANCELED" or tx.state == "CANCELLED" %}
+                                        <img style="width: 16px;" src="{{ url_for('static', filename="images/")}}invoice_cancelled.png" title="cancelled invoice"/>
+                                    {% endif %}
+
+                                    {% if tx.memo != None and tx.memo != "" %}
+                                        <img style="width: 16px;" src="{{ url_for('static', filename="images/memo.png")}}" title="{{ tx.memo }}"/>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        {% if lnd_invoices|length >= lnd_tx_display_limit %}
+                            <tr><td colspan=9>more...</td></tr>
+                        {% endif %}
+                    {% else %}
+                        <tr><td colspan=9 style="text-align: center;"><br/><br/>None yet!</td></tr>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+
+        <!-- Channels -->
         {% if lnd_channels|length > 0 %}
             <br/><br/>
             <b>Channels</b><br/>

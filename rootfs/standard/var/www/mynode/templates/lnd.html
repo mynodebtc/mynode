@@ -402,7 +402,7 @@
                         </tr>
                     {% endfor %}
                     {% if transactions|length >= tx_display_limit %}
-                        <td colspan=9>more...</td>
+                       <tr><td colspan=9>more...</td></tr>
                     {% endif %}
                 </tbody>
             </table>
@@ -429,7 +429,7 @@
                         </tr>
                     {% endfor %}
                     {% if payments|length >= tx_display_limit %}
-                        <td colspan=9>more...</td>
+                        <tr><td colspan=9>more...</td></tr>
                     {% endif %}
                 </tbody>
             </table>
@@ -458,10 +458,10 @@
                             </td>
                             <td>{{ tx.state }}</td>
                         </tr>
-                        {% if invoices|length >= tx_display_limit %}
-                            <td colspan=9>more...</td>
-                        {% endif %}
                     {% endfor %}
+                    {% if invoices|length >= tx_display_limit %}
+                        <tr><td colspan=9>more...</td></tr>
+                    {% endif %}
                 </tbody>
             </table>
         {% endif %}

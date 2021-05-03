@@ -188,6 +188,9 @@
                         if ("channel_balance" in balances && balances["channel_balance"] != null) {
                             $("#lnd_channel_balance").html(balances["channel_balance"]);
                         }
+                        if ("total_balance" in balances && balances["total_balance"] != null) {
+                            $("#lnd_total_balance").html(balances["total_balance"] + " sats");
+                        }
                     }
                     if ("lnd_ready" in data && data["lnd_ready"] != null) {
                         if (lnd_ready != data["lnd_ready"]) {
