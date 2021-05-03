@@ -266,7 +266,7 @@
                                 </td>
                             </tr>
                         {% endfor %}
-                        {% if lnd_invoices|length >= lnd_tx_display_limit %}
+                        {% if lnd_payments_and_invoices|length >= lnd_tx_display_limit %}
                             <tr><td colspan=9>more...</td></tr>
                         {% endif %}
                     {% else %}
