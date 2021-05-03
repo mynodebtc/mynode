@@ -1,4 +1,16 @@
 === v0.2.30 ===
+- Released: 05/02/21
+- Add support for 64-bit Raspberry Pi 4 Images
+- Upgrade Bitcoin to v0.2.21
+- Upgrade Specter to v1.3.1
+- Upgrade RTL to v0.10.2
+- Upgrade Sphinx Relay to v2.0.13
+- Upgrade LNDHub to v1.3.3
+- Update Lightning pairing options
+- More backend refactoring for managing applications
+- Bug Fixes
+
+=== v0.2.30 ===
 - Released: 04/18/21
 - Add Lightning Terminal v0.4.1
 - Upgrade Specter to v1.3.0
