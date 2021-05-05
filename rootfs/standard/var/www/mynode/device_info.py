@@ -553,6 +553,14 @@ def force_https(force):
     else:
         os.system("rm -f /home/bitcoin/.mynode/https_forced")
 
+# Regen cert
+def regen_https_cert():
+    os.system("rm -rf /home/bitcoin/.mynode/https")
+    os.system("rm -rf /mnt/hdd/mynode/settings/https")
+    os.system("/usr/bin/mynode_gen_cert.sh https 825")
+    os.system("sync")
+    os.system("systemctl restart nginx")
+
 def get_flask_secret_key():
     if os.path.isfile("/home/bitcoin/.mynode/flask_secret_key"):
         key = get_file_contents("/home/bitcoin/.mynode/flask_secret_key")
