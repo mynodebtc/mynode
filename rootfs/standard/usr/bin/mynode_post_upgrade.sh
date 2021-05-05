@@ -40,6 +40,11 @@ if [ -f /mnt/hdd/mynode/settings/torify_apt_get ]; then
     TORIFY="torify"
 fi
 
+
+# Migrate from version file to version+install combo
+/usr/bin/mynode_migrate_version_files.sh
+
+
 # Stop and disable any old services
 systemctl disable https || true
 systemctl stop https || true

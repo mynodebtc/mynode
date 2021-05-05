@@ -284,6 +284,10 @@ if [ ! -f /mnt/hdd/mynode/settings/.setquicksyncdefault ]; then
 fi
 
 
+# Migrate from version file to version+install combo
+/usr/bin/mynode_migrate_version_files.sh
+
+
 # BTC Config
 source /usr/bin/mynode_gen_bitcoin_config.sh
 
