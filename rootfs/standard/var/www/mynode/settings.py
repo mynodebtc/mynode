@@ -764,13 +764,11 @@ def download_logs_page():
 def regen_https_certs_page():
     check_logged_in()
 
-    # Touch files to trigger re-checking drive
-    os.system("rm -rf /home/bitcoin/.mynode/https")
-    os.system("rm -rf /mnt/hdd/mynode/settings/https")
-    os.system("sync")
-    os.system("systemctl restart https")
+    # Re-install app
+    t = Timer(1.0, regen_https_cert)
+    t.start()
     
-    flash("HTTPS Service Restarted", category="message")
+    flash("HTTPS Service Restarting", category="message")
     return redirect(url_for(".page_settings"))
 
 @mynode_settings.route("/settings/regen-electrs-certs")

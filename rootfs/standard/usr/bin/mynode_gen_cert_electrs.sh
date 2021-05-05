@@ -18,6 +18,12 @@ mkdir -p $HDD_DIR
 domain=myNode.local
 commonname=myNode.local
 
+LOCAL_IP_ADDR=$(hostname -I | head -n 1 | cut -d' ' -f1)
+TOR="electrstor.onion"
+if [ -f /var/lib/tor/mynode_electrs/hostname ]; then
+    TOR=$(cat /var/lib/tor/mynode_electrs/hostname)
+fi
+
 # Check for files on HDD and move to SD
 if [ ! -f $OUTPUT_DIR/$domain.pem ] && [ -f $HDD_DIR/$domain.pem ]; then
     cp -f $HDD_DIR/* $OUTPUT_DIR/
@@ -65,9 +71,11 @@ DNS.1 = $domain
 DNS.2 = www.$domain
 DNS.3 = localhost
 DNS.4 = 127.0.0.1
+DNS.5 = $LOCAL_IP_ADDR
+DNS.6 = $TOR
 DELIM
 
-openssl req -x509 -nodes -days 730 -newkey rsa:2048 -keyout $OUTPUT_DIR/$domain.key -out $OUTPUT_DIR/$domain.crt -config /tmp/cert_req.conf
+openssl req -x509 -nodes -days $DAYS -newkey rsa:2048 -keyout $OUTPUT_DIR/$domain.key -out $OUTPUT_DIR/$domain.crt -config /tmp/cert_req.conf
 
 echo "Creating PEM"
 cat $OUTPUT_DIR/$domain.key > $OUTPUT_DIR/$domain.pem
