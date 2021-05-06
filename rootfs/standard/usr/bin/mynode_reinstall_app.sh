@@ -20,6 +20,13 @@ APP="$1"
 rm -f /home/bitcoin/.mynode/${APP}_version || true
 rm -f /mnt/hdd/mynode/settings/${APP}_version || true
 
+# Make sure app is marked for install
+if [ -f /home/bitcoin/.mynode/${APP}_version_latest ]; then
+    touch /home/bitcoin/.mynode/install_${APP} || true
+else
+    touch /mnt/hdd/mynode/settings/install_${APP} || true
+fi
+
 # Custom re-install steps
 if [ "$APP" = "netdata" ]; then
     systemctl stop netdata
@@ -37,8 +44,6 @@ elif [ "$APP" = "webssh2" ]; then
     rm -f /mnt/hdd/mynode/settings/webssh2_version
     systemctl stop webssh2
     docker rmi webssh2
-elif [ "$APP" = "whirlpool" ]; then
-    rm -f $WHIRLPOOL_VERSION_FILE
 elif [ "$APP" = "dojo" ]; then
     rm -f /mnt/hdd/mynode/settings/dojo_url
     cd /mnt/hdd/mynode/dojo/docker/my-dojo/

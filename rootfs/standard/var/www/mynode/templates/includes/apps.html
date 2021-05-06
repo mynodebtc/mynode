@@ -3,7 +3,7 @@
 <div class="app_tile_grid_container">    
     <!-- Dynamic App Display -->
     {% for app in apps %}
-        {% if app.show_on_homepage and app.homepage_section == "apps" %}
+        {% if app.is_installed and app.show_on_homepage and app.homepage_section == "apps" %}
             <div class="app_tile">
                 <div class="app_status_icon {% if app.can_enable_disable %}clear{% endif %}" id="{{app.short_name}}_status_icon"></div>
                 <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/")}}{{app.short_name}}.png"/></div>

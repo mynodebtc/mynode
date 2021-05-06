@@ -385,6 +385,11 @@ else
 fi
 
 # BTCPay Server Setup
+mkdir -p /opt/mynode/btcpayserver
+cp -n /usr/share/btcpayserver/.env /opt/mynode/btcpayserver/
+cp -n /usr/share/btcpayserver/btcpay-env.sh /opt/mynode/btcpayserver/
+cp -n /usr/share/btcpayserver/docker-compose.generated.yml /opt/mynode/btcpayserver/
+cp -n /usr/share/btcpayserver/helpers.sh /opt/mynode/btcpayserver/
 if [ -f /opt/mynode/btcpayserver/.env ]; then
     sed -i "s/REPLACE_BTCPAY_VERSION/$BTCPAYSERVER_VERSION/g" /opt/mynode/btcpayserver/.env || true
     sed -i "s/REPLACE_NBXPLORER_VERSION/$BTCPAYSERVER_NBXPLORER_VERSION/g" /opt/mynode/btcpayserver/.env || true
@@ -509,6 +514,15 @@ fi
 if [ $IS_RASPI -eq 1 ]; then
     sed -i "s|MARIA_DB_IMAGE=.*|MARIA_DB_IMAGE=hypriot/rpi-mysql:latest|g" /mnt/hdd/mynode/mempool/.env
 fi
+
+# Setup Netdata
+mkdir -p /opt/mynode/netdata
+cp -f /usr/share/mynode/netdata-compose.yml /opt/mynode/netdata/netdata-compose.yml
+cp -f /usr/share/mynode/netdata.conf /opt/mynode/netdata/netdata.conf
+
+# Setup webssh2
+mkdir -p /opt/mynode/webssh2
+cp -f /usr/share/mynode/webssh2_config.json /opt/mynode/webssh2/config.json
 
 # Backup Tor files
 for f in /var/lib/tor/mynode*; do
