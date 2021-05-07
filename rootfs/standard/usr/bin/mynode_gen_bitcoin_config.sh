@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# TOTAL_RAM_GB - Comes from mynode_config.sh since this is only sourced from mynode_startup
+TOTAL_RAM_GB=$(free --giga | grep Mem | awk '{print $2}')
 
 # Setup default settings
 if [ ! -f /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled_defaulted ]; then
