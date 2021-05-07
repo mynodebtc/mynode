@@ -22,10 +22,13 @@ def get_current_version():
         current_version = "error"
     return current_version
 def get_device_type():
-    device = subprocess.check_output("mynode-get-device-type", shell=True).strip()
+    device = subprocess.check_output("mynode-get-device-type", shell=True).decode("utf-8").strip()
     return device
+def get_device_arch():
+    arch = subprocess.check_output("uname -m", shell=True).decode("utf-8").strip()
+    return arch
 def get_device_serial():
-    serial = subprocess.check_output("mynode-get-device-serial", shell=True).strip()
+    serial = subprocess.check_output("mynode-get-device-serial", shell=True).decode("utf-8").strip()
     return serial
 def skipped_product_key():
     return os.path.isfile("/home/bitcoin/.mynode/.product_key_skipped") or \
@@ -80,6 +83,7 @@ def check_in():
     data = {
         "serial": get_device_serial(),
         "device_type": get_device_type(),
+        "device_arch": get_device_arch(),
         "version": get_current_version(),
         "product_key": product_key,
         "drive_size": get_drive_size(),
