@@ -937,6 +937,15 @@ def get_onion_url_lndhub():
         pass
     return "error"
 
+def get_onion_url_lnbits():
+    try:
+        if os.path.isfile("/var/lib/tor/mynode_lnbits/hostname"):
+            with open("/var/lib/tor/mynode_lnbits/hostname") as f:
+                return f.read().strip()
+    except:
+        pass
+    return "error"
+
 def get_onion_url_btcpay():
     try:
         if os.path.isfile("/var/lib/tor/mynode_btcpay/hostname"):

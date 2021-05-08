@@ -264,6 +264,12 @@ HiddenServiceVersion 3
 HiddenServicePort 3000 127.0.0.1:3000
 HiddenServicePort 3001 127.0.0.1:3001
 
+# Hidden Service for myNode (LNBits)
+HiddenServiceDir /var/lib/tor/mynode_lnbits/
+HiddenServiceVersion 3
+HiddenServicePort 5000 127.0.0.1:5000
+HiddenServicePort 5001 127.0.0.1:5001
+
 # Hidden Service for myNode (Electrum Server)
 HiddenServiceDir /var/lib/tor/mynode_electrs/
 HiddenServiceVersion 3
