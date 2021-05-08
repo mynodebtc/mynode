@@ -8,13 +8,11 @@ source /usr/share/mynode/mynode_app_versions.sh
 
 # Make sure we have an app argument
 if [ "$#" -ne 1 ]; then
-    echo "Usage: mynode_reinstall_app.sh <app_name>"
+    echo "Usage: mynode_uninstall_app.sh <app_name>"
     exit 1
 fi
 APP="$1"
 
-# Shut down main services to save memory and CPU and stop app being reinstalled
-/usr/bin/mynode_stop_critical_services.sh
 
 # Delete the app's version file and install file
 rm -f /home/bitcoin/.mynode/${APP}_version || true

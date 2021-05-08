@@ -815,6 +815,27 @@ def reinstall_app_page():
     }
     return render_template('reboot.html', **templateData)
 
+@mynode_settings.route("/settings/uninstall-app")
+def uninstall_app_page():
+    check_logged_in()
+
+    # Check application specified
+    if not request.args.get("app"):
+        flash("No application specified", category="error")
+        return redirect("/apps")
+    
+    # Check application name is valid
+    app = request.args.get("app")
+    if not is_application_valid(app):
+        flash("Application is invalid", category="error")
+        return redirect("/apps")
+
+    # Un-install app
+    uninstall_app(app)
+
+    flash("Application Uninstalled", category="message")
+    return redirect("/apps")
+
 @mynode_settings.route("/settings/toggle-uploader")
 def toggle_uploader_page():
     check_logged_in()

@@ -13,8 +13,81 @@ import os
 mynode_applications = None
 
 # Utility functions
+def reinstall_app(app):
+    if not is_upgrade_running():
+        mark_upgrade_started()
+
+        # Clear app data
+        clear_application_cache()
+
+        os.system("touch /tmp/skip_base_upgrades")
+        os.system("sync")
+
+        # Reinstall
+        os.system("mkdir -p /home/admin/upgrade_logs")
+        file1 = "/home/admin/upgrade_logs/reinstall_{}.txt".format(app)
+        file2 = "/home/admin/upgrade_logs/upgrade_log_latest.txt"
+        cmd = "/usr/bin/mynode_reinstall_app.sh {} 2>&1 | tee {} {}".format(app,file1, file2)
+        subprocess.call(cmd, shell=True)
+        
+        # Sync
+        os.system("sync")
+        time.sleep(1)
+
+        # Reboot
+        reboot_device()
+
+def uninstall_app(app):
+    # Make sure app is disabled
+    disable_service(app)
+
+    # Clear app data
+    clear_application_cache()
+
+    # Uninstall App
+    os.system("mkdir -p /home/admin/upgrade_logs")
+    file1 = "/home/admin/upgrade_logs/uninstall_{}.txt".format(app)
+    file2 = "/home/admin/upgrade_logs/uninstall_log_latest.txt"
+    cmd = "/usr/bin/mynode_uninstall_app.sh {} 2>&1 | tee {} {}".format(app,file1, file2)
+    subprocess.call(cmd, shell=True)
+    
+    # Sync
+    os.system("sync")
+
 def is_installed(current_version):
     return current_version != "not installed"
+
+def get_app_current_version(short_name):
+    version = "unknown"
+    filename1 = "/home/bitcoin/.mynode/"+short_name+"_version"
+    filename2 = "/mnt/hdd/mynode/settings/"+short_name+"_version"
+    if os.path.isfile(filename1):
+        version = get_file_contents(filename1)
+    elif os.path.isfile(filename2):
+        version = get_file_contents(filename2)
+    else:
+        version = "not installed"
+
+    # For versions that are hashes, shorten them
+    version = version[0:16]
+
+    return version
+
+def get_app_latest_version(app):
+    version = "unknown"
+    filename1 = "/home/bitcoin/.mynode/"+app+"_version_latest"
+    filename2 = "/mnt/hdd/mynode/settings/"+app+"_version_latest"
+    if os.path.isfile(filename1):
+        version = get_file_contents(filename1)
+    elif os.path.isfile(filename2):
+        version = get_file_contents(filename2)
+    else:
+        version = "error"
+
+    # For versions that are hashes, shorten them
+    version = version[0:16]
+
+    return version
 
 def create_application(name="NAME",
                        short_name="SHORT_NAME",
@@ -125,6 +198,7 @@ def initialize_applications():
         short_name="rtl",
         app_tile_name="RTL",
         app_tile_default_status_text="Lightning Wallet",
+        can_uninstall=True,
         show_on_homepage=True,
         requires_lightning=True,
         supports_testnet=True,
@@ -146,6 +220,7 @@ def initialize_applications():
         name="BTCPay Server",
         short_name="btcpayserver",
         app_tile_default_status_text="Merchant Tool",
+        can_uninstall=True,
         requires_lightning=True,
         show_on_homepage=True,
         homepage_order=13
@@ -154,6 +229,7 @@ def initialize_applications():
         name="Mempool",
         short_name="mempool",
         app_tile_default_status_text="Mempool Viewer",
+        can_uninstall=True,
         show_on_homepage=True,
         supports_testnet=True,
         requires_docker_image_installation=True,
@@ -163,6 +239,7 @@ def initialize_applications():
         name="LND Hub",
         short_name="lndhub",
         app_tile_default_status_text="BlueWallet Backend",
+        can_uninstall=True,
         requires_lightning=True,
         show_on_homepage=True,
         homepage_order=15
@@ -182,6 +259,7 @@ def initialize_applications():
         short_name="btcrpcexplorer",
         app_tile_name="Explorer",
         app_tile_default_status_text="BTC RPC Explorer",
+        can_uninstall=True,
         requires_bitcoin=True,
         show_on_homepage=True,
         supports_testnet=True,
@@ -195,6 +273,7 @@ def initialize_applications():
         app_tile_button_href="/dojo",
         app_tile_default_status_text="Mixing Tool",
         app_tile_running_status_text="Running",
+        can_uninstall=True,
         show_on_application_page=True,
         show_on_homepage=True,
         requires_electrs=True,
@@ -208,6 +287,7 @@ def initialize_applications():
         app_tile_button_href="/whirlpool",
         app_tile_default_status_text="Mixing Tool",
         app_tile_running_status_text="Running",
+        can_uninstall=True,
         show_on_homepage=True,
         homepage_order=23
     ))
@@ -217,6 +297,7 @@ def initialize_applications():
         app_tile_button_text="Info",
         app_tile_button_href="/joininbox",
         app_tile_default_status_text="JoinMarket Mixing",
+        can_uninstall=True,
         show_on_homepage=True,
         homepage_order=24,
         can_enable_disable=False,
@@ -231,6 +312,7 @@ def initialize_applications():
         name="Thunderhub",
         short_name="thunderhub",
         app_tile_default_status_text="Lightning Wallet",
+        can_uninstall=True,
         requires_lightning=True,
         supports_testnet=True,
         show_on_homepage=True,
@@ -244,6 +326,7 @@ def initialize_applications():
         app_tile_button_text="Info",
         app_tile_button_href="/caravan",
         app_tile_default_status_text="Multisig Tool",
+        can_uninstall=True,
         show_on_homepage=True,
         homepage_order=31,
         supports_testnet=True,
@@ -254,6 +337,7 @@ def initialize_applications():
         short_name="specter",
         requires_bitcoin=True,
         app_tile_default_status_text="Multisig Tool",
+        can_uninstall=True,
         show_on_homepage=True,
         homepage_order=32,
         supports_testnet=True,
@@ -264,6 +348,7 @@ def initialize_applications():
         short_name="ckbunker",
         requires_bitcoin=True,
         app_tile_default_status_text="Coldcard Signing Tool",
+        can_uninstall=True,
         show_on_homepage=True,
         homepage_order=33,
         supports_testnet=True,
@@ -276,6 +361,7 @@ def initialize_applications():
         app_tile_button_href="/sphinxrelay",
         app_tile_default_status_text="Sphinx Chat Backend",
         app_tile_running_status_text="Running",
+        can_uninstall=True,
         requires_lightning=True,
         show_on_homepage=True,
         homepage_order=34,
@@ -286,6 +372,7 @@ def initialize_applications():
         short_name="lnbits",
         requires_lightning=True,
         app_tile_default_status_text="Lightning Wallet",
+        can_uninstall=True,
         show_on_homepage=True,
         homepage_order=35,
         is_premium=True
@@ -343,6 +430,10 @@ def update_applications():
 
     for app in mynode_applications:
         update_application(app)
+
+def clear_application_cache():
+    global mynode_applications
+    mynode_applications = None
 
 def get_all_applications(order_by="none"):
     global mynode_applications
