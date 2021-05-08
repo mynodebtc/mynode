@@ -224,61 +224,6 @@ def has_checkin_error():
 
 
 #==================================
-# Manage Apps
-#==================================
-def get_app_current_version(app):
-    version = "unknown"
-    filename1 = "/home/bitcoin/.mynode/"+app+"_version"
-    filename2 = "/mnt/hdd/mynode/settings/"+app+"_version"
-    if os.path.isfile(filename1):
-        version = get_file_contents(filename1)
-    elif os.path.isfile(filename2):
-        version = get_file_contents(filename2)
-    else:
-        version = "not installed"
-
-    # For versions that are hashes, shorten them
-    version = version[0:16]
-
-    return version
-
-def get_app_latest_version(app):
-    version = "unknown"
-    filename1 = "/home/bitcoin/.mynode/"+app+"_version_latest"
-    filename2 = "/mnt/hdd/mynode/settings/"+app+"_version_latest"
-    if os.path.isfile(filename1):
-        version = get_file_contents(filename1)
-    elif os.path.isfile(filename2):
-        version = get_file_contents(filename2)
-    else:
-        version = "error"
-
-    # For versions that are hashes, shorten them
-    version = version[0:16]
-
-    return version
-
-
-# This is going to be the "old" way to install apps
-def reinstall_app(app):
-    if not is_upgrade_running():
-        mark_upgrade_started()
-
-        # Upgrade
-        os.system("mkdir -p /home/admin/upgrade_logs")
-        file1 = "/home/admin/upgrade_logs/reinstall_{}.txt".format(app)
-        file2 = "/home/admin/upgrade_logs/upgrade_log_latest.txt"
-        cmd = "/usr/bin/mynode_reinstall_app.sh {} 2>&1 | tee {} {}".format(app,file1, file2)
-        subprocess.call(cmd, shell=True)
-        
-        # Sync
-        os.system("sync")
-        time.sleep(1)
-
-        # Reboot
-        reboot_device()
-
-#==================================
 # Reseller Info
 #==================================
 def is_device_from_reseller():

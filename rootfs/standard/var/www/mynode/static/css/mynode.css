@@ -532,6 +532,20 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
   background-color: #d7d7d7;
 }
 
+.install_button {
+    background-color: #99dd9d !important;
+}
+.install_button:hover {
+    background-color: #90d090 !important;
+}
+
+.uninstall_button {
+    background-color: #ffaaaa !important;
+}
+.uninstall_button:hover {
+    background-color: #f0a0a0 !important;
+}
+
 .mynode_button_small {
     font-size: 12px !important;
 }
