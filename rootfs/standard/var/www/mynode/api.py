@@ -147,3 +147,23 @@ def api_get_message():
     data = {}
     data["message"] = get_message(funny)
     return jsonify(data)
+
+@mynode_api.route("/api/toggle_setting")
+def api_toggle_setting():
+    check_logged_in()
+
+    data = {}
+    data["status"] = "unknown"
+
+    if not request.args.get("setting"):
+        data["status"] = "no_setting_specified"
+        return jsonify(data)
+
+    setting = request.args.get("setting")
+    if setting == "pinned_lightning_details":
+        toggle_pinned_lightning_details()
+        data["status"] = "success"
+    else:
+        data["status"] = "unknown_setting"
+    
+    return jsonify(data)

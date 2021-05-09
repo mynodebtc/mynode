@@ -116,6 +116,18 @@
                 showing_blocks = !showing_blocks;
             }
 
+            var pinned_lightning_details = {% if ui_settings['pinned_lightning_details'] %}true{% else %}false{% endif %};
+            function togglePinnedLightningDetails() {
+                if (pinned_lightning_details) {
+                    $('#pin_lightning_details_icon').attr('src', location.protocol+'//'+location.hostname+'/static/images/pin.png');
+                    $.get("/api/toggle_setting?setting=pinned_lightning_details");
+                } else {
+                    $('#pin_lightning_details_icon').attr('src', location.protocol+'//'+location.hostname+'/static/images/unpin.png');
+                    $.get("/api/toggle_setting?setting=pinned_lightning_details");
+                }
+                pinned_lightning_details = !pinned_lightning_details;
+            }
+
             var showing_lightning_details = false;
             function toggleLightningDetails() {
                 if (showing_lightning_details) {
@@ -134,7 +146,6 @@
                 }
                 showing_lightning_details = !showing_lightning_details;
             }
-            
             
 
             // Update page function
@@ -410,6 +421,11 @@
                 // Update info every 15 seconds
                 const update_interval = setInterval(update_page, 15000);
                 update_page();
+
+                // If pinned lightning, auto open lightning details
+                {% if lnd_wallet_exists and lnd_ready and ui_settings['pinned_lightning_details'] %}
+                toggleLightningDetails();
+                {% endif %}
             });
         </script>
      </head>

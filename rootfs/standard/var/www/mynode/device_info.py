@@ -471,6 +471,14 @@ def toggle_darkmode():
     else:
         enable_darkmode()
 
+def toggle_pinned_lightning_details():
+    ui_settings = read_ui_settings()
+    if "pinned_lightning_details" not in ui_settings or ui_settings["pinned_lightning_details"] == False:
+        ui_settings["pinned_lightning_details"] = True
+    else:
+        ui_settings["pinned_lightning_details"] = False
+    write_ui_settings(ui_settings)
+
 def set_background(background):
     ui_settings = read_ui_settings()
     ui_settings['background'] = background
