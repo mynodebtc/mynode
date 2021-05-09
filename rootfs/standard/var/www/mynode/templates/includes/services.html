@@ -93,7 +93,7 @@
             <br/>
             
             {% if lnd_wallet_exists and lnd_ready %}
-            <img class="" id="show_lightning_details" style="margin: auto; width: 60px; cursor: pointer;" onclick="toggleLightningDetails();" src="{{ url_for('static', filename="images/expand_down.png")}}"/>
+            <img class="" id="show_lightning_details" style="margin: auto; width: 60px; cursor: pointer;" onclick="toggleLightningDetails();" src="{{ url_for('static', filename="images/")}}{% if ui_settings['pinned_lightning_details'] %}expand_up.png{% else %}expand_down.png{% endif %}"/>
             {% endif %}
         </div>
     </div>
@@ -166,24 +166,16 @@
 <!-- Show Lightning Details -->
 <div class="app_tile_row">
     <div class="app_tile_lightning_details" id="lightning_details" style="display: none;">
-        <!--
-        <table>
-            <tr>
-                <td>
-                    <img style='width: 120px; height: 120px; display: inline;' src='/api/get_qr_code_image?url={{ lnd_deposit_address }}' title="{{ lnd_deposit_address }}"/>
-                </td>
-                <td>
-                    <b>Deposit Address:</b> {{lnd_deposit_address}}<br/>
-                    <b>On-chain Balance:</b> {{lnd_deposit_address}}<br/>
-                    <b>Channel Balance:</b> {{lnd_deposit_address}}<br/>
-                </td>
-            </tr>
-        </table>
-        -->
-
 
         <!-- Top Wallet Section -->
         <p style="font-size: 16px; font-weight: bold;">Wallet</p>
+
+        {% if ui_settings['pinned_lightning_details'] %}
+            <img class="lightning_pin_details_icon" id="pin_lightning_details_icon" onclick="togglePinnedLightningDetails();" src="{{ url_for('static', filename="images/unpin.png")}}" title="Toggle Pinning Lightning Details"/>
+        {% else %}
+            <img class="lightning_pin_details_icon" id="pin_lightning_details_icon" onclick="togglePinnedLightningDetails();" src="{{ url_for('static', filename="images/pin.png")}}" title="Toggle Pinning Lightning Details"/>
+        {% endif %}
+
         <div style="display: flex; margin: auto;">
 
             <div>
@@ -196,7 +188,6 @@
                 <br/>
                 <span style="font-size: 10px;">{{lnd_deposit_address}}</span>
             </div>
-
             
             <div>
                 <b>On-chain Transactions</b>
