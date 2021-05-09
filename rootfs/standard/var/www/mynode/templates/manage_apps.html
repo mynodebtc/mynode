@@ -89,6 +89,7 @@
         <br/><br/>
         <table class="bitcoin_table">
             <thead class="bitcoin_table_header">
+                <td><!-- Icon --></td>
                 <td>Application</td>
                 <td>Current Version</td>
                 <td>Latest Version</td>
@@ -100,6 +101,7 @@
                     {% if app.show_on_application_page %}
                     {% if not product_key_skipped or product_key_skipped and not app.is_premium %}
                         <tr>
+                            <td><img class="app_logo_icon" style="width: 32px;" src="{{ url_for('static', filename="images/")}}{{app.short_name}}.png"/></td>
                             <td>{{ app.name }}</td>
                             <td>
                                 {% if app.is_installed %}

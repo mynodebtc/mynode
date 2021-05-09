@@ -306,6 +306,7 @@ def initialize_applications():
     apps.append(create_application(
         name="Joinmarket",
         short_name="joinmarket",
+        show_on_application_page=False,
         is_premium=True
     ))
     apps.append(create_application(
