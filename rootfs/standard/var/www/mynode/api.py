@@ -55,6 +55,8 @@ def api_get_lightning_info():
     data["lnd_ready"] = is_lnd_ready()
     data["balances"] = get_lightning_balance_info()
     data["channels"] = get_lightning_channels()
+    data["transactions"] = get_lightning_transactions()
+    data["payments_and_invoices"] = get_lightning_payments_and_invoices()
 
     return jsonify(data)
 
