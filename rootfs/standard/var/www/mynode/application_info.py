@@ -379,6 +379,16 @@ def initialize_applications():
         is_premium=True
     ))
     apps.append(create_application(
+        name="WARden",
+        short_name="warden",
+        requires_lightning=False,
+        app_tile_default_status_text="Bitcoin Portfolio",
+        can_uninstall=True,
+        show_on_homepage=True,
+        homepage_order=41,
+        is_premium=False
+    ))
+    apps.append(create_application(
         name="Web SSH",
         short_name="webssh2",
     ))
