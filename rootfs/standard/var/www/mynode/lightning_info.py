@@ -272,6 +272,7 @@ def get_lightning_transactions():
         transactions = []
         data = copy.deepcopy(lightning_transactions)
         for tx in data["transactions"]:
+            tx["id"] = tx["tx_hash"]
             tx["amount_str"] = format_sat_amount(tx["amount"])
             tx["date_str"] = time.strftime("%D %H:%M", time.localtime(int(tx["time_stamp"])))
             transactions.append(tx)
@@ -285,6 +286,7 @@ def get_lightning_payments():
         payments = []
         data = copy.deepcopy(lightning_payments)
         for tx in data["payments"]:
+            tx["id"] = tx["payment_hash"]
             tx["type"] = "PAYMENT"
             tx["value_str"] = format_sat_amount(tx["value_sat"])
             tx["fee_str"] = format_sat_amount(tx["fee"])
@@ -294,7 +296,7 @@ def get_lightning_payments():
         payments.reverse()
         return payments
     except:
-        return None
+        return []
 
 def get_lightning_invoices():
     global lightning_invoices
@@ -302,6 +304,7 @@ def get_lightning_invoices():
         invoices = []
         data = copy.deepcopy(lightning_invoices)
         for tx in data["invoices"]:
+            tx["id"] = tx["r_hash"]
             tx["type"] = "INVOICE"
             tx["value_str"] = format_sat_amount(tx["value"])
             tx["date_str"] = time.strftime("%D %H:%M", time.localtime(int(tx["creation_date"])))
@@ -310,7 +313,7 @@ def get_lightning_invoices():
         invoices.reverse()
         return invoices
     except:
-        return None
+        return []
 
 def get_lightning_payments_and_invoices():
     payments = get_lightning_payments()
@@ -318,13 +321,13 @@ def get_lightning_payments_and_invoices():
     txs = []
 
     if payments == None and invoices == None:
-        return None
+        return []
     elif payments == None and invoices != None:
         return invoices
     elif payments != None and invoices == None:
         return payments
     elif len(payments) == 0 and len(invoices) == 0:
-        return None
+        return []
 
     while len(payments) or len(invoices):
         if len(payments) == 0:

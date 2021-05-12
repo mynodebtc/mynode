@@ -16,6 +16,8 @@
             var electrs_active = {% if electrs_active %}1{% else %}0{% endif %};
             var lnd_ready = {% if lnd_ready %}true{% else %}false{% endif %};
             var is_installing_docker_images = {% if is_installing_docker_images %}true{% else %}false{% endif %};
+            var lnd_last_btc_tx = "";
+            var lnd_last_ln_tx = "";
 
             // Toggle enable/disable functions
             function get_custom_enable_message(short_name) {
@@ -102,6 +104,21 @@
 
             function refresh_page() {
                 window.location.href=location.protocol+'//'+location.hostname+"/";
+            }
+
+            function need_to_update_tx_table(transactions, last_displayed_tx) {
+                if (transactions.length > 0) {
+                    tx = transactions[0];
+                    if (tx["id"] != last_displayed_tx) {
+                        return true;
+                    }
+                    return false;
+                } else {
+                    if (last_displayed_tx == "none") {
+                        return false;
+                    }
+                    return true;
+                }
             }
 
             var showing_blocks = false;
@@ -222,6 +239,78 @@
                                 $("#channel_bar_"+c["chan_id"]).progressbar({
                                     value: Math.floor( c["chan_percent"] )
                                 });
+                            }
+                        }
+                    }
+                    if ("transactions" in data && data["transactions"] != null) {
+                        transactions = data["transactions"];
+                        if (need_to_update_tx_table(transactions, lnd_last_btc_tx)) {
+                            // Clear table
+                            while ($('#lnd_transactions tr').length > 1) {
+                                $('#lnd_transactions tr:last').remove();
+                            }
+                            for (i=0; i < transactions.length && i < {{lnd_tx_display_limit}}; i++) {
+                                tx = transactions[i];
+                                //console.log(JSON.stringify(tx))
+                                if (i==0) {lnd_last_btc_tx = tx['id'];}
+                                row =  "<tr>";
+                                row += "<td>"+tx['date_str']+"</td>";
+                                row += "<td>"+tx['amount_str']+"</td>";
+                                row += "<td>";
+                                if      (tx["num_confirmations"] <  1) { row += "<img style=\"width: 16px;\" src=\"/static/images/confirm_pending.png\" title=\"pending transaction\"/>"; }
+                                else if (tx["num_confirmations"] <= 3) { row += "<img style=\"width: 16px;\" src=\"/static/images/confirm_bars_"+tx["num_confirmations"]+".png\" title=\""+tx["num_confirmations"]+" confirmations\"/>"; }
+                                else if (tx["num_confirmations"] >  3) { row += "<img style=\"width: 16px;\" src=\"/static/images/confirm_complete.png\" title=\""+tx["num_confirmations"]+" confirmations\"/>"; }
+                                row += "</td>";
+                                row += "</tr>";
+                                $('#lnd_transactions tr:last').after(row);
+                            }
+                            if (transactions.length >= {{lnd_tx_display_limit}}) {
+                                $('#lnd_transactions tr:last').after("<tr><td colspan=9>more...</td></tr>");
+                            }
+                            if (transactions.length == 0) {
+                                lnd_last_btc_tx = "none";
+                                $('#lnd_transactions tr:last').after("<tr><td colspan=9 style=\"text-align: center;\"><br/><br/>None yet!</td></tr>");
+                            }
+                        }
+                    }
+                    if ("payments_and_invoices" in data && data["payments_and_invoices"] != null) {
+                        payments_and_invoices = data["payments_and_invoices"];
+                        if (need_to_update_tx_table(payments_and_invoices, lnd_last_ln_tx)) {
+                            // Clear table
+                            while ($('#lnd_payments_and_invoices tr').length > 1) {
+                                $('#lnd_payments_and_invoices tr:last').remove();
+                            }
+                            for (i=0; i < payments_and_invoices.length && i < {{lnd_tx_display_limit}}; i++) {
+                                tx = payments_and_invoices[i];
+                                //console.log(JSON.stringify(tx))
+                                if (i==0) {lnd_last_ln_tx = tx['id'];}
+                                row =  "<tr>";
+                                row += "<td>"+tx['date_str']+"</td>";
+                                row += "<td>"+tx['value_str']+"</td>";
+                                row += "<td>";
+                                if (tx["type"] == "PAYMENT") {
+                                    row += "<img style=\"width: 16px;\" src=\"/static/images/ln_send.png\"/>";
+                                } else {
+                                    row += "<img style=\"width: 16px;\" src=\"/static/images/ln_recv.png\"/>";
+                                }
+                                if ("state" in tx && tx["state"] == "OPEN")      { row += "<img style=\"width: 16px;\" src=\"/static/images/invoice_pending.png\" title=\"open invoice\"/>"; }
+                                if ("state" in tx && tx["state"] == "SETTLED")   { row += "<img style=\"width: 16px;\" src=\"/static/images/invoice_complete.png\" title=\"settled invoice\"/>"; }
+                                if ("state" in tx && tx["state"] == "CANCELED")  { row += "<img style=\"width: 16px;\" src=\"/static/images/invoice_cancelled.png\" title=\"cancelled invoice\"/>"; }
+                                if ("state" in tx && tx["state"] == "CANCELLED") { row += "<img style=\"width: 16px;\" src=\"/static/images/invoice_cancelled.png\" title=\"cancelled invoice\"/>"; }
+
+                                if ("memo" in tx && tx["memo"] != "") {
+                                    row += "<img style=\"width: 16px;\" src=\"/static/images/memo.png\" title=\""+tx["memo"]+"\"/>";
+                                }
+                                row += "</td>";
+                                row += "</tr>";
+                                $('#lnd_payments_and_invoices tr:last').after(row);
+                            }
+                            if (payments_and_invoices.length >= {{lnd_tx_display_limit}}) {
+                                $('#lnd_payments_and_invoices tr:last').after("<tr><td colspan=9>more...</td></tr>");
+                            }
+                            if (payments_and_invoices.length == 0) {
+                                lnd_last_ln_tx = "none";
+                                $('#lnd_payments_and_invoices tr:last').after("<tr><td colspan=9 style=\"text-align: center;\"><br/><br/>None yet!</td></tr>");
                             }
                         }
                     }

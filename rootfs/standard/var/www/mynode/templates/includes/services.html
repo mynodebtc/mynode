@@ -191,12 +191,13 @@
             
             <div>
                 <b>On-chain Transactions</b>
-                <table style="font-size: 12px; width: 270px; margin: 10px;">
+                <table id="lnd_transactions" style="font-size: 12px; width: 270px; margin: 10px;">
                     <tr>
                         <td>Date</td>
                         <td>Amount</td>
                         <td></td>
                     </tr>
+                    <!-- ONLY UPDATE VIA JS??
                     {% if lnd_transactions and lnd_transactions|length > 0 %}
                         {% for tx in lnd_transactions[:lnd_tx_display_limit] %}
                             <tr>
@@ -219,18 +220,20 @@
                     {% else %}
                         <tr><td colspan=9 style="text-align: center;"><br/><br/>None yet!</td></tr>
                     {% endif %}
+                    -->
                 </table>
             </div> 
 
             
             <div>
                 <b>Lightning Transactions</b>
-                <table style="font-size: 12px; width: 270px; margin: 10px;">
+                <table id="lnd_payments_and_invoices" style="font-size: 12px; width: 270px; margin: 10px;">
                     <tr>
                         <td>Date</td>
                         <td>Amount</td>
                         <td></td>
                     </tr>
+                    <!-- ONLY UPDATE VIA JS??
                     {% if lnd_payments_and_invoices and lnd_payments_and_invoices|length > 0 %}
                         {% for tx in lnd_payments_and_invoices[:lnd_tx_display_limit] %}
                             <tr>
@@ -238,9 +241,9 @@
                                 <td>{{ tx.value_str }}</td>
                                 <td>
                                     {% if tx.type == "PAYMENT" %}
-                                        <img style="width: 16px;" src="{{ url_for('static', filename="images/ln_send.png")}}" title="{{ tx.memo }}"/>
+                                        <img style="width: 16px;" src="{{ url_for('static', filename="images/ln_send.png")}}"/>
                                     {% else %}
-                                        <img style="width: 16px;" src="{{ url_for('static', filename="images/ln_recv.png")}}" title="{{ tx.memo }}"/>
+                                        <img style="width: 16px;" src="{{ url_for('static', filename="images/ln_recv.png")}}"/>
                                     {% endif %}
 
                                     {% if tx.state == "OPEN" %}
@@ -263,6 +266,7 @@
                     {% else %}
                         <tr><td colspan=9 style="text-align: center;"><br/><br/>None yet!</td></tr>
                     {% endif %}
+                    -->
                 </table>
             </div>
         </div>
