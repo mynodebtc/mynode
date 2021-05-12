@@ -820,6 +820,35 @@ if should_install_app "ckbunker" ; then
     fi
 fi
 
+# Upgrade WARden
+if should_install_app "warden" ; then
+    WARDEN_UPGRADE_URL=https://github.com/pxsocs/warden/archive/refs/tags/$WARDEN_VERSION.tar.gz
+    CURRENT=""
+    if [ -f $WARDEN_VERSION_FILE ]; then
+        CURRENT=$(cat $WARDEN_VERSION_FILE)
+    fi
+    if [ "$CURRENT" != "$WARDEN_VERSION" ]; then
+        cd /opt/mynode
+        rm -rf warden
+
+        sudo -u bitcoin wget $WARDEN_UPGRADE_URL -O warden.tar.gz
+        sudo -u bitcoin tar -xvf warden.tar.gz
+        sudo -u bitcoin rm warden.tar.gz
+        sudo -u bitcoin mv warden-* warden
+        cd warden
+
+        # Make venv
+        if [ ! -d env ]; then
+            sudo -u bitcoin python3 -m venv env
+        fi
+        source env/bin/activate
+        pip3 install -r requirements.txt
+        deactivate
+
+        echo $WARDEN_VERSION > $WARDEN_VERSION_FILE
+    fi
+fi
+
 
 # Upgrade Sphinx Relay
 if should_install_app "sphinxrelay" ; then

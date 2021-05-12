@@ -1,0 +1,26 @@
+# WARden service
+# /etc/systemd/system/warden.service
+
+[Unit]
+Description=WARden
+Wants=bitcoind.service
+After=bitcoind.service
+
+[Service]
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/usr/bin/wait_on_bitcoin.sh
+WorkingDirectory=/opt/mynode/warden
+ExecStart=/bin/bash -c  'source env/bin/activate && python3 warden --host 0.0.0.0 --port 5010'
+
+User=bitcoin
+Group=bitcoin
+Type=simple
+TimeoutSec=120
+Restart=always
+RestartSec=30
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=warden
+
+[Install]
+WantedBy=multi-user.target

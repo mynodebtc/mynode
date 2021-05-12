@@ -105,6 +105,10 @@ SPHINXRELAY_VERSION="v2.0.13"
 SPHINXRELAY_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version
 SPHINXRELAY_LATEST_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version_latest
 
+WARDEN_VERSION="0.91"
+WARDEN_VERSION_FILE=/home/bitcoin/.mynode/warden_version
+WARDEN_LATEST_VERSION_FILE=/home/bitcoin/.mynode/warden_version_latest
+
 WEBSSH2_VERSION="v0.2.10-0"
 WEBSSH2_VERSION_FILE=/mnt/hdd/mynode/settings/webssh2_version
 WEBSSH2_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/webssh2_version_latest

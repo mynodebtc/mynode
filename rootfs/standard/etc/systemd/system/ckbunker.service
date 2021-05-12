@@ -20,7 +20,7 @@ Restart=always
 RestartSec=30
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=specter
+SyslogIdentifier=ckbunker
 
 [Install]
 WantedBy=multi-user.target
