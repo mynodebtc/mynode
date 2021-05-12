@@ -175,7 +175,7 @@ apt -y -qq install apt-transport-https ca-certificates
 apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
 apt-get -y install zlib1g-dev libudev-dev libusb-1.0-0-dev python3-venv gunicorn
 apt-get -y install sqlite3 libsqlite3-dev torsocks python3-requests libsystemd-dev
-apt-get -y install libjpeg-dev zlib1g-dev psmisc hexyl libbz2-dev
+apt-get -y install libjpeg-dev zlib1g-dev psmisc hexyl libbz2-dev liblzma-dev
 
 # Install device specific packages
 if [ $IS_X86 = 1 ]; then
@@ -218,7 +218,7 @@ pip2 install tzupdate virtualenv pysocks redis qrcode image subprocess32
 
 
 # Update Python3 to 3.7.X
-PYTHON_VERSION=3.7.8
+PYTHON_VERSION=3.7.9
 CURRENT_PYTHON3_VERSION=$(python3 --version)
 if [[ "$CURRENT_PYTHON3_VERSION" != *"Python ${PYTHON_VERSION}"* ]]; then
     mkdir -p /opt/download
