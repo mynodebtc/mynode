@@ -421,12 +421,18 @@ fi
 if [ -f /mnt/hdd/mynode/specter/config.json ]; then
     # Setup config file to point to local bitcoin instance
     BTCRPCPW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
-    sed -i "s#\"datadir\": .*#\"datadir\": \"/home/bitcoin/.bitcoin\",#g" /mnt/hdd/mynode/specter/config.json
-    sed -i "s#\"user\": .*#\"user\": \"mynode\",#g" /mnt/hdd/mynode/specter/config.json
-    sed -i "s#\"password\": .*#\"password\": \"$BTCRPCPW\",#g" /mnt/hdd/mynode/specter/config.json
-    sed -i "s#\"port\": .*#\"port\": \"8332\",#g" /mnt/hdd/mynode/specter/config.json
-    sed -i "s#\"host\": .*#\"host\": \"localhost\",#g" /mnt/hdd/mynode/specter/config.json
-    sed -i "s#\"protocol\": .*#\"protocol\": \"http\"#g" /mnt/hdd/mynode/specter/config.json
+
+    # Update Specter Settings
+    set +e
+    # cat /mnt/hdd/mynode/specter/config.json | jq '.rpc.datadir = "/home/bitcoin/.bitcoin"' > /mnt/hdd/mynode/specter/config_temp.json
+    # cp -f /mnt/hdd/mynode/specter/config_temp.json /mnt/hdd/mynode/specter/config.json
+    cat /mnt/hdd/mynode/specter/config.json | jq '.rpc.user = "mynode"' > /mnt/hdd/mynode/specter/config_temp.json
+    cp -f /mnt/hdd/mynode/specter/config_temp.json /mnt/hdd/mynode/specter/config.json
+    cat /mnt/hdd/mynode/specter/config.json | jq ".rpc.password = \"$BTCRPCPW\"" > /mnt/hdd/mynode/specter/config_temp.json
+    cp -f /mnt/hdd/mynode/specter/config_temp.json /mnt/hdd/mynode/specter/config.json
+    cat /mnt/hdd/mynode/specter/config.json | jq '.rpc.port = "8332"' > /mnt/hdd/mynode/specter/config_temp.json
+    cp -f /mnt/hdd/mynode/specter/config_temp.json /mnt/hdd/mynode/specter/config.json
+    set -e
 fi
 
 # Setup Thunderhub
@@ -787,6 +793,7 @@ echo $LNDCONNECT_VERSION > $LNDCONNECT_LATEST_VERSION_FILE
 echo $CKBUNKER_VERSION > $CKBUNKER_LATEST_VERSION_FILE
 echo $SPHINXRELAY_VERSION > $SPHINXRELAY_LATEST_VERSION_FILE
 echo $WEBSSH2_VERSION > $WEBSSH2_LATEST_VERSION_FILE
+echo $WARDEN_VERSION > $WARDEN_LATEST_VERSION_FILE
 
 # Weird hacks
 chmod +x /usr/bin/electrs || true # Once, a device didn't have the execute bit set for electrs
