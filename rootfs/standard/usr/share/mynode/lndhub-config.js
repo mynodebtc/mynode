@@ -1,4 +1,6 @@
 let config = {
+    postRateLimit: 100,
+    rateLimit: 200,
     bitcoind: {
       rpc: 'http://mynode:bolt@127.0.0.1:8332/wallet/wallet.dat',
     },
