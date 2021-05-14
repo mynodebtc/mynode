@@ -513,7 +513,7 @@
 
                 // If pinned lightning, auto open lightning details
                 {% if lnd_wallet_exists and lnd_ready and ui_settings['pinned_lightning_details'] %}
-                toggleLightningDetails();
+                setTimeout(toggleLightningDetails, 1500);
                 {% endif %}
             });
         </script>
