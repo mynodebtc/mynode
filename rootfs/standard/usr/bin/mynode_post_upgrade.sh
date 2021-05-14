@@ -416,6 +416,10 @@ if should_install_app "lndhub" ; then
         sudo -u bitcoin npm install --only=production
         sudo -u bitcoin ln -s /home/bitcoin/.lnd/tls.cert tls.cert
         sudo -u bitcoin ln -s /home/bitcoin/.lnd/data/chain/bitcoin/mainnet/admin.macaroon admin.macaroon
+
+        sed -i "s|updateDescribeGraph();|//updateDescribeGraph();|g" /opt/mynode/LndHub/controllers/api.js
+        sed -i "s|setInterval(updateDescribeGraph|//setInterval(updateDescribeGraph|g" /opt/mynode/LndHub/controllers/api.js
+
         echo $LNDHUB_VERSION > $LNDHUB_VERSION_FILE
     fi
     cd ~
