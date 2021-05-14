@@ -1,0 +1,55 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        {% include 'includes/head.html' %}
+    </head>
+    <body>
+        {% include 'includes/logo_header.html' %}
+        <div class="mynode_back_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        </div>
+
+        {% include 'includes/message_display.html' %}
+
+        <div class="main_header">PyBlock</div>
+        <br/>
+
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Status</div>
+                <div class="info_tile_contents">Ready</div>
+            </div>
+        </div>
+
+
+        <div class="instructions">
+            <div class="instructions-header">Instructions to setup PyBlock</div>
+            <ol class="instructions-steps">
+                <li>PyBlock is a tool for viewing and interacting with your node.</li>
+                <li>To get started, you need access to the Linux terminal of your myNode device.</li>
+                <ul>
+                    <li>A guide to access the Linux terminal is available on mynodebtc.com - <a href="https://mynodebtc.com/guide/debug_access_linux_terminal" target="_blank">guide</a></li>
+                </ul>
+                <li>Once you have terminal access, run the following command:</li>
+                <ul>
+                    <li><pre>sudo mynode-pyblock</pre></li>
+                </ul>
+                <li>Enter your myNode password when prompted.</li>
+                <li>The first time running PyBlock, you will be prompted for various node information.</li>
+                <ul>
+                    <li>For more information on filling it out, see the PyBlock <a href="https://github.com/curly60e/pyblock" target="_blank">GitHub page</a>.</li>
+                </ul>
+                <li>Enjoy PyBlock!</li>
+            </ol>
+
+            <br/><br/>
+
+            <!--
+            <div class="instructions-header">Tips and Notes</div>
+            <ul style="font-size: 12px;">
+                <li>Add tips and notes</li>
+            </ul>
+            -->
+        </div>
+    </body>
+</html>
