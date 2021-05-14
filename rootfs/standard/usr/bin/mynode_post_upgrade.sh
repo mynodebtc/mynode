@@ -824,6 +824,61 @@ if should_install_app "ckbunker" ; then
     fi
 fi
 
+
+# Upgrade Sphinx Relay
+if should_install_app "sphinxrelay" ; then
+    SPHINXRELAY_UPGRADE_URL=https://github.com/stakwork/sphinx-relay/archive/$SPHINXRELAY_VERSION.tar.gz
+    CURRENT=""
+    if [ -f $SPHINXRELAY_VERSION_FILE ]; then
+        CURRENT=$(cat $SPHINXRELAY_VERSION_FILE)
+    fi
+    if [ "$CURRENT" != "$SPHINXRELAY_VERSION" ]; then
+        cd /opt/mynode
+        rm -rf sphinxrelay
+
+        sudo -u bitcoin wget $SPHINXRELAY_UPGRADE_URL -O sphinx-relay.tar.gz
+        sudo -u bitcoin tar -xvf sphinx-relay.tar.gz
+        sudo -u bitcoin rm sphinx-relay.tar.gz
+        sudo -u bitcoin mv sphinx-relay-* sphinxrelay
+        cd sphinxrelay
+
+        sudo -u bitcoin npm install
+
+        echo $SPHINXRELAY_VERSION > $SPHINXRELAY_VERSION_FILE
+    fi
+fi
+
+
+# Upgrade pyblock
+if should_install_app "pyblock" ; then
+    PYBLOCK_UPGRADE_URL=https://github.com/curly60e/pyblock/archive/refs/tags/$PYBLOCK_VERSION.tar.gz
+    CURRENT=""
+    if [ -f $PYBLOCK_VERSION_FILE ]; then
+        CURRENT=$(cat $PYBLOCK_VERSION_FILE)
+    fi
+    if [ "$CURRENT" != "$PYBLOCK_VERSION" ]; then
+        cd /opt/mynode
+        rm -rf pyblock
+
+        sudo -u bitcoin wget $PYBLOCK_UPGRADE_URL -O pyblock.tar.gz
+        sudo -u bitcoin tar -xvf pyblock.tar.gz
+        sudo -u bitcoin rm pyblock.tar.gz
+        sudo -u bitcoin mv pyblock-* pyblock
+        cd pyblock
+
+        # Make venv
+        if [ ! -d env ]; then
+            sudo -u bitcoin python3 -m venv env
+        fi
+        source env/bin/activate
+        pip3 install -r requirements.txt
+        deactivate
+
+        echo $PYBLOCK_VERSION > $PYBLOCK_VERSION_FILE
+    fi
+fi
+
+
 # Upgrade WARden
 if should_install_app "warden" ; then
     WARDEN_UPGRADE_URL=https://github.com/pxsocs/warden/archive/refs/tags/$WARDEN_VERSION.tar.gz
@@ -854,28 +909,7 @@ if should_install_app "warden" ; then
 fi
 
 
-# Upgrade Sphinx Relay
-if should_install_app "sphinxrelay" ; then
-    SPHINXRELAY_UPGRADE_URL=https://github.com/stakwork/sphinx-relay/archive/$SPHINXRELAY_VERSION.tar.gz
-    CURRENT=""
-    if [ -f $SPHINXRELAY_VERSION_FILE ]; then
-        CURRENT=$(cat $SPHINXRELAY_VERSION_FILE)
-    fi
-    if [ "$CURRENT" != "$SPHINXRELAY_VERSION" ]; then
-        cd /opt/mynode
-        rm -rf sphinxrelay
 
-        sudo -u bitcoin wget $SPHINXRELAY_UPGRADE_URL -O sphinx-relay.tar.gz
-        sudo -u bitcoin tar -xvf sphinx-relay.tar.gz
-        sudo -u bitcoin rm sphinx-relay.tar.gz
-        sudo -u bitcoin mv sphinx-relay-* sphinxrelay
-        cd sphinxrelay
-
-        sudo -u bitcoin npm install
-
-        echo $SPHINXRELAY_VERSION > $SPHINXRELAY_VERSION_FILE
-    fi
-fi
 
 
 # Upgrade Tor

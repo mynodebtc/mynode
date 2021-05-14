@@ -9,6 +9,7 @@ from dojo import mynode_dojo
 from joininbox import mynode_joininbox
 from caravan import mynode_caravan
 from sphinxrelay import mynode_sphinxrelay
+from pyblock import mynode_pyblock
 from manage_apps import mynode_manage_apps
 from tor import mynode_tor
 from vpn import mynode_vpn
@@ -84,6 +85,7 @@ app.register_blueprint(mynode_dojo)
 app.register_blueprint(mynode_joininbox)
 app.register_blueprint(mynode_caravan)
 app.register_blueprint(mynode_sphinxrelay)
+app.register_blueprint(mynode_pyblock)
 app.register_blueprint(mynode_manage_apps)
 app.register_blueprint(mynode_tor)
 app.register_blueprint(mynode_electrum_server)

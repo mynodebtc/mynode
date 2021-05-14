@@ -105,6 +105,10 @@ SPHINXRELAY_VERSION="v2.0.13"
 SPHINXRELAY_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version
 SPHINXRELAY_LATEST_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version_latest
 
+PYBLOCK_VERSION="v0.9.7.3"
+PYBLOCK_VERSION_FILE=/home/bitcoin/.mynode/pyblock_version
+PYBLOCK_LATEST_VERSION_FILE=/home/bitcoin/.mynode/pyblock_version_latest
+
 WARDEN_VERSION="0.91"
 WARDEN_VERSION_FILE=/home/bitcoin/.mynode/warden_version
 WARDEN_LATEST_VERSION_FILE=/home/bitcoin/.mynode/warden_version_latest

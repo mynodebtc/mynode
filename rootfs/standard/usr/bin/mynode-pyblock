@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# mynode-pyblock
+# This script needs to be run with sudo so it can run as the bitcoin user
+
+sudo -u bitcoin bash -c "cd /opt/mynode/pyblock/; source env/bin/activate; python3 PyBlock.py"

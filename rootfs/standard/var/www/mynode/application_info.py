@@ -389,6 +389,19 @@ def initialize_applications():
         is_premium=False
     ))
     apps.append(create_application(
+        name="PyBlock",
+        short_name="pyblock",
+        requires_lightning=True,
+        app_tile_default_status_text="Blockchain Info",
+        app_tile_button_text="Info",
+        app_tile_button_href="/pyblock",
+        can_uninstall=True,
+        can_enable_disable=False,
+        show_on_homepage=True,
+        homepage_order=42,
+        is_premium=False
+    ))
+    apps.append(create_application(
         name="Web SSH",
         short_name="webssh2",
     ))
@@ -557,6 +570,8 @@ def get_application_status_color_special(short_name):
     if short_name == "lnd":
         return get_lnd_status_color()
     elif short_name == "joininbox":
+        return "clear"
+    elif short_name == "pyblock":
         return "clear"
     elif short_name == "whirlpool":
         if not os.path.isfile("/mnt/hdd/mynode/whirlpool/whirlpool-cli-config.properties"):
