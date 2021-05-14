@@ -1,3 +1,15 @@
+=== v0.2.32 ===
+- Released: 05/13/21
+- Upgrade Loop to v0.12.2
+- Add separate Tor service for LNBits
+- UI Update - Pin open Lightning Details
+- UI Update - Add icons to Application page
+- Bug fix - Use proper RAM limits for Bitcoin
+- Bug fix - Run JoininBox in venv to prevent TX failures
+- Bug fix - Mempool database works on RP4 64-bit
+- Bug fix - Improve auto-setup of Specter config
+- Bug fix - LNDHub will re-install with performance patch
+
 === v0.2.31 ===
 - Released: 05/02/21
 - Add support for 64-bit Raspberry Pi 4 Images
