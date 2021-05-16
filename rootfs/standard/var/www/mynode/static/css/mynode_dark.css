@@ -1,4 +1,9 @@
 /* mynode color: #f9c132  - not used in UI*/
+/* background color:  #1B2127 */
+/* settings tiles:    #20242B */
+/* tile color:        #121C21 */ 
+
+
 /* dark grey for background: #303841 */
 /* lighter gray: #3a4750 */
 /* light gray: #ddd */
@@ -33,6 +38,7 @@ a:active {
 .instructions,
 .device_status_info,
 .bitcoin_block,
+.pair_wallet_text,
 .app_tile_lightning_details,
 .lightning_channel_container,
 .settings_block_subheader,
@@ -68,6 +74,13 @@ table,
 .info_tile_header {
     color: #121C21;
     background-color: orange;
+}
+
+.bitcoin_table {
+    background-color: #1b2127;
+}
+.settings_block {
+    background-color: #121C21;    
 }
 
 .bitcoin_table_header {
@@ -110,6 +123,13 @@ th td {
   background-color: #3a4854;
 }
 
+.install_button {
+    color: #222 !important;
+}
+.uninstall_button {
+    color: #222 !important;
+}
+
 .loading_spinner_overlay {
     color: #ddd;
     background-color: #303841;
@@ -145,6 +165,7 @@ input:focus + .slider {
 
 .cli_contents {
     border: 2px solid #222222;
+    background-color: #20242b;
 }
 .config_textarea {
 	color: #ddd;
