@@ -364,10 +364,10 @@ td, th {
     font-size: 14px;
     font-family: Arial, Helvetica, sans-serif;
     border-collapse: collapse;
+    background-color: white;
 }
 .bitcoin_table_header {
     font-size: 16px;
-    background-color: #FFFFFF;
     font-weight: bold;
     font-family: Arial, Helvetica, sans-serif;
 }
@@ -377,7 +377,7 @@ table.bitcoin_table tbody tr:nth-child(odd) td{
 }
 
 table.bitcoin_table tbody tr:nth-child(even) td{
-    background-color: #fff;
+
 }
 
 table.bitcoin_table td {
@@ -605,7 +605,13 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     margin: auto;
     text-align: justify;
     font-size: 14px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
+    padding: 0px 15px 15px 15px;
+    /* background-color: #f0f0f0; */
+    background-color: #f8f8f8;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
 }
 .divider {
     width: 100%;
@@ -646,6 +652,7 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
 
 .pair_wallet_text {
     margin: auto;
+    margin-top: 15px;
     width: 1000px;
     font-size: 10px;
     line-height: 1.2;
@@ -756,6 +763,7 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     overflow-y: scroll;
     border: 2px solid #222222;
     border-radius: 5px;
+    background-color: #f8f8f8;
 }
 .login_div {
     width: 300px;
