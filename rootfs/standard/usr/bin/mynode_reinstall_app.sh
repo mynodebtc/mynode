@@ -28,7 +28,9 @@ else
 fi
 
 # Custom re-install steps
-if [ "$APP" = "netdata" ]; then
+if [ "$APP" = "bos" ]; then
+    npm uninstall -g balanceofsatoshis
+elif [ "$APP" = "netdata" ]; then
     systemctl stop netdata
     docker rmi netdata/netdata || true
 elif [ "$APP" = "btcpayserver" ]; then

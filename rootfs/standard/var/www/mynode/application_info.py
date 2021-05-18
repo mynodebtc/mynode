@@ -55,8 +55,8 @@ def uninstall_app(app):
     os.system("sync")
 
 def is_installed(short_name):
-    filename1 = "/home/bitcoin/.mynode/"+short_name+"_install"
-    filename2 = "/mnt/hdd/mynode/settings/"+short_name+"_install"
+    filename1 = "/home/bitcoin/.mynode/install_"+short_name
+    filename2 = "/mnt/hdd/mynode/settings/install_"+short_name
     if os.path.isfile(filename1):
         return True
     elif os.path.isfile(filename2):
@@ -131,7 +131,7 @@ def create_application(name="NAME",
     app["current_version"] = get_app_current_version(short_name)
     app["latest_version"] = get_app_latest_version(short_name)
     app["is_beta"] = is_beta
-    app["is_installed"] = is_installed(app["current_version"])
+    app["is_installed"] = is_installed(short_name)
     app["can_reinstall"] = can_reinstall
     app["can_uninstall"] = can_uninstall
     app["requires_lightning"] = requires_lightning
@@ -407,6 +407,16 @@ def initialize_applications():
     #     homepage_order=42,
     #     is_premium=False
     # ))
+    apps.append(create_application(
+        name="Balance of Satoshis",
+        short_name="bos",
+        requires_lightning=True,
+        app_tile_default_status_text="Lightning Tool",
+        can_uninstall=True,
+        can_enable_disable=False,
+        show_on_homepage=False,
+        is_premium=False
+    ))
     apps.append(create_application(
         name="Web SSH",
         short_name="webssh2",
