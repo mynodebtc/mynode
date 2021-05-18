@@ -585,6 +585,8 @@ def get_application_status(short_name):
 def get_application_status_color_special(short_name):
     if short_name == "lnd":
         return get_lnd_status_color()
+    elif short_name == "bos":
+        return "clear"
     elif short_name == "joininbox":
         return "clear"
     elif short_name == "pyblock":
