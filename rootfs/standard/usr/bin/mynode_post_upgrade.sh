@@ -576,12 +576,6 @@ if should_install_app "joininbox" ; then
             chmod -R +x ./joininbox/
             sudo -u joinmarket cp -rf ./joininbox/scripts/* .
 
-            # Apply patches
-            echo "" > set.password.sh
-            echo "" > standalone/expand.rootfs.sh
-            sudo -u joinmarket cp /usr/share/joininbox/menu.update.sh /home/joinmarket/menu.update.sh
-            sudo -u joinmarket sed -i "s|/home/joinmarket/menu.config.sh|echo 'mynode skip config'|g" /home/joinmarket/start.joininbox.sh
-
             # Install
             sudo -u joinmarket bash -c "cd /home/joinmarket/; ./install.joinmarket.sh install" || true
 

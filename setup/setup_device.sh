@@ -625,12 +625,6 @@ if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
         chmod -R +x ./joininbox/
         sudo -u joinmarket cp -rf ./joininbox/scripts/* .
 
-        # Apply patches
-        echo "" > set.password.sh
-        echo "" > standalone/expand.rootfs.sh
-        sudo -u joinmarket cp $TMP_INSTALL_PATH/usr/share/joininbox/menu.update.sh /home/joinmarket/menu.update.sh # fails in setup since files are extracted yet
-        sudo -u joinmarket sed -i "s|/home/joinmarket/menu.config.sh|echo 'mynode skip config'|g" /home/joinmarket/start.joininbox.sh
-
         echo $JOININBOX_VERSION > $JOININBOX_VERSION_FILE
     fi
 fi
@@ -868,6 +862,7 @@ if [ "$CURRENT" != "$SPHINXRELAY_VERSION" ]; then
 fi
 
 
+# SKIPPING BOS - OPTIONAL APP
 # SKIPPING PYBLOCK - OPTIONAL APP
 # SKIPPING WARDEN - OPTIONAL APP
 
