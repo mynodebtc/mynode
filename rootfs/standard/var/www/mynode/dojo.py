@@ -131,7 +131,6 @@ def dojo_page():
     templateData = {
         "title": "myNode Dojo",
         "ui_settings": read_ui_settings(),
-        "is_dojo_installed": is_dojo_installed(),
         "dojo_status": dojo_status,
         "dojo_version": get_dojo_version(),
         "dojo_enabled": is_service_enabled("dojo"),

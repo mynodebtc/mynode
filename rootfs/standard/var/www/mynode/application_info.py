@@ -54,8 +54,14 @@ def uninstall_app(app):
     # Sync
     os.system("sync")
 
-def is_installed(current_version):
-    return current_version != "not installed"
+def is_installed(short_name):
+    filename1 = "/home/bitcoin/.mynode/"+short_name+"_install"
+    filename2 = "/mnt/hdd/mynode/settings/"+short_name+"_install"
+    if os.path.isfile(filename1):
+        return True
+    elif os.path.isfile(filename2):
+        return True
+    return False
 
 def get_app_current_version(short_name):
     version = "unknown"

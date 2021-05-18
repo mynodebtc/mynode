@@ -23,10 +23,7 @@ def disable_service(short_name):
 
 # Functions to handle special enable/disable cases
 def enable_actions(short_name):
-    if short_name == "dojo":
-        if not is_dojo_installed():
-            install_dojo()
-            raise RequestRedirect("/settings/reboot-device")
+    pass
 
 def disable_actions(short_name):
     if short_name == "electrs":
@@ -40,19 +37,4 @@ def disable_actions(short_name):
 # Function to restart service
 def restart_service(short_name):
     os.system("systemctl restart {} --no-pager".format(short_name))
-
-
-# Dojo install / uninstall functions.... future work to abstract this
-def is_dojo_installed():
-    return os.path.isfile(DOJO_INSTALL_FILE)
-
-def install_dojo():
-    os.system("touch " + DOJO_INSTALL_FILE)
-    os.system("sync")
-
-def uninstall_dojo():
-    os.system("rm -f " + DOJO_INSTALL_FILE)
-    os.system("rf -f /mnt/hdd/mynode/settings/dojo_url")
-    disable_service("dojo")
-    os.system("sync")
 

@@ -614,48 +614,6 @@ def page_toggle_app():
         enable_service(app_short_name)
     return redirect("/")
 
-@app.route("/toggle-dojo-install")
-def page_toggle_dojo_install():
-    check_logged_in()
-
-    # In case of refresh, mark toggle was started
-    check_and_mark_reboot_action("toggle_dojo_install")
-
-    if is_dojo_installed():
-        # Mark app as not installed
-        uninstall_dojo()        
-
-        # Re-install app (this will uninstall and not re-install after reboot since install file is missing)
-        t = Timer(1.0, reinstall_app, ["dojo"])
-        t.start()
-
-        # Display wait page
-        templateData = {
-            "title": "myNode Uninstall",
-            "header_text": "Uninstalling",
-            "subheader_text": "This may take a while...",
-            "ui_settings": read_ui_settings()
-        }
-        return render_template('reboot.html', **templateData)
-    else:
-        # Mark Dojo for install
-        install_dojo()
-
-        # Re-install app
-        t = Timer(1.0, reboot_device)
-        t.start()
-
-        # Display wait page
-        templateData = {
-            "title": "myNode Install",
-            "header_text": "Installing",
-            "subheader_text": "This may take a while...",
-            "ui_settings": read_ui_settings()
-        }
-        return render_template('reboot.html', **templateData)
-
-    return redirect("/")
-
 @app.route("/clear-fsck-error")
 def page_clear_fsck_error():
     check_logged_in()
