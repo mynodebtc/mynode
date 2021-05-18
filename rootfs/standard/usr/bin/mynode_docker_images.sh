@@ -89,13 +89,13 @@ while true; do
     CURRENT=""
     INSTALL=true
     # If Upgrade file existed, mark "install" choice for legacy devices
-    if [ -f /mnt/hdd/mynode/settings/dojo_url ]; then
-        touch /mnt/hdd/mynode/settings/mynode_dojo_install
+    if [ -f /mnt/hdd/mynode/settings/dojo_url ] || [ -f /mnt/hdd/mynode/settings/mynode_dojo_install ]; then
+        touch /mnt/hdd/mynode/settings/install_dojo
         sync
         sleep 3s
     fi
     # Only install Dojo if marked for installation and testnet not enabled
-    if [ -f /mnt/hdd/mynode/settings/mynode_dojo_install ] && [ ! -f $IS_TESTNET_ENABLED_FILE ]; then
+    if [ -f /mnt/hdd/mynode/settings/install_dojo ] && [ ! -f $IS_TESTNET_ENABLED_FILE ]; then
         if [ -f $DOJO_UPGRADE_URL_FILE ] && [ ! -f $DOJO_VERSION_FILE ]; then
             echo $DOJO_VERSION > $DOJO_VERSION_FILE
             sync
