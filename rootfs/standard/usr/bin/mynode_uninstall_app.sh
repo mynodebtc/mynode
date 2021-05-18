@@ -29,6 +29,18 @@ if [ "$APP" = "bos" ]; then
     npm uninstall -g balanceofsatoshis
 elif [ "$APP" = "btcrpcexplorer" ]; then
     rm -rf /opt/mynode/btc-rpc-explorer
+elif [ "$APP" = "dojo" ]; then
+    rm -f /mnt/hdd/mynode/settings/dojo_url
+    rm -f /mnt/hdd/mynode/settings/mynode_dojo_install
+    cd /mnt/hdd/mynode/dojo/docker/my-dojo/
+
+    # Stop and uninstall
+    yes | ./dojo.sh uninstall
+
+    # Reset config files
+    cd ~
+    rm -rf /opt/download/dojo
+    rm -rf /mnt/hdd/mynode/dojo
 elif [ "$APP" = "lndhub" ]; then
     rm -rf /opt/mynode/LndHub
 elif [ "$APP" = "rtl" ]; then

@@ -48,6 +48,7 @@ elif [ "$APP" = "webssh2" ]; then
     docker rmi webssh2
 elif [ "$APP" = "dojo" ]; then
     rm -f /mnt/hdd/mynode/settings/dojo_url
+    rm -f /mnt/hdd/mynode/settings/mynode_dojo_install
     cd /mnt/hdd/mynode/dojo/docker/my-dojo/
 
     # Stop and uninstall
