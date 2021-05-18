@@ -906,6 +906,20 @@ if should_install_app "warden" ; then
 fi
 
 
+# Upgrade Balance of Satoshis
+if should_install_app "bos" ; then
+    CURRENT=""
+    if [ -f $BOS_VERSION_FILE ]; then
+        CURRENT=$(cat $BOS_VERSION_FILE)
+    fi
+    if [ "$CURRENT" != "$BOS_VERSION" ]; then
+        npm install -g balanceofsatoshis@$BOS_VERSION
+
+        echo $BOS_VERSION > $BOS_VERSION_FILE
+    fi
+fi
+
+
 
 
 

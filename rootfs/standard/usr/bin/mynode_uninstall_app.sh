@@ -25,12 +25,14 @@ sync
 rm -rf /opt/mynode/${APP}
 
 # Custom uninstall steps
-if [ "$APP" = "btcrpcexplorer" ]; then
+if [ "$APP" = "bos" ]; then
+    npm uninstall -g balanceofsatoshis
+elif [ "$APP" = "btcrpcexplorer" ]; then
     rm -rf /opt/mynode/btc-rpc-explorer
 elif [ "$APP" = "lndhub" ]; then
     rm -rf /opt/mynode/LndHub
 elif [ "$APP" = "rtl" ]; then
-    m -rf /opt/mynode/RTL
+    rm -rf /opt/mynode/RTL
 else
     echo "No custom uninstall steps"
 fi

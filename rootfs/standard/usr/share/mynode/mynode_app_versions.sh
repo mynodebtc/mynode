@@ -101,6 +101,10 @@ CKBUNKER_VERSION="v0.9"
 CKBUNKER_VERSION_FILE=/home/bitcoin/.mynode/ckbunker_version
 CKBUNKER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/ckbunker_version_latest
 
+BOS_VERSION="8.0.14"
+BOS_VERSION_FILE=/home/bitcoin/.mynode/bos_version
+BOS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bos_version_latest
+
 SPHINXRELAY_VERSION="v2.0.13"
 SPHINXRELAY_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version
 SPHINXRELAY_LATEST_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version_latest
