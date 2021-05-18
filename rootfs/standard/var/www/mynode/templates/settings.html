@@ -944,6 +944,14 @@
 
             <div class="divider"></div>
 
+            <div class="settings_block_subheader">Check External Drive</div>
+            The external drive will be checked for errors automatically on each boot. This can be disabled, but is not recommended.
+            <br/>
+            <a href="/settings/toggle-check-external-drive" class="ui-button ui-widget ui-corner-all settings_button">{% if skip_fsck %}Enable{% else %}Disable{% endif %}</a>
+
+
+            <div class="divider"></div>
+
             <div class="settings_block_subheader">Format External Drive</div>
             This will reboot your device and re-prompt for formatting the drive. If your external drive has been corrupted, this 
             may help and will be slightly less destructive than a factory reset. Make sure you have backed up all your keys and wallets!

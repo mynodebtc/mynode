@@ -118,17 +118,19 @@ fi
 # Check drive (only if exactly 1 is found)
 set +e
 if [ $IS_X86 = 0 ]; then
-    touch /tmp/repairing_drive
-    for d in /dev/sd*1 /dev/hd*1 /dev/vd*1 /dev/nvme*p1; do
-        echo "Repairing drive $d ...";
-        fsck -y $d > /tmp/fsck_results 2>&1
-        RC=$?
-        echo "" >> /tmp/fsck_results
-        echo "Code: $RC" >> /tmp/fsck_results
-        if [ "$RC" -ne 0 ] && [ "$RC" -ne 8 ] ; then
-            touch /tmp/fsck_error
-        fi
-    done
+    if [ ! -f /home/bitcoin/.mynode/skip_fsck ]; then
+        touch /tmp/repairing_drive
+        for d in /dev/sd*1 /dev/hd*1 /dev/vd*1 /dev/nvme*p1; do
+            echo "Repairing drive $d ...";
+            fsck -y $d > /tmp/fsck_results 2>&1
+            RC=$?
+            echo "" >> /tmp/fsck_results
+            echo "Code: $RC" >> /tmp/fsck_results
+            if [ "$RC" -ne 0 ] && [ "$RC" -ne 8 ] ; then
+                touch /tmp/fsck_error
+            fi
+        done
+    fi
 fi
 rm -f /tmp/repairing_drive
 set -e

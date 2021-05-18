@@ -677,6 +677,15 @@ def get_fsck_results():
         return "ERROR"
     return "ERROR"
 
+def set_skip_fsck(skip):
+    if skip:
+        os.system("touch /home/bitcoin/.mynode/skip_fsck")
+    else:
+        os.system("rm -f /home/bitcoin/.mynode/skip_fsck")
+    os.system("sync")
+def skip_fsck():
+    return os.path.isfile("/home/bitcoin/.mynode/skip_fsck")
+
 def has_sd_rw_error():
     return os.path.isfile("/tmp/sd_rw_error")
 
