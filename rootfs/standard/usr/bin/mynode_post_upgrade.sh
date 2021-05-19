@@ -576,12 +576,6 @@ if should_install_app "joininbox" ; then
             chmod -R +x ./joininbox/
             sudo -u joinmarket cp -rf ./joininbox/scripts/* .
 
-            # Apply patches
-            echo "" > set.password.sh
-            echo "" > standalone/expand.rootfs.sh
-            sudo -u joinmarket cp /usr/share/joininbox/menu.update.sh /home/joinmarket/menu.update.sh
-            sudo -u joinmarket sed -i "s|/home/joinmarket/menu.config.sh|echo 'mynode skip config'|g" /home/joinmarket/start.joininbox.sh
-
             # Install
             sudo -u joinmarket bash -c "cd /home/joinmarket/; ./install.joinmarket.sh install" || true
 
@@ -902,6 +896,20 @@ if should_install_app "warden" ; then
         deactivate
 
         echo $WARDEN_VERSION > $WARDEN_VERSION_FILE
+    fi
+fi
+
+
+# Upgrade Balance of Satoshis
+if should_install_app "bos" ; then
+    CURRENT=""
+    if [ -f $BOS_VERSION_FILE ]; then
+        CURRENT=$(cat $BOS_VERSION_FILE)
+    fi
+    if [ "$CURRENT" != "$BOS_VERSION" ]; then
+        npm install -g balanceofsatoshis@$BOS_VERSION
+
+        echo $BOS_VERSION > $BOS_VERSION_FILE
     fi
 fi
 

@@ -87,6 +87,7 @@ def page_settings():
         "upload_rate": upload_rate,
         "is_btc_lnd_tor_enabled": is_btc_lnd_tor_enabled(),
         "is_aptget_tor_enabled": is_aptget_tor_enabled(),
+        "skip_fsck": skip_fsck(),
         "uptime": uptime,
         "date": date,
         "local_ip": local_ip,
@@ -943,6 +944,17 @@ def toggle_netdata_page():
         disable_service("netdata")
     else:
         enable_service("netdata")
+    return redirect("/settings")
+
+@mynode_settings.route("/settings/toggle-check-external-drive")
+def toggle_check_external_drive_page():
+    check_logged_in()
+
+    if skip_fsck():
+        set_skip_fsck(False)
+    else:
+        set_skip_fsck(True)
+    flash("Check External Drive Updated", category="message")
     return redirect("/settings")
 
 @mynode_settings.route("/settings/modify-swap")

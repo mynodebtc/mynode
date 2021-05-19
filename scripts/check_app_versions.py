@@ -18,6 +18,7 @@ apps = [{"name": "bitcoin/bitcoin",                         "current_version_var
         {"name": "unchained-capital/caravan",               "current_version_variable": "CARAVAN_VERSION"},
         {"name": "cryptoadvance/specter-desktop",           "current_version_variable": "SPECTER_VERSION"},
         {"name": "Coldcard/ckbunker",                       "current_version_variable": "CKBUNKER_VERSION"},
+        {"name": "alexbosworth/balanceofsatoshis",          "current_version_variable": "BOS_VERSION"},
         {"name": "lnbits/lnbits",                           "current_version":          "6cf4881"},
         {"name": "apotdevin/thunderhub",                    "current_version_variable": "THUNDERHUB_VERSION"},
         {"name": "stakwork/sphinx-relay",                   "current_version_variable": "SPHINXRELAY_VERSION"},

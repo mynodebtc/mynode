@@ -53,7 +53,7 @@ JOINMARKET_VERSION="v0.8.2"
 JOINMARKET_VERSION_FILE=/home/bitcoin/.mynode/joinmarket_version
 JOINMARKET_LATEST_VERSION_FILE=/home/bitcoin/.mynode/joinmarket_version_latest
 
-JOININBOX_VERSION="v0.3.0"
+JOININBOX_VERSION="v0.4.0"
 JOININBOX_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version
 JOININBOX_LATEST_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version_latest
 
@@ -89,7 +89,7 @@ SPECTER_VERSION="1.3.1"
 SPECTER_VERSION_FILE=/home/bitcoin/.mynode/specter_version
 SPECTER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/specter_version_latest
 
-THUNDERHUB_VERSION="v0.12.12"
+THUNDERHUB_VERSION="v0.12.17"
 THUNDERHUB_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version
 THUNDERHUB_LATEST_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version_latest
 
@@ -101,7 +101,11 @@ CKBUNKER_VERSION="v0.9"
 CKBUNKER_VERSION_FILE=/home/bitcoin/.mynode/ckbunker_version
 CKBUNKER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/ckbunker_version_latest
 
-SPHINXRELAY_VERSION="v2.0.13"
+BOS_VERSION="8.0.14"
+BOS_VERSION_FILE=/home/bitcoin/.mynode/bos_version
+BOS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bos_version_latest
+
+SPHINXRELAY_VERSION="v2.0.14"
 SPHINXRELAY_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version
 SPHINXRELAY_LATEST_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version_latest
 
