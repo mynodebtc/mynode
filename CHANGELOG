@@ -1,3 +1,14 @@
+=== v0.2.33 ===
+- Released: 05/18/21
+- Add Balance of Satoshis v8.0.14
+- Upgrade Sphinx Relay to v2.0.14
+- Upgrade Thunderhub to v0.12.17
+- Upgrade JoininBox to v0.4.0
+- Upgrade LNDHub to v1.3.4
+- Bug fix: Fix startup error due to missing file
+- Bug fix: Resolve missing Dojo app icon
+- Bug fix: Fix Dark Mode CSS coloring
+
 === v0.2.32 ===
 - Released: 05/13/21
 - Upgrade Loop to v0.12.2
