@@ -37,6 +37,17 @@
             </div>
         {% endif %}
     {% endfor %}
+
+    <!-- App Store Icon -->
+    <div class="app_tile">
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/")}}apps.png"/></div>
+
+        <div class="app_title">Applications</div>
+        <div class="app_status" id="marketplace_status">Manage Apps</div>
+        <div class="app_contents">
+            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/apps">Manage</a>
+        </div>
+    </div>
 </div>
 
 

@@ -118,17 +118,19 @@ fi
 # Check drive (only if exactly 1 is found)
 set +e
 if [ $IS_X86 = 0 ]; then
-    touch /tmp/repairing_drive
-    for d in /dev/sd*1 /dev/hd*1 /dev/vd*1 /dev/nvme*p1; do
-        echo "Repairing drive $d ...";
-        fsck -y $d > /tmp/fsck_results 2>&1
-        RC=$?
-        echo "" >> /tmp/fsck_results
-        echo "Code: $RC" >> /tmp/fsck_results
-        if [ "$RC" -ne 0 ] && [ "$RC" -ne 8 ] ; then
-            touch /tmp/fsck_error
-        fi
-    done
+    if [ ! -f /home/bitcoin/.mynode/skip_fsck ]; then
+        touch /tmp/repairing_drive
+        for d in /dev/sd*1 /dev/hd*1 /dev/vd*1 /dev/nvme*p1; do
+            echo "Repairing drive $d ...";
+            fsck -y $d > /tmp/fsck_results 2>&1
+            RC=$?
+            echo "" >> /tmp/fsck_results
+            echo "Code: $RC" >> /tmp/fsck_results
+            if [ "$RC" -ne 0 ] && [ "$RC" -ne 8 ] ; then
+                touch /tmp/fsck_error
+            fi
+        done
+    fi
 fi
 rm -f /tmp/repairing_drive
 set -e
@@ -792,6 +794,7 @@ echo $SPECTER_VERSION > $SPECTER_LATEST_VERSION_FILE
 echo $THUNDERHUB_VERSION > $THUNDERHUB_LATEST_VERSION_FILE
 echo $LNDCONNECT_VERSION > $LNDCONNECT_LATEST_VERSION_FILE
 echo $CKBUNKER_VERSION > $CKBUNKER_LATEST_VERSION_FILE
+echo $BOS_VERSION > $BOS_LATEST_VERSION_FILE
 echo $SPHINXRELAY_VERSION > $SPHINXRELAY_LATEST_VERSION_FILE
 echo $WEBSSH2_VERSION > $WEBSSH2_LATEST_VERSION_FILE
 echo $PYBLOCK_VERSION > $PYBLOCK_LATEST_VERSION_FILE
