@@ -386,7 +386,7 @@ fi
 
 # BTCPay Server Setup
 mkdir -p /opt/mynode/btcpayserver
-cp -n /usr/share/btcpayserver/.env /opt/mynode/btcpayserver/
+cp -n /usr/share/btcpayserver/env /opt/mynode/btcpayserver/.env
 cp -n /usr/share/btcpayserver/btcpay-env.sh /opt/mynode/btcpayserver/
 cp -n /usr/share/btcpayserver/docker-compose.generated.yml /opt/mynode/btcpayserver/
 cp -n /usr/share/btcpayserver/helpers.sh /opt/mynode/btcpayserver/
@@ -397,8 +397,9 @@ fi
 echo $BTCPAYSERVER_VERSION > $BTCPAYSERVER_VERSION_FILE
 
 # BTC RPC Explorer Config
+mkdir -p /opt/mynode/btc-rpc-explorer
 cp /usr/share/mynode/btcrpcexplorer_env /opt/mynode/btc-rpc-explorer/.env
-chown bitcoin:bitcoin /opt/mynode/btc-rpc-explorer/.env
+chown -R bitcoin:bitcoin /opt/mynode/btc-rpc-explorer
 
 # LNBits Config
 if [ -d /opt/mynode/lnbits ]; then
