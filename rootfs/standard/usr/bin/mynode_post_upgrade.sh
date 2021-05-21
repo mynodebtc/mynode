@@ -160,13 +160,17 @@ if ! skip_base_upgrades ; then
     # Install any pip3 software
     pip3 install --upgrade pip setuptools wheel
     pip3 install gnureadline --no-cache-dir
-    pip3 install lndmanage==0.11.0 --no-cache-dir   # Install lndmanage (keep up to date with LND)
+    pip3 install lndmanage==0.12.0 --no-cache-dir
     pip3 install docker-compose --no-cache-dir
     pip3 install pipenv --no-cache-dir
     pip3 install bcrypt --no-cache-dir
     pip3 install pysocks --no-cache-dir
     pip3 install redis --no-cache-dir
     pip3 install systemd --no-cache-dir
+
+    # Install LNDManage
+    pip3 install lndmanage==$LNDMANAGE_VERSION --no-cache-dir
+    echo $LNDMANAGE_VERSION > $LNDMANAGE_VERSION_FILE
 
 
     # Install Docker

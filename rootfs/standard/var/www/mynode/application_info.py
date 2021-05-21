@@ -261,6 +261,10 @@ def initialize_applications():
         short_name="lndconnect",
     ))
     apps.append(create_application(
+        name="LNDManage",
+        short_name="lndmanage",
+    ))
+    apps.append(create_application(
         name="BTC RPC Explorer",
         short_name="btcrpcexplorer",
         app_tile_name="Explorer",
