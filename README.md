@@ -38,32 +38,32 @@ https://mynodebtc.com/order_now
 ## Features
 Each myNode device comes with a number of wonderful features:
 
-- Bitcoin Node (Bitcoin Core v0.20.1)
-- Lightning Node (LND v0.11.1-beta)
-- Electrum Server (Electrum Rust Server aka Electrs 0.8.6)
-- BTCPay Server (v1.0.5.9)
-- RTL (Ride the Lightning) - Lightning Wallet (v0.9.3-beta)
-- Samourai Dojo (v1.8.0)
-- Samourai Whirlpool (whirlpool-client-cli v0.10.8)
-- Specter Desktop (v0.10.4)
-- Thunderhub (v0.11.0)
-- BTC RPC Explorer (v2.0.2)
-- Mempool.Space - Mempool local visualizer for the Bitcoin blockchain (v1.0.1)
-- LND Hub - Lightning Wallet Server (v1.2.0)
-- Lndmanage (v0.11.0)
-- Lightning Loop - A Non-Custodial Off/On Chain Bridge (v0.9.0-beta)
-- Lightning Pool - A Non-Custodial auction for liquidity where bids are kept private and trades clear periodically (0.3.2-alpha)
+- Bitcoin Node
+- Lightning Node
+- Electrum Server
+- BTCPay Server
+- RTL (Ride the Lightning) - Lightning Wallet
+- Samourai Dojo
+- Samourai Whirlpool
+- Specter Desktop 
+- Thunderhub
+- BTC RPC Explorer
+- Mempool.Space - Mempool local visualizer for the Bitcoin blockchain
+- LND Hub - Lightning Wallet Server
+- Lndmanage
+- Lightning Loop - A Non-Custodial Off/On Chain Bridge
+- Lightning Pool - A Non-Custodial auction for liquidity where bids are kept private and trades clear periodically
 - LNBits (Raspiblitz version)
-- Caravan (v0.3.3)
+- Caravan
 - Tor
-- JoinMarket CLI (v0.7.0)
-- LND Connect - Generate QR Codes for connecting wallets (v0.2.0)
+- JoinMarket CLI
+- LND Connect - Generate QR Codes for connecting wallets
 - Virtual Machine support (OVA file: VirtualBox, VMWare)
-- VPN for Remote Access (OpenVPN 2.4.7)
+- VPN for Remote Access
 - Bitcoin CLI
 - QuickSync - Quickly sync Bitcoin blockchain
 - LN Channel Backup
-- Docker support (v19.03.13) (containers inside: Netdata Monitor, Glances, WebSSH2 (Linux Terminal), BTCPay Server)
+- Docker support (containers inside: Netdata Monitor, Glances, WebSSH2 (Linux Terminal), BTCPay Server)
 - Simple UI / Web Interface
 - Dark Mode interface
 - Dedicated hardware keeps you constantly and securely connected!
