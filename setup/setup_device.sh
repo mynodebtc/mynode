@@ -242,13 +242,16 @@ fi
 pip3 install --upgrade pip wheel setuptools
 pip3 install bitstring lnd-grpc pycoin aiohttp connectrum python-bitcoinlib
 pip3 install gnureadline
-pip3 install lndmanage==0.11.0   # Install LND Manage (keep up to date with LND)
 pip3 install docker-compose
 pip3 install pipenv
 pip3 install pysocks
 pip3 install redis
 pip3 install systemd
 
+
+# Install LNDManage
+pip3 install lndmanage==$LNDMANAGE_VERSION
+echo $LNDMANAGE_VERSION > $LNDMANAGE_VERSION_FILE
 
 # Install Rust
 if [ ! -f /tmp/installed_rust ]; then
