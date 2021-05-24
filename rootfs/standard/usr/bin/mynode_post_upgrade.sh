@@ -869,6 +869,12 @@ if should_install_app "pyblock" ; then
         pip3 install -r requirements.txt
         deactivate
 
+        # Copy default settings files
+        cp -f /usr/share/pyblock/bclock.conf bclock.conf
+        cp -f /usr/share/pyblock/blndconnect.conf blndconnect.conf
+        chown bitcoin:bitcoin bclock.conf
+        chown bitcoin:bitcoin blndconnect.conf
+
         echo $PYBLOCK_VERSION > $PYBLOCK_VERSION_FILE
     fi
 fi
