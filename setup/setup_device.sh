@@ -519,28 +519,7 @@ fi
 cd ~
 
 # Install Caravan
-CARAVAN_UPGRADE_URL=https://github.com/unchained-capital/caravan/archive/$CARAVAN_VERSION.tar.gz
-CURRENT=""
-if [ -f $CARAVAN_VERSION_FILE ]; then
-    CURRENT=$(cat $CARAVAN_VERSION_FILE)
-fi
-if [ "$CURRENT" != "$CARAVAN_VERSION" ] || [ ! -f $CARAVAN_SETTINGS_UPDATE_FILE ]; then
-    cd /opt/mynode
-    rm -rf caravan
-
-    rm -f caravan.tar.gz
-    wget $CARAVAN_UPGRADE_URL -O caravan.tar.gz
-    tar -xzf caravan.tar.gz
-    rm -f caravan.tar.gz
-    mv caravan-* caravan
-    chown -R bitcoin:bitcoin caravan
-
-    cd caravan
-    sudo -u bitcoin npm install --only=production
-    echo $CARAVAN_VERSION > $CARAVAN_VERSION_FILE
-    touch $CARAVAN_SETTINGS_UPDATE_FILE
-fi
-cd ~
+# Skip - no longer default app
 
 
 # Install cors proxy (my fork)
