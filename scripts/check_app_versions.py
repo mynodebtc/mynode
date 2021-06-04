@@ -26,7 +26,8 @@ apps = [{"name": "bitcoin/bitcoin",                         "current_version_var
         {"name": "stakwork/sphinx-relay",                   "current_version_variable": "SPHINXRELAY_VERSION"},
         {"name": "whirlpool/whirlpool-client-cli",          "current_version_variable": "WHIRLPOOL_VERSION"},
         {"name": "dojo/samourai-dojo",                      "current_version_variable": "DOJO_VERSION"},
-        {"name": "JoinMarket-Org/joinmarket-clientserver",  "current_version_variable": "JOINMARKET_VERSION"}
+        {"name": "JoinMarket-Org/joinmarket-clientserver",  "current_version_variable": "JOINMARKET_VERSION"},
+        {"name": "curly60e/pyblock",                        "current_version_variable": "PYBLOCK_VERSION"},
 ]
 
 # Apps that don't work or are not on GitHub
