@@ -3,4 +3,10 @@
 # mynode-joininbox
 # This script needs to be run with sudo so it can run as the joinmarket user
 
-sudo -u joinmarket bash -c "cd /home/joinmarket/; source /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate; ./menu.sh"
+source /usr/share/mynode/mynode_config.sh
+
+if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
+    sudo -u joinmarket bash -c "cd /home/joinmarket/; source /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate; ./menu.sh"
+else
+    echo "JoininBox is currently only supported on RP4 and x86"
+fi
