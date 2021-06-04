@@ -552,7 +552,7 @@ sudo usermod -aG plugdev bitcoin
 BTCRPCPW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
 if [ -f /opt/mynode/LndHub/config.js ]; then
     cp -f /usr/share/mynode/lndhub-config.js /opt/mynode/LndHub/config.js
-    sed -i "s/mynode:.*@/mynode:$BTCRPCPW@/g" /opt/mynode/LndHub/config.js
+    #sed -i "s/mynode:.*@/mynode:$BTCRPCPW@/g" /opt/mynode/LndHub/config.js
     chown bitcoin:bitcoin /opt/mynode/LndHub/config.js
 fi
 if [ -f /opt/mynode/btc-rpc-explorer/.env ]; then
