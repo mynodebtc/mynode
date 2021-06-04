@@ -421,22 +421,7 @@ if [ ! -L /home/bitcoin/.specter ]; then
     # Setup symlink to HDD
     sudo -u bitcoin ln -s /mnt/hdd/mynode/specter /home/bitcoin/.specter
 fi
-if [ -f /mnt/hdd/mynode/specter/config.json ]; then
-    # Setup config file to point to local bitcoin instance
-    BTCRPCPW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
 
-    # Update Specter Settings
-    set +e
-    # cat /mnt/hdd/mynode/specter/config.json | jq '.rpc.datadir = "/home/bitcoin/.bitcoin"' > /mnt/hdd/mynode/specter/config_temp.json
-    # cp -f /mnt/hdd/mynode/specter/config_temp.json /mnt/hdd/mynode/specter/config.json
-    cat /mnt/hdd/mynode/specter/config.json | jq '.rpc.user = "mynode"' > /mnt/hdd/mynode/specter/config_temp.json
-    cp -f /mnt/hdd/mynode/specter/config_temp.json /mnt/hdd/mynode/specter/config.json
-    cat /mnt/hdd/mynode/specter/config.json | jq ".rpc.password = \"$BTCRPCPW\"" > /mnt/hdd/mynode/specter/config_temp.json
-    cp -f /mnt/hdd/mynode/specter/config_temp.json /mnt/hdd/mynode/specter/config.json
-    cat /mnt/hdd/mynode/specter/config.json | jq '.rpc.port = "8332"' > /mnt/hdd/mynode/specter/config_temp.json
-    cp -f /mnt/hdd/mynode/specter/config_temp.json /mnt/hdd/mynode/specter/config.json
-    set -e
-fi
 
 # Setup Thunderhub
 mkdir -p /mnt/hdd/mynode/thunderhub/

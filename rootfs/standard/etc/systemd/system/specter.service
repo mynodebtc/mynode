@@ -9,7 +9,7 @@ After=bitcoin.service
 [Service]
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/mynode_gen_cert.sh specter 825
-#ExecStartPre=/usr/bin/mynode_pre_specter.sh
+ExecStartPre=/usr/bin/mynode_pre_specter.sh
 WorkingDirectory=/opt/mynode/specter
 
 ExecStart=/opt/mynode/specter/env/bin/python3 -m cryptoadvance.specter server --host 0.0.0.0 --cert=/mnt/hdd/mynode/settings/specter/myNode.local.crt --key=/mnt/hdd/mynode/settings/specter/myNode.local.key
