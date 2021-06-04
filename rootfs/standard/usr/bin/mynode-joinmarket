@@ -3,8 +3,13 @@
 # mynode-joinmarket
 # This script needs to be run with sudo so it can run as the joinmarket user
 
-sudo -u joinmarket bash -c "cd /home/joinmarket/joinmarket-clientserver; bash --rcfile <(echo '. ~/.bashrc; source ./jmvenv/bin/activate; cd scripts')"
+source /usr/share/mynode/mynode_config.sh
 
+if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
+    sudo -u joinmarket bash -c "cd /home/joinmarket/joinmarket-clientserver; bash --rcfile <(echo '. ~/.bashrc; source ./jmvenv/bin/activate; cd scripts')"
+else
+    echo "Joinmarket is currently only supported on RP4 and x86"
+fi
 #sudo su joinmarket
 #cd ~/joinmarket-clientserver/
 #source jmvenv/bin/activate
