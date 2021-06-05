@@ -102,6 +102,23 @@ def page_lnd():
     try:
         data = get_lightning_info()
 
+        # If lightning data is still None, show message
+        if data == None:
+            templateData = {
+                "title": "myNode Lightning Wallet",
+                "wallet_exists": wallet_exists,
+                "wallet_logged_in": False,
+                "watchtower_enabled": is_watchtower_enabled(),
+                "alias": alias,
+                "status": "Waiting on LND data...",
+                "version": get_lnd_version(),
+                "loop_version": get_loop_version(),
+                "pool_version": get_pool_version(),
+                "refresh_rate": 10,
+                "ui_settings": read_ui_settings()
+            }
+            return render_template('lnd.html', **templateData)
+
         if "block_height" in data:
             height = data['block_height']
         if "identity_pubkey" in data:
