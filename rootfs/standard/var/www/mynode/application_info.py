@@ -479,10 +479,20 @@ def clear_application_cache():
     global mynode_applications
     mynode_applications = None
 
+def need_application_refresh():
+    global mynode_applications
+    if mynode_applications == None:
+        return True
+    if os.path.isfile("/tmp/need_application_refresh"):
+        os.system("rm /tmp/need_application_refresh")
+        os.system("sync")
+        return True
+    return False
+
 def get_all_applications(order_by="none"):
     global mynode_applications
 
-    if mynode_applications == None:
+    if need_application_refresh():
         initialize_applications()
     else:
         update_applications()
