@@ -45,6 +45,7 @@ while true; do
             echo $WEBSSH2_VERSION > $WEBSSH2_VERSION_FILE
         fi
     fi
+    touch /tmp/need_application_refresh
 
     # Upgrade mempool
     MEMPOOL_UPGRADE_URL=https://github.com/mempool/mempool/archive/${MEMPOOL_VERSION}.tar.gz
@@ -55,8 +56,11 @@ while true; do
     fi
     if [ "$CURRENT" != "$MEMPOOL_VERSION" ]; then
         docker rmi mempoolspace || true     # Remove old v1 image
+        docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'mempool') || true # Remove v2 images
 
         cd /mnt/hdd/mynode/mempool
+        rm -rf data
+        rm -rf mysql
         mkdir -p data mysql/data mysql/db-scripts
         cp -f /usr/share/mynode/mempool-docker-compose.yml /mnt/hdd/mynode/docker-compose.yml
 
@@ -82,6 +86,7 @@ while true; do
 
         echo $MEMPOOL_VERSION > $MEMPOOL_VERSION_FILE
     fi
+    touch /tmp/need_application_refresh
 
     # Install Dojo
     DOJO_UPGRADE_URL=https://code.samourai.io/dojo/samourai-dojo/-/archive/$DOJO_VERSION/samourai-dojo-$DOJO_VERSION.tar.gz
@@ -151,6 +156,7 @@ while true; do
             fi
         fi
     fi
+    touch /tmp/need_application_refresh
 
     rm -f /tmp/installing_docker_images
     touch /tmp/installing_docker_images_completed_once
