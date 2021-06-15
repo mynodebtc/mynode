@@ -21,7 +21,12 @@
     </tr>
     <tr>
         <th>Device Type</th>
-        <td>{{device_type}}</td>
+        <td>
+            {{device_type}}
+            {% if device_type == "raspi4" and device_arch == "aarch64" %}
+            64-bit
+            {% endif %}
+        </td>
     </tr>
     <tr>
         <th>Device RAM</th>

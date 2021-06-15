@@ -271,6 +271,15 @@ def get_device_type():
     cached_data["device_type"] = device
     return device
 
+def get_device_arch():
+    global cached_data
+    if "device_arch" in cached_data:
+        return cached_data["device_arch"]
+
+    arch = subprocess.check_output("uname -m", shell=True).decode("utf-8").strip()
+    cached_data["device_arch"] = arch
+    return arch
+
 def get_device_ram():
     global cached_data
     if "ram" in cached_data:
