@@ -786,6 +786,8 @@ echo $WEBSSH2_VERSION > $WEBSSH2_LATEST_VERSION_FILE
 echo $PYBLOCK_VERSION > $PYBLOCK_LATEST_VERSION_FILE
 echo $WARDEN_VERSION > $WARDEN_LATEST_VERSION_FILE
 
+touch /tmp/need_application_refresh
+
 # Weird hacks
 chmod +x /usr/bin/electrs || true # Once, a device didn't have the execute bit set for electrs
 timedatectl set-ntp True || true # Make sure NTP is enabled for Tor and Bitcoin
