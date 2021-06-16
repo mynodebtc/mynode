@@ -4,6 +4,7 @@
 set -x
 
 source /usr/share/mynode/mynode_config.sh
+source /usr/share/mynode/mynode_functions.sh
 source /usr/share/mynode/mynode_app_versions.sh
 
 echo "Starting mynode_docker_images.sh ..."
@@ -50,41 +51,43 @@ while true; do
     # Upgrade mempool
     MEMPOOL_UPGRADE_URL=https://github.com/mempool/mempool/archive/${MEMPOOL_VERSION}.tar.gz
     echo "Checking for new mempool..."
-    CURRENT=""
-    if [ -f $MEMPOOL_VERSION_FILE ]; then
-        CURRENT=$(cat $MEMPOOL_VERSION_FILE)
-    fi
-    if [ "$CURRENT" != "$MEMPOOL_VERSION" ]; then
-        docker rmi mempoolspace || true     # Remove old v1 image
-        docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'mempool') || true # Remove v2 images
-
-        cd /mnt/hdd/mynode/mempool
-        rm -rf data
-        rm -rf mysql
-        mkdir -p data mysql/data mysql/db-scripts
-        cp -f /usr/share/mynode/mempool-docker-compose.yml /mnt/hdd/mynode/docker-compose.yml
-
-        rm -rf /opt/download/mempool
-        mkdir -p /opt/download/mempool
-        cd /opt/download/mempool
-        wget $MEMPOOL_UPGRADE_URL -O mempool.tar.gz
-        tar -xvf mempool.tar.gz
-        rm mempool.tar.gz
-        mv mempool-* mempool
-        cp -f mempool/mariadb-structure.sql /mnt/hdd/mynode/mempool/mysql/db-scripts/mariadb-structure.sql
-
-        # Update env variable to use latest version
-        sed -i "s/VERSION=.*/VERSION=$MEMPOOL_VERSION/g" /mnt/hdd/mynode/mempool/.env
-
-        docker pull mempool/frontend:${MEMPOOL_VERSION}
-        docker pull mempool/backend:${MEMPOOL_VERSION}
-
-        enabled=$(systemctl is-enabled mempool)
-        if [ "$enabled" = "enabled" ]; then
-            systemctl restart mempool &
+    if should_install_app "mempool" ; then
+        CURRENT=""
+        if [ -f $MEMPOOL_VERSION_FILE ]; then
+            CURRENT=$(cat $MEMPOOL_VERSION_FILE)
         fi
+        if [ "$CURRENT" != "$MEMPOOL_VERSION" ]; then
+            docker rmi mempoolspace || true     # Remove old v1 image
+            docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'mempool') || true # Remove v2 images
 
-        echo $MEMPOOL_VERSION > $MEMPOOL_VERSION_FILE
+            cd /mnt/hdd/mynode/mempool
+            rm -rf data
+            rm -rf mysql
+            mkdir -p data mysql/data mysql/db-scripts
+            cp -f /usr/share/mynode/mempool-docker-compose.yml /mnt/hdd/mynode/docker-compose.yml
+
+            rm -rf /opt/download/mempool
+            mkdir -p /opt/download/mempool
+            cd /opt/download/mempool
+            wget $MEMPOOL_UPGRADE_URL -O mempool.tar.gz
+            tar -xvf mempool.tar.gz
+            rm mempool.tar.gz
+            mv mempool-* mempool
+            cp -f mempool/mariadb-structure.sql /mnt/hdd/mynode/mempool/mysql/db-scripts/mariadb-structure.sql
+
+            # Update env variable to use latest version
+            sed -i "s/VERSION=.*/VERSION=$MEMPOOL_VERSION/g" /mnt/hdd/mynode/mempool/.env
+
+            docker pull mempool/frontend:${MEMPOOL_VERSION}
+            docker pull mempool/backend:${MEMPOOL_VERSION}
+
+            enabled=$(systemctl is-enabled mempool)
+            if [ "$enabled" = "enabled" ]; then
+                systemctl restart mempool &
+            fi
+
+            echo $MEMPOOL_VERSION > $MEMPOOL_VERSION_FILE
+        fi
     fi
     touch /tmp/need_application_refresh
 
@@ -100,59 +103,61 @@ while true; do
         sleep 3s
     fi
     # Only install Dojo if marked for installation and testnet not enabled
-    if [ -f /mnt/hdd/mynode/settings/install_dojo ] && [ ! -f $IS_TESTNET_ENABLED_FILE ]; then
-        if [ -f $DOJO_UPGRADE_URL_FILE ] && [ ! -f $DOJO_VERSION_FILE ]; then
-            echo $DOJO_VERSION > $DOJO_VERSION_FILE
-            sync
-        fi
-        if [ -f $DOJO_VERSION_FILE ]; then
-            INSTALL=false
-            CURRENT=$(cat $DOJO_VERSION_FILE)
-        fi
-        if [ "$CURRENT" != "$DOJO_VERSION" ]; then
-            MARK_DOJO_COMPLETE=1
-            sudo mkdir -p /opt/download/dojo
-            sudo mkdir -p /mnt/hdd/mynode/dojo
-            sudo rm -rf /opt/download/dojo/*
-            cd /opt/download/dojo
-            sudo wget -O dojo.tar.gz $DOJO_UPGRADE_URL
-
-            # verify tar file
-            echo "$DOJO_TAR_HASH  dojo.tar.gz" > /tmp/dojo_hash
-            sha256sum --check /tmp/dojo_hash
-
-            sudo tar -zxvf dojo.tar.gz
-            sudo cp -r samourai-dojo*/* /mnt/hdd/mynode/dojo
-            sudo rm -rf /opt/download/dojo/*
-
-            # Configure Dojo for MyNode
-            sudo /usr/bin/mynode_gen_dojo_config.sh || MARK_DOJO_COMPLETE=0
-
-            # Run Dojo Install or Upgrade
-            cd /mnt/hdd/mynode/dojo/docker/my-dojo
-            INSTALL_PID=0
-            if [ "$INSTALL" = "true" ]; then
-                yes | sudo ./dojo.sh install &
-                INSTALL_PID=$!
-            else
-                yes | sudo ./dojo.sh upgrade &
-                INSTALL_PID=$!
-            fi
-
-            #Check for install/upgrade to finish to initialize Dojo mysql db
-            sudo /usr/bin/mynode_post_dojo.sh
-
-            # Wait for install script to finish
-            wait $INSTALL_PID || MARK_DOJO_COMPLETE=0
-
-
-            # Try and start dojo (if upgraded and already enabled)
-            systemctl enable dojo &
-            systemctl restart dojo &
-
-            # Mark dojo install complete
-            if [ $MARK_DOJO_COMPLETE = 1 ]; then
+    if should_install_app "dojo" ; then
+        if [ ! -f $IS_TESTNET_ENABLED_FILE ]; then
+            if [ -f $DOJO_UPGRADE_URL_FILE ] && [ ! -f $DOJO_VERSION_FILE ]; then
                 echo $DOJO_VERSION > $DOJO_VERSION_FILE
+                sync
+            fi
+            if [ -f $DOJO_VERSION_FILE ]; then
+                INSTALL=false
+                CURRENT=$(cat $DOJO_VERSION_FILE)
+            fi
+            if [ "$CURRENT" != "$DOJO_VERSION" ]; then
+                MARK_DOJO_COMPLETE=1
+                sudo mkdir -p /opt/download/dojo
+                sudo mkdir -p /mnt/hdd/mynode/dojo
+                sudo rm -rf /opt/download/dojo/*
+                cd /opt/download/dojo
+                sudo wget -O dojo.tar.gz $DOJO_UPGRADE_URL
+
+                # verify tar file
+                echo "$DOJO_TAR_HASH  dojo.tar.gz" > /tmp/dojo_hash
+                sha256sum --check /tmp/dojo_hash
+
+                sudo tar -zxvf dojo.tar.gz
+                sudo cp -r samourai-dojo*/* /mnt/hdd/mynode/dojo
+                sudo rm -rf /opt/download/dojo/*
+
+                # Configure Dojo for MyNode
+                sudo /usr/bin/mynode_gen_dojo_config.sh || MARK_DOJO_COMPLETE=0
+
+                # Run Dojo Install or Upgrade
+                cd /mnt/hdd/mynode/dojo/docker/my-dojo
+                INSTALL_PID=0
+                if [ "$INSTALL" = "true" ]; then
+                    yes | sudo ./dojo.sh install &
+                    INSTALL_PID=$!
+                else
+                    yes | sudo ./dojo.sh upgrade &
+                    INSTALL_PID=$!
+                fi
+
+                #Check for install/upgrade to finish to initialize Dojo mysql db
+                sudo /usr/bin/mynode_post_dojo.sh
+
+                # Wait for install script to finish
+                wait $INSTALL_PID || MARK_DOJO_COMPLETE=0
+
+
+                # Try and start dojo (if upgraded and already enabled)
+                systemctl enable dojo &
+                systemctl restart dojo &
+
+                # Mark dojo install complete
+                if [ $MARK_DOJO_COMPLETE = 1 ]; then
+                    echo $DOJO_VERSION > $DOJO_VERSION_FILE
+                fi
             fi
         fi
     fi
