@@ -567,6 +567,7 @@ cd ~
 #     echo $ELECTRS_VERSION > $ELECTRS_VERSION_FILE
 # fi
 # cd ~
+echo $ELECTRS_VERSION > $ELECTRS_VERSION_FILE
 
 
 # Install recent version of secp256k1
@@ -843,6 +844,9 @@ if [ "$CURRENT" != "$SPHINXRELAY_VERSION" ]; then
     echo $SPHINXRELAY_VERSION > $SPHINXRELAY_VERSION_FILE
 fi
 
+# Mark docker images for install (on SD so install occurs after drive attach)
+touch /home/bitcoin/.mynode/install_mempool
+touch /home/bitcoin/.mynode/install_dojo
 
 # SKIPPING BOS - OPTIONAL APP
 # SKIPPING PYBLOCK - OPTIONAL APP
