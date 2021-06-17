@@ -155,10 +155,6 @@ Once you are running myNode, you can easily update the software yourself!
 
 --------------------
 
-<img src="images/4.png" width="600">
-
---------------------
-
 <img src="images/5.png" width="600">
 
 --------------------
