@@ -16,7 +16,7 @@ Website: https://mynodebtc.com
 
 
 ## User Interface
-![](images/1.png)
+<img src="images/1.png" width="800">
 
 ## Overview
 myNode aims to be the easiest way to run a dedicated, easy to use, Bitcoin Node and Lightning Wallet! By combining the best open source software with our UI, management, and monitoring software, you can easily, safely, and securely use Bitcoin and Lightning.
@@ -31,7 +31,7 @@ myNode offers premium support, simplified upgrades and more! If you are running 
 Upgrade now or purchase a device at:<br/>
 https://mynodebtc.com/order_now
 
-<b>myNode 1 Device</b>
+<b>myNode One Device</b>
 <br/>
 ![](images/device.jpg)
 
@@ -147,15 +147,23 @@ Once you are running myNode, you can easily update the software yourself!
 4. Congratulations! You're running a new myNode device!
 
 ## Screenshots
-![](images/2.png)
+<img src="images/2.png" width="600">
+
 --------------------
-![](images/3.png)
+
+<img src="images/3.png" width="600">
+
 --------------------
-![](images/4.png)
+
+<img src="images/4.png" width="600">
+
 --------------------
-![](images/5.png)
+
+<img src="images/5.png" width="600">
+
 --------------------
-![](images/6.png)
+
+<img src="images/6.png" width="600">
 
 
 ## What is Bitcoin?
