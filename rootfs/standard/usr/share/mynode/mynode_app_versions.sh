@@ -85,7 +85,7 @@ LNBITS_VERSION=503c981bc970f4ab894f50198dbd6833cae8f6e0         # Github hash to
 LNBITS_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version
 LNBITS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version_latest
 
-SPECTER_VERSION="1.4.2"
+SPECTER_VERSION="1.4.5"
 SPECTER_VERSION_FILE=/home/bitcoin/.mynode/specter_version
 SPECTER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/specter_version_latest
 
