@@ -20,7 +20,7 @@ while true; do
     done
 
     # Wait for lnd to accept logins
-    until journalctl -r -u lnd --no-pager | head -n 20 | grep "Waiting for wallet encryption password"
+    until journalctl -r -u lnd --no-pager | head -n 20 | grep "wallet locked, unlock it to enable full RPC access"
     do
         sleep $CHECK_RATE
     done
