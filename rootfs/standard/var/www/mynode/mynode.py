@@ -420,7 +420,7 @@ def index():
         if not get_has_updated_btc_info() or uptime_in_seconds < 180:
             error_message = ""
             if bitcoin_status_code != 0 and uptime_in_seconds > 600:
-                error_message = "Bitcoin has experienced an error. Please check the logs."
+                error_message = "Bitcoin has experienced an error. Please check the Bitcoin log on the status page."
             message = "<div class='small_message'>{}</<div>".format( get_message(include_funny=True) )
             templateData = {
                 "title": "myNode Status",
