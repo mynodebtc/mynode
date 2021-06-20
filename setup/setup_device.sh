@@ -896,7 +896,7 @@ systemctl enable lnd
 systemctl enable loop
 systemctl enable pool
 systemctl enable lit
-systemctl enable lnd_unlock
+#systemctl enable lnd_unlock # NOT NECESSARY WITH LND 0.13+
 systemctl enable lnd_backup
 systemctl enable lnd_admin_files
 systemctl enable lndconnect

@@ -996,6 +996,7 @@ systemctl disable mempoolspace || true
 systemctl disable hitch || true
 systemctl disable mongodb || true
 systemctl disable lnd_admin || true
+systemctl disable lnd_unlock || true
 systemctl disable dhcpcd || true
 rm /etc/systemd/system/bitcoind.service || true
 rm /etc/systemd/system/btc_rpc_explorer.service || true
