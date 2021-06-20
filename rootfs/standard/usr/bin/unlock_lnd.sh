@@ -2,6 +2,8 @@
 
 source /usr/share/mynode/mynode_config.sh
 
+# NOTE: NO LONGER USED AFTER LND 0.13+
+
 # Wait for LND + BTC to start
 sleep 1m
 

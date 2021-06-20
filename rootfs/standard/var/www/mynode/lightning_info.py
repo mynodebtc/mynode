@@ -388,7 +388,6 @@ def restart_lnd_actual():
     global lnd_ready
     lnd_ready = False
     os.system("systemctl restart lnd")
-    os.system("systemctl restart lnd_unlock")
     os.system("systemctl restart lnd_admin")
 
 def restart_lnd():
