@@ -24,7 +24,8 @@ def manage_apps_page():
         "ui_settings": read_ui_settings(),
         "load_time": t2-t1,
         "product_key_skipped": skipped_product_key(),
-        "apps": apps
+        "apps": apps,
+        "has_customized_app_versions": has_customized_app_versions(),
     }
     return render_template('manage_apps.html', **templateData)
 
@@ -49,3 +50,7 @@ def restart_app_page():
 
     flash("Application restarting!", category="message")
     return redirect("/apps")
+
+@mynode_manage_apps.route("/apps/customize-app-versions")
+def customize_app_versions_page():
+    return "TODO"

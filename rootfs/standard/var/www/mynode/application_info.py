@@ -173,6 +173,10 @@ def initialize_applications():
     global mynode_applications
     apps = []
 
+    # Update latest version files
+    os.system("/usr/bin/mynode_update_latest_version_files.sh")
+
+    # Update app data
     apps.append(create_application(
         name="Bitcoin",
         short_name="bitcoin",
@@ -479,6 +483,10 @@ def clear_application_cache():
     global mynode_applications
     mynode_applications = None
 
+def trigger_application_refresh():
+    os.system("touch /tmp/need_application_refresh")
+    os.system("sync")
+
 def need_application_refresh():
     global mynode_applications
     if mynode_applications == None:
@@ -664,3 +672,10 @@ def restart_application(short_name):
         return True
     except Exception as e:
         return False
+
+def has_customized_app_versions():
+    if os.path.isfile("/usr/share/mynode/mynode_app_versions_custom.sh"):
+        return True
+    if os.path.isfile("/mnt/hdd/mynode/settings/mynode_app_versions_custom.sh"):
+        return True
+    return False

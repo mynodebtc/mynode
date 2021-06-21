@@ -542,6 +542,15 @@ def reset_firewall_page():
     flash("Firewall Reset", category="message")
     return redirect("/settings")
 
+@mynode_settings.route("/settings/refresh-app-database")
+def refresh_app_database_page():
+    check_logged_in()
+    
+    trigger_application_refresh()
+
+    flash("Application Database Refreshed", category="message")
+    return redirect("/settings")
+
 @mynode_settings.route("/settings/remount-external-drive")
 def remount_external_drive_page():
     os.system("mount -o remount,rw /mnt/hdd")

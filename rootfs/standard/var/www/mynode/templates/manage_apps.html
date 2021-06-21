@@ -85,7 +85,17 @@
         {% include 'includes/message_display.html' %}
 
         </br>
-        <!-- {{ load_time }} ms -->
+
+        {% if has_customized_app_versions %}
+        <div class="main_page_warning_block" style="text-align: center;">
+            Your application versions have been customized.
+            <br/><br/>
+            <a href="/apps/customize-app-versions" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 80px;">Configure</a>
+        </div>
+        {% endif %}
+
+        <!-- <br/>{{ load_time }} ms -->
+
         <br/><br/>
         <table class="bitcoin_table">
             <thead class="bitcoin_table_header">
