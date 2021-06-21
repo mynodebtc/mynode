@@ -524,6 +524,16 @@ def reset_electrs_page():
     }
     return render_template('reboot.html', **templateData)
 
+@mynode_settings.route("/settings/reset-specter-config")
+def reset_specter_config_page():
+    check_logged_in()
+
+    t = Timer(1.0, reset_specter_config)
+    t.start()
+
+    flash("Specter Configuration Reset", category="message")
+    return redirect("/settings")
+
 @mynode_settings.route("/settings/reset-firewall")
 def reset_firewall_page():
     check_logged_in()
