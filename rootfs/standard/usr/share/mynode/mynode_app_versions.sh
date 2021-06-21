@@ -68,7 +68,7 @@ DOJO_TAR_HASH="9fb752795cf746a41696e37351d871369253acee94de9a50a28c3b3b85f94f85"
 DOJO_VERSION_FILE=/mnt/hdd/mynode/settings/dojo_version
 DOJO_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/dojo_version_latest
 
-RTL_VERSION="v0.10.2"
+RTL_VERSION="v0.11.0"
 RTL_VERSION_FILE=/home/bitcoin/.mynode/rtl_version
 RTL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/rtl_version_latest
 
@@ -124,3 +124,11 @@ WARDEN_LATEST_VERSION_FILE=/home/bitcoin/.mynode/warden_version_latest
 WEBSSH2_VERSION="v0.2.10-0"
 WEBSSH2_VERSION_FILE=/mnt/hdd/mynode/settings/webssh2_version
 WEBSSH2_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/webssh2_version_latest
+
+# Check for override files
+if [ -f /usr/share/mynode/mynode_app_versions_custom.sh ]; then
+    source /usr/share/mynode/mynode_app_versions_custom.sh
+fi
+if [ -f /mnt/hdd/mynode/settings/mynode_app_versions_custom.sh ]; then
+    source /mnt/hdd/mynode/settings/mynode_app_versions_custom.sh
+fi
