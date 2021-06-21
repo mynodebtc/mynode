@@ -876,6 +876,12 @@ def reset_sphinxrelay():
     delete_sphinxrelay_data()
     restart_sphinxrelay()
 
+#==================================
+# Specter Functions
+#==================================
+def reset_specter_config():
+    os.system("rm -rf /mnt/hdd/mynode/specter/config.json")
+    os.system("systemctl restart specter")
 
 #==================================
 # Tor Functions
