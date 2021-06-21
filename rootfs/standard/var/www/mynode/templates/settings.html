@@ -535,9 +535,13 @@
             <div class="settings_block_header">Applications</div>
 
             <div class="settings_block_subheader">Manage Applications</div>
-            You can view application information and manage app upgrades. 
+            You can view application information and manage app upgrades on the Manage page. You can also customize and override the
+            application versions supported by myNode.
             <br/>
-            <a href="/apps" class="ui-button ui-widget ui-corner-all settings_button">Manage Apps</a>
+            <a href="/apps" class="ui-button ui-widget ui-corner-all settings_button">Manage</a>
+            <a href="/apps/customize-app-versions" class="ui-button ui-widget ui-corner-all settings_button">Customize Application Versions</a>
+            <a href="/settings/refresh-app-database" class="ui-button ui-widget ui-corner-all settings_button">Refresh Application Database</a>
+
         </div>
 
 
@@ -612,17 +616,11 @@
             <div class="settings_block_header">Device</div>
 
             <div class="settings_block_subheader">Reboot Device</div>
-            This will reboot your myNode.
+            This will reboot or shutdown your device. After a shutown, you will need to power cycle the device to turn it back on.
             <br/>
             <button id="reboot-device" class="ui-button ui-widget ui-corner-all settings_button">Reboot Device</button>
-            
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Shutdown Device</div>
-            This will shutdown your myNode. You will need to power cycle the device to turn it back on.
-            <br/>
             <button id="shutdown-device" class="ui-button ui-widget ui-corner-all settings_button">Shutdown Device</button>
-
+            
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Download Debug Logs</div>
@@ -736,18 +734,13 @@
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Rescan Blockchain</div>
-            Advanced: If you are having issues seeing transactions in your wallets, try re-scanning the blockchain.
+            Advanced: If you are having issues seeing transactions in your wallets, try re-scanning the blockchain. If you
+            are having issues parsing the Bitcoin blockchain or blocks cannot be found, please try reindexing. This will 
+            take a long time.
             <br/>
             <button id="rescan-blockchain" class="ui-button ui-widget ui-corner-all settings_button">Rescan Blockchain</button>
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Reindex Blockchain</div>
-            Advanced: If you are having issues parsing the Bitcoin blockchain or blocks cannot be found, please try reindexing. 
-            <br/>
-            This will take a long time.
-            <br/>
             <button id="reindex-blockchain" class="ui-button ui-widget ui-corner-all settings_button">Reindex Blockchain</button>
+
         </div>
 
 
