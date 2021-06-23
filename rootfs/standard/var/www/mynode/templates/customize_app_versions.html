@@ -1,0 +1,77 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        {% include 'includes/head.html' %}
+
+        <script>
+            $(document).ready(function() {
+                $("#show_config_button").on("click", function() {
+                    visible = $("#default_version_config").is(':visible');
+                    if (visible) {
+                        $("#show_config_button").html("Show Default Version Config");
+                        $("#default_version_config").hide();
+                    } else {
+                        $("#show_config_button").html("Hide Default Version Config");
+                        $("#default_version_config").show();
+                    }
+                });
+            });
+        </script>
+     </head>
+
+    <body>
+        {% include 'includes/logo_header.html' %}
+        <div class="mynode_back_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/settings"><span class="ui-icon ui-icon-gear"></span>settings&nbsp;</a>
+        </div>
+
+        {% include 'includes/message_display.html' %}
+
+        <div class="main_header">Custom Application Versions</div>
+        <br/>
+
+        {% if product_key_skipped %}
+            <div class="text_block">Customizing app versions via the GUI is a Premium Feature</div>
+        {% else %}
+
+        <div class="text_block">
+            You can override the version each application myNode installs. If you override it, future myNode updates will
+            not affect the version you have specified.
+            <br/><br/>
+
+            Saving will update the "Latest Version" of an app shown on the application page. To perform the upgrade,
+            you will need to update it there.
+            <br/><br/>
+
+            <b>Caution:</b> Errors in this file may prevent myNode from booting properly.
+
+            To see the available variables, use the format from the included default myNode version configuration.
+            <br/><br/>
+
+            <button id="show_config_button" class="ui-button ui-widget ui-corner-all mynode_button_small">Show Default Version Config</button>
+            <div id="default_version_config" style="display: none;"><pre>{{app_version_data}}</pre></div>
+            <br/>
+            {% if has_customized_app_versions %}
+            <br/>
+            <div class="settings_block_subheader_status_icon yellow"></div>
+            <i>You currently have saved data in a custom versions file.</i>
+            <div class="settings_block_subheader_status_icon yellow"></div>
+            {% endif %}
+        </div>
+
+        <div class="centered_text_div">
+            <form action="/apps/customize-app-versions" method="POST">
+                <textarea class="config_textarea" name="app_data" id="app_data">{{ custom_app_version_data }}</textarea>
+                <br/><br/>
+                <input class="ui-button ui-widget ui-corner-all" type="submit" value="Save"/>
+                <a href="/apps/customize-app-versions?reset=1" class="ui-button ui-widget ui-corner-all">Reset Customization</a>
+            </form>
+        </div>
+
+        {% endif %}
+
+
+        {% include 'includes/footer.html' %}
+     </body>
+</html>

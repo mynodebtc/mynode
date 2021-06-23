@@ -51,6 +51,33 @@ def restart_app_page():
     flash("Application restarting!", category="message")
     return redirect("/apps")
 
-@mynode_manage_apps.route("/apps/customize-app-versions")
+@mynode_manage_apps.route("/apps/customize-app-versions", methods=['GET','POST'])
 def customize_app_versions_page():
-    return "TODO"
+    check_logged_in()
+
+    app_version_data=get_app_version_data()
+    custom_app_version_data=get_custom_app_version_data()
+
+    # Reset Config
+    if request.args.get("reset") and request.args.get("reset") == "1":
+        reset_custom_app_version_data()
+        flash("Custom config reset!", category="message")
+        return redirect("/apps/customize-app-versions")
+
+    # Save Config
+    if request.method == 'POST' and request.form.get('app_data'):
+        custom_app_data = request.form.get('app_data')
+        save_custom_app_version_data(custom_app_data)
+        flash("Custom config saved!", category="message")
+        return redirect("/apps/customize-app-versions")
+
+    # Load page
+    templateData = {
+        "title": "myNode Customize App Versions",
+        "ui_settings": read_ui_settings(),
+        "product_key_skipped": skipped_product_key(),
+        "has_customized_app_versions": has_customized_app_versions(),
+        "app_version_data": app_version_data,
+        "custom_app_version_data": custom_app_version_data
+    }
+    return render_template('customize_app_versions.html', **templateData)

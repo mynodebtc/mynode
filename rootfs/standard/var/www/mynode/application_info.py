@@ -3,6 +3,7 @@ from lightning_info import *
 from electrum_info import *
 from device_info import *
 from systemctl_info import *
+from utilities import *
 import copy
 import json
 import subprocess
@@ -679,3 +680,29 @@ def has_customized_app_versions():
     if os.path.isfile("/mnt/hdd/mynode/settings/mynode_app_versions_custom.sh"):
         return True
     return False
+
+def get_app_version_data():
+    try:
+        contents = subprocess.check_output('cat /usr/share/mynode/mynode_app_versions.sh | grep "_VERSION="', shell=True)
+        return contents
+    except Exception as e:
+        return "ERROR"
+
+def get_custom_app_version_data():
+    if os.path.isfile("/usr/share/mynode/mynode_app_versions_custom.sh"):
+        return get_file_contents("/usr/share/mynode/mynode_app_versions_custom.sh")
+    if os.path.isfile("/mnt/hdd/mynode/settings/mynode_app_versions_custom.sh"):
+        return get_file_contents("/mnt/hdd/mynode/settings/mynode_app_versions_custom.sh")
+    return ""
+
+def save_custom_app_version_data(data):
+    set_file_contents("/usr/share/mynode/mynode_app_versions_custom.sh", data)
+    set_file_contents("/mnt/hdd/mynode/settings/mynode_app_versions_custom.sh", data)
+    need_application_refresh()
+    os.system("sync")
+
+def reset_custom_app_version_data():
+    os.system("rm -f /usr/share/mynode/mynode_app_versions_custom.sh")
+    os.system("rm -f /mnt/hdd/mynode/settings/mynode_app_versions_custom.sh")
+    need_application_refresh()
+    os.system("sync")
