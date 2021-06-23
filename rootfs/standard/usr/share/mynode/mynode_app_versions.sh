@@ -128,7 +128,6 @@ WEBSSH2_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/webssh2_version_latest
 # Check for override files
 if [ -f /usr/share/mynode/mynode_app_versions_custom.sh ]; then
     source /usr/share/mynode/mynode_app_versions_custom.sh
-fi
-if [ -f /mnt/hdd/mynode/settings/mynode_app_versions_custom.sh ]; then
+elif [ -f /mnt/hdd/mynode/settings/mynode_app_versions_custom.sh ]; then
     source /mnt/hdd/mynode/settings/mynode_app_versions_custom.sh
 fi

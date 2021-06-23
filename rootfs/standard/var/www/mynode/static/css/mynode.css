@@ -145,6 +145,15 @@ td, th {
     margin-bottom: 10px;
 }
 
+.text_block {
+    width: 800px;
+    color: #444444;
+    margin: auto;
+    text-align: left;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
 .error_message {
     color: red;
     font-size: 16px;

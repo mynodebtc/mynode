@@ -14,7 +14,8 @@
         {% include 'includes/message_display.html' %}
 
         <div class="main_header">LND Custom Config</div>
-        <div class="main_header_sub_text">
+
+        <div class="text_block">
             You can edit the LND config. However, using your own config will prevent any future automatic updates and may have adverse effects.
             <br/><br/>
             Saving will reboot your device.
@@ -26,6 +27,7 @@
             <div class="settings_block_subheader_status_icon yellow"></div>
             {% endif %}
         </div>
+
         <div class="centered_text_div">
             <form action="/lnd/config" method="POST">
                 <textarea class="config_textarea" name="custom_config" id="custom_config">{{ lnd_config }}</textarea>
