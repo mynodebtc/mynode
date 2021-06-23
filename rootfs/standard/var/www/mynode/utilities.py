@@ -14,6 +14,7 @@ def get_file_contents(filename):
     return contents
 
 def set_file_contents(filename, data):
+    data = data.replace('\r\n','\n')
     try:
         with open(filename, "w") as f:
             f.write(data)
