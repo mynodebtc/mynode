@@ -6,6 +6,7 @@ from systemctl_info import *
 from utilities import *
 import copy
 import json
+import time
 import subprocess
 import re
 import os
@@ -698,11 +699,11 @@ def get_custom_app_version_data():
 def save_custom_app_version_data(data):
     set_file_contents("/usr/share/mynode/mynode_app_versions_custom.sh", data)
     set_file_contents("/mnt/hdd/mynode/settings/mynode_app_versions_custom.sh", data)
-    need_application_refresh()
     os.system("sync")
+    trigger_application_refresh()
 
 def reset_custom_app_version_data():
     os.system("rm -f /usr/share/mynode/mynode_app_versions_custom.sh")
     os.system("rm -f /mnt/hdd/mynode/settings/mynode_app_versions_custom.sh")
-    need_application_refresh()
     os.system("sync")
+    trigger_application_refresh()
