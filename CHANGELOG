@@ -1,3 +1,19 @@
+=== v0.2.35 ===
+- Released: 06/23/21
+- Add ability to customize app versions
+- Upgrade LND to v0.13.0
+- Upgrade Loop to v0.14.1
+- Upgrade LiT to v0.5.0
+- Upgrade BoS to v10.2.0
+- Upgrade RTL to v0.11.0
+- Upgrade JoinInBox to v0.5.0
+- Upgrade PyBlock to v0.9.8.6
+- Add ability to reset Specter config
+- Migrate LND unlock to file-based method
+- Upgrade LNBits
+- Display 32/64 bit device info on RP4 devices
+- Bug fixes
+
 === v0.2.34 ===
 - Released: 06/06/21
 - Add pyblock v0.9.8
