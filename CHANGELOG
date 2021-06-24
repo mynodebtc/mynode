@@ -1,3 +1,7 @@
+=== v0.2.36 ===
+- Released: 06/23/21
+- Fix path to Lightning Terminal sig file
+
 === v0.2.35 ===
 - Released: 06/23/21
 - Add ability to customize app versions
