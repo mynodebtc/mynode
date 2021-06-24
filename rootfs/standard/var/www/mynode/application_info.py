@@ -684,7 +684,7 @@ def has_customized_app_versions():
 
 def get_app_version_data():
     try:
-        contents = subprocess.check_output('cat /usr/share/mynode/mynode_app_versions.sh | grep "_VERSION="', shell=True)
+        contents = subprocess.check_output('cat /usr/share/mynode/mynode_app_versions.sh | grep -v "_VERSION_FILE=" | grep "="', shell=True)
         return contents
     except Exception as e:
         return "ERROR"
