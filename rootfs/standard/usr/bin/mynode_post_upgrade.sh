@@ -517,7 +517,7 @@ if [ ! -f /usr/include/secp256k1_ecdh.h ]; then
     cp -f include/* /usr/include/
 fi
 
-# Upgrade JoinMarket
+# Upgrade JoinMarket (legacy)
 if should_install_app "joinmarket" ; then
     echo "Upgrading JoinMarket..." # Old
     if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
@@ -556,6 +556,7 @@ if should_install_app "joinmarket" ; then
     fi
 fi
 
+# Upgrade JoininBox
 echo "Upgrading JoinInBox..."
 if should_install_app "joininbox" ; then
     if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then

@@ -21,12 +21,12 @@ rm -f /home/bitcoin/.mynode/install_${APP} || true
 rm -f /mnt/hdd/mynode/settings/install_${APP} || true
 sync
 
-# Attempt generic uninstall
-rm -rf /opt/mynode/${APP}
-
 # Custom uninstall steps
 if [ "$APP" = "bos" ]; then
     npm uninstall -g balanceofsatoshis
+elif [ "$APP" = "btcpayserver" ]; then
+    . "/opt/mynode/btcpayserver/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY" && . helpers.sh && btcpay_remove
+    cd ~
 elif [ "$APP" = "btcrpcexplorer" ]; then
     rm -rf /opt/mynode/btc-rpc-explorer
 elif [ "$APP" = "dojo" ]; then
@@ -48,6 +48,9 @@ elif [ "$APP" = "rtl" ]; then
 else
     echo "No custom uninstall steps"
 fi
+
+# Attempt generic uninstall
+rm -rf /opt/mynode/${APP}
 
 
 chown -R admin:admin /home/admin/upgrade_logs

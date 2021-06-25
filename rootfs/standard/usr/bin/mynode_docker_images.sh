@@ -48,6 +48,7 @@ while true; do
     fi
     touch /tmp/need_application_refresh
 
+
     # Upgrade mempool
     MEMPOOL_UPGRADE_URL=https://github.com/mempool/mempool/archive/${MEMPOOL_VERSION}.tar.gz
     echo "Checking for new mempool..."
@@ -90,6 +91,20 @@ while true; do
         fi
     fi
     touch /tmp/need_application_refresh
+
+
+    # Upgrade BTCPay Server (docker compose does install, just need version file update)
+    if should_install_app "btcpayserver" ; then
+        CURRENT=""
+        if [ -f $BTCPAYSERVER_VERSION_FILE ]; then
+            CURRENT=$(cat $BTCPAYSERVER_VERSION_FILE)
+        fi
+        if [ "$CURRENT" != "$BTCPAYSERVER_VERSION" ]; then
+            echo $BTCPAYSERVER_VERSION > $BTCPAYSERVER_VERSION_FILE
+        fi
+    fi
+    touch /tmp/need_application_refresh
+
 
     # Install Dojo
     DOJO_UPGRADE_URL=https://code.samourai.io/dojo/samourai-dojo/-/archive/$DOJO_VERSION/samourai-dojo-$DOJO_VERSION.tar.gz
