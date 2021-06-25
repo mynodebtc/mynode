@@ -410,7 +410,7 @@ def page_lnd_pair_wallet():
     bluewallet_lndhub_tor_img = "/api/get_qr_code_image?url="+urllib.quote_plus(bluewallet_lndhub_tor_text)
     bluewallet_electrs_local_text = "bluewallet:setelectrumserver?server="+local_ip+":50002"
     bluewallet_electrs_local_img = "/api/get_qr_code_image?url="+urllib.quote_plus(bluewallet_electrs_local_text)
-    bluewallet_electrs_tor_text = "bluewallet:setelectrumserver?server="+electrs_onion_url+":50002"
+    bluewallet_electrs_tor_text = "bluewallet:setelectrumserver?server="+electrs_onion_url+":50001"     # Use non-SSL for Tor (scans in Bluewallet better)
     bluewallet_electrs_tor_img = "/api/get_qr_code_image?url="+urllib.quote_plus(bluewallet_electrs_tor_text)
 
 
