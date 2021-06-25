@@ -396,7 +396,6 @@ if [ -f /opt/mynode/btcpayserver/.env ]; then
     sed -i "s/REPLACE_BTCPAY_VERSION/$BTCPAYSERVER_VERSION/g" /opt/mynode/btcpayserver/.env || true
     sed -i "s/REPLACE_NBXPLORER_VERSION/$BTCPAYSERVER_NBXPLORER_VERSION/g" /opt/mynode/btcpayserver/.env || true
 fi
-echo $BTCPAYSERVER_VERSION > $BTCPAYSERVER_VERSION_FILE
 
 # BTC RPC Explorer Config
 mkdir -p /opt/mynode/btc-rpc-explorer
