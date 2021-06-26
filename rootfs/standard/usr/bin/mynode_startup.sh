@@ -770,6 +770,7 @@ rm /etc/systemd/system/bitcoind.service || true # Make sure new bitcoin service 
 if [ -f /usr/share/joininbox/menu.update.sh ] && [ -f /home/joinmarket/menu.update.sh ]; then
     sudo -u joinmarket cp -f /usr/share/joininbox/menu.update.sh /home/joinmarket/menu.update.sh
 fi
+chown bitcoin:bitcoin /mnt/hdd/mynode/settings/.lndpw
 
 # Check for new versions
 torify wget $LATEST_VERSION_URL --timeout=30 -O /usr/share/mynode/latest_version || true
