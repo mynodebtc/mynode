@@ -1,3 +1,7 @@
+=== v0.2.37 ===
+- Released: 06/27/21
+- Resolve wallet creation / restore issue
+
 === v0.2.36 ===
 - Released: 06/23/21
 - Fix path to Lightning Terminal sig file
