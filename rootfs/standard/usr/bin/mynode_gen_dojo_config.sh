@@ -116,7 +116,7 @@ else
 fi
 
 # Modify for Raspbian devices
-if [ $IS_RASPI = 1 ]; then
+if [ $IS_RASPI -eq 1 ] && [ $IS_RASPI4_ARM64 -eq 0 ]; then
   # Modify mysql Dockerfile for Raspbian devices
   sed -i 's|FROM.*|FROM    hypriot/rpi-mysql:latest|' /mnt/hdd/mynode/dojo/docker/my-dojo/mysql/Dockerfile
   # Modify Tor Dockerfile for ARMv6/7 devices
@@ -125,7 +125,7 @@ if [ $IS_RASPI = 1 ]; then
 fi
 
 # Modify for Rock64 devices
-if [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ]; then
+if [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ] || [ $IS_RASPI4_ARM64 = 1 ]; then
   # Modify mysql Dockerfile for Rock64 devices
   sed -i 's|FROM.*|FROM    mariadb:latest|' /mnt/hdd/mynode/dojo/docker/my-dojo/mysql/Dockerfile
   # Modify Tor Dockerfile for ARMv8 devices
