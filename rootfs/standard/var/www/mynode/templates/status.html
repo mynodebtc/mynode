@@ -148,7 +148,7 @@
             <div id="lnd_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lnd_status_log}}</pre></div>
             <div class="divider"></div>
 
-            {% if lnd_wallet_exists %}
+            {% if lnd_wallet_exists and lnd_ready %}
             <div class="settings_block_subheader">Loop Status</div>
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ loop_status_color }}"></div>
@@ -159,7 +159,7 @@
             <div class="divider"></div>
             {% endif %}
 
-            {% if lnd_wallet_exists %}
+            {% if lnd_wallet_exists and lnd_ready %}
             <div class="settings_block_subheader">Pool Status</div>
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ pool_status_color }}"></div>
@@ -170,7 +170,7 @@
             <div class="divider"></div>
             {% endif %}
 
-            {% if lnd_wallet_exists %}
+            {% if lnd_wallet_exists and lnd_ready %}
             <div class="settings_block_subheader">Lightning Terminal Status</div>
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ lit_status_color }}"></div>
@@ -190,6 +190,7 @@
             <div id="electrs_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{electrs_status_log}}</pre></div>
             <div class="divider"></div>
 
+            {% if lnd_wallet_exists and lnd_ready %}
             <div class="settings_block_subheader">LNDHub Status</div>
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ lndhub_status_color }}"></div>
@@ -198,7 +199,9 @@
             <button id="show_lndhub_status" onclick="showLog('lndhub')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="lndhub_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lndhub_status_log}}</pre></div>
             <div class="divider"></div>
+            {% endif %}
 
+            {% if lnd_wallet_exists and lnd_ready %}
             <div class="settings_block_subheader">RTL Status</div>
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ rtl_status_color }}"></div>
@@ -207,7 +210,9 @@
             <button id="show_rtl_status" onclick="showLog('rtl')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="rtl_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{rtl_status_log}}</pre></div>
             <div class="divider"></div>
+            {% endif %}
 
+            {% if lnd_wallet_exists and lnd_ready %}
             <div class="settings_block_subheader">LNbits Status</div>
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ lnbits_status_color }}"></div>
@@ -216,7 +221,9 @@
             <button id="show_lnbits_status" onclick="showLog('lnbits')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="lnbits_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lnbits_status_log}}</pre></div>
             <div class="divider"></div>
+            {% endif %}
 
+            {% if lnd_wallet_exists and lnd_ready %}
             <div class="settings_block_subheader">Thunderhub Status</div>
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ thunderhub_status_color }}"></div>
@@ -225,6 +232,7 @@
             <button id="show_thunderhub_status" onclick="showLog('thunderhub')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="thunderhub_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{thunderhub_status_log}}</pre></div>
             <div class="divider"></div>
+            {% endif %}
 
             <div class="settings_block_subheader">Docker Status</div>
             <div class="settings_block_subheader_status">
@@ -328,7 +336,7 @@
             <div id="specter_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{specter_status_log}}</pre></div>
             <div class="divider"></div>
 
-            {% if lnd_wallet_exists %}
+            {% if lnd_wallet_exists and lnd_ready %}
             <div class="settings_block_subheader">Sphinx Relay Status</div>
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ sphinxrelay_status_color }}"></div>
