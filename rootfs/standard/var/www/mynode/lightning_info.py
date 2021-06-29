@@ -448,8 +448,8 @@ def lnd_channel_backup_exists():
     return os.path.isfile( get_lnd_channel_backup_file() )
 
 def get_lnd_status():
-    if not lnd_wallet_exists():
-        return "Please create wallet..."
+    #if not lnd_wallet_exists():
+    #    return "Please create wallet..."
 
     if not is_bitcoin_synced():
         return "Waiting..."
@@ -458,12 +458,12 @@ def get_lnd_status():
         return "Running"
 
     try:
-        #log = subprocess.check_output("tail -n 100 /var/log/lnd.log", shell=True)
         log = get_journalctl_log("lnd")
         lines = log.splitlines()
-        #lines.reverse()
         for line in lines:
-            if "Caught up to height" in line:
+            if "Waiting for wallet encryption password" in line and not lnd_wallet_exists():
+                return "Please create wallet..."
+            elif "Caught up to height" in line:
                 m = re.search("height ([0-9]+)", line)
                 height = m.group(1)
                 percent = 100.0 * (float(height) / bitcoin_block_height)
@@ -484,6 +484,8 @@ def get_lnd_status():
                 return "Logging in..."
             elif "LightningWallet opened" in line:
                 return "Wallet open..."
+            elif "wallet unlock password file was specified but wallet does not exist" in line:
+                return "Config Error"
 
         return "Waiting..."
     except:
@@ -493,9 +495,9 @@ def get_lnd_status_color():
     if not is_bitcoin_synced():
         return "yellow"
 
-    if not lnd_wallet_exists():
-        # This hides the restart /login attempt LND does from the GUI
-        return "green"
+    #if not lnd_wallet_exists():
+    #    # This hides the restart /login attempt LND does from the GUI
+    #    return "green"
     
     lnd_status_code = get_service_status_code("lnd")
     if lnd_status_code != 0:
@@ -503,6 +505,7 @@ def get_lnd_status_color():
         lnd_status = get_lnd_status()
         if lnd_status == "Logging in...":
             lnd_status_color = "yellow"
+        return lnd_status_color
     return "green"
 
 def get_lnd_version():
