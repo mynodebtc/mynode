@@ -69,11 +69,15 @@ def page_lnd():
     wallet_logged_in = is_lnd_logged_in()
     channel_backup_exists = lnd_channel_backup_exists()
 
+    lnd_has_error = get_service_status_code("lnd") != 0
+
     if not lnd_wallet_exists():
         templateData = {
             "title": "myNode Lightning Wallet",
             "wallet_exists": wallet_exists,
             "wallet_logged_in": wallet_logged_in,
+            "lnd_has_error": lnd_has_error,
+            "using_lnd_custom_config": using_lnd_custom_config(),
             "watchtower_enabled": is_watchtower_enabled(),
             "version": get_lnd_version(),
             "loop_version": get_loop_version(),
@@ -88,6 +92,7 @@ def page_lnd():
             "title": "myNode Lightning Wallet",
             "wallet_exists": wallet_exists,
             "wallet_logged_in": wallet_logged_in,
+            "lnd_has_error": lnd_has_error,
             "watchtower_enabled": is_watchtower_enabled(),
             "alias": alias,
             "status": get_lnd_status(),
@@ -108,6 +113,7 @@ def page_lnd():
                 "title": "myNode Lightning Wallet",
                 "wallet_exists": wallet_exists,
                 "wallet_logged_in": False,
+                "lnd_has_error": lnd_has_error,
                 "watchtower_enabled": is_watchtower_enabled(),
                 "alias": alias,
                 "status": "Waiting on LND data...",
@@ -183,6 +189,8 @@ def page_lnd():
         "title": "myNode Lightning Status",
         "wallet_exists": wallet_exists,
         "wallet_logged_in": wallet_logged_in,
+        "lnd_has_error": lnd_has_error,
+        "using_lnd_custom_config": using_lnd_custom_config(),
         "version": get_lnd_version(),
         "loop_version": get_loop_version(),
         "pool_version": get_pool_version(),

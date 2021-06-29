@@ -157,6 +157,12 @@
 
         <div class="main_header">Lightning Status</div>
         <br/>
+
+{% if lnd_has_error %}
+        <div class="main_page_error_block">
+            <p style="text-align: center;"><b>Warning!</b><br/>The LND service is not running properly. Please check the log on the <a href="/status">Status</a> page.</p>
+        </div>
+{% endif %}
         
 {% if not wallet_exists %}
         <div class="app_tile_row">
@@ -168,6 +174,18 @@
                 </div>
             </div>
         </div>
+
+        {% if using_lnd_custom_config %}
+        <!-- Show link to config in case custom config is causing problems -->
+        <div class="app_tile_row" style="margin-top: 50px;">
+            <div class="info_tile">
+                <div class="info_tile_header">Config</div>
+                <div class="info_tile_contents">
+                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/lnd/config">view / edit</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
 {% endif %}
 
 
