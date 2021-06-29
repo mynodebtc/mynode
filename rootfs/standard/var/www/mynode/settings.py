@@ -184,6 +184,7 @@ def page_status():
         "product_key_error": pk_error,
         "changelog": changelog,
         "lnd_wallet_exists": lnd_wallet_exists(),
+        "lnd_ready": is_lnd_ready(),
         "is_installing_docker_images": is_installing_docker_images(),
         "running_containers": running_containers,
         #"startup_status_log": startup_status_log,
