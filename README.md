@@ -33,7 +33,7 @@ https://mynodebtc.com/order_now
 
 <b>myNode One Device</b>
 <br/>
-![](images/device.jpg)
+![](images/device.png)
 
 ## Features
 Each myNode device comes with a number of wonderful features:
