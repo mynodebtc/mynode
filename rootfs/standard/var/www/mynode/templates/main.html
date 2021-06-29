@@ -316,6 +316,16 @@
                     }
                 });
 
+                // Update Bitcoin and Lightning color + status
+                $.getJSON("/api/get_service_status?service=bitcoin", function( data ) {
+                    update_status("bitcoin_status", data);
+                    update_status_icon("bitcoin_status_icon", data);
+                });
+                $.getJSON("/api/get_service_status?service=lnd", function( data ) {
+                    update_status("lnd_status", data);
+                    update_status_icon("lnd_status_icon", data);
+                });
+
                 // Update app status
                 {% for app in apps %}
                     {% if app.show_on_homepage %}
