@@ -591,12 +591,13 @@ def get_application_status(short_name):
         return "Installing..."
     if app["requires_lightning"] and not is_lnd_ready():
         return "Waiting on Lightning"
+    if app["requires_electrs"] and not is_electrs_active():
+        return "Waiting on Electrum"
     if not app["is_enabled"]:
         return app["app_tile_default_status_text"]
     if app["requires_bitcoin"] and not is_bitcoin_synced():
         return "Waiting on Bitcoin"
-    if app["requires_electrs"] and not is_electrs_active():
-        return "Waiting on Electrum"
+
 
     # Check special cases
     special_status = get_application_status_special(short_name)
