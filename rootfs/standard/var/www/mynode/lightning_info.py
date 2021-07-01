@@ -487,6 +487,10 @@ def get_lnd_status():
             elif "wallet unlock password file was specified but wallet does not exist" in line:
                 return "Config Error"
 
+        # Check if no wallet file (log may have been rotated out, so can't get more accurate message)
+        if not lnd_wallet_exists():
+            return "Please create wallet..."
+
         return "Waiting..."
     except:
         return "Status Error"
