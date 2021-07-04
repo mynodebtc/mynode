@@ -24,14 +24,16 @@ services:
       RPC_PORT: "8332"
       RPC_USER: "mynode"
       RPC_PASS: "${BITCOIN_RPC_PASS}"
-      ELECTRS_HOST: "172.17.0.1"
-      ELECTRS_PORT: "50001"
+      ELECTRUM_HOST: "172.17.0.1"
+      ELECTRUM_PORT: "50001"
+      ELECTRUM_TLS: "false"
       MYSQL_HOST: "db"
       MYSQL_PORT: "3306"
       MYSQL_DATABASE: "mempool"
       MYSQL_USER: "mempool"
       MYSQL_PASS: "mempool"
       BACKEND_MAINNET_HTTP_PORT: "8999"
+      MEMPOOL_CLEAR_PROTECTION_MINUTES: "20"
       CACHE_DIR: "/backend/cache/"
   db:
     image: ${MARIA_DB_IMAGE}
