@@ -344,12 +344,19 @@ if [ -f /mnt/hdd/mynode/settings/.testnet_enabled ]; then
 else
     sed -i "s/testnet/bitcoin/g" /mnt/hdd/mynode/electrs/electrs.toml || true
 fi
-if [ $IS_RASPI4_ARM64 -eq 1 ]; then
-    if [ -f /usr/bin/electrs ] && [ -f /usr/bin/electrs_arm64 ]; then
-        MD5_1=$(md5sum /usr/bin/electrs | cut -d' ' -f 1)
-        MD5_2=$(md5sum /usr/bin/electrs_arm64 | cut -d' ' -f 1)
+if [ $IS_RASPI4 -eq 1 ]; then
+    ELECTRS_DST=/usr/bin/electrs
+    ELECTRS_SRC=/usr/bin/electrs_arm32
+    if [ $IS_RASPI4_ARM64 -eq 1 ]; then
+        ELECTRS_SRC=/usr/bin/electrs_arm64
+    fi
+    if [ ! -f $ELECTRS_DST ]; then
+        cp -f $ELECTRS_SRC $ELECTRS_DST
+    else
+        MD5_1=$(md5sum $ELECTRS_DST | cut -d' ' -f 1)
+        MD5_2=$(md5sum $ELECTRS_SRC | cut -d' ' -f 1)
         if [ "${MD5_1}" != "{$MD5_2}" ]; then
-            cp -f /usr/bin/electrs_arm64 /usr/bin/electrs
+            cp -f $ELECTRS_SRC $ELECTRS_DST
         fi
     fi
 fi
