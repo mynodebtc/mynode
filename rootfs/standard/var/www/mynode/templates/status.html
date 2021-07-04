@@ -369,6 +369,15 @@
             <div id="nginx_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{nginx_status_log}}</pre></div>
             <div class="divider"></div>
 
+            <div class="settings_block_subheader">Web Server Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ www_status_color }}"></div>
+                {{ www_status }}
+            </div>
+            <button id="show_www_status" onclick="showLog('www')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="www_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{www_status_log}}</pre></div>
+            <div class="divider"></div>
+
             <div class="settings_block_subheader">Firewall Status</div>
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ ufw_status_color }}"></div>

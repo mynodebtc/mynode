@@ -549,6 +549,8 @@ def get_application_log(short_name):
             return get_journalctl_log("docker")
         elif short_name == "docker_image_build":
             return get_journalctl_log("docker_images")
+        elif short_name == "www":
+            return get_journalctl_log("www")
         else:
             return "ERROR: App or log not found ({})".format(short_name)
 
