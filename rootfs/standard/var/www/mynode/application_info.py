@@ -183,12 +183,14 @@ def initialize_applications():
         name="Bitcoin",
         short_name="bitcoin",
         app_tile_running_status_text="Running",
+        supports_testnet=True,
         log_file=get_bitcoin_log_file()
     ))
     apps.append(create_application(
         name="LND",
         short_name="lnd",
         app_tile_running_status_text="Running",
+        supports_testnet=True,
     ))
     apps.append(create_application(
         name="Loop",
