@@ -677,9 +677,11 @@ def internal_error(error):
 # Check for forced HTTPS
 @app.before_request
 def before_request():
-    if is_https_forced():
-        scheme = request.headers.get('X-Forwarded-Proto')
-        if scheme and scheme == 'http' and request.url.startswith('http://'):
+    # Check for HTTPS forced (only enforce once drive mounted and stable state)
+    # Otherwise, web GUI may be inaccessible if error occurs (NGINX needs drive for cert)
+    if is_https_forced() and get_mynode_status() == STATE_STABLE:
+        if request.url and request.url.startswith('http://'):
+            app.logger.info("REDIRECTING")
             url = request.url.replace('http://', 'https://', 1)
             code = 302
             app.logger.info("Redirecting to HTTPS ({})".format(url))
