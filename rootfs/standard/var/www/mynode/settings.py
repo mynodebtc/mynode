@@ -528,6 +528,16 @@ def reset_electrs_page():
     }
     return render_template('reboot.html', **templateData)
 
+@mynode_settings.route("/settings/clear-mempool-cache")
+def clear_mempool_cache_page():
+    check_logged_in()
+
+    t = Timer(1.0, clear_mempool_cache)
+    t.start()
+
+    flash("Mempool Cache Cleared", category="message")
+    return redirect("/settings")
+
 @mynode_settings.route("/settings/reset-specter-config")
 def reset_specter_config_page():
     check_logged_in()
