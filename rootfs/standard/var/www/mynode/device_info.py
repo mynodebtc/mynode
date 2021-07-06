@@ -877,6 +877,15 @@ def reset_sphinxrelay():
     restart_sphinxrelay()
 
 #==================================
+# Mempool Functions
+#==================================
+def clear_mempool_cache():
+    os.system("rm -rf /mnt/hdd/mynode/mempool/data/*")
+    os.system("rm -rf /mnt/hdd/mynode/mempool/mysql/data/*")
+    os.system("sync")
+    os.system("systemctl restart mempool")
+
+#==================================
 # Specter Functions
 #==================================
 def reset_specter_config():
