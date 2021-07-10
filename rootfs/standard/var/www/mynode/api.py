@@ -77,6 +77,24 @@ def api_get_service_status():
     data["sso_token"] = get_application_sso_token(service)
     return jsonify(data)
 
+@mynode_api.route("/api/get_app_info")
+def api_get_app_info():
+    check_logged_in()
+
+    data = {}
+    data["status"] = "ERROR"
+
+    if request.args.get('app'):
+        name = request.args.get('app')
+        if is_application_valid(name):
+            data = get_application( name )
+        else:
+            data["status"] = "INVALID APPLICATION"
+    else:
+        data = get_all_applications()
+
+    return jsonify(data)
+
 @mynode_api.route("/api/get_device_info")
 def api_get_device_info():
     check_logged_in()
