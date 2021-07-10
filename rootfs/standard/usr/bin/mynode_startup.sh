@@ -110,7 +110,6 @@ if [ -f /home/bitcoin/open_clone_tool ]; then
     sync
     while [ 1 ]; do
         python3 /usr/bin/clone_drive.py || true
-        sleep 60s
     done
 fi
 

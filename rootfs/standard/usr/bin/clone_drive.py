@@ -47,18 +47,9 @@ def set_clone_error(error_msg):
         return False
     return False
 
-def check_pid(pid):        
-    try:
-        os.kill(pid, 0)
-    except OSError:
-        return False
-    else:
-        return True
-
-def send_usr1_sig(process_id):
-    while check_pid(process_id):
-        os.kill(process_id, signal.SIGUSR1)
-        time.sleep(3)
+def wait_on_clone_error_dismiss():
+    while os.path.isfile("/tmp/.clone_error"):
+        time.sleep(1)
 
 def get_drive_size(drive):
     size = -1
@@ -136,6 +127,8 @@ def main():
     reset_clone_confirm()
     reset_clone_rescan()
     os.system("umount /mnt/hdd")
+    os.system("umount /tmp/drive1")
+    os.system("umount /tmp/drive2")
     os.system("rm /tmp/.clone_target_drive_has_mynode")
 
     # Detect drives
@@ -148,6 +141,7 @@ def main():
         print_and_log("Clone tool did not find 2 drives!")
         set_clone_state("error")
         set_clone_error("Clone tool needs 2 drives! Found {}.".format(drive_count))
+        wait_on_clone_error_dismiss()
         return
 
     # Detect Source and Target Drives
@@ -165,6 +159,7 @@ def main():
             if target_found:
                 set_clone_state("error")
                 set_clone_error("Two target drives found. Is myNode drive missing?")
+                wait_on_clone_error_dismiss()
                 return
             else:
                 target_found = True
@@ -174,6 +169,7 @@ def main():
             if target_found:
                 set_clone_state("error")
                 set_clone_error("Two target drives found. Is myNode drive missing?")
+                wait_on_clone_error_dismiss()
                 return
             else:
                 target_found = True
@@ -202,6 +198,7 @@ def main():
                     if target_found:
                         set_clone_state("error")
                         set_clone_error("Two target drives found. Is myNode drive missing?")
+                        wait_on_clone_error_dismiss()
                         return
                     else:
                         target_found = True
@@ -221,82 +218,97 @@ def main():
     while not os.path.isfile("/tmp/.clone_confirm") and not os.path.isfile("/tmp/.clone_rescan"):
         time.sleep(1)
 
-    # User asked for rescan - recursively call main
+    # User asked for rescan, return, script will re-run right away
     if os.path.isfile("/tmp/.clone_rescan"):
-        main()
         return
 
-    # Clone drives
+    # Setup for clone
     set_clone_state("in_progress")
+    os.system(f"mkdir -p /tmp/drive1")
+    os.system(f"mkdir -p /tmp/drive2")
+    os.system(f"umount /dev/{mynode_drive}1")
+    os.system(f"umount /dev/{target_drive}1")
+
+    # Update partitions (removes all + makes new without removing data)
+    print_and_log("Formatting Drive...")
+    os.system("echo 'Formatting drive...' > /tmp/.clone_progress")
+    subprocess.check_output(f"wipefs -a /dev/{target_drive}", shell=True)
+    time.sleep(2)
+    subprocess.check_output(f"/usr/bin/format_drive.sh {target_drive}", shell=True)
+    time.sleep(2)
+
+    # Make new partition on dest drive
+    print_and_log("Creating Partition...")
+    os.system("echo 'Creating Partition...' > /tmp/.clone_progress")
+    subprocess.check_output(f"mkfs.ext4 -F -L myNode /dev/{target_drive}1", shell=True)
+    time.sleep(2)
+
+    # Mounting Partitions
+    print_and_log("Mounting Partitions...")
+    os.system("echo 'Mounting Partitions...' > /tmp/.clone_progress")
+    subprocess.check_output(f"mount /dev/{mynode_drive}1 /tmp/drive1", shell=True)
+    subprocess.check_output(f"mount /dev/{target_drive}1 /tmp/drive2", shell=True)
+
+    # Clone drives
     os.system("echo 'Starting clone.' > /tmp/.clone_progress")
     try:
-        cmd = ["dd","bs=64K",f"if=/dev/{mynode_drive}",f"of=/dev/{target_drive}","conv=sync,noerror"]
+        #cmd = ["dd","bs=64K",f"if=/dev/{mynode_drive}",f"of=/dev/{target_drive}","conv=sync,noerror"]
         #cmd = ["dd","bs=512",f"if=/dev/zero",f"of=/dev/null","count=5999999","conv=sync,noerror"]
-        dd = subprocess.Popen(cmd, stderr=subprocess.PIPE)
-        print_and_log("DD PID: {}".format(dd.pid))
-        thread = Thread(target=send_usr1_sig, args=(dd.pid,))
-        thread.start()
-        for l in dd.stderr:
+        cmd = ["rsync","-avxHAX","--info=progress2",f"/tmp/drive1/","/tmp/drive2/"]
+        clone_process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        print_and_log("CLONE PID: {}".format(clone_process.pid))
+        for l in clone_process.stdout:
             l = l.decode("utf-8")
-            if 'bytes' in l:
+            if 'xfr#' in l:
+                logline = "UNKNOWN"
+                try:
+                    lines = l.split("\r")
+                    logline = lines[len(lines)-1].strip()
+                    parts = logline.split()
+                    logline = parts[0] + " bytes copied<br/>" + parts[1] + "<br/>" + parts[2] + "<br/>" + parts[3]
+                except Exception as e:
+                    logline = "Clone status parse error: ".format(str(e))
                 try:
                     out_fd = open('/tmp/.clone_progress','w')
-                    out_fd.write(l)
+                    out_fd.write(logline)
                     out_fd.close()
                 except Exception as e:
                     print_and_log("Write Exception: " + str(e))
 
-        while dd.poll() is None:
+        while clone_process.poll() is None:
             time.sleep(5)
-            print_and_log("Waiting on dd exit...")
+            print_and_log("Waiting on rsync exit...")
 
-        print_and_log("DD RET CODE: {}".format(dd.returncode))
-        if dd.returncode != 0:
-            # DD had an error - log it
-            if dd.stderr != None:
-                for l in dd.stderr:
-                    print_and_log("DD STDERR: "+l.decode("utf-8"))
-            if dd.stdout != None:
-                for l in dd.stdout:
-                    print_and_log("DD STDOUT: "+l.decode("utf-8"))
+        print_and_log("CLONE RET CODE: {}".format(clone_process.returncode))
+        if clone_process.returncode != 0:
+            # Clone had an error - log it
+            if clone_process.stderr != None:
+                for l in clone_process.stderr:
+                    print_and_log("CLONE STDERR: "+l.decode("utf-8"))
+            if clone_process.stdout != None:
+                for l in clone_process.stdout:
+                    print_and_log("CLONE STDOUT: "+l.decode("utf-8"))
             set_clone_state("error")
-            set_clone_error("DD failed with return code {}".format(dd.returncode))
+            set_clone_error("Clone failed with return code {}".format(clone_process.returncode))
+            wait_on_clone_error_dismiss()
             return
-        print_and_log("DD IS COMPLETE")
 
-        # PAUSE IF DD WAS SUCCESSFUL
-        # if dd.returncode == 0:
-        #     set_clone_state("error")
-        #     set_clone_error("DD WAS SUCCESSFUL!!!! Remove temp code.")
-        #     while True:
-        #         time.sleep(60)
-        
-        # Update partitions (removes all + makes new without removing data)
-        print_and_log("Updating Partitions...")
-        os.system("echo 'Updating partitions...' > /tmp/.clone_progress")
-        subprocess.check_output(f"/usr/bin/format_drive.sh {target_drive}", shell=True)
+        print_and_log("CLONE IS COMPLETE")
         time.sleep(2)
-
-        # Resize filesystem to fill up whole drive
-        print_and_log("Resizing Filesystem...")
-        os.system("echo 'Resizing filesystem...' > /tmp/.clone_progress")
-        os.system(f"partprobe /dev/{target_drive}")
-        time.sleep(2)
-        subprocess.check_output(f"e2fsck -y -f /dev/{target_drive}1", shell=True)
-        subprocess.check_output(f"resize2fs /dev/{target_drive}1", shell=True)
     except subprocess.CalledProcessError as e:
         print_and_log("CalledProcessError")
         print_and_log(e.stderr)
         print_and_log(e.stdout)
         set_clone_state("error")
         set_clone_error("Clone failed: {}".format(e))
+        wait_on_clone_error_dismiss()
         return
     except Exception as e:
         set_clone_state("error")
         set_clone_error("Clone failed: {}".format(e))
+        wait_on_clone_error_dismiss()
         return
         
-
     # Complete - wait for reboot
     set_clone_state("complete")
     print_and_log("Clone Complete!")
@@ -312,3 +324,4 @@ if __name__ == "__main__":
     except Exception as e:
         print_and_log("Exception: {}".format(str(e)))
         set_clone_error("Exception: {}".format(str(e)))
+        wait_on_clone_error_dismiss()

@@ -248,12 +248,21 @@ def index():
             }
             return render_template('state.html', **templateData)
         elif clone_state == CLONE_STATE_ERROR:
+            # Error is being cleared
+            if request.args.get('clone_clear_error'):
+                os.system("rm /tmp/.clone_error")
+                time.sleep(3)
+                return redirect("/")
+
+            # Show Error
             error = get_clone_error()
             msg  = ""
             msg += "Clone Error<br/></br>"
             msg += error
-            msg += "<br/><br/><br/><small>Retrying in one minute.<br/><br/><br/>"
-            msg += "<a class='ui-button ui-widget ui-corner-all mynode_button_small' href='/settings/reboot-device'>Exit Clone Tool</a>"
+            msg += "<br/><br/><br/>"
+            msg += "<a class='ui-button ui-widget ui-corner-all mynode_button_small' style='width: 120px;' href='/?clone_clear_error=1'>Try Again</a>"
+            msg += "<br/><br/>"
+            msg += "<a class='ui-button ui-widget ui-corner-all mynode_button_small' style='width: 120px;' href='/settings/reboot-device'>Exit Clone Tool</a>"
             templateData = {
                 "title": "myNode Clone Tool",
                 "header_text": "Cloning Tool",
