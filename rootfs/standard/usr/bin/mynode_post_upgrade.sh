@@ -172,7 +172,25 @@ if ! skip_base_upgrades ; then
     pip3 install lndmanage==$LNDMANAGE_VERSION --no-cache-dir
     echo $LNDMANAGE_VERSION > $LNDMANAGE_VERSION_FILE
 
+    # Update Node (not well tested, especially app re-install)
+    # if [ -f /etc/apt/sources.list.d/nodesource.list ]; then
+    #     NODE_VERSION=11.x
+    #     CURRENT_NODE_VERSION=$(cat /etc/apt/sources.list.d/nodesource.list)
+    #     if [[ "$CURRENT_NODE_VERSION" != *"node_${NODE_VERSION}"* ]]; then
+    #         # Upgrade node
+    #         curl -sL https://deb.nodesource.com/setup_${NODE_VERSION} | bash -
+    #         apt-get install -y nodejs
 
+    #         # Mark apps using node as needing re-install
+    #         rm -f /home/bitcoin/.mynode/lndhub_version
+    #         rm -f /home/bitcoin/.mynode/sphinxrelay_version
+    #     else
+    #         echo "Node version match"
+    #     fi
+    # else
+    #     echo "No node apt sources file?"
+    # fi
+    
     # Install Docker
     if [ ! -f /usr/bin/docker ]; then
         rm -f /tmp/docker_install.sh
