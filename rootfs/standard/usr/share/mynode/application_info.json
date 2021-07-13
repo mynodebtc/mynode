@@ -253,7 +253,7 @@
     {
         "name": "Netdata",
         "short_name": "netdata",
-        "show_on_application_page": false
+        "can_reinstall": false
     },
     {
         "name": "Tor",

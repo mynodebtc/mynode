@@ -517,6 +517,7 @@ fi
 # Setup Netdata
 mkdir -p /opt/mynode/netdata
 cp -f /usr/share/mynode/netdata-compose.yml /opt/mynode/netdata/netdata-compose.yml
+echo "NETDATA_VERSION=${NETDATA_VERSION}" > /opt/mynode/netdata/.env
 cp -f /usr/share/mynode/netdata.conf /opt/mynode/netdata/netdata.conf
 
 # Setup webssh2
