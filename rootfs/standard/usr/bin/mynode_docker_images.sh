@@ -23,8 +23,23 @@ while true; do
     # Pull images that don't need to be built
     # ???
 
-    # Upgrade WebSSH2
+    # Upgrade Netdata
+    echo "Checking for new netdata..."
+    CURRENT=""
+    if [ -f $NETDATA_VERSION_FILE ]; then
+        CURRENT=$(cat $NETDATA_VERSION_FILE)
+    fi
+    if [ "$CURRENT" != "$NETDATA_VERSION" ]; then
+        docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'netdata') || true
+
+        docker pull netdata/netdata:${NETDATA_VERSION}
+
+        echo $NETDATA_VERSION > $NETDATA_VERSION_FILE
+    fi
+    touch /tmp/need_application_refresh
     
+
+    # Upgrade WebSSH2
     echo "Checking for new webssh2..."
     WEBSSH2_UPGRADE_URL=https://github.com/billchurch/webssh2/archive/${WEBSSH2_VERSION}.tar.gz
     CURRENT=""

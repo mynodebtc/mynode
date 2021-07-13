@@ -121,6 +121,10 @@ WARDEN_VERSION="0.91"
 WARDEN_VERSION_FILE=/home/bitcoin/.mynode/warden_version
 WARDEN_LATEST_VERSION_FILE=/home/bitcoin/.mynode/warden_version_latest
 
+NETDATA_VERSION="v1.19.0"
+NETDATA_VERSION_FILE=/mnt/hdd/mynode/settings/netdata_version
+NETDATA_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/netdata_version_latest
+
 WEBSSH2_VERSION="v0.2.10-0"
 WEBSSH2_VERSION_FILE=/mnt/hdd/mynode/settings/webssh2_version
 WEBSSH2_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/webssh2_version_latest
