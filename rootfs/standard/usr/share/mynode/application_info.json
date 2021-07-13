@@ -1,0 +1,295 @@
+[
+    {
+        "name": "Bitcoin",
+        "short_name": "bitcoin",
+        "app_tile_running_status_text": "Running",
+        "supports_testnet": true
+    },
+    {
+        "name": "LND",
+        "short_name": "lnd",
+        "app_tile_running_status_text": "Running",
+        "supports_testnet": true
+    },
+    {
+        "name": "Loop",
+        "short_name": "loop",
+        "requires_lightning": true
+    },
+    {
+        "name": "Pool",
+        "short_name": "pool",
+        "requires_lightning": true
+    },
+    {
+        "name": "Lightning Terminal",
+        "short_name": "lit",
+        "requires_lightning": true
+    },
+    {
+        "name": "Ride the Lightning",
+        "short_name": "rtl",
+        "app_tile_name": "RTL",
+        "app_tile_default_status_text": "Lightning Wallet",
+        "can_uninstall": true,
+        "show_on_homepage": true,
+        "requires_lightning": true,
+        "supports_testnet": true,
+        "homepage_order": 11
+    },
+    {
+        "name": "Electrum Server",
+        "short_name": "electrs",
+        "app_tile_button_text": "Info",
+        "app_tile_button_href": "/electrum-server",
+        "app_tile_default_status_text": "",
+        "app_tile_running_status_text": "Running",
+        "can_reinstall": false,
+        "show_on_homepage": true,
+        "supports_testnet": true,
+        "homepage_order": 12
+    },
+    {
+        "name": "BTCPay Server",
+        "short_name": "btcpayserver",
+        "app_tile_default_status_text": "Merchant Tool",
+        "can_uninstall": true,
+        "requires_lightning": true,
+        "show_on_homepage": true,
+        "homepage_order": 13
+    },
+    {
+        "name": "Mempool",
+        "short_name": "mempool",
+        "app_tile_default_status_text": "Mempool Viewer",
+        "can_uninstall": true,
+        "show_on_homepage": true,
+        "supports_testnet": true,
+        "requires_docker_image_installation": true,
+        "homepage_order": 14
+    },
+    {
+        "name": "LND Hub",
+        "short_name": "lndhub",
+        "app_tile_default_status_text": "BlueWallet Backend",
+        "can_uninstall": true,
+        "requires_lightning": true,
+        "show_on_homepage": true,
+        "homepage_order": 15
+    },
+    {
+        "name": "Corsproxy",
+        "short_name": "corsproxy",
+        "can_enable_disable": false,
+        "show_on_application_page": false
+    },
+    {
+        "name": "LNDConnect",
+        "short_name": "lndconnect"
+    },
+    {
+        "name": "LNDManage",
+        "short_name": "lndmanage"
+    },
+    {
+        "name": "BTC RPC Explorer",
+        "short_name": "btcrpcexplorer",
+        "app_tile_name": "Explorer",
+        "app_tile_default_status_text": "BTC RPC Explorer",
+        "can_uninstall": true,
+        "requires_bitcoin": true,
+        "show_on_homepage": true,
+        "supports_testnet": true,
+        "requires_electrs": true,
+        "homepage_order": 21
+    },
+    {
+        "name": "Dojo",
+        "short_name": "dojo",
+        "app_tile_button_text": "Info",
+        "app_tile_button_href": "/dojo",
+        "app_tile_default_status_text": "Mixing Tool",
+        "app_tile_running_status_text": "Running",
+        "can_uninstall": true,
+        "show_on_application_page": true,
+        "show_on_homepage": true,
+        "requires_electrs": true,
+        "requires_docker_image_installation": true,
+        "homepage_order": 22
+    },
+    {
+        "name": "Whirlpool",
+        "short_name": "whirlpool",
+        "app_tile_button_text": "Info",
+        "app_tile_button_href": "/whirlpool",
+        "app_tile_default_status_text": "Mixing Tool",
+        "app_tile_running_status_text": "Running",
+        "can_uninstall": true,
+        "show_on_homepage": true,
+        "homepage_order": 23
+    },
+    {
+        "name": "JoininBox",
+        "short_name": "joininbox",
+        "app_tile_button_text": "Info",
+        "app_tile_button_href": "/joininbox",
+        "app_tile_default_status_text": "JoinMarket Mixing",
+        "can_uninstall": true,
+        "show_on_homepage": true,
+        "homepage_order": 24,
+        "can_enable_disable": false,
+        "is_premium": true
+    },
+    {
+        "name": "Joinmarket",
+        "short_name": "joinmarket",
+        "show_on_application_page": false,
+        "is_premium": true
+    },
+    {
+        "name": "Thunderhub",
+        "short_name": "thunderhub",
+        "app_tile_default_status_text": "Lightning Wallet",
+        "can_uninstall": true,
+        "requires_lightning": true,
+        "supports_testnet": true,
+        "show_on_homepage": true,
+        "homepage_order": 25,
+        "is_premium": true
+    },
+    {
+        "name": "Caravan",
+        "short_name": "caravan",
+        "requires_bitcoin": true,
+        "app_tile_button_text": "Info",
+        "app_tile_button_href": "/caravan",
+        "app_tile_default_status_text": "Multisig Tool",
+        "can_uninstall": true,
+        "show_on_homepage": true,
+        "homepage_order": 31,
+        "supports_testnet": true,
+        "is_premium": true
+    },
+    {
+        "name": "Specter",
+        "short_name": "specter",
+        "requires_bitcoin": true,
+        "app_tile_default_status_text": "Multisig Tool",
+        "can_uninstall": true,
+        "show_on_homepage": true,
+        "homepage_order": 32,
+        "supports_testnet": true,
+        "is_premium": true
+    },
+    {
+        "name": "CKBunker",
+        "short_name": "ckbunker",
+        "requires_bitcoin": true,
+        "app_tile_default_status_text": "Coldcard Signing Tool",
+        "can_uninstall": true,
+        "show_on_homepage": true,
+        "homepage_order": 33,
+        "supports_testnet": true,
+        "is_premium": true
+    },
+    {
+        "name": "Sphinx Relay",
+        "short_name": "sphinxrelay",
+        "app_tile_button_text": "Info",
+        "app_tile_button_href": "/sphinxrelay",
+        "app_tile_default_status_text": "Sphinx Chat Backend",
+        "app_tile_running_status_text": "Running",
+        "can_uninstall": true,
+        "requires_lightning": true,
+        "show_on_homepage": true,
+        "homepage_order": 34,
+        "is_premium": true
+    },
+    {
+        "name": "LNbits",
+        "short_name": "lnbits",
+        "app_tile_default_status_text": "Lightning Wallet",
+        "can_uninstall": true,
+        "show_on_homepage": true,
+        "homepage_order": 35,
+        "requires_lightning": true,
+        "is_premium": true
+    },
+    {
+        "COMMENT": "INCOMPLETE APP - enable showing on homepage and app page",
+        "name": "Warden",
+        "short_name": "warden",
+        "app_tile_default_status_text": "Portfolio Tracker",
+        "can_uninstall": true,
+        "show_on_homepage_page": false,
+        "show_on_application_page": false,
+        "homepage_order": 41
+    },
+    {
+        "name": "PyBlock",
+        "short_name": "pyblock",
+        "requires_lightning": true,
+        "app_tile_default_status_text": "Blockchain Info",
+        "app_tile_button_href": "/pyblock",
+        "app_tile_button_text": "Info",
+        "can_uninstall": true,
+        "can_enable_disable": false,
+        "show_on_homepage": true,
+        "homepage_order": 42
+    },
+    {
+        "name": "Balance of Satoshis",
+        "short_name": "bos",
+        "requires_lightning": true,
+        "app_tile_default_status_text": "Lightning Tool",
+        "can_uninstall": true,
+        "can_enable_disable": false,
+        "show_on_homepage": false
+    },
+    {
+        "name": "Web SSH",
+        "short_name": "webssh2"
+    },
+    {
+        "name": "Netdata",
+        "short_name": "netdata",
+        "show_on_application_page": false
+    },
+    {
+        "name": "Tor",
+        "short_name": "tor",
+        "can_enable_disable": false,
+        "app_tile_button_text": "Tor Services",
+        "app_tile_default_status_text": "Private Connections",
+        "app_tile_button_href": "/tor",
+        "show_on_application_page": false,
+        "show_on_homepage": true,
+        "journalctl_log_name": "tor@default",
+        "homepage_section": "remote_services",
+        "supports_testnet": true,
+        "is_premium": true
+    },
+    {
+        "name": "VPN",
+        "short_name": "vpn",
+        "can_reinstall": false,
+        "app_tile_button_text": "Info",
+        "app_tile_button_href": "/vpn-info",
+        "show_on_homepage": true,
+        "show_on_application_page": false,
+        "homepage_section": "remote_services",
+        "supports_testnet": true,
+        "is_premium": true
+    },
+    {
+        "name": "NGINX",
+        "short_name": "nginx",
+        "show_on_application_page": false
+    },
+    {
+        "name": "Firewall",
+        "short_name": "ufw",
+        "show_on_application_page": false,
+        "journalctl_log_name": "ufw"
+    }
+  ]

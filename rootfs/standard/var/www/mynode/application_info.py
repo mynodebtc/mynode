@@ -97,72 +97,41 @@ def get_app_latest_version(app):
 
     return version
 
-def create_application(name="NAME",
-                       short_name="SHORT_NAME",
-                       app_tile_name=None,
-                       is_premium=False,
-                       is_beta=False,
-                       can_reinstall=True,
-                       can_uninstall=False,
-                       requires_lightning=False,
-                       requires_electrs=False,
-                       requires_bitcoin=False,
-                       requires_docker_image_installation=False,
-                       supports_testnet=False,
-                       show_on_homepage=False,
-                       show_on_application_page=True,
-                       can_enable_disable=True,
-                       homepage_order=9999,
-                       homepage_section="",
-                       app_tile_button_text=None,
-                       app_tile_default_status_text="",
-                       app_tile_running_status_text="",
-                       app_tile_button_href="#",
-                       status="UNKNOWN",
-                       log_file=None,
-                       journalctl_log_name=None,
-                       ):
-    app = {}
-    app["name"] = name
-    app["short_name"] = short_name
-    if app_tile_name != None:
-        app["app_tile_name"] = app_tile_name
-    else:
-        app["app_tile_name"] = name
-    app["is_premium"] = is_premium
-    app["current_version"] = get_app_current_version(short_name)
-    app["latest_version"] = get_app_latest_version(short_name)
-    app["is_beta"] = is_beta
-    app["is_installed"] = is_installed(short_name)
-    app["can_reinstall"] = can_reinstall
-    app["can_uninstall"] = can_uninstall
-    app["requires_lightning"] = requires_lightning
-    app["requires_electrs"] = requires_electrs
-    app["requires_bitcoin"] = requires_bitcoin
-    app["requires_docker_image_installation"] = requires_docker_image_installation
-    app["supports_testnet"] = supports_testnet
-    app["show_on_homepage"] = show_on_homepage
-    app["show_on_application_page"] = show_on_application_page
-    app["can_enable_disable"] = can_enable_disable
-    app["is_enabled"] = is_service_enabled(short_name)
+def initialize_application_defaults(app):
+    if not "name" in app: app["name"] = "NO_NAME"
+    if not "short_name" in app: app["short_name"] = "NO_SHORT_NAME"
+    if not "description" in app: app["description"] = ""
+    if not "screenshots" in app: app["screenshots"] = []
+    if not "app_tile_name" in app: app["app_tile_name"] = app["name"]
+    if not "is_premium" in app: app["is_premium"] = False
+    app["current_version"] = get_app_current_version( app["short_name"] )
+    app["latest_version"] = get_app_latest_version( app["short_name"] )
+    if not "is_beta" in app: app["is_beta"] = False
+    app["is_installed"] = is_installed( app["short_name"] )
+    if not "can_reinstall" in app: app["can_reinstall"] = True
+    if not "can_uninstall" in app: app["can_uninstall"] = False
+    if not "requires_lightning" in app: app["requires_lightning"] = False
+    if not "requires_electrs" in app: app["requires_electrs"] = False
+    if not "requires_bitcoin" in app: app["requires_bitcoin"] = False
+    if not "requires_docker_image_installation" in app: app["requires_docker_image_installation"] = False
+    if not "supports_testnet" in app: app["supports_testnet"] = False
+    if not "show_on_homepage" in app: app["show_on_homepage"] = False
+    if not "show_on_application_page" in app: app["show_on_application_page"] = True
+    if not "can_enable_disable" in app: app["can_enable_disable"] = True
+    if not "is_enabled" in app: app["is_enabled"] = is_service_enabled( app["short_name"] )
     #app["status"] = status # Should status be optional to include? Takes lots of time.
     #app["status_color"] = get_service_status_color(short_name)
-    app["log_file"] = log_file
-    app["journalctl_log_name"] = journalctl_log_name
-    app["homepage_order"] = homepage_order
-    app["homepage_section"] = homepage_section
+    if not "log_file" in app: app["log_file"] = get_application_log_file( app["short_name"] )
+    if not "journalctl_log_name" in app: app["journalctl_log_name"] = None
+    if not "homepage_order" in app: app["homepage_order"] = 9999
+    if not "homepage_section" in app: app["homepage_section"] = ""
     if app["homepage_section"] == "" and app["show_on_homepage"]:
         app["homepage_section"] = "apps"
-    if app_tile_button_text != None:
-        app["app_tile_button_text"] = app_tile_button_text
-    else:
-        app["app_tile_button_text"] = app["app_tile_name"]
-    app["app_tile_default_status_text"] = app_tile_default_status_text
-    if app_tile_running_status_text != "":
-        app["app_tile_running_status_text"] = app_tile_running_status_text
-    else:
-        app["app_tile_running_status_text"] = app_tile_default_status_text
-    app["app_tile_button_href"] = app_tile_button_href
+    if not "app_tile_button_text" in app: app["app_tile_button_text"] = app["app_tile_name"]
+    if not "app_tile_default_status_text" in app: app["app_tile_default_status_text"] = ""
+    if not "app_tile_running_status_text" in app: app["app_tile_running_status_text"] = app["app_tile_default_status_text"]
+    if not "app_tile_button_href" in app: app["app_tile_button_href"] = "#"
+
     return app
 
 def update_application(app):
@@ -178,304 +147,15 @@ def initialize_applications():
     # Update latest version files
     os.system("/usr/bin/mynode_update_latest_version_files.sh")
 
-    # Update app data
-    apps.append(create_application(
-        name="Bitcoin",
-        short_name="bitcoin",
-        app_tile_running_status_text="Running",
-        supports_testnet=True,
-        log_file=get_bitcoin_log_file()
-    ))
-    apps.append(create_application(
-        name="LND",
-        short_name="lnd",
-        app_tile_running_status_text="Running",
-        supports_testnet=True,
-    ))
-    apps.append(create_application(
-        name="Loop",
-        short_name="loop",
-        requires_lightning=True,
-    ))
-    apps.append(create_application(
-        name="Pool",
-        short_name="pool",
-        requires_lightning=True,
-    ))
-    apps.append(create_application(
-        name="Lightning Terminal",
-        short_name="lit",
-        requires_lightning=True,
-    ))
-    apps.append(create_application(
-        name="Ride the Lightning",
-        short_name="rtl",
-        app_tile_name="RTL",
-        app_tile_default_status_text="Lightning Wallet",
-        can_uninstall=True,
-        show_on_homepage=True,
-        requires_lightning=True,
-        supports_testnet=True,
-        homepage_order=11
-    ))
-    apps.append(create_application(
-        name="Electrum Server",
-        short_name="electrs",
-        app_tile_button_text="Info",
-        app_tile_button_href="/electrum-server",
-        app_tile_default_status_text="",
-        app_tile_running_status_text="Running",
-        can_reinstall=False,
-        show_on_homepage=True,
-        supports_testnet=True,
-        homepage_order=12
-    ))
-    apps.append(create_application(
-        name="BTCPay Server",
-        short_name="btcpayserver",
-        app_tile_default_status_text="Merchant Tool",
-        can_uninstall=True,
-        requires_lightning=True,
-        show_on_homepage=True,
-        homepage_order=13
-    ))
-    apps.append(create_application(
-        name="Mempool",
-        short_name="mempool",
-        app_tile_default_status_text="Mempool Viewer",
-        can_uninstall=True,
-        show_on_homepage=True,
-        supports_testnet=True,
-        requires_docker_image_installation=True,
-        homepage_order=14
-    ))
-    apps.append(create_application(
-        name="LND Hub",
-        short_name="lndhub",
-        app_tile_default_status_text="BlueWallet Backend",
-        can_uninstall=True,
-        requires_lightning=True,
-        show_on_homepage=True,
-        homepage_order=15
-    ))
-    apps.append(create_application(
-        name="Corsproxy",
-        short_name="corsproxy",
-        can_enable_disable=False,
-        show_on_application_page=False
-    ))
-    apps.append(create_application(
-        name="LNDConnect",
-        short_name="lndconnect",
-    ))
-    apps.append(create_application(
-        name="LNDManage",
-        short_name="lndmanage",
-    ))
-    apps.append(create_application(
-        name="BTC RPC Explorer",
-        short_name="btcrpcexplorer",
-        app_tile_name="Explorer",
-        app_tile_default_status_text="BTC RPC Explorer",
-        can_uninstall=True,
-        requires_bitcoin=True,
-        show_on_homepage=True,
-        supports_testnet=True,
-        requires_electrs=True,
-        homepage_order=21
-    ))
-    apps.append(create_application(
-        name="Dojo",
-        short_name="dojo",
-        app_tile_button_text="Info",
-        app_tile_button_href="/dojo",
-        app_tile_default_status_text="Mixing Tool",
-        app_tile_running_status_text="Running",
-        can_uninstall=True,
-        show_on_application_page=True,
-        show_on_homepage=True,
-        requires_electrs=True,
-        requires_docker_image_installation=True,
-        homepage_order=22
-    ))
-    apps.append(create_application(
-        name="Whirlpool",
-        short_name="whirlpool",
-        app_tile_button_text="Info",
-        app_tile_button_href="/whirlpool",
-        app_tile_default_status_text="Mixing Tool",
-        app_tile_running_status_text="Running",
-        can_uninstall=True,
-        show_on_homepage=True,
-        homepage_order=23
-    ))
-    apps.append(create_application(
-        name="JoininBox",
-        short_name="joininbox",
-        app_tile_button_text="Info",
-        app_tile_button_href="/joininbox",
-        app_tile_default_status_text="JoinMarket Mixing",
-        can_uninstall=True,
-        show_on_homepage=True,
-        homepage_order=24,
-        can_enable_disable=False,
-        is_premium=True,
-    ))
-    apps.append(create_application(
-        name="Joinmarket",
-        short_name="joinmarket",
-        show_on_application_page=False,
-        is_premium=True
-    ))
-    apps.append(create_application(
-        name="Thunderhub",
-        short_name="thunderhub",
-        app_tile_default_status_text="Lightning Wallet",
-        can_uninstall=True,
-        requires_lightning=True,
-        supports_testnet=True,
-        show_on_homepage=True,
-        homepage_order=25,
-        is_premium=True
-    ))
-    apps.append(create_application(
-        name="Caravan",
-        short_name="caravan",
-        requires_bitcoin=True,
-        app_tile_button_text="Info",
-        app_tile_button_href="/caravan",
-        app_tile_default_status_text="Multisig Tool",
-        can_uninstall=True,
-        show_on_homepage=True,
-        homepage_order=31,
-        supports_testnet=True,
-        is_premium=True
-    ))
-    apps.append(create_application(
-        name="Specter",
-        short_name="specter",
-        requires_bitcoin=True,
-        app_tile_default_status_text="Multisig Tool",
-        can_uninstall=True,
-        show_on_homepage=True,
-        homepage_order=32,
-        supports_testnet=True,
-        is_premium=True
-    ))
-    apps.append(create_application(
-        name="CKBunker",
-        short_name="ckbunker",
-        requires_bitcoin=True,
-        app_tile_default_status_text="Coldcard Signing Tool",
-        can_uninstall=True,
-        show_on_homepage=True,
-        homepage_order=33,
-        supports_testnet=True,
-        is_premium=True
-    ))
-    apps.append(create_application(
-        name="Sphinx Relay",
-        short_name="sphinxrelay",
-        app_tile_button_text="Info",
-        app_tile_button_href="/sphinxrelay",
-        app_tile_default_status_text="Sphinx Chat Backend",
-        app_tile_running_status_text="Running",
-        can_uninstall=True,
-        requires_lightning=True,
-        show_on_homepage=True,
-        homepage_order=34,
-        is_premium=True
-    ))
-    apps.append(create_application(
-        name="LNbits",
-        short_name="lnbits",
-        requires_lightning=True,
-        app_tile_default_status_text="Lightning Wallet",
-        can_uninstall=True,
-        show_on_homepage=True,
-        homepage_order=35,
-        is_premium=True
-    ))
-    # apps.append(create_application(
-    #     name="WARden",
-    #     short_name="warden",
-    #     requires_lightning=False,
-    #     app_tile_default_status_text="Bitcoin Portfolio",
-    #     can_uninstall=True,
-    #     show_on_homepage=True,
-    #     homepage_order=41,
-    #     is_premium=False
-    # ))
-    apps.append(create_application(
-        name="PyBlock",
-        short_name="pyblock",
-        requires_lightning=True,
-        app_tile_default_status_text="Blockchain Info",
-        app_tile_button_text="Info",
-        app_tile_button_href="/pyblock",
-        can_uninstall=True,
-        can_enable_disable=False,
-        show_on_homepage=True,
-        homepage_order=42,
-        is_premium=False
-    ))
-    apps.append(create_application(
-        name="Balance of Satoshis",
-        short_name="bos",
-        requires_lightning=True,
-        app_tile_default_status_text="Lightning Tool",
-        can_uninstall=True,
-        can_enable_disable=False,
-        show_on_homepage=False,
-        is_premium=False
-    ))
-    apps.append(create_application(
-        name="Web SSH",
-        short_name="webssh2",
-    ))
-    apps.append(create_application(
-        name="Netdata",
-        short_name="netdata",
-        show_on_application_page=False
-    ))
-    apps.append(create_application(
-        name="Tor",
-        short_name="tor",
-        can_enable_disable=False,
-        app_tile_button_text="Tor Services",
-        app_tile_default_status_text="Private Connections",
-        app_tile_button_href="/tor",
-        show_on_homepage=True,
-        show_on_application_page=False,
-        journalctl_log_name="tor@default",
-        homepage_section="remote_services",
-        supports_testnet=True,
-        is_premium=True,
-    ))
-    apps.append(create_application(
-        name="VPN",
-        short_name="vpn",
-        can_reinstall=False,
-        app_tile_button_text="Info",
-        app_tile_button_href="/vpn-info",
-        show_on_homepage=True,
-        show_on_application_page=False,
-        homepage_section="remote_services",
-        supports_testnet=True,
-        is_premium=True,
-    ))
-    apps.append(create_application(
-        name="NGINX",
-        short_name="nginx",
-        show_on_application_page=False
-    ))
-    apps.append(create_application(
-        name="Firewall",
-        short_name="ufw",
-        show_on_application_page=False,
-        journalctl_log_name="ufw"
-    ))
-    mynode_applications = copy.deepcopy(apps)
+    # Opening JSON file
+    with open('/usr/share/mynode/application_info.json', 'r') as app_info_file:
+        apps = json.load(app_info_file)
+        
+        for index, app in enumerate(apps):
+            apps[index] = initialize_application_defaults(app)
+
+        mynode_applications = copy.deepcopy(apps)
+    return
 
 def update_applications():
     global mynode_applications
@@ -555,6 +235,11 @@ def get_application_log(short_name):
             return get_journalctl_log("www")
         else:
             return "ERROR: App or log not found ({})".format(short_name)
+
+def get_application_log_file(short_name):
+    if short_name == "bitcoin":
+        return get_bitcoin_log_file()
+    return None
 
 def get_application_status_special(short_name):
     if short_name == "bitcoin":
