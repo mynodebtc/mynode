@@ -335,22 +335,16 @@ Section 8 -- Interpretation.
 
 Section 9 -- myNode License Additions
 
-  a. Distribution as source via GitHub forks is permitted under the
-     following conditions:
+  a. Distribution and forking is permitted under the following
+     conditions:
 
        1. Modifications remain public and can be merged back into the 
           main myNode repo without restriction.
 
-       2. Modifications to the licensing, product key, or access to
-          premium features is prohibited.
+       2. Distribtution of modifications to the licensing, product key,
+          or access to premium features is prohibited.
 
-       3. Addition of new applications and modifications to enable or
-          disable signaling of new features or forks for services like
-          Bitcoin is encouraged.
-
-       4. Distribution as binaries or images is prohibited.
-
-       5. Use of the myNode logo or brand material to act on behalf of
+       3. Use of the myNode logo or brand material to act on behalf of
           or impersonate myNode is prohibited.
 
 =======================================================================
