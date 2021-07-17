@@ -537,6 +537,7 @@ def index():
             "sd_rw_error": has_sd_rw_error(),
             "drive_usage": drive_usage,
             "low_drive_space_error": low_drive_space_error,
+            "is_quicksync_disabled": not is_quicksync_enabled(),
             "cpu_usage": get_cpu_usage(),
             "ram_usage": get_ram_usage(),
             "swap_usage": get_swap_usage(),
