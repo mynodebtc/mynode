@@ -278,7 +278,7 @@ if [ ! -f /mnt/hdd/mynode/settings/.setquicksyncdefault ]; then
     fi
     # Default small drives to no QuickSync
     DRIVE_SIZE=$(df /mnt/hdd | grep /dev | awk '{print $2}')
-    if (( ${DRIVE_SIZE} <= 800000000 )); then
+    if (( ${DRIVE_SIZE} <= 900000000 )); then
         touch /mnt/hdd/mynode/settings/quicksync_disabled
     fi
     touch /mnt/hdd/mynode/settings/.setquicksyncdefault
