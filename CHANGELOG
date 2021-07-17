@@ -1,3 +1,16 @@
+=== v0.2.38 ===
+- Released: 07/16/21
+- Upgrade Specter to v1.4.6
+- Upgrade Balance of Satoshis to v10.6.0
+- Upgrade Mempool to v2.2.0
+- Upgrade PyBlock to v0.9.8.8
+- Improve Clone Tool Speed and Consistency
+- Add clear cache option for Mempool
+- UI Improvements
+- Fix Dojo issue on Raspi4 64-bit
+- Fix issue with force HTTPS
+- Bug Fixes
+
 === v0.2.37 ===
 - Released: 06/27/21
 - Resolve wallet creation / restore issue
