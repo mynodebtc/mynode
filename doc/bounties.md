@@ -40,6 +40,7 @@ Additional myNode guides would be helpful for users attempting to use various to
 - SD card read only error (75k sats)
 - Blue wallet w/ tor (100k sats)
 - Developer guide to add new application (150k sats)
+- Guide walking user through Clone Tool usage (75k sats)
 - Guide to setup BTCPay for public access via HTTPS with Custom Domain (150k sats)
 
 GitHub: https://github.com/mynodebtc/mynodebtc.github.io
