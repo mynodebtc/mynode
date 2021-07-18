@@ -12,10 +12,10 @@ With the growing number of node options available, some users would like to migr
 - Boot myNode with RaspiBlitz or Umbrel drive
 - Prompt user to migrate drive
 - If confirmed
--- Update the drive to use myNode drive folder format
--- Move Bitcoin data
--- Migrate Lightning data
--- Move old data to backup folder (optional, depends on size)
+  - Update the drive to use myNode drive folder format
+  - Move Bitcoin data
+  - Migrate Lightning data
+  - Move old data to backup folder (optional, depends on size)
 - Reboot
 
 Alternatively, create two tools to more easily import data specifically for LND and Bitcoin.
@@ -67,13 +67,15 @@ The watchtower config for tor is already setup and should be ready to use.
 Acceptance Criteria:
 - New link on Lightning page going to watchtower-specific page
 - New watchtower page
--- View watchtower clients, status, and details (lncli wtclient [towers, tower, stats, policy, ...])
--- Add new tower (lncli wtclient add ...)
--- Remove tower (lncli wtclient remove ...)
+  - View watchtower clients, status, and details (lncli wtclient [towers, tower, stats, policy, ...])
+  - Add new tower (lncli wtclient add ...)
+  - Remove tower (lncli wtclient remove ...)
 - Should work if testnet is enabled
 
 Helpful links:
+
 https://github.com/lightningnetwork/lnd/blob/master/docs/watchtower.md
+
 https://github.com/openoms/lightning-node-management/blob/master/advanced-tools/watchtower.md
 
 ## Add WARden Terminal Application
@@ -90,6 +92,10 @@ Acceptance Criteria:
 - Warden Terminal page in the UI that explains how to open the application in the Linux Terminal (similar to JoininBox)
 - Verify install, re-install, uninstall options work on application page for Warden Terminal
 - New `mynode-warden-terminal` command available in Linux Terminal to easily open application (similar to `mynode-joininbox`)
+
+Helpful links:
+
+https://github.com/pxsocs/warden_terminal
 
 # Claimed Bounties
 
