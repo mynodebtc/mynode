@@ -484,7 +484,7 @@ def index():
         # Find drive usage
         drive_usage = get_drive_usage()
         low_drive_space_error = False
-        if int(re.sub("[^0-9]", "", drive_usage)) > 95:
+        if int(re.sub("[^0-9]", "", drive_usage)) >= 95:
             low_drive_space_error = True
 
         # Check for new version of software
