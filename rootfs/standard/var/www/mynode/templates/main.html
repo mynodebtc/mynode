@@ -109,8 +109,18 @@
             function need_to_update_tx_table(transactions, last_displayed_tx) {
                 if (transactions.length > 0) {
                     tx = transactions[0];
-                    if (tx["id"] != last_displayed_tx) {
+                    if (tx["id"] != last_displayed_tx["id"]) {
                         return true;
+                    } else {
+                        fields_to_compare = ["num_confirmations"];
+                        for (i=0; i<fields_to_compare.length; i++) { 
+                            field_name = fields_to_compare[i];
+                            if (field_name in tx && field_name in last_displayed_tx) {
+                                if (tx[field_name] != last_displayed_tx[field_name]) {
+                                    return true;
+                                }
+                            }
+                        }
                     }
                     return false;
                 } else {
@@ -252,7 +262,7 @@
                             for (i=0; i < transactions.length && i < {{lnd_tx_display_limit}}; i++) {
                                 tx = transactions[i];
                                 //console.log(JSON.stringify(tx))
-                                if (i==0) {lnd_last_btc_tx = tx['id'];}
+                                if (i==0) {lnd_last_btc_tx = tx;}
                                 row =  "<tr>";
                                 row += "<td>"+tx['date_str']+"</td>";
                                 row += "<td>"+tx['amount_str']+"</td>";
@@ -283,7 +293,7 @@
                             for (i=0; i < payments_and_invoices.length && i < {{lnd_tx_display_limit}}; i++) {
                                 tx = payments_and_invoices[i];
                                 //console.log(JSON.stringify(tx))
-                                if (i==0) {lnd_last_ln_tx = tx['id'];}
+                                if (i==0) {lnd_last_ln_tx = tx;}
                                 row =  "<tr>";
                                 row += "<td>"+tx['date_str']+"</td>";
                                 row += "<td>"+tx['value_str']+"</td>";
