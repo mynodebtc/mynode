@@ -52,6 +52,12 @@
 
 10. Make image now (if imaging)
 
+    To make image:
+     - Shutdown device
+     - Remove SD Card
+     - Backup SD card on PC (something like https://howchoo.com/g/nmexndnlmdb/how-to-back-up-a-raspberry-pi-on-windows)
+     - Now, you can reflash and start over from this point if necessary by flashing image onto SD card
+
     Final results:
 
      - Image with SSH access
