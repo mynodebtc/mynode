@@ -31,17 +31,6 @@ else
         sed -i "s/bitcoin.testnet=.*/bitcoin.testnet=1/g" /mnt/hdd/mynode/lnd/lnd.conf
         cat /usr/share/mynode/lnd_testnet.conf >> /mnt/hdd/mynode/lnd/lnd.conf
     fi
-
-    # Only add wallet-unlock-file line if wallet has been made
-    if [ -f /mnt/hdd/mynode/settings/.testnet_enabled ]; then
-        if [ -f /mnt/hdd/mynode/lnd/data/chain/bitcoin/testnet/wallet.db ]; then
-            sed -i "s/#wallet-unlock-password-file/wallet-unlock-password-file/g" /mnt/hdd/mynode/lnd/lnd.conf
-        fi
-    else
-        if [ -f /mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/wallet.db ]; then
-            sed -i "s/#wallet-unlock-password-file/wallet-unlock-password-file/g" /mnt/hdd/mynode/lnd/lnd.conf
-        fi
-    fi
 fi
 
 # Append tor domain
