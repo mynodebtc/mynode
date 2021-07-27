@@ -447,6 +447,17 @@ def get_lnd_channel_backup_file():
 def lnd_channel_backup_exists():
     return os.path.isfile( get_lnd_channel_backup_file() )
 
+def lnd_get_channel_db_size():
+    path = "mainnet"
+    if is_testnet_enabled():
+        path = "testnet"
+    size = "???"
+    try:
+        size = subprocess.check_output("ls -lsah /mnt/hdd/mynode/lnd/data/graph/"+path+"/channel.db | awk '{print $6}'", shell=True)
+    except:
+        size = "ERR"
+    return size
+
 def get_lnd_status():
     #if not lnd_wallet_exists():
     #    return "Please create wallet..."
