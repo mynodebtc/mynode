@@ -206,6 +206,7 @@ def page_lnd():
         "pubkey": pubkey,
         "uri": uri,
         "ip": ip,
+        "channel_db_size": lnd_get_channel_db_size(),
         "watchtower_enabled": is_watchtower_enabled(),
         "lit_password": get_lnd_lit_password(),
         "lnd_deposit_address": lnd_deposit_address,
