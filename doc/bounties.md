@@ -33,11 +33,9 @@ Additional myNode guides would be helpful for users attempting to use various to
 - Guide for replacing each piece of hardware (100k sats)
 - Guide to check seed via BlueWallet (100k sats)
 - Guide to update specific app versions (100k sats)
-- Guide for voltage error (75k sats)
 - Guide for fsck error (75k sats)
 - Guide for WiFi (100k sats)
 - Open JoininBox / JoinMarket (75k sats)
-- SD card read only error (75k sats)
 - Blue wallet w/ tor (100k sats)
 - Developer guide to add new application (150k sats)
 - Guide walking user through Clone Tool usage (75k sats)
@@ -100,4 +98,9 @@ https://github.com/pxsocs/warden_terminal
 
 # Claimed Bounties
 
-None yet!
+## myNode Guides
+
+Additional myNode guides would be helpful for users attempting to use various tools or features.
+
+- ~~Guide for voltage error (75k sats)~~
+- ~~SD card read only error (75k sats)~~
