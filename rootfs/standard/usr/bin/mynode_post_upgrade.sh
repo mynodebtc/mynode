@@ -160,7 +160,6 @@ if ! skip_base_upgrades ; then
     # Install any pip3 software
     pip3 install --upgrade pip setuptools wheel
     pip3 install gnureadline --no-cache-dir
-    pip3 install lndmanage==0.12.0 --no-cache-dir
     pip3 install docker-compose --no-cache-dir
     pip3 install pipenv --no-cache-dir
     pip3 install bcrypt --no-cache-dir
