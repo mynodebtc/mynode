@@ -679,7 +679,7 @@ def internal_error(error):
     templateData = {
         "title": "myNode 500",
         "header_text": "Internal server error",
-        "subheader_text": "If you were manually upgrading myNode, redo it.",
+        "subheader_text": "If you were manually upgrading myNode, please try again.",
         "ui_settings": read_ui_settings()
     }
     return render_template('state.html', **templateData), 500

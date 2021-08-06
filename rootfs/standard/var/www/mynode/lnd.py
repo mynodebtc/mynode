@@ -187,6 +187,7 @@ def page_lnd():
 
     templateData = {
         "title": "myNode Lightning Status",
+        "is_community_edition": is_community_edition(),
         "wallet_exists": wallet_exists,
         "wallet_logged_in": wallet_logged_in,
         "lnd_has_error": lnd_has_error,
