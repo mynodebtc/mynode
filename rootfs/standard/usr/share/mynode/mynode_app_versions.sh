@@ -57,9 +57,9 @@ JOININBOX_VERSION="v0.5.0"
 JOININBOX_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version
 JOININBOX_LATEST_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version_latest
 
-WHIRLPOOL_VERSION="0.10.10"
-WHIRLPOOL_UPLOAD_FILE_ID="e4a90d89e67b90b7c715a12264ebc8fd"
-WHIRLPOOL_UPLOAD_SIG_ID="c3478374cddfd78869a6b93f5c78d098"
+WHIRLPOOL_VERSION="0.10.11"
+WHIRLPOOL_UPLOAD_FILE_ID="21d25ed02cceb91f4aa95b6389b9da9c"
+# Update sig file at /usr/share/whirlpool/whirlpool.asc for each release
 WHIRLPOOL_VERSION_FILE=/home/bitcoin/.mynode/whirlpool_version
 WHIRLPOOL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/whirlpool_version_latest
 
