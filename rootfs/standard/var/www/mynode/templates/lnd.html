@@ -591,7 +591,11 @@
                 <div class="app_title">Thunderhub</div>
                 <div class="app_status"></div>
                 <div class="app_contents">
+                    {% if is_community_edition %}
+                    Premium Feature
+                    {% else %}
                     <a class="ui-button ui-widget ui-corner-all mynode_button" href="#" id="thunderhub">Open Wallet</a>
+                    {% endif %}
                 </div>
             </div>
 
