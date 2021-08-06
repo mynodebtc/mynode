@@ -620,7 +620,8 @@ if should_install_app "whirlpool" ; then
         sudo rm -rf *.jar
         sudo -u bitcoin wget -O whirlpool.jar $WHIRLPOOL_UPGRADE_URL
 
-        wget -O whirlpool.asc $WHIRLPOOL_SIG_URL
+        #wget -O whirlpool.asc $WHIRLPOOL_SIG_URL
+        cp -f /usr/share/whirlpool/whirlpool.asc whirlpool.asc
         gpg --verify whirlpool.asc
 
         echo $WHIRLPOOL_VERSION > $WHIRLPOOL_VERSION_FILE
