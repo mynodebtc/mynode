@@ -40,7 +40,7 @@ LNDHUB_VERSION="v1.3.5"
 LNDHUB_VERSION_FILE=/home/bitcoin/.mynode/lndhub_version
 LNDHUB_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lndhub_version_latest
 
-CARAVAN_VERSION="v0.3.8"
+CARAVAN_VERSION="v0.3.10"
 CARAVAN_SETTINGS_UPDATE_FILE=/home/bitcoin/.mynode/caravan_settings_1
 CARAVAN_VERSION_FILE=/home/bitcoin/.mynode/caravan_version
 CARAVAN_LATEST_VERSION_FILE=/home/bitcoin/.mynode/caravan_version_latest
