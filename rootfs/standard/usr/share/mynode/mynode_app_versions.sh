@@ -109,7 +109,7 @@ BOS_VERSION="10.6.0"
 BOS_VERSION_FILE=/home/bitcoin/.mynode/bos_version
 BOS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bos_version_latest
 
-SPHINXRELAY_VERSION="v2.1.5"
+SPHINXRELAY_VERSION="v2.2.0"
 SPHINXRELAY_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version
 SPHINXRELAY_LATEST_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version_latest
 
