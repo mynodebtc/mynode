@@ -399,8 +399,8 @@ cp -n /usr/share/btcpayserver/btcpay-env.sh /opt/mynode/btcpayserver/
 cp -n /usr/share/btcpayserver/docker-compose.generated.yml /opt/mynode/btcpayserver/
 cp -n /usr/share/btcpayserver/helpers.sh /opt/mynode/btcpayserver/
 if [ -f /opt/mynode/btcpayserver/.env ]; then
-    sed -i "s/REPLACE_BTCPAY_VERSION/$BTCPAYSERVER_VERSION/g" /opt/mynode/btcpayserver/.env || true
-    sed -i "s/REPLACE_NBXPLORER_VERSION/$BTCPAYSERVER_NBXPLORER_VERSION/g" /opt/mynode/btcpayserver/.env || true
+    sed -i "s/BTCPAY_VERSION=.*/BTCPAY_VERSION=$BTCPAYSERVER_VERSION/g" /opt/mynode/btcpayserver/.env || true
+    sed -i "s/NBXPLORER_VERSION.*/NBXPLORER_VERSION=$BTCPAYSERVER_NBXPLORER_VERSION/g" /opt/mynode/btcpayserver/.env || true
 fi
 
 # BTC RPC Explorer Config
