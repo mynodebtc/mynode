@@ -433,10 +433,12 @@ if [ "$CURRENT" != "$POOL_VERSION" ]; then
 
     wget $POOL_UPGRADE_URL
     wget $POOL_UPGRADE_MANIFEST_URL -O manifest.txt
-    wget $POOL_UPGRADE_MANIFEST_SIG_URL -O manifest.txt.sig
+    wget $POOL_UPGRADE_MANIFEST_SIG_URL -O manifest.txt.asc
 
-    gpg --verify manifest.txt.sig manifest.txt
+    gpg --verify manifest.txt.asc
     if [ $? == 0 ]; then
+        sha256sum -c manifest.txt --ignore-missing
+
         # Install Pool
         tar -xzf pool-*.tar.gz
         mv $POOL_ARCH-$POOL_VERSION pool
