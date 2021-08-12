@@ -272,7 +272,6 @@
     {
         "name": "VPN",
         "short_name": "vpn",
-        "can_reinstall": false,
         "app_tile_button_text": "Info",
         "app_tile_button_href": "/vpn-info",
         "show_on_homepage": true,
