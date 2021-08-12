@@ -46,6 +46,10 @@ elif [ "$APP" = "webssh2" ]; then
     rm -f /mnt/hdd/mynode/settings/webssh2_version
     systemctl stop webssh2
     docker rmi webssh2
+elif [ "$APP" = "vpn" ]; then
+    rm -rf /etc/openvpn
+    rm -rf /etc/.pivpn
+    rm -rf /home/pivpn/ovpns
 elif [ "$APP" = "dojo" ]; then
     rm -f /mnt/hdd/mynode/settings/dojo_url
     rm -f /mnt/hdd/mynode/settings/mynode_dojo_install
