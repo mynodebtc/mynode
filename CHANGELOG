@@ -1,3 +1,16 @@
+=== v0.2.39 ===
+- Released: 08/15/21
+- Upgrade LND to v0.13.1
+- Upgrade Loop to v0.15.0
+- Upgrade Pool to v0.5.1
+- Upgrade Specter to v1.5.1
+- Upgrade Mempool to v2.2.1
+- Upgrade BTCPay Server to v1.2.0
+- Upgrade Caravan to v0.3.10
+- Upgrade LNDManage to v0.13.0
+- Upgrade BoS to v10.7.4
+- Upgrade Whirlpool to v0.10.11
+
 === v0.2.38 ===
 - Released: 07/16/21
 - Upgrade Specter to v1.4.6
