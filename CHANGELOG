@@ -1,3 +1,8 @@
+=== v0.2.40 ===
+- Released: 08/16/21
+- Upgrade Dojo to v1.10.1
+- Resolve Pool upgrade issue
+
 === v0.2.39 ===
 - Released: 08/15/21
 - Upgrade LND to v0.13.1
