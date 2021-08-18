@@ -399,11 +399,13 @@ def page_lnd_pair_wallet():
     lndconnect_local_rest_text = get_text_contents("/tmp/mynode_lndconnect/lndconnect_local_rest.txt")
     lndconnect_tor_grpc_text = get_text_contents("/tmp/mynode_lndconnect/lndconnect_tor_grpc.txt")
     lndconnect_tor_rest_text = get_text_contents("/tmp/mynode_lndconnect/lndconnect_tor_rest.txt")
+    zap_tor_text = get_text_contents("/tmp/mynode_lndconnect/zap_tor.txt")
 
     lndconnect_local_grpc_img = get_image_src_b64("/tmp/mynode_lndconnect/lndconnect_local_grpc.png")
     lndconnect_local_rest_img = get_image_src_b64("/tmp/mynode_lndconnect/lndconnect_local_rest.png")
     lndconnect_tor_grpc_img = get_image_src_b64("/tmp/mynode_lndconnect/lndconnect_tor_grpc.png")
     lndconnect_tor_rest_img = get_image_src_b64("/tmp/mynode_lndconnect/lndconnect_tor_rest.png")
+    zap_tor_img = get_image_src_b64("/tmp/mynode_lndconnect/zap_tor.png")
 
     # Blue Wallet Data
     electrs_onion_url = get_onion_url_electrs()
@@ -435,7 +437,8 @@ def page_lnd_pair_wallet():
     pairs.append( create_pair(name="Blue Wallet (Electrum + Local IP)", image_src=bluewallet_electrs_local_img,text=bluewallet_electrs_local_text,premium=False) )
     pairs.append( create_pair(name="Blue Wallet (Electrum + Tor)", image_src=bluewallet_electrs_tor_img,text=bluewallet_electrs_tor_text,premium=True) )
     #pairs.append( create_pair(name="Fully Noded (Tor)", image_src="",text="",premium=True) ) # Maybe not? pairs diff wallet
-    
+    pairs.append( create_pair(name="Zap (Local IP)", image_src=lndconnect_local_grpc_img,text=lndconnect_local_grpc_text,premium=False) )
+    pairs.append( create_pair(name="Zap (Tor)", image_src=zap_tor_img,text=zap_tor_text,premium=True) )
 
     # Show lndconnect page
     templateData = {
