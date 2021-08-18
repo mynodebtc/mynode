@@ -89,7 +89,7 @@ SPECTER_VERSION="1.5.1"
 SPECTER_VERSION_FILE=/home/bitcoin/.mynode/specter_version
 SPECTER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/specter_version_latest
 
-THUNDERHUB_VERSION="v0.12.24"
+THUNDERHUB_VERSION="v0.12.17"
 THUNDERHUB_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version
 THUNDERHUB_LATEST_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version_latest
 
