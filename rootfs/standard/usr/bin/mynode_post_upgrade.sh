@@ -183,6 +183,12 @@ if ! skip_base_upgrades ; then
     #         # Mark apps using node as needing re-install
     #         rm -f /home/bitcoin/.mynode/lndhub_version
     #         rm -f /home/bitcoin/.mynode/sphinxrelay_version
+    #         rm -f /home/bitcoin/.mynode/thunderhub_version
+    #         rm -f /home/bitcoin/.mynode/corsproxy_version
+    #         rm -f /home/bitcoin/.mynode/rtl_version
+    #         rm -f /home/bitcoin/.mynode/caravan_version
+    #         rm -f /home/bitcoin/.mynode/btcrpcexplorer_version
+    #         rm -f /home/bitcoin/.mynode/bos_version
     #     else
     #         echo "Node version match"
     #     fi
