@@ -1,3 +1,11 @@
+=== v0.2.41 ===
+- Released: 08/22/21
+- Upgrade BTC RPC Explorer to v3.2.0
+- Upgrade JoinInBox to version v0.6.0
+- Upgrde BoS to v10.8.0
+- Add QR codes for pairing Zap
+- Resolve Thunderhub "Internal Server Error" Issue
+
 === v0.2.40 ===
 - Released: 08/16/21
 - Upgrade Dojo to v1.10.1
