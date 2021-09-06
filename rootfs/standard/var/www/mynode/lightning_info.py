@@ -84,7 +84,8 @@ def update_lightning_info():
         lightning_channels = lnd_get("/channels")
         lightning_channel_balance = lnd_get("/balance/channels")
         lightning_wallet_balance = lnd_get("/balance/blockchain")
-        lightning_watchtower_server_info = lnd_get_v2("/watchtower/server")
+        if is_watchtower_enabled():
+            lightning_watchtower_server_info = lnd_get_v2("/watchtower/server")
 
         # Poll slower (make sure we gather data early)
         if lightning_update_count < 30 or lightning_update_count % 2 == 0:
