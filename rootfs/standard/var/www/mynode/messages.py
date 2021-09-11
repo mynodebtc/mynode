@@ -24,6 +24,12 @@ messages.append("'Bitcoin may be the TCP/IP of money.' - Paul Buchheit")
 messages.append("'I understand the political ramifications of [bitcoin] and I think that the government should stay out of them and they should be perfectly legal.' - Ron Paul")
 messages.append("'The reason we are all here is that the current financial system is outdated.' - Charlie Shrem")
 messages.append("'At the end of the day, Bitcoin is programmable money.' - Andreas Antonopoulos")
+messages.append("'I've been working on a new electronic cash system that's fully peer-to-peer, with no trusted third party.' - Satoshi Nakamoto")
+messages.append("'Announcing the first release of Bitcoin, a new electronic cash system that uses a peer-to-peer network to prevent double-spending. It's completely decentralized with no server or central authority.' - Satoshi Nakamoto")
+messages.append("'By convention, the first transaction in a block is a special transaction that starts a new coin owned by the creator of the block. This adds an incentive for nodes to support the network, and provides a way to initially distribute coins into circulation.' - Satoshi Nakamoto")
+messages.append("'You could use TOR if you don't want anyone to know you're even using Bitcoin.' - Satoshi Nakamoto")
+messages.append("'If you don't believe it or don't get it, I don't have the time to try to convince you, sorry.' - Satoshi Nakamoto")
+messages.append("'For greater privacy, it's best to use bitcoin addresses only once.' - Satoshi Nakamoto")
 
 # Funny messages
 funny_messages = []
