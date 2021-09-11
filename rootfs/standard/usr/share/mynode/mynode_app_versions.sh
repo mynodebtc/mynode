@@ -105,7 +105,7 @@ CKBUNKER_VERSION="v0.9"
 CKBUNKER_VERSION_FILE=/home/bitcoin/.mynode/ckbunker_version
 CKBUNKER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/ckbunker_version_latest
 
-BOS_VERSION="10.14.0"
+BOS_VERSION="10.14.3"
 BOS_VERSION_FILE=/home/bitcoin/.mynode/bos_version
 BOS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bos_version_latest
 
