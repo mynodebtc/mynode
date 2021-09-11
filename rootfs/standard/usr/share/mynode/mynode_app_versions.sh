@@ -32,7 +32,7 @@ ELECTRS_VERSION="v0.8.9"
 ELECTRS_VERSION_FILE=/home/bitcoin/.mynode/electrs_version
 ELECTRS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/electrs_version_latest
 
-MEMPOOL_VERSION="v2.2.1"
+MEMPOOL_VERSION="v2.2.2"
 MEMPOOL_VERSION_FILE=/mnt/hdd/mynode/settings/mempool_version
 MEMPOOL_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/mempool_version_latest
 
