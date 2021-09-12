@@ -32,7 +32,6 @@ Additional myNode guides would be helpful for users attempting to use various to
 
 - Guide for replacing each piece of hardware (100k sats)
 - Guide to check seed via BlueWallet (100k sats)
-- Guide to update specific app versions (100k sats)
 - Guide for WiFi (100k sats)
 - Blue wallet w/ tor (100k sats)
 - Developer guide to add new application (150k sats)
@@ -101,6 +100,7 @@ Additional myNode guides would be helpful for users attempting to use various to
 
 - ~~Open JoininBox / JoinMarket (75k sats)~~
 - ~~Guide for voltage error (75k sats)~~
+- ~~Guide to update specific app versions (100k sats)~~
 - ~~SD card read only error (75k sats)~~
 - ~~Guide for fsck error (75k sats)~~
 - ~~Guide walking user through Clone Tool usage (75k sats)~~
