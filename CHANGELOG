@@ -1,3 +1,14 @@
+=== v0.2.42 ===
+- Released: 09/15/21
+- Upgrade Mempool to v2.2.2
+- Upgrade RTL to v0.11.2
+- Upgrade Specter to v1.6.0
+- Upgrade BTC Pay to v1.2.3
+- Upgrade Caravan to v0.3.11
+- Upgrade BoS to v10.14.3
+- Enable LND database compaction
+- Logging improvements and quote additions
+
 === v0.2.41 ===
 - Released: 08/22/21
 - Upgrade BTC RPC Explorer to v3.2.0
