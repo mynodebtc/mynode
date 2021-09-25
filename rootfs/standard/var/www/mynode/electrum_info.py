@@ -81,6 +81,16 @@ def get_electrs_status():
             return "Running"
     return ""
 
+def get_electrs_db_size(is_testnet=False):
+    size = "Unknown"
+    try:
+        folder = "/mnt/hdd/mynode/electrs/mainnet"
+        if is_testnet:
+            folder = "/mnt/hdd/mynode/electrs/testnet"
+        size = subprocess.check_output("du -h "+folder+" | head -n1 | awk '{print $1;}'", shell=True)
+    except Exception as e:
+        size = "Error"
+    return size
 
 def get_from_electrum(method, params=[]):
     params = [params] if type(params) is not list else params
