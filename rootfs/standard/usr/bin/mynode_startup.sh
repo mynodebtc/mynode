@@ -254,33 +254,37 @@ done
 
 # Default QuickSync
 if [ ! -f /mnt/hdd/mynode/settings/.setquicksyncdefault ]; then
-    # Default x86 to no QuickSync
-    if [ $IS_X86 = 1 ]; then
-        touch /mnt/hdd/mynode/settings/quicksync_disabled
-    fi
-    # Default RockPro64 to no QuickSync
-    if [ $IS_ROCKPRO64 = 1 ]; then
-        touch /mnt/hdd/mynode/settings/quicksync_disabled
-    fi
-    # Default SSD to no QuickSync
-    DRIVE=$(cat /tmp/.mynode_drive)
-    HDD=$(lsblk $DRIVE -o ROTA | tail -n 1 | tr -d '[:space:]')
-    if [ "$HDD" = "0" ]; then
-        touch /mnt/hdd/mynode/settings/quicksync_disabled
-    fi
-    # If there is a USB->SATA adapter, assume we have an SSD and default to no QS
-    set +e
-    lsusb | grep "SATA 6Gb/s bridge"
-    RC=$?
-    set -e
-    if [ "$RC" = "0" ]; then
-        touch /mnt/hdd/mynode/settings/quicksync_disabled
-    fi
-    # Default small drives to no QuickSync
-    DRIVE_SIZE=$(df /mnt/hdd | grep /dev | awk '{print $2}')
-    if (( ${DRIVE_SIZE} <= 900000000 )); then
-        touch /mnt/hdd/mynode/settings/quicksync_disabled
-    fi
+    # # Default x86 to no QuickSync
+    # if [ $IS_X86 = 1 ]; then
+    #     touch /mnt/hdd/mynode/settings/quicksync_disabled
+    # fi
+    # # Default RockPro64 to no QuickSync
+    # if [ $IS_ROCKPRO64 = 1 ]; then
+    #     touch /mnt/hdd/mynode/settings/quicksync_disabled
+    # fi
+    # # Default SSD to no QuickSync
+    # DRIVE=$(cat /tmp/.mynode_drive)
+    # HDD=$(lsblk $DRIVE -o ROTA | tail -n 1 | tr -d '[:space:]')
+    # if [ "$HDD" = "0" ]; then
+    #     touch /mnt/hdd/mynode/settings/quicksync_disabled
+    # fi
+    # # If there is a USB->SATA adapter, assume we have an SSD and default to no QS
+    # set +e
+    # lsusb | grep "SATA 6Gb/s bridge"
+    # RC=$?
+    # set -e
+    # if [ "$RC" = "0" ]; then
+    #     touch /mnt/hdd/mynode/settings/quicksync_disabled
+    # fi
+    # # Default small drives to no QuickSync
+    # DRIVE_SIZE=$(df /mnt/hdd | grep /dev | awk '{print $2}')
+    # if (( ${DRIVE_SIZE} <= 900000000 )); then
+    #     touch /mnt/hdd/mynode/settings/quicksync_disabled
+    # fi
+
+    # QuickSync defaults to disabled, needs to be manually enabled if wanted
+    touch /mnt/hdd/mynode/settings/quicksync_disabled
+    
     touch /mnt/hdd/mynode/settings/.setquicksyncdefault
 fi
 
