@@ -41,6 +41,10 @@ elif [ "$APP" = "dojo" ]; then
     cd ~
     rm -rf /opt/download/dojo
     rm -rf /mnt/hdd/mynode/dojo
+elif [ "$APP" = "joininbox" ]; then
+    rm -rf /home/joinmarket/*
+    rm -rf /home/joinmarket/joininbox-*
+    rm -rf /home/joinmarket/.cache
 elif [ "$APP" = "lndhub" ]; then
     rm -rf /opt/mynode/LndHub
 elif [ "$APP" = "rtl" ]; then
