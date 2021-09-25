@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, session, abort, Markup, request, r
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from pprint import pprint, pformat
 from bitcoin_info import *
-from device_info import get_local_ip, skipped_product_key, get_onion_url_electrs, read_ui_settings, restart_electrs
+from device_info import get_local_ip, skipped_product_key, get_onion_url_electrs, read_ui_settings, restart_electrs, is_testnet_enabled
 from user_management import check_logged_in
 from electrum_info import *
 import json
@@ -24,6 +24,7 @@ def electrum_server_page():
     if current_block == None:
         current_block = "Unknown"
     status = get_electrs_status()
+    db_size = get_electrs_db_size( is_testnet_enabled() )
 
     #server_url = get_local_ip() + ":50002:s"
     server_ip = get_local_ip()
@@ -43,6 +44,7 @@ def electrum_server_page():
         "title": "myNode Electrum Server",
         "port": 50002,
         "status": status,
+        "db_size": db_size,
         "product_key_skipped": skipped_product_key(),
         "current_block": current_block,
         #"server_url": server_url,
