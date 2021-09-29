@@ -91,7 +91,7 @@ if ! skip_base_upgrades ; then
 
     # Check for updates (might auto-install all updates later)
     export DEBIAN_FRONTEND=noninteractive
-    $TORIFY apt-get update
+    $TORIFY apt-get update --allow-releaseinfo-change
 
     # Freeze any packages we don't want to update
     if [ $IS_X86 = 1 ]; then
