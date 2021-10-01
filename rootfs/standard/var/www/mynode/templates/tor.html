@@ -36,12 +36,6 @@
                     fully_noded_qr_dialog.dialog( "open" );
                 });
 
-                var qrcode = new QRCode("fully_noded_qr_code", {
-                    text: "{{ fully_noded_link }}",
-                    width: 400,
-                    height: 400,
-                    correctLevel : QRCode.CorrectLevel.H
-                });
 
                 {% for service in v3_services %}
                 $("#{{ service.id }}").tooltip({ content: "<img style='width: 300px; height: 300px;' src='/api/get_qr_code_image?url={{ service.link }}'/>" });
