@@ -11,7 +11,7 @@ Type=simple
 KillMode=process
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_bitcoin.sh
-ExecStart=/usr/bin/electrs --conf=/mnt/hdd/mynode/electrs/electrs.toml -vvvv 
+ExecStart=/usr/bin/electrs --conf=/mnt/hdd/mynode/electrs/electrs.toml -vv
 User=bitcoin
 Group=bitcoin
 TimeoutSec=300
