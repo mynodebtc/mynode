@@ -26,6 +26,8 @@ def update_electrs_info():
             for sample in family.samples:
                 if sample.name == "electrs_index_height":
                     electrum_server_current_block = int(sample.value)
+                elif sample.name == "index_height":
+                    electrum_server_current_block = int(sample.value)
 
         bitcoin_block_height = get_bitcoin_block_height()
         if electrum_server_current_block != None and bitcoin_block_height != None:
@@ -57,6 +59,7 @@ def get_electrs_status():
     lines = log.splitlines()
     lines.reverse()
     for line in lines:
+        # Electrs pre v9
         if "left to index)" in line:
             break
         elif "Checking if Bitcoin is synced..." in line or "NetworkInfo {" in line or "BlockchainInfo {" in line:
@@ -71,6 +74,22 @@ def get_electrs_status():
             break
         elif "RPC server running on" in line:
             break
+        # Electrs v9+
+        elif "stopping Electrum RPC server" in line or "notified via SIG15" in line:
+            return "Stopping..."
+        elif "serving Electrum RPC on 0.0.0.0:50001" in line:
+            break
+        elif "indexing 2000 blocks" in line:
+            break
+        elif "indexing 1 blocks" in line:
+            break
+        elif "starting config compaction" in line or "starting headers compaction" in line or "starting txid compaction" in line:
+            return "Compressing..."
+        elif "starting funding compaction" in line or "starting spending compaction" in line:
+            return "Compressing..."
+        elif "loading 12 blocks" in line:
+            break
+
 
     if electrum_server_current_block != None and bitcoin_block_height != None:
         if electrum_server_current_block < bitcoin_block_height - 10:
@@ -84,7 +103,7 @@ def get_electrs_status():
 def get_electrs_db_size(is_testnet=False):
     size = "Unknown"
     try:
-        folder = "/mnt/hdd/mynode/electrs/mainnet"
+        folder = "/mnt/hdd/mynode/electrs/bitcoin"
         if is_testnet:
             folder = "/mnt/hdd/mynode/electrs/testnet"
         size = subprocess.check_output("du -h "+folder+" | head -n1 | awk '{print $1;}'", shell=True)

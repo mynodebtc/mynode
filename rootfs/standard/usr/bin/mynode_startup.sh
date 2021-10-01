@@ -347,6 +347,9 @@ if [ -f /mnt/hdd/mynode/settings/.testnet_enabled ]; then
 else
     sed -i "s/testnet/bitcoin/g" /mnt/hdd/mynode/electrs/electrs.toml || true
 fi
+# Remove old electrs data (pre-v9)
+rm -rf /mnt/hdd/mynode/electrs/mainnet
+# Use correct binary on RP4 (32 bit/64bit)
 if [ $IS_RASPI4 -eq 1 ]; then
     ELECTRS_DST=/usr/bin/electrs
     ELECTRS_SRC=/usr/bin/electrs_arm32

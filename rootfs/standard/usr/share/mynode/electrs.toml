@@ -1,7 +1,8 @@
 # --timestamp --db-dir /mnt/hdd/mynode/electrs --electrum-rpc-addr 0.0.0.0:50001 --jsonrpc-import --bulk-index-threads 3 --index-batch-size 12 --daemon-rpc-addr 127.0.0.1:8332 --txid-limit 100 --tx-cache-size-mb 10.0 --wait-duration-secs 15 -vvvv 
 
 timestamp = true
-jsonrpc_import = true
+#jsonrpc_import = true
+jsonrpc_timeout_secs = 30
 daemon_rpc_addr = "127.0.0.1:8332"
 db_dir = "/mnt/hdd/mynode/electrs"
 electrum_rpc_addr = "0.0.0.0:50001"
