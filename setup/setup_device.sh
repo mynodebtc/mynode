@@ -307,7 +307,8 @@ else
     exit 1
 fi
 BTC_UPGRADE_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/bitcoin-$BTC_VERSION-$ARCH.tar.gz
-BTC_UPGRADE_SHA256SUM_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/SHA256SUMS.asc
+BTC_UPGRADE_SHA256SUM_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/SHA256SUMS
+BTC_UPGRADE_SHA256SUM_ASC_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/SHA256SUMS.asc
 CURRENT=""
 if [ -f $BTC_VERSION_FILE ]; then
     CURRENT=$(cat $BTC_VERSION_FILE)
@@ -319,10 +320,11 @@ if [ "$CURRENT" != "$BTC_VERSION" ]; then
     cd /opt/download
 
     wget $BTC_UPGRADE_URL
-    wget $BTC_UPGRADE_SHA256SUM_URL -O SHA256SUMS.asc
+    wget $BTC_UPGRADE_SHA256SUM_URL -O SHA256SUMS
+    wget $BTC_UPGRADE_SHA256SUM_ASC_URL -O SHA256SUMS.asc
 
     sha256sum --ignore-missing --check SHA256SUMS.asc
-    gpg --verify SHA256SUMS.asc
+    gpg --verify SHA256SUMS.asc SHA256SUMS |& grep "gpg: Good signature"
 
     # Install Bitcoin
     tar -xvf bitcoin-$BTC_VERSION-$ARCH.tar.gz

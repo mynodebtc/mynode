@@ -81,6 +81,7 @@ if ! skip_base_upgrades ; then
     curl https://keybase.io/guggero/pgp_keys.asc | gpg --import # Pool
     curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
     gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
+    gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys E777299FC265DD04793070EB944D35F9AC3DB76A # Bitcoin - Michael Ford (fanquake)
     curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
     curl https://samouraiwallet.com/pgp.txt | gpg --import # two keys from Samourai team
     gpg  --keyserver hkps://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E #loopd
@@ -237,7 +238,8 @@ else
     exit 1
 fi
 BTC_UPGRADE_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/bitcoin-$BTC_VERSION-$ARCH.tar.gz
-BTC_UPGRADE_SHA256SUM_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/SHA256SUMS.asc
+BTC_UPGRADE_SHA256SUM_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/SHA256SUMS
+BTC_UPGRADE_SHA256SUM_ASC_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/SHA256SUMS.asc
 CURRENT=""
 if [ -f $BTC_VERSION_FILE ]; then
     CURRENT=$(cat $BTC_VERSION_FILE)
@@ -249,11 +251,12 @@ if [ "$CURRENT" != "$BTC_VERSION" ]; then
     cd /opt/download
 
     wget $BTC_UPGRADE_URL
-    wget $BTC_UPGRADE_SHA256SUM_URL -O SHA256SUMS.asc
+    wget $BTC_UPGRADE_SHA256SUM_URL -O SHA256SUMS
+    wget $BTC_UPGRADE_SHA256SUM_ASC_URL -O SHA256SUMS.asc
 
-    sha256sum --ignore-missing --check SHA256SUMS.asc
+    sha256sum --ignore-missing --check SHA256SUMS
     if [ $? == 0 ]; then
-        gpg --verify SHA256SUMS.asc
+        gpg --verify SHA256SUMS.asc SHA256SUMS |& grep "gpg: Good signature"
         if [ $? == 0 ]; then
             # Install Bitcoin
             tar -xvf bitcoin-$BTC_VERSION-$ARCH.tar.gz
