@@ -36,7 +36,7 @@ MEMPOOL_VERSION="v2.2.2"
 MEMPOOL_VERSION_FILE=/mnt/hdd/mynode/settings/mempool_version
 MEMPOOL_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/mempool_version_latest
 
-LNDHUB_VERSION="v1.3.5"
+LNDHUB_VERSION="v1.4.1"
 LNDHUB_VERSION_FILE=/home/bitcoin/.mynode/lndhub_version
 LNDHUB_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lndhub_version_latest
 
