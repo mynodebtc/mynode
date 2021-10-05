@@ -1,3 +1,14 @@
+=== v0.2.43 ===
+- Released: 10/04/21
+- Upgrade Bitcoin to v22.0
+- Upgrade LND to v0.13.3
+- Upgrade Electrs to v0.9.0
+- Upgrade Lightning Terminal to v0.5.1
+- Upgrade LNDHub to v1.4.1
+- Upgrade Sphinx Relay to v2.2.1
+- Upgrade PyBlock to v0.9.8.9
+- Upgrade BoS to v11.2.0
+
 === v0.2.42 ===
 - Released: 09/15/21
 - Upgrade Mempool to v2.2.2
