@@ -865,7 +865,7 @@ update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy || true
 
 
 # Install files (downloaded and extracted earlier)
-if [ $IS_X86 = 1 ] || [ $IS_RASPI4_ARM64 ]; then
+if [ $IS_X86 = 1 ] || [ $IS_RASPI4_ARM64 = 1 ]; then
     rsync -r -K /tmp/upgrade/out/rootfs_*/* /
 else
     cp -rf /tmp/upgrade/out/rootfs_*/* /
