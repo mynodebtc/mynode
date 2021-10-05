@@ -8,6 +8,8 @@
 - Upgrade Sphinx Relay to v2.2.1
 - Upgrade PyBlock to v0.9.8.9
 - Upgrade BoS to v11.2.0
+- Updated default Bitcoin config
+- Bug fixes
 
 === v0.2.42 ===
 - Released: 09/15/21
