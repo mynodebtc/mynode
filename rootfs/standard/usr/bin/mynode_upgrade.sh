@@ -46,7 +46,7 @@ fi
 rm -f /usr/share/mynode/beta_version
 
 # Extract to temp location
-tar -xvf /opt/mynode_release_latest.tar.gz -C /opt/upgrade/
+tar -xf /opt/mynode_release_latest.tar.gz -C /opt/upgrade/
 
 # Install files
 VERSION=$(cat /opt/upgrade/out/rootfs_*/usr/share/mynode/version)
@@ -69,12 +69,17 @@ rm -f /home/admin/upgrade_logs/upgrade_log_latest_post_*
 touch $UPGRADE_ERROR_FILE
 for i in {1..5}
 do
-    /bin/bash /usr/bin/mynode_post_upgrade.sh 2>&1 | tee /home/admin/upgrade_logs/upgrade_log_${VERSION}_post_${i}.txt /home/admin/upgrade_logs/upgrade_log_latest_post_${i}.txt 
+    /bin/bash /usr/bin/mynode_post_upgrade.sh 2>&1
     RC=$?
     if [ "${RC}" -eq "0" ]; then
         rm -f $UPGRADE_ERROR_FILE
         break
     fi
+    printf "\n\n\n"
+    printf "##################################################\n"
+    printf "Post upgrade script failed attempt $i. Retrying.  \n"
+    printf "##################################################\n"
+    printf "\n\n\n"
     sleep 10s
 done
 chown -R admin:admin /home/admin/upgrade_logs
