@@ -69,12 +69,17 @@ fi
 # Run post upgrade script
 for i in {1..3}
 do
-    /bin/bash /usr/bin/mynode_post_upgrade.sh 2>&1 | tee /home/admin/upgrade_logs/reinstall_app_${APP}_post_${i}.txt
+    /bin/bash /usr/bin/mynode_post_upgrade.sh 2>&1
     RC=$?
     if [ "${RC}" -eq "0" ]; then
         rm -f $UPGRADE_ERROR_FILE
         break
     fi
+    printf "\n\n\n"
+    printf "##################################################\n"
+    printf "Post upgrade script failed attempt $i. Retrying.  \n"
+    printf "##################################################\n"
+    printf "\n\n\n"
     sleep 10s
 done
 chown -R admin:admin /home/admin/upgrade_logs
