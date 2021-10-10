@@ -53,8 +53,13 @@ def page_settings():
 
     logout_time_days, logout_time_hours = get_flask_session_timeout()
 
+    t1 = get_system_time_in_ms()
+    all_logs = get_all_upgrade_logs()
+    t2 = get_system_time_in_ms()
+
     templateData = {
         "title": "myNode Settings",
+        "load_time": t2-t1,
         "apps": get_all_applications(order_by="alphabetic"),
         "password_message": "",
         "current_version": current_version,
@@ -63,7 +68,8 @@ def page_settings():
         "latest_beta_version": latest_beta_version,
         "has_checkin_error": has_checkin_error(),
         "upgrade_error": did_upgrade_fail(),
-        "upgrade_logs": get_recent_upgrade_logs(),
+        "upgrade_log": get_recent_upgrade_log(),
+        "upgrade_logs": get_all_upgrade_logs(),
         "serial_number": serial_number,
         "device_type": device_type,
         "device_arch": device_arch,
@@ -174,7 +180,7 @@ def page_status():
         "latest_beta_version": latest_beta_version,
         "has_checkin_error": has_checkin_error(),
         "upgrade_error": did_upgrade_fail(),
-        "upgrade_logs": get_recent_upgrade_logs(),
+        "upgrade_logs": get_recent_upgrade_log(),
         "serial_number": serial_number,
         "device_type": device_type,
         "device_arch": device_arch,
@@ -332,11 +338,21 @@ def upgrade_beta_page():
 def get_upgrade_log_page():
     check_logged_in()
 
-    log = get_file_contents("/home/admin/upgrade_logs/upgrade_log_latest.txt")
+    log = get_file_contents("/home/admin/upgrade_logs/upgrade_log_latest.txt").decode("utf8")
     if (log == "ERROR"):
         log = "No log file found"
-    
+        
+    log = cleanup_log(log)
     return log
+
+@mynode_settings.route("/settings/clear-upgrade-logs")
+def clear_upgrade_logs_page():
+    check_logged_in()
+
+    os.system("rm -f /home/admin/upgrade_logs/*")
+
+    flash("Upgrade Logs Cleared", category="message")
+    return redirect("/settings")
 
 @mynode_settings.route("/settings/upgrade-test")
 def upgrade_page_test():
