@@ -16,6 +16,7 @@ import subprocess
 import random
 import string
 import redis
+import re
 
 try:
     import qrcode
@@ -204,20 +205,43 @@ def upgrade_device_beta():
 def did_upgrade_fail():
     return os.path.isfile("/mnt/hdd/mynode/settings/upgrade_error")
 
-def get_recent_upgrade_logs():
-    logs=""
-    current_version = get_current_version()
-    for i in range(1,6):
-        filename = "/home/admin/upgrade_logs/upgrade_log_{}_post_{}.txt".format(current_version, i)
-        try:
-            with open(filename, "r") as f:
-                logs = logs + "===========================================================\n"
-                logs = logs + "=== Upgrade Attempt #{}\n".format(i)
-                logs = logs + "===========================================================\n\n\n"
-                logs = logs + f.read().decode("utf8")
-        except:
-            pass
-    return logs
+def cleanup_log(log):
+    log = re.sub("(product_key|PRODUCT_KEY)=[0-9A-Z]+", "product_key=************", log)
+    return log
+
+def get_recent_upgrade_log():
+    log = get_file_contents("/home/admin/upgrade_logs/upgrade_log_latest.txt").decode("utf8")
+    return cleanup_log(log)
+
+def get_all_upgrade_logs():
+    log_list = []
+    folder = "/home/admin/upgrade_logs/"
+    log_id = 0
+
+    # Add latest upgrade log
+    if os.path.isfile( os.path.join(folder, "upgrade_log_latest.txt") ):
+        log = {}
+        log["id"] = log_id
+        log["name"] = "Latest Upgrade"
+        modTimeSeconds = os.path.getmtime( os.path.join(folder, "upgrade_log_latest.txt") )
+        log["date"] = time.strftime('%Y-%m-%d', time.localtime(modTimeSeconds))
+        log["log"] = get_recent_upgrade_log()
+        log_list.append( log )
+        log_id += 1
+
+    # Add file logs
+    for f in os.listdir(folder):
+        fullpath = os.path.join(folder, f)
+        if os.path.isfile( fullpath ):
+            log = {}
+            log["id"] = log_id
+            log["name"] = f
+            modTimeSeconds = os.path.getmtime(fullpath)
+            log["date"] = time.strftime('%Y-%m-%d', time.localtime(modTimeSeconds))
+            log["log"] = cleanup_log( get_file_contents(fullpath).decode("utf8") )
+            log_list.append( log )
+            log_id += 1
+    return log_list
 
 def has_checkin_error():
     return os.path.isfile("/tmp/check_in_error")

@@ -241,29 +241,34 @@
                 });
 
                 showing_upgrade_log=0;
-                $("#show_upgrade_status").on("click", function() {
+                $("#show_upgrade_logs").on("click", function() {
                     if (showing_upgrade_log == 0) {
-                        $("#show_upgrade_status").html("Hide Upgrade Log");
-                        $("#upgrade_status").show();
+                        $("#show_upgrade_logs").html("Hide Upgrade Logs");
+                        $("#upgrade_logs").show();
                         showing_upgrade_log = 1;
                     } else {
-                        $("#show_upgrade_status").html("Show Upgrade Log");
-                        $("#upgrade_status").hide();
+                        $("#show_upgrade_logs").html("Show Upgrade Logs");
+                        $("#upgrade_logs").hide();
                         showing_upgrade_log = 0;
                     }
                 });
+                showUpgradeLog(0);
 
                 showing_upgrade_beta_log=0;
-                $("#show_upgrade_status_beta").on("click", function() {
+                $("#show_upgrade_log_beta").on("click", function() {
                     if (showing_upgrade_beta_log == 0) {
-                        $("#show_upgrade_status_beta").html("Hide Upgrade Log");
-                        $("#upgrade_status_beta").show();
+                        $("#show_upgrade_log_beta").html("Hide Upgrade Log");
+                        $("#upgrade_log_beta").show();
                         showing_upgrade_beta_log = 1;
                     } else {
-                        $("#show_upgrade_status_beta").html("Show Upgrade Log");
-                        $("#upgrade_status_beta").hide();
+                        $("#show_upgrade_log_beta").html("Show Upgrade Log");
+                        $("#upgrade_log_beta").hide();
                         showing_upgrade_beta_log = 0;
                     }
+                });
+
+                $("#clear_upgrade_logs").on("click", function() {
+                    window.location.href='/settings/clear-upgrade-logs';
                 });
 
                 $("#upgrade_changelog").on("click", function() {
@@ -444,6 +449,18 @@
                     }
                 });
             });
+
+            function hideAllUpgradeLogs() {
+                {% for f in upgrade_logs %}
+                $("#upgrade_log_{{f.id}}").hide();
+                $("#show_upgrade_log_{{f.id}}").html("Show");
+                {% endfor %}
+            }
+            function showUpgradeLog(id) {
+                hideAllUpgradeLogs()
+                $("#upgrade_log_"+id).show();
+                $("#show_upgrade_log_"+id).html("Showing");
+            }
         </script>
      </head>
 
@@ -474,7 +491,7 @@
                     <td>{{latest_version}}</td>
                     <td>
                         &nbsp;<a href="/settings/get-latest-version" class="ui-button ui-widget ui-corner-all settings_button_small">Check for Updates</a>
-                        &nbsp;<button id="show_upgrade_status" class="ui-button ui-widget ui-corner-all settings_button_small">Show Upgrade Log</button>
+                        &nbsp;<button id="show_upgrade_logs" class="ui-button ui-widget ui-corner-all settings_button_small">Show Upgrade Log</button>
                     </td>
                 </tr>
             </table>
@@ -489,7 +506,35 @@
                 <p style="color: red;">It appears a recent upgrade may not have fully completed.</p>
                 <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Retry Upgrade</button>
             {% endif %}
-            <div id="upgrade_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{upgrade_logs}}</pre></div>
+            
+            <div id="upgrade_logs" style='text-align: left; font-size: 12px; width: 800px; display: none;'>
+
+                <br/><br/>
+
+                <table style="font-size: 12px;">
+                    <tr>
+                        <th></th>
+                        <th>Log</th>
+                        <th>Date</th>
+                    </tr>
+                    {% for f in upgrade_logs %}
+                    <tr>
+                        <td><button onclick="showUpgradeLog({{f.id}})" id="show_upgrade_log_{{f.id}}" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button></td>
+                        <td>{{f.name}}</td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;{{f.date}}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="3" style="margin: auto;">
+                            <center><button id="clear_upgrade_logs" class="ui-button ui-widget ui-corner-all settings_button_small">Clear All Logs</button></center>
+                        </td>
+                    </tr>
+                </table>
+
+                {% for f in upgrade_logs %}
+                <div id="upgrade_log_{{f.id}}" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{f.log}}</pre></div>
+                {% endfor %}
+            </div>
 
             <div class="divider"></div>
 
@@ -1018,8 +1063,8 @@
                 {% elif upgrade_error %}
                     <p style="color: red;">It appears a recent upgrade may not have fully completed.</p>
                     <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Retry Upgrade</button>
-                    <button id="show_upgrade_status_beta" class="ui-button ui-widget ui-corner-all settings_button">Show Upgrade Logs</button>
-                    <div id="upgrade_status_beta" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{upgrade_logs}}</pre></div>
+                    <button id="show_upgrade_log_beta" class="ui-button ui-widget ui-corner-all settings_button">Show Upgrade Log</button>
+                    <div id="upgrade_log_beta" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{upgrade_log}}</pre></div>
                 {% endif %}
 
                 <div class="divider"></div>
