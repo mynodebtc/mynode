@@ -187,3 +187,17 @@ def api_toggle_setting():
         data["status"] = "unknown_setting"
     
     return jsonify(data)
+
+@mynode_api.route("/api/get_drive_benchmark")
+def api_get_drive_benchmark():
+    check_logged_in()
+
+    data = {}
+    data["status"] = "error"
+    data["data"] = "UNKNOWN"
+    try:
+        data["data"] = subprocess.check_output("hdparm -Tt $(cat /tmp/.mynode_drive)", shell=True)
+        data["status"] = "success"
+    except Exception as e:
+        data["data"] = str(e)
+    return jsonify(data)

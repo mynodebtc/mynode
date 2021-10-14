@@ -158,6 +158,17 @@
                                       okFunction)
                 });
 
+                $("#run-disk-benchmark").on("click", function() {
+                    $("#run-disk-benchmark").prop("disabled",true);
+                    $("#run-disk-benchmark-results").html("Loading...");
+                    $.get("/api/get_drive_benchmark")
+                        .done(function( data ) {
+                            $("#run-disk-benchmark").prop("disabled",false);
+                            $("#run-disk-benchmark-results").html( data["data"] );
+                        }
+                    );
+                });
+
                 function factoryReset() {
                     $("#factory_reset_form").submit();
                     factory_reset_dialog.dialog( "close" );
@@ -992,6 +1003,14 @@
                 <option value="4" {% if swap_size == "4" %}selected="selected"{% endif %}>4 GB</option>
             </select>
             <button id="swap_button">Save</button>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Benchmark External Drive</div>
+            Run a disk benchmark on the external storage and see results below.
+            <br/>
+            <button id="run-disk-benchmark" class="ui-button ui-widget ui-corner-all settings_button">Run Disk Benchmark</button>
+            <pre id="run-disk-benchmark-results"></pre>
             
             <div class="divider"></div>
 
