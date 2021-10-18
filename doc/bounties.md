@@ -32,7 +32,6 @@ Additional myNode guides would be helpful for users attempting to use various to
 
 - Guide for replacing each piece of hardware for Raspberry Pi 4 (100k sats)
 - Blue wallet w/ tor (100k sats)
-- Developer guide to add new application (150k sats)
 - Guide to setup BTCPay for public access via HTTPS with Custom Domain (150k sats)
 
 GitHub: https://github.com/mynodebtc/mynodebtc.github.io
@@ -105,3 +104,4 @@ Additional myNode guides would be helpful for users attempting to use various to
 - ~~Guide for WiFi (100k sats)~~
 - ~~Guide for running myNode using VirtualBox (100k sats)~~
 - ~~Guide walking user through Clone Tool usage (75k sats)~~
+- ~~Developer guide to add new application (150k sats)~~
