@@ -721,6 +721,22 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     margin-bottom: 20px;
 }
 
+.bottom_center_alert_popup {
+    display: none;
+    position: fixed;
+    color: #333333;
+    border: 3px solid orange;
+    background-color: rgb(255, 250, 238);
+    width: 800px;
+    left: 50%;
+    margin-left: -400px;
+    border-radius: 25px;
+    text-align: center;
+    font-size: 14px;
+    padding: 20px;
+    bottom: 20px;
+}
+
 #product_key_message {
     margin: auto;
     padding-bottom: 10px;
@@ -900,7 +916,7 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
 .halving_message_table {
     width: 100%;
     font-size: 32px;
-    border: 0px;
+    border: hidden;
     text-align: center;
 }
 .halving_image {

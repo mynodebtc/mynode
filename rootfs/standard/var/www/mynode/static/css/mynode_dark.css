@@ -137,6 +137,7 @@ th td {
 }
 
 .main_page_warning_block,
+.bottom_center_alert_popup,
 .halving_message_main_page {
     color: #ddd;
     border: 3px solid orange;
