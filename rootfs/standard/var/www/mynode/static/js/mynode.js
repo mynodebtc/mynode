@@ -43,3 +43,9 @@ function openConfirmDialog(divid, title, message, okFunction) {
         }
     });
 }
+
+// Show alert popup with contents
+function showAlertPopup(divid, message) {
+    $("#"+divid).html(message);
+    $("#"+divid).show().delay(3000).fadeOut();
+}
