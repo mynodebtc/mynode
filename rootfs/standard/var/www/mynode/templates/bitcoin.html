@@ -7,9 +7,18 @@
         <script>
             $(document).ready(function() {
 
+                $( document ).tooltip();
+
                 $("#show_rpc_password").on("click", function() {
                     $("#show_rpc_password").hide(0);
                     $("#rpc_password").show();
+                });
+                $("#copy_rpc_password").on("click", function() {
+                    navigator.clipboard.writeText("{{rpc_password}}").then(function() {
+                        showAlertPopup("alert_popup", "<b>Password copied!</b>");
+                    }, function() {
+                        showAlertPopup("alert_popup", "<b>Password copy failed!</b>");
+                    });
                 });
 
             });
@@ -81,7 +90,7 @@
                         <tr>
                             <th>RPC Password</th>
                             <td>
-                                <p id="rpc_password" style="display: none; margin: 0;">{{rpc_password}}</p>
+                                <p id="rpc_password" style="display: none; margin: 0;">{{rpc_password}} <span id="copy_rpc_password" class="ui-icon ui-icon-copy" style="cursor: pointer;" title="Copy Password"></span></p>
                                 <a id="show_rpc_password" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;">show</a>
                             </td>
                         </tr>
@@ -195,6 +204,8 @@
                 {% endfor %}
             </tbody>
         </table>
+
+        <div id="alert_popup" class="bottom_center_alert_popup"></div>
 
         {% include 'includes/footer.html' %}
      </body>
