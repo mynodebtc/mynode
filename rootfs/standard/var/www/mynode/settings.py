@@ -530,19 +530,11 @@ def open_clone_tool_page():
 def reset_electrs_page():
     check_logged_in()
 
-    check_and_mark_reboot_action("reset_electrs")
-
     t = Timer(1.0, reset_electrs)
     t.start()
 
-    # Display wait page
-    templateData = {
-        "title": "myNode",
-        "header_text": "Resetting Electrum Data",
-        "subheader_text": "This will take several minutes...",
-        "ui_settings": read_ui_settings()
-    }
-    return render_template('reboot.html', **templateData)
+    flash("Resetting Electrum Server data...", category="message")
+    return redirect("/settings")
 
 @mynode_settings.route("/settings/clear-mempool-cache")
 def clear_mempool_cache_page():
