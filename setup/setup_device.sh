@@ -263,7 +263,7 @@ fi
 
 # Install node
 if [ ! -f /tmp/installed_node ]; then
-    curl -sL https://deb.nodesource.com/setup_11.x | bash -
+    curl -sL https://deb.nodesource.com/setup_$NODE_JS_VERSION | bash -
     apt-get install -y nodejs
     touch /tmp/installed_node
 fi
