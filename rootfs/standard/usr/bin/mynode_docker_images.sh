@@ -162,6 +162,9 @@ while true; do
                 # Configure Dojo for MyNode
                 sudo /usr/bin/mynode_gen_dojo_config.sh || MARK_DOJO_COMPLETE=0
 
+                # Fix for v1.12.0 (may need to remove later)
+                sed -i "s/bash gcc g++ make python3/bash gcc g++ make python3 curl cmake/g" /mnt/hdd/mynode/dojo/docker/my-dojo/node/Dockerfile
+
                 # Run Dojo Install or Upgrade
                 cd /mnt/hdd/mynode/dojo/docker/my-dojo
                 INSTALL_PID=0
