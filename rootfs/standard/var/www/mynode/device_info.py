@@ -870,12 +870,13 @@ def restart_electrs():
     t.start()
 
 def delete_electrs_data():
-    os.system("rm -rf /mnt/hdd/mynode/electrs")
+    os.system("rm -rf /mnt/hdd/mynode/electrs/bitcoin")
+    os.system("rm -rf /mnt/hdd/mynode/electrs/testnet")
 
 def reset_electrs():
     stop_electrs()
     delete_electrs_data()
-    reboot_device()
+    restart_electrs()
 
 
 #==================================
