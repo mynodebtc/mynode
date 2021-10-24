@@ -241,10 +241,13 @@
         "name": "Balance of Satoshis",
         "short_name": "bos",
         "requires_lightning": true,
-        "app_tile_default_status_text": "Lightning Tool",
+        "app_tile_default_status_text": "Lightning Utility",
+        "app_tile_button_href": "/bos",
+        "app_tile_button_text": "Info",
         "can_uninstall": true,
         "can_enable_disable": false,
-        "show_on_homepage": false
+        "show_on_homepage": true,
+        "homepage_order": 42
     },
     {
         "name": "Web SSH",

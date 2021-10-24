@@ -216,8 +216,8 @@ def index():
     elif status == STATE_DRIVE_MOUNTED:
         templateData = {
             "title": "myNode Drive Mounted",
-            "header_text": "Drive Mounted",
-            "subheader_text": "myNode starting soon...",
+            "header_text": "Starting...",
+            "subheader_text": "Drive Mounted",
             "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
