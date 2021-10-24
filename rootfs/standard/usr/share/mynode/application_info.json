@@ -247,7 +247,7 @@
         "can_uninstall": true,
         "can_enable_disable": false,
         "show_on_homepage": true,
-        "homepage_order": 42
+        "homepage_order": 43
     },
     {
         "name": "Web SSH",
