@@ -1,3 +1,19 @@
+=== v0.2.44 ===
+- Released: 10/26/21
+- Upgrade Electrs to v0.9.1
+- Upgrade Thunderhub to v0.12.30
+- Upgrade Dojo to v1.12.0
+- Upgrade Specter to v1.7.0
+- Upgrade BTC Pay Server to v1.2.4
+- Upgrade JoininBox to v0.6.2
+- Upgrade LiT to v0.5.2
+- Upgrade NodeJS to v14+
+- Add app tile for BoS
+- Add buttons to copy passwords
+- Add disk benchmark tool
+- Add ability to show and clear all upgrade logs
+- Bug Fixes and Improvements
+
 === v0.2.43 ===
 - Released: 10/04/21
 - Upgrade Bitcoin to v22.0
