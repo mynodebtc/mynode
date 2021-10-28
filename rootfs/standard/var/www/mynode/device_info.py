@@ -218,29 +218,34 @@ def get_all_upgrade_logs():
     folder = "/home/admin/upgrade_logs/"
     log_id = 0
 
-    # Add latest upgrade log
-    if os.path.isfile( os.path.join(folder, "upgrade_log_latest.txt") ):
-        log = {}
-        log["id"] = log_id
-        log["name"] = "Latest Upgrade"
-        modTimeSeconds = os.path.getmtime( os.path.join(folder, "upgrade_log_latest.txt") )
-        log["date"] = time.strftime('%Y-%m-%d', time.localtime(modTimeSeconds))
-        log["log"] = get_recent_upgrade_log()
-        log_list.append( log )
-        log_id += 1
-
-    # Add file logs
-    for f in os.listdir(folder):
-        fullpath = os.path.join(folder, f)
-        if os.path.isfile( fullpath ):
+    try:
+        # Add latest upgrade log
+        if os.path.isfile( os.path.join(folder, "upgrade_log_latest.txt") ):
             log = {}
             log["id"] = log_id
-            log["name"] = f
-            modTimeSeconds = os.path.getmtime(fullpath)
+            log["name"] = "Latest Upgrade"
+            modTimeSeconds = os.path.getmtime( os.path.join(folder, "upgrade_log_latest.txt") )
             log["date"] = time.strftime('%Y-%m-%d', time.localtime(modTimeSeconds))
-            log["log"] = cleanup_log( get_file_contents(fullpath).decode("utf8") )
+            log["log"] = get_recent_upgrade_log()
             log_list.append( log )
             log_id += 1
+
+        # Add file logs
+        if os.path.isdir(folder):
+            for f in os.listdir(folder):
+                fullpath = os.path.join(folder, f)
+                if os.path.isfile( fullpath ):
+                    log = {}
+                    log["id"] = log_id
+                    log["name"] = f
+                    modTimeSeconds = os.path.getmtime(fullpath)
+                    log["date"] = time.strftime('%Y-%m-%d', time.localtime(modTimeSeconds))
+                    log["log"] = cleanup_log( get_file_contents(fullpath).decode("utf8") )
+                    log_list.append( log )
+                    log_id += 1
+    except Exception as e:
+        pass
+
     return log_list
 
 def has_checkin_error():
