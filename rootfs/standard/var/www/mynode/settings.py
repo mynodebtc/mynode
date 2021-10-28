@@ -53,13 +53,8 @@ def page_settings():
 
     logout_time_days, logout_time_hours = get_flask_session_timeout()
 
-    t1 = get_system_time_in_ms()
-    all_logs = get_all_upgrade_logs()
-    t2 = get_system_time_in_ms()
-
     templateData = {
         "title": "myNode Settings",
-        "load_time": t2-t1,
         "apps": get_all_applications(order_by="alphabetic"),
         "password_message": "",
         "current_version": current_version,
