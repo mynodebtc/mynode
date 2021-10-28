@@ -65,9 +65,11 @@ if ! skip_base_upgrades ; then
     # Add sources
     apt-get -y install apt-transport-https
     DEBIAN_VERSION=$(lsb_release -c | awk '{ print $2 }')
-    # Tor
-    grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
-    grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+    # Tor (arm32 support was dropped)
+    if [ $IS_64_BIT = 1 ]; then
+        grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+        grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+    fi
     # Raspbian mirrors
     #if [ $IS_RASPI = 1 ]; then
     #    grep -qxF "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
@@ -84,7 +86,7 @@ if ! skip_base_upgrades ; then
     gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys E777299FC265DD04793070EB944D35F9AC3DB76A # Bitcoin - Michael Ford (fanquake)
     curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
     curl https://samouraiwallet.com/pgp.txt | gpg --import # two keys from Samourai team
-    gpg  --keyserver hkps://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E #loopd
+    gpg  --keyserver hkp://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E #loopd
     $TORIFY curl https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import  # tor
     gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | apt-key add -                                       # tor
     set -e
@@ -172,7 +174,7 @@ if ! skip_base_upgrades ; then
     pip3 install lndmanage==$LNDMANAGE_VERSION --no-cache-dir
     echo $LNDMANAGE_VERSION > $LNDMANAGE_VERSION_FILE
 
-    # Update Node (not well tested, especially app re-install)
+    # Update Node
     if [ -f /etc/apt/sources.list.d/nodesource.list ]; then
         CURRENT_NODE_VERSION=$(cat /etc/apt/sources.list.d/nodesource.list)
         if [[ "$CURRENT_NODE_VERSION" != *"node_${NODE_JS_VERSION}"* ]]; then
@@ -195,6 +197,9 @@ if ! skip_base_upgrades ; then
     else
         echo "No node apt sources file?"
     fi
+
+    # Update NPM (Node Package Manager)
+    npm install -g npm@latest
     
     # Install Docker
     if [ ! -f /usr/bin/docker ]; then

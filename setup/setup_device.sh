@@ -23,6 +23,7 @@ IS_RASPI3=0
 IS_RASPI4=0
 IS_RASPI4_ARM64=0
 IS_X86=0
+IS_64_BIT=0
 IS_UNKNOWN=0
 DEVICE_TYPE="unknown"
 MODEL=$(cat /proc/device-tree/model) || IS_UNKNOWN=1
@@ -30,9 +31,11 @@ uname -a | grep amd64 && IS_X86=1 && IS_UNKNOWN=0 || true
 if [[ $MODEL == *"Rock64"* ]]; then
     IS_ARMBIAN=1
     IS_ROCK64=1
+    IS_64_BIT=1
 elif [[ $MODEL == *"RockPro64"* ]]; then
     IS_ARMBIAN=1
     IS_ROCKPRO64=1
+    IS_64_BIT=1
 elif [[ $MODEL == *"Raspberry Pi 3"* ]]; then
     IS_RASPI=1
     IS_RASPI3=1
@@ -42,6 +45,7 @@ elif [[ $MODEL == *"Raspberry Pi 4"* ]]; then
     UNAME=$(uname -a)
     if [[ $UNAME == *"aarch64"* ]]; then
         IS_RASPI4_ARM64=1
+        IS_64_BIT=1
     fi
 fi
 
@@ -117,14 +121,16 @@ chown bitcoin:bitcoin /home/bitcoin
 chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
 
 # Update sources
-apt-get -y update
+apt-get -y update --allow-releaseinfo-change
 
 # Add sources
 apt-get -y install apt-transport-https curl gnupg
 DEBIAN_VERSION=$(lsb_release -c | awk '{ print $2 }')
-# Tor
-grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
-grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+# Tor (arm32 support was dropped)
+if [ $IS_64_BIT = 1 ]; then
+    grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+    grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+fi
 # Raspbian mirrors
 # if [ $IS_RASPI = 1 ]; then
 #     grep -qxF "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
@@ -137,9 +143,10 @@ curl https://keybase.io/bitconner/pgp_keys.asc | gpg --import
 curl https://keybase.io/guggero/pgp_keys.asc | gpg --import # Pool
 curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
+gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys E777299FC265DD04793070EB944D35F9AC3DB76A # Bitcoin - Michael Ford (fanquake)
 curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
 curl https://samouraiwallet.com/pgp.txt | gpg --import # two keys from Samourai team
-gpg  --keyserver hkps://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E #loopd
+gpg  --keyserver hkp://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E #loopd
 curl https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import  # tor
 gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | apt-key add -                                       # tor
 
@@ -283,6 +290,7 @@ usermod -aG docker root
 
 # Install node packages
 npm install -g pug-cli browserify uglify-js babel-cli
+npm install -g npm@latest
 
 # Remove existing MOTD login info
 rm -rf /etc/motd
@@ -324,7 +332,7 @@ if [ "$CURRENT" != "$BTC_VERSION" ]; then
     wget $BTC_UPGRADE_SHA256SUM_URL -O SHA256SUMS
     wget $BTC_UPGRADE_SHA256SUM_ASC_URL -O SHA256SUMS.asc
 
-    sha256sum --ignore-missing --check SHA256SUMS.asc
+    sha256sum --ignore-missing --check SHA256SUMS
     gpg --verify SHA256SUMS.asc SHA256SUMS |& grep "gpg: Good signature"
 
     # Install Bitcoin
