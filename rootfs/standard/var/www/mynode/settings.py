@@ -801,6 +801,16 @@ def download_logs_page():
 
     return send_from_directory(directory="/tmp/", filename="mynode_logs.tar.gz")
 
+@mynode_settings.route("/settings/mynode_web.cert")
+def download_https_cert_page():
+    check_logged_in()
+
+    if os.path.isfile("/mnt/hdd/mynode/settings/https/myNode.local.crt"):
+        return send_from_directory(directory="/mnt/hdd/mynode/settings/https/", filename="myNode.local.crt")
+    if os.path.isfile("/home/bitcoin/.mynode/https/myNode.local.crt"):
+        return send_from_directory(directory="/home/bitcoin/.mynode/https/", filename="myNode.local.crt")
+    return "error_missing_file"
+
 @mynode_settings.route("/settings/regen-https-certs")
 def regen_https_certs_page():
     check_logged_in()
