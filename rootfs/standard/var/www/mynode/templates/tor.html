@@ -87,7 +87,7 @@
         </div>
         <br/>
 
-        <div class="sub_header">v3 Addresses</div>
+        <div class="sub_header">Tor Services</div>
         <table class="bitcoin_table">
             <thead class="bitcoin_table_header">
                 <td>Service</td>
@@ -126,38 +126,6 @@
             </tbody>
         </table>
         <br/>
-
-        <div class="sub_header">v2 Addresses</div>
-        <table class="bitcoin_table">
-            <thead class="bitcoin_table_header">
-                <td>Service</td>
-                <td>Address</td>
-                <td>Password</td>
-                <td>Port</td>
-                <td>Guide</td>
-            </thead>
-            <tbody>
-                {% for service in v2_services %}
-                    <tr>
-                        <td><b>{{ service.service }}</b></td>
-                        <td>
-                            <span class="onion_url">{{ service.url }}</span>
-                            <span class="onion_url_placeholder">..........................................</span>
-                        </td>
-                        <td>
-                            <span class="onion_password">{{ service.password }}</span>
-                            <span class="onion_password_placeholder">..........................................</span>
-                        </td>
-                        <td>{{ service.port }}</td>
-                        <td>
-                            {% if service.guide|length %}
-                                <a href="{{ service.guide }}" target="_blank">Guide</a>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
 
         <br/>
         <div class="main_header">Tor Connected Apps</div>
