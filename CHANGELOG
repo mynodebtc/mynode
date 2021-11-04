@@ -1,3 +1,9 @@
+=== v0.2.45 ===
+- Released: 11/03/21
+- Remove Tor v2 services
+- Improve upgrade consistency
+- Add button to download HTTPS certificate
+
 === v0.2.44 ===
 - Released: 10/26/21
 - Upgrade Electrs to v0.9.1
