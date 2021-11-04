@@ -166,9 +166,10 @@ def upgrade_device():
 
         # Upgrade
         os.system("mkdir -p /home/admin/upgrade_logs")
+        os.system("cp -f /usr/bin/mynode_upgrade.sh /usr/bin/mynode_upgrade_running.sh")
         file1 = "/home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt".format(get_current_version())
         file2 = "/home/admin/upgrade_logs/upgrade_log_latest.txt"
-        cmd = "/usr/bin/mynode_upgrade.sh 2>&1 | tee {} {}".format(file1, file2)
+        cmd = "/usr/bin/mynode_upgrade_running.sh 2>&1 | tee {} {}".format(file1, file2)
         ret = subprocess.call(cmd, shell=True)
         if ret != 0:
             # Try one more time....
@@ -187,9 +188,10 @@ def upgrade_device_beta():
 
         # Upgrade
         os.system("mkdir -p /home/admin/upgrade_logs")
+        os.system("cp -f /usr/bin/mynode_upgrade.sh /usr/bin/mynode_upgrade_running.sh")
         file1 = "/home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt".format(get_current_version())
         file2 = "/home/admin/upgrade_logs/upgrade_log_latest.txt"
-        cmd = "/usr/bin/mynode_upgrade.sh beta 2>&1 | tee {} {}".format(file1, file2)
+        cmd = "/usr/bin/mynode_upgrade_running.sh beta 2>&1 | tee {} {}".format(file1, file2)
         ret = subprocess.call(cmd, shell=True)
         if ret != 0:
             # Try one more time....

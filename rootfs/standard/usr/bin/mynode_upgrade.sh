@@ -28,13 +28,18 @@ mkdir -p /home/admin/upgrade_logs/
 
 # Download Latest
 if [ $BETA = 0 ]; then
-    torify wget $UPGRADE_DOWNLOAD_URL -O /opt/mynode_release_latest.tar.gz
-    torify wget $UPGRADE_DOWNLOAD_SIGNATURE_URL -O /opt/mynode_release_latest.sha256
+    torify wget $UPGRADE_DOWNLOAD_URL -O /opt/mynode_release_latest.tar.gz || \
+           wget $UPGRADE_DOWNLOAD_URL -O /opt/mynode_release_latest.tar.gz
+    torify wget $UPGRADE_DOWNLOAD_SIGNATURE_URL -O /opt/mynode_release_latest.sha256 || \
+           wget $UPGRADE_DOWNLOAD_SIGNATURE_URL -O /opt/mynode_release_latest.sha256
 else
-    torify wget $UPGRADE_BETA_DOWNLOAD_URL -O /opt/mynode_release_latest.tar.gz
-    torify wget $UPGRADE_BETA_DOWNLOAD_SIGNATURE_URL -O /opt/mynode_release_latest.sha256
+    torify wget $UPGRADE_BETA_DOWNLOAD_URL -O /opt/mynode_release_latest.tar.gz || \
+           wget $UPGRADE_BETA_DOWNLOAD_URL -O /opt/mynode_release_latest.tar.gz
+    torify wget $UPGRADE_BETA_DOWNLOAD_SIGNATURE_URL -O /opt/mynode_release_latest.sha256 || \
+           wget $UPGRADE_BETA_DOWNLOAD_SIGNATURE_URL -O /opt/mynode_release_latest.sha256
 fi
-torify wget $UPGRADE_PUBKEY_URL -O /opt/mynode_release.pub
+torify wget $UPGRADE_PUBKEY_URL -O /opt/mynode_release.pub || \
+       wget $UPGRADE_PUBKEY_URL -O /opt/mynode_release.pub
 
 openssl dgst -sha256 -verify /opt/mynode_release.pub -signature /opt/mynode_release_latest.sha256 /opt/mynode_release_latest.tar.gz
 if [ $? -ne 0 ]; then
