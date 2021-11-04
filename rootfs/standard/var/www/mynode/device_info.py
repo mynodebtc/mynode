@@ -1056,7 +1056,7 @@ def get_tor_version():
     if "tor_version" in cached_data:
         return cached_data["tor_version"]
 
-    cached_data["tor_version"] = subprocess.check_output("tor --version | egrep -o '[0-9\\.]+'", shell=True).strip().strip(".")
+    cached_data["tor_version"] = subprocess.check_output("tor --version | head -n 1 | egrep -o '[0-9\\.]+[0-9]'", shell=True).strip().strip(".")
     return cached_data["tor_version"]
 
 

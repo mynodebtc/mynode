@@ -53,10 +53,7 @@ def page_tor():
     btcpay_onion_url = get_onion_url_btcpay()
     sphinxrelay_onion_url = get_onion_url_sphinxrelay()
 
-    btc_info_v2 = get_onion_info_btc_v2()
-
-
-    # Services
+    # v3 Services
     v3_services = []
     v3_services.append(create_v3_service("myNode Web", general_onion_url, "80", True, ""))
     v3_services.append(create_v3_service("WebSSH", general_onion_url, "2222 / 2223", True, ""))
@@ -81,9 +78,6 @@ def page_tor():
     v3_services.append(create_v3_service("Electrum Server", electrs_onion_url, "50002", False, "https://mynodebtc.github.io/tor/electrum.html"))
     v3_services.append(create_v3_service("Sphinx Relay", sphinxrelay_onion_url, "53001", True, ""))
     
-    v2_services = []
-    v2_services.append({"service": "Bitcoin API (REST)", "url": btc_info_v2["url"], "password": btc_info_v2["pass"], "port": "8332","guide":""})
-
     # App links
     rpc_password = get_bitcoin_rpc_password()
     fully_noded_link = "btcstandup://mynode:{}@{}:8332?label=myNode%20Tor".format(rpc_password, btc_onion_url)
@@ -93,7 +87,6 @@ def page_tor():
         "title": "myNode Tor Services",
         "version": get_tor_version(),
         "v3_services": v3_services,
-        "v2_services": v2_services,
         "fully_noded_link": fully_noded_link,
         "ui_settings": read_ui_settings()
     }
