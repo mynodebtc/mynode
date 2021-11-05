@@ -536,7 +536,7 @@ for f in /var/lib/tor/mynode*; do
     rsync --ignore-existing -r -avh $f /mnt/hdd/mynode/tor_backup/ || true
 done
 cp -a -f /mnt/hdd/mynode/tor_backup/. /var/lib/tor/ || true
-chown debian-tor:debian-tor /var/lib/tor
+chown -R debian-tor:debian-tor /var/lib/tor
 systemctl restart tor || true
 
 # Setup udev
