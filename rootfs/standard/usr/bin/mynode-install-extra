@@ -7,7 +7,7 @@ source /usr/share/mynode/mynode_config.sh
 source /usr/share/mynode/mynode_app_versions.sh
 
 # Make sure we have an app argument
-if [ "$#" -ne 1 ]; then
+if [ "$#" -lt 1 ]; then
     echo "Usage: mynode-install-extra <app_name>"
     exit 1
 fi
@@ -22,6 +22,24 @@ APP="$1"
 if [ "$APP" = "rust" ] || [ "$APP" = "cargo" ]; then
     wget https://sh.rustup.rs -O /tmp/setup_rust.sh
     /bin/bash /tmp/setup_rust.sh -y
+elif [ "$APP" = "electrs" ]; then
+    mkdir -p /home/admin/download
+    cd /home/admin/download
+    rm -rf electrs-*.tar.gz
+    rm -rf electrs
+
+    URL="https://github.com/romanz/electrs/archive/refs/tags/v0.9.2.tar.gz"
+    if [ "$#" -eq 2 ]; then
+        URL="$2"
+    fi
+    wget $URL -O electrs.tar.gz
+    tar -xvf electrs.tar.gz
+    mv electrs-* electrs
+
+    cd electrs
+    cargo build --release
+    sudo install -g root -o root target/release/electrs /usr/bin/electrs
+    cd ~
 else
     echo "Dont know what to do for app: $APP"
     exit
