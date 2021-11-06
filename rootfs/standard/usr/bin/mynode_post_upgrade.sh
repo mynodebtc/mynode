@@ -170,10 +170,6 @@ if ! skip_base_upgrades ; then
     pip3 install redis --no-cache-dir
     pip3 install systemd --no-cache-dir
 
-    # Install LNDManage
-    pip3 install lndmanage==$LNDMANAGE_VERSION --no-cache-dir
-    echo $LNDMANAGE_VERSION > $LNDMANAGE_VERSION_FILE
-
     # Update Node
     if [ -f /etc/apt/sources.list.d/nodesource.list ]; then
         CURRENT_NODE_VERSION=$(cat /etc/apt/sources.list.d/nodesource.list)
@@ -223,6 +219,10 @@ if ! skip_base_upgrades ; then
     # Install node packages
 
 fi
+
+# Install LNDManage
+pip3 install lndmanage==$LNDMANAGE_VERSION --no-cache-dir
+echo $LNDMANAGE_VERSION > $LNDMANAGE_VERSION_FILE
 
 
 # Upgrade BTC
