@@ -257,10 +257,6 @@ pip3 install redis
 pip3 install systemd
 
 
-# Install LNDManage
-pip3 install lndmanage==$LNDMANAGE_VERSION
-echo $LNDMANAGE_VERSION > $LNDMANAGE_VERSION_FILE
-
 # Install Rust
 if [ ! -f /tmp/installed_rust ]; then
     wget https://sh.rustup.rs -O /tmp/setup_rust.sh
@@ -295,6 +291,10 @@ npm install -g npm@$NODE_NPM_VERSION
 # Remove existing MOTD login info
 rm -rf /etc/motd
 rm -rf /etc/update-motd.d/*
+
+# Install LNDManage
+pip3 install lndmanage==$LNDMANAGE_VERSION
+echo $LNDMANAGE_VERSION > $LNDMANAGE_VERSION_FILE
 
 
 #########################################################
