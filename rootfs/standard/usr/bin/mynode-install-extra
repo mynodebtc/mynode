@@ -1,0 +1,31 @@
+#!/bin/bash
+# Note: This app will install things as the current user
+
+set -e
+
+source /usr/share/mynode/mynode_config.sh
+source /usr/share/mynode/mynode_app_versions.sh
+
+# Make sure we have an app argument
+if [ "$#" -ne 1 ]; then
+    echo "Usage: mynode-install-extra <app_name>"
+    exit 1
+fi
+APP="$1"
+
+# Skip for now, probably don't need to stop all servies and require reboot
+# Shut down main services to save memory and CPU and stop app being reinstalled
+#/usr/bin/mynode_stop_critical_services.sh
+
+
+# Custom re-install steps
+if [ "$APP" = "rust" ] || [ "$APP" = "cargo" ]; then
+    wget https://sh.rustup.rs -O /tmp/setup_rust.sh
+    /bin/bash /tmp/setup_rust.sh -y
+else
+    echo "Dont know what to do for app: $APP"
+    exit
+fi
+
+sync
+echo "Install Complete!"
