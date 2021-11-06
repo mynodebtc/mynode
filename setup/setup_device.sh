@@ -257,13 +257,6 @@ pip3 install redis
 pip3 install systemd
 
 
-# Install Rust
-if [ ! -f /tmp/installed_rust ]; then
-    wget https://sh.rustup.rs -O /tmp/setup_rust.sh
-    /bin/bash /tmp/setup_rust.sh -y
-    touch /tmp/installed_rust
-fi
-
 # Install node
 if [ ! -f /tmp/installed_node ]; then
     curl -sL https://deb.nodesource.com/setup_$NODE_JS_VERSION | bash -
