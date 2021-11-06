@@ -290,7 +290,7 @@ usermod -aG docker root
 
 # Install node packages
 npm install -g pug-cli browserify uglify-js babel-cli
-npm install -g npm@latest
+npm install -g npm@$NODE_NPM_VERSION
 
 # Remove existing MOTD login info
 rm -rf /etc/motd
