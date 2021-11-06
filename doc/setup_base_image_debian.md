@@ -2,7 +2,7 @@
 
 1. Setup Base OS
 
-   Install Debian 10.1.0 Net-install via CD
+   Install latest Debian Net-install via CD
 
    URL: [https://www.debian.org/CD/netinst/](https://www.debian.org/CD/netinst/)
 
