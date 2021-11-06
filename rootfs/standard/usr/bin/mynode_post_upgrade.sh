@@ -199,7 +199,7 @@ if ! skip_base_upgrades ; then
     fi
 
     # Update NPM (Node Package Manager)
-    npm install -g npm@latest
+    npm install -g npm@$NODE_NPM_VERSION
     
     # Install Docker
     if [ ! -f /usr/bin/docker ]; then
