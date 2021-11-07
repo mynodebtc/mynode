@@ -45,7 +45,7 @@ def get_public_ip():
     global public_ip
     return public_ip
 
-# Updates device info every 30 seconds
+# Updates device info every 60 seconds
 def update_device_info():
     global drive_usage
     global cpu_usage
@@ -64,24 +64,24 @@ def update_device_info():
 
         # Get drive percent usage
         results = subprocess.check_output("df -h /mnt/hdd | grep /dev | awk '{print $5}'", shell=True)
-        drive_usage = results
+        drive_usage = to_string(results)
 
         # Get RAM usage
         ram_info = psutil.virtual_memory()
-        ram_usage = "{}%".format(ram_info.percent)
+        ram_usage = "{:.1f}%".format(ram_info.percent)
 
         # Get Swap Usage
         swap_info = psutil.swap_memory()
-        swap_usage = "{}%".format(swap_info.percent)
+        swap_usage = "{:.1f}%".format(swap_info.percent)
 
         # Get CPU usage
-        #cpu_usage = "{}%".format(psutil.cpu_percent(interval=30.0))
-        cpu_info = psutil.cpu_times_percent(interval=30.0, percpu=False)
-        cpu_usage = "{}%".format(100.0 - cpu_info.idle)
+        cpu_info = psutil.cpu_times_percent(interval=10.0, percpu=False)
+        cpu_usage = "{:.1f}%".format(100.0 - cpu_info.idle)
 
         # Get device temp
         results = subprocess.check_output("cat /sys/class/thermal/thermal_zone0/temp", shell=True)
-        device_temp = int(results) / 1000
+        temp = int(results) / 1000
+        device_temp = "{:.1f}".format(temp)
 
     except Exception as e:
         print("CAUGHT update_device_info EXCEPTION: " + str(e))
@@ -192,7 +192,7 @@ def monitor_dmesg():
     while True:
         l = dmesg.stdout.readline()
         try:
-            l = l.encode('utf-8', 'ignore').decode('utf-8')
+            l = to_bytes(l).decode('utf-8')
 
             #TODO: Check for things like OOM, etc...
             if "Out of memory" in l:

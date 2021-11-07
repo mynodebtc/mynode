@@ -35,7 +35,7 @@ def get_image_contents(filename):
     try:
         with open(filename, "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read())
-            return encoded_string
+            return to_string(encoded_string)
     except:
         return "EXCEPTION"
     return "ERROR"
@@ -417,13 +417,13 @@ def page_lnd_pair_wallet():
     #Electrum QR:
     #bluewallet:setelectrumserver?server=v7gtzf7nua6hdmb2wtqaqioqmesdb4xrlly4zwr7bvayxv2bpg665pqd.onion%3A50001%3At
     bluewallet_lndhub_local_text = "bluewallet:setlndhuburl?url=http://"+local_ip+":3000"
-    bluewallet_lndhub_local_img = "/api/get_qr_code_image?url="+urllib.quote_plus(bluewallet_lndhub_local_text)
+    bluewallet_lndhub_local_img = "/api/get_qr_code_image?url="+quote_plus(bluewallet_lndhub_local_text)
     bluewallet_lndhub_tor_text = "bluewallet:setlndhuburl?url=http://"+lndhub_onion_url+":3000"
-    bluewallet_lndhub_tor_img = "/api/get_qr_code_image?url="+urllib.quote_plus(bluewallet_lndhub_tor_text)
+    bluewallet_lndhub_tor_img = "/api/get_qr_code_image?url="+quote_plus(bluewallet_lndhub_tor_text)
     bluewallet_electrs_local_text = "bluewallet:setelectrumserver?server="+local_ip+":50002:s"
-    bluewallet_electrs_local_img = "/api/get_qr_code_image?url="+urllib.quote_plus(bluewallet_electrs_local_text)
+    bluewallet_electrs_local_img = "/api/get_qr_code_image?url="+quote_plus(bluewallet_electrs_local_text)
     bluewallet_electrs_tor_text = "bluewallet:setelectrumserver?server="+electrs_onion_url+":50001:t"     # Use non-SSL for Tor (scans in Bluewallet better)
-    bluewallet_electrs_tor_img = "/api/get_qr_code_image?url="+urllib.quote_plus(bluewallet_electrs_tor_text)
+    bluewallet_electrs_tor_img = "/api/get_qr_code_image?url="+quote_plus(bluewallet_electrs_tor_text)
 
 
     # Pairing options

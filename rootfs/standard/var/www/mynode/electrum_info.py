@@ -1,6 +1,7 @@
 from bitcoin_info import get_bitcoin_block_height
 from prometheus_client.parser import text_string_to_metric_families
 from systemctl_info import *
+from utilities import *
 import subprocess
 import requests
 import socket
@@ -109,7 +110,7 @@ def get_electrs_db_size(is_testnet=False):
         size = subprocess.check_output("du -h "+folder+" | head -n1 | awk '{print $1;}'", shell=True)
     except Exception as e:
         size = "Error"
-    return size
+    return to_string( size )
 
 def get_from_electrum(method, params=[]):
     params = [params] if type(params) is not list else params

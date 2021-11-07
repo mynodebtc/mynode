@@ -10,7 +10,10 @@ from thread_functions import *
 from systemctl_info import *
 from application_info import *
 from messages import *
-import cStringIO
+if isPython3():
+    from io import StringIO, BytesIO
+else:
+    import cStringIO
 import json
 import subprocess
 import re
@@ -146,15 +149,23 @@ def api_get_log():
 @mynode_api.route("/api/get_qr_code_image")
 def api_get_qr_code_image():
     check_logged_in()
-    
-    img_buf = cStringIO.StringIO()
-    url = "ERROR"
+
+    url = "ERROR_URL"
     if request.args.get("url"):
         url = request.args.get("url")
-    img = generate_qr_code(url)
-    img.save(img_buf)
-    img_buf.seek(0)
-    return send_file(img_buf, mimetype='image/png')
+    
+    if isPython3():
+        img_buf = BytesIO()
+        img = generate_qr_code(url)
+        img.save(img_buf)
+        img_buf.seek(0)
+        return send_file(img_buf, mimetype='image/png')
+    else:
+        img_buf = cStringIO.StringIO()
+        img = generate_qr_code(url)
+        img.save(img_buf)
+        img_buf.seek(0)
+        return send_file(img_buf, mimetype='image/png')
 
 @mynode_api.route("/api/get_message")
 def api_get_message():
@@ -196,7 +207,7 @@ def api_get_drive_benchmark():
     data["status"] = "error"
     data["data"] = "UNKNOWN"
     try:
-        data["data"] = subprocess.check_output("hdparm -Tt $(cat /tmp/.mynode_drive)", shell=True)
+        data["data"] = to_string(subprocess.check_output("hdparm -Tt $(cat /tmp/.mynode_drive)", shell=True))
         data["status"] = "success"
     except Exception as e:
         data["data"] = str(e)
