@@ -249,12 +249,8 @@ fi
 # Install Python3 specific tools (run multiple times to make sure success)
 pip3 install --upgrade pip wheel setuptools
 pip3 install bitstring lnd-grpc pycoin aiohttp connectrum python-bitcoinlib
-pip3 install gnureadline
-pip3 install docker-compose
-pip3 install pipenv
-pip3 install pysocks
-pip3 install redis
-pip3 install systemd
+pip3 install gnureadline docker-compose pipenv bcrypt pysocks redis systemd --no-cache-dir
+pip3 install flask pam python-bitcoinrpc prometheus_client psutil transmissionrpc qrcode image --no-cache-dir
 
 
 # Install node

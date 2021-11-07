@@ -266,7 +266,7 @@ def is_device_from_reseller():
 #==================================
 def get_system_uptime():
     uptime = subprocess.check_output('awk \'{print int($1/86400)" days "int($1%86400/3600)" hour(s) "int(($1%3600)/60)" minute(s) "int($1%60)" seconds(s)"}\' /proc/uptime', shell=True)
-    uptime = uptime.strip()
+    uptime = to_string(uptime.strip())
     return uptime
 
 def get_system_uptime_in_seconds():
@@ -279,7 +279,7 @@ def get_system_time_in_ms():
 
 def get_system_date():
     date = subprocess.check_output('date', shell=True)
-    date = date.strip()
+    date = to_string(date.strip())
     return date
 
 def get_device_serial():
@@ -288,7 +288,7 @@ def get_device_serial():
         return cached_data["serial"]
 
     serial = subprocess.check_output("mynode-get-device-serial", shell=True)
-    serial = serial.strip()
+    serial = to_string(serial.strip())
 
     cached_data["serial"] = serial
     return serial
@@ -299,7 +299,7 @@ def get_device_type():
         return cached_data["device_type"]
     
     device = subprocess.check_output("mynode-get-device-type", shell=True).strip()
-    cached_data["device_type"] = device
+    cached_data["device_type"] = to_string(device)
     return device
 
 def get_device_arch():
@@ -308,7 +308,7 @@ def get_device_arch():
         return cached_data["device_arch"]
 
     arch = subprocess.check_output("uname -m", shell=True).decode("utf-8").strip()
-    cached_data["device_arch"] = arch
+    cached_data["device_arch"] = to_string(arch)
     return arch
 
 def get_device_ram():
@@ -317,7 +317,7 @@ def get_device_ram():
         return cached_data["ram"]
 
     ram = subprocess.check_output("free --giga | grep Mem | awk '{print $2}'", shell=True).strip()
-    cached_data["ram"] = ram
+    cached_data["ram"] = to_string(ram)
     return ram
 
 def get_local_ip():
@@ -327,7 +327,7 @@ def get_local_ip():
     except:
         local_ip = "error"
 
-    return local_ip
+    return to_string(local_ip)
 
 def get_device_changelog():
     changelog = ""
@@ -335,7 +335,7 @@ def get_device_changelog():
         changelog = subprocess.check_output(["cat", "/usr/share/mynode/changelog"])
     except:
         changelog = "ERROR"
-    return changelog
+    return to_string(changelog)
 
 def has_changed_password():
     try:
@@ -1058,7 +1058,9 @@ def get_tor_version():
     if "tor_version" in cached_data:
         return cached_data["tor_version"]
 
-    cached_data["tor_version"] = subprocess.check_output("tor --version | head -n 1 | egrep -o '[0-9\\.]+[0-9]'", shell=True).strip().strip(".")
+    v = to_string( subprocess.check_output("tor --version | head -n 1 | egrep -o '[0-9\\.]+[0-9]'", shell=True) )
+    v = v.strip()
+    cached_data["tor_version"] = v
     return cached_data["tor_version"]
 
 
@@ -1077,17 +1079,16 @@ def get_firewall_rules():
 
 
 #==================================
-# BTC RPC Explorer Functions
+# SSO Functions
 #==================================
-def get_btcrpcexplorer_sso_token():
-    return get_file_contents("/opt/mynode/btc-rpc-explorer/token")
-
-
-#==================================
-# Thunderhub Functions
-#==================================
-def get_thunderhub_sso_token():
-    return get_file_contents("/opt/mynode/thunderhub/.cookie")
+def get_sso_token(short_name):
+    if short_name == "btcrpcexplorer":
+        token = get_file_contents("/opt/mynode/btc-rpc-explorer/token")
+    elif short_name == "thunerhub":
+        token = get_file_contents("/opt/mynode/thunderhub/.cookie")
+    else:
+        token = "UNKOWN_APP"
+    return to_string(token)
 
 
 #==================================
@@ -1104,5 +1105,6 @@ def generate_qr_code(url):
         qr.make(fit=True)
         img = qr.make_image()
         return img
-    except:
-        return "ERROR"
+    except Exception as e:
+        print("generate_qr_code exception: {}".format(str(e)))
+        return None

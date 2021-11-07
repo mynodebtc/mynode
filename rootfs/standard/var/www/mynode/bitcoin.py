@@ -55,7 +55,7 @@ def bitcoin_status_page():
             for b in blockdata:
                 block = b
                 minutes = int(time.time() - int(b["time"])) / 60
-                block["age"] = "{} minutes".format(minutes)
+                block["age"] = "{} minutes".format( int(minutes) )
                 block["size"] = int(b["size"] / 1000)
                 blocks.append(block)
             blocks.reverse()

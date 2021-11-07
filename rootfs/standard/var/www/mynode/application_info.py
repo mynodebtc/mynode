@@ -79,7 +79,7 @@ def get_app_current_version(short_name):
     # For versions that are hashes, shorten them
     version = version[0:16]
 
-    return version
+    return to_string(version)
 
 def get_app_latest_version(app):
     version = "unknown"
@@ -95,7 +95,7 @@ def get_app_latest_version(app):
     # For versions that are hashes, shorten them
     version = version[0:16]
 
-    return version
+    return to_string(version)
 
 def initialize_application_defaults(app):
     if not "name" in app: app["name"] = "NO_NAME"
@@ -283,7 +283,7 @@ def get_application_status(short_name):
     if app["requires_electrs"] and not is_electrs_active():
         return "Waiting on Electrum"
     if not app["is_enabled"]:
-        return app["app_tile_default_status_text"]
+        return to_string(app["app_tile_default_status_text"])
     if app["requires_bitcoin"] and not is_bitcoin_synced():
         return "Waiting on Bitcoin"
 
@@ -351,12 +351,7 @@ def get_application_sso_token(short_name):
     # Make sure app is valid
     if not is_application_valid(short_name):
         return "APP NOT FOUND"
-    
-    if short_name == "btcrpcexplorer":
-        return get_btcrpcexplorer_sso_token()
-    if short_name == "thunderhub":
-        return get_thunderhub_sso_token()
-    return ""
+    return get_sso_token(short_name)
 
 def restart_application(short_name):
     try:

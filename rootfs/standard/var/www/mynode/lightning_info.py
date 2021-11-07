@@ -105,8 +105,10 @@ def update_lightning_tx_info():
 
 def get_lnd_deposit_address():
     if os.path.isfile("/tmp/lnd_deposit_address"):
-        return get_file_contents("/tmp/lnd_deposit_address")
-    return get_new_lnd_deposit_address()
+        addr = get_file_contents("/tmp/lnd_deposit_address")
+    else:
+        addr = get_new_lnd_deposit_address()
+    return to_string(addr)
 
 def get_new_lnd_deposit_address():
     address = "NEW_ADDR"
@@ -309,7 +311,7 @@ def get_lightning_invoices():
             tx["type"] = "INVOICE"
             tx["value_str"] = format_sat_amount(tx["value"])
             tx["date_str"] = time.strftime("%D %H:%M", time.localtime(int(tx["creation_date"])))
-            tx["memo"] = urllib.unquote_plus(tx["memo"])
+            tx["memo"] = unquote_plus(tx["memo"])
             invoices.append(tx)
         invoices.reverse()
         return invoices
@@ -383,7 +385,7 @@ def gen_new_wallet_seed():
     return seed
 
 def get_lnd_lit_password():
-    return get_file_contents("/mnt/hdd/mynode/settings/.litpw")
+    return to_string( get_file_contents("/mnt/hdd/mynode/settings/.litpw") )
 
 def restart_lnd_actual():
     global lnd_ready
@@ -454,7 +456,8 @@ def lnd_get_channel_db_size():
         path = "testnet"
     size = "???"
     try:
-        size = subprocess.check_output("ls -lsah /mnt/hdd/mynode/lnd/data/graph/"+path+"/channel.db | awk '{print $6}'", shell=True)
+        s = subprocess.check_output("ls -lsah /mnt/hdd/mynode/lnd/data/graph/"+path+"/channel.db | awk '{print $6}'", shell=True)
+        size = to_string( s )
     except:
         size = "ERR"
     return size
@@ -527,25 +530,25 @@ def get_lnd_status_color():
 def get_lnd_version():
     global lnd_version
     if lnd_version == None:
-        lnd_version = subprocess.check_output("lnd --version | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+' | head -n 1", shell=True)
+        lnd_version = to_string(subprocess.check_output("lnd --version | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+' | head -n 1", shell=True))
     return "v{}".format(lnd_version)
 
 def get_loop_version():
     global loop_version
     if loop_version == None:
-        loop_version = subprocess.check_output("loopd --version | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+' | head -n 1", shell=True)
+        loop_version = to_string(subprocess.check_output("loopd --version | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+' | head -n 1", shell=True))
     return "v{}".format(loop_version)
 
 def get_pool_version():
     global pool_version
     if pool_version == None:
-        pool_version = subprocess.check_output("poold --version | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+' | head -n 1", shell=True)
+        pool_version = to_string(subprocess.check_output("poold --version | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+' | head -n 1", shell=True))
     return "v{}".format(pool_version)
 
 def get_lit_version():
     global lit_version
     if lit_version == None:
-        #lit_version = subprocess.check_output("litd --version | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+' | head -n 1", shell=True)
+        #lit_version = to_string(subprocess.check_output("litd --version | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+' | head -n 1", shell=True))
         lit_version = "TODO"
     return "v{}".format(lit_version)
 

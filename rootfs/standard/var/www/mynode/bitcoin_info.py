@@ -1,4 +1,5 @@
 from config import *
+from utilities import *
 from threading import Timer
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 import urllib
@@ -33,7 +34,7 @@ def get_bitcoin_rpc_password():
 def get_bitcoin_version():
     global bitcoin_version
     if bitcoin_version == None:
-        bitcoin_version = subprocess.check_output("bitcoind --version | egrep -o 'v[0-9]+\\.[0-9]+\\.[0-9]+'", shell=True)
+        bitcoin_version = to_string(subprocess.check_output("bitcoind --version | egrep -o 'v[0-9]+\\.[0-9]+\\.[0-9]+'", shell=True))
     return bitcoin_version
 
 def is_bitcoin_synced():
@@ -59,7 +60,7 @@ def update_bitcoin_main_info():
             mynode_block_height = bitcoin_blockchain_info['blocks']
 
     except Exception as e:
-        print "ERROR: In update_bitcoin_info - {}".format( str(e) )
+        print("ERROR: In update_bitcoin_info - {}".format( str(e) ))
         return False
 
     return True
@@ -116,7 +117,7 @@ def update_bitcoin_other_info():
             pass
 
     except Exception as e:
-        print "ERROR: In update_bitcoin_info - {}".format( str(e) )
+        print("ERROR: In update_bitcoin_info - {}".format( str(e) ))
         return False
 
     return True
