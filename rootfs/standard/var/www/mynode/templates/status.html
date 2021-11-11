@@ -110,6 +110,7 @@
             <div id="startup_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{startup_status_log}}</pre></div>
             <div class="divider"></div>
 
+            {% if is_quicksync_enabled %}
             <div class="settings_block_subheader">QuickSync Status</div>
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ quicksync_status_color }}"></div>
@@ -118,6 +119,7 @@
             <button id="show_quicksync_status" onclick="showLog('quicksync')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="quicksync_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{quicksync_status_log}}</pre></div>
             <div class="divider"></div>
+            {% endif %}
 
             <div class="settings_block_subheader">Tor Status</div>
             <div class="settings_block_subheader_status">
