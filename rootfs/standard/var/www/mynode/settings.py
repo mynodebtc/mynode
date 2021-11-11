@@ -191,6 +191,7 @@ def page_status():
         #"startup_status_log": startup_status_log,
         "startup_status": get_service_status_basic_text("mynode"),
         "startup_status_color": get_service_status_color("mynode"),
+        "is_quicksync_enabled": is_quicksync_enabled(),
         #"quicksync_status_log": quicksync_status_log,
         "quicksync_status": quicksync_status,
         "quicksync_status_color": quicksync_status_color,
