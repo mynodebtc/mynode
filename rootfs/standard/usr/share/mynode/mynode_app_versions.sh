@@ -63,7 +63,7 @@ WHIRLPOOL_UPLOAD_FILE_ID="21d25ed02cceb91f4aa95b6389b9da9c"
 WHIRLPOOL_VERSION_FILE=/home/bitcoin/.mynode/whirlpool_version
 WHIRLPOOL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/whirlpool_version_latest
 
-DOJO_VERSION="v1.12.0"
+DOJO_VERSION="v1.12.1"
 DOJO_TAR_HASH="d5afb5070f642b0146151e94fb7a71d235575a8b435b55ab10c8b643fe2a4b98"
 DOJO_VERSION_FILE=/mnt/hdd/mynode/settings/dojo_version
 DOJO_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/dojo_version_latest
