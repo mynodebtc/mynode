@@ -26,11 +26,14 @@ stop_file_server:
 # Download Linux images
 out/linux_images/raspi_raspbian.zip:
 	@mkdir -p out/linux_images/
-	@wget https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2019-07-12/2019-07-10-raspbian-buster-lite.zip -O out/linux_images/raspi_raspbian.zip
+	@wget https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2021-05-28/2021-05-07-raspios-buster-armhf-lite.zip -O out/linux_images/raspi_raspbian.zip
+out/linux_images/raspi_raspbian64.zip:
+	@mkdir -p out/linux_images/
+	@wget https://downloads.raspberrypi.org/raspios_lite_arm64/images/raspios_lite_arm64-2021-05-28/2021-05-07-raspios-buster-arm64-lite.zip -O out/linux_images/raspi_raspbian.zip
 out/linux_images/rock64_debian.7z:
 	@mkdir -p out/linux_images/
 	@wget https://dl.armbian.com/rock64/Debian_buster_default.7z -O out/linux_images/rock64_debian.7z
-download_linux_images: out/linux_images/raspi_raspbian.zip out/linux_images/rock64_debian.7z
+download_linux_images: out/linux_images/raspi_raspbian.zip out/linux_images/raspi_raspbian64.zip out/linux_images/rock64_debian.7z
 
 
 # Download base myNode images
