@@ -242,3 +242,16 @@ def restart_bitcoin_actual():
 def restart_bitcoin():
     t = Timer(1.0, restart_bitcoin_actual)
     t.start()
+
+def is_bip158_enabled():
+    if os.path.isfile("/mnt/hdd/mynode/settings/.bip158_enabled"):
+        return True
+    return False
+
+def enable_bip158():
+    os.system("touch /mnt/hdd/mynode/settings/.bip158_enabled")
+    os.system("sync")
+
+def disable_bip158():
+    os.system("rm /mnt/hdd/mynode/settings/.bip158_enabled")
+    os.system("sync")

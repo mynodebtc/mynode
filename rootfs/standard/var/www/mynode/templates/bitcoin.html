@@ -20,6 +20,20 @@
                         showAlertPopup("alert_popup", "<b>Password copy failed!</b>");
                     });
                 });
+                $('#bip158_checkbox').change(function () {
+                    $("#bip158_save").show();
+                });
+                $("#bip158_save").on("click", function() {
+                    enabled=$('#bip158_checkbox').is(":checked")
+                    if (enabled)
+                    {
+                        window.location.href='/bitcoin/toggle_bip158?enabled=1'
+                    }
+                    else
+                    {
+                        window.location.href='/bitcoin/toggle_bip158?enabled=0'
+                    }
+                });
 
             });
         </script>
@@ -113,6 +127,16 @@
                         <tr>
                             <th>Whitepaper</th>
                             <td><a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/bitcoin/bitcoin_whitepaper.pdf">download</a></td>
+                        </tr>
+                        <tr>
+                            <th>Block Filters (BIP 158)</th>
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox" id="bip158_checkbox" {% if bip158_enabled %}checked{% endif %}>
+                                    <span class="slider round"></span>
+                                </label>
+                                <button id="bip158_save" style="display: none; float: right;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                            </td>
                         </tr>
                     </table>
                 </div>
