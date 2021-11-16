@@ -21,7 +21,7 @@ apps = [{"name": "bitcoin/bitcoin",                         "current_version_var
         {"name": "Coldcard/ckbunker",                       "current_version_variable": "CKBUNKER_VERSION"},
         {"name": "alexbosworth/balanceofsatoshis",          "current_version_variable": "BOS_VERSION"},
         {"name": "bitromortac/lndmanage",                   "current_version_variable": "LNDMANAGE_VERSION"},
-        {"name": "lnbits/lnbits",                           "current_version":          "6cf4881"},
+        {"name": "lnbits/lnbits",                           "current_version":          "bcecf6d"},
         {"name": "apotdevin/thunderhub",                    "current_version_variable": "THUNDERHUB_VERSION"},
         {"name": "stakwork/sphinx-relay",                   "current_version_variable": "SPHINXRELAY_VERSION"},
         {"name": "whirlpool/whirlpool-client-cli",          "current_version_variable": "WHIRLPOOL_VERSION"},
