@@ -27,7 +27,6 @@
                     enabled=$('#bip158_checkbox').is(":checked");
                     if (enabled)
                     {
-                        console.log("Enabling BIP 158!!");
                         openConfirmDialog("confirm-dialog", 
                                         "Enable block filters (BIP 158)", 
                                         "Are you sure you want to enable block filters?\
@@ -40,15 +39,7 @@
                     }
                     else
                     {
-                        console.log("Disabling BIP 158!!");
-                        openConfirmDialog("confirm-dialog", 
-                                        "Disable block filters (BIP 158)", 
-                                        "Are you sure you want to disable block filters?",
-                                        function(){
-                                            $( this ).dialog( "close" );
-                                            console.log("Inside callback of disabling BIP 158!!");
-                                            window.location.href='/bitcoin/toggle_bip158?enabled=0';
-                                        });
+                        window.location.href='/bitcoin/toggle_bip158?enabled=0';
                     }
                 });
 
