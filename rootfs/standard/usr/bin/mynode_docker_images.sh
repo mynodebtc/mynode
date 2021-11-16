@@ -20,6 +20,31 @@ while true; do
     echo "Checking for building new docker images..."
     touch /tmp/installing_docker_images
 
+    # Check if we happened to change architectures (move from 32-bit to 64-bit Raspi4 image)
+    CURRENT_ARCH=$(uname -m)
+    SAVED_ARCH="unknown"
+    if [ ! -f $DEVICE_ARCHITECTURE_FILE ]; then
+        echo $CURRENT_ARCH > $DEVICE_ARCHITECTURE_FILE
+    fi
+    if [ -f $DEVICE_ARCHITECTURE_FILE ]; then
+        SAVED_ARCH=$(cat $DEVICE_ARCHITECTURE_FILE)
+    fi
+    if [ "$CURRENT_ARCH" != "$SAVED_ARCH" ]; then
+        # Reset docker stuff
+        docker system prune --all --force
+
+        # Remove containers known to cause problems if cached
+        docker rmi debian:buster-slim
+
+        # Mark mempool and dojo for re-install
+        #  Must reset version for Dojo or it will fully re-install and break rather than 'upgrade'
+        echo "reset" > $WEBSSH2_VERSION_FILE
+        echo "reset" > $NETDATA_VERSION_FILE
+        echo "reset" > $MEMPOOL_VERSION_FILE
+        echo "reset" > $DOJO_VERSION_FILE
+    fi
+    echo $CURRENT_ARCH > $DEVICE_ARCHITECTURE_FILE
+
     # Pull images that don't need to be built
     # ???
 

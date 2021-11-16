@@ -53,6 +53,7 @@ SERIAL_NUM=$(mynode-get-device-serial)
 # Set all default / standard bash config settings
 MYNODE_DIR=/mnt/hdd/mynode
 MYNODE_STATUS_FILE=/tmp/.mynode_status
+DEVICE_ARCHITECTURE_FILE="/mnt/hdd/mynode/settings/.device_arch"
 VPN_BACKUP_DIR=/mnt/hdd/mynode/vpn
 QUICKSYNC_DIR=/mnt/hdd/mynode/quicksync
 QUICKSYNC_CONFIG_DIR=/mnt/hdd/mynode/.config/transmission
