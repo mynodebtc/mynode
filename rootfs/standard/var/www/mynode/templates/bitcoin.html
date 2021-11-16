@@ -24,14 +24,31 @@
                     $("#bip158_save").show();
                 });
                 $("#bip158_save").on("click", function() {
-                    enabled=$('#bip158_checkbox').is(":checked")
+                    enabled=$('#bip158_checkbox').is(":checked");
                     if (enabled)
                     {
-                        window.location.href='/bitcoin/toggle_bip158?enabled=1'
+                        console.log("Enabling BIP 158!!");
+                        openConfirmDialog("confirm-dialog", 
+                                        "Enable block filters (BIP 158)", 
+                                        "Are you sure you want to enable block filters?\
+                                        This will take some time to download and occupy about 5GB of storage.",
+                                        function(){
+                                            $( this ).dialog( "close" );
+                                            console.log("Inside callback of enabling BIP 158!!")
+                                            window.location.href='/bitcoin/toggle_bip158?enabled=1';
+                                        });
                     }
                     else
                     {
-                        window.location.href='/bitcoin/toggle_bip158?enabled=0'
+                        console.log("Disabling BIP 158!!");
+                        openConfirmDialog("confirm-dialog", 
+                                        "Disable block filters (BIP 158)", 
+                                        "Are you sure you want to disable block filters?",
+                                        function(){
+                                            $( this ).dialog( "close" );
+                                            console.log("Inside callback of disabling BIP 158!!");
+                                            window.location.href='/bitcoin/toggle_bip158?enabled=0';
+                                        });
                     }
                 });
 
@@ -230,6 +247,7 @@
         </table>
 
         <div id="alert_popup" class="bottom_center_alert_popup"></div>
+        <div id="confirm-dialog"></div>
 
         {% include 'includes/footer.html' %}
      </body>
