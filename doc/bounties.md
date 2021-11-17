@@ -36,16 +36,6 @@ Additional myNode guides would be helpful for users attempting to use various to
 
 GitHub: https://github.com/mynodebtc/mynodebtc.github.io
 
-## Add BIP 158 Toggle 
-
-Known active efforts: none
-
-Payout: 200k sats
-
-It may be beneficial to some users to enable block filters so addresses can be scanned faster. A toggle should be made available on the Bitcoin page to enable block filters (blockfilterindex=1). Changing this would probably need to reboot the node and the user should be prompted for confirmation prior to saving. The toggle should look similar to the watchtower toggle on the LND page.
-
-This does take extra disk space the creating the it may take some time. The user should be appropriately warned of the tradeoffs.
-
 ## Add Page to Manage Lightning Watchtower
 
 Known active efforts: none
@@ -105,3 +95,13 @@ Additional myNode guides would be helpful for users attempting to use various to
 - ~~Guide for running myNode using VirtualBox (100k sats)~~
 - ~~Guide walking user through Clone Tool usage (75k sats)~~
 - ~~Developer guide to add new application (150k sats)~~
+
+## Add BIP 158 Toggle 
+
+Completed: https://github.com/mynodebtc/mynode/pull/596
+
+Payout: 200k sats
+
+It may be beneficial to some users to enable block filters so addresses can be scanned faster. A toggle should be made available on the Bitcoin page to enable block filters (blockfilterindex=1). Changing this would probably need to reboot the node and the user should be prompted for confirmation prior to saving. The toggle should look similar to the watchtower toggle on the LND page.
+
+This does take extra disk space the creating the it may take some time. The user should be appropriately warned of the tradeoffs.
