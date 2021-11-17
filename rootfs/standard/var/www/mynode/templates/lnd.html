@@ -283,8 +283,10 @@
                                     <input type="checkbox" id="watchtower_enabled_checkbox" {% if watchtower_enabled %}checked{% endif %}>
                                     <span class="slider round"></span>
                                 </label>
-                                <br/>
-                                <button id="watchtower_enabled_save" style="display: none; margin-top: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                                <button id="watchtower_enabled_save" style="display: none; float: right;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                                {% if watchtower_enabled %}
+                                <a href="/lnd/watchtower" style="float: right;" class="ui-button ui-widget ui-corner-all settings_button_small">Manage</a>
+                                {% endif %}
                             </td>
                         </tr>
                         <tr>

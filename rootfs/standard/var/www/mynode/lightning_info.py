@@ -28,6 +28,9 @@ lightning_transactions = None
 lightning_payments = None
 lightning_invoices = None
 lightning_watchtower_server_info = None
+lightning_watchtower_client_stats = None
+lightning_watchtower_client_policy = None
+lightning_watchtower_client_towers = None
 lightning_desync_count = 0
 lightning_update_count = 0
 
@@ -46,6 +49,9 @@ def update_lightning_info():
     global lightning_payments
     global lightning_invoices
     global lightning_watchtower_server_info
+    global lightning_watchtower_client_stats
+    global lightning_watchtower_client_policy
+    global lightning_watchtower_client_towers
     global lightning_desync_count
     global lightning_update_count
     global lnd_ready
@@ -86,6 +92,9 @@ def update_lightning_info():
         lightning_wallet_balance = lnd_get("/balance/blockchain")
         if is_watchtower_enabled():
             lightning_watchtower_server_info = lnd_get_v2("/watchtower/server")
+            lightning_watchtower_client_policy = lnd_get_v2("/watchtower/client/policy")
+            lightning_watchtower_client_stats = lnd_get_v2("/watchtower/client/stats")
+            lightning_watchtower_client_towers = lnd_get_v2("/watchtower/client")['towers']
 
         # Poll slower (make sure we gather data early)
         if lightning_update_count < 30 or lightning_update_count % 2 == 0:
@@ -608,3 +617,15 @@ def enable_watchtower():
 def disable_watchtower():
     os.system("rm /mnt/hdd/mynode/settings/.watchtower_enabled")
     os.system("sync")
+
+def get_lightning_watchtower_client_stats():
+    global lightning_watchtower_client_stats
+    return copy.deepcopy(lightning_watchtower_client_stats)
+
+def get_lightning_watchtower_client_policy():
+    global lightning_watchtower_client_policy
+    return copy.deepcopy(lightning_watchtower_client_policy)
+
+def get_lightning_watchtower_client_towers():
+    global lightning_watchtower_client_towers
+    return copy.deepcopy(lightning_watchtower_client_towers)

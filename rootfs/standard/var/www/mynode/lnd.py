@@ -540,6 +540,48 @@ def lnd_set_watchtower_enabled_page():
     flash("Watchtower settings updated!", category="message")
     return redirect(url_for(".page_lnd"))
 
+@mynode_lnd.route("/lnd/watchtower")
+def page_watchtower():
+    watchtower_server_info = get_lightning_watchtower_server_info()
+    watchtower_uri = "..."
+    if watchtower_server_info != None:
+        if "uris" in watchtower_server_info and len(watchtower_server_info['uris']) > 0:
+            watchtower_uri = watchtower_server_info['uris'][0]
+
+    # Watchtower client stats:
+    watchtower_client_stats = get_lightning_watchtower_client_stats()
+    num_sessions_acquired = watchtower_client_stats['num_sessions_acquired']
+    num_sessions_exhausted = watchtower_client_stats['num_sessions_exhausted']
+    num_failed_backups = watchtower_client_stats['num_failed_backups']
+    num_pending_backups = watchtower_client_stats['num_pending_backups']
+    num_backups = watchtower_client_stats['num_backups']
+
+    # Watchtower client policy:
+    watchtower_client_policy = get_lightning_watchtower_client_policy()
+    max_updates = watchtower_client_policy['max_updates']
+    sweep_sat_per_vbyte = watchtower_client_policy['sweep_sat_per_vbyte']
+    sweep_sat_per_byte = watchtower_client_policy['sweep_sat_per_byte']
+
+    # Watchtower client towers
+    towers = get_lightning_watchtower_client_towers()
+    for tower in towers:
+        tower['pubkey'] = base64.b64encode(tower['pubkey']).decode()
+
+    templateData = {
+        "title": "myNode Lightning Watchtower",
+        "ui_settings": read_ui_settings(),
+        "watchtower_uri": watchtower_uri,
+        "num_backups": num_backups,
+        "num_pending_backups": num_pending_backups,
+        "num_failed_backups": num_failed_backups,
+        "num_sessions_acquired": num_sessions_acquired,
+        "num_sessions_exhausted": num_sessions_exhausted,
+        "max_updates": max_updates,
+        "sweep_sat_per_vbyte": sweep_sat_per_vbyte,
+        "sweep_sat_per_byte": sweep_sat_per_byte,
+        "watchtower_client_towers": towers,
+    }
+    return render_template("watchtower.html", **templateData)
 ##############################################
 ## LND API Calls
 ##############################################

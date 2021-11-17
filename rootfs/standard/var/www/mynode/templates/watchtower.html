@@ -1,0 +1,106 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        {% include 'includes/head.html' %}
+
+        {% if refresh_rate is defined and refresh_rate is not none %}  
+        <meta http-equiv="refresh" content="{{ refresh_rate }}"> 
+        {% endif %}
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        {% include 'includes/logo_header.html' %}
+        <div class="mynode_back_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        </div>
+        {% include 'includes/message_display.html' %}
+
+        <div class="main_header">Lightning Watchtower</div>
+        <br/>
+
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Watchtower Server URI</div>
+                <div class="info_tile_contents" style="font-size: 12px;">{{watchtower_uri}}</div>
+            </div>
+        </div>
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Stats</div>
+                <div class="info_tile_contents">
+                    <table class="info_table">
+                        <tr>
+                            <th>Failed backups</th>
+                            <td>{{ num_failed_backups }}</td>
+                        </tr>
+                        <tr>
+                            <th>Pending backups</th>
+                            <td>{{ num_pending_backups }}</td>
+                        </tr>
+                        <tr>
+                            <th>Backups</th>
+                            <td>{{ num_backups }}</td>
+                        </tr>
+                        <tr>
+                            <th>Sessions acquired</th>
+                            <td>{{ num_sessions_acquired }}</td>
+                        </tr>
+                        <tr>
+                            <th>Sessions exhausted</th>
+                            <td>{{ num_sessions_exhausted }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="info_tile">
+                <div class="info_tile_header">Policy</div>
+                <div class="info_tile_contents">
+                    <table class="info_table">
+                        <tr>
+                            <th>Max updates</th>
+                            <td>{{ max_updates }}</td>
+                        </tr>
+                        <tr>
+                            <th>Sweep sat/vbyte</th>
+                            <td>{{ sweep_sat_per_vbyte }}</td>
+                        </tr>
+                        <tr>
+                            <th>Sweep sat/byte</th>
+                            <td>{{ sweep_sat_per_byte }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <br/>
+        <div class="main_header">Client towers</div>
+        <div class="app_tile_row">
+            <table class="bitcoin_table">
+                <thead class="bitcoin_table_header">
+                    <td>Pubkey</td>
+                    <!-- <td>Addresses</td> -->
+                    <td>Active session Candidate</td>
+                    <td>Num. Sessions</td>
+                    <!-- <td>Sessions</td> -->
+                </thead>
+                {% for tower in watchtower_client_towers %}
+                <tr>
+                    <td style="font-size: 12px;">{{ tower.pubkey }}</td>
+                    <!-- <td>
+                        <ul>
+                            {% for address in tower.addresses %}
+                            <li>{{ address }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td> -->
+                    <td>{{ tower.active_session_candidate }}</td>
+                    <td>{{ tower.num_sessions }}</td>
+                    <!-- <td>{{ tower.sessions }}</td> -->
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% include 'includes/footer.html' %}
+    </body>
+</html>
