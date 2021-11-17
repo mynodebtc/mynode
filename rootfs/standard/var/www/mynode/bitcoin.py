@@ -117,6 +117,7 @@ def bitcoin_status_page():
         "wallets": walletdata,
         "bitcoin_whitepaper_exists": bitcoin_whitepaper_exists,
         "version": version,
+        "bip158_enabled": is_bip158_enabled(),
         "ui_settings": read_ui_settings()
     }
     return render_template('bitcoin.html', **templateData)
@@ -219,3 +220,25 @@ def runcmd_page():
         return ""
     response = runcmd(request.form['cmd'])
     return response
+
+@mynode_bitcoin.route("/bitcoin/toggle_bip158")
+def bitcoin_toggle_bip158():
+    check_logged_in()
+
+    if request.args.get("enabled") and request.args.get("enabled") == "1":
+        enable_bip158()
+    else:
+        disable_bip158()
+
+    # Trigger reboot
+    t = Timer(1.0, reboot_device)
+    t.start()
+
+    # Wait until device is restarted
+    templateData = {
+        "title": "myNode Reboot",
+        "header_text": "Restarting",
+        "subheader_text": "This will take several minutes...",
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('reboot.html', **templateData)
