@@ -250,7 +250,8 @@ fi
 pip3 install --upgrade pip wheel setuptools
 pip3 install bitstring lnd-grpc pycoin aiohttp connectrum python-bitcoinlib
 pip3 install gnureadline docker-compose pipenv bcrypt pysocks redis systemd --no-cache-dir
-pip3 install flask pam python-bitcoinrpc prometheus_client psutil transmissionrpc qrcode image --no-cache-dir
+pip3 install flask pam python-bitcoinrpc prometheus_client psutil transmissionrpc --no-cache-dir
+pip3 install qrcode image pyudev --no-cache-dir
 
 
 # Install node
@@ -896,6 +897,7 @@ systemctl enable glances
 systemctl enable webssh2
 systemctl enable rotate_logs
 systemctl enable corsproxy_btcrpc
+systemctl enable usb_extras
 
 
 # Regenerate MAC Address for Armbian devices

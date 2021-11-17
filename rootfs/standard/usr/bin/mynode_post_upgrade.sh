@@ -163,7 +163,8 @@ if ! skip_base_upgrades ; then
     # Install any pip3 software
     pip3 install --upgrade pip setuptools wheel
     pip3 install gnureadline docker-compose pipenv bcrypt pysocks redis systemd --no-cache-dir
-    pip3 install flask pam python-bitcoinrpc prometheus_client psutil transmissionrpc qrcode image --no-cache-dir
+    pip3 install flask pam python-bitcoinrpc prometheus_client psutil transmissionrpc --no-cache-dir
+    pip3 install qrcode image pyudev --no-cache-dir
 
     # Update Node
     if [ -f /etc/apt/sources.list.d/nodesource.list ]; then
@@ -992,6 +993,7 @@ systemctl enable loop
 systemctl enable pool
 systemctl enable rotate_logs
 systemctl enable corsproxy_btcrpc
+systemctl enable usb_extras
 
 # Disable any old services
 systemctl disable bitcoind || true
