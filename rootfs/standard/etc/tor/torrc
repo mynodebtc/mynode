@@ -219,8 +219,8 @@ HiddenServicePort 80 127.0.0.1:80
 HiddenServicePort 443 127.0.0.1:443
 HiddenServicePort 2222 127.0.0.1:2222
 HiddenServicePort 2223 127.0.0.1:2223
-HiddenServicePort 3000 127.0.0.1:3000
-HiddenServicePort 3001 127.0.0.1:3001
+#HiddenServicePort 3000 127.0.0.1:3000        # Do NOT enable - only use separate service (LNDHub)
+#HiddenServicePort 3001 127.0.0.1:3001        # Do NOT enable - only use separate service (LNDHub)
 HiddenServicePort 3002 127.0.0.1:3002
 HiddenServicePort 3003 127.0.0.1:3003
 HiddenServicePort 3010 127.0.0.1:3010
@@ -230,14 +230,15 @@ HiddenServicePort 3030 127.0.0.1:3030
 HiddenServicePort 3031 127.0.0.1:3031
 HiddenServicePort 4080 127.0.0.1:4080
 HiddenServicePort 4081 127.0.0.1:4081
-HiddenServicePort 5000 127.0.0.1:5000
-HiddenServicePort 5001 127.0.0.1:5001
+#HiddenServicePort 5000 127.0.0.1:5000        # Do NOT enable - only use separate service (LNBits)
+#HiddenServicePort 5001 127.0.0.1:5001        # Do NOT enable - only use separate service (LNBits)
 HiddenServicePort 8443 127.0.0.1:8443
 HiddenServicePort 8899 127.0.0.1:8899
 HiddenServicePort 19999 127.0.0.1:19999
 HiddenServicePort 20000 127.0.0.1:20000
 HiddenServicePort 25441 127.0.0.1:25441
-HiddenServicePort 49392 127.0.0.1:49392
+#HiddenServicePort 49392 127.0.0.1:49392       # Do NOT enable - only use separate service (BTCPayServer)
+#HiddenServicePort 49393 127.0.0.1:49393       # Do NOT enable - only use separate service (BTCPayServer)
 HiddenServicePort 61208 127.0.0.1:61208
 HiddenServicePort 61209 127.0.0.1:61209
 
@@ -255,12 +256,16 @@ HiddenServicePort 10080 127.0.0.1:10080
 # Hidden Service for myNode (LNDHub)
 HiddenServiceDir /var/lib/tor/mynode_lndhub/
 HiddenServiceVersion 3
+HiddenServicePort 80 127.0.0.1:3000
+HiddenServicePort 443 127.0.0.1:3001
 HiddenServicePort 3000 127.0.0.1:3000
 HiddenServicePort 3001 127.0.0.1:3001
 
 # Hidden Service for myNode (LNBits)
 HiddenServiceDir /var/lib/tor/mynode_lnbits/
 HiddenServiceVersion 3
+HiddenServicePort 80 127.0.0.1:5000
+HiddenServicePort 443 127.0.0.1:5001
 HiddenServicePort 5000 127.0.0.1:5000
 HiddenServicePort 5001 127.0.0.1:5001
 
@@ -278,6 +283,8 @@ HiddenServicePort 22022 127.0.0.1:22
 # Hidden Service for BTCPay Server
 HiddenServiceDir /var/lib/tor/mynode_btcpay/
 HiddenServiceVersion 3
+HiddenServicePort 80 127.0.0.1:49392
+HiddenServicePort 443 127.0.0.1:49393
 HiddenServicePort 49392 127.0.0.1:49392
 HiddenServicePort 49393 127.0.0.1:49393
 

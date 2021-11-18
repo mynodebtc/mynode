@@ -391,87 +391,121 @@
             $(document).ready(function() {
                 $( document ).tooltip();
 
+                function is_using_tor() {
+                    if (location.hostname.includes(".onion")) {
+                        return true;
+                    }
+                    return false;
+                }
+
                 $("#lit").on("click", function() {
                     url = 'https://'+location.hostname+':8443'
                     window.open(url,'_blank');
                 })
 
                 $("#lndhub").on("click", function() {
-                    port="3000"
-                    if (location.protocol == "https:") {
-                        port="3001"
+                    hostname=location.hostname
+                    port_string=""
+                    if (is_using_tor()) {
+                        hostname="{{lndhub_onion}}"
+                        // Use "default" port - either 80 or 443 for HTTP/HTTPS
+                    } else {
+                        port_string=":3000"
+                        if (location.protocol == "https:") {
+                            port_string=":3001"
+                        }
                     }
-                    url = location.protocol+'//'+location.hostname+':'+port
+                    url = location.protocol+'//'+hostname+port_string
                     window.open(url,'_blank');
                 })
 
                 $("#rtl").on("click", function() {
+                    hostname=location.hostname
                     port="3010"
                     if (location.protocol == "https:") {
                         port="3011"
                     }
-                    url = location.protocol+'//'+location.hostname+':'+port
+                    url = location.protocol+'//'+hostname+':'+port
                     window.open(url,'_blank');
                 })
 
                 $("#lnbits").on("click", function() {
-                    port="5000"
-                    if (location.protocol == "https:") {
-                        port="5001"
+                    hostname=location.hostname
+                    port_string=""
+                    if (is_using_tor()) {
+                        hostname="{{lnbits_onion}}"
+                        // Use "default" port - either 80 or 443 for HTTP/HTTPS
+                    } else {
+                        port_string=":5000"
+                        if (location.protocol == "https:") {
+                            port_string=":5001"
+                        }
                     }
-                    url = location.protocol+'//'+location.hostname+':'+port
+                    url = location.protocol+'//'+hostname+port_string
                     window.open(url,'_blank');
                 })
 
                 $("#thunderhub").on("click", function() {
+                    hostname=location.hostname
                     port="3030"
                     if (location.protocol == "https:") {
                         port="3031"
                     }
                     // Swap to use SSO (make optional? - needing password is safer)
-                    url = location.protocol+'//'+location.hostname+':'+port
-                    //url = location.protocol+'//'+location.hostname+':'+port+'/sso?'+'token='+application_data["thunderhub"]["sso_token"]
+                    url = location.protocol+'//'+hostname+':'+port
+                    //url = location.protocol+'//'+hostname+':'+port+'/sso?'+'token='+application_data["thunderhub"]["sso_token"]
                     window.open(url,'_blank');
                 })
 
                 $("#ckbunker").on("click", function() {
+                    hostname=location.hostname
                     port="9823"
                     if (location.protocol == "https:") {
                         port="9824"
                     }
-                    url = location.protocol+'//'+location.hostname+':'+port
+                    url = location.protocol+'//'+hostname+':'+port
                     window.open(url,'_blank');
                 })
 
                 $("#btcrpcexplorer").on("click", function() {
+                    hostname=location.hostname
                     port="3002"
                     if (location.protocol == "https:") {
                         port="3003"
                     }
-                    url = location.protocol+'//'+location.hostname+':'+port+'/?'+'token='+application_data["btcrpcexplorer"]["sso_token"]
+                    url = location.protocol+'//'+hostname+':'+port+'/?'+'token='+application_data["btcrpcexplorer"]["sso_token"]
                     window.open(url,'_blank');
                 })
 
                 $("#specter").on("click", function() {
-                    url = 'https://'+location.hostname+':25441'
+                    hostname=location.hostname
+                    url = 'https://'+hostname+':25441'
                     window.open(url,'_blank');
                 })
 
                 $("#mempool").on("click", function() {
+                    hostname=location.hostname
                     port="4080"
                     if (location.protocol == "https:") {
                         port="4081"
                     }
-                    url = location.protocol+'//'+location.hostname+':'+port
+                    url = location.protocol+'//'+hostname+':'+port
                     window.open(url,'_blank');
                 })
 
                 $("#btcpayserver").on("click", function() {
-                    port="49392"
-                    if (location.protocol == "https:") {
-                        port="49393"
+                    protocol=location.protocol
+                    hostname=location.hostname
+                    port_string=""
+                    if (is_using_tor()) {
+                        hostname="{{btcpayserver_onion}}"
+                        // Use "default" port - either 80 or 443 for HTTP/HTTPS
+                    } else {
+                        // When not using tor, BTCPayServer needs HTTPS to login
+                        protocol="https:"
+                        port_string=":49393"
                     }
-                    url = location.protocol+'//'+location.hostname+':'+port
+                    url = protocol+'//'+hostname+port_string
                     window.open(url,'_blank');
                 })
 
