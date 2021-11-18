@@ -6,6 +6,8 @@ import time
 import re
 import datetime
 import urllib
+import base64
+import json
 from flask import current_app as app
 from threading import Timer
 from utilities import *
@@ -389,6 +391,21 @@ def lnd_get_v2(path, timeout=10):
         return {"error": str(e)}
     return r.json()
 
+def lnd_post_v2(path, data, timeout=10):
+    try:
+        macaroon = get_macaroon()
+        headers = {'Grpc-Metadata-macaroon': macaroon}
+        r = requests.post(
+            "https://localhost:"+LND_REST_PORT+"/v2"+path,
+            verify=TLS_CERT_FILE,
+            headers=headers,
+            timeout=timeout,
+            data=json.dumps(data))
+    except Exception as e:
+        app.logger.info("ERROR in lnd_post_v2: "+str(e))
+        return {"error": str(e)}
+    return r.json()
+
 def gen_new_wallet_seed():
     seed = subprocess.check_output("python3 /usr/bin/gen_seed.py", shell=True)
     return seed
@@ -629,3 +646,12 @@ def get_lightning_watchtower_client_policy():
 def get_lightning_watchtower_client_towers():
     global lightning_watchtower_client_towers
     return copy.deepcopy(lightning_watchtower_client_towers)
+
+def add_watchtower(tower_pubkey_address):
+    data = {
+        'pubkey': base64.b64encode(tower_pubkey_address.split('@')[0]).decode(),
+        'address': tower_pubkey_address.split('@')[1]
+    }
+    r = lnd_post_v2('/watchtower/client', data=data)
+    # app.logger.info(r)
+    return r

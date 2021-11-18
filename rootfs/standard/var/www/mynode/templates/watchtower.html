@@ -7,6 +7,32 @@
         <meta http-equiv="refresh" content="{{ refresh_rate }}"> 
         {% endif %}
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script>
+            $(document).ready(function() {
+                function add_tower() {
+                    $("#add-watchtower-form").submit();
+                    add_tower_dialog.dialog( "close" );
+                }
+                add_tower_dialog = $( "#add-watchtower-dialog" ).dialog({
+                    autoOpen: false,
+                    resizable: false,
+                    height: "auto",
+                    width: 600,
+                    modal: true,
+                    position: { my: "center top", at: "center top", of: window, collision: "none" },
+                    buttons: {
+                        "Save": add_tower,
+                        Cancel: function() {
+                            add_tower_dialog.dialog( "close" );
+                        }
+                    },
+                    open: function() {}
+                });
+                $('#add-watchtower').on('click', function() {
+                    add_tower_dialog.dialog( "open" );
+                });
+            });
+        </script>
     </head>
     <body>
         {% include 'includes/logo_header.html' %}
@@ -75,6 +101,10 @@
 
         <br/>
         <div class="main_header">Client towers</div>
+        <button class="ui-button ui-widget ui-corner-all mynode_button"
+            style="margin: auto; display: block; margin-bottom: 10px; width: 15%;" id="add-watchtower">
+            Add watchtower
+        </button>
         <div class="app_tile_row">
             <table class="bitcoin_table">
                 <thead class="bitcoin_table_header">
@@ -83,6 +113,7 @@
                     <td>Active session Candidate</td>
                     <td>Num. Sessions</td>
                     <!-- <td>Sessions</td> -->
+                    <td>Delete watchtower</td>
                 </thead>
                 {% for tower in watchtower_client_towers %}
                 <tr>
@@ -97,9 +128,20 @@
                     <td>{{ tower.active_session_candidate }}</td>
                     <td>{{ tower.num_sessions }}</td>
                     <!-- <td>{{ tower.sessions }}</td> -->
+                    <td><button class="delete_tower">X</button></td>
                 </tr>
                 {% endfor %}
             </table>
+        </div>
+
+        <div id="add-watchtower-dialog" title="Add watchtower" style="display:none;">
+            <form id="add-watchtower-form" name="add-watchtower-form" action="/lnd/watchtower/add" method="POST">
+                <label for="tower">Pubkey@address:</label>
+                <br/>
+                <input type="text" name="tower" id="tower" value="" class="text ui-widget-content ui-corner-all" style="width: 100%">
+                <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </form>
         </div>
         {% include 'includes/footer.html' %}
     </body>

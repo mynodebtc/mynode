@@ -564,8 +564,8 @@ def page_watchtower():
 
     # Watchtower client towers
     towers = get_lightning_watchtower_client_towers()
-    for tower in towers:
-        tower['pubkey'] = base64.b64encode(tower['pubkey']).decode()
+    # for tower in towers:
+        # tower['pubkey'] = base64.b64decode(tower['pubkey']).decode()
 
     templateData = {
         "title": "myNode Lightning Watchtower",
@@ -582,6 +582,27 @@ def page_watchtower():
         "watchtower_client_towers": towers,
     }
     return render_template("watchtower.html", **templateData)
+
+@mynode_lnd.route("/lnd/watchtower/add", methods=["POST"])
+def page_add_watchtower():
+    check_logged_in()
+
+    tower_pubkey_address = request.form.get("tower")
+
+    if tower_pubkey_address == None or tower_pubkey_address == "":
+        flash("Empty tower pubkey@address", category="error")
+        return redirect(url_for(".page_watchtower"))
+    elif len(tower_pubkey_address.split('@')) < 2:
+        flash("Incorrect format for pubkey@address")
+        return redirect(url_for(".page_watchtower"))
+
+    message = add_watchtower(tower_pubkey_address)
+    if message['message']:
+        flash(message['message'], category='error')
+    else:
+        flash("Watchtower added!", category="message")
+    return redirect(url_for(".page_watchtower"))
+
 ##############################################
 ## LND API Calls
 ##############################################
