@@ -4,7 +4,7 @@ BTC_VERSION="22.0"
 BTC_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version
 BTC_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version_latest
 
-LND_VERSION="v0.13.4-beta"
+LND_VERSION="v0.14.0-beta"
 LND_VERSION_FILE=/home/bitcoin/.mynode/lnd_version
 LND_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnd_version_latest
 LND_UPGRADE_MANIFEST_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
