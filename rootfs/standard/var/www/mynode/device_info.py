@@ -957,6 +957,7 @@ def disable_aptget_tor():
     os.system("sync")
 
 def get_onion_url_ssh():
+    if is_community_edition(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode_ssh/hostname"):
             with open("/var/lib/tor/mynode_ssh/hostname") as f:
@@ -966,6 +967,7 @@ def get_onion_url_ssh():
     return "error"
 
 def get_onion_url_general():
+    if is_community_edition(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode/hostname"):
             with open("/var/lib/tor/mynode/hostname") as f:
@@ -975,6 +977,7 @@ def get_onion_url_general():
     return "error"
 
 def get_onion_url_btc():
+    if is_community_edition(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode_btc/hostname"):
             with open("/var/lib/tor/mynode_btc/hostname") as f:
@@ -984,6 +987,7 @@ def get_onion_url_btc():
     return "error"
 
 def get_onion_url_lnd():
+    if is_community_edition(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode_lnd/hostname"):
             with open("/var/lib/tor/mynode_lnd/hostname") as f:
@@ -993,6 +997,7 @@ def get_onion_url_lnd():
     return "error"
 
 def get_onion_url_electrs():
+    if is_community_edition(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode_electrs/hostname"):
             with open("/var/lib/tor/mynode_electrs/hostname") as f:
@@ -1002,6 +1007,7 @@ def get_onion_url_electrs():
     return "error"
 
 def get_onion_url_lndhub():
+    if is_community_edition(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode_lndhub/hostname"):
             with open("/var/lib/tor/mynode_lndhub/hostname") as f:
@@ -1011,6 +1017,7 @@ def get_onion_url_lndhub():
     return "error"
 
 def get_onion_url_lnbits():
+    if is_community_edition(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode_lnbits/hostname"):
             with open("/var/lib/tor/mynode_lnbits/hostname") as f:
@@ -1020,6 +1027,7 @@ def get_onion_url_lnbits():
     return "error"
 
 def get_onion_url_btcpay():
+    if is_community_edition(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode_btcpay/hostname"):
             with open("/var/lib/tor/mynode_btcpay/hostname") as f:
@@ -1029,6 +1037,7 @@ def get_onion_url_btcpay():
     return "error"
 
 def get_onion_url_sphinxrelay():
+    if is_community_edition(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode_sphinx/hostname"):
             with open("/var/lib/tor/mynode_sphinx/hostname") as f:
