@@ -89,7 +89,16 @@
     },
     {
         "name": "LNDManage",
-        "short_name": "lndmanage"
+        "short_name": "lndmanage",
+        "requires_lightning": true,
+        "hide_status_icon": true,
+        "app_tile_default_status_text": "Lightning Utility",
+        "app_tile_button_href": "/lndmanage",
+        "app_tile_button_text": "Info",
+        "can_uninstall": true,
+        "can_enable_disable": false,
+        "show_on_homepage": true,
+        "homepage_order": 44
     },
     {
         "name": "BTC RPC Explorer",
@@ -131,6 +140,7 @@
     {
         "name": "JoininBox",
         "short_name": "joininbox",
+        "hide_status_icon": true,
         "app_tile_button_text": "Info",
         "app_tile_button_href": "/joininbox",
         "app_tile_default_status_text": "JoinMarket Mixing",
@@ -230,6 +240,7 @@
         "name": "PyBlock",
         "short_name": "pyblock",
         "requires_lightning": true,
+        "hide_status_icon": true,
         "app_tile_default_status_text": "Blockchain Info",
         "app_tile_button_href": "/pyblock",
         "app_tile_button_text": "Info",
@@ -242,6 +253,7 @@
         "name": "Balance of Satoshis",
         "short_name": "bos",
         "requires_lightning": true,
+        "hide_status_icon": true,
         "app_tile_default_status_text": "Lightning Utility",
         "app_tile_button_href": "/bos",
         "app_tile_button_text": "Info",

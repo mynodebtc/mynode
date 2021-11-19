@@ -1,0 +1,55 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        {% include 'includes/head.html' %}
+    </head>
+    <body>
+        {% include 'includes/logo_header.html' %}
+        <div class="mynode_back_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        </div>
+
+        {% include 'includes/message_display.html' %}
+
+        <div class="main_header">LNDManage</div>
+        <br/>
+
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Status</div>
+                <div class="info_tile_contents">Ready</div>
+            </div>
+        </div>
+
+
+        <div class="instructions">
+            <div class="instructions-header">Instructions to run lndmanage</div>
+            <ol class="instructions-steps">
+                <li>lndmanage is an advanced channel management tool for lnd.</li>
+                <li>To get started, you need access to the Linux terminal of your myNode device.</li>
+                <ul>
+                    <li>A guide to access the Linux terminal is available here - <a href="https://mynodebtc.github.io/advanced/linux-terminal.html" target="_blank">guide</a></li>
+                </ul>
+                <li>Once you have terminal access, run commands starting with 'lndmanage'. For example:</li>
+                <ul>
+                    <li><pre>lndmanage status</pre></li>
+                    <li><pre>lndmanage listchannels</pre></li>
+                    <li><pre>lndmanage rebalance ...</pre></li>
+                    <li><pre>lndmanage circle ...</pre></li>
+                </ul>
+                <li>Enjoy lndmanage!</li>
+            </ol>
+
+            <br/><br/>
+
+            <!--
+            <div class="instructions-header">Tips and Notes</div>
+            <ul style="font-size: 12px;">
+                <li>Add tips and notes</li>
+            </ul>
+            -->
+        </div>
+
+        {% include 'includes/footer.html' %}
+    </body>
+</html>

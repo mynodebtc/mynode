@@ -216,9 +216,10 @@ if ! skip_base_upgrades ; then
 fi
 
 # Install LNDManage
-pip3 install lndmanage==$LNDMANAGE_VERSION --no-cache-dir
-echo $LNDMANAGE_VERSION > $LNDMANAGE_VERSION_FILE
-
+if should_install_app "lndmanage" ; then
+    pip3 install lndmanage==$LNDMANAGE_VERSION --no-cache-dir
+    echo $LNDMANAGE_VERSION > $LNDMANAGE_VERSION_FILE
+fi
 
 # Upgrade BTC
 echo "Upgrading BTC..."
