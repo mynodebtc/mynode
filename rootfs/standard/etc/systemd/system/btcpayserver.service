@@ -3,14 +3,15 @@
 
 [Unit]
 Description=BTCPayServer service
-After=docker.service network-online.target bitcoin.service
-Requires=docker.service network-online.target bitcoin.service
+After=docker.service network-online.target bitcoin.service lnd.service
+Requires=docker.service network-online.target bitcoin.service lnd.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/is_mainnet.sh
+ExecStartPre=/usr/bin/wait_on_lnd.sh
 ExecStart=/bin/bash -c  '. "/opt/mynode/btcpayserver/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY" && . helpers.sh && btcpay_up'
 ExecStop=/bin/bash -c   '. "/opt/mynode/btcpayserver/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY" && . helpers.sh && btcpay_down'
 ExecReload=/bin/bash -c '. "/opt/mynode/btcpayserver/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY" && . helpers.sh && btcpay_restart'
