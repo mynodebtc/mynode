@@ -109,27 +109,21 @@
             <table class="bitcoin_table">
                 <thead class="bitcoin_table_header">
                     <td>Pubkey</td>
-                    <!-- <td>Addresses</td> -->
-                    <td>Active session Candidate</td>
                     <td>Num. Sessions</td>
-                    <!-- <td>Sessions</td> -->
-                    <td>Delete watchtower</td>
+                    <td>Action</td>
                 </thead>
                 {% for tower in watchtower_client_towers %}
+                {% if tower.active_session_candidate %}
                 <tr>
                     <td style="font-size: 12px;">{{ tower.pubkey }}</td>
-                    <!-- <td>
-                        <ul>
-                            {% for address in tower.addresses %}
-                            <li>{{ address }}</li>
-                            {% endfor %}
-                        </ul>
-                    </td> -->
-                    <td>{{ tower.active_session_candidate }}</td>
                     <td>{{ tower.num_sessions }}</td>
-                    <!-- <td>{{ tower.sessions }}</td> -->
-                    <td><button class="delete_tower">X</button></td>
+                    <td>
+                        <a class="ui-button ui-widget ui-corner-all" href="/lnd/watchtower/remove?pubkey={{ tower.pubkey }}">
+                            Remove
+                        </a>
+                    </td>
                 </tr>
+                {% endif %}
                 {% endfor %}
             </table>
         </div>

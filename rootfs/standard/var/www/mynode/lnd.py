@@ -603,6 +603,21 @@ def page_add_watchtower():
         flash("Watchtower added!", category="message")
     return redirect(url_for(".page_watchtower"))
 
+@mynode_lnd.route("/lnd/watchtower/remove")
+def page_remove_watchtower():
+    check_logged_in()
+
+    pubkey = request.args.get('pubkey')
+    if pubkey == None or pubkey == '':
+        flash('Empty pubkey', category='error')
+    else:
+        r = remove_watchtower(pubkey)
+        if r.status_code == 404:
+            flash('Tower pubkey is invalid', category='error')
+        elif r.status_code == 200:
+            flash('Tower successfully removed!', category='message')
+    return redirect(url_for('.page_watchtower'))
+
 ##############################################
 ## LND API Calls
 ##############################################
