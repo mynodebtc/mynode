@@ -62,6 +62,8 @@ elif [ "$APP" = "dojo" ]; then
     cd ~
     rm -rf /opt/download/dojo
     rm -rf /mnt/hdd/mynode/dojo
+elif [ "$APP" = "lndmanage" ]; then
+    pip3 uninstall -y lndmanage
 else
     echo "No custom re-install steps"
 fi

@@ -121,6 +121,7 @@ def initialize_application_defaults(app):
     if not "is_enabled" in app: app["is_enabled"] = is_service_enabled( app["short_name"] )
     #app["status"] = status # Should status be optional to include? Takes lots of time.
     #app["status_color"] = get_service_status_color(short_name)
+    if not "hide_status_icon" in app: app["hide_status_icon"] = False
     if not "log_file" in app: app["log_file"] = get_application_log_file( app["short_name"] )
     if not "journalctl_log_name" in app: app["journalctl_log_name"] = None
     if not "homepage_order" in app: app["homepage_order"] = 9999
@@ -299,12 +300,6 @@ def get_application_status(short_name):
 def get_application_status_color_special(short_name):
     if short_name == "lnd":
         return get_lnd_status_color()
-    elif short_name == "bos":
-        return "clear"
-    elif short_name == "joininbox":
-        return "clear"
-    elif short_name == "pyblock":
-        return "clear"
     elif short_name == "whirlpool":
         if not os.path.isfile("/mnt/hdd/mynode/whirlpool/whirlpool-cli-config.properties"):
             return "yellow"
@@ -324,6 +319,10 @@ def get_application_status_color(short_name):
     
     # Get application
     app = get_application(short_name)
+
+    # Check hidden icon
+    if app["hide_status_icon"]:
+        return "clear"
 
     # Check Disabled, Testnet, Lightning, Electrum requirements...
     if is_testnet_enabled() and not app["supports_testnet"]:

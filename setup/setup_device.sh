@@ -282,8 +282,7 @@ rm -rf /etc/motd
 rm -rf /etc/update-motd.d/*
 
 # Install LNDManage
-pip3 install lndmanage==$LNDMANAGE_VERSION
-echo $LNDMANAGE_VERSION > $LNDMANAGE_VERSION_FILE
+# - skip, not default app
 
 
 #########################################################
