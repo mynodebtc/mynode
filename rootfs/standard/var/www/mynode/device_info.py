@@ -793,6 +793,12 @@ def reset_docker():
 
 def get_docker_running_containers():
     containers = []
+
+    # If docker not running, return empty
+    if get_service_status_code("docker") != 0:
+        return containers
+
+    # TODO: switch to subprocess after switch to python3 for web ui (timeout doesn't work w/ subprocess32, causes issues)
     try:
         text = subprocess32.check_output("docker ps --format '{{.Names}}'", shell=True, timeout=3).decode("utf8")
         containers = text.splitlines()

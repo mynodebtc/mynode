@@ -1,5 +1,6 @@
 from config import *
-from flask import Blueprint, render_template, session, abort, Markup, request, redirect, send_from_directory, url_for, flash, current_app
+from flask import Blueprint, render_template, session, abort, Markup, request, redirect, send_from_directory, url_for, flash
+from flask import current_app as app
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from bitcoin import is_bitcoin_synced
 from bitcoin_info import using_bitcoin_custom_config
@@ -848,13 +849,13 @@ def reinstall_app_page():
         return redirect("/settings")
     
     # Check application name is valid
-    app = request.args.get("app")
-    if not is_application_valid(app):
+    app_name = request.args.get("app")
+    if not is_application_valid(app_name):
         flash("Application is invalid", category="error")
         return redirect("/settings")
 
     # Re-install app
-    t = Timer(1.0, reinstall_app, [app])
+    t = Timer(1.0, reinstall_app, [app_name])
     t.start()
 
     # Display wait page
@@ -877,13 +878,13 @@ def uninstall_app_page():
         return redirect("/apps")
     
     # Check application name is valid
-    app = request.args.get("app")
-    if not is_application_valid(app):
+    app_name = request.args.get("app")
+    if not is_application_valid(app_name):
         flash("Application is invalid", category="error")
         return redirect("/apps")
 
     # Un-install app
-    uninstall_app(app)
+    uninstall_app(app_name)
 
     flash("Application Uninstalled", category="message")
     return redirect("/apps")
