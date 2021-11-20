@@ -1,3 +1,16 @@
+=== v0.2.46 ===
+- Released: 11/19/21
+- Upgrade LND to v0.14.0
+- Upgrade Dojo to v1.12.1
+- Upgrade Specter to v1.7.1
+- Upgrade BTC Pay Server to v1.3.5
+- Upgrade BoS to v11.12.0
+- Upgrade Sphinx Relay to v2.2.2
+- Improve Tor services for apps
+- Add app tile for lndmanage
+- Improve handling of 32->64 bit upgrades
+- Bug fixes
+
 === v0.2.45 ===
 - Released: 11/03/21
 - Remove Tor v2 services
