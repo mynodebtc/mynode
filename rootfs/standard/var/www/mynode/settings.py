@@ -89,6 +89,7 @@ def page_settings():
         "is_uploader_device": is_uploader(),
         "download_rate": download_rate,
         "upload_rate": upload_rate,
+        "btcrpcexplorer_token_enabled": is_btcrpcexplorer_token_enabled(),
         "is_btc_lnd_tor_enabled": is_btc_lnd_tor_enabled(),
         "is_aptget_tor_enabled": is_aptget_tor_enabled(),
         "skip_fsck": skip_fsck(),
@@ -780,19 +781,33 @@ def page_set_https_forced_page():
 
     flash("HTTPS Settings Saved", category="message")
     return redirect(url_for(".page_settings"))
+
+
+@mynode_settings.route("/settings/btcrpcexplorer_token")
+def page_btcrpcexplorer_token():
+    check_logged_in()
+    
+    enable = request.args.get('enable')
+    if enable == "1":
+        enable_btcrpcexplorer_token()
+    else:
+        disable_btcrpcexplorer_token()
+
+    flash("BTC RPC Explorer Token Setting Saved", category="message")
+    return redirect(url_for(".page_settings")) 
     
 
 @mynode_settings.route("/settings/enable_aptget_tor")
 def page_enable_aptget_tor():
     check_logged_in()
-
-    check_and_mark_reboot_action("enable_aptget_tor")
     
     enable = request.args.get('enable')
     if enable == "1":
         enable_aptget_tor()
     else:
         disable_aptget_tor()
+    
+    flash("Tor Setting Saved", category="message")
     return redirect(url_for(".page_settings"))
 
 @mynode_settings.route("/settings/mynode_logs.tar.gz")

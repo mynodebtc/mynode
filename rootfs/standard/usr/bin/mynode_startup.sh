@@ -412,11 +412,6 @@ if [ -f /opt/mynode/btcpayserver/.env ]; then
     sed -i "s/NBXPLORER_VERSION.*/NBXPLORER_VERSION=$BTCPAYSERVER_NBXPLORER_VERSION/g" /opt/mynode/btcpayserver/.env || true
 fi
 
-# BTC RPC Explorer Config
-mkdir -p /opt/mynode/btc-rpc-explorer
-cp /usr/share/mynode/btcrpcexplorer_env /opt/mynode/btc-rpc-explorer/.env
-chown -R bitcoin:bitcoin /opt/mynode/btc-rpc-explorer
-
 # LNBits Config
 if [ -d /opt/mynode/lnbits ]; then
     cp /usr/share/mynode/lnbits.env /opt/mynode/lnbits/.env

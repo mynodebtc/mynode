@@ -78,6 +78,7 @@ def api_get_service_status():
     data["status"] = get_application_status(service)
     data["color"] = get_application_status_color(service)
     data["sso_token"] = get_application_sso_token(service)
+    data["sso_token_enabled"] = get_application_sso_token_enabled(service)
     return jsonify(data)
 
 @mynode_api.route("/api/get_app_info")
