@@ -532,6 +532,7 @@ def index():
             "lnd_channels": get_lightning_channels(),
             "electrs_active": electrs_active,
             "btcpayserver_onion": get_onion_url_btcpay(),
+            "btcrpcexplorer_token_enabled": is_btcrpcexplorer_token_enabled(),
             "lndhub_onion": get_onion_url_lndhub(),
             "lnbits_onion": get_onion_url_lnbits(),
             "is_testnet_enabled": is_testnet_enabled(),

@@ -931,6 +931,27 @@ def reset_specter_config():
     os.system("systemctl restart specter")
 
 #==================================
+# BTC RPC Explorer Functions
+#==================================
+def is_btcrpcexplorer_token_enabled():
+    if os.path.isfile("/mnt/hdd/mynode/settings/.btcrpcexplorer_disable_token"):
+        return False
+    return True
+
+def enable_btcrpcexplorer_token():
+    os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpcexplorer_disable_token")
+    os.system("sync")
+    if is_service_enabled("btcrpcexplorer"):
+        restart_service("btcrpcexplorer")
+
+
+def disable_btcrpcexplorer_token():
+    os.system("touch /mnt/hdd/mynode/settings/.btcrpcexplorer_disable_token")
+    os.system("sync")
+    if is_service_enabled("btcrpcexplorer"):
+        restart_service("btcrpcexplorer")
+
+#==================================
 # Tor Functions
 #==================================
 def reset_tor():
@@ -1104,6 +1125,12 @@ def get_sso_token(short_name):
     else:
         token = "UNKOWN_APP"
     return to_string(token)
+
+def get_sso_token_enabled(short_name):
+    enabled = False
+    if short_name == "btcrpcexplorer":
+        enabled = is_btcrpcexplorer_token_enabled()
+    return enabled
 
 
 #==================================

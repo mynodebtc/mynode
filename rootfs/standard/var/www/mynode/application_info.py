@@ -349,8 +349,14 @@ def get_application_status_color(short_name):
 def get_application_sso_token(short_name):
     # Make sure app is valid
     if not is_application_valid(short_name):
-        return "APP NOT FOUND"
+        return "APP_NOT_FOUND"
     return get_sso_token(short_name)
+
+def get_application_sso_token_enabled(short_name):
+    # Make sure app is valid
+    if not is_application_valid(short_name):
+        return "APP_NOT_FOUND"
+    return get_sso_token_enabled(short_name)
 
 def restart_application(short_name):
     try:

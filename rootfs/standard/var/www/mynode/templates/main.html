@@ -100,6 +100,9 @@
                 if ("sso_token" in data && data["sso_token"] != null && data["sso_token"] != "") {
                     application_data[short_name]["sso_token"] = data["sso_token"]
                 }
+                if ("sso_token_enabled" in data) {
+                    application_data[short_name]["sso_token_enabled"] = data["sso_token_enabled"]
+                }
             }
 
             function refresh_page() {
@@ -473,7 +476,11 @@
                     if (location.protocol == "https:") {
                         port="3003"
                     }
-                    url = location.protocol+'//'+hostname+':'+port+'/?'+'token='+application_data["btcrpcexplorer"]["sso_token"]
+                    token_string=""
+                    if (application_data["btcrpcexplorer"]["sso_token_enabled"]) {
+                        token_string='?'+'token='+application_data["btcrpcexplorer"]["sso_token"]
+                    }
+                    url = location.protocol+'//'+hostname+':'+port+'/'+token_string
                     window.open(url,'_blank');
                 })
 
