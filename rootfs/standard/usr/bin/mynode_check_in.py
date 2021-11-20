@@ -7,6 +7,8 @@ import random
 
 CHECKIN_URL = "https://www.mynodebtc.com/device_api/check_in.php"
 
+latest_version_check_count = 0
+
 # Helper functions
 def unset_skipped_product_key():
     os.system("rm -rf /home/bitcoin/.mynode/.product_key_skipped")
@@ -76,6 +78,30 @@ def get_quicksync_enabled():
         enabled = 0
     return enabled
 
+def check_for_new_mynode_version():
+    global latest_version_check_count
+    # Chances of refreshing version
+    #   Note: Hard limit forces day 5 to 100%
+    # 
+    # A 30% chance per day is:  A 35% chance per day is:  A 40% chance per day is:  A 45% chance per day is:
+    #  1 day(s): 30%             1 day(s): 35%             1 day(s): 40%             1 day(s): 45%
+    #  2 day(s): 51%             2 day(s): 57%             2 day(s): 64%             2 day(s): 69%
+    #  3 day(s): 65%             3 day(s): 72%             3 day(s): 78%             3 day(s): 83%
+    #  5 day(s): 83%             5 day(s): 88%             5 day(s): 92%             5 day(s): 94%
+    #  7 day(s): 91%             7 day(s): 95%             7 day(s): 97%             7 day(s): 98%
+    # A 50% chance per day is:  A 55% chance per day is:  A 60% chance per day is:  A 65% chance per day is:
+    #  1 day(s): 50%             1 day(s): 55%             1 day(s): 60%             1 day(s): 65%
+    #  2 day(s): 75%             2 day(s): 79%             2 day(s): 84%             2 day(s): 87%
+    #  3 day(s): 87%             3 day(s): 90%             3 day(s): 93%             3 day(s): 95%
+    #  5 day(s): 96%             5 day(s): 98%             5 day(s): 99%             5 day(s): 99%
+    #  7 day(s): 99.2%           7 day(s): 99.6%           7 day(s): 99.8%           7 day(s): 99.9%
+    if latest_version_check_count % 5 == 0 or random.randint(1, 100) <= 40:
+        os.system("printf \"%s | Version Check Count ({}) - Checking for new version! \\n\" \"$(date)\" >> /tmp/check_in_status".format(latest_version_check_count))
+        os.system("/usr/bin/mynode_get_latest_version.sh")
+    else:
+        os.system("printf \"%s | Version Check Count ({}) - Skipping version check \\n\" \"$(date)\" >> /tmp/check_in_status".format(latest_version_check_count))
+    latest_version_check_count = latest_version_check_count + 1
+
 # Checkin every 24 hours
 def check_in():
 
@@ -92,20 +118,7 @@ def check_in():
     }
 
     # Check for new version (not every time to spread out upgrades)
-    # A 30% chance per day is:  A 35% chance per day is:  A 40% chance per day is:  A 45% chance per day is:
-    #  1 day(s): 30%             1 day(s): 35%             1 day(s): 40%             1 day(s): 45%
-    #  2 day(s): 51%             2 day(s): 57%             2 day(s): 64%             2 day(s): 69%
-    #  3 day(s): 65%             3 day(s): 72%             3 day(s): 78%             3 day(s): 83%
-    #  5 day(s): 83%             5 day(s): 88%             5 day(s): 92%             5 day(s): 94%
-    #  7 day(s): 91%             7 day(s): 95%             7 day(s): 97%             7 day(s): 98%
-    # A 50% chance per day is:  A 55% chance per day is:  A 60% chance per day is:  A 65% chance per day is:
-    #  1 day(s): 50%             1 day(s): 55%             1 day(s): 60%             1 day(s): 65%
-    #  2 day(s): 75%             2 day(s): 79%             2 day(s): 84%             2 day(s): 87%
-    #  3 day(s): 87%             3 day(s): 90%             3 day(s): 93%             3 day(s): 95%
-    #  5 day(s): 96%             5 day(s): 98%             5 day(s): 99%             5 day(s): 99%
-    #  7 day(s): 99.2%           7 day(s): 99.6%           7 day(s): 99.8%           7 day(s): 99.9%
-    if random.randint(1, 100) <= 60:
-        os.system("/usr/bin/mynode_get_latest_version.sh")
+    check_for_new_mynode_version()
 
     # Setup tor proxy
     session = requests.session()
@@ -153,7 +166,7 @@ def check_in():
 
 # Run check in every 24 hours
 if __name__ == "__main__":
-    delay = 120
+    delay = 180
     while True:
         time.sleep(delay)   # Delay before first checkin so drive is likely mounted
         check_in()
