@@ -28,7 +28,7 @@ elif [ "$APP" = "electrs" ]; then
     rm -rf electrs-*.tar.gz
     rm -rf electrs
 
-    URL="https://github.com/romanz/electrs/archive/refs/tags/v0.9.2.tar.gz"
+    URL="https://github.com/romanz/electrs/archive/refs/tags/v0.9.3.tar.gz"
     if [ "$#" -eq 2 ]; then
         URL="$2"
     fi
