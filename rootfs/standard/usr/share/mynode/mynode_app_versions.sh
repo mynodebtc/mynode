@@ -93,7 +93,7 @@ THUNDERHUB_VERSION="v0.12.31"
 THUNDERHUB_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version
 THUNDERHUB_LATEST_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version_latest
 
-LNDMANAGE_VERSION="0.13.0"
+LNDMANAGE_VERSION="0.14.0"
 LNDMANAGE_VERSION_FILE=/home/bitcoin/.mynode/lndmanage_version
 LNDMANAGE_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lndmanage_version_latest
 
