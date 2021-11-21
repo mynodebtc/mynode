@@ -38,7 +38,7 @@ expect {
         timeout { exit 2 }
 }
 expect {
-        "want to use? (Enter y/n):" {
+        "create a new seed (Enter y/x/n):" {
                 send -- "y\n"
         }
         timeout { exit 2 }
