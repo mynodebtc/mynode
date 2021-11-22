@@ -139,8 +139,7 @@ if ! skip_base_upgrades ; then
     pip2 install tzupdate virtualenv pysocks redis qrcode image subprocess32 --no-cache-dir
 
 
-    # Update Python3 to 3.7.X
-    PYTHON_VERSION=3.7.9
+    # Update Python3
     CURRENT_PYTHON3_VERSION=$(python3 --version)
     if [[ "$CURRENT_PYTHON3_VERSION" != *"Python ${PYTHON_VERSION}"* ]]; then
         mkdir -p /opt/download
@@ -162,7 +161,7 @@ if ! skip_base_upgrades ; then
 
     # Install any pip3 software
     pip3 install --upgrade pip setuptools wheel
-    pip3 install gnureadline docker-compose pipenv bcrypt pysocks redis systemd --no-cache-dir
+    pip3 install gnureadline docker-compose pipenv bcrypt pysocks redis --no-cache-dir
     pip3 install flask pam python-bitcoinrpc prometheus_client psutil transmissionrpc qrcode image --no-cache-dir
 
     # Update Node

@@ -225,8 +225,7 @@ pip2 install grpcio grpcio-tools googleapis-common-protos
 pip2 install tzupdate virtualenv pysocks redis qrcode image subprocess32
 
 
-# Update Python3 to 3.7.X
-PYTHON_VERSION=3.7.9
+# Update Python3
 CURRENT_PYTHON3_VERSION=$(python3 --version)
 if [[ "$CURRENT_PYTHON3_VERSION" != *"Python ${PYTHON_VERSION}"* ]]; then
     mkdir -p /opt/download
@@ -249,7 +248,7 @@ fi
 # Install Python3 specific tools (run multiple times to make sure success)
 pip3 install --upgrade pip wheel setuptools
 pip3 install bitstring lnd-grpc pycoin aiohttp connectrum python-bitcoinlib
-pip3 install gnureadline docker-compose pipenv bcrypt pysocks redis systemd --no-cache-dir
+pip3 install gnureadline docker-compose pipenv bcrypt pysocks redis --no-cache-dir
 pip3 install flask pam python-bitcoinrpc prometheus_client psutil transmissionrpc qrcode image --no-cache-dir
 
 
