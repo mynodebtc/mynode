@@ -1,14 +1,12 @@
-#!/usr/bin/python3
+#!/usr/local/bin/python3
 import time
 import os
 import subprocess
 import signal
 import logging
-from systemd import journal
 from threading import Thread
 
 log = logging.getLogger('mynode')
-log.addHandler(journal.JournaldLogHandler())
 log.setLevel(logging.INFO)
 
 def print_and_log(msg):
