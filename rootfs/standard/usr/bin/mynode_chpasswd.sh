@@ -3,7 +3,7 @@
 PASSWORD=$1
 
 HASH_SHA256=$(echo -n "$PASSWORD" | sha256sum | awk '{print $1}')
-HASH_BCRYPT=$(python3.7 -c "import bcrypt; print(bcrypt.hashpw(b\"$PASSWORD\", bcrypt.gensalt()).decode(\"ascii\"))")
+HASH_BCRYPT=$(/usr/local/bin/python3 -c "import bcrypt; print(bcrypt.hashpw(b\"$PASSWORD\", bcrypt.gensalt()).decode(\"ascii\"))")
 
 # If pass did not change and all hash files exist, exit success
 if [ -f /home/bitcoin/.mynode/.hashedpw ]; then
