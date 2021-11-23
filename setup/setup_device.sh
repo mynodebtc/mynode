@@ -225,7 +225,32 @@ pip2 install grpcio grpcio-tools googleapis-common-protos
 pip2 install tzupdate virtualenv pysocks redis qrcode image subprocess32
 
 
-# Update Python3
+# Install Rust (only needed on 32-bit RPi for building some python wheels)
+if [ ! -f $HOME/.cargo/env ]; then
+    wget https://sh.rustup.rs -O /tmp/setup_rust.sh
+    /bin/bash /tmp/setup_rust.sh -y --default-toolchain none
+    sync
+fi
+if [ -f $HOME/.cargo/env ]; then
+    # Remove old toolchains
+    source $HOME/.cargo/env
+    TOOLCHAINS=$(rustup toolchain list)
+    for toolchain in $TOOLCHAINS; do
+        if [[ "$toolchain" == *"linux"* ]] && [[ "$toolchain" != *"${RUST_VERSION}"* ]]; then
+            rustup toolchain remove $toolchain || true
+        fi
+    done
+    # Manage rust toolchains
+    if [ $IS_RASPI = 1 ] && [ $IS_RASPI4_ARM64 = 0 ]; then
+        # Install and use desired version
+        rustup install $RUST_VERSION
+        rustup default $RUST_VERSION
+        rustc --version
+    fi
+fi
+
+
+# Install Python3 (latest)
 CURRENT_PYTHON3_VERSION=$(python3 --version)
 if [[ "$CURRENT_PYTHON3_VERSION" != *"Python ${PYTHON_VERSION}"* ]]; then
     mkdir -p /opt/download
@@ -247,8 +272,7 @@ fi
 
 # Install Python3 specific tools (run multiple times to make sure success)
 pip3 install --upgrade pip wheel setuptools
-pip3 install bitstring lnd-grpc pycoin aiohttp connectrum python-bitcoinlib
-pip3 install gnureadline docker-compose pipenv bcrypt pysocks redis --no-cache-dir
+pip3 install lnd-grpc gnureadline docker-compose pipenv bcrypt pysocks redis --no-cache-dir
 pip3 install flask pam python-bitcoinrpc prometheus_client psutil transmissionrpc qrcode image --no-cache-dir
 
 
