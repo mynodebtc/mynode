@@ -120,19 +120,26 @@ Add another argument to the local upgrade script:
 Once you are running myNode, you can easily update the software yourself!
 
 1. Start by running myNode on your device via the instructions above in "Running myNode"
-2. Clone the latest release from the git repo on your PC or laptop
+2. Clone the current myNode Github repo onto your machine (this is easiest if you do it on the myNode machine using the machine's native terminal. For VM version, minimize the initial myNode window, right click on desktop background, and select Terminal emulator)
     * Run `git clone https://github.com/mynodebtc/mynode.git`
+3. Change directory into the cloned repo
     * Run `cd mynode`
+4. Switch to the latest release version branch
     * Run `git checkout tags/latest_release`
-3. Run `make rootfs`
-4. Run `make start_file_server`
-    * This will run a local HTTP server so your device can download files
-5. On your device, run `sudo mynode-local-upgrade [dev pc ip address]`
-    * This will download your locally generated artifact and install it on your device
-    * Your device will automatically reboot to ensure updates take effect
-6. Optional: Run `make stop_file_server`
-    * This will stop the local HTTP server
-7. You are now running the latest version of myNode software!
+5. Build out the installation file structure
+    * Run `make rootfs`
+6. Start a local HTTP server for the myNode device to download and install the files
+    * Run `make start_file_server`
+7. On your myNode machine terminal, initiate the download and installation of the upgrade files. Your myNode machine will automatically reboot to ensure updates take effect.
+    * Run `sudo mynode-local-upgrade [dev pc ip address]` (ip address will be 127.0.0.1 if doing it on the same myNode machine)
+8. *Optional:* Stop the local HTTP server on the machine in was started on
+    * Run `make stop_file_server`
+9. You are now running the latest version of myNode software!
+
+**TIP:** You can copy & paste the entire command below into the myNode machine terminal to do the above process in a single step, if you are doing the command on the same myNode machine. You will need to enter your user password at the end for the final step:
+```bash
+git clone https://github.com/mynodebtc/mynode.git && cd mynode && git checkout tags/latest_release && make rootfs && make start_file_server && sudo mynode-local-upgrade 127.0.01
+```
 
 ## Convert new device to run myNode
 1. Run make command for your device. Ex:
