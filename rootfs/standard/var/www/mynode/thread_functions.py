@@ -14,7 +14,8 @@ import random
 
 # Info to get from the update threads
 has_updated_btc_info = False
-drive_usage = "0%"
+data_drive_usage = "0%"
+os_drive_usage = "0%"
 cpu_usage = "..."
 ram_usage = "..."
 swap_usage = "..."
@@ -26,9 +27,12 @@ public_ip = "not_detected"
 def get_has_updated_btc_info():
     global has_updated_btc_info
     return has_updated_btc_info
-def get_drive_usage():
-    global drive_usage
-    return drive_usage
+def get_data_drive_usage():
+    global data_drive_usage
+    return data_drive_usage
+def get_os_drive_usage():
+    global os_drive_usage
+    return os_drive_usage
 def get_cpu_usage():
     global cpu_usage
     return cpu_usage
@@ -47,7 +51,8 @@ def get_public_ip():
 
 # Updates device info every 60 seconds
 def update_device_info():
-    global drive_usage
+    global data_drive_usage
+    global os_drive_usage
     global cpu_usage
     global ram_usage
     global swap_usage
@@ -64,7 +69,9 @@ def update_device_info():
 
         # Get drive percent usage
         results = subprocess.check_output("df -h /mnt/hdd | grep /dev | awk '{print $5}'", shell=True)
-        drive_usage = to_string(results)
+        data_drive_usage = to_string(results)
+        results = subprocess.check_output("df -h / | grep /dev | awk '{print $5}'", shell=True)
+        os_drive_usage = to_string(results)
 
         # Get RAM usage
         ram_info = psutil.virtual_memory()

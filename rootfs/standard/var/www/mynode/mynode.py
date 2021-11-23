@@ -486,9 +486,10 @@ def index():
         lnd_status_color = get_lnd_status_color()
 
         # Find drive usage
-        drive_usage = get_drive_usage()
+        os_drive_usage = get_os_drive_usage()
+        data_drive_usage = get_data_drive_usage()
         low_drive_space_error = False
-        if int(re.sub("[^0-9]", "", drive_usage)) >= 95:
+        if int(re.sub("[^0-9]", "", data_drive_usage)) >= 95:
             low_drive_space_error = True
 
         # Check for new version of software
@@ -542,7 +543,8 @@ def index():
             "fsck_error": has_fsck_error(),
             "fsck_results": get_fsck_results(),
             "sd_rw_error": has_sd_rw_error(),
-            "drive_usage": drive_usage,
+            "data_drive_usage": data_drive_usage,
+            "os_drive_usage": os_drive_usage,
             "low_drive_space_error": low_drive_space_error,
             "is_quicksync_disabled": not is_quicksync_enabled(),
             "cpu_usage": get_cpu_usage(),
