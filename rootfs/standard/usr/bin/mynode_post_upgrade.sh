@@ -139,6 +139,31 @@ if ! skip_base_upgrades ; then
     pip2 install tzupdate virtualenv pysocks redis qrcode image subprocess32 --no-cache-dir
 
 
+    # Install Rust (only needed on 32-bit RPi for building some python wheels)
+    if [ ! -f $HOME/.cargo/env ]; then
+        wget https://sh.rustup.rs -O /tmp/setup_rust.sh
+        /bin/bash /tmp/setup_rust.sh -y --default-toolchain none
+        sync
+    fi
+    if [ -f $HOME/.cargo/env ]; then
+        # Remove old toolchains
+        source $HOME/.cargo/env
+        TOOLCHAINS=$(rustup toolchain list)
+        for toolchain in $TOOLCHAINS; do
+            if [[ "$toolchain" == *"linux"* ]] && [[ "$toolchain" != *"${RUST_VERSION}"* ]]; then
+                rustup toolchain remove $toolchain || true
+            fi
+        done
+        # Manage rust toolchains
+        if [ $IS_RASPI = 1 ] && [ $IS_RASPI4_ARM64 = 0 ]; then
+            # Install and use desired version
+            rustup install $RUST_VERSION
+            rustup default $RUST_VERSION
+            rustc --version
+        fi
+    fi
+
+
     # Update Python3
     CURRENT_PYTHON3_VERSION=$(python3 --version)
     if [[ "$CURRENT_PYTHON3_VERSION" != *"Python ${PYTHON_VERSION}"* ]]; then
@@ -149,10 +174,18 @@ if ! skip_base_upgrades ; then
         wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz -O python.tar.xz
         tar xf python.tar.xz
 
+        # Build and install python
         cd Python-*
         ./configure
         make -j4
         make install
+
+        # Mark apps using python as needing re-install
+        rm -f /home/bitcoin/.mynode/specter_version
+        rm -f /home/bitcoin/.mynode/lnbits_version
+        rm -f /home/bitcoin/.mynode/pyblock_version
+        rm -f /home/bitcoin/.mynode/ckbunker_version
+
         cd ~
     else
         echo "Python up to date"
@@ -161,7 +194,7 @@ if ! skip_base_upgrades ; then
 
     # Install any pip3 software
     pip3 install --upgrade pip setuptools wheel
-    pip3 install gnureadline docker-compose pipenv bcrypt pysocks redis --no-cache-dir
+    pip3 install lnd-grpc gnureadline docker-compose pipenv bcrypt pysocks redis --no-cache-dir
     pip3 install flask pam python-bitcoinrpc prometheus_client psutil transmissionrpc qrcode image --no-cache-dir
 
     # Update Node

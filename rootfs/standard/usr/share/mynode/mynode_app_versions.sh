@@ -129,8 +129,13 @@ WEBSSH2_VERSION="v0.2.10-0"
 WEBSSH2_VERSION_FILE=/mnt/hdd/mynode/settings/webssh2_version
 WEBSSH2_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/webssh2_version_latest
 
+# Dependency versions
+PYTHON_VERSION="3.7.9"
+
 NODE_JS_VERSION="14.x"
 NODE_NPM_VERSION="^8.1.0"
+
+RUST_VERSION="1.56.1"
 
 # Check for override files
 if [ -f /usr/share/mynode/mynode_app_versions_custom.sh ]; then
