@@ -353,8 +353,8 @@
                 // Update device info
                 $.getJSON("/api/get_device_info", function( data ) {
                     //console.log("Device Data: " + JSON.stringify(data))
-                    if ("disk_usage" in data && data["disk_usage"] != null) {
-                        $("#device_drive_usage").html(data["disk_usage"]);
+                    if ("data_drive_usage" in data && data["data_drive_usage"] != null) {
+                        $("#data_drive_usage").html(data["data_drive_usage"]);
                     }
                     if ("cpu" in data && data["cpu"] != null) {
                         $("#device_cpu_usage").html(data["cpu"]);
@@ -666,7 +666,7 @@
                 <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/drive.png")}}"/></div>
                 <div class="app_title">Disk Usage</div>
                 <div class="app_status"></div>
-                <div class="app_contents"><div class="device_status_info" id="device_drive_usage">{{drive_usage}}</div></div>
+                <div class="app_contents"><div class="device_status_info" id="data_drive_usage">{{data_drive_usage}}</div></div>
             </div>
             <div class="app_tile">
                 <div class="app_status_icon"></div>

@@ -104,7 +104,7 @@ def api_get_device_info():
     check_logged_in()
 
     data = {}
-    data["disk_usage"] = get_drive_usage()
+    data["data_drive_usage"] = get_data_drive_usage()
     data["cpu"] = get_cpu_usage()
     data["ram"] = get_ram_usage()
     data["temp"] = get_device_temp()

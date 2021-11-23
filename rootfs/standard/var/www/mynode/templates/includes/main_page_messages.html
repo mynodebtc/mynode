@@ -19,7 +19,7 @@
 {% if low_drive_space_error %}
 <div class="main_page_error_block">
     <center>
-    <p>Your drive is {{drive_usage}} full and free space is running very low. You may need to upgrade to a larger drive.</p>
+    <p>Your drive is {{data_drive_usage}} full and free space is running very low. You may need to upgrade to a larger drive.</p>
     {% if not is_quicksync_disabled %}
     <p>QuickSync is enabled! Disable <a href="/settings#quicksync">QuickSync</a> to save significant disk space.</p>
     {% endif %}
