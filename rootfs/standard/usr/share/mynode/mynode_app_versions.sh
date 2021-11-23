@@ -130,7 +130,7 @@ WEBSSH2_VERSION_FILE=/mnt/hdd/mynode/settings/webssh2_version
 WEBSSH2_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/webssh2_version_latest
 
 # Dependency versions
-PYTHON_VERSION="3.7.9"
+PYTHON_VERSION="3.8.9"
 
 NODE_JS_VERSION="14.x"
 NODE_NPM_VERSION="^8.1.0"
