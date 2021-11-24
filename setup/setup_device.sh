@@ -879,6 +879,12 @@ if [ $IS_ROCKPRO64 = 1 ]; then
     systemctl enable fan_control
 fi
 
+# Random Cleanup
+rm -rf /opt/download
+mkdir -p /opt/download
+
+# Clean apt-cache
+apt-get clean
 
 # Setup myNode Startup Script
 systemctl daemon-reload

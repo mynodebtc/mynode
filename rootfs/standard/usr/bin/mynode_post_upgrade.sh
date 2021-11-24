@@ -1002,6 +1002,8 @@ if [ -f /etc/apt/trusted.gpg.d/microsoft.gpg ]; then
     rm /etc/apt/trusted.gpg.d/microsoft.gpg
 fi
 
+rm -rf /opt/download
+mkdir -p /opt/download
 
 # Clean apt-cache
 apt-get clean
