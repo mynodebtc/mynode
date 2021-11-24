@@ -1,0 +1,52 @@
+#!/bin/bash
+# Note: This app will install things as the current user
+
+set -e
+
+source /usr/share/mynode/mynode_config.sh
+source /usr/share/mynode/mynode_app_versions.sh
+
+# Make sure we have an app argument
+if [ "$#" -lt 1 ]; then
+    echo "Usage: mynode-install-extra <app_name>"
+    exit 1
+fi
+APP="$1"
+
+# Skip for now, probably don't need to stop all servies and require reboot
+# Shut down main services to save memory and CPU and stop app being reinstalled
+#/usr/bin/mynode_stop_critical_services.sh
+
+
+# Custom re-install steps
+if [ "$APP" = "cache" ]; then
+    # Clear cache as both current user (likely admin) and root
+    pip3 cache purge
+    sudo pip3 cache purge
+
+    sudo rm -rf /opt/download/*
+elif [ "$APP" = "rust" ] || [ "$APP" = "cargo" ]; then
+    wget https://sh.rustup.rs -O /tmp/setup_rust.sh
+    /bin/bash /tmp/setup_rust.sh -y --default-toolchain none
+    sync
+    if [ -f $HOME/.cargo/env ]; then
+        # Remove old toolchains
+        source $HOME/.cargo/env
+        TOOLCHAINS=$(rustup toolchain list)
+        for toolchain in $TOOLCHAINS; do
+            if [[ "$toolchain" == *"linux"* ]] && [[ "$toolchain" != *"${RUST_VERSION}"* ]]; then
+                rustup toolchain remove $toolchain || true
+            fi
+        done
+    fi
+elif [ "$APP" = "electrs" ]; then
+    mkdir -p /home/admin/download
+    cd /home/admin/download
+    rm -rf electrs*
+else
+    echo "Dont know what to do for app: $APP"
+    exit
+fi
+
+sync
+echo "Uninstall Complete!"
