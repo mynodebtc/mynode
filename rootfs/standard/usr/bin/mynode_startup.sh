@@ -149,6 +149,11 @@ done
 
 # Check for docker reset
 if [ -f /home/bitcoin/reset_docker ]; then
+    # Show status
+    echo "docker_reset" > $MYNODE_STATUS_FILE
+    chmod 777 $MYNODE_STATUS_FILE
+
+    # Delete docker data
     rm -rf /mnt/hdd/mynode/docker
     rm /home/bitcoin/reset_docker
     sync
