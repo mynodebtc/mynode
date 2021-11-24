@@ -39,6 +39,7 @@ if [ "$APP" = "rust" ] || [ "$APP" = "cargo" ]; then
         rustc --version
     fi
 elif [ "$APP" = "electrs" ]; then
+    source $HOME/.cargo/env
     mkdir -p /home/admin/download
     cd /home/admin/download
     rm -rf electrs-*.tar.gz
