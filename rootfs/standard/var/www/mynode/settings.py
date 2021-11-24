@@ -498,7 +498,7 @@ def reset_docker_page():
     # Display wait page
     templateData = {
         "title": "myNode",
-        "header_text": "Resetting Docker Data",
+        "header_text": "Rebooting",
         "subheader_text": "This will take several minutes...",
         "ui_settings": read_ui_settings()
     }

@@ -225,6 +225,14 @@ def index():
             "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
+    elif status == STATE_DOCKER_RESET:
+        templateData = {
+            "title": "myNode",
+            "header_text": "Resetting Docker Data",
+            "subheader_text": "This will take several minutes...",
+            "ui_settings": read_ui_settings()
+        }
+        return render_template('reboot.html', **templateData)
     elif status == STATE_DRIVE_FULL:
         message  = "Your drive is full!<br/><br/>"
         message += "<p style='font-size: 16px; width: 800px; margin: auto;'>"
