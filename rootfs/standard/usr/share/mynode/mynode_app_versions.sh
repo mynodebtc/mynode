@@ -22,11 +22,11 @@ POOL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/pool_version_latest
 POOL_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/manifest-$POOL_VERSION.txt
 POOL_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/manifest-$POOL_VERSION.txt.sig
 
-LIT_VERSION="v0.5.2-alpha"
+LIT_VERSION="v0.6.0-alpha"
 LIT_VERSION_FILE=/home/bitcoin/.mynode/lit_version
 LIT_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lit_version_latest
 LIT_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-$LIT_VERSION.txt
-LIT_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-$LIT_VERSION.txt.sig
+LIT_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-$LIT_VERSION.sig
 
 ELECTRS_VERSION="v0.9.3"
 ELECTRS_VERSION_FILE=/home/bitcoin/.mynode/electrs_version
