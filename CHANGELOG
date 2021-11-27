@@ -1,3 +1,15 @@
+=== v0.2.47 ===
+- Released: 11/26/21
+- Upgrade LND to v0.14.1
+- Upgrade Electrs to v0.9.3
+- Upgrade Lightning Terminal to v0.6.0
+- Upgrade LNDManage to v0.14.0
+- Upgrade BTC Pay Server to v1.3.6
+- Upgrade PyBlock to v1.1
+- Upgrade Sphinx Relay to v2.2.3
+- Upgrade Python to v3.8.9
+- Fix LND wallet creation issue
+
 === v0.2.46 ===
 - Released: 11/19/21
 - Upgrade LND to v0.14.0
