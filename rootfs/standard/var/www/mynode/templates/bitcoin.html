@@ -20,6 +20,10 @@
                         showAlertPopup("alert_popup", "<b>Password copy failed!</b>");
                     });
                 });
+                if (location.protocol == 'https:') {
+                    $("#copy_rpc_password").show();
+                }
+
                 $('#bip158_checkbox').change(function () {
                     $("#bip158_save").show();
                 });
@@ -112,7 +116,7 @@
                         <tr>
                             <th>RPC Password</th>
                             <td>
-                                <p id="rpc_password" style="display: none; margin: 0;">{{rpc_password}} <span id="copy_rpc_password" class="ui-icon ui-icon-copy" style="cursor: pointer;" title="Copy Password"></span></p>
+                                <p id="rpc_password" style="display: none; margin: 0;">{{rpc_password}} <span id="copy_rpc_password" class="ui-icon ui-icon-copy" style="cursor: pointer; display: none;" title="Copy Password"></span></p>
                                 <a id="show_rpc_password" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;">show</a>
                             </td>
                         </tr>
