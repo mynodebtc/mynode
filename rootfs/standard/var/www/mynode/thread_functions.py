@@ -9,6 +9,7 @@ from device_info import *
 from enable_disable_functions import *
 from systemctl_info import *
 from electrum_info import update_electrs_info
+from price_info import update_price_info
 from requests import get
 import random
 
@@ -21,7 +22,6 @@ ram_usage = "..."
 swap_usage = "..."
 device_temp = "..."
 public_ip = "not_detected"
-
 
 # Getters
 def get_has_updated_btc_info():
@@ -158,6 +158,15 @@ def update_lnd_info_thread():
         update_lightning_info()
     except Exception as e:
         print("CAUGHT update_lnd_info_thread EXCEPTION: " + str(e))
+
+
+# Updates price info every 5 minutes
+def update_price_info_thread():
+    try:
+        # Get Price Info
+        update_price_info()
+    except Exception as e:
+        print("CAUGHT update_price_info_thread EXCEPTION: " + str(e))
 
 
 # Check every 3 hours

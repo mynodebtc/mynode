@@ -10,7 +10,7 @@ from threading import Timer
 from thread_functions import *
 from user_management import check_logged_in
 from lightning_info import *
-from thread_functions import *
+from price_info import *
 from utilities import *
 from application_info import *
 import pam
@@ -983,14 +983,23 @@ def ping_page():
 @mynode_settings.route("/settings/toggle-darkmode")
 def toggle_darkmode_page():
     check_logged_in()
-    toggle_darkmode()
+    toggle_ui_setting("darkmode")
+    flash("Darkmode Setting Updated", category="message")
     return redirect("/settings")
 
 @mynode_settings.route("/settings/toggle-darkmode-home")
 def toggle_darkmode_page_home():
     check_logged_in()
-    toggle_darkmode()
+    toggle_ui_setting("darkmode")
     return redirect("/")
+
+@mynode_settings.route("/settings/toggle-price-ticker")
+def toggle_price_ticker_page():
+    check_logged_in()
+    toggle_ui_setting("price_ticker")
+    update_price_info()
+    flash("Price Ticker Setting Updated", category="message")
+    return redirect("/settings")
 
 @mynode_settings.route("/settings/set-background", methods=['POST'])
 def set_background_page():
@@ -1001,8 +1010,9 @@ def set_background_page():
         return redirect("/settings")
 
     bg = request.form.get('background')
-    set_background(bg)
+    set_ui_setting("background", bg)
 
+    flash("Background Updated", category="message")
     return redirect("/settings")
 
 @mynode_settings.route("/settings/toggle-netdata")
@@ -1013,6 +1023,8 @@ def toggle_netdata_page():
         disable_service("netdata")
     else:
         enable_service("netdata")
+
+    flash("Netdata Setting Updated", category="message")
     return redirect("/settings")
 
 @mynode_settings.route("/settings/toggle-check-external-drive")

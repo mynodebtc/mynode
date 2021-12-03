@@ -9,6 +9,7 @@ from device_info import *
 from thread_functions import *
 from systemctl_info import *
 from application_info import *
+from price_info import *
 from messages import *
 if isPython3():
     from io import StringIO, BytesIO
@@ -60,6 +61,17 @@ def api_get_lightning_info():
     data["channels"] = get_lightning_channels()
     data["transactions"] = get_lightning_transactions()
     data["payments_and_invoices"] = get_lightning_payments_and_invoices()
+
+    return jsonify(data)
+
+@mynode_api.route("/api/get_price_info")
+def api_get_price_info():
+    check_logged_in()
+
+    data = {}
+    data["price"] = get_latest_price()
+    data["delta"] = get_price_diff_24hrs()
+    data["direction"] = get_price_up_down_flat_24hrs()
 
     return jsonify(data)
 
@@ -193,7 +205,7 @@ def api_toggle_setting():
 
     setting = request.args.get("setting")
     if setting == "pinned_lightning_details":
-        toggle_pinned_lightning_details()
+        toggle_ui_setting("pinned_lightning_details")
         data["status"] = "success"
     else:
         data["status"] = "unknown_setting"
