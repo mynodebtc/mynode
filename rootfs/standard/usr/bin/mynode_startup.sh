@@ -136,6 +136,10 @@ fi
 rm -f /tmp/repairing_drive
 set -e
 
+# Custom startup hook - pre-startup
+if [ -f /usr/local/bin/mynode_hook_pre_startup.sh ]; then
+    /bin/bash /usr/local/bin/mynode_hook_pre_startup.sh || true
+fi
 
 # Mount HDD (normal boot, format if necessary)
 while [ ! -f /mnt/hdd/.mynode ]
@@ -790,9 +794,10 @@ if [ -f /usr/share/joininbox/menu.update.sh ] && [ -f /home/joinmarket/menu.upda
 fi
 chown bitcoin:bitcoin /mnt/hdd/mynode/settings/.lndpw || true
 
-# Check for new versions
-torify wget $LATEST_VERSION_URL --timeout=30 -O /usr/share/mynode/latest_version || true
-torify wget $LATEST_BETA_VERSION_URL --timeout=30 -O /usr/share/mynode/latest_beta_version || true
+# Custom startup hook - post-startup
+if [ -f /usr/local/bin/mynode_hook_post_startup.sh ]; then
+    /bin/bash /usr/local/bin/mynode_hook_post_startup.sh || true
+fi
 
 # Update current state
 if [ -f $QUICKSYNC_DIR/.quicksync_complete ]; then
