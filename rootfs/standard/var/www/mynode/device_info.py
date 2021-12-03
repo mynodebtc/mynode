@@ -31,6 +31,7 @@ except:
 local_ip = "unknown"
 cached_data = {}
 warning_data = {}
+ui_settings = None
 
 #==================================
 # Manage Device
@@ -458,7 +459,22 @@ def get_drive_info(drive):
 #==================================
 # UI Functions
 #==================================
+def init_ui_setting_defaults(ui_settings):
+    if "darkmode" not in ui_settings:
+        ui_settings["darkmode"] = False
+    if "price_ticker" not in ui_settings:
+        ui_settings["price_ticker"] = False
+    if "pinned_lightning_details" not in ui_settings:
+        ui_settings["pinned_lightning_details"] = False
+    if "background" not in ui_settings:
+        ui_settings["background"] = "none"
+    return ui_settings
+
 def read_ui_settings():
+    global ui_settings
+    if ui_settings != None:
+        return ui_settings
+    
     ui_hdd_file = '/mnt/hdd/mynode/settings/ui.json'
     ui_mynode_file = '/home/bitcoin/.mynode/ui.json'
 
@@ -470,19 +486,20 @@ def read_ui_settings():
     elif os.path.isfile(ui_mynode_file):
         with open(ui_mynode_file, 'r') as fp:
             ui_settings = json.load(fp)
-    # if ui.json is not found anywhere, use default settings
-    else:
-        ui_settings = {'darkmode': False}
 
     # Set reseller
     ui_settings["reseller"] = is_device_from_reseller()
 
+    ui_settings = init_ui_setting_defaults(ui_settings)
+
     return ui_settings
 
-def write_ui_settings(ui_settings):
+def write_ui_settings(ui_settings_new):
+    global ui_settings
+    ui_settings = ui_settings_new
+
     ui_hdd_file = '/mnt/hdd/mynode/settings/ui.json'
     ui_mynode_file = '/home/bitcoin/.mynode/ui.json'
-
     try:
         with open(ui_hdd_file, 'w') as fp:
             json.dump(ui_settings, fp)
@@ -492,42 +509,18 @@ def write_ui_settings(ui_settings):
     with open(ui_mynode_file, 'w') as fp:
         json.dump(ui_settings, fp)
 
-def is_darkmode_enabled():
+def get_ui_setting(name):
     ui_settings = read_ui_settings()
-    return ui_settings['darkmode']
+    return ui_settings[name]
 
-def disable_darkmode():
+def set_ui_setting(name, value):
     ui_settings = read_ui_settings()
-    ui_settings['darkmode'] = False
+    ui_settings[name] = value
     write_ui_settings(ui_settings)
 
-def enable_darkmode():
-    ui_settings = read_ui_settings()
-    ui_settings['darkmode'] = True
-    write_ui_settings(ui_settings)
+def toggle_ui_setting(name):
+    set_ui_setting(name, not get_ui_setting(name))
 
-def toggle_darkmode():
-    if is_darkmode_enabled():
-        disable_darkmode()
-    else:
-        enable_darkmode()
-
-def toggle_pinned_lightning_details():
-    ui_settings = read_ui_settings()
-    if "pinned_lightning_details" not in ui_settings or ui_settings["pinned_lightning_details"] == False:
-        ui_settings["pinned_lightning_details"] = True
-    else:
-        ui_settings["pinned_lightning_details"] = False
-    write_ui_settings(ui_settings)
-
-def set_background(background):
-    ui_settings = read_ui_settings()
-    ui_settings['background'] = background
-    write_ui_settings(ui_settings)
-
-def get_background():
-    ui_settings = read_ui_settings()
-    return ui_settings['background']
 
 # def get_background_choices():
 #     choices = []

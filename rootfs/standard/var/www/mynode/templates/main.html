@@ -18,6 +18,7 @@
             var is_installing_docker_images = {% if is_installing_docker_images %}true{% else %}false{% endif %};
             var lnd_last_btc_tx = "";
             var lnd_last_ln_tx = "";
+            var price_data = {};
 
             // Toggle enable/disable functions
             function get_custom_enable_message(short_name) {
@@ -94,6 +95,36 @@
                     $("#channel_status_icon_"+c["chan_id"]).removeClass("clear");
                     $("#channel_status_icon_"+c["chan_id"]).addClass(c["status_color"]);
                 }
+            }
+
+            var price_display_rotate_count = 0;
+            function update_price_display() {
+                {% if ui_settings['price_ticker'] %}
+                if ("price" in price_data && "delta" in price_data && "direction" in price_data ) {
+                    $("#price_ticker").show();
+                    $("#price_ticker_text").slideUp('fast', function() {
+                        display_id = price_display_rotate_count % 3;
+                        if (display_id == 0) {
+                            p = price_data["price"].toLocaleString('en-US', {style: 'currency', currency: 'USD'});
+                            $("#price_ticker_text").html(p + " USD/BTC");
+                        } else if (display_id == 1) {
+                            sats = parseInt(100000000 / price_data["price"]);
+                            $("#price_ticker_text").html(sats + " SATS/USD");
+                        } else if (display_id == 2) { 
+                            p = Math.abs(price_data["delta"]).toLocaleString('en-US', {style: 'currency', currency: 'USD'});
+                            if (price_data["direction"] == "flat") {
+                                $("#price_ticker_text").html("Price is flat");
+                            } else if (price_data["direction"] == "up") {
+                                $("#price_ticker_text").html("Price is up "+p);
+                            } else if (price_data["direction"] == "down") {
+                                $("#price_ticker_text").html("Price is down "+p);
+                            }
+                        }
+                        $("#price_ticker_text").slideDown();
+                        price_display_rotate_count = price_display_rotate_count + 1;
+                    });
+                }
+                {% endif %}
             }
 
             function update_sso_token(short_name, data) {
@@ -350,6 +381,17 @@
                     {% endif %}
                 {% endfor %}
 
+                // Update price info
+                $.getJSON("/api/get_price_info", function( data ) {
+                    console.log("Price Data: " + JSON.stringify(data))
+                    if ("price" in data && data["price"] != null) {
+                        price_data = data;
+                        if (price_display_rotate_count == 0) {
+                            update_price_display();
+                        }
+                    }
+                });
+
                 // Update device info
                 $.getJSON("/api/get_device_info", function( data ) {
                     //console.log("Device Data: " + JSON.stringify(data))
@@ -571,6 +613,9 @@
                 // Update info every 15 seconds
                 const update_interval = setInterval(update_page, 15000);
                 update_page();
+
+                // Rotate Price Ticker every 10 seconds
+                const rotate_ticker_interval = setInterval(update_price_display, 10000);
 
                 // If pinned lightning, auto open lightning details
                 {% if lnd_wallet_exists and lnd_ready and ui_settings['pinned_lightning_details'] %}

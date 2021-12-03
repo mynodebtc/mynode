@@ -631,6 +631,17 @@
 
             <div class="divider"></div>
 
+            <div class="settings_block_subheader">Price Ticker</div>
+            Display recent Bitcoin price on the main page.
+            <br/>
+            {% if ui_settings['price_ticker'] %}
+                <a href="/settings/toggle-price-ticker" class="ui-button ui-widget ui-corner-all settings_button">Disable</a>
+            {% else %}
+                <a href="/settings/toggle-price-ticker" class="ui-button ui-widget ui-corner-all settings_button">Enable</a>
+            {% endif %}
+
+            <div class="divider"></div>
+
             <div class="settings_block_subheader">Background</div>
             For fun, you can set a background image.
             <br/><br/>
