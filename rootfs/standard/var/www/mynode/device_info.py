@@ -479,13 +479,17 @@ def read_ui_settings():
     ui_mynode_file = '/home/bitcoin/.mynode/ui.json'
 
     # read ui.json from HDD
-    if os.path.isfile(ui_hdd_file):
-        with open(ui_hdd_file, 'r') as fp:
-            ui_settings = json.load(fp)
-    # read ui.json from mynode
-    elif os.path.isfile(ui_mynode_file):
-        with open(ui_mynode_file, 'r') as fp:
-            ui_settings = json.load(fp)
+    try:
+        if os.path.isfile(ui_hdd_file):
+            with open(ui_hdd_file, 'r') as fp:
+                ui_settings = json.load(fp)
+        # read ui.json from mynode
+        elif os.path.isfile(ui_mynode_file):
+            with open(ui_mynode_file, 'r') as fp:
+                ui_settings = json.load(fp)
+    except Exception as e:
+        # Error reading ui settings
+        pass
 
     # If no files were read, init variable and mark we need to write files
     need_file_write = False
@@ -513,11 +517,11 @@ def write_ui_settings(ui_settings_new):
     try:
         with open(ui_hdd_file, 'w') as fp:
             json.dump(ui_settings, fp)
+
+        with open(ui_mynode_file, 'w') as fp:
+            json.dump(ui_settings, fp)
     except:
         pass
-
-    with open(ui_mynode_file, 'w') as fp:
-        json.dump(ui_settings, fp)
 
 def get_ui_setting(name):
     ui_settings = read_ui_settings()
