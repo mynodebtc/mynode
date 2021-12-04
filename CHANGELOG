@@ -1,3 +1,14 @@
+=== v0.2.48 ===
+- Released: 12/03/21
+- Add optional Price Ticker
+- Add ability to insert custom hook scripts
+- Upgrade LiT to v0.6.2
+- Upgrade Specter to v1.7.2
+- Upgrade JoininBox to v0.6.4
+- Upgrade BoS to v0.11.13
+- Upgrade PyBlock to v1.1.6
+- Improve Docker Consistency
+
 === v0.2.47 ===
 - Released: 11/26/21
 - Upgrade LND to v0.14.1
