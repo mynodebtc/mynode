@@ -713,6 +713,7 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     display: block;
     font-size: 12px;
     padding: 5px;
+    padding-left: 12px;
     margin: auto;
     margin-bottom: 20px;
 }
@@ -727,6 +728,7 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     display: block;
     font-size: 12px;
     padding: 5px;
+    padding-left: 12px;
     margin: auto;
     margin-bottom: 20px;
 }
@@ -911,10 +913,10 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
 
 .halving_message_main_page {
     color: #333333;
-    border: 3px solid orange;
+    border: 2px solid orange;
     background-color: rgb(255, 250, 238);
-    width: 600px;
-    border-radius: 25px;
+    width: 810px;
+    border-radius: 10px;
     text-align: center;
     display: block;
     font-size: 32px;
