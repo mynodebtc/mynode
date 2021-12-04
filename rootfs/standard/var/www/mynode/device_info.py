@@ -487,10 +487,20 @@ def read_ui_settings():
         with open(ui_mynode_file, 'r') as fp:
             ui_settings = json.load(fp)
 
+    # If no files were read, init variable and mark we need to write files
+    need_file_write = False
+    if ui_settings == None:
+        ui_settings = {}
+        need_file_write = True
+
     # Set reseller
     ui_settings["reseller"] = is_device_from_reseller()
 
+    # Load defaults
     ui_settings = init_ui_setting_defaults(ui_settings)
+
+    if need_file_write:
+        write_ui_settings(ui_settings)
 
     return ui_settings
 
