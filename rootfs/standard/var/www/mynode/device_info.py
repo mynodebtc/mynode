@@ -348,6 +348,11 @@ def has_changed_password():
         return False
     return False
 
+def hide_password_warning():
+    if os.path.isfile("/mnt/hdd/mynode/settings/hide_password_warning"):
+        return True
+    return False
+
 def is_mount_read_only(mnt):
     with open('/proc/mounts') as f:
         for line in f:
