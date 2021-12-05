@@ -11,6 +11,7 @@ from caravan import mynode_caravan
 from sphinxrelay import mynode_sphinxrelay
 from pyblock import mynode_pyblock
 from bos import mynode_bos
+from wardenterminal import mynode_wardenterminal
 from lndmanage import mynode_lndmanage
 from manage_apps import mynode_manage_apps
 from tor import mynode_tor
@@ -90,6 +91,7 @@ app.register_blueprint(mynode_caravan)
 app.register_blueprint(mynode_sphinxrelay)
 app.register_blueprint(mynode_pyblock)
 app.register_blueprint(mynode_bos)
+app.register_blueprint(mynode_wardenterminal)
 app.register_blueprint(mynode_lndmanage)
 app.register_blueprint(mynode_manage_apps)
 app.register_blueprint(mynode_tor)
