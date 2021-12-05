@@ -48,7 +48,7 @@
 -->
 {% endif %}
 
-{% if not has_changed_password %}
+{% if not has_changed_password and not hide_password_warning %}
 <div class="main_page_warning_block">
     <p style="text-align: center;"><b>Warning!</b></p>
     <p style="text-align: center;">You appear to be using the default password! You should change it to
