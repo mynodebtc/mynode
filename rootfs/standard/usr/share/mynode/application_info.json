@@ -232,8 +232,21 @@
         "app_tile_default_status_text": "Portfolio Tracker",
         "can_uninstall": false,
         "can_reinstall": false,
-        "show_on_homepage_page": false,
+        "show_on_homepage": false,
         "show_on_application_page": false,
+        "homepage_order": 41
+    },
+    {
+        "name": "Warden Terminal",
+        "short_name": "wardenterminal",
+        "hide_status_icon": true,
+        "app_tile_default_status_text": "Bitcoin Dashboard",
+        "app_tile_button_href": "/wardenterminal",
+        "app_tile_button_text": "Info",
+        "can_uninstall": true,
+        "can_enable_disable": false,
+        "show_on_homepage": true,
+        "show_on_application_page": true,
         "homepage_order": 41
     },
     {

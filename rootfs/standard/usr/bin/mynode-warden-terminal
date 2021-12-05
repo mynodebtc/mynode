@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# mynode-warden-terminal
+# This script needs to be run with sudo so it can run as the bitcoin user
+
+cp -f /usr/share/mynode/wardenterminal.ini /opt/mynode/wardenterminal/config.ini
+sudo -u bitcoin bash -c "cd /opt/mynode/wardenterminal/; source env/bin/activate; python3 node_warden.py 2>/dev/null"
