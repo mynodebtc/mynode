@@ -12,7 +12,7 @@ def get_latest_price():
     global price_data
     if len(price_data) > 0:
         return price_data[len(price_data) - 1]["price"]
-    return "N/A"
+    return "MISSING"
 
 def get_price_diff_24hrs():
     global price_data
@@ -41,7 +41,9 @@ def update_price_info():
             data = json.loads(price_json_string)
             price = data["bpi"]["USD"]["rate_float"]
 
-        except:
+        except Exception as e:
+            log_message("update_price_info EXCEPTION: {}".format(str(e)))
+            price = "ERR"
             pass
 
         # Add latest price
@@ -50,6 +52,7 @@ def update_price_info():
         d["time"] = now
         d["price"] = price
         price_data.append(d)
+        log_message("UPDATE PRICE {}".format(price))
 
         # only keep 24 hours of updates
         while len(price_data) > 0:

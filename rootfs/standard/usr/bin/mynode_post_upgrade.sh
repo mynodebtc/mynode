@@ -185,6 +185,7 @@ if ! skip_base_upgrades ; then
         rm -f /home/bitcoin/.mynode/lnbits_version
         rm -f /home/bitcoin/.mynode/pyblock_version
         rm -f /home/bitcoin/.mynode/ckbunker_version
+        rm -f /home/bitcoin/.mynode/joininbox_version_latest
 
         cd ~
     else
