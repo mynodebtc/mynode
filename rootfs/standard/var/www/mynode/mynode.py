@@ -747,7 +747,6 @@ def start_threads():
     global threads
     app.logger.info("STARTING THREADS")
 
-
     # Start threads
     btc_thread1 = BackgroundThread(update_bitcoin_main_info_thread, 60) # Restart after 60, thread manages timing
     btc_thread1.start()
@@ -761,7 +760,7 @@ def start_threads():
     lnd_thread = BackgroundThread(update_lnd_info_thread, 60)
     lnd_thread.start()
     threads.append(lnd_thread)
-    price_thread = BackgroundThread(update_price_info_thread, 15) # 5 minutes
+    price_thread = BackgroundThread(update_price_info_thread, 2) # 2 minutes
     price_thread.start()
     threads.append(price_thread)
     drive_thread = BackgroundThread(update_device_info, 60)
