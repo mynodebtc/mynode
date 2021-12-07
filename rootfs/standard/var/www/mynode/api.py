@@ -46,7 +46,7 @@ def api_get_bitcoin_info():
             b["difficulty"] = None
         data["recent_blocks"] = blocks
 
-    #app.logger.info("api_get_bitcoin_info data: "+json.dumps(data))
+    #log_message("api_get_bitcoin_info data: "+json.dumps(data))
     return jsonify(data)
 
 @mynode_api.route("/api/get_lightning_info")

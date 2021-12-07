@@ -4,6 +4,7 @@ import sys
 import codecs
 import urllib
 
+mynode_logger = None
 
 #==================================
 # Python Info
@@ -59,6 +60,24 @@ def set_file_contents(filename, data):
     except:
         return False
     return False
+
+
+#==================================
+# Logging Functions
+#==================================
+def log_message(msg):
+    # Logs to www log
+    global mynode_logger
+    if mynode_logger != None:
+        mynode_logger.info(msg)
+
+def set_logger(l):
+    global mynode_logger
+    mynode_logger = l
+
+def get_logger():
+    global mynode_logger
+    return mynode_logger
 
 
 #==================================
