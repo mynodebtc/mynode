@@ -81,7 +81,7 @@ BTCPAYSERVER_NBXPLORER_VERSION="2.2.18"
 BTCPAYSERVER_VERSION_FILE=/home/bitcoin/.mynode/btcpayserver_version
 BTCPAYSERVER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/btcpayserver_version_latest
 
-BTCRPCEXPLORER_VERSION="v3.2.0"
+BTCRPCEXPLORER_VERSION="v3.3.0"
 BTCRPCEXPLORER_VERSION_FILE=/home/bitcoin/.mynode/btcrpcexplorer_version
 BTCRPCEXPLORER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/btcrpcexplorer_version_latest
 
