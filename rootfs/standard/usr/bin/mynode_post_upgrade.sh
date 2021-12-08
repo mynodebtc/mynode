@@ -542,17 +542,24 @@ echo $ELECTRS_VERSION > $ELECTRS_VERSION_FILE
 
 # Install recent version of secp256k1
 echo "Installing secp256k1..."
-if [ ! -f /usr/include/secp256k1_ecdh.h ]; then
+SECP256K1_UPGRADE_URL=https://github.com/bitcoin-core/secp256k1/archive/$SECP256K1_VERSION.tar.gz
+CURRENT=""
+if [ -f $SECP256K1_VERSION_FILE ]; then
+    CURRENT=$(cat $SECP256K1_VERSION_FILE)
+fi
+if [ "$CURRENT" != "$SECP256K1_VERSION" ]; then
     rm -rf /tmp/secp256k1
     cd /tmp/
     git clone https://github.com/bitcoin-core/secp256k1.git
     cd secp256k1
 
     ./autogen.sh
-    ./configure
+    ./configure --enable-module-recovery --disable-jni --enable-experimental --enable-module-ecdh --enable-benchmark=no
     make
     make install
     cp -f include/* /usr/include/
+
+    echo $SECP256K1_VERSION > $SECP256K1_VERSION_FILE
 fi
 
 # Upgrade JoinMarket (legacy)
