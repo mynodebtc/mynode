@@ -322,6 +322,8 @@
     },
     {
         "name": "Joinmarket GUI",
-        "short_name": "jmg"
+        "short_name": "jmg",
+        "requires_bitcoin": true,
+        "show_on_homepage": true
     }
   ]

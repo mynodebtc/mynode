@@ -3,14 +3,14 @@
 
 [Unit]
 Description=JMG
-Wants=bitcoin.service
-After=bitcoin.service
+Wants=bitcoin.service jmwalletd.service
+After=bitcoin.service jmwalletd.service
 
 [Service]
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/is_mainnet.sh
-WorkingDirectory=/home/joinmarket/jmg
-ExecStart=/bin/sh -c 'cd /home/joinmarket/jmg && ./jmg_venv/bin/python src/app.py'
+WorkingDirectory=/opt/mynode/jmg
+ExecStart=/bin/sh -c 'cd /opt/mynode/jmg && ./jmg_venv/bin/python src/app.py'
 
 User=joinmarket
 Group=joinmarket
