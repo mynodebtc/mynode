@@ -319,5 +319,9 @@
         "short_name": "ufw",
         "show_on_application_page": false,
         "journalctl_log_name": "ufw"
+    },
+    {
+        "name": "Joinmarket GUI",
+        "short_name": "jmg"
     }
   ]

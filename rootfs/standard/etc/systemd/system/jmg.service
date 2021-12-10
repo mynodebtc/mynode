@@ -1,0 +1,26 @@
+# JoinMarket GUI service
+# /etc/systemd/system/jmg.service
+
+[Unit]
+Description=JMG
+Wants=bitcoin.service
+After=bitcoin.service
+
+[Service]
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/usr/bin/is_mainnet.sh
+WorkingDirectory=/home/joinmarket/jmg
+ExecStart=/bin/sh -c 'cd /home/joinmarket/jmg && ./jmg_venv/bin/python src/app.py'
+
+User=joinmarket
+Group=joinmarket
+Type=simple
+TimeoutSec=120
+Restart=always
+RestartSec=30
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=jmg
+
+[Install]
+WantedBy=multi-user.target

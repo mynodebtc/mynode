@@ -634,6 +634,40 @@ if should_install_app "joininbox" ; then
     fi
 fi
 
+# Install JoinMarket GUI
+if should_install_app "jm"; then
+    if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
+        JMG_UPGRADE_URL=https://github.com/manasgandy/joinmarket-gui/archive/refs/tags/%JMG_VERSION.tar.gz
+        CURRENT=""
+        if [ -f $JMG_VERSION_FILE ]; then
+            CURRENT=$(cat $JMG_VERSION_FILE)
+        fi
+        if [ "$CURRENT" != "$JMG_VERSION" ]; then
+            # Download and build JoinMarket GUI
+            cd /home/joinmarket
+
+            # Delete previous version
+            rm -rf jmg
+
+            sudo -u joinmarket wget $JMG_UPGRADE_URL -O jmg.tar.gz
+            sudo -u joinmarket tar -xvf jmg.tar.gz
+            sudo -u joinmarket rm jm.tar.gz
+            mv jmg-* jmg
+            cd jmg
+
+            # Install dependencies
+            sudo -u joinmarket python3 -m venv jmg_venv
+            sudo -u joinmarket ./jmg_venv/bin/pip install -r requirements.txt
+
+            # Setup TLS certificates
+            sudo -u joinmarket mkdir .joinmarket/ssl
+            sudo -u joinmarket openssl req -newkey rsa:4096 -x509 -sha256 -days 3650 -nodes -batch -out /home/joinmarket/.joinmarket/ssl/cert.pem -keyout /home/joinmarket/.joinmarket/ssl/key.pem
+
+            echo $JMG_VERSION > $JMG_VERSION_FILE
+        fi
+    fi
+fi
+
 # Install Whirlpool
 if should_install_app "whirlpool" ; then
     WHIRLPOOL_UPGRADE_URL=https://code.samourai.io/whirlpool/whirlpool-client-cli/uploads/$WHIRLPOOL_UPLOAD_FILE_ID/whirlpool-client-cli-$WHIRLPOOL_VERSION-run.jar
