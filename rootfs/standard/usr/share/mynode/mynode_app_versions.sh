@@ -57,7 +57,7 @@ JOININBOX_VERSION="v0.6.4"
 JOININBOX_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version
 JOININBOX_LATEST_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version_latest
 
-JMG_VERSION="v0.3.3-alpha"
+JMG_VERSION="v0.4.1"
 JMG_VERSION_FILE=/home/bitcoin/.mynode/jmg_version
 JMG_LATEST_VERSION_FILE=/home/bitcoin/.mynode/jmg_version_latest
 
