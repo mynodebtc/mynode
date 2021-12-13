@@ -371,6 +371,8 @@ if [ $IS_RASPI4_ARM64 = 1 ]; then
     LND_ARCH="lnd-linux-arm64"
 fi
 LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/$LND_ARCH-$LND_VERSION.tar.gz
+LNCLI_COMPLETION_URL=https://raw.githubusercontent.com/lightningnetwork/lnd/$LND_VERSION/contrib/lncli.bash-completion
+
 CURRENT=""
 if [ -f $LND_VERSION_FILE ]; then
     CURRENT=$(cat $LND_VERSION_FILE)
@@ -392,6 +394,10 @@ if [ "$CURRENT" != "$LND_VERSION" ]; then
     ln -s /bin/ip /usr/bin/ip || true
 
     echo $LND_VERSION > $LND_VERSION_FILE
+
+    # Download bash-completion file for lncli
+    wget $LNCLI_COMPLETION_URL
+    sudo cp lncli.bash-completion /etc/bash_completion.d/lncli
 fi
 cd ~
 
