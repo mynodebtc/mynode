@@ -383,7 +383,7 @@
 
                 // Update price info
                 $.getJSON("/api/get_price_info", function( data ) {
-                    console.log("Price Data: " + JSON.stringify(data))
+                    // console.log("Price Data: " + JSON.stringify(data))
                     if ("price" in data && data["price"] != null) {
                         price_data = data;
                         if (price_display_rotate_count == 0) {
