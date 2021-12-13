@@ -474,6 +474,13 @@
                     window.open(url,'_blank');
                 })
 
+                $("#jmg").on("click", function() {
+                    hostname=location.hostname
+                    port="5002"
+                    url = location.protocol+'//'+hostname+':'+port
+                    window.open(url,'_blank');
+                })
+
                 $("#lnbits").on("click", function() {
                     hostname=location.hostname
                     port_string=""
