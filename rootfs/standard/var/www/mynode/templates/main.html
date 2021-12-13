@@ -474,12 +474,17 @@
                     window.open(url,'_blank');
                 })
 
+                // Joinmarket GUI
                 $("#jmg").on("click", function() {
                     hostname=location.hostname
                     port="5002"
                     url = location.protocol+'//'+hostname+':'+port
                     window.open(url,'_blank');
                 })
+
+                if ($("#jmg_status_icon").attr('class').split(' ').indexOf('yellow') != -1) {
+                    $("#jmg").hide();
+                }
 
                 $("#lnbits").on("click", function() {
                     hostname=location.hostname

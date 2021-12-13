@@ -431,6 +431,7 @@ def index():
         lnd_status_color = "red"
         lnd_ready = is_lnd_ready()
         electrs_active = is_electrs_active()
+        jmwalletd_running = is_service_active('jmwalletd')
         bitcoin_status = "Inactive"
         lnd_status = "Inactive"
         electrs_status = ""
@@ -546,6 +547,7 @@ def index():
             "lnd_tx_display_limit": 6,
             "lnd_channels": get_lightning_channels(),
             "electrs_active": electrs_active,
+            "jmwalletd_running": jmwalletd_running,
             "btcpayserver_onion": get_onion_url_btcpay(),
             "lndhub_onion": get_onion_url_lndhub(),
             "lnbits_onion": get_onion_url_lnbits(),
