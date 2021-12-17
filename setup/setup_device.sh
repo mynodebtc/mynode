@@ -627,6 +627,15 @@ if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
         chmod -R +x ./joininbox/
         sudo -u joinmarket cp -rf ./joininbox/scripts/* .
 
+        # Use Python3.7 on RP4 32-bit
+        JM_ENV_VARS=""
+        if [ $IS_64_BIT = 0 ]; then
+            JM_ENV_VARS="export JM_PYTHON=python3.7; "
+        fi
+
+        # Install
+        sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket.sh install" || true
+
         echo $JOININBOX_VERSION > $JOININBOX_VERSION_FILE
     fi
 fi
