@@ -425,20 +425,12 @@ def index():
         return render_template('state.html', **templateData)
     elif status == STATE_STABLE:
         bitcoin_status_code = get_service_status_code("bitcoin")
-        lnd_status_code = get_service_status_code("lnd")
-        tor_status_color = "gray"
         bitcoin_status_color = "red"
         lnd_status_color = "red"
         lnd_ready = is_lnd_ready()
         electrs_active = is_electrs_active()
         bitcoin_status = "Inactive"
         lnd_status = "Inactive"
-        electrs_status = ""
-        lndconnect_status_color = "gray"
-        btcpayserver_status_color = "gray"
-        mempool_status_color = "gray"
-        vpn_status_color = "gray"
-        vpn_status = ""
         current_block = 1234
 
         if not get_has_updated_btc_info() or uptime_in_seconds < 180:
@@ -483,8 +475,6 @@ def index():
             return render_template('syncing.html', **templateData)
 
         # Find bitcoid status
-        bitcoin_info = get_bitcoin_blockchain_info()
-        bitcoin_peers = get_bitcoin_peers()
         if bitcoin_status_code != 0:
             bitcoin_status_color = "red"
         else:
