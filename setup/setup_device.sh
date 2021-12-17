@@ -23,6 +23,7 @@ IS_RASPI3=0
 IS_RASPI4=0
 IS_RASPI4_ARM64=0
 IS_X86=0
+IS_32_BIT=0
 IS_64_BIT=0
 IS_UNKNOWN=0
 DEVICE_TYPE="unknown"
@@ -39,12 +40,15 @@ elif [[ $MODEL == *"RockPro64"* ]]; then
 elif [[ $MODEL == *"Raspberry Pi 3"* ]]; then
     IS_RASPI=1
     IS_RASPI3=1
+    IS_32_BIT=1
 elif [[ $MODEL == *"Raspberry Pi 4"* ]]; then
     IS_RASPI=1
     IS_RASPI4=1
+    IS_32_BIT=1
     UNAME=$(uname -a)
     if [[ $UNAME == *"aarch64"* ]]; then
         IS_RASPI4_ARM64=1
+        IS_32_BIT=0
         IS_64_BIT=1
     fi
 fi
@@ -274,6 +278,11 @@ fi
 pip3 install --upgrade pip wheel setuptools
 pip3 install lnd-grpc gnureadline docker-compose pipenv bcrypt pysocks redis --no-cache-dir
 pip3 install flask pam python-bitcoinrpc prometheus_client psutil transmissionrpc qrcode image --no-cache-dir
+
+# For RP4 32-bit, install specific grpcio version known to build (uses proper glibc for wheel)
+if [ $IS_32_BIT = 1 ]; then
+    pip3 install grpcio==$PYTHON_ARM32_GRPCIO_VERSION grpcio-tools==$PYTHON_ARM32_GRPCIO_VERSION
+fi
 
 
 # Install node
@@ -629,7 +638,7 @@ if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
 
         # Use Python3.7 on RP4 32-bit
         JM_ENV_VARS=""
-        if [ $IS_64_BIT = 0 ]; then
+        if [ $IS_32_BIT = 1 ]; then
             JM_ENV_VARS="export JM_PYTHON=python3.7; "
         fi
 
