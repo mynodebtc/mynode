@@ -198,6 +198,11 @@ if ! skip_base_upgrades ; then
     pip3 install lnd-grpc gnureadline docker-compose pipenv bcrypt pysocks redis --no-cache-dir
     pip3 install flask pam python-bitcoinrpc prometheus_client psutil transmissionrpc qrcode image --no-cache-dir
 
+    # For RP4 32-bit, install specific grpcio version known to build (uses proper glibc for wheel)
+    if [ $IS_32_BIT = 1 ]; then
+        pip3 install grpcio==$PYTHON_ARM32_GRPCIO_VERSION grpcio-tools==$PYTHON_ARM32_GRPCIO_VERSION
+    fi
+
     # Update Node
     if [ -f /etc/apt/sources.list.d/nodesource.list ]; then
         CURRENT_NODE_VERSION=$(cat /etc/apt/sources.list.d/nodesource.list)
@@ -638,7 +643,7 @@ if should_install_app "joininbox" ; then
 
             # Use Python3.7 on RP4 32-bit
             JM_ENV_VARS=""
-            if [ $IS_64_BIT = 0 ]; then
+            if [ $IS_32_BIT = 1 ]; then
                 JM_ENV_VARS="export JM_PYTHON=python3.7; "
             fi
 

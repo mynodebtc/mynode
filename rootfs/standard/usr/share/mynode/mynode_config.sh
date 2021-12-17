@@ -9,6 +9,7 @@ IS_RASPI3=0
 IS_RASPI4=0
 IS_RASPI4_ARM64=0
 IS_X86=0
+IS_32_BIT=0
 IS_64_BIT=0
 DEVICE_TYPE="unknown"
 MODEL=$(tr -d '\0' < /proc/device-tree/model) || MODEL="unknown"
@@ -24,12 +25,15 @@ elif [[ $MODEL == *"RockPro64"* ]]; then
 elif [[ $MODEL == *"Raspberry Pi 3"* ]]; then
     IS_RASPI=1
     IS_RASPI3=1
+    IS_32_BIT=1
 elif [[ $MODEL == *"Raspberry Pi 4"* ]]; then
     IS_RASPI=1
     IS_RASPI4=1
+    IS_32_BIT=1
     UNAME=$(uname -a)
     if [[ $UNAME == *"aarch64"* ]]; then
         IS_RASPI4_ARM64=1
+        IS_32_BIT=0
         IS_64_BIT=1
     fi
 fi
