@@ -929,6 +929,11 @@ if should_install_app "pyblock" ; then
         sudo -u bitcoin mv pyblock-* pyblock
         cd pyblock
 
+        # Patch deps for old versions
+        if [ $IS_32_BIT = 1 ]; then
+            sed -i "s/^grpcio.*/grpcio==1.40.0/g" requirements.txt
+        fi
+
         # Make venv
         if [ ! -d env ]; then
             sudo -u bitcoin python3 -m venv env
