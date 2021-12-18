@@ -1,3 +1,15 @@
+=== v0.2.49 ===
+- Released: 12/18/21
+- Add Warden Terminal App
+- Upgrade Pool to v0.5.3
+- Upgrade Loop to v0.16.0
+- Upgrade BTC RPC Explorer to v3.3.0
+- Upgrade Caravan to v0.3.13
+- Upgrade PyBlock to v1.1.8.6
+- Upgrade BoS to v11.16.0
+- Enable bash-completion for Bitcoin and LND CLI
+- Fix issue with LND wallet creation on ARM32 platform
+
 === v0.2.48 ===
 - Released: 12/03/21
 - Add optional Price Ticker
