@@ -596,7 +596,7 @@ def set_flask_session_timeout(days, hours):
 
 
 #==================================
-# Uploader Functions
+# Web Server Functions
 #==================================
 def restart_flask():
     os.system("systemctl restart www")
@@ -904,6 +904,12 @@ def reset_electrs():
     delete_electrs_data()
     restart_electrs()
 
+#==================================
+# RTL Functions
+#==================================
+def reset_rtl_config():
+    os.system("rm -rf /mnt/hdd/mynode/rtl/RTL-Config.json")
+    os.system("systemctl restart rtl")
 
 #==================================
 # Sphinx Relay Server Functions

@@ -545,6 +545,16 @@ def clear_mempool_cache_page():
     flash("Mempool Cache Cleared", category="message")
     return redirect("/settings")
 
+@mynode_settings.route("/settings/reset-rtl-config")
+def reset_rtl_config_page():
+    check_logged_in()
+
+    t = Timer(1.0, reset_rtl_config)
+    t.start()
+
+    flash("RTL Configuration Reset", category="message")
+    return redirect("/settings")
+
 @mynode_settings.route("/settings/reset-specter-config")
 def reset_specter_config_page():
     check_logged_in()
