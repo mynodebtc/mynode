@@ -117,7 +117,7 @@ SPHINXRELAY_VERSION="v2.2.3"
 SPHINXRELAY_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version
 SPHINXRELAY_LATEST_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version_latest
 
-PYBLOCK_VERSION="v1.1.6"
+PYBLOCK_VERSION="v1.1.8.6"
 PYBLOCK_VERSION_FILE=/home/bitcoin/.mynode/pyblock_version
 PYBLOCK_LATEST_VERSION_FILE=/home/bitcoin/.mynode/pyblock_version_latest
 
