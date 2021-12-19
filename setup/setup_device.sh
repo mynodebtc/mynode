@@ -187,7 +187,7 @@ apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncu
 apt-get -y install zlib1g-dev libudev-dev libusb-1.0-0-dev python3-venv gunicorn
 apt-get -y install sqlite3 libsqlite3-dev torsocks python3-requests libsystemd-dev
 apt-get -y install libjpeg-dev zlib1g-dev psmisc hexyl libbz2-dev liblzma-dev netcat-openbsd
-apt-get -y install hdparm iotop nut
+apt-get -y install hdparm iotop nut obfs4proxy
 
 # Install device specific packages
 if [ $IS_X86 = 1 ]; then
