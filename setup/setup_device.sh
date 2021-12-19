@@ -276,7 +276,7 @@ fi
 
 # Install Python3 specific tools (run multiple times to make sure success)
 pip3 install --upgrade pip wheel setuptools
-pip3 install lnd-grpc gnureadline docker-compose pipenv bcrypt pysocks redis --no-cache-dir
+pip3 install gnureadline docker-compose pipenv bcrypt pysocks redis systemd --no-cache-dir
 pip3 install flask pam python-bitcoinrpc prometheus_client psutil transmissionrpc --no-cache-dir
 pip3 install qrcode image pyudev --no-cache-dir
 

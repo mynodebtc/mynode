@@ -195,7 +195,7 @@ if ! skip_base_upgrades ; then
 
     # Install any pip3 software
     pip3 install --upgrade pip setuptools wheel
-    pip3 install lnd-grpc gnureadline docker-compose pipenv bcrypt pysocks redis --no-cache-dir
+    pip3 install gnureadline docker-compose pipenv bcrypt pysocks redis systemd --no-cache-dir
     pip3 install flask pam python-bitcoinrpc prometheus_client psutil transmissionrpc --no-cache-dir
     pip3 install qrcode image pyudev --no-cache-dir
 
