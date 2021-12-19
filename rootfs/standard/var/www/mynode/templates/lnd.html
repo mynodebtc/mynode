@@ -103,6 +103,9 @@
                         showAlertPopup("alert_popup", "<b>Password copy failed!</b>");
                     });
                 });
+                if (location.protocol == 'https:') {
+                    $("#copy_lit_password").show();
+                }
 
                 $('#watchtower_enabled_checkbox').change(function () {
                     $("#watchtower_enabled_save").show();
@@ -246,7 +249,7 @@
                             <th>Lightning Terminal</th>
                             <td>
                                 <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="lit" style="width: 100px;" href="#">open</a>
-                                <span id="lit_password" style="display: none; margin: 0;">{{lit_password}} <span id="copy_lit_password" class="ui-icon ui-icon-copy" style="cursor: pointer;" title="Copy Password"></span></span>
+                                <span id="lit_password" style="display: none; margin: 0;">{{lit_password}} <span id="copy_lit_password" class="ui-icon ui-icon-copy" style="cursor: pointer; display: none;" title="Copy Password"></span></span>
                                 
                                 <a id="show_lit_password" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;">show password</a>
                             </td>

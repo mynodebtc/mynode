@@ -445,6 +445,21 @@
                     }
                 });
 
+                $('#btcrpcexplorer_token_checkbox').change(function () {
+                    $("#btcrpcexplorer_token").show();
+                });
+                $("#btcrpcexplorer_token").on("click", function() {
+                    enabled=$('#btcrpcexplorer_token_checkbox').is(":checked")
+                    if (enabled)
+                    {
+                        window.location.href='/settings/btcrpcexplorer_token?enable=1'
+                    }
+                    else
+                    {
+                        window.location.href='/settings/btcrpcexplorer_token?enable=0'
+                    }
+                });
+
                 $('#aptget_tor_checkbox').change(function () {
                     $("#aptget_tor").show();
                 });
@@ -612,6 +627,17 @@
                 <a href="/settings/toggle-darkmode" class="ui-button ui-widget ui-corner-all settings_button">Disable</a>
             {% else %}
                 <a href="/settings/toggle-darkmode" class="ui-button ui-widget ui-corner-all settings_button">Enable</a>
+            {% endif %}
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Price Ticker</div>
+            Display recent Bitcoin price on the main page.
+            <br/>
+            {% if ui_settings['price_ticker'] %}
+                <a href="/settings/toggle-price-ticker" class="ui-button ui-widget ui-corner-all settings_button">Disable</a>
+            {% else %}
+                <a href="/settings/toggle-price-ticker" class="ui-button ui-widget ui-corner-all settings_button">Enable</a>
             {% endif %}
 
             <div class="divider"></div>
@@ -796,7 +822,34 @@
             This will regenerate your Electrum Server certificate.
             <br/>
             <a href="/settings/regen-electrs-certs" class="ui-button ui-widget ui-corner-all settings_button">Regenerate</a>
+        </div>
 
+
+        <div class="settings_block">
+            <a id="rtl"></a>
+            <div class="settings_block_header">Ride the Lightning</div>
+            
+            <div class="settings_block_subheader">Reset RTL Configuration</div>
+            This will delete your RTL configuration and restart the application.
+            <br/>
+            <a href="/settings/reset-rtl-config" class="ui-button ui-widget ui-corner-all settings_button">Reset Configuration</a>
+        </div>
+
+
+        <div class="settings_block">
+            <a id="btcrpcexplorer"></a>
+            <div class="settings_block_header">BTC RPC Explorer</div>
+            
+            <div class="settings_block_subheader">Access Token</div>
+            To improve security, a token is required to access BTC RPC Explorer. This restricts access to people who have logged into myNode and navigated to
+            BTC RPC Explorer via the interface. To allow access to all users on the network, you can disable requiring the token. This is less secure.
+            <br/><br/>
+            <label class="switch">
+                <input type="checkbox" id="btcrpcexplorer_token_checkbox" {% if btcrpcexplorer_token_enabled %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <br/><br/>
+            <button id="btcrpcexplorer_token" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
         </div>
 
 

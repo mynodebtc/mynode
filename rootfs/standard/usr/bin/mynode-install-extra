@@ -21,14 +21,31 @@ APP="$1"
 # Custom re-install steps
 if [ "$APP" = "rust" ] || [ "$APP" = "cargo" ]; then
     wget https://sh.rustup.rs -O /tmp/setup_rust.sh
-    /bin/bash /tmp/setup_rust.sh -y
+    /bin/bash /tmp/setup_rust.sh -y --default-toolchain none
+    sync
+    if [ -f $HOME/.cargo/env ]; then
+        # Remove old toolchains
+        source $HOME/.cargo/env
+        TOOLCHAINS=$(rustup toolchain list)
+        for toolchain in $TOOLCHAINS; do
+            if [[ "$toolchain" == *"linux"* ]] && [[ "$toolchain" != *"${RUST_VERSION}"* ]]; then
+                rustup toolchain remove $toolchain || true
+            fi
+        done
+
+        # Install and use desired version
+        rustup install $RUST_VERSION
+        rustup default $RUST_VERSION
+        rustc --version
+    fi
 elif [ "$APP" = "electrs" ]; then
+    source $HOME/.cargo/env
     mkdir -p /home/admin/download
     cd /home/admin/download
     rm -rf electrs-*.tar.gz
     rm -rf electrs
 
-    URL="https://github.com/romanz/electrs/archive/refs/tags/v0.9.2.tar.gz"
+    URL="https://github.com/romanz/electrs/archive/refs/tags/v0.9.3.tar.gz"
     if [ "$#" -eq 2 ]; then
         URL="$2"
     fi
@@ -37,7 +54,7 @@ elif [ "$APP" = "electrs" ]; then
     mv electrs-* electrs
 
     cd electrs
-    cargo build --release
+    cargo +$RUST_VERSION build --release
     sudo install -g root -o root target/release/electrs /usr/bin/electrs
     cd ~
 else

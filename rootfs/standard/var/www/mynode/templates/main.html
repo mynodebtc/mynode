@@ -18,6 +18,7 @@
             var is_installing_docker_images = {% if is_installing_docker_images %}true{% else %}false{% endif %};
             var lnd_last_btc_tx = "";
             var lnd_last_ln_tx = "";
+            var price_data = {};
 
             // Toggle enable/disable functions
             function get_custom_enable_message(short_name) {
@@ -96,9 +97,42 @@
                 }
             }
 
+            var price_display_rotate_count = 0;
+            function update_price_display() {
+                {% if ui_settings['price_ticker'] %}
+                if ("price" in price_data && "delta" in price_data && "direction" in price_data ) {
+                    $("#price_ticker").show();
+                    $("#price_ticker_text").slideUp('fast', function() {
+                        display_id = price_display_rotate_count % 3;
+                        if (display_id == 0) {
+                            p = price_data["price"].toLocaleString('en-US', {style: 'currency', currency: 'USD'});
+                            $("#price_ticker_text").html(p + " USD/BTC");
+                        } else if (display_id == 1) {
+                            sats = parseInt(100000000 / price_data["price"]);
+                            $("#price_ticker_text").html(sats + " SATS/USD");
+                        } else if (display_id == 2) { 
+                            p = Math.abs(price_data["delta"]).toLocaleString('en-US', {style: 'currency', currency: 'USD'});
+                            if (price_data["direction"] == "flat") {
+                                $("#price_ticker_text").html("Price is flat");
+                            } else if (price_data["direction"] == "up") {
+                                $("#price_ticker_text").html("Price is up "+p);
+                            } else if (price_data["direction"] == "down") {
+                                $("#price_ticker_text").html("Price is down "+p);
+                            }
+                        }
+                        $("#price_ticker_text").slideDown();
+                        price_display_rotate_count = price_display_rotate_count + 1;
+                    });
+                }
+                {% endif %}
+            }
+
             function update_sso_token(short_name, data) {
                 if ("sso_token" in data && data["sso_token"] != null && data["sso_token"] != "") {
                     application_data[short_name]["sso_token"] = data["sso_token"]
+                }
+                if ("sso_token_enabled" in data) {
+                    application_data[short_name]["sso_token_enabled"] = data["sso_token_enabled"]
                 }
             }
 
@@ -347,11 +381,22 @@
                     {% endif %}
                 {% endfor %}
 
+                // Update price info
+                $.getJSON("/api/get_price_info", function( data ) {
+                    // console.log("Price Data: " + JSON.stringify(data))
+                    if ("price" in data && data["price"] != null) {
+                        price_data = data;
+                        if (price_display_rotate_count == 0) {
+                            update_price_display();
+                        }
+                    }
+                });
+
                 // Update device info
                 $.getJSON("/api/get_device_info", function( data ) {
                     //console.log("Device Data: " + JSON.stringify(data))
-                    if ("disk_usage" in data && data["disk_usage"] != null) {
-                        $("#device_drive_usage").html(data["disk_usage"]);
+                    if ("data_drive_usage" in data && data["data_drive_usage"] != null) {
+                        $("#data_drive_usage").html(data["data_drive_usage"]);
                     }
                     if ("cpu" in data && data["cpu"] != null) {
                         $("#device_cpu_usage").html(data["cpu"]);
@@ -391,87 +436,125 @@
             $(document).ready(function() {
                 $( document ).tooltip();
 
+                function is_using_tor() {
+                    if (location.hostname.includes(".onion")) {
+                        return true;
+                    }
+                    return false;
+                }
+
                 $("#lit").on("click", function() {
                     url = 'https://'+location.hostname+':8443'
                     window.open(url,'_blank');
                 })
 
                 $("#lndhub").on("click", function() {
-                    port="3000"
-                    if (location.protocol == "https:") {
-                        port="3001"
+                    hostname=location.hostname
+                    port_string=""
+                    if (is_using_tor()) {
+                        hostname="{{lndhub_onion}}"
+                        // Use "default" port - either 80 or 443 for HTTP/HTTPS
+                    } else {
+                        port_string=":3000"
+                        if (location.protocol == "https:") {
+                            port_string=":3001"
+                        }
                     }
-                    url = location.protocol+'//'+location.hostname+':'+port
+                    url = location.protocol+'//'+hostname+port_string
                     window.open(url,'_blank');
                 })
 
                 $("#rtl").on("click", function() {
+                    hostname=location.hostname
                     port="3010"
                     if (location.protocol == "https:") {
                         port="3011"
                     }
-                    url = location.protocol+'//'+location.hostname+':'+port
+                    url = location.protocol+'//'+hostname+':'+port
                     window.open(url,'_blank');
                 })
 
                 $("#lnbits").on("click", function() {
-                    port="5000"
-                    if (location.protocol == "https:") {
-                        port="5001"
+                    hostname=location.hostname
+                    port_string=""
+                    if (is_using_tor()) {
+                        hostname="{{lnbits_onion}}"
+                        // Use "default" port - either 80 or 443 for HTTP/HTTPS
+                    } else {
+                        port_string=":5000"
+                        if (location.protocol == "https:") {
+                            port_string=":5001"
+                        }
                     }
-                    url = location.protocol+'//'+location.hostname+':'+port
+                    url = location.protocol+'//'+hostname+port_string
                     window.open(url,'_blank');
                 })
 
                 $("#thunderhub").on("click", function() {
+                    hostname=location.hostname
                     port="3030"
                     if (location.protocol == "https:") {
                         port="3031"
                     }
                     // Swap to use SSO (make optional? - needing password is safer)
-                    url = location.protocol+'//'+location.hostname+':'+port
-                    //url = location.protocol+'//'+location.hostname+':'+port+'/sso?'+'token='+application_data["thunderhub"]["sso_token"]
+                    url = location.protocol+'//'+hostname+':'+port
+                    //url = location.protocol+'//'+hostname+':'+port+'/sso?'+'token='+application_data["thunderhub"]["sso_token"]
                     window.open(url,'_blank');
                 })
 
                 $("#ckbunker").on("click", function() {
+                    hostname=location.hostname
                     port="9823"
                     if (location.protocol == "https:") {
                         port="9824"
                     }
-                    url = location.protocol+'//'+location.hostname+':'+port
+                    url = location.protocol+'//'+hostname+':'+port
                     window.open(url,'_blank');
                 })
 
                 $("#btcrpcexplorer").on("click", function() {
+                    hostname=location.hostname
                     port="3002"
                     if (location.protocol == "https:") {
                         port="3003"
                     }
-                    url = location.protocol+'//'+location.hostname+':'+port+'/?'+'token='+application_data["btcrpcexplorer"]["sso_token"]
+                    token_string=""
+                    if (application_data["btcrpcexplorer"]["sso_token_enabled"]) {
+                        token_string='?'+'token='+application_data["btcrpcexplorer"]["sso_token"]
+                    }
+                    url = location.protocol+'//'+hostname+':'+port+'/'+token_string
                     window.open(url,'_blank');
                 })
 
                 $("#specter").on("click", function() {
-                    url = 'https://'+location.hostname+':25441'
+                    hostname=location.hostname
+                    url = 'https://'+hostname+':25441'
                     window.open(url,'_blank');
                 })
 
                 $("#mempool").on("click", function() {
+                    hostname=location.hostname
                     port="4080"
                     if (location.protocol == "https:") {
                         port="4081"
                     }
-                    url = location.protocol+'//'+location.hostname+':'+port
+                    url = location.protocol+'//'+hostname+':'+port
                     window.open(url,'_blank');
                 })
 
                 $("#btcpayserver").on("click", function() {
-                    port="49392"
-                    if (location.protocol == "https:") {
-                        port="49393"
+                    protocol=location.protocol
+                    hostname=location.hostname
+                    port_string=""
+                    if (is_using_tor()) {
+                        hostname="{{btcpayserver_onion}}"
+                        // Use "default" port - either 80 or 443 for HTTP/HTTPS
+                    } else {
+                        // When not using tor, BTCPayServer needs HTTPS to login
+                        protocol="https:"
+                        port_string=":49393"
                     }
-                    url = location.protocol+'//'+location.hostname+':'+port
+                    url = protocol+'//'+hostname+port_string
                     window.open(url,'_blank');
                 })
 
@@ -530,6 +613,9 @@
                 // Update info every 15 seconds
                 const update_interval = setInterval(update_page, 15000);
                 update_page();
+
+                // Rotate Price Ticker every 10 seconds
+                const rotate_ticker_interval = setInterval(update_price_display, 10000);
 
                 // If pinned lightning, auto open lightning details
                 {% if lnd_wallet_exists and lnd_ready and ui_settings['pinned_lightning_details'] %}
@@ -625,7 +711,7 @@
                 <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/drive.png")}}"/></div>
                 <div class="app_title">Disk Usage</div>
                 <div class="app_status"></div>
-                <div class="app_contents"><div class="device_status_info" id="device_drive_usage">{{drive_usage}}</div></div>
+                <div class="app_contents"><div class="device_status_info" id="data_drive_usage">{{data_drive_usage}}</div></div>
             </div>
             <div class="app_tile">
                 <div class="app_status_icon"></div>

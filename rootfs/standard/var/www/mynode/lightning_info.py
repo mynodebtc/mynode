@@ -6,7 +6,6 @@ import time
 import re
 import datetime
 import urllib
-from flask import current_app as app
 from threading import Timer
 from utilities import *
 from bitcoin_info import *
@@ -366,7 +365,7 @@ def lnd_get(path, timeout=10, params={}):
         headers = {"Grpc-Metadata-macaroon":macaroon}
         r = requests.get("https://localhost:"+LND_REST_PORT+"/v1"+path, verify=TLS_CERT_FILE,headers=headers, params=params, timeout=timeout)
     except Exception as e:
-        app.logger.info("ERROR in lnd_get: "+str(e))
+        log_message("ERROR in lnd_get: "+str(e))
         return {"error": str(e)}
     return r.json()
 
@@ -376,7 +375,7 @@ def lnd_get_v2(path, timeout=10):
         headers = {'Grpc-Metadata-macaroon': macaroon}
         r = requests.get("https://localhost:"+LND_REST_PORT+"/v2"+path, verify=TLS_CERT_FILE, headers=headers, timeout=timeout)
     except Exception as e:
-        app.logger.info("ERROR in lnd_get_v2: "+str(e))
+        log_message("ERROR in lnd_get_v2: "+str(e))
         return {"error": str(e)}
     return r.json()
 

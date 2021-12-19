@@ -9,6 +9,7 @@ from device_info import *
 from thread_functions import *
 from systemctl_info import *
 from application_info import *
+from price_info import *
 from messages import *
 if isPython3():
     from io import StringIO, BytesIO
@@ -45,7 +46,7 @@ def api_get_bitcoin_info():
             b["difficulty"] = None
         data["recent_blocks"] = blocks
 
-    #app.logger.info("api_get_bitcoin_info data: "+json.dumps(data))
+    #log_message("api_get_bitcoin_info data: "+json.dumps(data))
     return jsonify(data)
 
 @mynode_api.route("/api/get_lightning_info")
@@ -60,6 +61,17 @@ def api_get_lightning_info():
     data["channels"] = get_lightning_channels()
     data["transactions"] = get_lightning_transactions()
     data["payments_and_invoices"] = get_lightning_payments_and_invoices()
+
+    return jsonify(data)
+
+@mynode_api.route("/api/get_price_info")
+def api_get_price_info():
+    check_logged_in()
+
+    data = {}
+    data["price"] = get_latest_price()
+    data["delta"] = get_price_diff_24hrs()
+    data["direction"] = get_price_up_down_flat_24hrs()
 
     return jsonify(data)
 
@@ -78,6 +90,7 @@ def api_get_service_status():
     data["status"] = get_application_status(service)
     data["color"] = get_application_status_color(service)
     data["sso_token"] = get_application_sso_token(service)
+    data["sso_token_enabled"] = get_application_sso_token_enabled(service)
     return jsonify(data)
 
 @mynode_api.route("/api/get_app_info")
@@ -103,7 +116,7 @@ def api_get_device_info():
     check_logged_in()
 
     data = {}
-    data["disk_usage"] = get_drive_usage()
+    data["data_drive_usage"] = get_data_drive_usage()
     data["cpu"] = get_cpu_usage()
     data["ram"] = get_ram_usage()
     data["temp"] = get_device_temp()
@@ -192,7 +205,7 @@ def api_toggle_setting():
 
     setting = request.args.get("setting")
     if setting == "pinned_lightning_details":
-        toggle_pinned_lightning_details()
+        toggle_ui_setting("pinned_lightning_details")
         data["status"] = "success"
     else:
         data["status"] = "unknown_setting"

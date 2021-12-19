@@ -47,6 +47,8 @@ elif [ "$APP" = "joininbox" ]; then
     rm -rf /home/joinmarket/.cache
 elif [ "$APP" = "lndhub" ]; then
     rm -rf /opt/mynode/LndHub
+elif [ "$APP" = "lndmanage" ]; then
+    pip3 uninstall -y lndmanage
 elif [ "$APP" = "rtl" ]; then
     rm -rf /opt/mynode/RTL
 else

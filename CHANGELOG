@@ -1,3 +1,51 @@
+=== v0.2.49 ===
+- Released: 12/18/21
+- Add Warden Terminal App
+- Upgrade Pool to v0.5.3
+- Upgrade Loop to v0.16.0
+- Upgrade BTC RPC Explorer to v3.3.0
+- Upgrade Caravan to v0.3.13
+- Upgrade PyBlock to v1.1.8.6
+- Upgrade BoS to v11.16.0
+- Enable bash-completion for Bitcoin and LND CLI
+- Fix issue with LND wallet creation on ARM32 platform
+
+=== v0.2.48 ===
+- Released: 12/03/21
+- Add optional Price Ticker
+- Add ability to insert custom hook scripts
+- Upgrade LiT to v0.6.2
+- Upgrade Specter to v1.7.2
+- Upgrade JoininBox to v0.6.4
+- Upgrade BoS to v0.11.13
+- Upgrade PyBlock to v1.1.6
+- Improve Docker Consistency
+
+=== v0.2.47 ===
+- Released: 11/26/21
+- Upgrade LND to v0.14.1
+- Upgrade Electrs to v0.9.3
+- Upgrade Lightning Terminal to v0.6.0
+- Upgrade LNDManage to v0.14.0
+- Upgrade BTC Pay Server to v1.3.6
+- Upgrade PyBlock to v1.1
+- Upgrade Sphinx Relay to v2.2.3
+- Upgrade Python to v3.8.9
+- Fix LND wallet creation issue
+
+=== v0.2.46 ===
+- Released: 11/19/21
+- Upgrade LND to v0.14.0
+- Upgrade Dojo to v1.12.1
+- Upgrade Specter to v1.7.1
+- Upgrade BTC Pay Server to v1.3.5
+- Upgrade BoS to v11.12.0
+- Upgrade Sphinx Relay to v2.2.2
+- Improve Tor services for apps
+- Add app tile for lndmanage
+- Improve handling of 32->64 bit upgrades
+- Bug fixes
+
 === v0.2.45 ===
 - Released: 11/03/21
 - Remove Tor v2 services

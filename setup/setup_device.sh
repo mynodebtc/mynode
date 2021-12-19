@@ -23,6 +23,7 @@ IS_RASPI3=0
 IS_RASPI4=0
 IS_RASPI4_ARM64=0
 IS_X86=0
+IS_32_BIT=0
 IS_64_BIT=0
 IS_UNKNOWN=0
 DEVICE_TYPE="unknown"
@@ -39,12 +40,15 @@ elif [[ $MODEL == *"RockPro64"* ]]; then
 elif [[ $MODEL == *"Raspberry Pi 3"* ]]; then
     IS_RASPI=1
     IS_RASPI3=1
+    IS_32_BIT=1
 elif [[ $MODEL == *"Raspberry Pi 4"* ]]; then
     IS_RASPI=1
     IS_RASPI4=1
+    IS_32_BIT=1
     UNAME=$(uname -a)
     if [[ $UNAME == *"aarch64"* ]]; then
         IS_RASPI4_ARM64=1
+        IS_32_BIT=0
         IS_64_BIT=1
     fi
 fi
@@ -183,7 +187,7 @@ apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncu
 apt-get -y install zlib1g-dev libudev-dev libusb-1.0-0-dev python3-venv gunicorn
 apt-get -y install sqlite3 libsqlite3-dev torsocks python3-requests libsystemd-dev
 apt-get -y install libjpeg-dev zlib1g-dev psmisc hexyl libbz2-dev liblzma-dev netcat-openbsd
-apt-get -y install hdparm iotop
+apt-get -y install hdparm iotop nut obfs4proxy
 
 # Install device specific packages
 if [ $IS_X86 = 1 ]; then
@@ -225,8 +229,32 @@ pip2 install grpcio grpcio-tools googleapis-common-protos
 pip2 install tzupdate virtualenv pysocks redis qrcode image subprocess32
 
 
-# Update Python3 to 3.7.X
-PYTHON_VERSION=3.7.9
+# Install Rust (only needed on 32-bit RPi for building some python wheels)
+if [ ! -f $HOME/.cargo/env ]; then
+    wget https://sh.rustup.rs -O /tmp/setup_rust.sh
+    /bin/bash /tmp/setup_rust.sh -y --default-toolchain none
+    sync
+fi
+if [ -f $HOME/.cargo/env ]; then
+    # Remove old toolchains
+    source $HOME/.cargo/env
+    TOOLCHAINS=$(rustup toolchain list)
+    for toolchain in $TOOLCHAINS; do
+        if [[ "$toolchain" == *"linux"* ]] && [[ "$toolchain" != *"${RUST_VERSION}"* ]]; then
+            rustup toolchain remove $toolchain || true
+        fi
+    done
+    # Manage rust toolchains
+    if [ $IS_RASPI = 1 ] && [ $IS_RASPI4_ARM64 = 0 ]; then
+        # Install and use desired version
+        rustup install $RUST_VERSION
+        rustup default $RUST_VERSION
+        rustc --version
+    fi
+fi
+
+
+# Install Python3 (latest)
 CURRENT_PYTHON3_VERSION=$(python3 --version)
 if [[ "$CURRENT_PYTHON3_VERSION" != *"Python ${PYTHON_VERSION}"* ]]; then
     mkdir -p /opt/download
@@ -248,10 +276,14 @@ fi
 
 # Install Python3 specific tools (run multiple times to make sure success)
 pip3 install --upgrade pip wheel setuptools
-pip3 install bitstring lnd-grpc pycoin aiohttp connectrum python-bitcoinlib
-pip3 install gnureadline docker-compose pipenv bcrypt pysocks redis systemd --no-cache-dir
+pip3 install lnd-grpc gnureadline docker-compose pipenv bcrypt pysocks redis --no-cache-dir
 pip3 install flask pam python-bitcoinrpc prometheus_client psutil transmissionrpc --no-cache-dir
 pip3 install qrcode image pyudev --no-cache-dir
+
+# For RP4 32-bit, install specific grpcio version known to build (uses proper glibc for wheel)
+if [ $IS_32_BIT = 1 ]; then
+    pip3 install grpcio==$PYTHON_ARM32_GRPCIO_VERSION grpcio-tools==$PYTHON_ARM32_GRPCIO_VERSION
+fi
 
 
 # Install node
@@ -283,8 +315,7 @@ rm -rf /etc/motd
 rm -rf /etc/update-motd.d/*
 
 # Install LNDManage
-pip3 install lndmanage==$LNDMANAGE_VERSION
-echo $LNDMANAGE_VERSION > $LNDMANAGE_VERSION_FILE
+# - skip, not default app
 
 
 #########################################################
@@ -308,6 +339,7 @@ fi
 BTC_UPGRADE_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/bitcoin-$BTC_VERSION-$ARCH.tar.gz
 BTC_UPGRADE_SHA256SUM_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/SHA256SUMS
 BTC_UPGRADE_SHA256SUM_ASC_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/SHA256SUMS.asc
+BTC_CLI_COMPLETION_URL=https://raw.githubusercontent.com/bitcoin/bitcoin/v$BTC_VERSION/contrib/bitcoin-cli.bash-completion
 CURRENT=""
 if [ -f $BTC_VERSION_FILE ]; then
     CURRENT=$(cat $BTC_VERSION_FILE)
@@ -338,6 +370,10 @@ if [ "$CURRENT" != "$BTC_VERSION" ]; then
     fi
     mkdir -p /home/admin/.bitcoin
     echo $BTC_VERSION > $BTC_VERSION_FILE
+
+    # Install bash-completion for bitcoin-cli
+    wget $BTC_CLI_COMPLETION_URL -O bitcoin-cli.bash-completion
+    sudo cp bitcoin-cli.bash-completion /etc/bash_completion.d/bitcoin-cli
 fi
 cd ~
 
@@ -350,6 +386,8 @@ if [ $IS_RASPI4_ARM64 = 1 ]; then
     LND_ARCH="lnd-linux-arm64"
 fi
 LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/$LND_ARCH-$LND_VERSION.tar.gz
+LNCLI_COMPLETION_URL=https://raw.githubusercontent.com/lightningnetwork/lnd/$LND_VERSION/contrib/lncli.bash-completion
+
 CURRENT=""
 if [ -f $LND_VERSION_FILE ]; then
     CURRENT=$(cat $LND_VERSION_FILE)
@@ -371,6 +409,10 @@ if [ "$CURRENT" != "$LND_VERSION" ]; then
     ln -s /bin/ip /usr/bin/ip || true
 
     echo $LND_VERSION > $LND_VERSION_FILE
+
+    # Download bash-completion file for lncli
+    wget $LNCLI_COMPLETION_URL
+    sudo cp lncli.bash-completion /etc/bash_completion.d/lncli
 fi
 cd ~
 
@@ -552,17 +594,24 @@ echo $ELECTRS_VERSION > $ELECTRS_VERSION_FILE
 
 # Install recent version of secp256k1
 echo "Installing secp256k1..."
-if [ ! -f /usr/include/secp256k1_ecdh.h ]; then
+SECP256K1_UPGRADE_URL=https://github.com/bitcoin-core/secp256k1/archive/$SECP256K1_VERSION.tar.gz
+CURRENT=""
+if [ -f $SECP256K1_VERSION_FILE ]; then
+    CURRENT=$(cat $SECP256K1_VERSION_FILE)
+fi
+if [ "$CURRENT" != "$SECP256K1_VERSION" ]; then
     rm -rf /tmp/secp256k1
     cd /tmp/
     git clone https://github.com/bitcoin-core/secp256k1.git
     cd secp256k1
 
     ./autogen.sh
-    ./configure
+    ./configure --enable-module-recovery --disable-jni --enable-experimental --enable-module-ecdh --enable-benchmark=no
     make
     make install
     cp -f include/* /usr/include/
+
+    echo $SECP256K1_VERSION > $SECP256K1_VERSION_FILE
 fi
 
 echo "Installing JoinInBox..."
@@ -587,6 +636,15 @@ if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
 
         chmod -R +x ./joininbox/
         sudo -u joinmarket cp -rf ./joininbox/scripts/* .
+
+        # Use Python3.7 on RP4 32-bit
+        JM_ENV_VARS=""
+        if [ $IS_32_BIT = 1 ]; then
+            JM_ENV_VARS="export JM_PYTHON=python3.7; "
+        fi
+
+        # Install
+        sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket.sh install" || true
 
         echo $JOININBOX_VERSION > $JOININBOX_VERSION_FILE
     fi
@@ -827,6 +885,7 @@ fi
 
 # Mark docker images for install (on SD so install occurs after drive attach)
 touch /home/bitcoin/.mynode/install_mempool
+touch /home/bitcoin/.mynode/install_btcpayserver
 touch /home/bitcoin/.mynode/install_dojo
 
 # SKIPPING BOS - OPTIONAL APP
@@ -858,6 +917,12 @@ if [ $IS_ROCKPRO64 = 1 ]; then
     systemctl enable fan_control
 fi
 
+# Random Cleanup
+rm -rf /opt/download
+mkdir -p /opt/download
+
+# Clean apt-cache
+apt-get clean
 
 # Setup myNode Startup Script
 systemctl daemon-reload

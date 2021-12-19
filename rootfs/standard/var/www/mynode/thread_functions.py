@@ -9,26 +9,30 @@ from device_info import *
 from enable_disable_functions import *
 from systemctl_info import *
 from electrum_info import update_electrs_info
+from price_info import update_price_info
 from requests import get
 import random
 
 # Info to get from the update threads
 has_updated_btc_info = False
-drive_usage = "0%"
+data_drive_usage = "0%"
+os_drive_usage = "0%"
 cpu_usage = "..."
 ram_usage = "..."
 swap_usage = "..."
 device_temp = "..."
 public_ip = "not_detected"
 
-
 # Getters
 def get_has_updated_btc_info():
     global has_updated_btc_info
     return has_updated_btc_info
-def get_drive_usage():
-    global drive_usage
-    return drive_usage
+def get_data_drive_usage():
+    global data_drive_usage
+    return data_drive_usage
+def get_os_drive_usage():
+    global os_drive_usage
+    return os_drive_usage
 def get_cpu_usage():
     global cpu_usage
     return cpu_usage
@@ -47,7 +51,8 @@ def get_public_ip():
 
 # Updates device info every 60 seconds
 def update_device_info():
-    global drive_usage
+    global data_drive_usage
+    global os_drive_usage
     global cpu_usage
     global ram_usage
     global swap_usage
@@ -64,7 +69,9 @@ def update_device_info():
 
         # Get drive percent usage
         results = subprocess.check_output("df -h /mnt/hdd | grep /dev | awk '{print $5}'", shell=True)
-        drive_usage = to_string(results)
+        data_drive_usage = to_string(results)
+        results = subprocess.check_output("df -h / | grep /dev | awk '{print $5}'", shell=True)
+        os_drive_usage = to_string(results)
 
         # Get RAM usage
         ram_info = psutil.virtual_memory()
@@ -103,7 +110,7 @@ def update_bitcoin_main_info_thread():
                 bitcoin_block_height = get_bitcoin_block_height()
                 mynode_block_height = get_mynode_block_height()
                 remaining = bitcoin_block_height - mynode_block_height
-                if remaining == 0 and bitcoin_block_height > 680000:
+                if remaining == 0 and bitcoin_block_height > 710000:
                     synced = True
                     if not os.path.isfile(BITCOIN_SYNCED_FILE):
                         open(BITCOIN_SYNCED_FILE, 'a').close() # touch file
@@ -151,6 +158,15 @@ def update_lnd_info_thread():
         update_lightning_info()
     except Exception as e:
         print("CAUGHT update_lnd_info_thread EXCEPTION: " + str(e))
+
+
+# Updates price info every 5 minutes
+def update_price_info_thread():
+    try:
+        # Get Price Info
+        update_price_info()
+    except Exception as e:
+        print("CAUGHT update_price_info_thread EXCEPTION: " + str(e))
 
 
 # Check every 3 hours

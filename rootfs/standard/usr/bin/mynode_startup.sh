@@ -136,6 +136,10 @@ fi
 rm -f /tmp/repairing_drive
 set -e
 
+# Custom startup hook - pre-startup
+if [ -f /usr/local/bin/mynode_hook_pre_startup.sh ]; then
+    /bin/bash /usr/local/bin/mynode_hook_pre_startup.sh || true
+fi
 
 # Mount HDD (normal boot, format if necessary)
 while [ ! -f /mnt/hdd/.mynode ]
@@ -149,6 +153,11 @@ done
 
 # Check for docker reset
 if [ -f /home/bitcoin/reset_docker ]; then
+    # Show status
+    echo "docker_reset" > $MYNODE_STATUS_FILE
+    chmod 777 $MYNODE_STATUS_FILE
+
+    # Delete docker data
     rm -rf /mnt/hdd/mynode/docker
     rm /home/bitcoin/reset_docker
     sync
@@ -370,36 +379,7 @@ if [ $IS_RASPI4 -eq 1 ]; then
 fi
 
 # RTL config
-sudo -u bitcoin mkdir -p /opt/mynode/RTL
-sudo -u bitcoin mkdir -p /mnt/hdd/mynode/rtl
-chown -R bitcoin:bitcoin /mnt/hdd/mynode/rtl
-chown -R bitcoin:bitcoin /mnt/hdd/mynode/rtl_backup
-# If local settings file is not a symlink, delete and setup symlink to HDD
-if [ ! -L /opt/mynode/RTL/RTL-Config.json ]; then
-    rm -f /opt/mynode/RTL/RTL-Config.json
-    sudo -u bitcoin ln -s /mnt/hdd/mynode/rtl/RTL-Config.json /opt/mynode/RTL/RTL-Config.json
-fi
-# If config file on HDD does not exist, create it
-if [ ! -f /mnt/hdd/mynode/rtl/RTL-Config.json ]; then
-    cp -f /usr/share/mynode/RTL-Config.json /mnt/hdd/mynode/rtl/RTL-Config.json
-fi
-# Force update of RTL config file (increment to force new update)
-RTL_CONFIG_UPDATE_NUM=1
-if [ ! -f /mnt/hdd/mynode/rtl/update_settings_$RTL_CONFIG_UPDATE_NUM ]; then
-    cp -f /usr/share/mynode/RTL-Config.json /mnt/hdd/mynode/rtl/RTL-Config.json
-    touch /mnt/hdd/mynode/rtl/update_settings_$RTL_CONFIG_UPDATE_NUM
-fi
-# Update RTL config file to use mynode pw
-if [ -f /home/bitcoin/.mynode/.hashedpw ]; then
-    HASH=$(cat /home/bitcoin/.mynode/.hashedpw)
-    sed -i "s/\"multiPassHashed\":.*/\"multiPassHashed\": \"$HASH\",/g" /mnt/hdd/mynode/rtl/RTL-Config.json
-fi
-# Update for testnet
-if [ -f /mnt/hdd/mynode/settings/.testnet_enabled ]; then
-    sed -i "s/mainnet/testnet/g" /mnt/hdd/mynode/rtl/RTL-Config.json || true
-else
-    sed -i "s/testnet/mainnet/g" /mnt/hdd/mynode/rtl/RTL-Config.json || true
-fi
+# Moved to mynode_pre_rtl.sh
 
 # BTCPay Server Setup
 mkdir -p /opt/mynode/btcpayserver
@@ -411,11 +391,6 @@ if [ -f /opt/mynode/btcpayserver/.env ]; then
     sed -i "s/BTCPAY_VERSION=.*/BTCPAY_VERSION=$BTCPAYSERVER_VERSION/g" /opt/mynode/btcpayserver/.env || true
     sed -i "s/NBXPLORER_VERSION.*/NBXPLORER_VERSION=$BTCPAYSERVER_NBXPLORER_VERSION/g" /opt/mynode/btcpayserver/.env || true
 fi
-
-# BTC RPC Explorer Config
-mkdir -p /opt/mynode/btc-rpc-explorer
-cp /usr/share/mynode/btcrpcexplorer_env /opt/mynode/btc-rpc-explorer/.env
-chown -R bitcoin:bitcoin /opt/mynode/btc-rpc-explorer
 
 # LNBits Config
 if [ -d /opt/mynode/lnbits ]; then
@@ -790,9 +765,10 @@ if [ -f /usr/share/joininbox/menu.update.sh ] && [ -f /home/joinmarket/menu.upda
 fi
 chown bitcoin:bitcoin /mnt/hdd/mynode/settings/.lndpw || true
 
-# Check for new versions
-torify wget $LATEST_VERSION_URL --timeout=30 -O /usr/share/mynode/latest_version || true
-torify wget $LATEST_BETA_VERSION_URL --timeout=30 -O /usr/share/mynode/latest_beta_version || true
+# Custom startup hook - post-startup
+if [ -f /usr/local/bin/mynode_hook_post_startup.sh ]; then
+    /bin/bash /usr/local/bin/mynode_hook_post_startup.sh || true
+fi
 
 # Update current state
 if [ -f $QUICKSYNC_DIR/.quicksync_complete ]; then

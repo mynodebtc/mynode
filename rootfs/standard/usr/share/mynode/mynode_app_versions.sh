@@ -4,31 +4,31 @@ BTC_VERSION="22.0"
 BTC_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version
 BTC_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version_latest
 
-LND_VERSION="v0.13.4-beta"
+LND_VERSION="v0.14.1-beta"
 LND_VERSION_FILE=/home/bitcoin/.mynode/lnd_version
 LND_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnd_version_latest
 LND_UPGRADE_MANIFEST_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
-LND_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-roasbeef-$LND_VERSION.sig
+LND_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-guggero-$LND_VERSION.sig
 
-LOOP_VERSION="v0.15.0-beta"
+LOOP_VERSION="v0.16.0-beta"
 LOOP_VERSION_FILE=/home/bitcoin/.mynode/loop_version
 LOOP_LATEST_VERSION_FILE=/home/bitcoin/.mynode/loop_version_latest
 LOOP_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt
 LOOP_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt.sig
 
-POOL_VERSION="v0.5.1-alpha"
+POOL_VERSION="v0.5.3-alpha"
 POOL_VERSION_FILE=/home/bitcoin/.mynode/pool_version
 POOL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/pool_version_latest
 POOL_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/manifest-$POOL_VERSION.txt
-POOL_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/manifest-$POOL_VERSION.txt.sig
+POOL_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/manifest-$POOL_VERSION.sig
 
-LIT_VERSION="v0.5.2-alpha"
+LIT_VERSION="v0.6.1-alpha"
 LIT_VERSION_FILE=/home/bitcoin/.mynode/lit_version
 LIT_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lit_version_latest
 LIT_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-$LIT_VERSION.txt
-LIT_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-$LIT_VERSION.txt.sig
+LIT_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-$LIT_VERSION.sig
 
-ELECTRS_VERSION="v0.9.1"
+ELECTRS_VERSION="v0.9.3"
 ELECTRS_VERSION_FILE=/home/bitcoin/.mynode/electrs_version
 ELECTRS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/electrs_version_latest
 
@@ -40,7 +40,7 @@ LNDHUB_VERSION="v1.4.1"
 LNDHUB_VERSION_FILE=/home/bitcoin/.mynode/lndhub_version
 LNDHUB_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lndhub_version_latest
 
-CARAVAN_VERSION="v0.3.11"
+CARAVAN_VERSION="v0.3.13"
 CARAVAN_SETTINGS_UPDATE_FILE=/home/bitcoin/.mynode/caravan_settings_1
 CARAVAN_VERSION_FILE=/home/bitcoin/.mynode/caravan_version
 CARAVAN_LATEST_VERSION_FILE=/home/bitcoin/.mynode/caravan_version_latest
@@ -53,9 +53,13 @@ JOINMARKET_VERSION="v0.8.2"
 JOINMARKET_VERSION_FILE=/home/bitcoin/.mynode/joinmarket_version
 JOINMARKET_LATEST_VERSION_FILE=/home/bitcoin/.mynode/joinmarket_version_latest
 
-JOININBOX_VERSION="v0.6.2"
+JOININBOX_VERSION="v0.6.4"
 JOININBOX_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version
 JOININBOX_LATEST_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version_latest
+
+SECP256K1_VERSION=486205aa68b7f1d4291f78fa20bc4485fd843e1c
+SECP256K1_VERSION_FILE=/home/bitcoin/.mynode/secp256k1_version
+SECP256K1_LATEST_VERSION_FILE=/home/bitcoin/.mynode/secp256k1_version_latest
 
 WHIRLPOOL_VERSION="0.10.11"
 WHIRLPOOL_UPLOAD_FILE_ID="21d25ed02cceb91f4aa95b6389b9da9c"
@@ -72,12 +76,12 @@ RTL_VERSION="v0.11.2"
 RTL_VERSION_FILE=/home/bitcoin/.mynode/rtl_version
 RTL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/rtl_version_latest
 
-BTCPAYSERVER_VERSION="1.3.5"
+BTCPAYSERVER_VERSION="1.3.6"
 BTCPAYSERVER_NBXPLORER_VERSION="2.2.18"
 BTCPAYSERVER_VERSION_FILE=/home/bitcoin/.mynode/btcpayserver_version
 BTCPAYSERVER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/btcpayserver_version_latest
 
-BTCRPCEXPLORER_VERSION="v3.2.0"
+BTCRPCEXPLORER_VERSION="v3.3.0"
 BTCRPCEXPLORER_VERSION_FILE=/home/bitcoin/.mynode/btcrpcexplorer_version
 BTCRPCEXPLORER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/btcrpcexplorer_version_latest
 
@@ -85,15 +89,15 @@ LNBITS_VERSION=bcecf6d43111199302d9f7152ecb7e7a4735662a         # Github hash to
 LNBITS_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version
 LNBITS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version_latest
 
-SPECTER_VERSION="1.7.1"
+SPECTER_VERSION="1.7.2"
 SPECTER_VERSION_FILE=/home/bitcoin/.mynode/specter_version
 SPECTER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/specter_version_latest
 
-THUNDERHUB_VERSION="v0.12.30"
+THUNDERHUB_VERSION="v0.12.31"
 THUNDERHUB_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version
 THUNDERHUB_LATEST_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version_latest
 
-LNDMANAGE_VERSION="0.13.0"
+LNDMANAGE_VERSION="0.14.0"
 LNDMANAGE_VERSION_FILE=/home/bitcoin/.mynode/lndmanage_version
 LNDMANAGE_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lndmanage_version_latest
 
@@ -105,21 +109,25 @@ CKBUNKER_VERSION="v0.9"
 CKBUNKER_VERSION_FILE=/home/bitcoin/.mynode/ckbunker_version
 CKBUNKER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/ckbunker_version_latest
 
-BOS_VERSION="11.12.0"
+BOS_VERSION="11.16.0"
 BOS_VERSION_FILE=/home/bitcoin/.mynode/bos_version
 BOS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bos_version_latest
 
-SPHINXRELAY_VERSION="v2.2.1"
+SPHINXRELAY_VERSION="v2.2.3"
 SPHINXRELAY_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version
 SPHINXRELAY_LATEST_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version_latest
 
-PYBLOCK_VERSION="v0.9.8.9"
+PYBLOCK_VERSION="v1.1.8.6"
 PYBLOCK_VERSION_FILE=/home/bitcoin/.mynode/pyblock_version
 PYBLOCK_LATEST_VERSION_FILE=/home/bitcoin/.mynode/pyblock_version_latest
 
 WARDEN_VERSION="0.91"
 WARDEN_VERSION_FILE=/home/bitcoin/.mynode/warden_version
 WARDEN_LATEST_VERSION_FILE=/home/bitcoin/.mynode/warden_version_latest
+
+WARDEN_TERMINAL_VERSION=c327e84fb95fa6e29bb24d641e6215b3942d8da4
+WARDEN_TERMINAL_VERSION_FILE=/home/bitcoin/.mynode/wardenterminal_version
+WARDEN_TERMINAL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/wardenterminal_version_latest
 
 NETDATA_VERSION="v1.19.0"
 NETDATA_VERSION_FILE=/mnt/hdd/mynode/settings/netdata_version
@@ -129,8 +137,15 @@ WEBSSH2_VERSION="v0.2.10-0"
 WEBSSH2_VERSION_FILE=/mnt/hdd/mynode/settings/webssh2_version
 WEBSSH2_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/webssh2_version_latest
 
+# Dependency versions
+PYTHON_VERSION="3.8.9"
+
+PYTHON_ARM32_GRPCIO_VERSION="1.40.0"
+
 NODE_JS_VERSION="14.x"
 NODE_NPM_VERSION="^8.1.0"
+
+RUST_VERSION="1.56.1"
 
 # Check for override files
 if [ -f /usr/share/mynode/mynode_app_versions_custom.sh ]; then

@@ -31,6 +31,7 @@ except:
 local_ip = "unknown"
 cached_data = {}
 warning_data = {}
+ui_settings = None
 
 #==================================
 # Manage Device
@@ -347,6 +348,11 @@ def has_changed_password():
         return False
     return False
 
+def hide_password_warning():
+    if os.path.isfile("/mnt/hdd/mynode/settings/hide_password_warning"):
+        return True
+    return False
+
 def is_mount_read_only(mnt):
     with open('/proc/mounts') as f:
         for line in f:
@@ -373,6 +379,7 @@ STATE_DRIVE_FORMATTING =      "drive_formatting"
 STATE_DRIVE_MOUNTED =         "drive_mounted"
 STATE_DRIVE_CLONE =           "drive_clone"
 STATE_DRIVE_FULL =            "drive_full"
+STATE_DOCKER_RESET =          "docker_reset"
 STATE_GEN_DHPARAM =           "gen_dhparam"
 STATE_QUICKSYNC_DOWNLOAD =    "quicksync_download"
 STATE_QUICKSYNC_COPY =        "quicksync_copy"
@@ -457,76 +464,82 @@ def get_drive_info(drive):
 #==================================
 # UI Functions
 #==================================
+def init_ui_setting_defaults(ui_settings):
+    if "darkmode" not in ui_settings:
+        ui_settings["darkmode"] = False
+    if "price_ticker" not in ui_settings:
+        ui_settings["price_ticker"] = False
+    if "pinned_lightning_details" not in ui_settings:
+        ui_settings["pinned_lightning_details"] = False
+    if "background" not in ui_settings:
+        ui_settings["background"] = "none"
+    return ui_settings
+
 def read_ui_settings():
+    global ui_settings
+    if ui_settings != None:
+        return ui_settings
+    
     ui_hdd_file = '/mnt/hdd/mynode/settings/ui.json'
     ui_mynode_file = '/home/bitcoin/.mynode/ui.json'
 
     # read ui.json from HDD
-    if os.path.isfile(ui_hdd_file):
-        with open(ui_hdd_file, 'r') as fp:
-            ui_settings = json.load(fp)
-    # read ui.json from mynode
-    elif os.path.isfile(ui_mynode_file):
-        with open(ui_mynode_file, 'r') as fp:
-            ui_settings = json.load(fp)
-    # if ui.json is not found anywhere, use default settings
-    else:
-        ui_settings = {'darkmode': False}
+    try:
+        if os.path.isfile(ui_hdd_file):
+            with open(ui_hdd_file, 'r') as fp:
+                ui_settings = json.load(fp)
+        # read ui.json from mynode
+        elif os.path.isfile(ui_mynode_file):
+            with open(ui_mynode_file, 'r') as fp:
+                ui_settings = json.load(fp)
+    except Exception as e:
+        # Error reading ui settings
+        pass
+
+    # If no files were read, init variable and mark we need to write files
+    need_file_write = False
+    if ui_settings == None:
+        ui_settings = {}
+        need_file_write = True
 
     # Set reseller
     ui_settings["reseller"] = is_device_from_reseller()
 
+    # Load defaults
+    ui_settings = init_ui_setting_defaults(ui_settings)
+
+    if need_file_write:
+        write_ui_settings(ui_settings)
+
     return ui_settings
 
-def write_ui_settings(ui_settings):
+def write_ui_settings(ui_settings_new):
+    global ui_settings
+    ui_settings = ui_settings_new
+
     ui_hdd_file = '/mnt/hdd/mynode/settings/ui.json'
     ui_mynode_file = '/home/bitcoin/.mynode/ui.json'
-
     try:
         with open(ui_hdd_file, 'w') as fp:
+            json.dump(ui_settings, fp)
+
+        with open(ui_mynode_file, 'w') as fp:
             json.dump(ui_settings, fp)
     except:
         pass
 
-    with open(ui_mynode_file, 'w') as fp:
-        json.dump(ui_settings, fp)
-
-def is_darkmode_enabled():
+def get_ui_setting(name):
     ui_settings = read_ui_settings()
-    return ui_settings['darkmode']
+    return ui_settings[name]
 
-def disable_darkmode():
+def set_ui_setting(name, value):
     ui_settings = read_ui_settings()
-    ui_settings['darkmode'] = False
+    ui_settings[name] = value
     write_ui_settings(ui_settings)
 
-def enable_darkmode():
-    ui_settings = read_ui_settings()
-    ui_settings['darkmode'] = True
-    write_ui_settings(ui_settings)
+def toggle_ui_setting(name):
+    set_ui_setting(name, not get_ui_setting(name))
 
-def toggle_darkmode():
-    if is_darkmode_enabled():
-        disable_darkmode()
-    else:
-        enable_darkmode()
-
-def toggle_pinned_lightning_details():
-    ui_settings = read_ui_settings()
-    if "pinned_lightning_details" not in ui_settings or ui_settings["pinned_lightning_details"] == False:
-        ui_settings["pinned_lightning_details"] = True
-    else:
-        ui_settings["pinned_lightning_details"] = False
-    write_ui_settings(ui_settings)
-
-def set_background(background):
-    ui_settings = read_ui_settings()
-    ui_settings['background'] = background
-    write_ui_settings(ui_settings)
-
-def get_background():
-    ui_settings = read_ui_settings()
-    return ui_settings['background']
 
 # def get_background_choices():
 #     choices = []
@@ -583,7 +596,7 @@ def set_flask_session_timeout(days, hours):
 
 
 #==================================
-# Uploader Functions
+# Web Server Functions
 #==================================
 def restart_flask():
     os.system("systemctl restart www")
@@ -793,6 +806,12 @@ def reset_docker():
 
 def get_docker_running_containers():
     containers = []
+
+    # If docker not running, return empty
+    if get_service_status_code("docker") != 0:
+        return containers
+
+    # TODO: switch to subprocess after switch to python3 for web ui (timeout doesn't work w/ subprocess32, causes issues)
     try:
         text = subprocess32.check_output("docker ps --format '{{.Names}}'", shell=True, timeout=3).decode("utf8")
         containers = text.splitlines()
@@ -885,6 +904,12 @@ def reset_electrs():
     delete_electrs_data()
     restart_electrs()
 
+#==================================
+# RTL Functions
+#==================================
+def reset_rtl_config():
+    os.system("rm -rf /mnt/hdd/mynode/rtl/RTL-Config.json")
+    os.system("systemctl restart rtl")
 
 #==================================
 # Sphinx Relay Server Functions
@@ -925,6 +950,27 @@ def reset_specter_config():
     os.system("systemctl restart specter")
 
 #==================================
+# BTC RPC Explorer Functions
+#==================================
+def is_btcrpcexplorer_token_enabled():
+    if os.path.isfile("/mnt/hdd/mynode/settings/.btcrpcexplorer_disable_token"):
+        return False
+    return True
+
+def enable_btcrpcexplorer_token():
+    os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpcexplorer_disable_token")
+    os.system("sync")
+    if is_service_enabled("btcrpcexplorer"):
+        restart_service("btcrpcexplorer")
+
+
+def disable_btcrpcexplorer_token():
+    os.system("touch /mnt/hdd/mynode/settings/.btcrpcexplorer_disable_token")
+    os.system("sync")
+    if is_service_enabled("btcrpcexplorer"):
+        restart_service("btcrpcexplorer")
+
+#==================================
 # Tor Functions
 #==================================
 def reset_tor():
@@ -957,6 +1003,7 @@ def disable_aptget_tor():
     os.system("sync")
 
 def get_onion_url_ssh():
+    if is_community_edition(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode_ssh/hostname"):
             with open("/var/lib/tor/mynode_ssh/hostname") as f:
@@ -966,6 +1013,7 @@ def get_onion_url_ssh():
     return "error"
 
 def get_onion_url_general():
+    if is_community_edition(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode/hostname"):
             with open("/var/lib/tor/mynode/hostname") as f:
@@ -975,6 +1023,7 @@ def get_onion_url_general():
     return "error"
 
 def get_onion_url_btc():
+    if is_community_edition(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode_btc/hostname"):
             with open("/var/lib/tor/mynode_btc/hostname") as f:
@@ -984,6 +1033,7 @@ def get_onion_url_btc():
     return "error"
 
 def get_onion_url_lnd():
+    if is_community_edition(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode_lnd/hostname"):
             with open("/var/lib/tor/mynode_lnd/hostname") as f:
@@ -993,6 +1043,7 @@ def get_onion_url_lnd():
     return "error"
 
 def get_onion_url_electrs():
+    if is_community_edition(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode_electrs/hostname"):
             with open("/var/lib/tor/mynode_electrs/hostname") as f:
@@ -1002,6 +1053,7 @@ def get_onion_url_electrs():
     return "error"
 
 def get_onion_url_lndhub():
+    if is_community_edition(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode_lndhub/hostname"):
             with open("/var/lib/tor/mynode_lndhub/hostname") as f:
@@ -1011,6 +1063,7 @@ def get_onion_url_lndhub():
     return "error"
 
 def get_onion_url_lnbits():
+    if is_community_edition(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode_lnbits/hostname"):
             with open("/var/lib/tor/mynode_lnbits/hostname") as f:
@@ -1020,6 +1073,7 @@ def get_onion_url_lnbits():
     return "error"
 
 def get_onion_url_btcpay():
+    if is_community_edition(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode_btcpay/hostname"):
             with open("/var/lib/tor/mynode_btcpay/hostname") as f:
@@ -1029,6 +1083,7 @@ def get_onion_url_btcpay():
     return "error"
 
 def get_onion_url_sphinxrelay():
+    if is_community_edition(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode_sphinx/hostname"):
             with open("/var/lib/tor/mynode_sphinx/hostname") as f:
@@ -1089,6 +1144,12 @@ def get_sso_token(short_name):
     else:
         token = "UNKOWN_APP"
     return to_string(token)
+
+def get_sso_token_enabled(short_name):
+    enabled = False
+    if short_name == "btcrpcexplorer":
+        enabled = is_btcrpcexplorer_token_enabled()
+    return enabled
 
 
 #==================================

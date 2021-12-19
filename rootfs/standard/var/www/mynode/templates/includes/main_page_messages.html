@@ -1,30 +1,38 @@
 {% if fsck_error %}
 <div class="main_page_error_block">
-    <center>
-    <p>There may be an error with the filesystem on your drive.</p>
-    <p>{{ fsck_results }}</p>
-    <a href="/clear-fsck-error" class="ui-button ui-widget ui-corner-all settings_button_small">OK</a>
-    </center>
+    <p style="text-align: center;"><b>Warning!</b></p>
+    <p style="text-align: center;">There may be an error with the filesystem on your drive.</p>
+    <p style="text-align: center;">
+        {{ fsck_results }}
+        <br/><br/><br/>
+        <a href="/clear-fsck-error" class="ui-button ui-widget ui-corner-all settings_button_small">OK</a>
+    </p>
 </div>
 {% endif %}
 
 {% if sd_rw_error %}
 <div class="main_page_error_block">
-    <center>
-    <p>There may be an error with the filesystem on your SD card. It was mounted as read-only and has been updated to read/write.</p>
-    </center>
+    <p style="text-align: center;">There may be an error with the filesystem on your SD card. It was mounted as read-only and has been updated to read/write.</p>
 </div>
 {% endif %}
 
 {% if low_drive_space_error %}
 <div class="main_page_error_block">
-    <center>
-    <p>Your drive is {{drive_usage}} full and free space is running very low. You may need to upgrade to a larger drive.</p>
+    <p style="text-align: center;"><b>Warning!</b></p>
+    <p style="text-align: center;">Your drive is {{data_drive_usage}} full and free space is running very low. You may need to upgrade to a larger drive.</p>
     {% if not is_quicksync_disabled %}
-    <p>QuickSync is enabled! Disable <a href="/settings#quicksync">QuickSync</a> to save significant disk space.</p>
+    <p style="text-align: center;">QuickSync is enabled! Disable <a href="/settings#quicksync">QuickSync</a> to save significant disk space.</p>
     {% endif %}
-    <p>To migrate to a larger drive, try the <a href="/settings#clone_tool">Clone Tool</a>.</p>
-    </center>
+    <p style="text-align: center;">To migrate to a larger drive, try the <a href="/settings#clone_tool">Clone Tool</a>.</p>
+</div>
+{% endif %}
+
+{% if low_os_drive_space_error %}
+<div class="main_page_error_block">
+    <p style="text-align: center;"><b>Warning!</b></p>
+    <p style="text-align: center;">Your SD card is {{os_drive_usage}} full and free space is running low.</p>
+    <p style="text-align: center;">You can flash the latest image for your device onto a larger SD card. Instructions
+        and download links are available <a href="https://mynodebtc.com/download" target="_blank">here</a>.</p>
 </div>
 {% endif %}
 
@@ -40,9 +48,11 @@
 -->
 {% endif %}
 
-{% if not has_changed_password %}
+{% if not has_changed_password and not hide_password_warning %}
 <div class="main_page_warning_block">
-    <p style="text-align: center;"><b>Warning!</b><br/>You appear to be using the default password! You should change it to something else on the <a href="/settings">settings</a> page.</p>
+    <p style="text-align: center;"><b>Warning!</b></p>
+    <p style="text-align: center;">You appear to be using the default password! You should change it to
+         something else on the <a href="/settings">settings</a> page.</p>
 </div>
 {% endif %}
 

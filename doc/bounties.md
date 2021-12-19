@@ -60,24 +60,6 @@ https://github.com/lightningnetwork/lnd/blob/master/docs/watchtower.md
 
 https://github.com/openoms/lightning-node-management/blob/master/advanced-tools/watchtower.md
 
-## Add WARden Terminal Application
-
-Known active efforts: none
-
-Payout: 250k sats
-
-Warden Terminal is a very interesting application that users would like to see available on myNode.
-
-Acceptance Criteria:
-- Warden Terminal application installed similar to existing applications
-- Warden Terminal icon visible on the home screen
-- Warden Terminal page in the UI that explains how to open the application in the Linux Terminal (similar to JoininBox)
-- Verify install, re-install, uninstall options work on application page for Warden Terminal
-- New `mynode-warden-terminal` command available in Linux Terminal to easily open application (similar to `mynode-joininbox`)
-
-Helpful links:
-
-https://github.com/pxsocs/warden_terminal
 
 # Claimed Bounties
 

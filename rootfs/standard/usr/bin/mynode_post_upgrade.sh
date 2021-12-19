@@ -115,7 +115,7 @@ if ! skip_base_upgrades ; then
     $TORIFY apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
     $TORIFY apt-get -y install libudev-dev libusb-1.0-0-dev python3-venv gunicorn sqlite3 libsqlite3-dev
     $TORIFY apt-get -y install torsocks python3-requests libsystemd-dev libjpeg-dev zlib1g-dev psmisc
-    $TORIFY apt-get -y install hexyl libbz2-dev liblzma-dev netcat-openbsd hdparm iotop
+    $TORIFY apt-get -y install hexyl libbz2-dev liblzma-dev netcat-openbsd hdparm iotop nut obfs4proxy
 
     # Install device specific packages
     if [ $IS_X86 = 1 ]; then
@@ -139,8 +139,32 @@ if ! skip_base_upgrades ; then
     pip2 install tzupdate virtualenv pysocks redis qrcode image subprocess32 --no-cache-dir
 
 
-    # Update Python3 to 3.7.X
-    PYTHON_VERSION=3.7.9
+    # Install Rust (only needed on 32-bit RPi for building some python wheels)
+    if [ ! -f $HOME/.cargo/env ]; then
+        wget https://sh.rustup.rs -O /tmp/setup_rust.sh
+        /bin/bash /tmp/setup_rust.sh -y --default-toolchain none
+        sync
+    fi
+    if [ -f $HOME/.cargo/env ]; then
+        # Remove old toolchains
+        source $HOME/.cargo/env
+        TOOLCHAINS=$(rustup toolchain list)
+        for toolchain in $TOOLCHAINS; do
+            if [[ "$toolchain" == *"linux"* ]] && [[ "$toolchain" != *"${RUST_VERSION}"* ]]; then
+                rustup toolchain remove $toolchain || true
+            fi
+        done
+        # Manage rust toolchains
+        if [ $IS_RASPI = 1 ] && [ $IS_RASPI4_ARM64 = 0 ]; then
+            # Install and use desired version
+            rustup install $RUST_VERSION
+            rustup default $RUST_VERSION
+            rustc --version
+        fi
+    fi
+
+
+    # Update Python3
     CURRENT_PYTHON3_VERSION=$(python3 --version)
     if [[ "$CURRENT_PYTHON3_VERSION" != *"Python ${PYTHON_VERSION}"* ]]; then
         mkdir -p /opt/download
@@ -150,10 +174,19 @@ if ! skip_base_upgrades ; then
         wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz -O python.tar.xz
         tar xf python.tar.xz
 
+        # Build and install python
         cd Python-*
         ./configure
         make -j4
         make install
+
+        # Mark apps using python as needing re-install
+        rm -f /home/bitcoin/.mynode/specter_version
+        rm -f /home/bitcoin/.mynode/lnbits_version
+        rm -f /home/bitcoin/.mynode/pyblock_version
+        rm -f /home/bitcoin/.mynode/ckbunker_version
+        rm -f /home/bitcoin/.mynode/joininbox_version_latest
+
         cd ~
     else
         echo "Python up to date"
@@ -162,9 +195,14 @@ if ! skip_base_upgrades ; then
 
     # Install any pip3 software
     pip3 install --upgrade pip setuptools wheel
-    pip3 install gnureadline docker-compose pipenv bcrypt pysocks redis systemd --no-cache-dir
+    pip3 install lnd-grpc gnureadline docker-compose pipenv bcrypt pysocks redis --no-cache-dir
     pip3 install flask pam python-bitcoinrpc prometheus_client psutil transmissionrpc --no-cache-dir
     pip3 install qrcode image pyudev --no-cache-dir
+
+    # For RP4 32-bit, install specific grpcio version known to build (uses proper glibc for wheel)
+    if [ $IS_32_BIT = 1 ]; then
+        pip3 install grpcio==$PYTHON_ARM32_GRPCIO_VERSION grpcio-tools==$PYTHON_ARM32_GRPCIO_VERSION
+    fi
 
     # Update Node
     if [ -f /etc/apt/sources.list.d/nodesource.list ]; then
@@ -217,9 +255,10 @@ if ! skip_base_upgrades ; then
 fi
 
 # Install LNDManage
-pip3 install lndmanage==$LNDMANAGE_VERSION --no-cache-dir
-echo $LNDMANAGE_VERSION > $LNDMANAGE_VERSION_FILE
-
+if should_install_app "lndmanage" ; then
+    pip3 install lndmanage==$LNDMANAGE_VERSION --no-cache-dir
+    echo $LNDMANAGE_VERSION > $LNDMANAGE_VERSION_FILE
+fi
 
 # Upgrade BTC
 echo "Upgrading BTC..."
@@ -240,6 +279,7 @@ fi
 BTC_UPGRADE_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/bitcoin-$BTC_VERSION-$ARCH.tar.gz
 BTC_UPGRADE_SHA256SUM_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/SHA256SUMS
 BTC_UPGRADE_SHA256SUM_ASC_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/SHA256SUMS.asc
+BTC_CLI_COMPLETION_URL=https://raw.githubusercontent.com/bitcoin/bitcoin/v$BTC_VERSION/contrib/bitcoin-cli.bash-completion
 CURRENT=""
 if [ -f $BTC_VERSION_FILE ]; then
     CURRENT=$(cat $BTC_VERSION_FILE)
@@ -265,6 +305,10 @@ if [ "$CURRENT" != "$BTC_VERSION" ]; then
 
             # Mark current version
             echo $BTC_VERSION > $BTC_VERSION_FILE
+
+            # Install bash-completion for bitcoin-cli
+            wget $BTC_CLI_COMPLETION_URL -O bitcoin-cli.bash-completion
+            sudo cp bitcoin-cli.bash-completion /etc/bash_completion.d/bitcoin-cli
         else
             echo "ERROR UPGRADING BITCOIN - GPG FAILED"
         fi
@@ -283,6 +327,7 @@ if [ $IS_RASPI4_ARM64 = 1 ]; then
     LND_ARCH="lnd-linux-arm64"
 fi
 LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/$LND_ARCH-$LND_VERSION.tar.gz
+LNCLI_COMPLETION_URL=https://raw.githubusercontent.com/lightningnetwork/lnd/$LND_VERSION/contrib/lncli.bash-completion
 CURRENT=""
 if [ -f $LND_VERSION_FILE ]; then
     CURRENT=$(cat $LND_VERSION_FILE)
@@ -309,6 +354,10 @@ if [ "$CURRENT" != "$LND_VERSION" ]; then
     else
         echo "ERROR UPGRADING LND - GPG FAILED"
     fi
+
+    # Download bash-completion file for lncli
+    wget $LNCLI_COMPLETION_URL
+    sudo cp lncli.bash-completion /etc/bash_completion.d/lncli
 fi
 
 # Upgrade Loop
@@ -509,17 +558,24 @@ echo $ELECTRS_VERSION > $ELECTRS_VERSION_FILE
 
 # Install recent version of secp256k1
 echo "Installing secp256k1..."
-if [ ! -f /usr/include/secp256k1_ecdh.h ]; then
+SECP256K1_UPGRADE_URL=https://github.com/bitcoin-core/secp256k1/archive/$SECP256K1_VERSION.tar.gz
+CURRENT=""
+if [ -f $SECP256K1_VERSION_FILE ]; then
+    CURRENT=$(cat $SECP256K1_VERSION_FILE)
+fi
+if [ "$CURRENT" != "$SECP256K1_VERSION" ]; then
     rm -rf /tmp/secp256k1
     cd /tmp/
     git clone https://github.com/bitcoin-core/secp256k1.git
     cd secp256k1
 
     ./autogen.sh
-    ./configure
+    ./configure --enable-module-recovery --disable-jni --enable-experimental --enable-module-ecdh --enable-benchmark=no
     make
     make install
     cp -f include/* /usr/include/
+
+    echo $SECP256K1_VERSION > $SECP256K1_VERSION_FILE
 fi
 
 # Upgrade JoinMarket (legacy)
@@ -586,8 +642,14 @@ if should_install_app "joininbox" ; then
             chmod -R +x ./joininbox/
             sudo -u joinmarket cp -rf ./joininbox/scripts/* .
 
+            # Use Python3.7 on RP4 32-bit
+            JM_ENV_VARS=""
+            if [ $IS_32_BIT = 1 ]; then
+                JM_ENV_VARS="export JM_PYTHON=python3.7; "
+            fi
+
             # Install
-            sudo -u joinmarket bash -c "cd /home/joinmarket/; ./install.joinmarket.sh install" || true
+            sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket.sh install" || true
 
             echo $JOININBOX_VERSION > $JOININBOX_VERSION_FILE
         fi
@@ -877,10 +939,9 @@ if should_install_app "pyblock" ; then
         deactivate
 
         # Copy default settings files
-        cp -f /usr/share/pyblock/bclock.conf bclock.conf
-        cp -f /usr/share/pyblock/blndconnect.conf blndconnect.conf
-        chown bitcoin:bitcoin bclock.conf
-        chown bitcoin:bitcoin blndconnect.conf
+        sudo -u bitcoin mkdir -p config
+        cp -f /usr/share/pyblock/* config/
+        chown -R bitcoin:bitcoin config
 
         echo $PYBLOCK_VERSION > $PYBLOCK_VERSION_FILE
     fi
@@ -913,6 +974,36 @@ if should_install_app "warden" ; then
         deactivate
 
         echo $WARDEN_VERSION > $WARDEN_VERSION_FILE
+    fi
+fi
+
+
+# Upgrade WARden Terminal
+if should_install_app "wardenterminal" ; then
+    WARDEN_TERMINAL_UPGRADE_URL=https://github.com/pxsocs/warden_terminal/archive/$WARDEN_TERMINAL_VERSION.tar.gz
+    CURRENT=""
+    if [ -f $WARDEN_TERMINAL_VERSION_FILE ]; then
+        CURRENT=$(cat $WARDEN_TERMINAL_VERSION_FILE)
+    fi
+    if [ "$CURRENT" != "$WARDEN_TERMINAL_VERSION" ]; then
+        cd /opt/mynode
+        rm -rf wardenterminal
+
+        sudo -u bitcoin wget $WARDEN_TERMINAL_UPGRADE_URL -O wardenterminal.tar.gz
+        sudo -u bitcoin tar -xvf wardenterminal.tar.gz
+        sudo -u bitcoin rm wardenterminal.tar.gz
+        sudo -u bitcoin mv warden_terminal-* wardenterminal
+        cd wardenterminal
+
+        # Make venv
+        if [ ! -d env ]; then
+            sudo -u bitcoin python3 -m venv env
+        fi
+        source env/bin/activate
+        pip3 install -r requirements.txt
+        deactivate
+
+        echo $WARDEN_TERMINAL_VERSION > $WARDEN_TERMINAL_VERSION_FILE
     fi
 fi
 
@@ -970,6 +1061,8 @@ if [ -f /etc/apt/trusted.gpg.d/microsoft.gpg ]; then
     rm /etc/apt/trusted.gpg.d/microsoft.gpg
 fi
 
+rm -rf /opt/download
+mkdir -p /opt/download
 
 # Clean apt-cache
 apt-get clean

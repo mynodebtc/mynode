@@ -1,5 +1,5 @@
 from config import *
-from flask import Blueprint, render_template, session, abort, Markup, request, redirect, send_from_directory, url_for, flash, current_app
+from flask import Blueprint, render_template, session, abort, Markup, request, redirect, send_from_directory, url_for, flash
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from bitcoin import is_bitcoin_synced
 from bitcoin_info import using_bitcoin_custom_config
@@ -9,7 +9,7 @@ from threading import Timer
 from thread_functions import *
 from user_management import check_logged_in
 from lightning_info import *
-from thread_functions import *
+from price_info import *
 from utilities import *
 from application_info import *
 import pam
@@ -88,6 +88,7 @@ def page_settings():
         "is_uploader_device": is_uploader(),
         "download_rate": download_rate,
         "upload_rate": upload_rate,
+        "btcrpcexplorer_token_enabled": is_btcrpcexplorer_token_enabled(),
         "is_btc_lnd_tor_enabled": is_btc_lnd_tor_enabled(),
         "is_aptget_tor_enabled": is_aptget_tor_enabled(),
         "skip_fsck": skip_fsck(),
@@ -97,7 +98,8 @@ def page_settings():
         "throttled_data": get_throttled_data(),
         "oom_error": has_oom_error(),
         "oom_info": get_oom_error_info(),
-        "drive_usage": get_drive_usage(),
+        "data_drive_usage": get_data_drive_usage(),
+        "os_drive_usage": get_os_drive_usage(),
         "cpu_usage": get_cpu_usage(),
         "ram_usage": get_ram_usage(),
         "device_temp": get_device_temp(),
@@ -280,7 +282,8 @@ def page_status():
         "throttled_data": get_throttled_data(),
         "oom_error": has_oom_error(),
         "oom_info": get_oom_error_info(),
-        "drive_usage": get_drive_usage(),
+        "data_drive_usage": get_data_drive_usage(),
+        "os_drive_usage": get_os_drive_usage(),
         "cpu_usage": get_cpu_usage(),
         "ram_usage": get_ram_usage(),
         "device_temp": get_device_temp(),
@@ -494,7 +497,7 @@ def reset_docker_page():
     # Display wait page
     templateData = {
         "title": "myNode",
-        "header_text": "Resetting Docker Data",
+        "header_text": "Rebooting",
         "subheader_text": "This will take several minutes...",
         "ui_settings": read_ui_settings()
     }
@@ -540,6 +543,16 @@ def clear_mempool_cache_page():
     t.start()
 
     flash("Mempool Cache Cleared", category="message")
+    return redirect("/settings")
+
+@mynode_settings.route("/settings/reset-rtl-config")
+def reset_rtl_config_page():
+    check_logged_in()
+
+    t = Timer(1.0, reset_rtl_config)
+    t.start()
+
+    flash("RTL Configuration Reset", category="message")
     return redirect("/settings")
 
 @mynode_settings.route("/settings/reset-specter-config")
@@ -779,19 +792,33 @@ def page_set_https_forced_page():
 
     flash("HTTPS Settings Saved", category="message")
     return redirect(url_for(".page_settings"))
+
+
+@mynode_settings.route("/settings/btcrpcexplorer_token")
+def page_btcrpcexplorer_token():
+    check_logged_in()
+    
+    enable = request.args.get('enable')
+    if enable == "1":
+        enable_btcrpcexplorer_token()
+    else:
+        disable_btcrpcexplorer_token()
+
+    flash("BTC RPC Explorer Token Setting Saved", category="message")
+    return redirect(url_for(".page_settings")) 
     
 
 @mynode_settings.route("/settings/enable_aptget_tor")
 def page_enable_aptget_tor():
     check_logged_in()
-
-    check_and_mark_reboot_action("enable_aptget_tor")
     
     enable = request.args.get('enable')
     if enable == "1":
         enable_aptget_tor()
     else:
         disable_aptget_tor()
+    
+    flash("Tor Setting Saved", category="message")
     return redirect(url_for(".page_settings"))
 
 @mynode_settings.route("/settings/mynode_logs.tar.gz")
@@ -848,13 +875,13 @@ def reinstall_app_page():
         return redirect("/settings")
     
     # Check application name is valid
-    app = request.args.get("app")
-    if not is_application_valid(app):
+    app_name = request.args.get("app")
+    if not is_application_valid(app_name):
         flash("Application is invalid", category="error")
         return redirect("/settings")
 
     # Re-install app
-    t = Timer(1.0, reinstall_app, [app])
+    t = Timer(1.0, reinstall_app, [app_name])
     t.start()
 
     # Display wait page
@@ -877,13 +904,13 @@ def uninstall_app_page():
         return redirect("/apps")
     
     # Check application name is valid
-    app = request.args.get("app")
-    if not is_application_valid(app):
+    app_name = request.args.get("app")
+    if not is_application_valid(app_name):
         flash("Application is invalid", category="error")
         return redirect("/apps")
 
     # Un-install app
-    uninstall_app(app)
+    uninstall_app(app_name)
 
     flash("Application Uninstalled", category="message")
     return redirect("/apps")
@@ -965,14 +992,23 @@ def ping_page():
 @mynode_settings.route("/settings/toggle-darkmode")
 def toggle_darkmode_page():
     check_logged_in()
-    toggle_darkmode()
+    toggle_ui_setting("darkmode")
+    flash("Darkmode Setting Updated", category="message")
     return redirect("/settings")
 
 @mynode_settings.route("/settings/toggle-darkmode-home")
 def toggle_darkmode_page_home():
     check_logged_in()
-    toggle_darkmode()
+    toggle_ui_setting("darkmode")
     return redirect("/")
+
+@mynode_settings.route("/settings/toggle-price-ticker")
+def toggle_price_ticker_page():
+    check_logged_in()
+    toggle_ui_setting("price_ticker")
+    update_price_info()
+    flash("Price Ticker Setting Updated", category="message")
+    return redirect("/settings")
 
 @mynode_settings.route("/settings/set-background", methods=['POST'])
 def set_background_page():
@@ -983,8 +1019,9 @@ def set_background_page():
         return redirect("/settings")
 
     bg = request.form.get('background')
-    set_background(bg)
+    set_ui_setting("background", bg)
 
+    flash("Background Updated", category="message")
     return redirect("/settings")
 
 @mynode_settings.route("/settings/toggle-netdata")
@@ -995,6 +1032,8 @@ def toggle_netdata_page():
         disable_service("netdata")
     else:
         enable_service("netdata")
+
+    flash("Netdata Setting Updated", category="message")
     return redirect("/settings")
 
 @mynode_settings.route("/settings/toggle-check-external-drive")

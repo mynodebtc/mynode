@@ -11,6 +11,8 @@ from caravan import mynode_caravan
 from sphinxrelay import mynode_sphinxrelay
 from pyblock import mynode_pyblock
 from bos import mynode_bos
+from wardenterminal import mynode_wardenterminal
+from lndmanage import mynode_lndmanage
 from manage_apps import mynode_manage_apps
 from tor import mynode_tor
 from vpn import mynode_vpn
@@ -30,6 +32,7 @@ from device_info import *
 from device_warnings import *
 from systemctl_info import *
 from application_info import *
+from price_info import *
 import pam
 import re
 import json
@@ -88,6 +91,8 @@ app.register_blueprint(mynode_caravan)
 app.register_blueprint(mynode_sphinxrelay)
 app.register_blueprint(mynode_pyblock)
 app.register_blueprint(mynode_bos)
+app.register_blueprint(mynode_wardenterminal)
+app.register_blueprint(mynode_lndmanage)
 app.register_blueprint(mynode_manage_apps)
 app.register_blueprint(mynode_tor)
 app.register_blueprint(mynode_electrum_server)
@@ -223,6 +228,14 @@ def index():
             "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
+    elif status == STATE_DOCKER_RESET:
+        templateData = {
+            "title": "myNode",
+            "header_text": "Resetting Docker Data",
+            "subheader_text": "This will take several minutes...",
+            "ui_settings": read_ui_settings()
+        }
+        return render_template('reboot.html', **templateData)
     elif status == STATE_DRIVE_FULL:
         message  = "Your drive is full!<br/><br/>"
         message += "<p style='font-size: 16px; width: 800px; margin: auto;'>"
@@ -412,20 +425,12 @@ def index():
         return render_template('state.html', **templateData)
     elif status == STATE_STABLE:
         bitcoin_status_code = get_service_status_code("bitcoin")
-        lnd_status_code = get_service_status_code("lnd")
-        tor_status_color = "gray"
         bitcoin_status_color = "red"
         lnd_status_color = "red"
         lnd_ready = is_lnd_ready()
         electrs_active = is_electrs_active()
         bitcoin_status = "Inactive"
         lnd_status = "Inactive"
-        electrs_status = ""
-        lndconnect_status_color = "gray"
-        btcpayserver_status_color = "gray"
-        mempool_status_color = "gray"
-        vpn_status_color = "gray"
-        vpn_status = ""
         current_block = 1234
 
         if not get_has_updated_btc_info() or uptime_in_seconds < 180:
@@ -470,8 +475,6 @@ def index():
             return render_template('syncing.html', **templateData)
 
         # Find bitcoid status
-        bitcoin_info = get_bitcoin_blockchain_info()
-        bitcoin_peers = get_bitcoin_peers()
         if bitcoin_status_code != 0:
             bitcoin_status_color = "red"
         else:
@@ -483,11 +486,15 @@ def index():
         lnd_status = get_lnd_status()
         lnd_status_color = get_lnd_status_color()
 
-        # Find drive usage
-        drive_usage = get_drive_usage()
+        # Find drive / SD card usage
+        os_drive_usage = get_os_drive_usage()
+        data_drive_usage = get_data_drive_usage()
         low_drive_space_error = False
-        if int(re.sub("[^0-9]", "", drive_usage)) >= 95:
+        low_os_drive_space_error = False
+        if int(re.sub("[^0-9]", "", data_drive_usage)) >= 95:
             low_drive_space_error = True
+        if int(re.sub("[^0-9]", "", os_drive_usage)) >= 95:
+            low_os_drive_space_error = True
 
         # Check for new version of software
         upgrade_available = False
@@ -529,6 +536,9 @@ def index():
             "lnd_tx_display_limit": 6,
             "lnd_channels": get_lightning_channels(),
             "electrs_active": electrs_active,
+            "btcpayserver_onion": get_onion_url_btcpay(),
+            "lndhub_onion": get_onion_url_lndhub(),
+            "lnbits_onion": get_onion_url_lnbits(),
             "is_testnet_enabled": is_testnet_enabled(),
             "is_installing_docker_images": is_installing_docker_images(),
             "is_device_from_reseller": is_device_from_reseller(),
@@ -537,14 +547,17 @@ def index():
             "fsck_error": has_fsck_error(),
             "fsck_results": get_fsck_results(),
             "sd_rw_error": has_sd_rw_error(),
-            "drive_usage": drive_usage,
+            "data_drive_usage": data_drive_usage,
+            "os_drive_usage": os_drive_usage,
             "low_drive_space_error": low_drive_space_error,
+            "low_os_drive_space_error": low_os_drive_space_error,
             "is_quicksync_disabled": not is_quicksync_enabled(),
             "cpu_usage": get_cpu_usage(),
             "ram_usage": get_ram_usage(),
             "swap_usage": get_swap_usage(),
             "device_temp": get_device_temp(),
             "upgrade_available": upgrade_available,
+            "hide_password_warning": hide_password_warning(),
             "has_changed_password": has_changed_password(),
             "ui_settings": read_ui_settings()
         }
@@ -737,6 +750,9 @@ def start_threads():
     lnd_thread = BackgroundThread(update_lnd_info_thread, 60)
     lnd_thread.start()
     threads.append(lnd_thread)
+    price_thread = BackgroundThread(update_price_info_thread, 2) # 2 minutes
+    price_thread.start()
+    threads.append(price_thread)
     drive_thread = BackgroundThread(update_device_info, 60)
     drive_thread.start()
     threads.append(drive_thread)
@@ -777,6 +793,8 @@ if __name__ == "__main__":
     # Handle signals
     signal.signal(signal.SIGTERM, on_shutdown)
     signal.signal(signal.SIGINT, on_shutdown)
+
+    set_logger(app.logger)
 
     # Setup and start threads
     start_threads()
