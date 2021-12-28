@@ -819,6 +819,24 @@ def get_docker_running_containers():
         containers = [str(e)]
     return containers
 
+
+#==================================
+# USB Extras Functions
+#==================================
+def get_usb_extras():
+    devices = []
+    json_path = "/tmp/usb_extras.json"
+    if os.path.isfile(json_path):
+        try:
+            with open(json_path) as f:
+                devices = json.load(f)
+        except Exception as e:
+            log_message("EXCEPTION in get_usb_extras: " + str(e))
+            devices = []
+    log_message("get_usb_extras: {}".format(len(devices)))
+    return devices
+    
+
 #==================================
 # Bitcoin Functions
 #==================================

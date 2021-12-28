@@ -52,35 +52,6 @@ def write_usb_devices_json():
 
 
 ################################
-## USBDetector
-################################
-class USBDetector():
-    ''' Monitor udev for detection of usb '''
- 
-    def __init__(self):
-        ''' Initiate the object '''
-        thread = Thread(target=self._work)
-        thread.daemon = True
-        thread.start()
- 
-    def _work(self):
-        ''' Runs the actual loop to detect the events '''
-        self.context = pyudev.Context()
-        self.monitor = pyudev.Monitor.from_netlink(self.context)
-        self.monitor.filter_by(subsystem='usb')
-        # this is module level logger, can be ignored
-        print_and_log("Starting to monitor for usb")
-        self.monitor.start()
-        for device in iter(self.monitor.poll, None):
-            print_and_log("Got USB event: %s", device.action)
-            if device.action == 'add':
-                # some function to run on insertion of usb
-                self.on_created()
-            else:
-                # some function to run on removal of usb
-                self.on_deleted()
-
-################################
 ## Utility Functions
 ################################
 
@@ -111,10 +82,10 @@ def get_drive_size(drive):
     print_and_log(f"Drive {drive} size: {size}")
     return size
 
-def mount_partition(partition, folder_name):
+def mount_partition(partition, folder_name, permissions="ro"):
     try:
         subprocess.check_output(f"mkdir -p /mnt/usb_extras/{folder_name}", shell=True)
-        subprocess.check_output(f"mount -o ro /dev/{partition} /mnt/usb_extras/{folder_name}", shell=True)
+        subprocess.check_output(f"mount -o {permissions} /dev/{partition} /mnt/usb_extras/{folder_name}", shell=True)
         return True
     except Exception as e:
         return False
@@ -169,11 +140,19 @@ def find_unmounted_drives():
 ################################
 ## HTTP Server Functions
 ################################
+class NoCacheHTTPRequestHandler(
+    SimpleHTTPRequestHandler
+):
+    def send_response_only(self, code, message=None):
+        super().send_response_only(code, message)
+        self.send_header('Cache-Control', 'no-store, must-revalidate')
+        self.send_header('Expires', '0')
+
 def web_handler_from(directory):
     def _init(self, *args, **kwargs):
-        return SimpleHTTPRequestHandler.__init__(self, *args, directory=self.directory, **kwargs)
+        return NoCacheHTTPRequestHandler.__init__(self, *args, directory=self.directory, **kwargs)
     return type(f'HandlerFrom<{directory}>',
-                (SimpleHTTPRequestHandler,),
+                (NoCacheHTTPRequestHandler,),
                 {'__init__': _init, 'directory': directory})
 
 ################################
@@ -206,25 +185,54 @@ class OpendimeHandler(UsbDeviceHandler):
     def __init__(self, block_device, partition):
         super().__init__()
         self.device = block_device
+        self.device_type = "opendime"
         self.partition = partition
         self.folder_name = f"opendime_{self.id}"
-        self.state = "init"
+        self.state = "loading_1"
         self.http_server = None
         self.http_server_thread = None
 
     def to_dict(self):
         dict = {}
         dict["id"] = self.id
+        dict["device_type"] = self.device_type
         dict["device"] = self.device
         dict["partition"] = self.partition
         dict["folder_name"] = self.folder_name
+        dict["port"] = self.port
         dict["state"] = self.state
         return dict
 
     def start(self):
         try:
-            if mount_partition(self.partition, self.folder_name):
-                self.http_server = HTTPServer(('', 8010), web_handler_from(f"/mnt/usb_extras/{self.folder_name}"))
+            if mount_partition(self.partition, self.folder_name, "rw"):
+                # Check device state
+                self.state = "loading_2"
+                try:
+                    readme_file = f"/mnt/usb_extras/{self.folder_name}/README.txt"
+                    private_key_file = f"/mnt/usb_extras/{self.folder_name}/private-key.txt"
+                    if os.path.isfile(readme_file):
+                        with open(readme_file) as f:
+                            content = f.read()
+                            if "This Opendime is fresh and unused. It hasn't picked a private key yet." in content:
+                                self.state = "new"
+                                print_and_log("  Opendime in state 'new'")
+
+                    if os.path.isfile(private_key_file):
+                        with open(private_key_file) as f:
+                            content = f.read()
+                            if "SEALED" in content:
+                                self.state = "sealed"
+                                print_and_log("  Opendime in state 'sealed'")
+                            else:
+                                self.state = "unsealed"
+                                print_and_log("  Opendime in state 'unsealed'")
+
+                except Exception as e:
+                    self.state = "error_reading_opendime"
+
+                self.port = 8010 + (self.id % 10)
+                self.http_server = HTTPServer(('', self.port), web_handler_from(f"/mnt/usb_extras/{self.folder_name}"))
                 self.http_server_thread = Thread(target = self.http_server.serve_forever)
                 self.http_server_thread.setDaemon(True)
                 self.http_server_thread.start()
@@ -291,6 +299,9 @@ def check_usb_devices():
                         print_and_log(f"Drive {drive} could not be detected.")
                 else:
                     print_and_log(f"{num_partitions} partitions found. Not sure what to do.")
+
+        # Successful scan post init or usb action detected, mark homepage refresh
+        os.system("touch /tmp/homepage_needs_refresh")
             
     except Exception as e:
         print_and_log("Exception: {}".format(str(e)))
@@ -322,11 +333,13 @@ def main():
     print_and_log("Waiting on USB Event...")
     set_usb_extras_state("waiting")
     for device in iter(monitor.poll, None):
+        print_and_log("")
         print_and_log("Got USB event: %s", device.action)
         if device.action == 'add':
             check_usb_devices()
         else:
-            # TODO: HANDLE DEVICE REMOVAL
+            # HANDLE DEVICE REMOVAL BETTER? This resets all and re-scans
+            reset_usb_devices()
             check_usb_devices()
         print_and_log("Waiting on USB Event...")
         set_usb_extras_state("waiting")
