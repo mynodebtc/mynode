@@ -120,6 +120,11 @@ Add another argument to the local upgrade script:
 Once you are running myNode, you can easily update the software yourself!
 
 1. Start by running myNode on your device via the instructions above in "Running myNode"
+2. Open 2 Terminals:
+    * 1 Terminal: Local PC or laptop
+    * 1 Terminal: ssh into your myNode device
+      * Command: `ssh admin@[myNode ip address]`
+      * Default credentials: admin/bolt
 2. Clone the latest release from the git repo on your PC or laptop
     * Run `git clone https://github.com/mynodebtc/mynode.git`
     * Run `cd mynode`
