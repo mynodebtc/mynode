@@ -14,6 +14,7 @@ from bos import mynode_bos
 from wardenterminal import mynode_wardenterminal
 from lndmanage import mynode_lndmanage
 from manage_apps import mynode_manage_apps
+from usb_extras import mynode_usb_extras
 from tor import mynode_tor
 from vpn import mynode_vpn
 from electrum_server import *
@@ -97,6 +98,7 @@ app.register_blueprint(mynode_manage_apps)
 app.register_blueprint(mynode_tor)
 app.register_blueprint(mynode_electrum_server)
 app.register_blueprint(mynode_vpn)
+app.register_blueprint(mynode_usb_extras)
 app.register_blueprint(mynode_settings)
 
 ### Definitions
@@ -552,6 +554,7 @@ def index():
             "low_drive_space_error": low_drive_space_error,
             "low_os_drive_space_error": low_os_drive_space_error,
             "is_quicksync_disabled": not is_quicksync_enabled(),
+            "usb_extras": get_usb_extras(),
             "cpu_usage": get_cpu_usage(),
             "ram_usage": get_ram_usage(),
             "swap_usage": get_swap_usage(),

@@ -141,6 +141,11 @@ def api_homepage_needs_refresh():
     if not is_bitcoin_synced():
         data["needs_refresh"] = "yes"
 
+    # If file indicating refresh was made, refresh and remove file
+    if os.path.isfile("/tmp/homepage_needs_refresh"):
+        data["needs_refresh"] = "yes"
+        os.system("rm /tmp/homepage_needs_refresh")
+
     return jsonify(data)
 
 @mynode_api.route("/api/get_log")

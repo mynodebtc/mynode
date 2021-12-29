@@ -276,8 +276,9 @@ fi
 
 # Install Python3 specific tools (run multiple times to make sure success)
 pip3 install --upgrade pip wheel setuptools
-pip3 install lnd-grpc gnureadline docker-compose pipenv bcrypt pysocks redis --no-cache-dir
-pip3 install flask pam python-bitcoinrpc prometheus_client psutil transmissionrpc qrcode image --no-cache-dir
+pip3 install gnureadline docker-compose pipenv bcrypt pysocks redis systemd --no-cache-dir
+pip3 install flask pam python-bitcoinrpc prometheus_client psutil transmissionrpc --no-cache-dir
+pip3 install qrcode image pyudev --no-cache-dir
 
 # For RP4 32-bit, install specific grpcio version known to build (uses proper glibc for wheel)
 if [ $IS_32_BIT = 1 ]; then
@@ -961,6 +962,7 @@ systemctl enable glances
 systemctl enable webssh2
 systemctl enable rotate_logs
 systemctl enable corsproxy_btcrpc
+systemctl enable usb_extras
 
 
 # Regenerate MAC Address for Armbian devices

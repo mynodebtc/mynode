@@ -1,0 +1,18 @@
+# USB Extras
+# /etc/systemd/system/usb_extras.service
+
+[Unit]
+Description=USB Extras
+After=network.target mynode.service
+
+[Service]
+ExecStart=/usr/local/bin/python3 /usr/bin/mynode_usb_extras.py
+User=root
+Group=root
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=usb_extras
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

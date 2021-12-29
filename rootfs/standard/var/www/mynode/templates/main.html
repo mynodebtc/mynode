@@ -207,6 +207,15 @@
                 }
                 showing_lightning_details = !showing_lightning_details;
             }
+
+            function open_new_mynode_tab(port, protocol="same") {
+                hostname=location.hostname
+                if (protocol == "same") {
+                    protocol = location.protocol
+                }
+                url = protocol+'//'+hostname+':'+port
+                window.open(url,'_blank');
+            }
             
 
             // Update page function
