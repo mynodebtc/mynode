@@ -109,7 +109,7 @@ CKBUNKER_VERSION="v0.9"
 CKBUNKER_VERSION_FILE=/home/bitcoin/.mynode/ckbunker_version
 CKBUNKER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/ckbunker_version_latest
 
-BOS_VERSION="11.16.0"
+BOS_VERSION="11.17.0"
 BOS_VERSION_FILE=/home/bitcoin/.mynode/bos_version
 BOS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bos_version_latest
 
@@ -117,7 +117,7 @@ SPHINXRELAY_VERSION="v2.2.3"
 SPHINXRELAY_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version
 SPHINXRELAY_LATEST_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version_latest
 
-PYBLOCK_VERSION="v1.1.8.6"
+PYBLOCK_VERSION="v1.1.9"
 PYBLOCK_VERSION_FILE=/home/bitcoin/.mynode/pyblock_version
 PYBLOCK_LATEST_VERSION_FILE=/home/bitcoin/.mynode/pyblock_version_latest
 
