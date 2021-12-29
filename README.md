@@ -48,15 +48,19 @@ Each myNode device comes with a number of wonderful features:
 - Specter Desktop
 - Thunderhub
 - BTC RPC Explorer
-- Mempool.Space - Mempool local visualizer for the Bitcoin blockchain
+- Mempool - Mempool local visualizer for the Bitcoin blockchain
 - LND Hub - Lightning Wallet Server
 - Lndmanage
 - Lightning Loop - A Non-Custodial Off/On Chain Bridge
 - Lightning Pool - A Non-Custodial auction for liquidity where bids are kept private and trades clear periodically
-- LNBits (Raspiblitz version)
+- Lightning Terminal
+- LNBits
 - Caravan
+- Warden Terminal
+- PyBlock
+- Lndmanage
 - Tor
-- JoinMarket CLI
+- JoininBox / JoinMarket
 - LND Connect - Generate QR Codes for connecting wallets
 - Virtual Machine support (OVA file: VirtualBox, VMWare)
 - VPN for Remote Access
@@ -72,12 +76,12 @@ Each myNode device comes with a number of wonderful features:
 We currently support images for the following devices:
  - Raspberry Pi 4
  - RockPro64
- - Rock64
  - Virtual Machine Support (VirtualBox hosting Windows/OS X/Linux/Solaris, VMWare hosting Windows/OS X/Linux)
 
 ## Deprecated Devices
 Due to limited RAM and CPU power, following devices are no longer recommended for use. Performance may be poor.
 - Raspberry Pi 3
+- Rock64
 
 ## Running myNode
 You can run myNode on your own device in just a few easy steps!
@@ -120,24 +124,24 @@ Add another argument to the local upgrade script:
 Once you are running myNode, you can easily update the software yourself!
 
 1. Start by running myNode on your device via the instructions above in "Running myNode"
-2. Open 2 Terminals:
+2. Open 2 Terminal windows:
     * 1 Terminal: Local PC or laptop
     * 1 Terminal: ssh into your myNode device
       * Command: `ssh admin@[myNode ip address]`
       * Default credentials: admin/bolt
-2. Clone the latest release from the git repo on your PC or laptop
+3. Clone the latest release from the git repo on your PC or laptop
     * Run `git clone https://github.com/mynodebtc/mynode.git`
     * Run `cd mynode`
     * Run `git checkout tags/latest_release`
-3. Run `make rootfs`
-4. Run `make start_file_server`
+4. Run `make rootfs`
+5. Run `make start_file_server`
     * This will run a local HTTP server so your device can download files
-5. On your device, run `sudo mynode-local-upgrade [dev pc ip address]`
+6. On your device, run `sudo mynode-local-upgrade [dev pc ip address]`
     * This will download your locally generated artifact and install it on your device
     * Your device will automatically reboot to ensure updates take effect
-6. Optional: Run `make stop_file_server`
+7. Optional: Run `make stop_file_server`
     * This will stop the local HTTP server
-7. You are now running the latest version of myNode software!
+8. You are now running the latest version of myNode software!
 
 ## Convert new device to run myNode
 1. Run make command for your device. Ex:
