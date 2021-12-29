@@ -195,8 +195,9 @@ if ! skip_base_upgrades ; then
 
     # Install any pip3 software
     pip3 install --upgrade pip setuptools wheel
-    pip3 install lnd-grpc gnureadline docker-compose pipenv bcrypt pysocks redis --no-cache-dir
-    pip3 install flask pam python-bitcoinrpc prometheus_client psutil transmissionrpc qrcode image --no-cache-dir
+    pip3 install gnureadline docker-compose pipenv bcrypt pysocks redis systemd --no-cache-dir
+    pip3 install flask pam python-bitcoinrpc prometheus_client psutil transmissionrpc --no-cache-dir
+    pip3 install qrcode image pyudev --no-cache-dir
 
     # For RP4 32-bit, install specific grpcio version known to build (uses proper glibc for wheel)
     if [ $IS_32_BIT = 1 ]; then
@@ -1085,6 +1086,7 @@ systemctl enable loop
 systemctl enable pool
 systemctl enable rotate_logs
 systemctl enable corsproxy_btcrpc
+systemctl enable usb_extras
 
 # Disable any old services
 systemctl disable bitcoind || true
