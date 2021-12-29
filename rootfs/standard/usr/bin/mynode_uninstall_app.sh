@@ -45,6 +45,8 @@ elif [ "$APP" = "joininbox" ]; then
     rm -rf /home/joinmarket/*
     rm -rf /home/joinmarket/joininbox-*
     rm -rf /home/joinmarket/.cache
+elif [ "$APP" = "jmg" ]; then
+    rm -rf /home/joinmarket/jmg
 elif [ "$APP" = "lndhub" ]; then
     rm -rf /opt/mynode/LndHub
 elif [ "$APP" = "lndmanage" ]; then

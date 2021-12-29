@@ -23,6 +23,14 @@ def is_service_enabled(service_name):
     service_enabled_cache[service_name] = False
     return False
 
+def is_service_active(service_name):
+    try:
+        if subprocess.check_output("systemctl is-active {}".format(service_name), shell=True).decode('utf8') == 'active\n':
+            return True
+    except:
+        return False
+    return False
+
 def get_service_status_code(service_name):
     code = os.system("systemctl status {} --no-pager > /dev/null".format(service_name))
     return code
@@ -31,7 +39,7 @@ def get_service_status_basic_text(service_name):
     if not is_service_enabled(service_name):
         return "Disabled"
 
-    code = os.system("systemctl status {} --no-pager  > /dev/null".format(service_name))
+    code = os.systm("systemctl status {} --no-pager  > /dev/null".format(service_name))
     if code == 0:
         return "Running"
     return "Error"

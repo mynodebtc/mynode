@@ -147,14 +147,12 @@
         "can_uninstall": true,
         "show_on_homepage": true,
         "homepage_order": 24,
-        "can_enable_disable": false,
-        "is_premium": true
+        "can_enable_disable": false
     },
     {
         "name": "Joinmarket",
         "short_name": "joinmarket",
-        "show_on_application_page": false,
-        "is_premium": true
+        "show_on_application_page": false
     },
     {
         "name": "Thunderhub",
@@ -319,5 +317,12 @@
         "short_name": "ufw",
         "show_on_application_page": false,
         "journalctl_log_name": "ufw"
+    },
+    {
+        "name": "Joinmarket GUI",
+        "short_name": "jmg",
+        "requires_bitcoin": true,
+        "show_on_homepage": true,
+        "requires_jmwalletd": true
     }
   ]

@@ -1,0 +1,26 @@
+# JoinMarket Wallet service
+# /etc/systemd/system/jmwalletd.service
+
+[Unit]
+Description=JoinMarketWallet
+Wants=bitcoin.service
+After=bitcoin.service
+
+[Service]
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/usr/bin/is_mainnet.sh
+WorkingDirectory=/home/joinmarket/joinmarket-clientserver
+ExecStart=/bin/sh -c 'cd /home/joinmarket/joinmarket-clientserver && ./jmvenv/bin/python scripts/jmwalletd.py'
+
+User=joinmarket
+Group=joinmarket
+Type=simple
+TimeoutSec=120
+Restart=always
+RestartSec=30
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=jmwalletd
+
+[Install]
+WantedBy=multi-user.target

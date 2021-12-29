@@ -57,6 +57,10 @@ JOININBOX_VERSION="v0.6.4"
 JOININBOX_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version
 JOININBOX_LATEST_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version_latest
 
+JMG_VERSION="v0.4.1"
+JMG_VERSION_FILE=/home/bitcoin/.mynode/jmg_version
+JMG_LATEST_VERSION_FILE=/home/bitcoin/.mynode/jmg_version_latest
+
 SECP256K1_VERSION=486205aa68b7f1d4291f78fa20bc4485fd843e1c
 SECP256K1_VERSION_FILE=/home/bitcoin/.mynode/secp256k1_version
 SECP256K1_LATEST_VERSION_FILE=/home/bitcoin/.mynode/secp256k1_version_latest

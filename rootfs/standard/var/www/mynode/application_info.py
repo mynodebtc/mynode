@@ -114,6 +114,7 @@ def initialize_application_defaults(app):
     if not "requires_electrs" in app: app["requires_electrs"] = False
     if not "requires_bitcoin" in app: app["requires_bitcoin"] = False
     if not "requires_docker_image_installation" in app: app["requires_docker_image_installation"] = False
+    if not "requires_jmwalletd" in app: app["requires_jmwalletd"] = False
     if not "supports_testnet" in app: app["supports_testnet"] = False
     if not "show_on_homepage" in app: app["show_on_homepage"] = False
     if not "show_on_application_page" in app: app["show_on_application_page"] = True
@@ -287,6 +288,8 @@ def get_application_status(short_name):
         return to_string(app["app_tile_default_status_text"])
     if app["requires_bitcoin"] and not is_bitcoin_synced():
         return "Waiting on Bitcoin"
+    if app["requires_jmwalletd"] and not is_service_active('jmwalletd'):
+        return "Waiting on Joinmarket Daemon"
 
 
     # Check special cases
@@ -336,6 +339,8 @@ def get_application_status_color(short_name):
     if app["requires_bitcoin"] and not is_bitcoin_synced():
         return "yellow"
     if app["requires_electrs"] and not is_electrs_active():
+        return "yellow"
+    if app["requires_jmwalletd"] and not is_service_active('jmwalletd'):
         return "yellow"
 
     # Check special cases
