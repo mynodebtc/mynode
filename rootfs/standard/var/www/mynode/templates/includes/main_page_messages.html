@@ -89,21 +89,20 @@
         {% if device.device_type == "opendime" %}
             <div class="main_page_warning_block">
                 <p style="text-align: center;"><b>Opendime Detected!</b></p>
-                <p style="text-align: center;">An Opendime has been found attached to your myNode! The interfacxe 
-                    can be accessed with the "Open" button below. 
+                <p style="text-align: center;">An Opendime has been found attached to your myNode! The interface 
+                    can be accessed with the "Open" button below.
+                    <br/><br/>
                     {% if device.state == "new" %}
-                        <br/><br/>
                         Your Opendime appears to not be initialized. To seed it with randomness and setup the private
                         key, click the "Initialize" button.
                     {% elif device.state == "sealed" %}
-                        <br/><br/>
                         Your Opendime appears to be initialized and ready to transfer funds!
                     {% elif device.state == "unsealed" %}
-                        <br/><br/>
                         Your Opendime appears to be unsealed and ready to redeem funds!
                     {% else %}
+                        Uh oh! Your device state cannot be identified.
                         <br/><br/>
-                        Uh oh! Your device state cannot be identified. ({{ device.state }})
+                        Device State: ({{ device.state }})
                     {% endif %}
                 </p>
                 <p style="text-align: center;">
