@@ -1,3 +1,12 @@
+=== v0.2.50 ===
+- Released: 01/02/22
+- Add OpenDime Support
+- Upgrade Dojo to v1.13.0
+- Upgrade RTL to v0.12.0
+- Upgrade JoininBox to v0.6.5
+- Upgrade BTC Pay Server to v1.3.7
+- Upgrade PyBlock to v1.1.9
+
 === v0.2.49 ===
 - Released: 12/18/21
 - Add Warden Terminal App
