@@ -6,6 +6,8 @@ import time
 import re
 import datetime
 import urllib
+import random
+from device_info import *
 from threading import Timer
 from utilities import *
 from bitcoin_info import *
@@ -264,6 +266,15 @@ def get_lightning_balance_info():
         balance_data["wallet_pending"] = format_sat_amount( wallet_balance_data["unconfirmed_balance"] )
 
     if channel_num >= 0 and wallet_num >= 0:
+        balance_data["total_balance"] = format_sat_amount(channel_num + wallet_num)
+
+    if get_randomize_balances():
+        channel_num = random.randint(40000,1000000)
+        wallet_num = random.randint(100000,1500000)
+        balance_data["channel_balance"] = format_sat_amount(channel_num)
+        balance_data["channel_pending"] = "0"
+        balance_data["wallet_balance"] = format_sat_amount(wallet_num)
+        balance_data["wallet_pending"] = "0"
         balance_data["total_balance"] = format_sat_amount(channel_num + wallet_num)
 
     return balance_data
