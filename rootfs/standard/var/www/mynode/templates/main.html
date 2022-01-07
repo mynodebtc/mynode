@@ -212,6 +212,8 @@
                 hostname=location.hostname
                 if (protocol == "same") {
                     protocol = location.protocol
+                } else if (protocol == "http" || protocol == "https") {
+                    protocol = protocol + ":"
                 }
                 url = protocol+'//'+hostname+':'+port
                 window.open(url,'_blank');
