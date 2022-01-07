@@ -430,6 +430,21 @@
                     }
                 });
 
+                $('#randomize_balances_checkbox').change(function () {
+                    $("#randomize_balances_button").show();
+                });
+                $("#randomize_balances_button").on("click", function() {
+                    enabled=$('#randomize_balances_checkbox').is(":checked")
+                    if (enabled)
+                    {
+                        window.location.href='/settings/enable_randomize_balances?enable=1'
+                    }
+                    else
+                    {
+                        window.location.href='/settings/enable_randomize_balances?enable=0'
+                    }
+                });
+
                 $('#https_forced_checkbox').change(function () {
                     $("#https_forced").show();
                 });
@@ -1146,6 +1161,18 @@
 
                 <div class="divider"></div>
             {% endif %}
+
+            <div class="settings_block_subheader">Randomize Balances</div>
+            This shows random balances for taking screenshots and testing the interface.
+            <br/><br/>
+            <label class="switch">
+                <input type="checkbox" id="randomize_balances_checkbox" {% if randomize_balances %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <br/><br/>
+            <button id="randomize_balances_button" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+
+            <div class="divider"></div>
 
             <div class="settings_block_subheader">Uploader Device</div>
             This disables most features and prioritize sharing QuickSync files. It can be reversed later.

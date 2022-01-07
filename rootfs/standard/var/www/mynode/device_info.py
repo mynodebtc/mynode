@@ -4,18 +4,13 @@ from werkzeug.routing import RequestRedirect
 from flask import flash, redirect
 from utilities import *
 from enable_disable_functions import *
-from lightning_info import is_lnd_ready
 from systemctl_info import *
-from electrum_info import get_electrs_status, is_electrs_active
-from bitcoin_info import is_bitcoin_synced
-from datetime import timedelta
 import time
 import json
 import os
 import subprocess
 import random
 import string
-import redis
 import re
 
 try:
@@ -594,6 +589,14 @@ def set_flask_session_timeout(days, hours):
     set_file_contents("/home/bitcoin/.mynode/flask_session_timeout", "{},{}".format(days, hours))
     os.system("sync")
 
+def get_randomize_balances():
+    return os.path.isfile('/home/bitcoin/.mynode/randomize_balances')
+
+def set_randomize_balances(randomize):
+    if randomize:
+        os.system("touch /home/bitcoin/.mynode/randomize_balances")
+    else:
+        os.system("rm -f /home/bitcoin/.mynode/randomize_balances")
 
 #==================================
 # Web Server Functions

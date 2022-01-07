@@ -85,6 +85,7 @@ def page_settings():
         "is_testnet_enabled": is_testnet_enabled(),
         "is_quicksync_disabled": not is_quicksync_enabled(),
         "netdata_enabled": is_service_enabled("netdata"),
+        "randomize_balances": get_randomize_balances(),
         "is_uploader_device": is_uploader(),
         "download_rate": download_rate,
         "upload_rate": upload_rate,
@@ -1077,4 +1078,17 @@ def page_clear_oom_error():
     check_logged_in()
     clear_oom_error()
     flash("Warning Cleared", category="message")
+    return redirect("/settings")
+
+@mynode_settings.route("/settings/enable_randomize_balances")
+def page_enable_enable_randomize_balances():
+    check_logged_in()
+    
+    enable = request.args.get('enable')
+    if enable == "1":
+        set_randomize_balances(True)
+    else:
+        set_randomize_balances(False)
+
+    flash("Randomize Balance Setting Updated", category="message")
     return redirect("/settings")
