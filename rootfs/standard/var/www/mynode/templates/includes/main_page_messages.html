@@ -96,7 +96,7 @@
                         Your Opendime appears to not be initialized. To seed it with randomness and setup the private
                         key, click the "Initialize" button.
                     {% elif device.state == "sealed" %}
-                        Your Opendime appears to be initialized and ready to transfer funds!
+                        Your Opendime appears to be initialized and ready to receive funds!
                     {% elif device.state == "unsealed" %}
                         Your Opendime appears to be unsealed and ready to redeem funds!
                     {% else %}
@@ -109,7 +109,7 @@
                     {% if device.state == "new" %}
                     <a href="/usb_extras/opendime_init?id={{device.id}}" class="ui-button ui-widget ui-corner-all settings_button_small">Initialize</a>
                     {% endif %}
-                    <a href="#" onclick="open_new_mynode_tab('{{device.port}}')" class="ui-button ui-widget ui-corner-all settings_button_small">Open</a>
+                    <a href="#" onclick="open_new_mynode_tab('{{device.port}}', 'http')" class="ui-button ui-widget ui-corner-all settings_button_small">Open</a>
                 </p>
             </div>
         {% endif %}
