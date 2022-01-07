@@ -232,6 +232,8 @@ def get_application_log(short_name):
             return get_journalctl_log("docker")
         elif short_name == "docker_image_build":
             return get_journalctl_log("docker_images")
+        elif short_name == "usb_extras":
+            return get_journalctl_log("usb_extras")
         elif short_name == "www":
             return get_journalctl_log("www")
         else:
