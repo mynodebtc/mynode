@@ -580,12 +580,18 @@ def page_product_key():
 
     # If get, just display page
     if request.method == 'GET':
-        templateData = {
-            "title": "myNode Product Key",
-            "header_text": "Product Key",
-            "ui_settings": read_ui_settings()
-        }
-        return render_template('product_key.html', **templateData)
+        # Check if recheck was specified
+        if request.args.get("recheck"):
+            recheck_product_key()
+            flash("Your key will be re-checked shortly...", category="message")
+            return redirect("/")
+        else:
+            templateData = {
+                "title": "myNode Product Key",
+                "header_text": "Product Key",
+                "ui_settings": read_ui_settings()
+            }
+            return render_template('product_key.html', **templateData)
     elif request.method == 'POST':
         skip = request.form.get('pk_skip')
         submit = request.form.get('pk_submit')

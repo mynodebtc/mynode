@@ -16,6 +16,10 @@ def unset_skipped_product_key():
 def delete_product_key_error():
     os.system("rm -rf /home/bitcoin/.mynode/.product_key_error")
     os.system("rm -rf /mnt/hdd/mynode/settings/.product_key_error")
+def has_product_key_error():
+    if os.path.isfile("/home/bitcoin/.mynode/.product_key_error") or os.path.isfile("/mnt/hdd/mynode/settings/.product_key_error"):
+        return True
+    return False
 def get_current_version():
     current_version = "0.0"
     try:
@@ -134,9 +138,9 @@ def check_in():
             # Use tor for check in unless there have been tor 5 failures in a row
             r = None
             if (fail_count+1) % 5 == 0:
-                r = requests.post(CHECKIN_URL, data=data, timeout=15)
+                r = requests.post(CHECKIN_URL, data=data, timeout=20)
             else:
-                r = session.post(CHECKIN_URL, data=data, timeout=15)
+                r = session.post(CHECKIN_URL, data=data, timeout=20)
             
             if r.status_code == 200:
                 if r.text == "OK":
