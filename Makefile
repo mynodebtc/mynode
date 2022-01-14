@@ -39,19 +39,19 @@ download_linux_images: out/linux_images/raspi_raspbian.zip out/linux_images/rasp
 # Download base myNode images
 out/base_images/raspi3_base.img.gz:
 	@mkdir -p out/base_images/
-	@wget http://mynodebtc.com/device/mynode_images/raspi3_base.img.gz -O out/base_images/raspi3_base.img.gz
+	@wget https://mynodebtc.com/device/mynode_images/raspi3_base.img.gz -O out/base_images/raspi3_base.img.gz
 out/base_images/raspi4_base.img.gz:
 	@mkdir -p out/base_images/
-	@wget http://mynodebtc.com/device/mynode_images/raspi4_base.img.gz -O out/base_images/raspi4_base.img.gz
+	@wget https://mynodebtc.com/device/mynode_images/raspi4_base.img.gz -O out/base_images/raspi4_base.img.gz
 out/base_images/rock64_base.img.gz:
 	@mkdir -p out/base_images/
-	@wget http://mynodebtc.com/device/mynode_images/rock64_base.img.gz -O out/base_images/rock64_base.img.gz
+	@wget https://mynodebtc.com/device/mynode_images/rock64_base.img.gz -O out/base_images/rock64_base.img.gz
 out/base_images/rockpro64_base.img.gz:
 	@mkdir -p out/base_images/
-	@wget http://mynodebtc.com/device/mynode_images/rockpro64_base.img.gz -O out/base_images/rockpro64_base.img.gz
+	@wget https://mynodebtc.com/device/mynode_images/rockpro64_base.img.gz -O out/base_images/rockpro64_base.img.gz
 out/base_images/debian_base.ova:
 	@mkdir -p out/base_images/
-	@wget http://mynodebtc.com/device/mynode_images/vm_base.ova -O out/base_images/debian_base.ova
+	@wget https://mynodebtc.com/device/mynode_images/vm_base.ova -O out/base_images/debian_base.ova
 
 
 

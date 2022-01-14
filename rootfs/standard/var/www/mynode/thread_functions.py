@@ -173,7 +173,7 @@ def update_price_info_thread():
 def find_public_ip():
     global public_ip
 
-    #urls = ["http://mynodebtc.com/device_api/get_public_ip.php"]
+    #urls = ["https://mynodebtc.com/device_api/get_public_ip.php"]
     urls = ["https://api.ipify.org/","https://ip.seeip.org/","https://ip.seeip.org"]
     url = random.choice(urls)
 
