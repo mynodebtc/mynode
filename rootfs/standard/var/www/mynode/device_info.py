@@ -715,6 +715,10 @@ def delete_product_key_error():
     os.system("rm -rf /home/bitcoin/.mynode/.product_key_error")
     os.system("rm -rf /mnt/hdd/mynode/settings/.product_key_error")
 
+def recheck_product_key():
+    delete_product_key_error()
+    os.system("systemctl restart check_in")
+
 
 #==================================
 # Drive Repair Functions
