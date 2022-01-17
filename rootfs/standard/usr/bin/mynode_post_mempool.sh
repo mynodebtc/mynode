@@ -15,19 +15,22 @@ while [ 1 ]; do
   isRunning=$(docker inspect --format="{{.State.Running}}" mempool_db_1)
   if [ "$isRunning" == "true" ]; then
     sleep 5s
-    blocks=$(docker exec -i mempool_db_1 mysql -uroot -padmin -D mempool -e "show tables;" | grep blocks)
-    if [[ "$blocks" == *"blocks"* ]]; then
-        echo "Mempool DB initialized!"
-        exit 0;
-    fi
-    if [ $IS_RASPI == 1 ]; then
-        echo "Initializing mempool db..."
-        docker exec -i mempool_db_1 bash -c "mysql -u root -padmin mempool" </mnt/hdd/mynode/mempool/mysql/db-scripts/mariadb-structure.sql
-        if [ $? -eq 0 ]; then
-            echo "Import success. Restart service by exiting 1."
-            exit 1
+
+    # Initialize database
+    databases=$(docker exec -i mempool_db_1 mysql -uroot -padmin -e "SHOW DATABASES;")
+    if [[ "$databases" == *"information_schema"* ]]; then   # Check DB is responding
+        if [[ "$databases" == *"mempool"* ]]; then
+            # DB found, exit 0
+            exit 0
+        else
+            # Setup a database for mempool
+            $(docker exec -i mempool_db_1 mysql -uroot -padmin -e "drop database mempool;")
+            $(docker exec -i mempool_db_1 mysql -uroot -padmin -e "create database mempool;")
+            $(docker exec -i mempool_db_1 mysql -uroot -padmin -e "grant all privileges on mempool.* to 'mempool'@'%' identified by 'mempool';")
+            exit 0
         fi
     fi
+
   else
     echo "Waiting to initialize mempool DB..."
     sleep 10s
