@@ -12,6 +12,7 @@ EnvironmentFile=/mnt/hdd/mynode/settings/.btcrpc_environment
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_bitcoin.sh
 ExecStartPre=/usr/bin/wait_on_docker_image_install.sh
+ExecStartPre=/usr/bin/mynode_pre_mempool.sh
 ExecStart=/usr/local/bin/docker-compose up
 ExecStartPost=/usr/bin/mynode_post_mempool.sh
 

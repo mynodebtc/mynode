@@ -104,8 +104,7 @@ while true; do
             cd /mnt/hdd/mynode/mempool
             rm -rf data
             rm -rf mysql
-            mkdir -p data mysql/data mysql/db-scripts
-            cp -f /usr/share/mynode/mempool-docker-compose.yml /mnt/hdd/mynode/docker-compose.yml
+            mkdir -p data mysql/data
 
             rm -rf /opt/download/mempool
             mkdir -p /opt/download/mempool
@@ -114,10 +113,6 @@ while true; do
             tar -xvf mempool.tar.gz
             rm mempool.tar.gz
             mv mempool-* mempool
-            cp -f mempool/mariadb-structure.sql /mnt/hdd/mynode/mempool/mysql/db-scripts/mariadb-structure.sql
-
-            # Update env variable to use latest version
-            sed -i "s/VERSION=.*/VERSION=$MEMPOOL_VERSION/g" /mnt/hdd/mynode/mempool/.env
 
             docker pull mempool/frontend:${MEMPOOL_VERSION}
             docker pull mempool/backend:${MEMPOOL_VERSION}

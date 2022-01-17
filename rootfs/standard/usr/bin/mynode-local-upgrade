@@ -34,11 +34,9 @@ tar -xf /tmp/mynode_rootfs_${DEVICE_TYPE}.tar.gz -C /tmp/rootfs/
 echo Done!
 
 # Install files
-if [ $IS_X86 = 1 ] || [ $IS_RASPI4_ARM64 = 1 ]; then
-    rsync -r -K /tmp/rootfs/out/rootfs_${DEVICE_TYPE}/* /
-else
-    cp -rf /tmp/rootfs/out/rootfs_${DEVICE_TYPE}/* /
-fi
+rsync -r -K /tmp/rootfs/out/rootfs_${DEVICE_TYPE}/* /
+
+# Update systemd service config
 systemctl daemon-reload
 
 # Sleep and sync FS
@@ -46,12 +44,18 @@ echo "Syncing filesystem..."
 sleep 1
 sync
 
+# Reload systemd files
+systemctl daemon-reload
+
 # Restart or reboot
 if [ "$#" -ge 2 ]; then
     # Restart service
     if [ "$2" = "www" ]; then
         echo "Restarting www service..."
         systemctl restart www
+    elif [ "$2" = "mempool" ]; then
+        echo "Restarting mempool service..."
+        systemctl restart mempool &
     elif [ "$2" = "files" ]; then
         echo "Only updating files... Done."
     elif [ "$2" = "reboot" ]; then
