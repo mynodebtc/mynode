@@ -124,8 +124,8 @@ if [ $IS_RASPI -eq 1 ] && [ $IS_RASPI4_ARM64 -eq 0 ]; then
   sed -i 's|ENV     GOLANG_SHA256.*|ENV     GOLANG_SHA256       37a1a83e363dcf146a67fa839d170fd1afb13009585fdd493d0a3370fbe6f785|' /mnt/hdd/mynode/dojo/docker/my-dojo/tor/Dockerfile
 fi
 
-# Modify for Rock64 devices
-if [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ] || [ $IS_RASPI4_ARM64 = 1 ]; then
+# Modify for Armbian + RP4 64-bit devices
+if [ $IS_ARMBIAN = 1 ] || [ $IS_RASPI4_ARM64 = 1 ]; then
   # Modify mysql Dockerfile for Rock64 devices
   sed -i 's|FROM.*|FROM    mariadb:latest|' /mnt/hdd/mynode/dojo/docker/my-dojo/mysql/Dockerfile
   # Modify Tor Dockerfile for ARMv8 devices
