@@ -72,13 +72,10 @@
             <div class="info_tile">
                 <div class="info_tile_header">Electrum Tor Service</div>
                 <div class="info_tile_contents">
+                    {% if product_key_skipped %}
+                        Premium Feature
+                    {% else %}
                     <table class="info_table">
-                        {% if product_key_skipped %}
-                        <tr>
-                            <th>Status</th>
-                            <td>Premium Feature</td>
-                        </tr>
-                        {% else %}
                         <tr>
                             <th>Hostname</th>
                             <td style="font-size: 12px;">{{electrs_onion_hostname}}</td>
@@ -91,8 +88,8 @@
                             <th>Tor Help</th>
                             <td><a href="http://docs.electrum.org/en/latest/tor.html" target="_blank">Link</a></td>
                         </tr>
-                        {% endif %}
                     </table>
+                    {% endif %}
                 </div>
             </div>
         </div>
