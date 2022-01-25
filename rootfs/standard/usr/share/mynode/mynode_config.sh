@@ -8,6 +8,7 @@ IS_RASPI=0
 IS_RASPI3=0
 IS_RASPI4=0
 IS_RASPI4_ARM64=0
+IS_ROCKPI4=0
 IS_X86=0
 IS_32_BIT=0
 IS_64_BIT=0
@@ -36,12 +37,18 @@ elif [[ $MODEL == *"Raspberry Pi 4"* ]]; then
         IS_32_BIT=0
         IS_64_BIT=1
     fi
+elif [[ $MODEL == *"ROCK Pi 4"* ]]; then
+    IS_ARMBIAN=1
+    IS_ROCKPI4=1
+    IS_64_BIT=1
 fi
 
 if [ $IS_RASPI3 -eq 1 ]; then
     DEVICE_TYPE="raspi3"
 elif [ $IS_RASPI4 -eq 1 ]; then
     DEVICE_TYPE="raspi4"
+elif [ $IS_ROCKPI4 -eq 1 ]; then
+    DEVICE_TYPE="rockpi4"
 elif [ $IS_ROCK64 -eq 1 ]; then
     DEVICE_TYPE="rock64"
 elif [ $IS_ROCKPRO64 -eq 1 ]; then

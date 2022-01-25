@@ -59,7 +59,8 @@ if [ ! -f /var/lib/mynode/.expanded_rootfs ]; then
         raspi-config --expand-rootfs
         touch /var/lib/mynode/.expanded_rootfs 
     fi
-    if [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ]; then
+    #if [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ] || [ $IS_ROCKPI4 = 1 ]; then
+    if [ $IS_ARMBIAN = 1 ]; then
         /usr/lib/armbian/armbian-resize-filesystem start
         touch /var/lib/mynode/.expanded_rootfs 
     fi
@@ -487,18 +488,7 @@ fi
 chown -R joinmarket:joinmarket /mnt/hdd/mynode/joinmarket
 
 # Setup Mempool
-cp -f /usr/share/mynode/mempool-docker-compose.yml /mnt/hdd/mynode/mempool/docker-compose.yml
-if [ ! -f /mnt/hdd/mynode/mempool/.env ]; then
-    cp -f /usr/share/mynode/mempool.env /mnt/hdd/mynode/mempool/.env
-fi
-if [ -f /mnt/hdd/mynode/mempool/.env ]; then
-    sed -i "s/VERSION=.*/VERSION=$MEMPOOL_VERSION/g" /mnt/hdd/mynode/mempool/.env
-fi
-if [ $IS_RASPI -eq 1 ] && [ $IS_RASPI4_ARM64 -eq 0 ]; then
-    sed -i "s|MARIA_DB_IMAGE=.*|MARIA_DB_IMAGE=hypriot/rpi-mysql:latest|g" /mnt/hdd/mynode/mempool/.env
-else
-    sed -i "s|MARIA_DB_IMAGE=.*|MARIA_DB_IMAGE=mariadb:10.5.8|g" /mnt/hdd/mynode/mempool/.env
-fi
+# Moved to mynode_pre_mempool.sh
 
 # Setup Netdata
 mkdir -p /opt/mynode/netdata
@@ -540,9 +530,6 @@ if [ -f /mnt/hdd/mynode/joinmarket/joinmarket.cfg ]; then
 fi
 if [ -f /mnt/hdd/mynode/lit/lit.conf ]; then
     sed -i "s/faraday.bitcoin.password=.*/faraday.bitcoin.password=$BTCRPCPW/g" /mnt/hdd/mynode/lit/lit.conf
-fi
-if [ -f /mnt/hdd/mynode/mempool/.env ]; then
-    sed -i "s/BITCOIN_RPC_PASS=.*/BITCOIN_RPC_PASS=$BTCRPCPW/g" /mnt/hdd/mynode/mempool/.env
 fi
 echo "BTC_RPC_PASSWORD=$BTCRPCPW" > /mnt/hdd/mynode/settings/.btcrpc_environment
 chown bitcoin:bitcoin /mnt/hdd/mynode/settings/.btcrpc_environment
