@@ -269,7 +269,7 @@ if [ $IS_RASPI = 1 ]; then
     if [ $IS_RASPI4_ARM64 = 1 ]; then
         ARCH="aarch64-linux-gnu"
     fi
-elif [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ]; then
+elif [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ] || [ $IS_ROCKPI4 = 1 ]; then
     ARCH="aarch64-linux-gnu"
 elif [ $IS_X86 = 1 ]; then
     ARCH="x86_64-linux-gnu"
@@ -324,7 +324,7 @@ LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
 fi
-if [ $IS_RASPI4_ARM64 = 1 ]; then
+if [ $IS_RASPI4_ARM64 = 1 ] || [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ] || [ $IS_ROCKPI4 = 1 ]; then
     LND_ARCH="lnd-linux-arm64"
 fi
 LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/$LND_ARCH-$LND_VERSION.tar.gz

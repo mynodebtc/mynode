@@ -66,6 +66,11 @@ setup_new_rockpro64: start_file_server out/base_images/rockpro64_base.img.gz roo
 	@cp -f setup/setup_device.sh out/setup_device.sh 
 	@/bin/bash scripts/setup_new_rockpro64.sh
 
+.PHONY: setup_new_rockpi4
+setup_new_rockpi4: start_file_server out/base_images/rockpi4_base.img.gz rootfs
+	@cp -f setup/setup_device.sh out/setup_device.sh 
+	@/bin/bash scripts/setup_new_rockpi4.sh
+
 .PHONY: setup_new_raspi3
 setup_new_raspi3: start_file_server out/base_images/raspi3_base.img.gz rootfs 
 	@cp -f setup/setup_device.sh out/setup_device.sh 

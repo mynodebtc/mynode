@@ -22,6 +22,7 @@ IS_RASPI=0
 IS_RASPI3=0
 IS_RASPI4=0
 IS_RASPI4_ARM64=0
+IS_ROCKPI4=0
 IS_X86=0
 IS_32_BIT=0
 IS_64_BIT=0
@@ -51,7 +52,12 @@ elif [[ $MODEL == *"Raspberry Pi 4"* ]]; then
         IS_32_BIT=0
         IS_64_BIT=1
     fi
+elif [[ $MODEL == *"ROCK Pi 4"* ]]; then
+    IS_ARMBIAN=1
+    IS_ROCKPI4=1
+    IS_64_BIT=1
 fi
+
 
 if [ $IS_UNKNOWN = 1 ]; then
     echo "UNKNOWN DEVICE TYPE"
@@ -102,6 +108,8 @@ elif [ $IS_RASPI3 = 1 ]; then
     TARBALL="mynode_rootfs_raspi3.tar.gz"
 elif [ $IS_RASPI4 = 1 ]; then
     TARBALL="mynode_rootfs_raspi4.tar.gz"
+elif [ $IS_ROCKPI4 = 1 ]; then
+    TARBALL="mynode_rootfs_rockpi4.tar.gz"
 elif [ $IS_X86 = 1 ]; then
     TARBALL="mynode_rootfs_debian.tar.gz"
 fi
@@ -328,7 +336,7 @@ if [ $IS_RASPI = 1 ]; then
     if [ $IS_RASPI4_ARM64 = 1 ]; then
         ARCH="aarch64-linux-gnu"
     fi
-elif [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ]; then
+elif [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ] || [ $IS_ROCKPI4 = 1 ]; then
     ARCH="aarch64-linux-gnu"
 elif [ $IS_X86 = 1 ]; then
     ARCH="x86_64-linux-gnu"
@@ -382,7 +390,7 @@ LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
 fi
-if [ $IS_RASPI4_ARM64 = 1 ]; then
+if [ $IS_RASPI4_ARM64 = 1 ] || [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ] || [ $IS_ROCKPI4 = 1 ]; then
     LND_ARCH="lnd-linux-arm64"
 fi
 LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/$LND_ARCH-$LND_VERSION.tar.gz
@@ -902,12 +910,7 @@ update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy || true
 
 
 # Install files (downloaded and extracted earlier)
-if [ $IS_X86 = 1 ] || [ $IS_RASPI4_ARM64 = 1 ]; then
-    rsync -r -K /tmp/upgrade/out/rootfs_*/* /
-else
-    cp -rf /tmp/upgrade/out/rootfs_*/* /
-fi
-sleep 1
+rsync -r -K /tmp/upgrade/out/rootfs_*/* /
 sync
 sleep 1
 
@@ -965,17 +968,6 @@ systemctl enable corsproxy_btcrpc
 systemctl enable usb_extras
 
 
-# Regenerate MAC Address for Armbian devices
-if [ $IS_ARMBIAN = 1 ]; then
-    . /usr/lib/armbian/armbian-common
-    CONNECTION="$(nmcli -f UUID,ACTIVE,DEVICE,TYPE connection show --active | grep ethernet | tail -n1)"
-    UUID=$(awk -F" " '/ethernet/ {print $1}' <<< "${CONNECTION}")
-    get_random_mac
-    nmcli connection modify $UUID ethernet.cloned-mac-address $MACADDR
-    nmcli connection modify $UUID -ethernet.mac-address ""
-fi
-
-
 # Disable services
 systemctl disable hitch || true
 systemctl disable mongodb || true
@@ -993,8 +985,8 @@ rm -rf /tmp/*
 rm -rf ~/setup_device.sh
 rm -rf /etc/motd # Remove simple motd for update-motd.d
 
-# Reset MAC address for Armbian devices
-if [ $IS_ARMBIAN = 1 ] ; then
+# Regenerate MAC address for some Armbian devices
+if [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ] ; then
     . /usr/lib/armbian/armbian-common
     CONNECTION="$(nmcli -f UUID,ACTIVE,DEVICE,TYPE connection show --active | tail -n1)"
     UUID=$(awk -F" " '/ethernet/ {print $1}' <<< "${CONNECTION}")
