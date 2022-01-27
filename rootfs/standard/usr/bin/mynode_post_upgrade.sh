@@ -47,6 +47,8 @@ if ! skip_base_upgrades ; then
     # Migrate from version file to version+install combo
     /usr/bin/mynode_migrate_version_files.sh
 
+    # PwnKit vulnerability mitigation
+    chmod 0755 /usr/bin/pkexec
 
     # Stop and disable any old services
     systemctl disable https || true
