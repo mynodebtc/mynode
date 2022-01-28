@@ -8,6 +8,7 @@
 - Upgrade Pool to v0.5.4
 - Upgrade Sphinx Relay to v2.2.5
 - Upgrade BoS to v11.36.2
+- Add early support for Rock Pi 4
 - Bug fixes
 
 === v0.2.50 ===
