@@ -1,3 +1,15 @@
+=== v0.2.51 ===
+- Released: 01/28/22
+- Upgrade Mempool to v2.3.1
+- Upgrade BTCPay Server to v1.4.0
+- Upgrade Whirlpool to v0.10.12
+- Upgrade JoininBox to v0.6.6
+- Upgrade Lightning Terminal to v0.6.2
+- Upgrade Pool to v0.5.4
+- Upgrade Sphinx Relay to v2.2.5
+- Upgrade BoS to v11.36.2
+- Bug fixes
+
 === v0.2.50 ===
 - Released: 01/02/22
 - Add OpenDime Support
