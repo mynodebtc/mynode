@@ -76,7 +76,7 @@ def check_and_mark_reboot_action(tmp_marker):
     if os.path.isfile("/tmp/{}".format(tmp_marker)):
         flash(u'Refresh prevented - action already triggered', category="error")
         raise RequestRedirect("/")
-    otouch("/tmp/{}".format(tmp_marker))
+    touch("/tmp/{}".format(tmp_marker))
 
 def reload_throttled_data():
     global cached_data
@@ -593,7 +593,7 @@ def get_randomize_balances():
 
 def set_randomize_balances(randomize):
     if randomize:
-        touch("touch /home/bitcoin/.mynode/randomize_balances")
+        touch("/home/bitcoin/.mynode/randomize_balances")
     else:
         delete_file("rm -f /home/bitcoin/.mynode/randomize_balances")
 
