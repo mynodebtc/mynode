@@ -260,12 +260,12 @@ def is_device_from_reseller():
 # Device Info
 #==================================
 def get_system_uptime():
-    uptime = subprocess.check_output('awk \'{print int($1/86400)" days "int($1%86400/3600)" hour(s) "int(($1%3600)/60)" minute(s) "int($1%60)" seconds(s)"}\' /proc/uptime', shell=True)
-    uptime = to_string(uptime.strip())
+    uptime = to_string(subprocess.check_output('awk \'{print int($1/86400)" days "int($1%86400/3600)" hour(s) "int(($1%3600)/60)" minute(s) "int($1%60)" seconds(s)"}\' /proc/uptime', shell=True))
+    uptime = uptime.strip()
     return uptime
 
 def get_system_uptime_in_seconds():
-    uptime = subprocess.check_output('awk \'{print $1}\' /proc/uptime', shell=True)
+    uptime = to_string(subprocess.check_output('awk \'{print $1}\' /proc/uptime', shell=True))
     uptime = int(float(uptime.strip()))
     return uptime
 
@@ -273,8 +273,8 @@ def get_system_time_in_ms():
     return int(round(time.time() * 1000))
 
 def get_system_date():
-    date = subprocess.check_output('date', shell=True)
-    date = to_string(date.strip())
+    date = to_string(subprocess.check_output('date', shell=True))
+    date = date.strip()
     return date
 
 def get_device_serial():
@@ -282,8 +282,8 @@ def get_device_serial():
     if "serial" in cached_data:
         return cached_data["serial"]
 
-    serial = subprocess.check_output("mynode-get-device-serial", shell=True)
-    serial = to_string(serial.strip())
+    serial = to_string(subprocess.check_output("mynode-get-device-serial", shell=True))
+    serial = serial.strip()
 
     cached_data["serial"] = serial
     return serial
@@ -318,19 +318,19 @@ def get_device_ram():
 def get_local_ip():
     local_ip = "unknown"
     try:
-        local_ip = subprocess.check_output('/usr/bin/get_local_ip.py', shell=True).strip()
+        local_ip = to_string(subprocess.check_output('/usr/bin/get_local_ip.py', shell=True).strip())
     except:
         local_ip = "error"
 
-    return to_string(local_ip)
+    return local_ip
 
 def get_device_changelog():
     changelog = ""
     try:
-        changelog = subprocess.check_output(["cat", "/usr/share/mynode/changelog"])
+        changelog = to_string(subprocess.check_output(["cat", "/usr/share/mynode/changelog"]))
     except:
         changelog = "ERROR"
-    return to_string(changelog)
+    return changelog
 
 def has_changed_password():
     try:
@@ -444,7 +444,7 @@ def get_drive_info(drive):
     data = {}
     data["name"] = "NOT_FOUND"
     try:
-        lsblk_output = subprocess.check_output("lsblk -io KNAME,TYPE,SIZE,MODEL,VENDOR /dev/{} | grep disk".format(drive), shell=True).decode("utf-8") 
+        lsblk_output = to_string(subprocess.check_output("lsblk -io KNAME,TYPE,SIZE,MODEL,VENDOR /dev/{} | grep disk".format(drive), shell=True).decode("utf-8"))
         parts = lsblk_output.split()
         data["name"] = parts[0]
         data["size"] = parts[2]
@@ -670,7 +670,7 @@ def get_quicksync_log():
     log = "UNKNOWN"
     if is_quicksync_enabled():
         try:
-            log = subprocess.check_output(["mynode-get-quicksync-status"]).decode("utf8")
+            log = to_string(subprocess.check_output(["mynode-get-quicksync-status"]).decode("utf8"))
         except:
             log = "ERROR"
     else:
@@ -1150,7 +1150,7 @@ def reload_firewall():
 
 def get_firewall_rules():
     try:
-        rules = subprocess.check_output("ufw status", shell=True).decode("utf8")
+        rules = to_string(subprocess.check_output("ufw status", shell=True).decode("utf8"))
     except:
         rules = "ERROR"
     return rules

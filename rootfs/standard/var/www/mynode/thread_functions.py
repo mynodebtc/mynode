@@ -64,14 +64,12 @@ def update_device_info():
         reload_throttled_data()
 
         # Get drive actual usage
-        #results = subprocess.check_output(["du","-sh","/mnt/hdd/mynode/"])
+        #results = to_string(subprocess.check_output(["du","-sh","/mnt/hdd/mynode/"]))
         #drive_usage = results.split()[0]
 
         # Get drive percent usage
-        results = subprocess.check_output("df -h /mnt/hdd | grep /dev | awk '{print $5}'", shell=True)
-        data_drive_usage = to_string(results)
-        results = subprocess.check_output("df -h / | grep /dev | awk '{print $5}'", shell=True)
-        os_drive_usage = to_string(results)
+        data_drive_usage = to_string(subprocess.check_output("df -h /mnt/hdd | grep /dev | awk '{print $5}'", shell=True))
+        os_drive_usage = to_string(subprocess.check_output("df -h / | grep /dev | awk '{print $5}'", shell=True))
 
         # Get RAM usage
         ram_info = psutil.virtual_memory()
@@ -86,7 +84,7 @@ def update_device_info():
         cpu_usage = "{:.1f}%".format(100.0 - cpu_info.idle)
 
         # Get device temp
-        results = subprocess.check_output("cat /sys/class/thermal/thermal_zone0/temp", shell=True)
+        results = to_string(subprocess.check_output("cat /sys/class/thermal/thermal_zone0/temp", shell=True))
         temp = int(results) / 1000
         device_temp = "{:.1f}".format(temp)
 

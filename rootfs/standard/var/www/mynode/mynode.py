@@ -136,7 +136,7 @@ def index():
     if is_uploader():
         status=""
         try:
-            status = subprocess.check_output(["mynode-get-quicksync-status"])
+            status = to_string(subprocess.check_output(["mynode-get-quicksync-status"]))
         except:
             status = "Waiting on quicksync to start..."
 
@@ -352,8 +352,8 @@ def index():
         return redirect("/product-key")
     elif status == STATE_QUICKSYNC_COPY:
         try:
-            current = subprocess.check_output(["du","-m","--max-depth=0","/mnt/hdd/mynode/bitcoin/"]).split()[0]
-            total = subprocess.check_output(["du","-m","--max-depth=0","/mnt/hdd/mynode/quicksync/"]).split()[0]
+            current = to_string(subprocess.check_output(["du","-m","--max-depth=0","/mnt/hdd/mynode/bitcoin/"]).split()[0])
+            total = to_string(subprocess.check_output(["du","-m","--max-depth=0","/mnt/hdd/mynode/quicksync/"]).split()[0])
         except:
             current = 0.0
             total = 100.0
