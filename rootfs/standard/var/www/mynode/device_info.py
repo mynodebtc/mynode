@@ -76,7 +76,7 @@ def check_and_mark_reboot_action(tmp_marker):
     if os.path.isfile("/tmp/{}".format(tmp_marker)):
         flash(u'Refresh prevented - action already triggered', category="error")
         raise RequestRedirect("/")
-    os.system("touch /tmp/{}".format(tmp_marker))
+    otouch("/tmp/{}".format(tmp_marker))
 
 def reload_throttled_data():
     global cached_data
@@ -150,8 +150,7 @@ def get_latest_beta_version():
     return beta_version
 
 def mark_upgrade_started():
-    os.system("touch /tmp/upgrade_started")
-    os.system("sync")
+    touch("/tmp/upgrade_started")
 
 def is_upgrade_running():
     return os.path.isfile("/tmp/upgrade_started") 
@@ -294,8 +293,8 @@ def get_device_type():
     if "device_type" in cached_data:
         return cached_data["device_type"]
     
-    device = subprocess.check_output("mynode-get-device-type", shell=True).strip()
-    cached_data["device_type"] = to_string(device)
+    device = to_string(subprocess.check_output("mynode-get-device-type", shell=True).strip())
+    cached_data["device_type"] = device
     return device
 
 def get_device_arch():
@@ -303,8 +302,8 @@ def get_device_arch():
     if "device_arch" in cached_data:
         return cached_data["device_arch"]
 
-    arch = subprocess.check_output("uname -m", shell=True).decode("utf-8").strip()
-    cached_data["device_arch"] = to_string(arch)
+    arch = to_string(subprocess.check_output("uname -m", shell=True).decode("utf-8").strip())
+    cached_data["device_arch"] = arch
     return arch
 
 def get_device_ram():
@@ -312,8 +311,8 @@ def get_device_ram():
     if "ram" in cached_data:
         return cached_data["ram"]
 
-    ram = subprocess.check_output("free --giga | grep Mem | awk '{print $2}'", shell=True).strip()
-    cached_data["ram"] = to_string(ram)
+    ram = to_string(subprocess.check_output("free --giga | grep Mem | awk '{print $2}'", shell=True).strip())
+    cached_data["ram"] = ram
     return ram
 
 def get_local_ip():
@@ -550,9 +549,9 @@ def is_https_forced():
 
 def force_https(force):
     if force:
-        os.system("touch /home/bitcoin/.mynode/https_forced")
+        touch("/home/bitcoin/.mynode/https_forced")
     else:
-        os.system("rm -f /home/bitcoin/.mynode/https_forced")
+        delete_file("/home/bitcoin/.mynode/https_forced")
 
 # Regen cert
 def regen_https_cert():
@@ -594,9 +593,18 @@ def get_randomize_balances():
 
 def set_randomize_balances(randomize):
     if randomize:
-        os.system("touch /home/bitcoin/.mynode/randomize_balances")
+        touch("touch /home/bitcoin/.mynode/randomize_balances")
     else:
-        os.system("rm -f /home/bitcoin/.mynode/randomize_balances")
+        delete_file("rm -f /home/bitcoin/.mynode/randomize_balances")
+
+def is_www_python3():
+    return os.path.isfile('/home/bitcoin/.mynode/.www_use_python3')
+
+def set_www_python3(use_python3):
+    if use_python3:
+        touch("/home/bitcoin/.mynode/.www_use_python3")
+    else:
+        delete_file("/home/bitcoin/.mynode/.www_use_python3")
 
 #==================================
 # Web Server Functions
@@ -611,9 +619,9 @@ def restart_flask():
 def is_uploader():
     return os.path.isfile("/mnt/hdd/mynode/settings/uploader")
 def set_uploader():
-    os.system("touch /mnt/hdd/mynode/settings/uploader")
+    touch("/mnt/hdd/mynode/settings/uploader")
 def unset_uploader():
-    os.system("rm -rf /mnt/hdd/mynode/settings/uploader")
+    delete_file("/mnt/hdd/mynode/settings/uploader")
 
 
 #==================================
@@ -622,10 +630,9 @@ def unset_uploader():
 def is_quicksync_enabled():
     return not os.path.isfile("/mnt/hdd/mynode/settings/quicksync_disabled")
 def disable_quicksync():
-    os.system("touch /mnt/hdd/mynode/settings/quicksync_disabled")
-    os.system("sync")
+    touch("/mnt/hdd/mynode/settings/quicksync_disabled")
 def enable_quicksync():
-    os.system("rm -rf /mnt/hdd/mynode/settings/quicksync_disabled")
+    delete_file("/mnt/hdd/mynode/settings/quicksync_disabled")
 
 def settings_disable_quicksync():
     disable_quicksync()
@@ -675,11 +682,11 @@ def get_quicksync_log():
 # Product Key Functions
 #==================================
 def set_skipped_product_key():
-    os.system("touch /home/bitcoin/.mynode/.product_key_skipped")
-    os.system("touch /mnt/hdd/mynode/settings/.product_key_skipped")
+    touch("/home/bitcoin/.mynode/.product_key_skipped")
+    touch("/mnt/hdd/mynode/settings/.product_key_skipped")
 def unset_skipped_product_key():
-    os.system("rm -rf /home/bitcoin/.mynode/.product_key_skipped")
-    os.system("rm -rf /mnt/hdd/mynode/settings/.product_key_skipped")
+    delete_file("/home/bitcoin/.mynode/.product_key_skipped")
+    delete_file("/mnt/hdd/mynode/settings/.product_key_skipped")
 def skipped_product_key():
     return os.path.isfile("/home/bitcoin/.mynode/.product_key_skipped") or \
            os.path.isfile("/mnt/hdd/mynode/settings/.product_key_skipped")
@@ -687,8 +694,8 @@ def is_community_edition():
     return skipped_product_key()
 
 def delete_product_key():
-    os.system("rm -rf /home/bitcoin/.mynode/.product_key")
-    os.system("rm -rf /mnt/hdd/mynode/settings/.product_key")
+    delete_file("/home/bitcoin/.mynode/.product_key")
+    delete_file("/mnt/hdd/mynode/settings/.product_key")
 def has_product_key():
     return os.path.isfile("/home/bitcoin/.mynode/.product_key")
 def get_product_key():
@@ -739,10 +746,9 @@ def get_fsck_results():
 
 def set_skip_fsck(skip):
     if skip:
-        os.system("touch /home/bitcoin/.mynode/skip_fsck")
+        touch("/home/bitcoin/.mynode/skip_fsck")
     else:
-        os.system("rm -f /home/bitcoin/.mynode/skip_fsck")
-    os.system("sync")
+        delete_file("/home/bitcoin/.mynode/skip_fsck")
 def skip_fsck():
     return os.path.isfile("/home/bitcoin/.mynode/skip_fsck")
 
@@ -756,10 +762,10 @@ def has_sd_rw_error():
 def has_oom_error():
     return os.path.isfile("/tmp/oom_error")
 def clear_oom_error():
-    os.system("rm -f /tmp/oom_error")
-    os.system("rm -f /tmp/oom_info")
+    delete_file("/tmp/oom_error")
+    delete_file("/tmp/oom_info")
 def set_oom_error(oom_error):
-    os.system("touch /tmp/oom_error")
+    touch("/tmp/oom_error")
     set_file_contents("/tmp/oom_info", oom_error)
 def get_oom_error_info():
     try:
@@ -797,7 +803,7 @@ def get_docker_image_build_status_color():
 
 def reset_docker():
     # Delete docker data
-    os.system("touch /home/bitcoin/reset_docker")
+    touch("/home/bitcoin/reset_docker")
 
     # Reset marker files
     os.system("rm -f /mnt/hdd/mynode/settings/webssh2_version")
@@ -896,11 +902,9 @@ def delete_lnd_data():
 def is_testnet_enabled():
     return os.path.isfile("/mnt/hdd/mynode/settings/.testnet_enabled")
 def enable_testnet():
-    os.system("touch /mnt/hdd/mynode/settings/.testnet_enabled")
-    os.system("sync")
+    touch("/mnt/hdd/mynode/settings/.testnet_enabled")
 def disable_testnet():
-    os.system("rm -f /mnt/hdd/mynode/settings/.testnet_enabled")
-    os.system("sync")
+    delete_file("/mnt/hdd/mynode/settings/.testnet_enabled")
 def toggle_testnet(): 
     if is_testnet_enabled():
         disable_testnet()
@@ -983,15 +987,13 @@ def is_btcrpcexplorer_token_enabled():
     return True
 
 def enable_btcrpcexplorer_token():
-    os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpcexplorer_disable_token")
-    os.system("sync")
+    delete_file("/mnt/hdd/mynode/settings/.btcrpcexplorer_disable_token")
     if is_service_enabled("btcrpcexplorer"):
         restart_service("btcrpcexplorer")
 
 
 def disable_btcrpcexplorer_token():
-    os.system("touch /mnt/hdd/mynode/settings/.btcrpcexplorer_disable_token")
-    os.system("sync")
+    touch("/mnt/hdd/mynode/settings/.btcrpcexplorer_disable_token")
     if is_service_enabled("btcrpcexplorer"):
         restart_service("btcrpcexplorer")
 
@@ -1009,23 +1011,19 @@ def is_btc_lnd_tor_enabled():
     return os.path.isfile("/mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
 
 def enable_btc_lnd_tor():
-    os.system("touch /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
-    os.system("sync")
+    touch("/mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
 
 def disable_btc_lnd_tor():
-    os.system("rm -f /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
-    os.system("sync")
+    delete_file("/mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
 
 def is_aptget_tor_enabled():
     return os.path.isfile("/mnt/hdd/mynode/settings/torify_apt_get")
 
 def enable_aptget_tor():
-    os.system("touch /mnt/hdd/mynode/settings/torify_apt_get")
-    os.system("sync")
+    touch("/mnt/hdd/mynode/settings/torify_apt_get")
 
 def disable_aptget_tor():
-    os.system("rm -f /mnt/hdd/mynode/settings/torify_apt_get")
-    os.system("sync")
+    delete_file("/mnt/hdd/mynode/settings/torify_apt_get")
 
 def get_onion_url_ssh():
     if is_community_edition(): return "not_available"

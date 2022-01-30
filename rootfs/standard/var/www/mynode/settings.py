@@ -45,8 +45,8 @@ def page_settings():
     upload_rate = 100
     download_rate = 100
     try:
-        upload_rate = subprocess.check_output(["cat","/mnt/hdd/mynode/settings/quicksync_upload_rate"])
-        download_rate = subprocess.check_output(["cat","/mnt/hdd/mynode/settings/quicksync_background_download_rate"])
+        upload_rate = to_string(subprocess.check_output(["cat","/mnt/hdd/mynode/settings/quicksync_upload_rate"]))
+        download_rate = to_string(subprocess.check_output(["cat","/mnt/hdd/mynode/settings/quicksync_background_download_rate"]))
     except:
         upload_rate = 100
         download_rate = 100
@@ -85,6 +85,7 @@ def page_settings():
         "is_testnet_enabled": is_testnet_enabled(),
         "is_quicksync_disabled": not is_quicksync_enabled(),
         "netdata_enabled": is_service_enabled("netdata"),
+        "www_python3": is_www_python3(),
         "randomize_balances": get_randomize_balances(),
         "is_uploader_device": is_uploader(),
         "download_rate": download_rate,
@@ -513,8 +514,7 @@ def open_clone_tool_page():
 
     check_and_mark_reboot_action("open_clone_tool")
 
-    os.system("touch /home/bitcoin/open_clone_tool")
-    os.system("sync")
+    touch("/home/bitcoin/open_clone_tool")
 
     # Trigger reboot
     t = Timer(1.0, reboot_device)
@@ -603,7 +603,7 @@ def format_external_drive_page():
     else:
         check_and_mark_reboot_action("format_external_drive")
 
-        os.system("touch /home/bitcoin/.mynode/force_format_prompt")
+        touch("/home/bitcoin/.mynode/force_format_prompt")
 
         templateData = {
             "title": "myNode",
@@ -1078,6 +1078,23 @@ def page_clear_oom_error():
     check_logged_in()
     clear_oom_error()
     flash("Warning Cleared", category="message")
+    return redirect("/settings")
+
+@mynode_settings.route("/settings/enable_www_python3")
+def page_enable_enable_www_python3():
+    check_logged_in()
+    
+    enable = request.args.get('enable')
+    if enable == "1":
+        set_www_python3(True)
+    else:
+        set_www_python3(False)
+
+    # Restart web server
+    t = Timer(3.0, restart_service, ["www"])
+    t.start()
+
+    flash("WWW Python 3 Setting Updated", category="message")
     return redirect("/settings")
 
 @mynode_settings.route("/settings/enable_randomize_balances")

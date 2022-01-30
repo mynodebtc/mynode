@@ -249,9 +249,7 @@ def is_bip158_enabled():
     return False
 
 def enable_bip158():
-    os.system("touch /mnt/hdd/mynode/settings/.bip158_enabled")
-    os.system("sync")
+    touch("/mnt/hdd/mynode/settings/.bip158_enabled")
 
 def disable_bip158():
-    os.system("rm /mnt/hdd/mynode/settings/.bip158_enabled")
-    os.system("sync")
+    delete_file("/mnt/hdd/mynode/settings/.bip158_enabled")

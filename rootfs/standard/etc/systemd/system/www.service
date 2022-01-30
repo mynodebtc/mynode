@@ -15,7 +15,8 @@ RestartSec=10
 Nice=-15
 IOAccounting=true
 IOWeight=2000
-ExecStart=/usr/bin/python2.7 /var/www/mynode/mynode.py
+ExecStart=/usr/bin/mynode_www.sh
+#ExecStart=/usr/bin/python2.7 /var/www/mynode/mynode.py
 # Future
 #ExecStart=python3 /var/www/mynode/mynode.py
 User=root

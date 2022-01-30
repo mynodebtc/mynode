@@ -205,7 +205,7 @@ def index():
         return render_template('state.html', **templateData)
     elif status == STATE_DRIVE_CONFIRM_FORMAT:
         if request.args.get('format'):
-            os.system("touch /tmp/format_ok")
+            touch("/tmp/format_ok")
             time.sleep(1)
             return redirect("/")
 
@@ -291,11 +291,11 @@ def index():
         elif clone_state == CLONE_STATE_NEED_CONFIRM:
             # Clone was confirmed
             if request.args.get('clone_confirm'):
-                os.system("touch /tmp/.clone_confirm")
+                touch("/tmp/.clone_confirm")
                 time.sleep(3)
                 return redirect("/")
             if request.args.get('clone_rescan'):
-                os.system("touch /tmp/.clone_rescan")
+                touch("/tmp/.clone_rescan")
                 time.sleep(3)
                 return redirect("/")
 

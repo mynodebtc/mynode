@@ -41,6 +41,26 @@ def unquote_plus(s):
 #==================================
 # Utilities
 #==================================
+def touch(file_path):
+    # In rare cases, touch seems to fail, so try both python and system call
+    # Touch via python
+    if os.path.exists(file_path):
+        os.utime(file_path, None)
+    else:
+        open(file_path, 'a').close()
+    # Touch via system
+    os.system("touch {}".format(file_path))
+    # Sync
+    os.system("sync")
+
+def delete_file(file_path):
+    try:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            os.system("rm -f {}".format(file_path))
+    except Exception as e:
+        log_message("FAILED TO DELETE {}".format(file_path))
+    
 def get_file_contents(filename):
     contents = "UNKNOWN"
     try:

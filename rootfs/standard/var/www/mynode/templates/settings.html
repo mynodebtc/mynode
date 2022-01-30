@@ -430,6 +430,21 @@
                     }
                 });
 
+                $('#www_python3_checkbox').change(function () {
+                    $("#www_python3_button").show();
+                });
+                $("#www_python3_button").on("click", function() {
+                    enabled=$('#www_python3_checkbox').is(":checked")
+                    if (enabled)
+                    {
+                        window.location.href='/settings/enable_www_python3?enable=1'
+                    }
+                    else
+                    {
+                        window.location.href='/settings/enable_www_python3?enable=0'
+                    }
+                });
+
                 $('#randomize_balances_checkbox').change(function () {
                     $("#randomize_balances_button").show();
                 });
@@ -1157,6 +1172,18 @@
 
                 <div class="divider"></div>
             {% endif %}
+
+            <div class="settings_block_subheader">Use Python 3 for Web Interface</div>
+            This will use the beta version of the web UI, which relies on python 3.
+            <br/><br/>
+            <label class="switch">
+                <input type="checkbox" id="www_python3_checkbox" {% if www_python3 %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <br/><br/>
+            <button id="www_python3_button" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+
+            <div class="divider"></div>
 
             <div class="settings_block_subheader">Randomize Balances</div>
             This shows random balances for taking screenshots and testing the interface.
