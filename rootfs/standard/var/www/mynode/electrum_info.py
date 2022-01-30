@@ -54,7 +54,7 @@ def get_electrs_status():
     bitcoin_block_height = get_bitcoin_block_height()
     log = ""
     try:
-        log += subprocess.check_output("journalctl --unit=electrs --no-pager | tail -n 100", shell=True)
+        log += to_string(subprocess.check_output("journalctl --unit=electrs --no-pager | tail -n 100", shell=True))
     except:
         log += ""
     lines = log.splitlines()
@@ -107,10 +107,10 @@ def get_electrs_db_size(is_testnet=False):
         folder = "/mnt/hdd/mynode/electrs/bitcoin"
         if is_testnet:
             folder = "/mnt/hdd/mynode/electrs/testnet"
-        size = subprocess.check_output("du -h "+folder+" | head -n1 | awk '{print $1;}'", shell=True)
+        size = to_string(subprocess.check_output("du -h "+folder+" | head -n1 | awk '{print $1;}'", shell=True))
     except Exception as e:
         size = "Error"
-    return to_string( size )
+    return size
 
 def get_from_electrum(method, params=[]):
     params = [params] if type(params) is not list else params

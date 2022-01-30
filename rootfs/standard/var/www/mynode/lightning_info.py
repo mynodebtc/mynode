@@ -391,7 +391,7 @@ def lnd_get_v2(path, timeout=10):
     return r.json()
 
 def gen_new_wallet_seed():
-    seed = subprocess.check_output("python3 /usr/bin/gen_seed.py", shell=True)
+    seed = to_string(subprocess.check_output("python3 /usr/bin/gen_seed.py", shell=True))
     return seed
 
 def get_lnd_lit_password():
@@ -423,7 +423,7 @@ def get_lightning_macaroon_file():
     return "/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon"
 
 def get_macaroon():
-    m = subprocess.check_output("xxd -ps -u -c 1000 " + get_lightning_macaroon_file(), shell=True)
+    m = to_string(subprocess.check_output("xxd -ps -u -c 1000 " + get_lightning_macaroon_file(), shell=True))
     return m.strip()
 
 def lnd_wallet_exists():
@@ -466,8 +466,7 @@ def lnd_get_channel_db_size():
         path = "testnet"
     size = "???"
     try:
-        s = subprocess.check_output("ls -lsah /mnt/hdd/mynode/lnd/data/graph/"+path+"/channel.db | awk '{print $6}'", shell=True)
-        size = to_string( s )
+        size = to_string(subprocess.check_output("ls -lsah /mnt/hdd/mynode/lnd/data/graph/"+path+"/channel.db | awk '{print $6}'", shell=True))
     except:
         size = "ERR"
     return size

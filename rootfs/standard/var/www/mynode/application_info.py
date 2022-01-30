@@ -259,7 +259,7 @@ def get_application_status_special(short_name):
             return "Waiting for initialization..."
     elif short_name == "dojo":
         try:
-            dojo_initialized = subprocess.check_output("docker inspect --format={{.State.Running}} db", shell=True).strip()
+            dojo_initialized = to_string(subprocess.check_output("docker inspect --format={{.State.Running}} db", shell=True).strip())
         except:
             dojo_initialized = ""
         if dojo_initialized != "true":
@@ -305,7 +305,7 @@ def get_application_status_color_special(short_name):
             return "yellow"
     elif short_name == "dojo":
         try:
-            dojo_initialized = subprocess.check_output("docker inspect --format={{.State.Running}} db", shell=True).strip()
+            dojo_initialized = to_string(subprocess.check_output("docker inspect --format={{.State.Running}} db", shell=True).strip())
         except:
             dojo_initialized = ""
         if dojo_initialized != "true":
@@ -374,7 +374,7 @@ def has_customized_app_versions():
 
 def get_app_version_data():
     try:
-        contents = subprocess.check_output('cat /usr/share/mynode/mynode_app_versions.sh | grep -v "_VERSION_FILE=" | grep "="', shell=True)
+        contents = to_string(subprocess.check_output('cat /usr/share/mynode/mynode_app_versions.sh | grep -v "_VERSION_FILE=" | grep "="', shell=True))
         return contents
     except Exception as e:
         return "ERROR"

@@ -110,7 +110,7 @@ def get_file_log(file_path):
         return "MISSING FILE"
 
     try:
-        status_log = subprocess.check_output(["tail","-n","200",file_path]).decode("utf8")
+        status_log = to_string(subprocess.check_output(["tail","-n","250",file_path]).decode("utf8"))
         lines = status_log.split('\n')
         lines.reverse()
         status_log = '\n'.join(lines)

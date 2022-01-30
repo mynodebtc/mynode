@@ -6,6 +6,7 @@ from enable_disable_functions import *
 from bitcoin_info import get_mynode_block_height
 from electrum_info import get_electrs_status, is_electrs_active
 from application_info import *
+from utilities import *
 import subprocess
 import re
 import os
@@ -15,7 +16,7 @@ mynode_dojo = Blueprint('mynode_dojo',__name__)
 ## Status and color
 def is_dojo_initialized():
     try:
-        dojo_initialized = subprocess.check_output("docker inspect --format={{.State.Running}} db", shell=True)
+        dojo_initialized = to_string(subprocess.check_output("docker inspect --format={{.State.Running}} db", shell=True))
         dojo_initialized = dojo_initialized.strip()
     except:
         dojo_initialized = ""
@@ -55,7 +56,7 @@ def get_dojo_status():
 
 def get_dojo_tracker_status():
     try:
-        tracker_log = subprocess.check_output("docker logs --tail 100 nodejs", shell=True)
+        tracker_log = to_string(subprocess.check_output("docker logs --tail 100 nodejs", shell=True))
     except:
         return "error"
 
@@ -86,7 +87,7 @@ def get_dojo_tracker_status():
 def get_dojo_version():
     version = "Unknown"
     try:
-        version = subprocess.check_output("cat /mnt/hdd/mynode/dojo/docker/my-dojo/.env | grep -i DOJO_VERSION_TAG", shell=True)
+        version = to_string(subprocess.check_output("cat /mnt/hdd/mynode/dojo/docker/my-dojo/.env | grep -i DOJO_VERSION_TAG", shell=True))
         version = version.split("=")[1]
         version = version.strip()
     except:
@@ -96,7 +97,7 @@ def get_dojo_version():
 def get_dojo_admin_key():
     key = 'Not found'
     try:
-        key = subprocess.check_output("cat /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-node.conf | grep -i NODE_ADMIN_KEY= | cut -c 16-", shell=True)
+        key = to_string(subprocess.check_output("cat /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-node.conf | grep -i NODE_ADMIN_KEY= | cut -c 16-", shell=True))
         key = key.strip()
     except:
         key = 'error'
@@ -105,7 +106,7 @@ def get_dojo_admin_key():
 def get_dojo_addr():
     addr = 'Not found'
     try:
-        addr = subprocess.check_output("docker exec tor cat /var/lib/tor/hsv3dojo/hostname", shell=True)
+        addr = to_string(subprocess.check_output("docker exec tor cat /var/lib/tor/hsv3dojo/hostname", shell=True))
         page = '/admin'
         addr = addr.strip() + page
     except:
