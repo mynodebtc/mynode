@@ -136,7 +136,7 @@ Once you are running myNode, you can easily update the software yourself!
 4. Run `make rootfs`
 5. Run `make start_file_server`
     * This will run a local HTTP server so your device can download files
-6. On your device, run `sudo mynode-local-upgrade [dev pc ip address]`
+6. On the other terminal which you used to ssh into your device, run `sudo mynode-local-upgrade [dev pc ip address]`
     * This will download your locally generated artifact and install it on your device
     * Your device will automatically reboot to ensure updates take effect
 7. Optional: Run `make stop_file_server`
