@@ -612,9 +612,7 @@ def is_watchtower_enabled():
     return False
 
 def enable_watchtower():
-    os.system("touch /mnt/hdd/mynode/settings/.watchtower_enabled")
-    os.system("sync")
+    touch("/mnt/hdd/mynode/settings/.watchtower_enabled")
 
 def disable_watchtower():
-    os.system("rm /mnt/hdd/mynode/settings/.watchtower_enabled")
-    os.system("sync")
+    delete_file("/mnt/hdd/mynode/settings/.watchtower_enabled")

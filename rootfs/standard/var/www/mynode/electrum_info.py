@@ -33,7 +33,7 @@ def update_electrs_info():
         bitcoin_block_height = get_bitcoin_block_height()
         if electrum_server_current_block != None and bitcoin_block_height != None:
             if electrum_server_current_block > bitcoin_block_height - 2:
-                os.system("touch /tmp/electrs_up_to_date")
+                touch("/tmp/electrs_up_to_date")
                 electrs_active = True
     except:
         pass

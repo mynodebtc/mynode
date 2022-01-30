@@ -22,8 +22,7 @@ def reinstall_app(app):
         # Clear app data
         clear_application_cache()
 
-        os.system("touch /tmp/skip_base_upgrades")
-        os.system("sync")
+        touch("/tmp/skip_base_upgrades")
 
         # Reinstall
         os.system("mkdir -p /home/admin/upgrade_logs")
@@ -169,8 +168,7 @@ def clear_application_cache():
     mynode_applications = None
 
 def trigger_application_refresh():
-    os.system("touch /tmp/need_application_refresh")
-    os.system("sync")
+    touch("/tmp/need_application_refresh")
 
 def need_application_refresh():
     global mynode_applications
