@@ -380,6 +380,15 @@
             <div id="usb_extras_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{usb_extras_status_log}}</pre></div>
             <div class="divider"></div>
 
+            <div class="settings_block_subheader">CORS Proxy</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ corsproxy_status_color }}"></div>
+                {{ corsproxy_status }}
+            </div>
+            <button id="show_corsproxy_status" onclick="showLog('corsproxy')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="corsproxy_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{corsproxy_status_log}}</pre></div>
+            <div class="divider"></div>
+
             <div class="settings_block_subheader">Web Server Status</div>
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ www_status_color }}"></div>

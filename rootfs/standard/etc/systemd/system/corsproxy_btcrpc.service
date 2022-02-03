@@ -9,6 +9,7 @@ After=bitcoin.service
 [Service]
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_bitcoin.sh
+ExecStartPre=/usr/bin/mynode_pre_corsproxy.sh
 WorkingDirectory=/opt/mynode/corsproxy
 Environment="CORSPROXY_PORT=8335" "CORSPROXY_HOST=0.0.0.0" "CORSPROXY_TARGET=localhost:8332" "CORSPROXY_USE_HTTPS=true" "CORSPROXY_HTTPS_KEY=/home/bitcoin/.mynode/https/myNode.local.key" "CORSPROXY_HTTPS_CERT=/home/bitcoin/.mynode/https/myNode.local.crt"
 ExecStart=/usr/bin/npm start
