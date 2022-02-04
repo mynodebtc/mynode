@@ -12,7 +12,9 @@ mynode-get-quicksync-status > /tmp/mynode_info/quicksync_state.txt
 cp /usr/share/mynode/version /tmp/mynode_info/version
 cp -rf /home/admin/upgrade_logs /tmp/mynode_info/
 cp /mnt/hdd/mynode/bitcoin/debug.log /tmp/mynode_info/bitcoin_debug.log
-
+if [ -f /mnt/hdd/mynode/lnd/logs/bitcoin/mainnet/lnd.log ]; then
+    cp /mnt/hdd/mynode/lnd/logs/bitcoin/mainnet/lnd.log /tmp/mynode_info/lnd_debug.log
+fi
 echo "" > /tmp/mynode_info/device_info
 
 echo "##### df -h #####" >> /tmp/mynode_info/device_info
