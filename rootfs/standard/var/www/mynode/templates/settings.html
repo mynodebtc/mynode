@@ -169,6 +169,17 @@
                     );
                 });
 
+                $("#view-usb-info").on("click", function() {
+                    $("#view-usb-info").prop("disabled",true);
+                    $("#view-usb-info-results").html("Loading...");
+                    $.get("/api/get_usb_info")
+                        .done(function( data ) {
+                            $("#view-usb-info").prop("disabled",false);
+                            $("#view-usb-info-results").html( data["data"] );
+                        }
+                    );
+                });
+
                 function factoryReset() {
                     $("#factory_reset_form").submit();
                     factory_reset_dialog.dialog( "close" );
@@ -442,6 +453,21 @@
                     else
                     {
                         window.location.href='/settings/enable_www_python3?enable=0'
+                    }
+                });
+
+                $('#uas_usb_checkbox').change(function () {
+                    $("#uas_usb_button").show();
+                });
+                $("#uas_usb_button").on("click", function() {
+                    enabled=$('#uas_usb_checkbox').is(":checked")
+                    if (enabled)
+                    {
+                        window.location.href='/settings/enable_uas_usb?enable=1'
+                    }
+                    else
+                    {
+                        window.location.href='/settings/enable_uas_usb?enable=0'
                     }
                 });
 
@@ -1096,6 +1122,26 @@
             <button id="run-disk-benchmark" class="ui-button ui-widget ui-corner-all settings_button">Run Disk Benchmark</button>
             <pre id="run-disk-benchmark-results"></pre>
             
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Enable UAS USB Driver</div>
+            This will allow the device to use the UAS USB driver, which may change performance. Only affects Raspberry Pi 4. This will reboot your device.
+            <br/><br/>
+            <label class="switch">
+                <input type="checkbox" id="uas_usb_checkbox" {% if uas_usb %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <br/><br/>
+            <button id="uas_usb_button" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">View USB Information</div>
+            View information about the current USB devices.
+            <br/>
+            <button id="view-usb-info" class="ui-button ui-widget ui-corner-all settings_button">Show USB Info</button>
+            <pre id="view-usb-info-results"></pre>
+
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Remount External Drive</div>
