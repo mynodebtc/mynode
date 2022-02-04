@@ -230,3 +230,21 @@ def api_get_drive_benchmark():
     except Exception as e:
         data["data"] = str(e)
     return jsonify(data)
+
+@mynode_api.route("/api/get_usb_info")
+def api_get_usb_info():
+    check_logged_in()
+
+    data = {}
+    data["status"] = "error"
+    data["data"] = "UNKNOWN"
+    try:
+        info = ""
+        info += to_string(subprocess.check_output("lsusb", shell=True))
+        info += "\n\n"
+        info += to_string(subprocess.check_output("lsusb -t", shell=True))
+        data["data"] = info
+        data["status"] = "success"
+    except Exception as e:
+        data["data"] = str(e)
+    return jsonify(data)

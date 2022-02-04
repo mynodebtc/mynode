@@ -86,6 +86,7 @@ def page_settings():
         "is_quicksync_disabled": not is_quicksync_enabled(),
         "netdata_enabled": is_service_enabled("netdata"),
         "www_python3": is_www_python3(),
+        "uas_usb": is_uas_usb_enabled(),
         "randomize_balances": get_randomize_balances(),
         "is_uploader_device": is_uploader(),
         "download_rate": download_rate,
@@ -1082,6 +1083,32 @@ def page_clear_oom_error():
     clear_oom_error()
     flash("Warning Cleared", category="message")
     return redirect("/settings")
+
+@mynode_settings.route("/settings/enable_uas_usb")
+def page_enable_enable_uas_usb():
+    check_logged_in()
+    
+    enable = request.args.get('enable')
+    if enable == "1":
+        set_uas_usb_enabled(True)
+    else:
+        set_uas_usb_enabled(False)
+
+    os.system("systemctl restart usb_driver_check")
+    time.sleep(1)
+
+    # Trigger reboot
+    t = Timer(1.0, reboot_device)
+    t.start()
+
+    # Display wait page
+    templateData = {
+        "title": "myNode Reboot",
+        "header_text": "Restarting",
+        "subheader_text": "This will take several minutes...",
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('reboot.html', **templateData)
 
 @mynode_settings.route("/settings/enable_www_python3")
 def page_enable_enable_www_python3():
