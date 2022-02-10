@@ -536,6 +536,12 @@ chown bitcoin:bitcoin /mnt/hdd/mynode/settings/.btcrpc_environment
 if [ -f /mnt/hdd/mynode/bitcoin/bitcoin.conf ]; then
     sed -i "s/rpcauth=.*/$RPCAUTH/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
 fi
+if [ -f /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-bitcoind.conf ]; then
+    sed -i "s/BITCOIND_RPC_PASSWORD=.*/BITCOIND_RPC_PASSWORD=$BTCRPCPW/g" /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-bitcoind.conf
+fi
+if [ -f /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-bitcoind.conf.tpl ]; then
+    sed -i "s/BITCOIND_RPC_PASSWORD=.*/BITCOIND_RPC_PASSWORD=$BTCRPCPW/g" /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-bitcoind.conf.tpl
+fi
 
 
 # Append bitcoin UID and GID to btcrpc_environment
