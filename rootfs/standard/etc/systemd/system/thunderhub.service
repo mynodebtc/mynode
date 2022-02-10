@@ -11,7 +11,7 @@ ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_lnd.sh
 Environment=PORT=3030
 WorkingDirectory=/opt/mynode/thunderhub
-ExecStart=/usr/bin/npm run start -- -p 3030
+ExecStart=/usr/bin/npm run start
 
 User=bitcoin
 Group=bitcoin
