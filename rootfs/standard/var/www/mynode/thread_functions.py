@@ -6,6 +6,7 @@ from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from bitcoin_info import *
 from lightning_info import *
 from device_info import *
+from utilities import *
 from enable_disable_functions import *
 from systemctl_info import *
 from electrum_info import update_electrs_info
@@ -89,7 +90,7 @@ def update_device_info():
         device_temp = "{:.1f}".format(temp)
 
     except Exception as e:
-        print("CAUGHT update_device_info EXCEPTION: " + str(e))
+        log_message("CAUGHT update_device_info EXCEPTION: " + str(e))
         return
 
 # Updates main bitcoin info every 30 seconds
@@ -128,7 +129,7 @@ def update_bitcoin_main_info_thread():
                 time.sleep(10)
 
     except Exception as e:
-        print("CAUGHT update_bitcoin_main_info_thread EXCEPTION: " + str(e))
+        log_message("CAUGHT update_bitcoin_main_info_thread EXCEPTION: " + str(e))
 
 
 # Updates other bitcoin info every 60 seconds
@@ -137,7 +138,7 @@ def update_bitcoin_other_info_thread():
         # Get bitcoin info
         update_bitcoin_other_info()
     except Exception as e:
-        print("CAUGHT update_bitcoin_other_info_thread EXCEPTION: " + str(e))
+        log_message("CAUGHT update_bitcoin_other_info_thread EXCEPTION: " + str(e))
 
 
 # Updates electrs info every 60 seconds
@@ -146,7 +147,7 @@ def update_electrs_info_thread():
         if is_service_enabled("electrs"):
             update_electrs_info()
     except Exception as e:
-        print("CAUGHT update_electrs_info_thread EXCEPTION: " + str(e))
+        log_message("CAUGHT update_electrs_info_thread EXCEPTION: " + str(e))
 
 
 # Updates LND info every 60 seconds
@@ -155,7 +156,7 @@ def update_lnd_info_thread():
         # Get LND info
         update_lightning_info()
     except Exception as e:
-        print("CAUGHT update_lnd_info_thread EXCEPTION: " + str(e))
+        log_message("CAUGHT update_lnd_info_thread EXCEPTION: " + str(e))
 
 
 # Updates price info every 5 minutes
@@ -164,7 +165,7 @@ def update_price_info_thread():
         # Get Price Info
         update_price_info()
     except Exception as e:
-        print("CAUGHT update_price_info_thread EXCEPTION: " + str(e))
+        log_message("CAUGHT update_price_info_thread EXCEPTION: " + str(e))
 
 
 # Check every 3 hours
