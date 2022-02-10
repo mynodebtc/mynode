@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, abort, Markup, request, redirect, send_from_directory, url_for, flash
+from flask import Blueprint, render_template, session, abort, Markup, request, redirect, url_for, flash
 from pprint import pprint, pformat
 from threading import Timer
 from bitcoin_info import *
@@ -243,7 +243,7 @@ def lnd_regen_tls_cert():
 @mynode_lnd.route("/lnd/tls.cert")
 def lnd_tls_cert():
     check_logged_in()
-    return send_from_directory(directory="/mnt/hdd/mynode/lnd/", filename="tls.cert")
+    return download_file(directory="/mnt/hdd/mynode/lnd/", filename="tls.cert")
 
 @mynode_lnd.route("/lnd/admin.macaroon")
 def lnd_admin_macaroon():
@@ -254,7 +254,7 @@ def lnd_admin_macaroon():
         folder = "testnet"
 
     # Download macaroon
-    return send_from_directory(directory="/mnt/hdd/mynode/lnd/data/chain/bitcoin/{}/".format(folder), filename="admin.macaroon")
+    return download_file(directory="/mnt/hdd/mynode/lnd/data/chain/bitcoin/{}/".format(folder), filename="admin.macaroon")
 
 @mynode_lnd.route("/lnd/readonly.macaroon")
 def lnd_readonly_macaroon():
@@ -265,7 +265,7 @@ def lnd_readonly_macaroon():
         folder = "testnet"
 
     # Download macaroon
-    return send_from_directory(directory="/mnt/hdd/mynode/lnd/data/chain/bitcoin/{}/".format(folder), filename="readonly.macaroon")
+    return download_file(directory="/mnt/hdd/mynode/lnd/data/chain/bitcoin/{}/".format(folder), filename="readonly.macaroon")
 
 @mynode_lnd.route("/lnd/channel.backup")
 def lnd_channel_backup():
@@ -274,7 +274,7 @@ def lnd_channel_backup():
     scb_location = get_lnd_channel_backup_file()
     parts = os.path.split(scb_location)
 
-    return send_from_directory(directory=parts[0]+"/", filename=parts[1])
+    return download_file(directory=parts[0]+"/", filename=parts[1])
 
 @mynode_lnd.route("/lnd/create_wallet")
 def page_lnd_create_wallet():

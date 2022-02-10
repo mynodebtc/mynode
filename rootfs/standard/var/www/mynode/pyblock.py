@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, request, flash, send_from_directory
+from flask import Blueprint, render_template, redirect, request, flash
 from user_management import check_logged_in
 from device_info import read_ui_settings
 from systemctl_info import *

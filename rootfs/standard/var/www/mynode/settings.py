@@ -1,5 +1,5 @@
 from config import *
-from flask import Blueprint, render_template, session, abort, Markup, request, redirect, send_from_directory, url_for, flash
+from flask import Blueprint, render_template, session, abort, Markup, request, redirect, url_for, flash
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from bitcoin import is_bitcoin_synced
 from bitcoin_info import using_bitcoin_custom_config
@@ -835,16 +835,16 @@ def download_logs_page():
 
     os.system("/usr/bin/mynode_gen_debug_tarball.sh")
 
-    return send_from_directory(directory="/tmp/", filename="mynode_logs.tar.gz")
+    return download_file(directory="/tmp/", filename="mynode_logs.tar.gz")
 
 @mynode_settings.route("/settings/mynode_web.cert")
 def download_https_cert_page():
     check_logged_in()
 
     if os.path.isfile("/mnt/hdd/mynode/settings/https/myNode.local.crt"):
-        return send_from_directory(directory="/mnt/hdd/mynode/settings/https/", filename="myNode.local.crt")
+        return download_file(directory="/mnt/hdd/mynode/settings/https/", filename="myNode.local.crt")
     if os.path.isfile("/home/bitcoin/.mynode/https/myNode.local.crt"):
-        return send_from_directory(directory="/home/bitcoin/.mynode/https/", filename="myNode.local.crt")
+        return download_file(directory="/home/bitcoin/.mynode/https/", filename="myNode.local.crt")
     return "error_missing_file"
 
 @mynode_settings.route("/settings/regen-https-certs")

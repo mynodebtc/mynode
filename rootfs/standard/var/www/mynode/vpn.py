@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template, session, abort, Markup, request, redirect, send_from_directory, url_for, flash
+from flask import Blueprint, render_template, session, abort, Markup, request, redirect, url_for, flash
 from thread_functions import get_public_ip, check_in, find_public_ip
 from device_info import is_community_edition, read_ui_settings
 from user_management import check_logged_in
+from utilities import *
 import subprocess
 import pam
 import os
@@ -81,7 +82,7 @@ def page_download_ovpn():
         return redirect(url_for(".page_vpn_info"))
 
     # Download ovpn
-    return send_from_directory(directory="/home/pivpn/ovpns/", filename="mynode_vpn.ovpn")
+    return download_file(directory="/home/pivpn/ovpns/", filename="mynode_vpn.ovpn")
 
 @mynode_vpn.route("/vpn-info/find-public-ip")
 def check_in_page():
