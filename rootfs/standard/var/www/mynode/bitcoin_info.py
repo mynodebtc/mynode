@@ -60,7 +60,7 @@ def update_bitcoin_main_info():
             mynode_block_height = bitcoin_blockchain_info['blocks']
 
     except Exception as e:
-        print("ERROR: In update_bitcoin_info - {}".format( str(e) ))
+        log_message("ERROR: In update_bitcoin_info - {}".format( str(e) ))
         return False
 
     return True
@@ -108,16 +108,21 @@ def update_bitcoin_other_info():
             wallets = rpc_connection.listwallets()
             wallet_data = []
             for w in wallets:
-                wallet_name = urllib.pathname2url(w)
+                wallet_name = "FILL_IN"
+                if isPython3():
+                    wallet_name = urllib.request.pathname2url(w)
+                else:
+                    wallet_name = urllib.pathname2url(w)
+
                 wallet_rpc_connection = AuthServiceProxy("http://%s:%s@127.0.0.1:8332/wallet/%s"%(rpc_user, rpc_pass, wallet_name), timeout=60)
                 wallet_info = wallet_rpc_connection.getwalletinfo()
                 wallet_data.append(wallet_info)
             bitcoin_wallets = wallet_data
-        except:
-            pass
+        except Exception as e1:
+            log_message("ERROR: In update_bitcoin_other_info - {}".format( str(e1) ))
 
-    except Exception as e:
-        print("ERROR: In update_bitcoin_info - {}".format( str(e) ))
+    except Exception as e2:
+        log_message("ERROR: In update_bitcoin_other_info - {}".format( str(e2) ))
         return False
 
     return True
