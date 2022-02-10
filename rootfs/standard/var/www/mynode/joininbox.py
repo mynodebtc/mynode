@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template, redirect, request, flash, send_from_directory
+from flask import Blueprint, render_template, redirect, request, flash
 from user_management import check_logged_in
 from device_info import read_ui_settings
 from systemctl_info import *
+from utilities import *
 import os
 import time
 import subprocess
@@ -53,4 +54,4 @@ def joininbox_download_wallet():
         flash("Error finding wallet to download!", category="error")
         return redirect("/joininbox")
 
-    return send_from_directory(directory=wallet_folder, filename=wallet_name, as_attachment=True)
+    return download_file(directory=wallet_folder, filename=wallet_name)

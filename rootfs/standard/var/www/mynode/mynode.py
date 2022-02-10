@@ -1,6 +1,6 @@
 
 from config import *
-from flask import Flask, render_template, Markup, send_from_directory, redirect, request, url_for
+from flask import Flask, render_template, Markup, redirect, request, url_for
 from user_management import *
 from api import mynode_api
 from bitcoin import mynode_bitcoin

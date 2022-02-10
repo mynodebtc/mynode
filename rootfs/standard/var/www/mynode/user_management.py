@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, abort, Markup, request, redirect, send_from_directory, url_for, flash
+from flask import Blueprint, render_template, session, abort, Markup, request, redirect, url_for, flash
 from config import *
 import time
 import pam

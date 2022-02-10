@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, send_from_directory, abort, Markup, request, redirect, flash
+from flask import Blueprint, render_template, session, abort, Markup, request, redirect, flash
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from pprint import pprint, pformat
 from bitcoin_info import *
@@ -141,12 +141,12 @@ def bitcoin_download_wallet():
     t = Timer(3.0, cleanup_download_wallets)
     t.start()
 
-    return send_from_directory(directory="/tmp/download_wallets/", filename=wallet_name, as_attachment=True)
+    return download_file(directory="/tmp/download_wallets/", filename=wallet_name)
 
 @mynode_bitcoin.route("/bitcoin/bitcoin_whitepaper.pdf")
 def bitcoin_whitepaper_pdf():
     check_logged_in()
-    return send_from_directory(directory="/mnt/hdd/mynode/bitcoin/", filename="bitcoin_whitepaper.pdf")
+    return download_file(directory="/mnt/hdd/mynode/bitcoin/", filename="bitcoin_whitepaper.pdf")
 
 @mynode_bitcoin.route("/bitcoin/reset_config")
 def bitcoin_reset_config_page():

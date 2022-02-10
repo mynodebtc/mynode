@@ -1,3 +1,4 @@
+from flask import send_from_directory
 import os
 import subprocess
 import sys
@@ -142,3 +143,13 @@ def format_sat_amount(amount):
     except:
         r = amount
     return r
+
+
+#==================================
+# Flask Functions
+#==================================
+def download_file(directory, filename, downloaded_file_name=None, as_attachment=True):
+    if isPython3():
+        return send_from_directory(directory=directory, path=filename, filename=None, as_attachment=as_attachment)
+    else:
+        return send_from_directory(directory=directory, filename=filename, as_attachment=as_attachment)
