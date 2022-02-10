@@ -891,8 +891,8 @@ def reset_bitcoin_env_file():
 def delete_bitcoin_data():
     os.system("rm -rf /mnt/hdd/mynode/bitcoin")
     os.system("rm -rf /mnt/hdd/mynode/quicksync/.quicksync_complete")
-    os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpc_environment")
-    os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpcpw")
+    #os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpc_environment")
+    #os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpcpw")
 
 def reset_blockchain():
     stop_bitcoin()
@@ -1206,5 +1206,5 @@ def generate_qr_code(url):
         img = qr.make_image()
         return img
     except Exception as e:
-        print("generate_qr_code exception: {}".format(str(e)))
+        log_message("generate_qr_code exception: {}".format(str(e)))
         return None
