@@ -1,3 +1,18 @@
+=== v0.2.52 ===
+- Released: 02/11/22
+- Upgrade LND to v0.14.2
+- Upgrade Loop to v0.17.0
+- Upgrade BTCPay Server to v1.4.4
+- Upgrade Specter to v1.8.1
+- Upgrade Whirlpool to v0.10.13
+- Upgrade BoS to v11.52.1
+- Improve QR code scanning
+- Add toggle for BIP37 and BIP157
+- Add UAS toggle for USB driver (RP4)
+- Fix: Prevent RPC password errors after resetting blockchain
+- Fix: Corsproxy now runs properly
+- Devs: Add toggle for Python3 web UI
+
 === v0.2.51 ===
 - Released: 01/28/22
 - Upgrade Mempool to v2.3.1
