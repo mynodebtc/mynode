@@ -24,6 +24,49 @@
                     $("#copy_rpc_password").show();
                 }
 
+                $('#bip37_checkbox').change(function () {
+                    $("#bip37_save").show();
+                });
+                $("#bip37_save").on("click", function() {
+                    enabled=$('#bip37_checkbox').is(":checked");
+                    if (enabled)
+                    {
+                        openConfirmDialog("confirm-dialog", 
+                                        "Enable Peer Bloom Filters (BIP 37)", 
+                                        "Are you sure you want to enable bloom filters?<br/><br/>\
+                                        Enabling peer bloom filters may have negative consequences. See https://github.com/bitcoin/bitcoin/issues/9540.",
+                                        function(){
+                                            $( this ).dialog( "close" );
+                                            window.location.href='/bitcoin/toggle_bip37?enabled=1';
+                                        });
+                    }
+                    else
+                    {
+                        window.location.href='/bitcoin/toggle_bip37?enabled=0';
+                    }
+                });
+
+                $('#bip157_checkbox').change(function () {
+                    $("#bip157_save").show();
+                });
+                $("#bip157_save").on("click", function() {
+                    enabled=$('#bip157_checkbox').is(":checked");
+                    if (enabled)
+                    {
+                        openConfirmDialog("confirm-dialog", 
+                                        "Enable Peer Block Filters (BIP 157)", 
+                                        "Are you sure you want to enable peer block filters?",
+                                        function(){
+                                            $( this ).dialog( "close" );
+                                            window.location.href='/bitcoin/toggle_bip157?enabled=1';
+                                        });
+                    }
+                    else
+                    {
+                        window.location.href='/bitcoin/toggle_bip157?enabled=0';
+                    }
+                });
+
                 $('#bip158_checkbox').change(function () {
                     $("#bip158_save").show();
                 });
@@ -32,12 +75,11 @@
                     if (enabled)
                     {
                         openConfirmDialog("confirm-dialog", 
-                                        "Enable block filters (BIP 158)", 
+                                        "Enable Block Filters (BIP 158)", 
                                         "Are you sure you want to enable block filters?\
                                         This will take some time to download and occupy about 5GB of storage.",
                                         function(){
                                             $( this ).dialog( "close" );
-                                            console.log("Inside callback of enabling BIP 158!!")
                                             window.location.href='/bitcoin/toggle_bip158?enabled=1';
                                         });
                     }
@@ -139,6 +181,26 @@
                         <tr>
                             <th>Whitepaper</th>
                             <td><a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/bitcoin/bitcoin_whitepaper.pdf">download</a></td>
+                        </tr>
+                        <tr>
+                            <th>Peer Bloom Filters (BIP 37)</th>
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox" id="bip37_checkbox" {% if bip37_enabled %}checked{% endif %}>
+                                    <span class="slider round"></span>
+                                </label>
+                                <button id="bip37_save" style="display: none; float: right;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Peer Block Filters (BIP 157)</th>
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox" id="bip157_checkbox" {% if bip157_enabled %}checked{% endif %}>
+                                    <span class="slider round"></span>
+                                </label>
+                                <button id="bip157_save" style="display: none; float: right;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                            </td>
                         </tr>
                         <tr>
                             <th>Block Filters (BIP 158)</th>

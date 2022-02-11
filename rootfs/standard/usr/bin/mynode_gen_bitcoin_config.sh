@@ -61,6 +61,13 @@ else
         cat /usr/share/mynode/bitcoin_testnet.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
     fi
 
+    # Append BIP setting toggles
+    if [ -f /mnt/hdd/mynode/settings/.bip37_enabled ]; then
+        cat /usr/share/mynode/bitcoin_bip37.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    fi
+    if [ -f /mnt/hdd/mynode/settings/.bip157_enabled ]; then
+        cat /usr/share/mynode/bitcoin_bip157.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    fi
     if [ -f /mnt/hdd/mynode/settings/.bip158_enabled ]; then
         cat /usr/share/mynode/bitcoin_bip158.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
     fi

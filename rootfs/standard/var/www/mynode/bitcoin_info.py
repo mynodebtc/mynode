@@ -248,13 +248,29 @@ def restart_bitcoin():
     t = Timer(1.0, restart_bitcoin_actual)
     t.start()
 
+def is_bip37_enabled():
+    if os.path.isfile("/mnt/hdd/mynode/settings/.bip37_enabled"):
+        return True
+    return False
+def enable_bip37():
+    touch("/mnt/hdd/mynode/settings/.bip37_enabled")
+def disable_bip37():
+    delete_file("/mnt/hdd/mynode/settings/.bip37_enabled")
+
+def is_bip157_enabled():
+    if os.path.isfile("/mnt/hdd/mynode/settings/.bip157_enabled"):
+        return True
+    return False
+def enable_bip157():
+    touch("/mnt/hdd/mynode/settings/.bip157_enabled")
+def disable_bip157():
+    delete_file("/mnt/hdd/mynode/settings/.bip157_enabled")
+
 def is_bip158_enabled():
     if os.path.isfile("/mnt/hdd/mynode/settings/.bip158_enabled"):
         return True
     return False
-
 def enable_bip158():
     touch("/mnt/hdd/mynode/settings/.bip158_enabled")
-
 def disable_bip158():
     delete_file("/mnt/hdd/mynode/settings/.bip158_enabled")
