@@ -61,8 +61,8 @@ SECP256K1_VERSION=486205aa68b7f1d4291f78fa20bc4485fd843e1c
 SECP256K1_VERSION_FILE=/home/bitcoin/.mynode/secp256k1_version
 SECP256K1_LATEST_VERSION_FILE=/home/bitcoin/.mynode/secp256k1_version_latest
 
-WHIRLPOOL_VERSION="0.10.12"
-WHIRLPOOL_UPLOAD_FILE_ID="c779031385b098281e22dbe75bfeeac0"
+WHIRLPOOL_VERSION="0.10.13"
+WHIRLPOOL_UPLOAD_FILE_ID="c1bb32bac6d4b377f625c996387375c2"
 # Update sig file at /usr/share/whirlpool/whirlpool.asc for each release
 WHIRLPOOL_VERSION_FILE=/home/bitcoin/.mynode/whirlpool_version
 WHIRLPOOL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/whirlpool_version_latest
