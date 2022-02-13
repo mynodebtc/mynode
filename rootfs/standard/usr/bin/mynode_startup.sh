@@ -380,7 +380,7 @@ if [ $IS_RASPI4 -eq 1 ]; then
 fi
 
 # RTL config
-# Moved to mynode_pre_rtl.sh
+# Moved to pre_rtl.sh
 
 # BTCPay Server Setup
 mkdir -p /opt/mynode/btcpayserver
@@ -488,7 +488,7 @@ fi
 chown -R joinmarket:joinmarket /mnt/hdd/mynode/joinmarket
 
 # Setup Mempool
-# Moved to mynode_pre_mempool.sh
+# Moved to pre_mempool.sh
 
 # Setup Netdata
 mkdir -p /opt/mynode/netdata
@@ -753,6 +753,7 @@ systemctl enable check_in || true
 systemctl enable bitcoin || true                # Make sure new bitcoin service is used
 systemctl disable bitcoind || true              # Make sure new bitcoin service is used
 rm /etc/systemd/system/bitcoind.service || true # Make sure new bitcoin service is used
+systemctl daemon-reload || true
 if [ -f /usr/share/joininbox/menu.update.sh ] && [ -f /home/joinmarket/menu.update.sh ]; then
     sudo -u joinmarket cp -f /usr/share/joininbox/menu.update.sh /home/joinmarket/menu.update.sh
 fi

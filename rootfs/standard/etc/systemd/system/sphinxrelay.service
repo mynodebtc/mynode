@@ -9,7 +9,7 @@ After=lnd.service
 [Service]
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_lnd.sh
-ExecStartPre=+/usr/bin/mynode_pre_sphinxrelay.sh
+ExecStartPre=+/usr/bin/service_pre/pre_sphinxrelay.sh
 WorkingDirectory=/opt/mynode/sphinxrelay
 ExecStart=npm run prod
 
