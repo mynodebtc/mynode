@@ -10,7 +10,7 @@ After=bitcoin.service
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_bitcoin.sh
 ExecStartPre=/usr/bin/wait_on_electrs.sh
-ExecStartPre=+/usr/bin/mynode_pre_btcrpcexplorer.sh
+ExecStartPre=+/usr/bin/service_pre/pre_btcrpcexplorer.sh
 WorkingDirectory=/opt/mynode/btc-rpc-explorer
 ExecStart=/usr/bin/npm start
 
