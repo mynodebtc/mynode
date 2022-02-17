@@ -7,12 +7,14 @@ Wants=network-online.target
 After=network-online.target
 
 [Service]
+Type=simple
 ExecStart=/usr/local/bin/python3 /usr/bin/mynode_check_in.py
 User=root
 Group=root
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=mynode
+Restart=always
 RestartSec=30
 
 [Install]
