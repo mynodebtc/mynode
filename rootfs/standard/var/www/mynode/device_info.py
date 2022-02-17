@@ -260,7 +260,7 @@ def is_device_from_reseller():
 # Device Info
 #==================================
 def get_system_uptime():
-    uptime = to_string(subprocess.check_output('awk \'{print int($1/86400)" days "int($1%86400/3600)" hour(s) "int(($1%3600)/60)" minute(s) "int($1%60)" seconds(s)"}\' /proc/uptime', shell=True))
+    uptime = to_string(subprocess.check_output('awk \'{print int($1/86400)" days "int($1%86400/3600)" hour(s) "int(($1%3600)/60)" minute(s)"}\' /proc/uptime', shell=True))
     uptime = uptime.strip()
     return uptime
 
