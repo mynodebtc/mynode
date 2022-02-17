@@ -1,0 +1,21 @@
+# myNode Premium+ Connect
+# /etc/systemd/system/premium_plus_connect.service
+
+[Unit]
+Description=myNode Premium+ Connect
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/python3 /usr/bin/mynode_premium_plus_connect.py
+User=root
+Group=root
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=premium_plus_connect
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
