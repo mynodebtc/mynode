@@ -200,7 +200,7 @@ if ! skip_base_upgrades ; then
     pip3 install --upgrade pip setuptools wheel || pip3 install --upgrade pip setuptools wheel --use-deprecated=html5lib
     pip3 install gnureadline docker-compose pipenv bcrypt pysocks redis systemd --no-cache-dir
     pip3 install flask pam python-bitcoinrpc prometheus_client psutil transmissionrpc --no-cache-dir
-    pip3 install qrcode image pyudev --no-cache-dir
+    pip3 install qrcode image pyudev inotify_simple --no-cache-dir
 
     # For RP4 32-bit, install specific grpcio version known to build (uses proper glibc for wheel)
     if [ $IS_32_BIT = 1 ]; then
@@ -1072,6 +1072,7 @@ apt-get clean
 
 # Enable any new/required services
 systemctl enable check_in
+systemctl enable premium_plus_connect
 systemctl enable background
 systemctl enable docker
 systemctl enable bitcoin
