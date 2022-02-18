@@ -1,6 +1,8 @@
 from config import *
 from utilities import *
+from systemctl_info import *
 from threading import Timer
+import requests
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 import urllib
 import subprocess
@@ -18,6 +20,7 @@ bitcoin_peers = []
 bitcoin_network_info = None
 bitcoin_wallets = None
 bitcoin_mempool = None
+bitcoin_recommended_fees = None
 bitcoin_version = None
 
 # Functions
@@ -73,6 +76,7 @@ def update_bitcoin_other_info():
     global bitcoin_peers
     global bitcoin_network_info
     global bitcoin_mempool
+    global bitcoin_recommended_fees
     global bitcoin_wallets
 
     while bitcoin_blockchain_info == None:
@@ -118,6 +122,22 @@ def update_bitcoin_other_info():
                 wallet_info = wallet_rpc_connection.getwalletinfo()
                 wallet_data.append(wallet_info)
             bitcoin_wallets = wallet_data
+
+            # Get recommended fee info (from mempool on port 4080)
+            if is_service_enabled("mempool"):
+                try:
+                    r = requests.get("http://localhost:4080/api/v1/fees/recommended", timeout=1)
+                    data = r.json()
+                    bitcoin_recommended_fees = ""
+                    bitcoin_recommended_fees += "Low priority: {} sat/vB".format(data["hourFee"])
+                    bitcoin_recommended_fees += " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "
+                    bitcoin_recommended_fees += "Medium priority: {} sat/vB".format(data["halfHourFee"])
+                    bitcoin_recommended_fees += " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "
+                    bitcoin_recommended_fees += "High priority: {} sat/vB".format(data["fastestFee"])
+                except Exception as e:
+                    bitcoin_recommended_fees = "Fee error - " . str(e)
+            else:
+                bitcoin_recommended_fees = None
         except Exception as e1:
             log_message("ERROR: In update_bitcoin_other_info - {}".format( str(e1) ))
 
@@ -200,6 +220,10 @@ def get_bitcoin_mempool_size():
     info = get_bitcoin_mempool_info()
     size = float(info["bytes"]) / 1000 / 1000
     return "{:.3} MB".format(size)
+
+def get_bitcoin_recommended_fees():
+    global bitcoin_recommended_fees
+    return bitcoin_recommended_fees
 
 def get_bitcoin_wallets():
     global bitcoin_wallets

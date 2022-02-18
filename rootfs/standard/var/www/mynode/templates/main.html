@@ -19,6 +19,9 @@
             var lnd_last_btc_tx = "";
             var lnd_last_ln_tx = "";
             var price_data = {};
+            var device_info = null;
+            var bitcoin_info = null;
+            var lnd_info = null;
 
             // Toggle enable/disable functions
             function get_custom_enable_message(short_name) {
@@ -97,34 +100,51 @@
                 }
             }
 
-            var price_display_rotate_count = 0;
-            function update_price_display() {
-                {% if ui_settings['price_ticker'] %}
+            var ticker_rotate_count = 0;
+            function update_ticker() {
+                display_options = [];
+                // Append price display options
                 if ("price" in price_data && "delta" in price_data && "direction" in price_data ) {
-                    $("#price_ticker").show();
-                    $("#price_ticker_text").slideUp('fast', function() {
-                        display_id = price_display_rotate_count % 3;
-                        if (display_id == 0) {
-                            p = price_data["price"].toLocaleString('en-US', {style: 'currency', currency: 'USD'});
-                            $("#price_ticker_text").html(p + " USD/BTC");
-                        } else if (display_id == 1) {
-                            sats = parseInt(100000000 / price_data["price"]);
-                            $("#price_ticker_text").html(sats + " SATS/USD");
-                        } else if (display_id == 2) { 
-                            p = Math.abs(price_data["delta"]).toLocaleString('en-US', {style: 'currency', currency: 'USD'});
-                            if (price_data["direction"] == "flat") {
-                                $("#price_ticker_text").html("Price is flat");
-                            } else if (price_data["direction"] == "up") {
-                                $("#price_ticker_text").html("Price is up "+p);
-                            } else if (price_data["direction"] == "down") {
-                                $("#price_ticker_text").html("Price is down "+p);
-                            }
-                        }
-                        $("#price_ticker_text").slideDown();
-                        price_display_rotate_count = price_display_rotate_count + 1;
-                    });
+                    p = price_data["price"].toLocaleString('en-US', {style: 'currency', currency: 'USD'});
+                    display_options.push(p + " USD/BTC")
+
+                    sats = parseInt(100000000 / price_data["price"]);
+                    display_options.push(sats + " SATS/USD")
+
+                    p = Math.abs(price_data["delta"]).toLocaleString('en-US', {style: 'currency', currency: 'USD'});
+                    if (price_data["direction"] == "flat") {
+                        direction_text = "Price is flat";
+                    } else if (price_data["direction"] == "up") {
+                        direction_text = "Price is up " + p;
+                    } else if (price_data["direction"] == "down") {
+                        direction_text = "Price is down " + p;
+                    }
+                    display_options.push(direction_text)
                 }
-                {% endif %}
+                // Append uptime option
+                if (device_info && "uptime" in device_info) {
+                    display_options.push("Online for " + device_info["uptime"])
+                }
+                // Append fees option
+                if (bitcoin_info && "recommended_fees" in bitcoin_info && bitcoin_info["recommended_fees"] != null) {
+                    display_options.push(bitcoin_info["recommended_fees"])
+                }
+
+                if (display_options.length == 0) {
+                    display_options.push("Loading...")
+                } else if (display_options.length == 1) {
+                    display_options.push("Welcome to myNode!")
+                    display_options.push("Enable Mempool or the Price Ticker to see more info here!")
+                }
+                    
+                // Display new ticker text
+                $("#ticker").show();
+                $("#ticker_text").slideUp('fast', function() {
+                    display_id = ticker_rotate_count % display_options.length;
+                    $("#ticker_text").html( display_options[display_id] );
+                    $("#ticker_text").slideDown();
+                    ticker_rotate_count = ticker_rotate_count + 1;
+                });
             }
 
             function update_sso_token(short_name, data) {
@@ -225,6 +245,7 @@
                 // Update Bitcoin Info
                 $.getJSON("/api/get_bitcoin_info", function( data ) {
                     //console.log("Bitcoin Data: " + JSON.stringify(data))
+                    bitcoin_info = data;
                     if ("current_block" in data && data["current_block"] != null) {
                         $("#current_block").html(data["current_block"]);
                     }
@@ -257,6 +278,7 @@
                 // Update Lightning Info
                 $.getJSON("/api/get_lightning_info", function( data ) {
                     //console.log("Lightning Data: " + JSON.stringify(data))
+                    lnd_info = data;
                     if ("channel_count" in data && data["channel_count"] != null) {
                         $("#lnd_channel_count").html(data["channel_count"]);
                     }
@@ -393,19 +415,19 @@
                 {% endfor %}
 
                 // Update price info
+                {% if ui_settings['price_ticker'] %}
                 $.getJSON("/api/get_price_info", function( data ) {
                     // console.log("Price Data: " + JSON.stringify(data))
                     if ("price" in data && data["price"] != null) {
                         price_data = data;
-                        if (price_display_rotate_count == 0) {
-                            update_price_display();
-                        }
                     }
                 });
+                {% endif %}
 
                 // Update device info
                 $.getJSON("/api/get_device_info", function( data ) {
                     //console.log("Device Data: " + JSON.stringify(data))
+                    device_info = data
                     if ("data_drive_usage" in data && data["data_drive_usage"] != null) {
                         $("#data_drive_usage").html(data["data_drive_usage"]);
                     }
@@ -625,8 +647,10 @@
                 const update_interval = setInterval(update_page, 15000);
                 update_page();
 
-                // Rotate Price Ticker every 10 seconds
-                const rotate_ticker_interval = setInterval(update_price_display, 10000);
+                // Rotate Ticker every 6 seconds
+                const rotate_ticker_interval = setInterval(update_ticker, 8000);
+                setTimeout(update_ticker, 1500);
+                update_ticker();
 
                 // If pinned lightning, auto open lightning details
                 {% if lnd_wallet_exists and lnd_ready and ui_settings['pinned_lightning_details'] %}

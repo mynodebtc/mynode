@@ -249,7 +249,7 @@ td, th {
     background: #f0f0f0;
 }
 /* width of four tiles (full width) */
-.app_tile_price_ticker {
+.app_tile_ticker {
     display: inline-block;
     position: relative;
     border: none;
