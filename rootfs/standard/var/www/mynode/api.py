@@ -34,6 +34,7 @@ def api_get_bitcoin_info():
     data["peer_count"] = get_bitcoin_peer_count()
     #data["difficulty"] = get_bitcoin_difficulty() # Dont send difficulty, it causes errors in jsonify
     data["mempool_size"] = get_bitcoin_mempool_size()
+    data["recommended_fees"] = get_bitcoin_recommended_fees()
 
     # Add blocks
     data["recent_blocks"] = None
@@ -120,6 +121,7 @@ def api_get_device_info():
     data["cpu"] = get_cpu_usage()
     data["ram"] = get_ram_usage()
     data["temp"] = get_device_temp()
+    data["uptime"] = get_system_uptime()
     data["is_installing_docker_images"] = is_installing_docker_images()
     data["is_electrs_active"] = is_electrs_active()
 
