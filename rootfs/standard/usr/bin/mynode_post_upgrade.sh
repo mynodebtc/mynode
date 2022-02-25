@@ -114,11 +114,16 @@ if ! skip_base_upgrades ; then
     $TORIFY apt-get -y install libatlas-base-dev libffi-dev libssl-dev glances python3-bottle
     $TORIFY apt-get -y -qq install apt-transport-https ca-certificates
     $TORIFY apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
-    $TORIFY apt-get -y install xorg chromium openbox lightdm openjdk-11-jre libevent-dev ncurses-dev
+    $TORIFY apt-get -y install openjdk-11-jre libevent-dev ncurses-dev
     $TORIFY apt-get -y install libudev-dev libusb-1.0-0-dev python3-venv gunicorn sqlite3 libsqlite3-dev
     $TORIFY apt-get -y install torsocks python3-requests libsystemd-dev libjpeg-dev zlib1g-dev psmisc
     $TORIFY apt-get -y install hexyl libbz2-dev liblzma-dev netcat-openbsd hdparm iotop nut obfs4proxy
     $TORIFY apt-get -y install libpq-dev socat
+
+    # Install Openbox GUI
+    if [ $IS_X86 = 1 ]; then
+        $TORIFY apt-get -y install xorg chromium openbox lightdm
+    fi
 
     # Install device specific packages
     if [ $IS_X86 = 1 ]; then
@@ -194,6 +199,19 @@ if ! skip_base_upgrades ; then
     else
         echo "Python up to date"
     fi
+
+    # Add to python path
+    [ -d /usr/local/lib/python2.7/dist-packages ] && echo "/var/pynode" > /usr/local/lib/python2.7/dist-packages/pynode.pth
+    [ -d /usr/local/lib/python3.7/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.7/site-packages/pynode.pth
+    [ -d /usr/local/lib/python3.8/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.8/site-packages/pynode.pth
+
+    # Remove old python files so new copies are used (files migrated to pynode)
+    PYNODE_FILES="/var/pynode/*.py"
+    for pynode_file in $PYNODE_FILES
+    do
+        pynode_file="$(basename -- $pynode_file)"
+        rm -f /var/www/mynode/$pynode_file*
+    done
 
 
     # Install any pip3 software
