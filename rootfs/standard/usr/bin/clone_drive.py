@@ -2,17 +2,15 @@
 import time
 import os
 import subprocess
-import signal
 import logging
-from threading import Thread
+from systemd import journal
+from utilities import *
+from drive_info import *
 
 log = logging.getLogger('mynode')
+log.addHandler(journal.JournaldLogHandler())
 log.setLevel(logging.INFO)
-
-def log_message(msg):
-    global log
-    print(msg)
-    log.info(msg)
+set_logger(log)
 
 def set_clone_state(state):
     log_message("Clone State: {}".format(state))
@@ -49,74 +47,6 @@ def wait_on_clone_error_dismiss():
     while os.path.isfile("/tmp/.clone_error"):
         time.sleep(1)
 
-def get_drive_size(drive):
-    size = -1
-    try:
-        lsblk_output = subprocess.check_output(f"lsblk -b /dev/{drive} | grep disk", shell=True).decode("utf-8")
-        parts = lsblk_output.split()
-        size = int(parts[3])
-    except:
-        pass
-    log_message(f"Drive {drive} size: {size}")
-    return size
-
-
-def check_partition_for_mynode(partition):
-    is_mynode = False
-    try:
-        subprocess.check_output(f"mount -o ro /dev/{partition} /mnt/hdd", shell=True)
-        if os.path.isfile("/mnt/hdd/.mynode"):
-            is_mynode = True
-    except Exception as e:
-        # Mount failed, could be target drive
-        pass
-    finally:
-        time.sleep(1)
-        os.system("umount /mnt/hdd")
-
-    return is_mynode
-
-def find_partitions_for_drive(drive):
-    partitions = []
-    try:
-        ls_output = subprocess.check_output(f"ls /sys/block/{drive}/ | grep {drive}", shell=True).decode("utf-8") 
-        partitions = ls_output.split()
-    except:
-        pass
-    return partitions
-
-def is_drive_detected_by_fdisk(d):
-    detected = False
-    try:
-        # Command fails and throws exception if not mounted
-        ls_output = subprocess.check_output(f"fdisk -l /dev/{d}", shell=True).decode("utf-8")
-        detected = True
-    except:
-        pass
-    return detected
-
-def is_drive_mounted(d):
-    mounted = True
-    try:
-        # Command fails and throws exception if not mounted
-        ls_output = subprocess.check_output(f"grep -qs '/dev/{d}' /proc/mounts", shell=True).decode("utf-8") 
-    except:
-        mounted = False
-    return mounted
-
-def find_drives():
-    drives = []
-    try:
-        ls_output = subprocess.check_output("ls /sys/block/ | egrep 'hd.*|vd.*|sd.*|nvme.*'", shell=True).decode("utf-8") 
-        all_drives = ls_output.split()
-
-        # Only return drives that are not mounted (VM may have /dev/sda as OS drive)
-        for d in all_drives:
-            if is_drive_detected_by_fdisk(d) and not is_drive_mounted(d):
-                drives.append(d)
-    except:
-        pass
-    return drives
 
 def main():
     # Set initial state
@@ -130,7 +60,7 @@ def main():
     os.system("rm /tmp/.clone_target_drive_has_mynode")
 
     # Detect drives
-    drives = find_drives()
+    drives = find_unmounted_drives()
     log_message(f"Drives: {drives}")
 
     # Check exactly two drives found

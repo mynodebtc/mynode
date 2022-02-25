@@ -409,9 +409,6 @@ def restart_lnd():
 
     time.sleep(1)
 
-def is_testnet_enabled():
-    return os.path.isfile("/mnt/hdd/mynode/settings/.testnet_enabled")
-
 def get_lightning_wallet_file():
     if is_testnet_enabled():
         return "/mnt/hdd/mynode/lnd/data/chain/bitcoin/testnet/wallet.db"

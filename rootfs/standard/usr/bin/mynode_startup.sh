@@ -78,6 +78,11 @@ rm -rf /etc/motd # Remove simple motd for update-motd.d
 mkdir -p /mnt/hdd
 mkdir -p /mnt/usb_extras
 
+# Add to python path
+[ -d /usr/local/lib/python2.7/dist-packages ] && echo "/var/pynode" > /usr/local/lib/python2.7/dist-packages/pynode.pth
+[ -d /usr/local/lib/python3.7/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.7/site-packages/pynode.pth
+[ -d /usr/local/lib/python3.8/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.8/site-packages/pynode.pth
+
 # Customize logo for resellers
 if [ -f /opt/mynode/custom/logo_custom.png ]; then
     cp -f /opt/mynode/custom/logo_custom.png /var/www/mynode/static/images/logo_custom.png 

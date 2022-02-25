@@ -18,23 +18,25 @@ def isPython3():
 def to_bytes(s):
     if type(s) is bytes:
         return s
-    elif type(s) is str or (sys.version_info[0] < 3 and type(s) is unicode):
+    elif type(s) is str or (not isPython3() and type(s) is unicode):
         return codecs.encode(s, 'utf-8', 'ignore')
     else:
         raise TypeError("to_bytes: Expected bytes or string, but got %s." % type(s))
 
 def to_string(s):
     b = to_bytes(s)
-    return b.decode("utf-8")
+    r = b.decode("utf-8")
+    print("S TYPE: "+str(type(r)))
+    return r
 
 def quote_plus(s):
-    if (sys.version_info > (3, 0)):
+    if isPython3():
         return urllib.parse.quote_plus(s)
     else:
         return urllib.quote_plus(s)
 
 def unquote_plus(s):
-    if (sys.version_info > (3, 0)):
+    if isPython3():
         return urllib.parse.unquote_plus(s)
     else:
         return urllib.unquote_plus(s)
@@ -66,7 +68,7 @@ def get_file_contents(filename):
     contents = "UNKNOWN"
     try:
         with open(filename, "r") as f:
-            contents = f.read().strip()
+            contents = to_string(f.read()).strip()
     except:
         contents = "ERROR"
     return to_bytes(contents)
@@ -90,11 +92,12 @@ def log_message(msg):
     # Logs to www log
     global mynode_logger
     if mynode_logger != None:
+        print(msg)
         mynode_logger.info(msg)
 
-def set_logger(l):
+def set_logger(logger):
     global mynode_logger
-    mynode_logger = l
+    mynode_logger = logger
 
 def get_logger():
     global mynode_logger
@@ -153,3 +156,15 @@ def download_file(directory, filename, downloaded_file_name=None, as_attachment=
         return send_from_directory(directory=directory, path=filename, filename=None, as_attachment=as_attachment)
     else:
         return send_from_directory(directory=directory, filename=filename, as_attachment=as_attachment)
+
+#==================================
+# Hashing Functions
+#==================================
+def get_md5_file_hash(path):
+    import hashlib
+    if not os.path.isfile(path):
+        return "MISSING_FILE"
+    try:
+        return hashlib.md5(open(path,'rb').read()).hexdigest()
+    except Exception as e:
+        return "ERROR ({})".format(e)

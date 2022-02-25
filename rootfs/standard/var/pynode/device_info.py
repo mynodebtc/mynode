@@ -81,7 +81,7 @@ def check_and_mark_reboot_action(tmp_marker):
 def reload_throttled_data():
     global cached_data
     if os.path.isfile("/tmp/get_throttled_data"):
-        cached_data["get_throttled_data"] = get_file_contents("/tmp/get_throttled_data")
+        cached_data["get_throttled_data"] = to_string( get_file_contents("/tmp/get_throttled_data") )
 
 def get_throttled_data():
     global cached_data
@@ -207,7 +207,7 @@ def cleanup_log(log):
     return log
 
 def get_recent_upgrade_log():
-    log = get_file_contents("/home/admin/upgrade_logs/upgrade_log_latest.txt").decode("utf8")
+    log =  to_string( get_file_contents("/home/admin/upgrade_logs/upgrade_log_latest.txt") )
     return cleanup_log(log)
 
 def get_all_upgrade_logs():
@@ -237,7 +237,7 @@ def get_all_upgrade_logs():
                     log["name"] = f
                     modTimeSeconds = os.path.getmtime(fullpath)
                     log["date"] = time.strftime('%Y-%m-%d', time.localtime(modTimeSeconds))
-                    log["log"] = cleanup_log( get_file_contents(fullpath).decode("utf8") )
+                    log["log"] = cleanup_log( to_string( get_file_contents(fullpath) ) )
                     log_list.append( log )
                     log_id += 1
     except Exception as e:
@@ -362,7 +362,7 @@ def set_swap_size(size):
     return set_file_contents("/mnt/hdd/mynode/settings/swap_size", size)
 
 def get_swap_size():
-    return get_file_contents("/mnt/hdd/mynode/settings/swap_size")
+    return to_string( get_file_contents("/mnt/hdd/mynode/settings/swap_size") )
 
 #==================================
 # myNode Status
@@ -423,19 +423,19 @@ CLONE_STATE_IN_PROGRESS     = "in_progress"
 CLONE_STATE_COMPLETE        = "complete"
 
 def get_clone_state():
-    return get_file_contents("/tmp/.clone_state")
+    return to_string( get_file_contents("/tmp/.clone_state") )
 
 def get_clone_error():
-    return get_file_contents("/tmp/.clone_error")
+    return to_string( get_file_contents("/tmp/.clone_error") )
 
 def get_clone_progress():
-    return get_file_contents("/tmp/.clone_progress")
+    return to_string( get_file_contents("/tmp/.clone_progress") )
 
 def get_clone_source_drive():
-    return get_file_contents("/tmp/.clone_source")
+    return to_string( get_file_contents("/tmp/.clone_source") )
 
 def get_clone_target_drive():
-    return get_file_contents("/tmp/.clone_target")
+    return to_string( get_file_contents("/tmp/.clone_target") )
 
 def get_clone_target_drive_has_mynode():
     return os.path.isfile("/tmp/.clone_target_drive_has_mynode")
@@ -563,7 +563,7 @@ def regen_https_cert():
 
 def get_flask_secret_key():
     if os.path.isfile("/home/bitcoin/.mynode/flask_secret_key"):
-        key = get_file_contents("/home/bitcoin/.mynode/flask_secret_key")
+        key = to_string( get_file_contents("/home/bitcoin/.mynode/flask_secret_key") )
     else:
         letters = string.ascii_letters
         key = ''.join(random.choice(letters) for i in range(32))
@@ -573,7 +573,7 @@ def get_flask_secret_key():
 def get_flask_session_timeout():
     try:
         if os.path.isfile("/home/bitcoin/.mynode/flask_session_timeout"):
-            timeout = get_file_contents("/home/bitcoin/.mynode/flask_session_timeout")
+            timeout = to_string( get_file_contents("/home/bitcoin/.mynode/flask_session_timeout") )
             parts = timeout.split(",")
             d = parts[0]
             h = parts[1]
@@ -606,21 +606,6 @@ def set_www_python3(use_python3):
     else:
         delete_file("/home/bitcoin/.mynode/.www_use_python3")
 
-
-#==================================
-# Drive Functions
-#==================================
-def is_uas_usb_enabled():
-    return os.path.isfile('/home/bitcoin/.mynode/.uas_usb_enabled') or \
-           os.path.isfile('/mnt/hdd/mynode/settings/.uas_usb_enabled')
-
-def set_uas_usb_enabled(use_uas):
-    if use_uas:
-        touch("/home/bitcoin/.mynode/.uas_usb_enabled")
-        touch("/mnt/hdd/mynode/settings/.uas_usb_enabled")
-    else:
-        delete_file("/home/bitcoin/.mynode/.uas_usb_enabled")
-        delete_file("/mnt/hdd/mynode/settings/.uas_usb_enabled")
 
 #==================================
 # Web Server Functions
@@ -741,6 +726,74 @@ def delete_product_key_error():
 def recheck_product_key():
     delete_product_key_error()
     os.system("systemctl restart check_in")
+
+
+#==================================
+# Premium+ Token Functions
+#==================================
+def delete_premium_plus_token():
+    delete_file("/home/bitcoin/.mynode/.premium_plus_token")
+    delete_file("/mnt/hdd/mynode/settings/.premium_plus_token")
+def has_premium_plus_token():
+    return os.path.isfile("/home/bitcoin/.mynode/.premium_plus_token") or \
+           os.path.isfile("/mnt/hdd/mynode/settings/.premium_plus_token")
+def get_premium_plus_token():
+    token = "error_1"
+    if not has_premium_plus_token():
+        return ""
+
+    try:
+        if os.path.isfile("/home/bitcoin/.mynode/.premium_plus_token"):
+            with open("/home/bitcoin/.mynode/.premium_plus_token", "r") as f:
+                token = f.read().strip()
+        elif os.path.isfile("/mnt/hdd/mynode/settings/.premium_plus_token"):
+            with open("/mnt/hdd/mynode/settings/.premium_plus_token", "r") as f:
+                token = f.read().strip()
+    except:
+        token = "error_2"
+    return token
+def reset_premium_plus_token_status():
+    delete_file("/home/bitcoin/.mynode/.premium_plus_token_status")
+def set_premium_plus_token_status(msg):
+    os.system("echo '{}' > /home/bitcoin/.mynode/.premium_plus_token_status".format(msg))
+def get_premium_plus_token_status():
+    status = "UNKNOWN"
+    if not has_premium_plus_token():
+        return "No Token Set"
+    if not os.path.isfile("/home/bitcoin/.mynode/.premium_plus_token_status"):
+        return "Updating..."
+    try:
+        with open("/home/bitcoin/.mynode/.premium_plus_token_status", "r") as f:
+            status = f.read().strip()
+    except:
+        status = "STATUS_ERROR_2"
+    return status
+def get_premium_plus_is_connected():
+    status = get_premium_plus_token_status()
+    if status == "OK":
+        return True
+    return False
+def update_premium_plus_last_sync_time():
+    t = int(round(time.time()))
+    os.system("echo '{}' > /home/bitcoin/.mynode/.premium_plus_last_sync".format(t))
+def get_premium_plus_last_sync():
+    try:
+        now = int(round(time.time()))
+        last = int(get_file_contents("/home/bitcoin/.mynode/.premium_plus_last_sync"))
+        diff_min = int((now - last) / 60)
+        if diff_min == 0:
+            return "Now"
+        else:
+            return "{} minutes(s) ago".format(diff_min)
+    except Exception as e:
+        return "Unknown"
+def save_premium_plus_token(token):
+    set_file_contents("/home/bitcoin/.mynode/.premium_plus_token", token)
+    set_file_contents("/mnt/hdd/mynode/settings/.premium_plus_token", token)
+
+def recheck_premium_plus_token():
+    reset_premium_plus_token_status()
+    os.system("systemctl restart premium_plus_connect")
 
 
 #==================================

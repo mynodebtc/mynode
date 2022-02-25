@@ -11,6 +11,7 @@ from user_management import check_logged_in
 from lightning_info import *
 from price_info import *
 from utilities import *
+from drive_info import *
 from application_info import *
 import pam
 import time
@@ -346,7 +347,7 @@ def upgrade_beta_page():
 def get_upgrade_log_page():
     check_logged_in()
 
-    log = get_file_contents("/home/admin/upgrade_logs/upgrade_log_latest.txt").decode("utf8")
+    log = to_string( get_file_contents("/home/admin/upgrade_logs/upgrade_log_latest.txt") )
     if (log == "ERROR"):
         log = "No log file found"
         

@@ -11,10 +11,10 @@ def clear_service_enabled_cache():
     global service_enabled_cache
     service_enabled_cache = {}
 
-def is_service_enabled(service_name):
+def is_service_enabled(service_name, force_refresh=False):
     global service_enabled_cache
 
-    if service_name in service_enabled_cache:
+    if service_name in service_enabled_cache and force_refresh == False:
         return service_enabled_cache[service_name]
 
     code = os.system("systemctl is-enabled {} > /dev/null".format(service_name))
