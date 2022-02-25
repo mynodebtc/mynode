@@ -381,9 +381,9 @@ def get_app_version_data():
 
 def get_custom_app_version_data():
     if os.path.isfile("/usr/share/mynode/mynode_app_versions_custom.sh"):
-        return get_file_contents("/usr/share/mynode/mynode_app_versions_custom.sh")
+        return to_string( get_file_contents("/usr/share/mynode/mynode_app_versions_custom.sh") )
     if os.path.isfile("/mnt/hdd/mynode/settings/mynode_app_versions_custom.sh"):
-        return get_file_contents("/mnt/hdd/mynode/settings/mynode_app_versions_custom.sh")
+        return to_string( get_file_contents("/mnt/hdd/mynode/settings/mynode_app_versions_custom.sh") )
     return ""
 
 def save_custom_app_version_data(data):

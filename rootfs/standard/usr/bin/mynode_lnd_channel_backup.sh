@@ -1,4 +1,5 @@
 #!/bin/bash
+# NO LONGER USED - MIGRATED TO PYTHON
 
 source /usr/share/mynode/mynode_config.sh
 

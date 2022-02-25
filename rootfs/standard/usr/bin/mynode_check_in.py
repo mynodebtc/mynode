@@ -4,79 +4,17 @@ import requests
 import time
 import subprocess
 import random
+from drive_info import *
+from device_info import *
 
 CHECKIN_URL = "https://www.mynodebtc.com/device_api/check_in.php"
 
 latest_version_check_count = 0
 
 # Helper functions
-def unset_skipped_product_key():
-    os.system("rm -rf /home/bitcoin/.mynode/.product_key_skipped")
-    os.system("rm -rf /mnt/hdd/mynode/settings/.product_key_skipped")
-def delete_product_key_error():
-    os.system("rm -rf /home/bitcoin/.mynode/.product_key_error")
-    os.system("rm -rf /mnt/hdd/mynode/settings/.product_key_error")
-def has_product_key_error():
-    if os.path.isfile("/home/bitcoin/.mynode/.product_key_error") or os.path.isfile("/mnt/hdd/mynode/settings/.product_key_error"):
-        return True
-    return False
-def get_current_version():
-    current_version = "0.0"
-    try:
-        with open("/usr/share/mynode/version", "r") as f:
-            current_version = f.read().strip()
-    except:
-        current_version = "error"
-    return current_version
-def get_device_type():
-    device = subprocess.check_output("mynode-get-device-type", shell=True).decode("utf-8").strip()
-    return device
-def get_device_arch():
-    arch = subprocess.check_output("uname -m", shell=True).decode("utf-8").strip()
-    return arch
-def get_device_serial():
-    serial = subprocess.check_output("mynode-get-device-serial", shell=True).decode("utf-8").strip()
-    return serial
-def skipped_product_key():
-    return os.path.isfile("/home/bitcoin/.mynode/.product_key_skipped") or \
-           os.path.isfile("/mnt/hdd/mynode/settings/.product_key_skipped")
-def has_product_key():
-    return os.path.isfile("/home/bitcoin/.mynode/.product_key")
-def get_product_key():
-    product_key = "no_product_key"
-    if skipped_product_key():
-        return "community_edition"
-
-    if not has_product_key():
-        return "product_key_missing"
-
-    try:
-        with open("/home/bitcoin/.mynode/.product_key", "r") as f:
-            product_key = f.read().strip()
-    except:
-        product_key = "product_key_error"
-    return product_key
-def is_drive_mounted():
-    mounted = True
-    try:
-        # Command fails and throws exception if not mounted
-        output = subprocess.check_output(f"grep -qs '/mnt/hdd ext4' /proc/mounts", shell=True).decode("utf-8") 
-    except:
-        mounted = False
-    return mounted
-def get_drive_size():
-    size = -1
-    if not is_drive_mounted():
-        return -3
-    try:
-        size = subprocess.check_output("df /mnt/hdd | grep /dev | awk '{print $2}'", shell=True).strip()
-        size = int(size) / 1000 / 1000
-    except Exception as e:
-        size = -2
-    return size
 def get_quicksync_enabled():
     enabled = 1
-    if not is_drive_mounted():
+    if not is_mynode_drive_mounted():
         return -3
     if os.path.isfile("/mnt/hdd/mynode/settings/quicksync_disabled"):
         enabled = 0
@@ -117,7 +55,7 @@ def check_in():
         "device_arch": get_device_arch(),
         "version": get_current_version(),
         "product_key": product_key,
-        "drive_size": get_drive_size(),
+        "drive_size": get_mynode_drive_size(),
         "quicksync_enabled": get_quicksync_enabled(),
     }
 

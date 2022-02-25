@@ -8,6 +8,7 @@ After=network-online.target
 
 [Service]
 Type=simple
+KillMode=control-group
 ExecStart=/usr/local/bin/python3 /usr/bin/mynode_check_in.py
 User=root
 Group=root

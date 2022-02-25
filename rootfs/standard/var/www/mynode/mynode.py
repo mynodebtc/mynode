@@ -15,6 +15,7 @@ from wardenterminal import mynode_wardenterminal
 from lndmanage import mynode_lndmanage
 from manage_apps import mynode_manage_apps
 from usb_extras import mynode_usb_extras
+from premium_plus import mynode_premium_plus
 from tor import mynode_tor
 from vpn import mynode_vpn
 from electrum_server import *
@@ -97,6 +98,7 @@ app.register_blueprint(mynode_wardenterminal)
 app.register_blueprint(mynode_lndmanage)
 app.register_blueprint(mynode_manage_apps)
 app.register_blueprint(mynode_tor)
+app.register_blueprint(mynode_premium_plus)
 app.register_blueprint(mynode_electrum_server)
 app.register_blueprint(mynode_vpn)
 app.register_blueprint(mynode_usb_extras)
@@ -256,6 +258,8 @@ def index():
         return render_template('state.html', **templateData)
     elif status == STATE_DRIVE_CLONE:
         clone_state = get_clone_state()
+        log_message("CLONE_STATE")
+        log_message(clone_state)
         if clone_state == CLONE_STATE_DETECTING:
             templateData = {
                 "title": "myNode Clone Tool",

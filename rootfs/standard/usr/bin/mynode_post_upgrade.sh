@@ -206,12 +206,15 @@ if ! skip_base_upgrades ; then
     [ -d /usr/local/lib/python3.8/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.8/site-packages/pynode.pth
 
     # Remove old python files so new copies are used (files migrated to pynode)
+    set +x
     PYNODE_FILES="/var/pynode/*.py"
     for pynode_file in $PYNODE_FILES
-    do
+        echo "Migrating pynode file $pynode_file..."
         pynode_file="$(basename -- $pynode_file)"
-        rm -f /var/www/mynode/$pynode_file*
+        rm -f /var/www/mynode/${pynode_file}    # .py
+        rm -f /var/www/mynode/${pynode_file}c   # .pyc
     done
+    set -x
 
 
     # Install any pip3 software

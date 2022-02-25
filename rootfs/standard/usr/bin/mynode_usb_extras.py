@@ -2,20 +2,20 @@
 import time
 import os
 import subprocess
-import signal
 import logging
-import random
-import string
 import json
 import atexit
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 import pyudev
 from systemd import journal
 from threading import Thread
+from utilities import *
+from drive_info import *
 
 log = logging.getLogger('mynode')
 log.addHandler(journal.JournaldLogHandler())
 log.setLevel(logging.INFO)
+set_logger(log)
 
 ################################
 ## USB Device Cache
@@ -54,12 +54,6 @@ def write_usb_devices_json():
 ################################
 ## Utility Functions
 ################################
-
-def log_message(msg):
-    global log
-    print(msg)
-    log.info(msg)
-
 def set_usb_extras_state(state):
     log_message("USB Extras State: {}".format(state))
     try:
@@ -71,71 +65,6 @@ def set_usb_extras_state(state):
         return False
     return False
 
-def get_drive_size(drive):
-    size = -1
-    try:
-        lsblk_output = subprocess.check_output(f"lsblk -b /dev/{drive} | grep disk", shell=True).decode("utf-8")
-        parts = lsblk_output.split()
-        size = int(parts[3])
-    except:
-        pass
-    log_message(f"Drive {drive} size: {size}")
-    return size
-
-def mount_partition(partition, folder_name, permissions="ro"):
-    try:
-        subprocess.check_output(f"mkdir -p /mnt/usb_extras/{folder_name}", shell=True)
-        subprocess.check_output(f"mount -o {permissions} /dev/{partition} /mnt/usb_extras/{folder_name}", shell=True)
-        return True
-    except Exception as e:
-        return False
-
-def unmount_partition(folder_name):
-    os.system(f"umount /mnt/usb_extras/{folder_name}")
-    os.system(f"rm -rf /mnt/usb_extras/{folder_name}")
-    time.sleep(1)
-
-def find_partitions_for_drive(drive):
-    partitions = []
-    try:
-        ls_output = subprocess.check_output(f"ls /sys/block/{drive}/ | grep {drive}", shell=True).decode("utf-8") 
-        partitions = ls_output.split()
-    except:
-        pass
-    return partitions
-
-def is_drive_detected_by_fdisk(d):
-    detected = False
-    try:
-        # Command fails and throws exception if not mounted
-        ls_output = subprocess.check_output(f"fdisk -l /dev/{d}", shell=True).decode("utf-8")
-        detected = True
-    except:
-        pass
-    return detected
-
-def is_drive_mounted(d):
-    mounted = True
-    try:
-        # Command fails and throws exception if not mounted
-        ls_output = subprocess.check_output(f"grep -qs '/dev/{d}' /proc/mounts", shell=True).decode("utf-8") 
-    except:
-        mounted = False
-    return mounted
-
-def find_unmounted_drives():
-    drives = []
-    try:
-        ls_output = subprocess.check_output("ls /sys/block/ | egrep 'hd.*|vd.*|sd.*|nvme.*'", shell=True).decode("utf-8") 
-        all_drives = ls_output.split()
-
-        # Only return drives that are not mounted (VM may have /dev/sda as OS drive)
-        for d in all_drives:
-            if is_drive_detected_by_fdisk(d) and not is_drive_mounted(d):
-                drives.append(d)
-    except:
-        pass
-    return drives
 
 ################################
 ## HTTP Server Functions

@@ -1,0 +1,156 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        {% include 'includes/head.html' %}
+
+
+        <script>
+            $(document).ready(function() {
+
+                $( document ).tooltip();
+
+                token="{{access_token}}"
+
+                function set_token() {
+                    $("#set_token_form").submit();
+                    set_token_dialog.dialog( "close" );
+                }
+                set_token_dialog = $( "#set-token-dialog" ).dialog({
+                    autoOpen: false,
+                    resizable: false,
+                    height: "auto",
+                    width: 600,
+                    modal: true,
+                    position: { my: "center top", at: "center top", of: window, collision: "none" },
+                    buttons: {
+                        "Save": set_token,
+                        Cancel: function() {
+                            set_token_dialog.dialog( "close" );
+                        }
+                    },
+                    open: function() {
+                        $("#token").val(token)
+                    }
+                });
+
+                $("#change_token_button").on("click", function() {
+                    set_token_dialog.dialog( "open" );
+                });
+                $("#set_token_button").on("click", function() {
+                    set_token_dialog.dialog( "open" );
+                });
+                $("#clear_token_button").on("click", function() {
+                    if (confirm("Are you sure you want to clear your Premium+ Access Token?")) {
+                        window.location.href='/premium-plus/clear-token';
+                    }
+                });
+
+            });
+        </script>
+     </head>
+
+    <body>
+        {% include 'includes/logo_header.html' %}
+        <div class="mynode_back_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        </div>
+
+        {% include 'includes/message_display.html' %}
+
+        <div class="main_header">Premium+</div>
+        <br/>
+
+        <!-- Config and Status Row -->
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Access Token and Status</div>
+                <div class="info_tile_contents">
+                    <table class="info_table">
+                        <tr>
+                            <th>Access Token</th>
+                            <td>
+                                {% if has_access_token %}
+                                    {{access_token}} 
+                                    <button id="change_token_button" class="ui-button ui-widget ui-corner-all settings_button_small">Change</button>
+                                    <button id="clear_token_button" class="ui-button ui-widget ui-corner-all settings_button_small">Clear</button>
+                                {% else %}
+                                    <button id="set_token_button" class="ui-button ui-widget ui-corner-all settings_button_small">Set Token</button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% if has_access_token %}
+                        <tr>
+                            <th>Status</th>
+                            <td>{{status}}</td>
+                        </tr>
+                        <tr>
+                            <th>Last Sync</th>
+                            <td>{{last_sync}}</td>
+                        </tr>
+                        <tr>
+                            <th>Actions</th>
+                            <td><a href="/premium-plus/sync" class="ui-button ui-widget ui-corner-all mynode_button_small">Force Sync</a></td>
+                        </tr>
+                        {% endif %}
+                    </table>
+                </div>
+            </div>
+        </div>
+        <br/>
+
+        <!-- Premium+ Services -->
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Premium+ Services</div>
+                <div class="info_tile_contents">
+                    <table class="info_table">
+                        <tr>
+                            <th>Sync Device Status</th>
+                            <td>{{mempool_tx}}</td>
+                        </tr>
+                        <tr>
+                            <th>Backup Lightning SCB File</th>
+                            <td>{{mempool_tx}}</td>
+                        </tr>
+                        <tr>
+                            <th>myNode Watchtower</th>
+                            <td>{{mempool_size}}</td>
+                        </tr>
+                        <tr>
+                            <th>Proxy</th>
+                            <td>
+                                <p id="rpc_password" style="display: none; margin: 0;">{{rpc_password}} <span id="copy_rpc_password" class="ui-icon ui-icon-copy" style="cursor: pointer; display: none;" title="Copy Password"></span></p>
+                                <a id="show_rpc_password" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;">show</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Peer Bloom Filters (BIP 37)</th>
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox" id="bip37_checkbox" {% if bip37_enabled %}checked{% endif %}>
+                                    <span class="slider round"></span>
+                                </label>
+                                <button id="bip37_save" style="display: none; float: right;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="set-token-dialog" title="Set Premium+ Access Token" style="display:none;">
+            <form id="set_token_form" name="set_token_form" action="/premium-plus/set-token" method="POST">
+                <p>The Premium+ Access Token is the key that syncs your node data for backup and remote access.</p>
+                <b>Access Token:</b>
+                <br/>
+                <input type="text" name="token" id="token" value="" class="text ui-widget-content ui-corner-all" size="40" maxlength="64">
+
+                <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </form>
+        </div>
+
+        {% include 'includes/footer.html' %}
+     </body>
+</html>
