@@ -129,7 +129,7 @@ WARDEN_TERMINAL_VERSION=c327e84fb95fa6e29bb24d641e6215b3942d8da4
 WARDEN_TERMINAL_VERSION_FILE=/home/bitcoin/.mynode/wardenterminal_version
 WARDEN_TERMINAL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/wardenterminal_version_latest
 
-NETDATA_VERSION="v1.19.0"
+NETDATA_VERSION="v1.32.1"
 NETDATA_VERSION_FILE=/mnt/hdd/mynode/settings/netdata_version
 NETDATA_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/netdata_version_latest
 
