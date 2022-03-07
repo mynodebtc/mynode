@@ -120,9 +120,10 @@ def premium_plus_connect():
 
     return True
 
-# Run premium plus update every hour
+# Run premium plus update consistently
 if __name__ == "__main__":
-    one_hour_in_ms = 60 * 60 * 1000
+    update_in_min = 15 # Update every 15 minutes
+    update_ms = update_in_min * 60 * 1000 
 
     while True:
         try:
@@ -145,7 +146,7 @@ if __name__ == "__main__":
             inotify = INotify()
             watch_flags = flags.CREATE | flags.DELETE | flags.MODIFY | flags.DELETE_SELF
             wd = inotify.add_watch('/home/bitcoin/.mynode/', watch_flags)
-            for event in inotify.read(timeout=one_hour_in_ms):
+            for event in inotify.read(timeout=update_ms):
                 log_message("File changed: " + str(event))
             log_message("Running connect again")
         except Exception as e:
