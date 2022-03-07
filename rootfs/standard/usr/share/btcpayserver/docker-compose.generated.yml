@@ -16,6 +16,7 @@ services:
       BTCPAY_SSHKEYFILE: ${BTCPAY_SSHKEYFILE}
       BTCPAY_SSHAUTHORIZEDKEYS: ${BTCPAY_SSHAUTHORIZEDKEYS}
       BTCPAY_DEBUGLOG: btcpay.log
+      BTCPAY_DOCKERDEPLOYMENT: "true"
       BTCPAY_CHAINS: "btc"
       BTCPAY_BTCEXPLORERURL: http://localhost:32838/
       BTCPAY_BTCLIGHTNING: "type=lnd-rest;server=https://localhost:10080/;macaroonfilepath=/etc/lnd_bitcoin/data/chain/bitcoin/mainnet/admin.macaroon;allowinsecure=true"
@@ -36,6 +37,7 @@ services:
     - "/mnt/hdd/mynode/lnd:/etc/lnd_bitcoin"
     - "/root/.ssh/authorized_keys:${BTCPAY_SSHAUTHORIZEDKEYS}"
     - "/root/.ssh/id_rsa_btcpay:${BTCPAY_SSHKEYFILE}"
+    - "btcpay_pluginsdir:/root/.btcpayserver/Plugins"
   nbxplorer:
     restart: unless-stopped
     image: nicolasdorier/nbxplorer:${NBXPLORER_VERSION}
@@ -45,17 +47,23 @@ services:
     environment:
       NBXPLORER_NETWORK: ${NBITCOIN_NETWORK:-regtest}
       NBXPLORER_BIND: 0.0.0.0:32838
+      NBXPLORER_TRIMEVENTS: 10000
       NBXPLORER_SIGNALFILESDIR: /datadir
       NBXPLORER_CHAINS: "btc"
       NBXPLORER_BTCRPCURL: http://localhost:8332/
       NBXPLORER_BTCNODEENDPOINT: localhost:8333
     volumes:
     - "nbxplorer_datadir:/datadir"
-    - "/mnt/hdd/mynode/bitcoin:/root/.bitcoin"
+
+
+
+
   postgres:
     restart: unless-stopped
-    image: postgres:${POSTGRES_VERSION}
+    image: btcpayserver/postgres:${POSTGRES_VERSION}
     network_mode: host
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
     - "postgres_datadir:/var/lib/postgresql/data"
 volumes:

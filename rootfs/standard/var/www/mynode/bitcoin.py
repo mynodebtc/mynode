@@ -61,27 +61,7 @@ def bitcoin_status_page():
             #blocks = blocks[:5] # Take top 5
 
         # Peers
-        peers = []
-        if peerdata != None:
-            for p in peerdata:
-                peer = p
-
-                if "pingtime" in p:
-                    peer["pingtime"] =  int(p["pingtime"] * 1000)
-                else:
-                    peer["pingtime"] = "N/A"
-
-                if "bytessent" in p:
-                    peer["tx"] = "{:.2f}".format(float(p["bytessent"]) / 1000 / 1000)
-                else:
-                    peer["tx"] = "N/A"
-
-                if "bytesrecv" in p:
-                    peer["rx"] = "{:.2f}".format(float(p["bytesrecv"]) / 1000 / 1000)
-                else:
-                    peer["rx"] = "N/A"
-
-                peers.append(peer)
+        peers = peerdata
 
         # Local address
         local_address = "..."
@@ -109,9 +89,9 @@ def bitcoin_status_page():
         "block_num": info["blocks"],
         "header_num": info["headers"],
         "rpc_password": rpc_password,
-        "disk_size": (int(info["size_on_disk"]) / 1000 / 1000 / 1000),
+        "disk_usage": get_bitcoin_disk_usage(),
         "mempool_tx": mempool["size"],
-        "mempool_size": "{:.3} MB".format(float(mempool["bytes"]) / 1000 / 1000),
+        "mempool_size": "{:.2} MB".format(float(mempool["bytes"]) / 1000 / 1000),
         "is_testnet_enabled": is_testnet_enabled(),
         "wallets": walletdata,
         "bitcoin_whitepaper_exists": bitcoin_whitepaper_exists,

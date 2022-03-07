@@ -26,7 +26,13 @@ log.setLevel(logging.INFO)
 set_logger(log)
 
 # Helper functions
-
+cached_remote_hash = "NONE"
+def get_saved_remote_backup_hash():
+    global cached_remote_hash
+    return cached_remote_hash
+def set_saved_remote_backup_hash(hash):
+    global cached_remote_hash
+    cached_remote_hash = hash
 
 # Local Backup
 def local_backup(original_scb, backup_scb):
@@ -51,21 +57,40 @@ def local_backup(original_scb, backup_scb):
 # Remote Backup
 def remote_backup(original, backup):
 
+    # Check if remote backup is enabled
+    premium_plus_settings = get_premium_plus_settings()
+    if not premium_plus_settings['backup_scb']:
+        log_message("Remote Backup: SCB Backup Disabled")
+        return
+
     # Mainnet only
     if is_testnet_enabled():
-        log_message("Remote Backup: Skipping (testnet enabled")
+        log_message("Remote Backup: Skipping (testnet enabled)")
         return
 
     # Premium+ Feature
-    if not has_premium_plus_token() or get_premium_plus_token_status != "OK":
+    if not has_premium_plus_token() or get_premium_plus_token_status() != "OK":
         log_message("Remote Backup: Skipping (not Premium+)")
         return
 
+    md5_1 = get_md5_file_hash(original_scb)
+    md5_2 = get_saved_remote_backup_hash()
+    log_message("  Hash 1: {}".format(md5_1))
+    log_message("  Hash 2: {}".format(md5_2))
+    if md5_1 == md5_2:
+        log_message("Remote Backup: Hashes Match. Skipping Backup.")
+        return
+
     # POST Data
+    try:
+        file_data = {'scb': open(original,'rb')}
+    except Exception as e:
+        log_message("Remote Backup: Error reading SCB file.")
+        return
+
     data = {
         "token": get_premium_plus_token(),
-        "product_key": get_product_key(),
-        "scb_file": "REPLACE ME WITH FILE CONTENTS"
+        "product_key": get_product_key()
     }
 
     # Setup tor proxy
@@ -82,13 +107,14 @@ def remote_backup(original, backup):
             # Use tor for check in unless there have been tor 5 failures in a row
             r = None
             if (fail_count+1) % 5 == 0:
-                r = requests.post(BACKUP_SCB_URL, data=data, timeout=20)
+                r = requests.post(BACKUP_SCB_URL, data=data, files=file_data, timeout=20)
             else:
-                r = session.post(BACKUP_SCB_URL, data=data, timeout=20)
+                r = session.post(BACKUP_SCB_URL, data=data, files=file_data, timeout=20)
             
             if r.status_code == 200:
                 if r.text == "OK":
                     log_message("Remote Backup: Success ({})".format(r.text))
+                    set_saved_remote_backup_hash( md5_1 )
                 else:
                     log_message("Remote Backup: Error: ({})".format(r.text))
                 backup_success = True

@@ -12,6 +12,7 @@ import subprocess
 import random
 import string
 import re
+import psutil
 
 try:
     import qrcode
@@ -314,6 +315,44 @@ def get_device_ram():
     ram = to_string(subprocess.check_output("free --giga | grep Mem | awk '{print $2}'", shell=True).strip())
     cached_data["ram"] = ram
     return ram
+
+def get_device_temp():
+    if is_cached("device_temp", 60):
+        return get_cached_data("device_temp")
+
+    device_temp = "..."
+    try:
+        results = to_string(subprocess.check_output("cat /sys/class/thermal/thermal_zone0/temp", shell=True))
+        temp = int(results) / 1000
+        device_temp = "{:.1f}".format(temp)
+        update_cached_data("device_temp", device_temp)
+    except:
+        return device_temp
+    return device_temp
+
+def get_ram_usage():
+    if is_cached("ram_usage", 120):
+        return get_cached_data("ram_usage")
+
+    ram_usage = "..."
+    try:
+        ram_info = psutil.virtual_memory()
+        ram_usage = "{:.1f}%".format(ram_info.percent)
+    except:
+        return ram_usage
+    return ram_usage
+    
+def get_swap_usage():
+    if is_cached("swap_usage", 120):
+        return get_cached_data("swap_usage")
+
+    swap_usage = "..."
+    try:
+        swap_info = psutil.swap_memory()
+        swap_usage = "{:.1f}%".format(swap_info.percent)
+    except:
+        return swap_usage
+    return swap_usage
 
 def get_local_ip():
     local_ip = "unknown"
@@ -795,6 +834,16 @@ def recheck_premium_plus_token():
     reset_premium_plus_token_status()
     os.system("systemctl restart premium_plus_connect")
 
+def get_premium_plus_setting_names():
+    return ["sync_status","sync_bitcoin_and_lightning","backup_scb","watchtower"]
+def get_premium_plus_settings():
+    names = get_premium_plus_setting_names()
+    settings = {}
+    for n in names:
+        settings[n] = False
+    for n in names:
+        settings[n] = settings_file_exists(n)
+    return settings
 
 #==================================
 # Drive Repair Functions

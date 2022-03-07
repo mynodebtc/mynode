@@ -208,7 +208,7 @@ if ! skip_base_upgrades ; then
     # Remove old python files so new copies are used (files migrated to pynode)
     set +x
     PYNODE_FILES="/var/pynode/*.py"
-    for pynode_file in $PYNODE_FILES
+    for pynode_file in $PYNODE_FILES; do
         echo "Migrating pynode file $pynode_file..."
         pynode_file="$(basename -- $pynode_file)"
         rm -f /var/www/mynode/${pynode_file}    # .py

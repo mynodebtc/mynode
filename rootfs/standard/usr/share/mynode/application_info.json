@@ -288,7 +288,6 @@
         "comment": "HIDDEN FOR NOW - Enable show_on_homepage",
         "name": "Premium+",
         "short_name": "premium_plus",
-        "hide_status_icon": true,
         "can_enable_disable": false,
         "app_tile_button_text": "Manage",
         "app_tile_default_status_text": "Access and Backup",

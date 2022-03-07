@@ -9,6 +9,7 @@ from device_info import *
 from thread_functions import *
 from systemctl_info import *
 from application_info import *
+from drive_info import *
 from price_info import *
 from messages import *
 if isPython3():

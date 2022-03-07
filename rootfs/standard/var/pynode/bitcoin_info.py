@@ -22,6 +22,7 @@ bitcoin_wallets = None
 bitcoin_mempool = None
 bitcoin_recommended_fees = None
 bitcoin_version = None
+BITCOIN_CACHE_FILE = "/tmp/bitcoin_info.json"
 
 # Functions
 def get_bitcoin_rpc_username():
@@ -57,15 +58,24 @@ def update_bitcoin_main_info():
         rpc_connection = AuthServiceProxy("http://%s:%s@127.0.0.1:8332"%(rpc_user, rpc_pass), timeout=120)
 
         # Basic Info
-        bitcoin_blockchain_info = rpc_connection.getblockchaininfo()
-        if bitcoin_blockchain_info != None:
-            bitcoin_block_height = bitcoin_blockchain_info['headers']
-            mynode_block_height = bitcoin_blockchain_info['blocks']
+        info = rpc_connection.getblockchaininfo()
+        if info != None:
+            # Save specific data
+            bitcoin_block_height = info['headers']
+            mynode_block_height = info['blocks']
+            # Data cleanup
+            if "difficulty" in info:
+                info["difficulty"] = "{:.3g}".format(info["difficulty"])
+            if "verificationprogress" in info:
+                info["verificationprogress"] = "{:.3g}".format(info["verificationprogress"])
+
+        bitcoin_blockchain_info = info
 
     except Exception as e:
         log_message("ERROR: In update_bitcoin_info - {}".format( str(e) ))
         return False
 
+    update_bitcoin_json_cache()
     return True
 
 def update_bitcoin_other_info():
@@ -99,14 +109,37 @@ def update_bitcoin_other_info():
                 bitcoin_recent_blocks = rpc_connection.batch_([ [ "getblock", h ] for h in block_hashes ])
                 bitcoin_recent_blocks_last_cache_height = mynode_block_height
 
-            # Get peers
-            bitcoin_peers = rpc_connection.getpeerinfo()
+            # Get peers and cleanup data
+            peerdata = rpc_connection.getpeerinfo()
+            peers = []
+            if peerdata != None:
+                for p in peerdata:
+                    peer = p
+
+                    peer["pingtime"] = int(p["pingtime"] * 1000) if ("pingtime" in p) else "N/A"
+                    peer["tx"] = "{:.2f}".format(float(p["bytessent"]) / 1000 / 1000) if ("bytessent" in p) else "N/A"
+                    peer["rx"] = "{:.2f}".format(float(p["bytesrecv"]) / 1000 / 1000) if ("bytesrecv" in p) else "N/A"
+                    peer["minping"] = str(p["minping"]) if ("minping" in p) else "N/A"
+                    peer["minfeefilter"] = str(p["minfeefilter"]) if ("minfeefilter" in p) else "N/A"
+                    peer["pingwait"] = str(p["pingwait"]) if ("pingwait" in p) else "N/A"
+
+                    peers.append(peer)
+            bitcoin_peers = peers
 
             # Get network info
-            bitcoin_network_info = rpc_connection.getnetworkinfo()
+            network_data = rpc_connection.getnetworkinfo()
+            if network_data != None:
+                network_data["relayfee"] = str(network_data["relayfee"])
+                network_data["incrementalfee"] = str(network_data["incrementalfee"])
+            bitcoin_network_info = network_data
 
             # Get mempool
-            bitcoin_mempool = rpc_connection.getmempoolinfo()
+            mempool_data = rpc_connection.getmempoolinfo()
+            if mempool_data != None:
+                mempool_data["total_fee"] = str(mempool_data["total_fee"])
+                mempool_data["mempoolminfee"] = str(mempool_data["mempoolminfee"])
+                mempool_data["minrelaytxfee"] = str(mempool_data["minrelaytxfee"])
+            bitcoin_mempool = mempool_data
 
             # Get wallet info
             wallets = rpc_connection.listwallets()
@@ -145,6 +178,7 @@ def update_bitcoin_other_info():
         log_message("ERROR: In update_bitcoin_other_info - {}".format( str(e2) ))
         return False
 
+    update_bitcoin_json_cache()
     return True
 
 def get_bitcoin_status():
@@ -169,7 +203,7 @@ def get_bitcoin_blockchain_info():
 def get_bitcoin_difficulty():
     info = get_bitcoin_blockchain_info()
     if "difficulty" in info:
-        return "{:.3g}".format(info["difficulty"])
+        return info["difficulty"]
     return "???"
 
 def get_bitcoin_block_height():
@@ -209,17 +243,27 @@ def get_bitcoin_mempool_info():
     mempool["size"] = "???"
     mempool["bytes"] = "0"
     if mempooldata != None:
+        mempool["display_size"] = "unknown"
         if "size" in mempooldata:
             mempool["size"] = mempooldata["size"]
         if "bytes" in mempooldata:
             mempool["bytes"] = mempooldata["bytes"]
+            mempool["display_bytes"] = "{:.1} MB".format( float(mempooldata["bytes"])/1000/1000 )
 
     return copy.deepcopy(mempool)
 
 def get_bitcoin_mempool_size():
     info = get_bitcoin_mempool_info()
     size = float(info["bytes"]) / 1000 / 1000
-    return "{:.3} MB".format(size)
+    return "{:.1} MB".format(size)
+
+def get_bitcoin_disk_usage():
+    info = get_bitcoin_blockchain_info()
+    if "size_on_disk" in info:
+        usage = int(info["size_on_disk"]) / 1000 / 1000 / 1000
+        return "{:.0f}".format(usage)
+    else:
+        return "UNK"
 
 def get_bitcoin_recommended_fees():
     global bitcoin_recommended_fees
@@ -298,3 +342,21 @@ def enable_bip158():
     touch("/mnt/hdd/mynode/settings/.bip158_enabled")
 def disable_bip158():
     delete_file("/mnt/hdd/mynode/settings/.bip158_enabled")
+
+
+def update_bitcoin_json_cache():
+    global BITCOIN_CACHE_FILE
+    bitcoin_data = {}
+    bitcoin_data["current_block_height"] = mynode_block_height
+    bitcoin_data["blockchain_info"] = get_bitcoin_blockchain_info()
+    #bitcoin_data["recent_blocks"] = bitcoin_recent_blocks
+    bitcoin_data["peers"] = get_bitcoin_peers()
+    bitcoin_data["network_info"] = get_bitcoin_network_info()
+    bitcoin_data["mempool"] = get_bitcoin_mempool_info()
+    #bitcoin_data["recommended_fees"] = bitcoin_recommended_fees
+    bitcoin_data["disk_usage"] = get_bitcoin_disk_usage()
+    return set_dictionary_file_cache(bitcoin_data, BITCOIN_CACHE_FILE)
+
+def get_bitcoin_json_cache():
+    global BITCOIN_CACHE_FILE
+    return get_dictionary_file_cache(BITCOIN_CACHE_FILE)
