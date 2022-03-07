@@ -32,6 +32,7 @@ lightning_watchtower_server_info = None
 lightning_desync_count = 0
 lightning_update_count = 0
 
+LIGHTNING_CACHE_FILE = "/tmp/lightning_info.json"
 LND_FOLDER = "/mnt/hdd/mynode/lnd/"
 TLS_CERT_FILE = "/mnt/hdd/mynode/lnd/tls.cert"
 LND_REST_PORT = "10080"
@@ -91,6 +92,8 @@ def update_lightning_info():
         # Poll slower (make sure we gather data early)
         if lightning_update_count < 30 or lightning_update_count % 2 == 0:
             update_lightning_tx_info()
+
+    update_lightning_json_cache()
 
     return True
 
@@ -612,3 +615,22 @@ def enable_watchtower():
 
 def disable_watchtower():
     delete_file("/mnt/hdd/mynode/settings/.watchtower_enabled")
+
+# Only call from www process which has data
+def update_lightning_json_cache():
+    global LIGHTNING_CACHE_FILE
+    lightning_data = {}
+    lightning_data["info"] = get_lightning_info()
+    lightning_data["peers"] = get_lightning_peers()
+    lightning_data["channels"] = get_lightning_channels()
+    lightning_data["balances"] = get_lightning_balance_info()
+    #lightning_data["transactions"] = lightning_transactions
+    #lightning_data["payments"] = lightning_payments
+    #lightning_data["invoices"] = lightning_invoices
+    #lightning_data["watchtower_server_info"] = lightning_watchtower_server_info
+    return set_dictionary_file_cache(lightning_data, LIGHTNING_CACHE_FILE)
+
+# Can call from any process
+def get_lightning_json_cache():
+    global LIGHTNING_CACHE_FILE
+    return get_dictionary_file_cache(LIGHTNING_CACHE_FILE)

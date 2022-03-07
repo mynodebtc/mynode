@@ -3,6 +3,25 @@
         <title>{{ title }}</title>
         {% include 'includes/head.html' %}
 
+        <style>
+            .ui-tooltip {
+                
+                font-size: 16px;
+                width: 400px;
+                max-width: 400px;
+                
+            }
+
+            {% if not is_connected %}
+            .connected-style {
+                color: #AAAAAA;
+            }
+            {% else %}
+            .connected-style {
+                
+            }
+            {% endif %}
+        </style>
 
         <script>
             $(document).ready(function() {
@@ -45,6 +64,86 @@
                     }
                 });
 
+                $("#sync_button").on("click", function() {
+                    $('#loading_spinner_overlay').fadeIn();
+                    window.location.href='/premium-plus/sync';
+                });
+
+
+                $('#sync_status_checkbox').change(function () {
+                    $("#sync_status_save").show();
+                });
+                $("#sync_status_save").on("click", function() {
+                    enabled=$('#sync_status_checkbox').is(":checked");
+                    if (enabled)
+                    {
+                        window.location.href='/premium-plus/toggle-setting?name=sync_status&enabled=1';
+                    }
+                    else
+                    {
+                        window.location.href='/premium-plus/toggle-setting?name=sync_status&enabled=0';
+                    }
+                });
+
+                $('#sync_bitcoin_and_lightning_checkbox').change(function () {
+                    $("#sync_bitcoin_and_lightning_save").show();
+                });
+                $("#sync_bitcoin_and_lightning_save").on("click", function() {
+                    enabled=$('#sync_bitcoin_and_lightning_checkbox').is(":checked");
+                    if (enabled)
+                    {
+                        window.location.href='/premium-plus/toggle-setting?name=sync_bitcoin_and_lightning&enabled=1';
+                    }
+                    else
+                    {
+                        window.location.href='/premium-plus/toggle-setting?name=sync_bitcoin_and_lightning&enabled=0';
+                    }
+                });
+
+                $('#backup_scb_checkbox').change(function () {
+                    $("#backup_scb_save").show();
+                });
+                $("#backup_scb_save").on("click", function() {
+                    enabled=$('#backup_scb_checkbox').is(":checked");
+                    if (enabled)
+                    {
+                        window.location.href='/premium-plus/toggle-setting?name=backup_scb&enabled=1';
+                    }
+                    else
+                    {
+                        window.location.href='/premium-plus/toggle-setting?name=backup_scb&enabled=0';
+                    }
+                });
+
+                $('#watchtower_checkbox').change(function () {
+                    $("#watchtower_save").show();
+                });
+                $("#watchtower_save").on("click", function() {
+                    enabled=$('#watchtower_checkbox').is(":checked");
+                    if (enabled)
+                    {
+                        window.location.href='/premium-plus/toggle-setting?name=watchtower&enabled=1';
+                    }
+                    else
+                    {
+                        window.location.href='/premium-plus/toggle-setting?name=watchtower&enabled=0';
+                    }
+                });
+
+                //$( document ).tooltip();
+
+                $( document ).tooltip({
+                    items: "[title]",
+                    content: function() {
+                        var element = $( this );
+                        if ( element.is( "[title]" ) ) {
+                            text =  "<b>"+element.attr( "title" )+"</b>"
+                            text += "<br/><br/>";
+                            text += ""+element.attr( "msg" )+"";
+                            return text;
+                        }
+                    }
+                });
             });
         </script>
      </head>
@@ -81,7 +180,7 @@
                         {% if has_access_token %}
                         <tr>
                             <th>Status</th>
-                            <td>{{status}}</td>
+                            <td>{{status_text}}</td>
                         </tr>
                         <tr>
                             <th>Last Sync</th>
@@ -89,7 +188,7 @@
                         </tr>
                         <tr>
                             <th>Actions</th>
-                            <td><a href="/premium-plus/sync" class="ui-button ui-widget ui-corner-all mynode_button_small">Force Sync</a></td>
+                            <td><button id="sync_button" class="ui-button ui-widget ui-corner-all mynode_button_small">Force Sync</button></td>
                         </tr>
                         {% endif %}
                     </table>
@@ -105,32 +204,64 @@
                 <div class="info_tile_contents">
                     <table class="info_table">
                         <tr>
-                            <th>Sync Device Status</th>
-                            <td>{{mempool_tx}}</td>
-                        </tr>
-                        <tr>
-                            <th>Backup Lightning SCB File</th>
-                            <td>{{mempool_tx}}</td>
-                        </tr>
-                        <tr>
-                            <th>myNode Watchtower</th>
-                            <td>{{mempool_size}}</td>
-                        </tr>
-                        <tr>
-                            <th>Proxy</th>
+                            <th class="connected-style">Sync Device Status</th>
                             <td>
-                                <p id="rpc_password" style="display: none; margin: 0;">{{rpc_password}} <span id="copy_rpc_password" class="ui-icon ui-icon-copy" style="cursor: pointer; display: none;" title="Copy Password"></span></p>
-                                <a id="show_rpc_password" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;">show</a>
+                                <label class="switch">
+                                    <input type="checkbox" id="sync_status_checkbox" {% if premium_plus_settings['sync_status'] %}checked{% endif %} {% if not is_connected %}disabled{% endif %}>
+                                    <span class="slider round"></span>
+                                </label>
+                                <button id="sync_status_save" style="display: none; float: right;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                            </td>
+                            <td>
+                                <img style="width: 16px; margin-left: 10px;" src="{{ url_for('static', filename="images/tooltip_icon.png")}}" title="Sync Device Status" msg="Syncing your node's status will allow you to see basic node information via mynodebtc.com. Info like app status, drive usage, and uptime will be available online.">
                             </td>
                         </tr>
                         <tr>
-                            <th>Peer Bloom Filters (BIP 37)</th>
+                            <th class="connected-style">Sync Bitcoin and Lightning Info</th>
                             <td>
                                 <label class="switch">
-                                    <input type="checkbox" id="bip37_checkbox" {% if bip37_enabled %}checked{% endif %}>
+                                    <input type="checkbox" id="sync_bitcoin_and_lightning_checkbox" {% if premium_plus_settings['sync_bitcoin_and_lightning'] %}checked{% endif %} {% if not is_connected %}disabled{% endif %}>
                                     <span class="slider round"></span>
                                 </label>
-                                <button id="bip37_save" style="display: none; float: right;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                                <button id="sync_bitcoin_and_lightning_save" style="display: none; float: right;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                            </td>
+                            <td>
+                                <img style="width: 16px; margin-left: 10px;" src="{{ url_for('static', filename="images/tooltip_icon.png")}}" title="Sync Bitcoin and Lightning Info" msg="Syncing your node's Bitcoin and Lightning information will allow you to view that information via mynodebtc.com. Bitcoin information (block height, peers, etc...) and Lightning information (peers, channels, balances, etc...) will be available online. Some information may be considered sensitive.">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="connected-style">Remote Channel Backup</th>
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox" id="backup_scb_checkbox" {% if premium_plus_settings['backup_scb'] %}checked{% endif %} {% if not is_connected %}disabled{% endif %}>
+                                    <span class="slider round"></span>
+                                </label>
+                                <button id="backup_scb_save" style="display: none; float: right;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                            </td>
+                            <td>
+                                <img style="width: 16px; margin-left: 10px;" src="{{ url_for('static', filename="images/tooltip_icon.png")}}" title="Remote Channel Backup" msg="Enabling Remote Channel Backup creates another layer of defense. An online backup of your encrypted SCB file is made to help prevent loss of funds in case of physical hardware failure.">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="connected-style">Lightning Watchtower</th>
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox" id="watchtower_checkbox" {% if premium_plus_settings['watchtower'] %}checked{% endif %} {% if not is_connected %}disabled{% endif %}>
+                                    <span class="slider round"></span>
+                                </label>
+                                <button id="watchtower_save" style="display: none; float: right;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                            </td>
+                            <td>
+                                <img style="width: 16px; margin-left: 10px;" src="{{ url_for('static', filename="images/tooltip_icon.png")}}" title="Lightning Watchtower" msg="Enabling the Lightning Watchtower starts an external node to monitor your Lightning channels, helping detect and prevent malicious actions by peers.">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="connected-style">Proxy</th>
+                            <td class="connected-style">
+                                Coming soon!
+                            </td>
+                            <td>
+                                &nbsp;
                             </td>
                         </tr>
                     </table>
@@ -149,6 +280,12 @@
                 <!-- Allow form submission with keyboard without duplicating the dialog button -->
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
             </form>
+        </div>
+
+        <div id="loading_spinner_overlay" class="loading_spinner_overlay" style="display:none;">
+            <img id="loading_spinner" class="loading_image" src="{{ url_for('static', filename="images/loading.gif")}}"/>
+            <br/>
+            Loading...
         </div>
 
         {% include 'includes/footer.html' %}

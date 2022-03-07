@@ -16,78 +16,34 @@ import random
 
 # Info to get from the update threads
 has_updated_btc_info = False
-data_drive_usage = "0%"
-os_drive_usage = "0%"
 cpu_usage = "..."
 ram_usage = "..."
 swap_usage = "..."
-device_temp = "..."
 public_ip = "not_detected"
 
 # Getters
 def get_has_updated_btc_info():
     global has_updated_btc_info
     return has_updated_btc_info
-def get_data_drive_usage():
-    global data_drive_usage
-    return data_drive_usage
-def get_os_drive_usage():
-    global os_drive_usage
-    return os_drive_usage
 def get_cpu_usage():
     global cpu_usage
     return cpu_usage
-def get_ram_usage():
-    global ram_usage
-    return ram_usage
-def get_swap_usage():
-    global swap_usage
-    return swap_usage
-def get_device_temp():
-    global device_temp
-    return device_temp
 def get_public_ip():
     global public_ip
     return public_ip
 
 # Updates device info every 60 seconds
 def update_device_info():
-    global data_drive_usage
-    global os_drive_usage
     global cpu_usage
-    global ram_usage
-    global swap_usage
-    global device_temp
 
     # Get drive info
     try:
         # Get throttled info (raspi only)
         reload_throttled_data()
 
-        # Get drive actual usage
-        #results = to_string(subprocess.check_output(["du","-sh","/mnt/hdd/mynode/"]))
-        #drive_usage = results.split()[0]
-
-        # Get drive percent usage
-        data_drive_usage = to_string(subprocess.check_output("df -h /mnt/hdd | grep /dev | awk '{print $5}'", shell=True))
-        os_drive_usage = to_string(subprocess.check_output("df -h / | grep /dev | awk '{print $5}'", shell=True))
-
-        # Get RAM usage
-        ram_info = psutil.virtual_memory()
-        ram_usage = "{:.1f}%".format(ram_info.percent)
-
-        # Get Swap Usage
-        swap_info = psutil.swap_memory()
-        swap_usage = "{:.1f}%".format(swap_info.percent)
-
         # Get CPU usage
         cpu_info = psutil.cpu_times_percent(interval=10.0, percpu=False)
         cpu_usage = "{:.1f}%".format(100.0 - cpu_info.idle)
-
-        # Get device temp
-        results = to_string(subprocess.check_output("cat /sys/class/thermal/thermal_zone0/temp", shell=True))
-        temp = int(results) / 1000
-        device_temp = "{:.1f}".format(temp)
 
     except Exception as e:
         log_message("CAUGHT update_device_info EXCEPTION: " + str(e))

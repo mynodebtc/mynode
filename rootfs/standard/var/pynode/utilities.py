@@ -1,5 +1,7 @@
 from flask import send_from_directory
 import os
+import time
+import json
 import subprocess
 import sys
 import codecs
@@ -26,7 +28,6 @@ def to_bytes(s):
 def to_string(s):
     b = to_bytes(s)
     r = b.decode("utf-8")
-    print("S TYPE: "+str(type(r)))
     return r
 
 def quote_plus(s):
@@ -82,6 +83,96 @@ def set_file_contents(filename, data):
         return True
     except:
         return False
+    return False
+
+
+#==================================
+# Cache Functions
+#==================================
+utilities_cached_data = {}
+
+def is_cached(key, refresh_time=3600): # refresh=1hr
+    global utilities_cached_data
+    cache_time_key = key + "_cache_time"
+    now_time = int(time.time())
+    if key in utilities_cached_data and cache_time_key in utilities_cached_data:
+        if utilities_cached_data[cache_time_key] + refresh_time < now_time:
+            return False
+        else:
+            return True
+    else:
+        return False
+
+def get_cached_data(key):
+    global utilities_cached_data
+    if key in utilities_cached_data:
+        return utilities_cached_data[key]
+    return None
+
+def update_cached_data(key, value):
+    global utilities_cached_data
+    cache_time_key = key + "_cache_time"
+    now_time = int(time.time())
+    utilities_cached_data[key] = value
+    utilities_cached_data[cache_time_key] = now_time
+
+def set_dictionary_file_cache(data, file_path):
+    try:
+        with open(file_path, 'w') as file:
+            json.dump(data, file)
+        return True
+    except Exception as e:
+        log_message("ERROR set_dictionary_file_cache ({}):{} ".format(file_path, str(e)))
+        log_message(str(data))
+        return False
+
+def get_dictionary_file_cache(file_path):
+    try:
+        with open(file_path) as file:
+            data = json.load(file)
+        return data
+    except Exception as e:
+        log_message("ERROR get_dictionary_file_cache ({}): {}".format(file_path, str(e)))
+        return None
+
+#==================================
+# Settings File Functions
+#==================================
+def create_settings_file(name):
+    from drive_info import is_mynode_drive_mounted
+
+    folder_1="/home/bitcoin/.mynode/"
+    folder_2="/mnt/hdd/mynode/settings/"
+    path_1="{}{}".format(folder_1, name)
+    path_2="{}{}".format(folder_2, name)
+    touch(path_1)
+    if is_mynode_drive_mounted():
+        touch(path_2)
+
+def delete_settings_file(name):
+    folder_1="/home/bitcoin/.mynode/"
+    folder_2="/mnt/hdd/mynode/settings/"
+    path_1="{}{}".format(folder_1, name)
+    path_2="{}{}".format(folder_2, name)
+    delete_file(path_1)
+    delete_file(path_2)
+
+def settings_file_exists(name):
+    from drive_info import is_mynode_drive_mounted
+
+    folder_1="/home/bitcoin/.mynode/"
+    folder_2="/mnt/hdd/mynode/settings/"
+    path_1="{}{}".format(folder_1, name)
+    path_2="{}{}".format(folder_2, name)
+    if os.path.isfile(path_1) and os.path.isfile(path_2):
+        return True
+    elif os.path.isfile(path_1) or os.path.isfile(path_2):
+        # Make sure backup file is in place
+        touch(path_1)
+        if is_mynode_drive_mounted():
+            touch(path_2)
+        return True
+    
     return False
 
 

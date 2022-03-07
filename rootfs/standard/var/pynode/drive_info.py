@@ -52,8 +52,27 @@ def get_mynode_drive_size():
         size = -2
     return size
 
-def get_mynode_drive_usage():
-    return "TODO"
+def get_data_drive_usage():
+    if is_cached("data_drive_usage", 300):
+        return get_cached_data("data_drive_usage")
+    usage = "0%"
+    try:
+        usage = to_string(subprocess.check_output("df -h /mnt/hdd | grep /dev | awk '{print $5}'", shell=True))
+        update_cached_data("data_drive_usage", usage)
+    except:
+        return usage
+    return usage
+        
+def get_os_drive_usage():
+    if is_cached("os_drive_usage", 300):
+        return get_cached_data("os_drive_usage")
+    usage = "0%"
+    try:
+        usage = to_string(subprocess.check_output("df -h / | grep /dev | awk '{print $5}'", shell=True))
+        update_cached_data("os_drive_usage", usage)
+    except:
+        return usage
+    return usage
 
 def check_partition_for_mynode(partition):
     is_mynode = False

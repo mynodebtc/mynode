@@ -31,6 +31,7 @@ from messages import get_message
 from thread_functions import *
 from datetime import timedelta
 from device_info import *
+from drive_info import *
 from device_warnings import *
 from systemctl_info import *
 from application_info import *
@@ -776,6 +777,9 @@ def start_threads():
     dmesg_thread = BackgroundThread(monitor_dmesg, 60) # Runs forever, restart after 60 if it fails 
     dmesg_thread.start()
     threads.append(dmesg_thread)
+    app_data_cache_thread = BackgroundThread(update_application_json_cache, 300)
+    app_data_cache_thread.start()
+    threads.append(app_data_cache_thread)
 
     app.logger.info("STARTED {} THREADS".format(len(threads)))
 

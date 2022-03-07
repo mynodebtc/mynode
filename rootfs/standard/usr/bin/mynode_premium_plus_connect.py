@@ -9,6 +9,9 @@ from systemd import journal
 from utilities import *
 from device_info import *
 from drive_info import *
+from application_info import *
+from bitcoin_info import *
+from lightning_info import *
 
 
 PREMIUM_PLUS_CONNECT_URL = "https://www.mynodebtc.com/device_api/premium_plus_connect.php"
@@ -19,7 +22,46 @@ log.setLevel(logging.INFO)
 set_logger(log)
 
 # Helper functions
+def get_premium_plus_device_info():
+    info = {}
+    settings = get_premium_plus_settings()
 
+    # Basic Info
+    info["serial"] = get_device_serial()
+    info["device_type"] = get_device_type()
+    info["device_arch"] = get_device_arch()
+    info["drive_size"] = get_mynode_drive_size()
+    info["data_drive_usage"] = get_data_drive_usage()
+    info["os_drive_usage"] = get_os_drive_usage()
+    info["temperature"] = get_device_temp()
+    info["total_ram"] = get_device_ram()
+    info["ram_usage"] = get_ram_usage()
+    info["swap_usage"] = get_swap_usage()
+    info["uptime"] = get_system_uptime()
+
+    # App status info
+    if settings['sync_status']:
+        info["app_info"] = get_all_applications_from_json_cache()
+
+    return info
+
+def get_premium_plus_bitcoin_info():
+    info = {}
+    settings = get_premium_plus_settings()
+
+    if settings['sync_bitcoin_and_lightning']:
+        log_message("BITCOIN " + str(get_bitcoin_json_cache()))
+        info = get_bitcoin_json_cache()
+    return info
+
+def get_premium_plus_lightning_info():
+    info = {}
+    settings = get_premium_plus_settings()
+
+    if settings['sync_bitcoin_and_lightning']:
+        log_message("LIGHTNING " + str(get_lightning_json_cache()))
+        info = get_lightning_json_cache()
+    return info
 
 # Update hourly
 def premium_plus_connect():
@@ -27,13 +69,13 @@ def premium_plus_connect():
     # Check in
     data = {
         "serial": get_device_serial(),
-        "device_type": get_device_type(),
-        "device_arch": get_device_arch(),
         "version": get_current_version(),
         "token": get_premium_plus_token(),
+        "settings": json.dumps(get_premium_plus_settings()),
+        "device_info": json.dumps(get_premium_plus_device_info()),
+        "bitcoin_info": json.dumps(get_premium_plus_bitcoin_info()),
+        "lightning_info": json.dumps(get_premium_plus_lightning_info()),
         "product_key": get_product_key(),
-        "drive_size": get_mynode_drive_size(),
-        "drive_usage": get_mynode_drive_usage(),
     }
 
     # Setup tor proxy
@@ -105,7 +147,7 @@ if __name__ == "__main__":
             wd = inotify.add_watch('/home/bitcoin/.mynode/', watch_flags)
             for event in inotify.read(timeout=one_hour_in_ms):
                 log_message("File changed: " + str(event))
-            log_message("Running connect again: " + str(event))
+            log_message("Running connect again")
         except Exception as e:
             log_message("Error: {}".format(e))
             time.sleep(60)

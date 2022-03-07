@@ -12,6 +12,7 @@ import re
 import os
 
 # Cached data
+JSON_APPLICATION_CACHE_FILE = "/tmp/app_cache.json"
 mynode_applications = None
 
 # Utility functions
@@ -118,8 +119,8 @@ def initialize_application_defaults(app):
     if not "show_on_application_page" in app: app["show_on_application_page"] = True
     if not "can_enable_disable" in app: app["can_enable_disable"] = True
     if not "is_enabled" in app: app["is_enabled"] = is_service_enabled( app["short_name"] )
-    #app["status"] = status # Should status be optional to include? Takes lots of time.
-    #app["status_color"] = get_service_status_color(short_name)
+    #app["status"] = get_application_status( app["short_name"] )
+    #app["status_color"] = get_service_status_color( app["short_name"] )
     if not "hide_status_icon" in app: app["hide_status_icon"] = False
     if not "log_file" in app: app["log_file"] = get_application_log_file( app["short_name"] )
     if not "journalctl_log_name" in app: app["journalctl_log_name"] = None
@@ -134,11 +135,12 @@ def initialize_application_defaults(app):
 
     return app
 
-def update_application(app):
+def update_application(app, include_status=False):
     short_name = app["short_name"]
     app["is_enabled"] = is_service_enabled(short_name)
-    #app["status"] = "???" # Should status be optional to include? Takes lots of time.
-    #app["status_color"] = get_service_status_color(short_name)
+    if include_status:
+        app["status"] = get_application_status( app["short_name"] )
+        app["status_color"] = get_service_status_color( app["short_name"] )
 
 def initialize_applications():
     global mynode_applications
@@ -157,11 +159,11 @@ def initialize_applications():
         mynode_applications = copy.deepcopy(apps)
     return
 
-def update_applications():
+def update_applications(include_status=False):
     global mynode_applications
 
     for app in mynode_applications:
-        update_application(app)
+        update_application(app, include_status)
 
 def clear_application_cache():
     global mynode_applications
@@ -180,13 +182,16 @@ def need_application_refresh():
         return True
     return False
 
-def get_all_applications(order_by="none"):
+def get_all_applications(order_by="none", include_status=False):
     global mynode_applications
 
     if need_application_refresh():
         initialize_applications()
     else:
         update_applications()
+
+    if include_status:
+        update_applications(include_status)
 
     apps = copy.deepcopy(mynode_applications)
     if order_by == "alphabetic":
@@ -195,6 +200,17 @@ def get_all_applications(order_by="none"):
         apps.sort(key=lambda x: x["homepage_order"])
 
     return apps
+
+# Only call this from the www python process so status data is available
+def update_application_json_cache():
+    global JSON_APPLICATION_CACHE_FILE
+    apps = get_all_applications(order_by="alphabetic", include_status=True)
+    return set_dictionary_file_cache(apps, JSON_APPLICATION_CACHE_FILE)
+
+# Getting the data can be called from any process
+def get_all_applications_from_json_cache():
+    global JSON_APPLICATION_CACHE_FILE
+    return get_dictionary_file_cache(JSON_APPLICATION_CACHE_FILE)
 
 def get_application(short_name):
     apps = get_all_applications()
@@ -310,6 +326,14 @@ def get_application_status_color_special(short_name):
             dojo_initialized = ""
         if dojo_initialized != "true":
             return "red"
+    elif short_name == "premium_plus":
+        if has_premium_plus_token():
+            if get_premium_plus_is_connected():
+                return "green"
+            else:
+                return "red"
+        else:
+            return "gray"
     return ""
 
 def get_application_status_color(short_name):
