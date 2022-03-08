@@ -282,7 +282,7 @@
         "app_tile_default_status_text": "Access and Backup",
         "app_tile_button_href": "/premium-plus",
         "show_on_application_page": false,
-        "show_on_homepage": true,
+        "show_on_homepage": false,
         "can_uninstall": false,
         "can_reinstall": false,
         "journalctl_log_name": "premium_plus_connect",
