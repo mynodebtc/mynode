@@ -1,3 +1,17 @@
+=== v0.2.53 ===
+- Released: 03/07/22
+- Upgrade Dojo to v1.14.0
+- Upgrade Thunderhub to v0.13.7
+- Upgrade RTL to v0.12.2
+- Upgrade JoininBox to v0.6.7
+- Upgrade BTCPay Server to v1.4.7
+- Upgrade LiT to v0.6.4
+- Upgrade Pool to v0.5.5
+- Upgrade Netdata to v1.32.1
+- Upgrade BoS to v11.57.0
+- Devs: Migrate Web UI to Python3
+- Devs: Refactor Python Code to "PyNode"
+
 === v0.2.52 ===
 - Released: 02/11/22
 - Upgrade LND to v0.14.2
