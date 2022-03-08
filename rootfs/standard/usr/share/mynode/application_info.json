@@ -226,17 +226,6 @@
         "is_premium": true
     },
     {
-        "COMMENT": "INCOMPLETE APP - enable can_uninstall,can_reinstall,show_on_homepage_page,show_on_application_page",
-        "name": "Warden",
-        "short_name": "warden",
-        "app_tile_default_status_text": "Portfolio Tracker",
-        "can_uninstall": false,
-        "can_reinstall": false,
-        "show_on_homepage": false,
-        "show_on_application_page": false,
-        "homepage_order": 41
-    },
-    {
         "name": "Warden Terminal",
         "short_name": "wardenterminal",
         "hide_status_icon": true,
