@@ -5,6 +5,10 @@
    Install latest Debian Net-install via CD
 
    URL: [https://www.debian.org/CD/netinst/](https://www.debian.org/CD/netinst/)
+   CURRENT IMAGE (10.11): https://cdimage.debian.org/mirror/cdimage/archive/10.11.0/amd64/iso-cd/
+   
+   Set VM Settings:
+     - Set Ethernet adapter to Bridged Mode
 
    Follow instructions:
 
@@ -17,7 +21,7 @@
      - Username: mynode
      - Password: bolt
      - Timezone: Central
-     - Partition: Guided Use Entire Disk, Continue, Continue, Continue, Yes
+     - Partition: Manual, One ext4 Partition, No Swap
      - CDs and Packages: No, Next, Next
      - Software Selection: No GUI, No Print Server, Add SSH Server
      - Install Grub: Yes, /dev/sda
