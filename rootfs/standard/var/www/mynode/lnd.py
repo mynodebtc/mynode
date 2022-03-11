@@ -165,12 +165,22 @@ def page_lnd():
         invoices = get_lightning_invoices()
 
         watchtower_server_info = get_lightning_watchtower_server_info()
-        watchtower_uri = "..."
+        watchtower_text= "..."
         if watchtower_server_info != None:
-            if "uris" in watchtower_server_info and len(watchtower_server_info['uris']) > 0:
-                watchtower_uri = watchtower_server_info['uris'][0]
+            try:
+                if "uris" in watchtower_server_info and len(watchtower_server_info['uris']) > 0:
+                    watchtower_text = watchtower_server_info['uris'][0]
+                elif "pubkey" in watchtower_server_info or "listeners" in watchtower_server_info:
+                    watchtower_text = ""
+                    if "pubkey" in watchtower_server_info:
+                        watchtower_text += watchtower_server_info["pubkey"]
+                    #if "listeners":
+                    #    watchtower_text += "listeners: " + watchtower_server_info["listeners"][0]
+                else:
+                    watchtower_text = "missing info"
+            except:
+                watchtower_text = "error"
 
-            
     except Exception as e:
         templateData = {
             "title": "myNode Lightning Status",
@@ -215,7 +225,7 @@ def page_lnd():
         "channel_pending": format_sat_amount(balance_info["channel_pending"]),
         "wallet_balance": format_sat_amount(balance_info["wallet_balance"]),
         "wallet_pending": format_sat_amount(balance_info["wallet_pending"]),
-        "watchtower_uri": watchtower_uri,
+        "watchtower_text": Markup(watchtower_text),
         "peers": peers,
         "channels": channels,
         "transactions": transactions,
@@ -463,7 +473,8 @@ def page_lnd_change_alias():
         flash("Invalid Alias", category="error")
         return redirect(url_for(".page_lnd"))
     with open("/mnt/hdd/mynode/settings/.lndalias", "w") as f:
-        utf8_alias = alias.decode('utf-8', 'ignore')
+        alias_bytes = alias.encode('utf-8')
+        utf8_alias = alias_bytes.decode('utf-8', 'ignore')
         f.write(utf8_alias)
         f.close()
 
