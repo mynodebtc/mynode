@@ -528,7 +528,7 @@ def index():
             "current_block": current_block,
             "bitcoin_peer_count": get_bitcoin_peer_count(),
             "bitcoin_difficulty": get_bitcoin_difficulty(),
-            "bitcoin_mempool_size": get_bitcoin_mempool_size(),
+            "bitcoin_mempool_size": get_bitcoin_mempool_info()["display_bytes"],
             "bitcoin_version": get_bitcoin_version(),
             "lnd_status_color": lnd_status_color,
             "lnd_status": Markup(lnd_status),
