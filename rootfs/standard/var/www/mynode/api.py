@@ -34,7 +34,7 @@ def api_get_bitcoin_info():
     data["block_height"] = get_bitcoin_block_height()
     data["peer_count"] = get_bitcoin_peer_count()
     #data["difficulty"] = get_bitcoin_difficulty() # Dont send difficulty, it causes errors in jsonify
-    data["mempool_size"] = get_bitcoin_mempool_size()
+    data["mempool_size"] = get_bitcoin_mempool_info()["display_bytes"]
     data["recommended_fees"] = get_bitcoin_recommended_fees()
 
     # Add blocks

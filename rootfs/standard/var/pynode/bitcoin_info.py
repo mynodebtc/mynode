@@ -241,21 +241,20 @@ def get_bitcoin_mempool_info():
 
     mempool = {}
     mempool["size"] = "???"
+    mempool["count"] = "???"
     mempool["bytes"] = "0"
+    mempool["display_bytes"] = "???"
     if mempooldata != None:
         mempool["display_size"] = "unknown"
         if "size" in mempooldata:
             mempool["size"] = mempooldata["size"]
+            mempool["count"] = mempooldata["size"]
         if "bytes" in mempooldata:
             mempool["bytes"] = mempooldata["bytes"]
-            mempool["display_bytes"] = "{:.1} MB".format( float(mempooldata["bytes"])/1000/1000 )
+            mb = round(float(mempool["bytes"] / 1000 / 1000), 2)
+            mempool["display_bytes"] = "{0:.10} MB".format( mb )
 
     return copy.deepcopy(mempool)
-
-def get_bitcoin_mempool_size():
-    info = get_bitcoin_mempool_info()
-    size = float(info["bytes"]) / 1000 / 1000
-    return "{:.1} MB".format(size)
 
 def get_bitcoin_disk_usage():
     info = get_bitcoin_blockchain_info()
