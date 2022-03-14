@@ -1,0 +1,209 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        {% include 'includes/head.html' %}
+
+        {% if refresh_rate is defined and refresh_rate is not none %}  
+        <meta http-equiv="refresh" content="{{ refresh_rate }}"> 
+        {% endif %}
+
+        <script>
+            function remove_tower(tower) {
+                if ( confirm("Are you sure you want to remove tower "+tower+"?") ) {
+                    window.location = location.protocol+'//'+location.hostname+"/lnd/watchtower/remove_tower?tower="+tower
+                }
+            }
+
+            $(document).ready(function() {
+
+                $('#watchtower_server_enabled_checkbox').change(function () {
+                    $("#watchtower_server_enabled_save").show();
+                });
+                $("#watchtower_server_enabled_save").on("click", function() {
+                    enabled=$('#watchtower_server_enabled_checkbox').is(":checked")
+                    if (enabled)
+                    {
+                        window.location.href='/lnd/watchtower/set_watchtower_enabled?enabled=1'
+                    }
+                    else
+                    {
+                        window.location.href='/lnd/watchtower/set_watchtower_enabled?enabled=0'
+                    }
+                });
+                   
+            });
+        </script>
+     </head>
+
+    <body>
+        {% include 'includes/logo_header.html' %}
+        <div class="mynode_back_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/lnd"><span class="ui-icon ui-icon-arrowthick-1-w"></span>back&nbsp;</a>
+        </div>
+
+        {% include 'includes/message_display.html' %}
+
+        <div class="main_header">Watchtower Server</div>
+        <br/>
+        
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Status</div>
+                <div class="info_tile_contents">
+                    <table class="info_table">
+                        <tr>
+                            <th>Enabled</th>
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox" id="watchtower_server_enabled_checkbox" {% if watchtower_server_enabled %}checked{% endif %}>
+                                    <span class="slider round"></span>
+                                </label>
+                                <br/>
+                                <button id="watchtower_server_enabled_save" style="display: none; margin-top: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {% if watchtower_server_enabled %}
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">URI / Pubkey</div>
+                <div class="info_tile_contents" style="font-size: 12px;">
+                    {{ watchtower_server_uri }}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+
+        <br/>
+        <div class="main_header">Watchtower Client</div>
+        <br/>
+
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Status</div>
+                <div class="info_tile_contents">
+                    Enabled
+                </div>
+            </div>
+        </div>
+        
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Active Towers</div>
+                <div class="info_tile_contents">
+                    {% if watchtower_client_towers and watchtower_client_towers|length > 0%}
+                        <table class="info_table" style="font-size: 12px;" cellpadding=5>
+                            <tr>
+                                <th><b>URI(s)</b></th>
+                                <th><b>Sessions</b></th>
+                                <th>&nbsp;</th>
+                            </tr>
+                            {% for tower in watchtower_client_towers %}
+                                <!--
+                                {'pubkey': 'A7MWka/imgKNHBo2swdaVXMRBcOopDqzvMIO+rNN7DZI', 
+                                 'addresses': ['553e5qijayrejjtmzabwibaesge6lb34jegkn7fwvfcszl35a3uj24id.onion:9911'],
+                                 'active_session_candidate': False,
+                                 'num_sessions': 2,
+                                 'sessions': 
+                                    [{'num_backups': 58,
+                                      'num_pending_backups': 0,
+                                      'max_backups': 1024,
+                                      'sweep_sat_per_byte': 10, 
+                                      'sweep_sat_per_vbyte': 10},
+                                     {'num_backups': 0,
+                                      'num_pending_backups': 0,
+                                      'max_backups': 1024,
+                                      'sweep_sat_per_byte': 10,
+                                      'sweep_sat_per_vbyte': 10}], 
+                                 'pubkey_b16': b'03B31691AFE29A028D1C1A36B3075A55731105C3A8A43AB3BCC20EFAB34DEC3648'}
+                                  -->
+                                <tr>
+                                    <td>
+                                        <small>
+                                        {% set first = True %}
+                                        {% for addr in tower.addresses %}
+                                            {% if first %} {% set first = False %} {% else %} <br/> {% endif %}
+                                            {{tower.pubkey_b16}}@{{addr}}
+                                        {% endfor %}
+                                        </small>
+                                    </td>
+                                    <td>{{tower.num_sessions}}</td>
+                                    <td><button onclick="remove_tower('{{tower.pubkey_b16}}')" class="ui-button ui-widget ui-corner-all mynode_button_small red"><span class="ui-icon ui-icon-trash"></span></button></td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% else %}
+                        No active client towers
+                    {% endif %}
+
+                    <br/><br/>
+                    <form action="/lnd/watchtower/add_tower" method="post">
+                        <input type="text" id="new_tower" name="new_tower" class="text ui-widget-content ui-corner-all" size="100" style="font-size: 14px;" placeholder="pubkey@address:9911"/>
+                        <input type="submit" class="ui-button ui-widget ui-corner-all mynode_button_small" value="Add">
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Stats</div>
+                <div class="info_tile_contents">
+                    <table class="info_table">
+                        <tr>
+                            <th>Backups</th>
+                            <td>{{watchtower_client_stats.num_backups}}</td>
+                        </tr>
+                        <tr>
+                            <th>Pending Backups</th>
+                            <td>{{watchtower_client_stats.num_pending_backups}}</td>
+                        </tr>
+                        <tr>
+                            <th>Failed Updates</th>
+                            <td>{{watchtower_client_stats.num_failed_backups}}</td>
+                        </tr>
+                        <tr>
+                            <th>Sessions Acquired</th>
+                            <td>{{watchtower_client_stats.num_sessions_acquired}}</td>
+                        </tr>
+                        <tr>
+                            <th>Sessions Exhausted</th>
+                            <td>{{watchtower_client_stats.num_sessions_exhausted}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Policy</div>
+                <div class="info_tile_contents">
+                    <table class="info_table">
+                        <tr>
+                            <th>Max Updates</th>
+                            <td>{{watchtower_client_policy.max_updates}}</td>
+                        </tr>
+                        <tr>
+                            <th>Sweep sat/byte</th>
+                            <td>{{watchtower_client_policy.sweep_sat_per_byte}}</td>
+                        </tr>
+                        <tr>
+                            <th>Sweep sat/vbyte</th>
+                            <td>{{watchtower_client_policy.sweep_sat_per_vbyte}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {% include 'includes/footer.html' %}
+    </body>
+</html>

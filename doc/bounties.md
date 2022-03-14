@@ -36,30 +36,6 @@ Additional myNode guides would be helpful for users attempting to use various to
 
 GitHub: https://github.com/mynodebtc/mynodebtc.github.io
 
-## Add Page to Manage Lightning Watchtower
-
-Known active efforts: none
-
-Payout: 250k sats
-
-Users that want to use watchtower will likely prefer more detailed information available via the myNode UI. Watchtower integration is currently limited to enabling and disabling watchtower functionality along with viewing the watchtower URI.
-
-The watchtower config for tor is already setup and should be ready to use.
-
-Acceptance Criteria:
-- New link on Lightning page going to watchtower-specific page
-- New watchtower page
-  - View watchtower clients, status, and details (lncli wtclient [towers, tower, stats, policy, ...])
-  - Add new tower (lncli wtclient add ...)
-  - Remove tower (lncli wtclient remove ...)
-- Should work if testnet is enabled
-
-Helpful links:
-
-https://github.com/lightningnetwork/lnd/blob/master/docs/watchtower.md
-
-https://github.com/openoms/lightning-node-management/blob/master/advanced-tools/watchtower.md
-
 
 # Claimed Bounties
 

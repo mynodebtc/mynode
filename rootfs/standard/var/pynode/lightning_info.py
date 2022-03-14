@@ -7,6 +7,7 @@ import re
 import datetime
 import urllib
 import random
+import base64
 from device_info import *
 from threading import Timer
 from utilities import *
@@ -28,7 +29,10 @@ lightning_wallet_balance = None
 lightning_transactions = None
 lightning_payments = None
 lightning_invoices = None
-lightning_watchtower_server_info = None
+lightning_watchtower_server_info = {}
+lightning_watchtower_client_towers = {}
+lightning_watchtower_client_stats = {}
+lightning_watchtower_client_policy = {}
 lightning_desync_count = 0
 lightning_update_count = 0
 
@@ -38,6 +42,19 @@ TLS_CERT_FILE = "/mnt/hdd/mynode/lnd/tls.cert"
 LND_REST_PORT = "10080"
 
 # Functions
+def run_lncli_command(cmd):
+    try:
+        base =  "lncli "
+        base += "--lnddir=/mnt/hdd/mynode/lnd "
+        if is_testnet_enabled():
+            base += "--network=testnet "
+        cmd = cmd.replace("lncli ", base)
+        output = subprocess.check_output(cmd, shell=True)
+        return output
+    except Exception as e:
+        log_message("ERROR in run_lncli_command: {}".format(str(e)))
+        return None
+
 def update_lightning_info():
     global lightning_info
     global lightning_peers
@@ -48,6 +65,9 @@ def update_lightning_info():
     global lightning_payments
     global lightning_invoices
     global lightning_watchtower_server_info
+    global lightning_watchtower_client_towers
+    global lightning_watchtower_client_stats
+    global lightning_watchtower_client_policy
     global lightning_desync_count
     global lightning_update_count
     global lnd_ready
@@ -88,6 +108,18 @@ def update_lightning_info():
         lightning_wallet_balance = lnd_get("/balance/blockchain")
         if is_watchtower_enabled():
             lightning_watchtower_server_info = lnd_get_v2("/watchtower/server")
+        towers = lnd_get_v2("/watchtower/client?include_sessions=1")
+        tower_details = []
+        if towers != None and "towers" in towers:
+            for tower in towers["towers"]:
+                if "pubkey" in tower and tower["active_session_candidate"]:
+                    pubkey_decoded = base64.b64decode(tower['pubkey'])
+                    pubkey_b16 = to_string(base64.b16encode( pubkey_decoded )).lower()
+                    tower["pubkey_b16"] = pubkey_b16
+                    tower_details.append(tower)
+        lightning_watchtower_client_towers = tower_details
+        lightning_watchtower_client_stats = lnd_get_v2("/watchtower/client/stats")
+        lightning_watchtower_client_policy = lnd_get_v2("/watchtower/client/policy")
 
         # Poll slower (make sure we gather data early)
         if lightning_update_count < 30 or lightning_update_count % 2 == 0:
@@ -367,7 +399,46 @@ def get_lightning_payments_and_invoices():
 
 def get_lightning_watchtower_server_info():
     global lightning_watchtower_server_info
-    return copy.deepcopy(lightning_watchtower_server_info)
+    server_info = copy.deepcopy(lightning_watchtower_server_info)
+    server_info["watchtower_server_uri"] = "..."
+
+    if server_info != None:
+        try:
+            if "uris" in server_info and len(server_info['uris']) > 0:
+                first_uri = True
+                text = ""
+                for uri in server_info['uris']:
+                    if first_uri:
+                        first_uri = False
+                    else:
+                        text += "<br/>"
+                    text += uri
+                server_info["watchtower_server_uri"] = text
+            elif "pubkey" in server_info or "listeners" in server_info:
+                server_info["watchtower_server_uri"] = ""
+                if "pubkey" in server_info:
+                    server_info["watchtower_server_uri"] += server_info["pubkey"]
+                #if "listeners":
+                #    server_info["watchtower_server_uri"] += "listeners: " + watchtower_server_info["listeners"][0]
+        except:
+            return server_info
+
+    return server_info
+
+def get_lightning_watchtower_client_towers():
+    global lightning_watchtower_client_towers
+    towers = copy.deepcopy(lightning_watchtower_client_towers)
+    return towers
+
+def get_lightning_watchtower_client_stats():
+    global lightning_watchtower_client_stats
+    stats = copy.deepcopy(lightning_watchtower_client_stats)
+    return stats
+
+def get_lightning_watchtower_client_policy():
+    global lightning_watchtower_client_policy
+    policy = copy.deepcopy(lightning_watchtower_client_policy)
+    return policy
 
 def is_lnd_ready():
     global lnd_ready
@@ -606,15 +677,13 @@ def get_lnd_alias_file_data():
     return "ERROR"
 
 def is_watchtower_enabled():
-    if os.path.isfile("/mnt/hdd/mynode/settings/.watchtower_enabled"):
-        return True
-    return False
+    return settings_file_exists("watchtower_enabled")
 
 def enable_watchtower():
-    touch("/mnt/hdd/mynode/settings/.watchtower_enabled")
+    create_settings_file("watchtower_enabled")
 
 def disable_watchtower():
-    delete_file("/mnt/hdd/mynode/settings/.watchtower_enabled")
+    delete_settings_file("watchtower_enabled")
 
 # Only call from www process which has data
 def update_lightning_json_cache():
