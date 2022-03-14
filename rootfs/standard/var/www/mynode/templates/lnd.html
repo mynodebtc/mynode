@@ -107,21 +107,6 @@
                     $("#copy_lit_password").show();
                 }
 
-                $('#watchtower_enabled_checkbox').change(function () {
-                    $("#watchtower_enabled_save").show();
-                });
-                $("#watchtower_enabled_save").on("click", function() {
-                    enabled=$('#watchtower_enabled_checkbox').is(":checked")
-                    if (enabled)
-                    {
-                        window.location.href='/lnd/set_watchtower_enabled?enabled=1'
-                    }
-                    else
-                    {
-                        window.location.href='/lnd/set_watchtower_enabled?enabled=0'
-                    }
-                });
-
                 function show_deposit_address(addr) {
                     $("#lnd_deposit_address_text").html( addr );
                     $("#lnd_deposit_address_qrcode").attr("src", "/api/get_qr_code_image?url="+addr);
@@ -257,14 +242,14 @@
 {% endif %}
 {% if wallet_exists %}
                         <tr>
-                            <th>TLS Certification</th>
+                            <th>TLS Certificate</th>
                             <td>
                                 <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/lnd/tls.cert">download</a>
                                 <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/lnd/regen_tls_cert">regenerate</a>
                             </td>
                         </tr>
                         <tr>
-                            <th>Macaroon Download</th>
+                            <th>Macaroons</th>
                             <td>
                                 <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="admin_macaroon" href="/lnd/admin.macaroon">admin</a>
                                 <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="readonly_macaroon" href="/lnd/readonly.macaroon">readonly</a>
@@ -280,14 +265,9 @@
                         </tr>
 {% endif %}
                         <tr>
-                            <th>Watchtower Server</th>
+                            <th>Watchtower</th>
                             <td>
-                                <label class="switch">
-                                    <input type="checkbox" id="watchtower_enabled_checkbox" {% if watchtower_enabled %}checked{% endif %}>
-                                    <span class="slider round"></span>
-                                </label>
-                                <br/>
-                                <button id="watchtower_enabled_save" style="display: none; margin-top: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                                <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/lnd/watchtower">open</a>
                             </td>
                         </tr>
                         <tr>
@@ -304,10 +284,12 @@
                                 {{alias}}
                             </td>
                         </tr>
+                        <!--
                         <tr>
                             <th>Ports (gRPC/REST)</th>
                             <td>10009 / 10080</td>
                         </tr>
+                        -->
 {% endif %}
                     </table>
                 </div>
@@ -344,16 +326,6 @@
             <div class="info_tile">
                 <div class="info_tile_header">URI</div>
                 <div class="info_tile_contents" style="font-size: 12px;">{{uri}}</div>
-            </div>
-        </div>
-{% endif %}
-
-{% if wallet_logged_in and watchtower_enabled %}
-        <!-- URI Tile / Row -->
-        <div class="app_tile_row">
-            <div class="info_tile">
-                <div class="info_tile_header">Watchtower Server Pubkey/URI</div>
-                <div class="info_tile_contents" style="font-size: 12px;">{{watchtower_text}}</div>
             </div>
         </div>
 {% endif %}

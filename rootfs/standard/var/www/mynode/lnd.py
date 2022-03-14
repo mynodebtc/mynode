@@ -164,23 +164,6 @@ def page_lnd():
         payments = get_lightning_payments()
         invoices = get_lightning_invoices()
 
-        watchtower_server_info = get_lightning_watchtower_server_info()
-        watchtower_text= "..."
-        if watchtower_server_info != None:
-            try:
-                if "uris" in watchtower_server_info and len(watchtower_server_info['uris']) > 0:
-                    watchtower_text = watchtower_server_info['uris'][0]
-                elif "pubkey" in watchtower_server_info or "listeners" in watchtower_server_info:
-                    watchtower_text = ""
-                    if "pubkey" in watchtower_server_info:
-                        watchtower_text += watchtower_server_info["pubkey"]
-                    #if "listeners":
-                    #    watchtower_text += "listeners: " + watchtower_server_info["listeners"][0]
-                else:
-                    watchtower_text = "missing info"
-            except:
-                watchtower_text = "error"
-
     except Exception as e:
         templateData = {
             "title": "myNode Lightning Status",
@@ -225,7 +208,6 @@ def page_lnd():
         "channel_pending": format_sat_amount(balance_info["channel_pending"]),
         "wallet_balance": format_sat_amount(balance_info["wallet_balance"]),
         "wallet_pending": format_sat_amount(balance_info["wallet_pending"]),
-        "watchtower_text": Markup(watchtower_text),
         "peers": peers,
         "channels": channels,
         "transactions": transactions,
@@ -537,7 +519,7 @@ def lnd_config_page():
     }
     return render_template('lnd_config.html', **templateData)
 
-@mynode_lnd.route("/lnd/set_watchtower_enabled")
+@mynode_lnd.route("/lnd/watchtower/set_watchtower_enabled")
 def lnd_set_watchtower_enabled_page():
     check_logged_in()
 
@@ -549,7 +531,68 @@ def lnd_set_watchtower_enabled_page():
     restart_lnd()
 
     flash("Watchtower settings updated!", category="message")
-    return redirect(url_for(".page_lnd"))
+    return redirect(url_for(".page_lnd_watchtower"))
+
+@mynode_lnd.route("/lnd/watchtower")
+def page_lnd_watchtower():
+    check_logged_in()
+
+    watchtower_server_info = get_lightning_watchtower_server_info() 
+    watchtower_client_towers = get_lightning_watchtower_client_towers() 
+    watchtower_client_stats = get_lightning_watchtower_client_stats() 
+    watchtower_client_policy = get_lightning_watchtower_client_policy() 
+
+    templateData = {
+        "title": "myNode Lightning Watchtower",
+        "watchtower_server_enabled": is_watchtower_enabled(),
+        "watchtower_server_uri": Markup(watchtower_server_info["watchtower_server_uri"]),
+        "watchtower_client_towers": watchtower_client_towers,
+        "watchtower_client_stats": watchtower_client_stats,
+        "watchtower_client_policy": watchtower_client_policy,
+        "header": "Lightning Watchtower",
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('lnd_watchtower.html', **templateData)
+
+@mynode_lnd.route("/lnd/watchtower/add_tower", methods=["POST"])
+def page_lnd_watchtower_add_tower():
+    check_logged_in()
+
+    if request.form.get("new_tower"):
+        cmd = "lncli wtclient add {}".format(request.form.get("new_tower"))
+        r = run_lncli_command(cmd)
+        if r == None:
+            flash("Error adding tower!", category="error")
+            return redirect(url_for(".page_lnd_watchtower"))
+    else:
+        flash("Error adding tower - missing tower", category="error")
+        return redirect(url_for(".page_lnd_watchtower"))
+
+    # Update Lightning Info
+    update_lightning_info()
+
+    flash("Tower added!", category="message")
+    return redirect(url_for(".page_lnd_watchtower"))
+
+@mynode_lnd.route("/lnd/watchtower/remove_tower", methods=["GET"])
+def page_lnd_watchtower_remove_tower():
+    check_logged_in()
+
+    if request.args.get("tower"):
+        cmd = "lncli wtclient remove {}".format(request.args.get("tower"))
+        r = run_lncli_command(cmd)
+        if r == None:
+            flash("Error removing tower!", category="error")
+            return redirect(url_for(".page_lnd_watchtower"))
+    else:
+        flash("Error removing tower - missing tower", category="error")
+        return redirect(url_for(".page_lnd_watchtower"))
+
+    # Update Lightning Info
+    update_lightning_info()
+
+    flash("Tower removed!", category="message")
+    return redirect(url_for(".page_lnd_watchtower"))
 
 ##############################################
 ## LND API Calls
