@@ -175,7 +175,7 @@ fi
 
 # Check drive usage
 mb_available=$(df --block-size=M /mnt/hdd | grep /dev | awk '{print $4}' | cut -d'M' -f1)
-if [ $mb_available -le 1200 ]; then
+if [ $mb_available -le 1500 ]; then
     echo "drive_full" > $MYNODE_STATUS_FILE
     sleep 10s
     mb_available=$(df --block-size=M /mnt/hdd | grep /dev | awk '{print $4}' | cut -d'M' -f1)
@@ -396,6 +396,7 @@ cp -n /usr/share/btcpayserver/helpers.sh /opt/mynode/btcpayserver/
 if [ -f /opt/mynode/btcpayserver/.env ]; then
     sed -i "s/BTCPAY_VERSION=.*/BTCPAY_VERSION=$BTCPAYSERVER_VERSION/g" /opt/mynode/btcpayserver/.env || true
     sed -i "s/NBXPLORER_VERSION.*/NBXPLORER_VERSION=$BTCPAYSERVER_NBXPLORER_VERSION/g" /opt/mynode/btcpayserver/.env || true
+    sed -i "s/POSTGRES_VERSION.*/POSTGRES_VERSION=$BTCPAYSERVER_POSTGRES_VERSION/g" /opt/mynode/btcpayserver/.env || true
 fi
 
 # LNBits Config
