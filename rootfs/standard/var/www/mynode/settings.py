@@ -610,6 +610,10 @@ def format_external_drive_page():
 
         touch("/home/bitcoin/.mynode/force_format_prompt")
 
+        # Trigger reboot
+        t = Timer(1.0, reboot_device)
+        t.start()
+
         templateData = {
             "title": "myNode",
             "header_text": "Rebooting",
