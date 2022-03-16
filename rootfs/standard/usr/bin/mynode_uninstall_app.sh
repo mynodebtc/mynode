@@ -25,6 +25,10 @@ sync
 if [ "$APP" = "bos" ]; then
     npm uninstall -g balanceofsatoshis
 elif [ "$APP" = "btcpayserver" ]; then
+    cp /usr/share/btcpayserver/env /opt/mynode/btcpayserver/.env
+    cp /usr/share/btcpayserver/btcpay-env.sh /opt/mynode/btcpayserver/
+    cp /usr/share/btcpayserver/docker-compose.generated.yml /opt/mynode/btcpayserver/
+    cp /usr/share/btcpayserver/helpers.sh /opt/mynode/btcpayserver/
     . "/opt/mynode/btcpayserver/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY" && . helpers.sh && btcpay_remove
     cd ~
 elif [ "$APP" = "btcrpcexplorer" ]; then
