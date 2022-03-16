@@ -56,8 +56,6 @@ services:
     - "nbxplorer_datadir:/datadir"
 
 
-
-
   postgres:
     restart: unless-stopped
     image: btcpayserver/postgres:${POSTGRES_VERSION}
@@ -68,6 +66,7 @@ services:
     - "postgres_datadir:/var/lib/postgresql/data"
 volumes:
   btcpay_datadir: 
+  btcpay_pluginsdir: 
   postgres_datadir: 
   nbxplorer_datadir: 
 networks: {}
