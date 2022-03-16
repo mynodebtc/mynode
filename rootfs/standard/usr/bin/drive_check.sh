@@ -11,6 +11,7 @@ while [ -z "$drive" ]; do
 done
 
 echo "Found Drive: $drive"
+sleep 60s
 
 lsblk $drive &> /dev/null
 while [ $? -eq 0 ]; do
@@ -19,9 +20,17 @@ while [ $? -eq 0 ]; do
     # Check drive usage
     mb_available=$(df --block-size=M /mnt/hdd | grep /dev | awk '{print $4}' | cut -d'M' -f1)
     if [ $mb_available -le 1000 ]; then
-        # Usage is 99%+, reboot to get into drive_full state with services stopped
+        # Usage is 99.9%+, reboot to get into drive_full state with services stopped if first detected
         echo "High Drive Usage: $mb_available MB available"
-        /usr/bin/mynode-reboot
+
+        current_state=$(cat /tmp/.mynode_status)
+        if [ "$current_state" == "drive_full" ]; then
+            echo "Drive full already detected, not rebooting"
+            sleep 15m
+        else
+            echo "Just found drive full, rebooting..."
+            /usr/bin/mynode-reboot
+        fi
     fi
 
     # Wait, check again in one minute
