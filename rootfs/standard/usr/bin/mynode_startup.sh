@@ -175,11 +175,11 @@ fi
 
 # Check drive usage
 mb_available=$(df --block-size=M /mnt/hdd | grep /dev | awk '{print $4}' | cut -d'M' -f1)
-if [ $mb_available -le 1500 ]; then
+while [ $mb_available -le 1500 ]; do
     echo "drive_full" > $MYNODE_STATUS_FILE
-    sleep 10s
+    sleep 60s
     mb_available=$(df --block-size=M /mnt/hdd | grep /dev | awk '{print $4}' | cut -d'M' -f1)
-fi
+done
 
 
 # Setup Drive
