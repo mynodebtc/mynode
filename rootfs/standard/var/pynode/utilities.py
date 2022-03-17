@@ -154,8 +154,12 @@ def delete_settings_file(name):
     folder_2="/mnt/hdd/mynode/settings/"
     path_1="{}{}".format(folder_1, name)
     path_2="{}{}".format(folder_2, name)
+    path_3="{}.{}".format(folder_1, name)
+    path_4="{}.{}".format(folder_2, name)
     delete_file(path_1)
     delete_file(path_2)
+    delete_file(path_3)
+    delete_file(path_4)
 
 def settings_file_exists(name):
     from drive_info import is_mynode_drive_mounted
@@ -164,6 +168,18 @@ def settings_file_exists(name):
     folder_2="/mnt/hdd/mynode/settings/"
     path_1="{}{}".format(folder_1, name)
     path_2="{}{}".format(folder_2, name)
+    path_3="{}.{}".format(folder_1, name)
+    path_4="{}.{}".format(folder_2, name)
+    
+    # Migrate hidden files to non-hidden
+    if os.path.isfile(path_3) or os.path.isfile(path_4):
+        # Make sure backup file is in place
+        touch(path_1)
+        if is_mynode_drive_mounted():
+            touch(path_2)
+        delete_file(path_3)
+        delete_file(path_4)
+
     if os.path.isfile(path_1) and os.path.isfile(path_2):
         return True
     elif os.path.isfile(path_1) or os.path.isfile(path_2):
