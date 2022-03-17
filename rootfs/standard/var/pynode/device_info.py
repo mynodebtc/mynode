@@ -1126,13 +1126,13 @@ def reset_tor():
     os.system("rm -rf /mnt/hdd/mynode/lnd/v3_onion_private_key")
 
 def is_btc_lnd_tor_enabled():
-    return os.path.isfile("/mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
+    settings_file_exists("btc_lnd_tor_enabled")
 
 def enable_btc_lnd_tor():
-    touch("/mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
+    create_settings_file("btc_lnd_tor_enabled")
 
 def disable_btc_lnd_tor():
-    delete_file("/mnt/hdd/mynode/settings/.btc_lnd_tor_enabled")
+    delete_settings_file("btc_lnd_tor_enabled")
 
 def is_aptget_tor_enabled():
     return os.path.isfile("/mnt/hdd/mynode/settings/torify_apt_get")
