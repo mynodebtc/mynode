@@ -23,6 +23,7 @@ proc checkPartitionsForExistingMyNodeFs {partitionsName} {
 
     # Check if we are skipping the check (to reformat drive)
     if { [file exists /home/bitcoin/.mynode/force_format_prompt] } {
+        puts "Forcing format prompt (/home/bitcoin/.mynode/force_format_prompt exists)"
         return 0
     }
 
