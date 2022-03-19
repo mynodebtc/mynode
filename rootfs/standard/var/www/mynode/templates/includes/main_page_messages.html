@@ -1,3 +1,10 @@
+{% if product_key_skipped %}
+<div class="main_page_warning_block">
+    <p style="text-align: center;"><b>Community Edition</b></p>
+    <p style="text-align: center;">You are currently using Community Edition. <a target="_blank" href="https://mynodebtc.com/order/premium">Upgrade now</a> or <a href="/product-key">add a key</a> for more features and support!</p>
+</div>
+{% endif %}
+
 {% if fsck_error %}
 <div class="main_page_error_block">
     <p style="text-align: center;"><b>Warning!</b></p>
