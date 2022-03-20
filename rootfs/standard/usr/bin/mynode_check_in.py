@@ -4,10 +4,18 @@ import requests
 import time
 import subprocess
 import random
+import logging
+from systemd import journal
+from utilities import *
 from drive_info import *
 from device_info import *
 
 CHECKIN_URL = "https://www.mynodebtc.com/device_api/check_in.php"
+
+log = logging.getLogger('check_in')
+log.addHandler(journal.JournaldLogHandler())
+log.setLevel(logging.INFO)
+set_logger(log)
 
 latest_version_check_count = 0
 
@@ -38,10 +46,10 @@ def check_for_new_mynode_version():
     #  5 day(s): 96%             5 day(s): 98%             5 day(s): 99%             5 day(s): 99%
     #  7 day(s): 99.2%           7 day(s): 99.6%           7 day(s): 99.8%           7 day(s): 99.9%
     if latest_version_check_count % 5 == 0 or random.randint(1, 100) <= 40:
-        os.system("printf \"%s | Version Check Count ({}) - Checking for new version! \\n\" \"$(date)\" >> /tmp/check_in_status".format(latest_version_check_count))
+        log_message("Version Check Count ({}) - Checking for new version!".format(latest_version_check_count))
         os.system("/usr/bin/mynode_get_latest_version.sh")
     else:
-        os.system("printf \"%s | Version Check Count ({}) - Skipping version check \\n\" \"$(date)\" >> /tmp/check_in_status".format(latest_version_check_count))
+        log_message("Version Check Count ({}) - Skipping version check".format(latest_version_check_count))
     latest_version_check_count = latest_version_check_count + 1
 
 # Checkin every 24 hours
@@ -82,21 +90,21 @@ def check_in():
             
             if r.status_code == 200:
                 if r.text == "OK":
-                    os.system("printf \"%s | Check In Success: {} \\n\" \"$(date)\" >> /tmp/check_in_status".format(r.text))
+                    log_message("Check In Success: {}".format(r.text))
 
                     if product_key != "community_edition":
                         unset_skipped_product_key()
                     delete_product_key_error()
                 else:
                     os.system("echo '{}' > /home/bitcoin/.mynode/.product_key_error".format(r.text))
-                    os.system("printf \"%s | Check In Returned Error: {} \\n\" \"$(date)\" >> /tmp/check_in_status".format(r.text))
+                    log_message("Check In Returned Error: {}".format(r.text))
 
                 os.system("rm -f /tmp/check_in_error")
                 check_in_success = True
             else:
-                os.system("printf \"%s | Check In Failed. Retrying... Code {} \\n\" \"$(date)\" >> /tmp/check_in_status".format(r.status_code))
+                log_message("Check In Failed. Retrying... Code {}".format(r.status_code))
         except Exception as e:
-            os.system("printf \"%s | Check In Failed. Retrying... Exception {} \\n\" \"$(date)\" >> /tmp/check_in_status".format(e))
+            log_message("Check In Failed. Retrying... Exception {}".format(e))
 
         if not check_in_success:
             # Check in failed, try again in 3 minutes

@@ -5,7 +5,7 @@ TOTAL_RAM_GB=$(free --giga | grep Mem | awk '{print $2}')
 # Setup default settings
 if [ ! -f /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled_defaulted ]; then
     touch /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled_defaulted
-    touch /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled
+    touch /mnt/hdd/mynode/settings/btc_lnd_tor_enabled
     sync
 fi
 
@@ -49,8 +49,8 @@ else
         sed -i "s/maxmempool=.*/maxmempool=50/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
     fi
 
-    # Append Tor/IP section
-    if [ -f /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled ]; then
+    # Append Tor/IP section (check new file or old file, should be migrated to new)
+    if [ -f /mnt/hdd/mynode/settings/btc_lnd_tor_enabled ] || [ -f /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled ]; then
         cat /usr/share/mynode/bitcoin_tor.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
     else
         cat /usr/share/mynode/bitcoin_ipv4.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf

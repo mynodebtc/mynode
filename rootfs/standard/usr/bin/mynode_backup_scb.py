@@ -93,40 +93,19 @@ def remote_backup(original, backup):
         "product_key": get_product_key()
     }
 
-    # Setup tor proxy
-    session = requests.session()
-    session.proxies = {}
-    session.proxies['http'] = 'socks5h://localhost:9050'
-    session.proxies['https'] = 'socks5h://localhost:9050'
-
-    # Backup to server
-    fail_count = 0
-    backup_success = False
-    while not backup_success:
-        try:
-            # Use tor for check in unless there have been tor 5 failures in a row
-            r = None
-            if (fail_count+1) % 5 == 0:
-                r = requests.post(BACKUP_SCB_URL, data=data, files=file_data, timeout=20)
-            else:
-                r = session.post(BACKUP_SCB_URL, data=data, files=file_data, timeout=20)
-            
-            if r.status_code == 200:
-                if r.text == "OK":
-                    log_message("Remote Backup: Success ({})".format(r.text))
-                    set_saved_remote_backup_hash( md5_1 )
-                else:
-                    log_message("Remote Backup: Error: ({})".format(r.text))
-                backup_success = True
-            else:
-                log_message("Remote Backup: Connect Failed. Retrying... Code {}".format(r.status_code))
-        except Exception as e:
-            log_message("Remote Backup: Connect Failed. Retrying... Exception {}".format(e))
-
-        if not backup_success:
-            # Check in failed, try again in 1 minute
-            time.sleep(60)
-            fail_count = fail_count + 1
+    response = make_tor_request(BACKUP_SCB_URL, data, file_data)
+    if response == None:
+        log_message("Premium+ Connect Error: Connection Failed")
+        return False
+    if response.status_code != 200:
+        log_message("Remote Backup: Connect Failed. Code {}".format(response.status_code))
+        return False
+    else:
+        if response.text == "OK":
+            log_message("Remote Backup: Success ({})".format(response.text))
+            set_saved_remote_backup_hash( md5_1 )
+        else:
+            log_message("Remote Backup: Error: ({})".format(response.text))
 
     return True
 

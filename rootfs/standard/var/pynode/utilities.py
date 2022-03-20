@@ -6,6 +6,7 @@ import subprocess
 import sys
 import codecs
 import urllib
+import requests
 
 mynode_logger = None
 
@@ -275,3 +276,38 @@ def get_md5_file_hash(path):
         return hashlib.md5(open(path,'rb').read()).hexdigest()
     except Exception as e:
         return "ERROR ({})".format(e)
+
+#==================================
+# Network Functions
+#==================================
+def make_tor_request(url, data, file_data=None, max_retries=5, fallback_to_ip=True, fail_delay=5):
+    # Return data
+    r = None
+
+    # Setup tor proxy
+    session = requests.session()
+    session.proxies = {}
+    session.proxies['http'] = 'socks5h://localhost:9050'
+    session.proxies['https'] = 'socks5h://localhost:9050'
+
+    # Check In
+    for fail_count in range(max_retries):
+        try:
+            # Use tor for check in unless there have been tor 5 failures in a row
+            r = None
+            if fallback_to_ip and fail_count >= (max_retries - 1):
+                r = requests.post(url, data=data, files=file_data, timeout=20)
+            else:
+                r = session.post(url, data=data, files=file_data, timeout=20)
+            
+            if r.status_code == 200:
+                return r
+            else:
+                log_message("Connection to {} failed. Retrying... Code {}".format(url, r.status_code))
+        except Exception as e:
+            log_message("Connection to {} failed. Retrying... Exception {}".format(url, e))
+
+        # Check in failed, try again
+        time.sleep(fail_delay)
+
+    return r

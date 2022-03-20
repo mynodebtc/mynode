@@ -13,13 +13,13 @@ else
     # Generate a default config
     cp -f /usr/share/mynode/lnd.conf /mnt/hdd/mynode/lnd/lnd.conf
 
-    # Append Tor/IP section
-    if [ -f /mnt/hdd/mynode/settings/.watchtower_enabled ]; then
+    # Append Watchtower Section
+    if [ -f /mnt/hdd/mynode/settings/watchtower_enabled ]; then
         cat /usr/share/mynode/lnd_watchtower.conf >> /mnt/hdd/mynode/lnd/lnd.conf
     fi
 
-    # Append Tor/IP section
-    if [ -f /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled ]; then
+    # Append Tor/IP section (check new file or old file, should be migrated to new)
+    if [ -f /mnt/hdd/mynode/settings/btc_lnd_tor_enabled ] || [ -f /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled ]; then
         cat /usr/share/mynode/lnd_tor.conf >> /mnt/hdd/mynode/lnd/lnd.conf
     else
         cat /usr/share/mynode/lnd_ipv4.conf >> /mnt/hdd/mynode/lnd/lnd.conf
