@@ -1,0 +1,23 @@
+#!/usr/local/bin/python3
+
+from argparse import ArgumentParser
+
+def main():
+    parser = ArgumentParser(prog='mynode-manage-apps')
+    action_choices = (
+        'init',
+        'createfolders',
+    )
+    parser.add_argument('action', help='action to manage mynode application', nargs='?', choices=action_choices)
+    args = parser.parse_args()
+
+    if args.action == "createbasefolders":
+        print("createbasefolders")
+    elif args.action == "init":
+        print("init")
+    else:
+        print("UNKNOWN BASE ACTION")
+
+
+if __name__ == '__main__':
+    main()

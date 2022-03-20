@@ -63,6 +63,42 @@ def get_premium_plus_lightning_info():
         info = get_lightning_json_cache()
     return info
 
+def make_tor_request(data, url, max_retries=5, fail_to_ip=True, fail_delay=5):
+    # Return data
+    r = None
+
+    # Setup tor proxy
+    session = requests.session()
+    session.proxies = {}
+    session.proxies['http'] = 'socks5h://localhost:9050'
+    session.proxies['https'] = 'socks5h://localhost:9050'
+
+    # Check In
+    for fail_count in range(max_retries):
+        try:
+            # Use tor for check in unless there have been tor 5 failures in a row
+            r = None
+            if fail_to_ip and fail_count >= (max_retries - 1):
+                r = requests.post(url, data=data, timeout=20)
+            else:
+                r = session.post(url, data=data, timeout=20)
+            
+            if r.status_code == 200:
+                return r
+            else:
+                log_message("Connection to {} failed. Retrying... Code {}".format(url, r.status_code))
+        except Exception as e:
+            log_message("Connection to {} failed. Retrying... Exception {}".format(url, e))
+
+
+        # Check in failed, try again
+        time.sleep(fail_delay)
+
+    return r
+
+def on_connect_success():
+
+
 # Update hourly
 def premium_plus_connect():
 
