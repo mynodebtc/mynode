@@ -309,6 +309,7 @@ fi
 
 # Install docker
 curl -sSL https://get.docker.com | sed 's/sleep 20/sleep 1/' | sudo sh || true
+apt-get install -y docker docker-ce containerd
 
 # Use systemd for managing docker
 rm -f /etc/init.d/docker

@@ -262,6 +262,7 @@ if ! skip_base_upgrades ; then
         sed -i 's/sleep 20/sleep 1/' /tmp/docker_install.sh
         /bin/bash /tmp/docker_install.sh
     fi
+    apt-get install -y docker docker-ce containerd
 
     # Use systemd for managing Docker
     rm -f /etc/init.d/docker
