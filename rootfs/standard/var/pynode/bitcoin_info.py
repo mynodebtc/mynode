@@ -72,7 +72,7 @@ def update_bitcoin_main_info():
         bitcoin_blockchain_info = info
 
     except Exception as e:
-        log_message("ERROR: In update_bitcoin_info - {}".format( str(e) ))
+        log_message("ERROR: In update_bitcoin_info - {} DATA: {}".format( str(e), str(info) ))
         return False
 
     update_bitcoin_json_cache()
@@ -110,6 +110,7 @@ def update_bitcoin_other_info():
                 bitcoin_recent_blocks_last_cache_height = mynode_block_height
 
             # Get peers and cleanup data
+            log_message("update_bitcoin_other_info - PEERS")
             peerdata = rpc_connection.getpeerinfo()
             peers = []
             if peerdata != None:
@@ -127,6 +128,7 @@ def update_bitcoin_other_info():
             bitcoin_peers = peers
 
             # Get network info
+            log_message("update_bitcoin_other_info - NETWORK")
             network_data = rpc_connection.getnetworkinfo()
             if network_data != None:
                 network_data["relayfee"] = str(network_data["relayfee"])
@@ -134,6 +136,7 @@ def update_bitcoin_other_info():
             bitcoin_network_info = network_data
 
             # Get mempool
+            log_message("update_bitcoin_other_info - MEMPOOL")
             mempool_data = rpc_connection.getmempoolinfo()
             if mempool_data != None:
                 mempool_data["total_fee"] = str(mempool_data["total_fee"])
@@ -142,6 +145,7 @@ def update_bitcoin_other_info():
             bitcoin_mempool = mempool_data
 
             # Get wallet info
+            log_message("update_bitcoin_other_info - WALLETS")
             wallets = rpc_connection.listwallets()
             wallet_data = []
             for w in wallets:
@@ -157,6 +161,7 @@ def update_bitcoin_other_info():
             bitcoin_wallets = wallet_data
 
             # Get recommended fee info (from mempool on port 4080)
+            log_message("update_bitcoin_other_info - MEMPOOL")
             if is_service_enabled("mempool"):
                 try:
                     r = requests.get("http://localhost:4080/api/v1/fees/recommended", timeout=1)
@@ -172,10 +177,10 @@ def update_bitcoin_other_info():
             else:
                 bitcoin_recommended_fees = None
         except Exception as e1:
-            log_message("ERROR: In update_bitcoin_other_info - {}".format( str(e1) ))
+            log_message("ERROR: In update_bitcoin_other_info (1) - {} DATA: {}".format( str(e1), str() ))
 
     except Exception as e2:
-        log_message("ERROR: In update_bitcoin_other_info - {}".format( str(e2) ))
+        log_message("ERROR: In update_bitcoin_other_info (2) - {} DATA: {}".format( str(e2), str() ))
         return False
 
     update_bitcoin_json_cache()
