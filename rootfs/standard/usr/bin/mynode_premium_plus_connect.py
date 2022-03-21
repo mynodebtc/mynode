@@ -70,8 +70,31 @@ def on_connect_success(connect_response_data):
     
     try:
         # Check for lnd watchtower, setup this device to use Premium+ Watchtower
-        if settings["watchtower"]:
-            log_message("FOUND WATCHTOWER: {}".format(connect_response_data["watchtower_uri"]))
+        try:
+            if "watchtower_uri" in connect_response_data:
+                w = connect_response_data["watchtower_uri"]
+                parts = w.split("@")
+                pubkey = parts[0]
+                output = run_lncli_command("lncli wtclient towers")
+                info = json.loads(output)
+                towers = info["towers"]
+                
+                found_watchtower = False
+                for t in towers:
+                    #log_message("EXISTING TOWER: {} active={}".format(t["pubkey"], t["active_session_candidate"]))
+                    if t["pubkey"] == pubkey and t["active_session_candidate"] == True:
+                        if settings["watchtower"]:
+                            log_message("Found Premium+ Tower")
+                        else:
+                            log_message("Removing Premium+ Tower {}".format(pubkey))
+                            run_lncli_command("lncli wtclient remove {}".format(pubkey))
+                        found_watchtower = True
+                if not found_watchtower:
+                    log_message("Adding Premium+ Tower {}".format(w))
+                    run_lncli_command("lncli wtclient add {}".format(w))
+
+        except Exception as e:
+            log_message("on_connect_success exception: {}".format(str(e)))
     except Exception as e:
         log_message("on_connect_success exception: {}".format(str(e)))
         return
