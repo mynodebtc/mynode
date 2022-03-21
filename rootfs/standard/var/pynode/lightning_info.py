@@ -99,16 +99,20 @@ def update_lightning_info():
         return True
 
     if lnd_ready:
+        log_message("update_lightning_info - LND READY")
         if lightning_desync_count > 0:
             os.system("printf \"%s | De-sync greater than 0 (was {}), but now synced! Setting to 0. \\n\" \"$(date)\" >> /tmp/lnd_failures".format(lightning_desync_count))
             lightning_desync_count = 0
+        log_message("update_lightning_info - GET PEERS, CHANNELS, BALANCE, WALLET")
         lightning_peers = lnd_get("/peers")
         lightning_channels = lnd_get("/channels")
         lightning_channel_balance = lnd_get("/balance/channels")
         lightning_wallet_balance = lnd_get("/balance/blockchain")
+        log_message("update_lightning_info - GET WATCHTOWER")
         if is_watchtower_enabled():
             lightning_watchtower_server_info = lnd_get_v2("/watchtower/server")
         towers = lnd_get_v2("/watchtower/client?include_sessions=1")
+        log_message("update_lightning_info - TOWER DETAILS")
         tower_details = []
         if towers != None and "towers" in towers:
             for tower in towers["towers"]:
@@ -118,11 +122,13 @@ def update_lightning_info():
                     tower["pubkey_b16"] = pubkey_b16
                     tower_details.append(tower)
         lightning_watchtower_client_towers = tower_details
+        log_message("update_lightning_info - GET CLIENT STATS, POLICY")
         lightning_watchtower_client_stats = lnd_get_v2("/watchtower/client/stats")
         lightning_watchtower_client_policy = lnd_get_v2("/watchtower/client/policy")
 
         # Poll slower (make sure we gather data early)
         if lightning_update_count < 30 or lightning_update_count % 2 == 0:
+            log_message("update_lightning_info - GET TX INFO")
             update_lightning_tx_info()
 
     update_lightning_json_cache()
