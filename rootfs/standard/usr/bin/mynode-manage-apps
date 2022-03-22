@@ -1,6 +1,56 @@
 #!/usr/local/bin/python3
 
 from argparse import ArgumentParser
+import os
+
+APPLICATIONS_FOLDER = "/usr/share/mynode_apps"
+
+def init_application(app_info):
+    app_name = app_info["short_name"]
+    app_dir = APPLICATIONS_FOLDER + "/" + app_name
+    print(" Loading " + app_name + "...")
+    os.system("cp -f {} {}".format(app_dir+"/app.service", "/etc/systemd/system/"+app_name+".service"))
+    os.system("cp -f {} {}".format(app_dir+"/"+app_name+".png", "/var/www/mynode/static/images/app_icons/"+app_name+".png"))
+    if (os.path.isfile(app_dir+"/scripts/pre_"+app_name+".sh")):
+        os.system("cp -f {} {}".format(app_dir+"/scripts/pre_"+app_name+".sh",      "/usr/bin/service_post/pre_"+app_name+".sh"))
+    if (os.path.isfile(app_dir+"/scripts/post_"+app_name+".sh")):
+        os.system("cp -f {} {}".format(app_dir+"/scripts/post_"+app_name+".sh",     "/usr/bin/service_pre/post_"+app_name+".sh"))
+    if (os.path.isfile(app_dir+"/scripts/install"+app_name+".sh")):
+        os.system("cp -f {} {}".format(app_dir+"/scripts/install_"+app_name+".sh",  "/usr/bin/service_install/install_"+app_name+".sh"))
+    if (os.path.isfile(app_dir+"/scripts/uninstall"+app_name+".sh")):
+        os.system("cp -f {} {}".format(app_dir+"/scripts/uninstall"+app_name+".sh", "/usr/bin/service_uninstall/uninstall_"+app_name+".sh"))
+    
+    print("  TODO: Install data files")
+
+    # For "node" type apps
+    print("  TODO: Need node special files???")
+
+    # For "python" type apps
+    print("  TODO: Need python special files???")
+
+    # For "docker" type apps
+    print("  TODO: Build dockerfile???")
+    print("  TODO: Install dockerfile???")
+
+    print(" Done.")
+
+
+def init_applications():
+    # Loop over each app
+    for app_folder_name in os.listdir(APPLICATIONS_FOLDER):
+        print("Found Application: {}".format(app_folder_name))
+        app_dir = APPLICATIONS_FOLDER + "/" + app_folder_name
+        try:
+            app_json_path = app_dir + "/app.json"
+            with open(app_json_path, 'r') as fp:
+                app_info = json.load(fp)
+                init_application(app_info)
+
+        except Exception as e:
+            print("  ERROR: Error loading app.json file")            
+
+    os.system("systemctl daemon-reload")
+
 
 def main():
     parser = ArgumentParser(prog='mynode-manage-apps')
@@ -12,9 +62,9 @@ def main():
     args = parser.parse_args()
 
     if args.action == "createbasefolders":
-        print("createbasefolders")
+        print("createbasefolders - not needed?")
     elif args.action == "init":
-        print("init")
+        init_applications()
     else:
         print("UNKNOWN BASE ACTION")
 

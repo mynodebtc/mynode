@@ -65,7 +65,7 @@ def is_installed(short_name):
         return True
     return False
 
-def get_app_current_version(short_name):
+def get_app_current_version_from_file(short_name):
     version = "unknown"
     filename1 = "/home/bitcoin/.mynode/"+short_name+"_version"
     filename2 = "/mnt/hdd/mynode/settings/"+short_name+"_version"
@@ -81,7 +81,7 @@ def get_app_current_version(short_name):
 
     return to_string(version)
 
-def get_app_latest_version(app):
+def get_app_latest_version_from_file(app):
     version = "unknown"
     filename1 = "/home/bitcoin/.mynode/"+app+"_version_latest"
     filename2 = "/mnt/hdd/mynode/settings/"+app+"_version_latest"
@@ -104,8 +104,8 @@ def initialize_application_defaults(app):
     if not "screenshots" in app: app["screenshots"] = []
     if not "app_tile_name" in app: app["app_tile_name"] = app["name"]
     if not "is_premium" in app: app["is_premium"] = False
-    app["current_version"] = get_app_current_version( app["short_name"] )
-    app["latest_version"] = get_app_latest_version( app["short_name"] )
+    if not "current_version" in app: app["current_version"] = get_app_current_version_from_file( app["short_name"] )
+    if not "latest_version" in app: app["latest_version"] = get_app_latest_version_from_file( app["short_name"] )
     if not "is_beta" in app: app["is_beta"] = False
     app["is_installed"] = is_installed( app["short_name"] )
     if not "can_reinstall" in app: app["can_reinstall"] = True
