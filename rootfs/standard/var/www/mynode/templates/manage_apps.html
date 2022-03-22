@@ -111,7 +111,7 @@
                     {% if app.show_on_application_page %}
                         {% if not product_key_skipped or product_key_skipped and not app.is_premium %}
                             <tr>
-                                <td><img class="app_logo_icon" style="width: 32px;" src="{{ url_for('static', filename="images/")}}{{app.short_name}}.png"/></td>
+                                <td><img class="app_logo_icon" style="width: 32px;" src="{{ url_for('static', filename="images/app_icons/")}}{{app.short_name}}.png"/></td>
                                 <td>{{ app.name }}</td>
                                 <td>
                                     {% if app.is_installed %}
@@ -150,7 +150,7 @@
                             </tr>
                         {% else%}
                         <tr>
-                            <td><img class="app_logo_icon" style="width: 32px;" src="{{ url_for('static', filename="images/")}}{{app.short_name}}.png"/></td>
+                            <td><img class="app_logo_icon" style="width: 32px;" src="{{ url_for('static', filename="images/app_icons/")}}{{app.short_name}}.png"/></td>
                             <td>{{ app.name }}</td>
                             <td>&nbsp;</td>
                             <td>&nbsp;</td>
