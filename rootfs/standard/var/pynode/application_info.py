@@ -11,6 +11,9 @@ import subprocess
 import re
 import os
 
+# Globals
+DYNAMIC_APPLICATIONS_FOLDER = "/usr/share/mynode_apps"
+
 # Cached data
 JSON_APPLICATION_CACHE_FILE = "/tmp/app_cache.json"
 mynode_applications = None
@@ -157,6 +160,9 @@ def initialize_applications():
             apps[index] = initialize_application_defaults(app)
 
         mynode_applications = copy.deepcopy(apps)
+
+    # TODO: Load all app-specific JSON files
+    # ...
     return
 
 def update_applications(include_status=False):
@@ -421,3 +427,65 @@ def reset_custom_app_version_data():
     os.system("rm -f /mnt/hdd/mynode/settings/mynode_app_versions_custom.sh")
     os.system("sync")
     trigger_application_refresh()
+
+######################################################################################
+## Dynamic Apps
+######################################################################################
+def get_dynamic_app_dir():
+    global DYNAMIC_APPLICATIONS_FOLDER
+    return DYNAMIC_APPLICATIONS_FOLDER
+
+def get_dynamic_app_names():
+    app_dir = get_dynamic_app_dir()
+    app_names = []
+    for app_folder_name in os.listdir( app_dir ):
+        if os.path.isdir(app_dir + "/" +app_folder_name):
+            app_names.append(app_folder_name)
+    return app_names
+
+def init_dynamic_app(app_info):
+    app_name = app_info["short_name"]
+    app_dir = DYNAMIC_APPLICATIONS_FOLDER + "/" + app_name
+    log_message(" Loading " + app_name + "...")
+    os.system("cp -f {} {}".format(app_dir+"/app.service", "/etc/systemd/system/"+app_name+".service"))
+    os.system("cp -f {} {}".format(app_dir+"/"+app_name+".png", "/var/www/mynode/static/images/app_icons/"+app_name+".png"))
+    if (os.path.isfile(app_dir+"/scripts/pre_"+app_name+".sh")):
+        os.system("cp -f {} {}".format(app_dir+"/scripts/pre_"+app_name+".sh",      "/usr/bin/service_post/pre_"+app_name+".sh"))
+    if (os.path.isfile(app_dir+"/scripts/post_"+app_name+".sh")):
+        os.system("cp -f {} {}".format(app_dir+"/scripts/post_"+app_name+".sh",     "/usr/bin/service_pre/post_"+app_name+".sh"))
+    if (os.path.isfile(app_dir+"/scripts/install"+app_name+".sh")):
+        os.system("cp -f {} {}".format(app_dir+"/scripts/install_"+app_name+".sh",  "/usr/bin/service_install/install_"+app_name+".sh"))
+    if (os.path.isfile(app_dir+"/scripts/uninstall"+app_name+".sh")):
+        os.system("cp -f {} {}".format(app_dir+"/scripts/uninstall"+app_name+".sh", "/usr/bin/service_uninstall/uninstall_"+app_name+".sh"))
+    
+    log_message("  TODO: Install data files")
+
+    # For "node" type apps
+    log_message("  TODO: Need node special files???")
+
+    # For "python" type apps
+    log_message("  TODO: Need python special files???")
+
+    # For "docker" type apps
+    log_message("  TODO: Build dockerfile???")
+    log_message("  TODO: Install dockerfile???")
+
+    log_message(" Done.")
+
+def init_dynamic_apps():
+    # Loop over each app
+    root_app_dir = get_dynamic_app_dir()
+    app_names = get_dynamic_app_names()
+    for app_name in app_names:
+        log_message("Found Application: {}".format(app_name))
+        app_dir = root_app_dir + "/" + app_name
+        try:
+            app_json_path = app_dir + "/app.json"
+            with open(app_json_path, 'r') as fp:
+                app_info = json.load(fp)
+                init_dynamic_app(app_info)
+
+        except Exception as e:
+            log_message("  ERROR: Error loading app.json file ({})".format(str(e)))            
+
+    os.system("systemctl daemon-reload")

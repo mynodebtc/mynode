@@ -1,0 +1,13 @@
+{
+    "name": "LNDg",
+    "short_name": "lndg",
+    "requires_lightning": true,
+    "hide_status_icon": false,
+    "app_tile_default_status_text": "Lightning Tool",
+    "app_tile_button_href": "/lndg",
+    "app_tile_button_text": "Info",
+    "can_uninstall": true,
+    "can_enable_disable": false,
+    "show_on_homepage": true,
+    "homepage_order": 99
+}
