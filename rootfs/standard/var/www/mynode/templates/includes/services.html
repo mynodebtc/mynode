@@ -3,7 +3,7 @@
     <div class="app_tile_wide">
         <div style="width: 130px; float: left;">
             <div class="app_status_icon {{ bitcoin_status_color }}" id="bitcoin_status_icon"></div>
-            <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/bitcoin.png")}}"/></div>
+            <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/app_icons/bitcoin.png")}}"/></div>
             <div class="app_title">Bitcoin</div>
             <div class="app_status" id="bitcoin_status">{{ bitcoin_status }}</div>
             {% if is_testnet_enabled %}
@@ -43,7 +43,7 @@
     <div class="app_tile_wide">
         <div style="width: 130px; float: left;">
             <div class="app_status_icon {{ lnd_status_color }}" id="lnd_status_icon"></div>
-            <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/lightning.png")}}"/></div>
+            <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/app_icons/lightning.png")}}"/></div>
             <div class="app_title">Lightning</div>
             <div class="app_status" id="lnd_status">{{ lnd_status }}</div>
             {% if is_testnet_enabled %}
