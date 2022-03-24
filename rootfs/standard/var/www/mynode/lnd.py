@@ -78,7 +78,6 @@ def page_lnd():
             "wallet_logged_in": wallet_logged_in,
             "lnd_has_error": lnd_has_error,
             "using_lnd_custom_config": using_lnd_custom_config(),
-            "watchtower_enabled": is_watchtower_enabled(),
             "version": get_lnd_version(),
             "loop_version": get_loop_version(),
             "pool_version": get_pool_version(),
@@ -93,7 +92,6 @@ def page_lnd():
             "wallet_exists": wallet_exists,
             "wallet_logged_in": wallet_logged_in,
             "lnd_has_error": lnd_has_error,
-            "watchtower_enabled": is_watchtower_enabled(),
             "alias": alias,
             "status": get_lnd_status(),
             "version": get_lnd_version(),
@@ -114,7 +112,6 @@ def page_lnd():
                 "wallet_exists": wallet_exists,
                 "wallet_logged_in": False,
                 "lnd_has_error": lnd_has_error,
-                "watchtower_enabled": is_watchtower_enabled(),
                 "alias": alias,
                 "status": "Waiting on LND data...",
                 "version": get_lnd_version(),
@@ -201,7 +198,6 @@ def page_lnd():
         "uri": uri,
         "ip": ip,
         "channel_db_size": lnd_get_channel_db_size(),
-        "watchtower_enabled": is_watchtower_enabled(),
         "lit_password": get_lnd_lit_password(),
         "lnd_deposit_address": lnd_deposit_address,
         "channel_balance": format_sat_amount(balance_info["channel_balance"]),
@@ -519,14 +515,28 @@ def lnd_config_page():
     }
     return render_template('lnd_config.html', **templateData)
 
-@mynode_lnd.route("/lnd/watchtower/set_watchtower_enabled")
-def lnd_set_watchtower_enabled_page():
+@mynode_lnd.route("/lnd/watchtower/set_watchtower_server_enabled")
+def lnd_set_watchtower_server_enabled_page():
     check_logged_in()
 
     if request.args.get("enabled") and request.args.get("enabled") == "1":
-        enable_watchtower()
+        enable_watchtower_server()
     else:
-        disable_watchtower()
+        disable_watchtower_server()
+
+    restart_lnd()
+
+    flash("Watchtower settings updated!", category="message")
+    return redirect(url_for(".page_lnd_watchtower"))
+
+@mynode_lnd.route("/lnd/watchtower/set_watchtower_client_enabled")
+def lnd_set_watchtower_client_enabled_page():
+    check_logged_in()
+
+    if request.args.get("enabled") and request.args.get("enabled") == "1":
+        enable_watchtower_client()
+    else:
+        disable_watchtower_client()
 
     restart_lnd()
 
@@ -544,8 +554,9 @@ def page_lnd_watchtower():
 
     templateData = {
         "title": "myNode Lightning Watchtower",
-        "watchtower_server_enabled": is_watchtower_enabled(),
+        "watchtower_server_enabled": is_watchtower_server_enabled(),
         "watchtower_server_uri": Markup(watchtower_server_info["watchtower_server_uri"]),
+        "watchtower_client_enabled": is_watchtower_client_enabled(),
         "watchtower_client_towers": watchtower_client_towers,
         "watchtower_client_stats": watchtower_client_stats,
         "watchtower_client_policy": watchtower_client_policy,

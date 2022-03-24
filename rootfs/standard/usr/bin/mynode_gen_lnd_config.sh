@@ -13,9 +13,14 @@ else
     # Generate a default config
     cp -f /usr/share/mynode/lnd.conf /mnt/hdd/mynode/lnd/lnd.conf
 
-    # Append Watchtower Section
+    # Append Watchtower Server Section
     if [ -f /mnt/hdd/mynode/settings/watchtower_enabled ]; then
         cat /usr/share/mynode/lnd_watchtower.conf >> /mnt/hdd/mynode/lnd/lnd.conf
+    fi
+
+    # Append Watchtower Client Section
+    if [ -f /mnt/hdd/mynode/settings/watchtower_client_enabled ]; then
+        cat /usr/share/mynode/lnd_watchtower_client.conf >> /mnt/hdd/mynode/lnd/lnd.conf
     fi
 
     # Append Tor/IP section (check new file or old file, should be migrated to new)

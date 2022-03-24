@@ -109,7 +109,7 @@ def update_lightning_info():
         lightning_channel_balance = lnd_get("/balance/channels")
         lightning_wallet_balance = lnd_get("/balance/blockchain")
         log_message("update_lightning_info - GET WATCHTOWER")
-        if is_watchtower_enabled():
+        if is_watchtower_server_enabled():
             lightning_watchtower_server_info = lnd_get_v2("/watchtower/server")
         towers = lnd_get_v2("/watchtower/client?include_sessions=1")
         log_message("update_lightning_info - TOWER DETAILS")
@@ -682,14 +682,24 @@ def get_lnd_alias_file_data():
         return "ERROR"
     return "ERROR"
 
-def is_watchtower_enabled():
+def is_watchtower_server_enabled():
     return settings_file_exists("watchtower_enabled")
 
-def enable_watchtower():
+def enable_watchtower_server():
     create_settings_file("watchtower_enabled")
 
-def disable_watchtower():
+def disable_watchtower_server():
     delete_settings_file("watchtower_enabled")
+
+
+def is_watchtower_client_enabled():
+    return settings_file_exists("watchtower_client_enabled")
+
+def enable_watchtower_client():
+    create_settings_file("watchtower_client_enabled")
+
+def disable_watchtower_client():
+    delete_settings_file("watchtower_client_enabled")
 
 # Only call from www process which has data
 def update_lightning_json_cache():

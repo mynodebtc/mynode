@@ -23,11 +23,26 @@
                     enabled=$('#watchtower_server_enabled_checkbox').is(":checked")
                     if (enabled)
                     {
-                        window.location.href='/lnd/watchtower/set_watchtower_enabled?enabled=1'
+                        window.location.href='/lnd/watchtower/set_watchtower_server_enabled?enabled=1'
                     }
                     else
                     {
-                        window.location.href='/lnd/watchtower/set_watchtower_enabled?enabled=0'
+                        window.location.href='/lnd/watchtower/set_watchtower_server_enabled?enabled=0'
+                    }
+                });
+
+                $('#watchtower_client_enabled_checkbox').change(function () {
+                    $("#watchtower_client_enabled_save").show();
+                });
+                $("#watchtower_client_enabled_save").on("click", function() {
+                    enabled=$('#watchtower_client_enabled_checkbox').is(":checked")
+                    if (enabled)
+                    {
+                        window.location.href='/lnd/watchtower/set_watchtower_client_enabled?enabled=1'
+                    }
+                    else
+                    {
+                        window.location.href='/lnd/watchtower/set_watchtower_client_enabled?enabled=0'
                     }
                 });
                    
@@ -88,11 +103,24 @@
             <div class="info_tile">
                 <div class="info_tile_header">Status</div>
                 <div class="info_tile_contents">
-                    Enabled
+                    <table class="info_table">
+                        <tr>
+                            <th>Enabled</th>
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox" id="watchtower_client_enabled_checkbox" {% if watchtower_client_enabled %}checked{% endif %}>
+                                    <span class="slider round"></span>
+                                </label>
+                                <br/>
+                                <button id="watchtower_client_enabled_save" style="display: none; margin-top: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
             </div>
         </div>
         
+        {% if watchtower_client_enabled %}
         <div class="app_tile_row">
             <div class="info_tile">
                 <div class="info_tile_header">Active Towers</div>
@@ -203,6 +231,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
 
         {% include 'includes/footer.html' %}
     </body>
