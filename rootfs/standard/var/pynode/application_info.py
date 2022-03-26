@@ -159,10 +159,21 @@ def initialize_applications():
         for index, app in enumerate(apps):
             apps[index] = initialize_application_defaults(app)
 
-        mynode_applications = copy.deepcopy(apps)
+    # Load dynamic app JSON files
+    dynamic_app_dir = get_dynamic_app_dir()
+    dynamic_app_names = get_dynamic_app_names()
+    for app_name in dynamic_app_names:
+        try:
+            app_dir = dynamic_app_dir + "/" + app_name
+            with open(app_dir + "/" + app_name + ".json", 'r') as app_info_file:
+                app = json.load(app_info_file)
+                apps.append(initialize_application_defaults(app))
 
-    # TODO: Load all app-specific JSON files
-    # ...
+        except Exception as e:
+            log_message("ERROR: Could not initialize dynamic app {} - {}".format(app_name, str(e)))
+
+    mynode_applications = copy.deepcopy(apps)
+
     return
 
 def update_applications(include_status=False):
@@ -470,6 +481,11 @@ def init_dynamic_app(app_info):
     log_message("  TODO: Build dockerfile???")
     log_message("  TODO: Install dockerfile???")
 
+    # Other init
+    log_message("  TODO: Other init")
+    log_message("  TODO:   Open Port")
+    log_message("  TODO:   More???")
+
     log_message(" Done.")
 
 def init_dynamic_apps():
@@ -488,4 +504,8 @@ def init_dynamic_apps():
         except Exception as e:
             log_message("  ERROR: Error loading app.json file ({})".format(str(e)))            
 
+    # Reload systemctl files
     os.system("systemctl daemon-reload")
+
+    # Mark app db for needing reload
+    # TODO: Need to mark this? all json files should be found early
