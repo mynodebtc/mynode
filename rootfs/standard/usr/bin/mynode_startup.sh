@@ -506,6 +506,9 @@ cp -f /usr/share/mynode/netdata.conf /opt/mynode/netdata/netdata.conf
 mkdir -p /opt/mynode/webssh2
 cp -f /usr/share/mynode/webssh2_config.json /opt/mynode/webssh2/config.json
 
+# Initialize Dynamic Apps
+mynode-manage-apps init || true
+
 # Backup Tor files
 for f in /var/lib/tor/mynode*; do
     rsync --ignore-existing -r -avh $f /mnt/hdd/mynode/tor_backup/ || true

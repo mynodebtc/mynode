@@ -2,8 +2,15 @@
 
 from argparse import ArgumentParser
 from application_info import *
-import json
+import logging
+from systemd import journal
 import os
+
+log = logging.getLogger('mynode_manage_apps')
+log.addHandler(journal.JournaldLogHandler())
+log.setLevel(logging.INFO)
+set_logger(log)
+
 
 def main():
     parser = ArgumentParser(prog='mynode-manage-apps')

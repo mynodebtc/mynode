@@ -1,0 +1,28 @@
+# LNDg Service
+# /etc/systemd/system/lndg.service
+
+[Unit]
+Description=LNDg
+Wants=www.service docker_images.service
+After=www.service docker_images.service
+
+[Service]
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_pre/pre_lndg.sh ]; then /bin/bash /usr/bin/service_pre/pre_lndg.sh; fi'
+ExecStart=/usr/bin/docker run --rm --name webssh2 -p 2222:2222 -v /opt/mynode/webssh2/config.json:/usr/src/config.json webssh2
+ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_post/post_lndg.sh ]; then /bin/bash /usr/bin/service_post/post_lndg.sh; fi'
+ExecStop=/usr/bin/docker stop -t 2 webssh2
+
+# Need new user
+User=root
+Group=root
+Type=simple
+TimeoutSec=120
+Restart=always
+RestartSec=60
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=lndg
+
+[Install]
+WantedBy=multi-user.target
