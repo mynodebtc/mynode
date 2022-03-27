@@ -40,6 +40,7 @@
 
    ```sh
    sync
+   sudo shutdown -h now
    ```
 
 8. Make image now (if imaging)

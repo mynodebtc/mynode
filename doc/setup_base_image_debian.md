@@ -70,6 +70,7 @@
 
    ```sh
    sync
+   sudo shutdown -h now
    ```
 
 10. Make image now (if imaging)
