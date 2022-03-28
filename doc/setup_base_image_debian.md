@@ -5,10 +5,15 @@
    Install latest Debian Net-install via CD
 
    URL: [https://www.debian.org/CD/netinst/](https://www.debian.org/CD/netinst/)
-   CURRENT IMAGE (10.11): https://cdimage.debian.org/mirror/cdimage/archive/10.11.0/amd64/iso-cd/
-   
-   Set VM Settings:
+   CURRENT IMAGE (10.11)
+        BASIC: https://cdimage.debian.org/mirror/cdimage/archive/10.11.0/amd64/iso-cd/
+        ADDITIONAL FIRMWARE: https://cdimage.debian.org/mirror/cdimage/unofficial/non-free/cd-including-firmware/archive/10.11.0+nonfree/amd64/iso-cd/
+   If VM, set VM Settings:
      - Set Ethernet adapter to Bridged Mode
+
+   If PC, set PC / UEFI Settings:
+     - Use Debian Image with Firmware
+     - Disable Secure Boot
 
    Follow instructions:
 
