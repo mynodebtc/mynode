@@ -57,8 +57,11 @@ def get_data_drive_usage():
         return get_cached_data("data_drive_usage")
     usage = "0%"
     try:
-        usage = to_string(subprocess.check_output("df -h /mnt/hdd | grep /dev | awk '{print $5}'", shell=True))
-        update_cached_data("data_drive_usage", usage)
+        if is_mynode_drive_mounted():
+            usage = to_string(subprocess.check_output("df -h /mnt/hdd | grep /dev | awk '{print $5}'", shell=True))
+            update_cached_data("data_drive_usage", usage)
+        else:
+            return "N/A"
     except:
         return usage
     return usage
