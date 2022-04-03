@@ -188,7 +188,7 @@ def bitcoincli():
 
     # Load page
     templateData = {
-        "title": "myNode Bitcoin CLI",
+        "title": "myNode Bitcoin Terminal",
         "ui_settings": read_ui_settings()
     }
     return render_template('bitcoin_cli.html', **templateData)
