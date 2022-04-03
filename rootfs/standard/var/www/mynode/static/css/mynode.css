@@ -795,8 +795,8 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
 .cli_contents {
     margin: auto;
     width: 800px;
-    max-height: 500px;
-    height: 500px;
+    max-height: 400px;
+    height: 400px;
     overflow-y: scroll;
     border: 2px solid #222222;
     border-radius: 5px;
