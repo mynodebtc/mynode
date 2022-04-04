@@ -1126,7 +1126,7 @@ def reset_tor():
     os.system("rm -rf /mnt/hdd/mynode/lnd/v3_onion_private_key")
 
 def is_btc_lnd_tor_enabled():
-    settings_file_exists("btc_lnd_tor_enabled")
+    return settings_file_exists("btc_lnd_tor_enabled")
 
 def enable_btc_lnd_tor():
     create_settings_file("btc_lnd_tor_enabled")
