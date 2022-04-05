@@ -1,3 +1,20 @@
+=== v0.2.54 ===
+- Released: 04/04/22
+- Add UI for LND Watchtower
+- Upgrade Loop to v0.18.0
+- Upgrade Lightning Terminal to v0.6.5
+- Upgrade Thunderhub to v0.13.10
+- Upgrade Specter to v1.9.1
+- Upgrade BTCPay Server to v1.4.9
+- Upgrade LNDManage to v0.14.1
+- Upgrade Sphinx Relay to v2.2.6
+- Upgrade BoS to v11.64.1
+- Update favicon
+- Resolve issue with RTL install
+- Resolve issue setting LND alias
+- Resolve issue toggling tor
+- Dev: More python refactoring
+
 === v0.2.53 ===
 - Released: 03/07/22
 - Upgrade Dojo to v1.14.0
