@@ -210,6 +210,7 @@ def index():
     elif status == STATE_DRIVE_CONFIRM_FORMAT:
         if request.args.get('format'):
             touch("/tmp/format_ok")
+            os.system("rm -f /home/bitcoin/.mynode/force_format_prompt")
             time.sleep(1)
             return redirect("/")
 
@@ -450,7 +451,7 @@ def index():
                 "title": "myNode Status",
                 "header_text": "Starting...",
                 "subheader_text": Markup("Launching myNode Services{}".format(message)),
-                "error_message": error_message,
+                "error_message": Markup(error_message + "<br/><br/>"),
                 "ui_settings": read_ui_settings()
             }
             return render_template('state.html', **templateData)
@@ -477,6 +478,7 @@ def index():
                 "header_text": "Bitcoin Blockchain",
                 "bitcoin_block_height": bitcoin_block_height,
                 "mynode_block_height": mynode_block_height,
+                "progress": get_bitcoin_sync_progress(),
                 "message": get_message(include_funny=True),
                 "ui_settings": read_ui_settings()
             }

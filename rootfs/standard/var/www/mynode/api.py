@@ -32,6 +32,7 @@ def api_get_bitcoin_info():
     data = {}
     data["current_block"] = get_mynode_block_height()
     data["block_height"] = get_bitcoin_block_height()
+    data["progress"] = get_bitcoin_sync_progress()
     data["peer_count"] = get_bitcoin_peer_count()
     #data["difficulty"] = get_bitcoin_difficulty() # Dont send difficulty, it causes errors in jsonify
     data["mempool_size"] = get_bitcoin_mempool_info()["display_bytes"]
