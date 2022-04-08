@@ -7,13 +7,15 @@
         $(document).ready(function() {
             current_block = {{mynode_block_height}};
             block_height = {{bitcoin_block_height}};
+            progress = "{{progress}}";
 
             function update_counts() {
                 // Update Bitcoin Info
                 $.getJSON("/api/get_bitcoin_info", function( data ) {
-                    //console.log("Bitcoin Data: " + JSON.stringify(data))
+                    //console.log("Bitcoin Data: " + JSON.stringify(data));
                     if ("current_block" in data && data["current_block"] != null && 
-                        "block_height" in data && data["block_height"] != null) {
+                        "block_height" in data && data["block_height"] != null && 
+                        "progress" in data && data["progress"] != null) {
                         if (current_block != parseInt(data["current_block"])) {
                             $("#current_block").fadeOut(250, function() {
                                 $(this).text(data["current_block"]);
@@ -25,6 +27,12 @@
                                 $(this).text(data["block_height"]);
                             }).fadeIn(250);
                             block_height = parseInt(data["block_height"]);
+                        }
+                        if (progress != data['progress']) {
+                            $("#progress").fadeOut(250, function() {
+                                $(this).text(data["progress"]);
+                            }).fadeIn(250);
+                            progress = data["progress"];
                         }
 
                         // We're close, so do a full refresh to get to home page faster
@@ -65,8 +73,14 @@
 
         <div class="state_subheader">
             Syncing... <br/>
-            <span id="current_block">{{mynode_block_height}}</span> of <span id="block_height">{{bitcoin_block_height}}</span>
+            
+            <div style="margin-top: 20px;">
+                <span id="current_block">{{mynode_block_height}}</span> of <span id="block_height">{{bitcoin_block_height}}</span>
+            </div>
 
+            <div id="progress" style='margin-top: 10px; font-size: 14px;'>{{progress}}</div>
+
+            <br/>
             <div id="message" class='small_message'>{{ message }}</div>
         </div>
 

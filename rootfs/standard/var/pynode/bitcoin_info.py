@@ -67,7 +67,9 @@ def update_bitcoin_main_info():
             if "difficulty" in info:
                 info["difficulty"] = "{:.3g}".format(info["difficulty"])
             if "verificationprogress" in info:
-                info["verificationprogress"] = "{:.3g}".format(info["verificationprogress"])
+                info["verificationprogress"] = "{:.2f}%".format(100 * info["verificationprogress"])
+            else:
+                info["verificationprogress"] = "???"
 
         bitcoin_blockchain_info = info
 
@@ -218,6 +220,14 @@ def get_bitcoin_block_height():
 def get_mynode_block_height():
     global mynode_block_height
     return mynode_block_height
+
+def get_bitcoin_sync_progress():
+    info = get_bitcoin_blockchain_info()
+    progress = "???"
+    if info:
+        if "verificationprogress" in info:
+            return info["verificationprogress"]
+    return progress
 
 def get_bitcoin_recent_blocks():
     global bitcoin_recent_blocks
