@@ -4,9 +4,9 @@ source /usr/share/mynode/mynode_config.sh
 
 set -x
 
-WALLET_FOLDER="/mnt/hdd/mynode/bitcoin/wallets"
+WALLET_FOLDER="/mnt/hdd/mynode/bitcoin"
 if [ -f $IS_TESTNET_ENABLED_FILE ]; then
-    WALLET_FOLDER="/mnt/hdd/mynode/bitcoin/wallets"
+    WALLET_FOLDER="/mnt/hdd/mynode/bitcoin/testnet3/wallets"
 fi
 
 sleep 60s
