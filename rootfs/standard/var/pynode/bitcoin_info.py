@@ -46,6 +46,15 @@ def is_bitcoin_synced():
         return True
     return False
 
+def run_bitcoincli_command(cmd):
+    cmd = "bitcoin-cli --conf=/home/admin/.bitcoin/bitcoin.conf --datadir=/mnt/hdd/mynode/bitcoin "+cmd+"; exit 0"
+    log_message("Running bitcoin-cli cmd:  {}".format(cmd))
+    try:
+        results = to_string(subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True))
+    except Exception as e:
+        results = str(e)
+    return results
+
 def update_bitcoin_main_info():
     global bitcoin_block_height
     global mynode_block_height
@@ -161,6 +170,7 @@ def update_bitcoin_other_info():
                 wallet_info = wallet_rpc_connection.getwalletinfo()
                 wallet_data.append(wallet_info)
             bitcoin_wallets = wallet_data
+            create_default_wallets()
 
             # Get recommended fee info (from mempool on port 4080)
             log_message("update_bitcoin_other_info - MEMPOOL")
@@ -286,6 +296,23 @@ def get_bitcoin_recommended_fees():
 def get_bitcoin_wallets():
     global bitcoin_wallets
     return copy.deepcopy(bitcoin_wallets)
+
+def create_default_wallets():
+    default_wallets = ["joinmarket_wallet.dat"]
+    if is_bitcoin_synced():
+        wallets = get_bitcoin_wallets()
+        for new_wallet in default_wallets:
+            found = False
+            for w in wallets:
+                log_message("{} comparing to {}".format(new_wallet, w["walletname"]))
+                if new_wallet == w["walletname"]:
+                    found = True
+                    break
+            if not found:
+                log_message("Creating new default wallet {}".format(new_wallet))
+                run_bitcoincli_command("createwallet {}".format(new_wallet))
+                run_bitcoincli_command("loadwallet {}".format(new_wallet))
+
 
 def get_default_bitcoin_config():
     try:

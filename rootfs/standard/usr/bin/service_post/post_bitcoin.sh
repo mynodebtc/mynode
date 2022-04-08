@@ -27,11 +27,5 @@ fi
 #chmod -R 755 /mnt/hdd/mynode/bitcoin/chainstate || true
 #chmod -R 755 /mnt/hdd/mynode/bitcoin/indexes || true
 
-# Make default wallets
-if [ ! -d ${WALLET_FOLDER}/joinmarket_wallet.dat ]; then
-    bitcoin-cli createwallet joinmarket_wallet.dat > /dev/null  2>&1 || true
-fi
-bitcoin-cli loadwallet joinmarket_wallet.dat > /dev/null  2>&1 || true
-
 # Sync FS
 sync

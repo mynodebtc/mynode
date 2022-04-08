@@ -14,14 +14,6 @@ import time
 mynode_bitcoin = Blueprint('mynode_bitcoin',__name__)
 
 
-def runcmd(cmd):
-    cmd = "bitcoin-cli --conf=/home/admin/.bitcoin/bitcoin.conf --datadir=/mnt/hdd/mynode/bitcoin "+cmd+"; exit 0"
-    try:
-        results = to_string(subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True))
-    except Exception as e:
-        results = str(e)
-    return results
-
 def cleanup_download_wallets():
     os.system("rm -rf /tmp/download_wallets/*")
 
@@ -113,7 +105,7 @@ def bitcoin_download_wallet():
 
     os.system("mkdir -p /tmp/download_wallets")
     os.system("chmod 777 /tmp/download_wallets")
-    runcmd("-rpcwallet='"+wallet_name+"' dumpwallet '/tmp/download_wallets/"+wallet_name+"'")
+    run_bitcoincli_command("-rpcwallet='"+wallet_name+"' dumpwallet '/tmp/download_wallets/"+wallet_name+"'")
 
     if not os.path.isfile("/tmp/download_wallets/"+wallet_name):
         flash("Error exporting wallet data for download", category="error")
@@ -199,7 +191,7 @@ def runcmd_page():
     
     if not request:
         return ""
-    response = runcmd(request.form['cmd'])
+    response = run_bitcoincli_command(request.form['cmd'])
     return response
 
 @mynode_bitcoin.route("/bitcoin/toggle_bip37")
