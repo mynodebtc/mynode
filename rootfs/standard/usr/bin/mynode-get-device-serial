@@ -1,5 +1,20 @@
 #!/bin/bash
 SERIAL_NUM="UNKNOWN"
+BACKUP_SERIAL="UNKNOWN_BACKUP"
+
+if [ -f /home/bitcoin/.mynode/mynode_serial ]; then
+    BACKUP_SERIAL=$(cat /home/bitcoin/.mynode/mynode_serial)
+else
+    # Backup, use eth0 mac (some are duplicate?)
+    if [ -f /sys/class/net/eth0/address ]; then
+        MAC=$(cat /sys/class/net/eth0/address)
+        BACKUP_SERIAL=$(echo "${MAC//:}")
+    else
+        BACKUP_SERIAL="UNKNOWN_BACKUP_SERIAL"
+    fi
+fi
+
+
 if [ -f /sys/firmware/devicetree/base/serial-number ]; then
     SERIAL_NUM=$(tr -d '\0' </sys/firmware/devicetree/base/serial-number)
 else
@@ -7,15 +22,13 @@ else
     if [[ "$SERIAL_NUM" == "" ]]; then
         # Caution - dmidecode seem to cause issues on some platforms (used on VM)
         SERIAL_NUM=$(sudo dmidecode | grep UUID | cut -d ' ' -f 2)
+        if [[ "$SERIAL_NUM" == "03000200-0400-0500-0006-000700080009" ]]; then
+             # Some mini PCs return this hard coded value
+            SERIAL_NUM=$BACKUP_SERIAL
+        fi
     elif [[ "$SERIAL_NUM" == "0000000000000000" ]]; then
         # RockPro64 returns 0s (base serial-num should work now)
-        if [ -f /home/bitcoin/.mynode/mynode_serial ]; then
-            SERIAL_NUM=$(cat /home/bitcoin/.mynode/mynode_serial)
-        else
-            # Backup, use eth0 mac (some are duplicate?)
-            MAC=$(cat /sys/class/net/eth0/address)
-            SERIAL_NUM=$(echo "${MAC//:}")
-        fi
+        SERIAL_NUM=$BACKUP_SERIAL
     fi
 fi
 
