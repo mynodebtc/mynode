@@ -863,6 +863,18 @@ def regen_https_certs_page():
     flash("HTTPS Service Restarting", category="message")
     return redirect(url_for(".page_settings"))
 
+@mynode_settings.route("/settings/regen-ssh-keys")
+def regen_ssh_keys_page():
+    check_logged_in()
+
+    #os.system("rm -f /home/bitcoin/.mynode/.gensshkeys")
+    os.system("rm -rf /etc/ssh/ssh_host_*")
+    os.system("dpkg-reconfigure openssh-server")
+    os.system("systemctl restart ssh")
+
+    flash("SSH Service Restarting", category="message")
+    return redirect(url_for(".page_settings"))
+
 @mynode_settings.route("/settings/regen-electrs-certs")
 def regen_electrs_certs_page():
     check_logged_in()

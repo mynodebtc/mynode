@@ -111,6 +111,11 @@
                                       "<p>Would you still like to restart QuickSync?</p>",
                                       okFunction)
                 });
+                $("#show_quicksync").on("click", function() {
+                    $("#show_quicksync").hide(0);
+                    $("#show_quicksync_message").hide(0);
+                    $("#quicksync_container").show();
+                });
 
                 $("#reboot-device").on("click", function() {
                     // Enable electrs
@@ -999,48 +1004,54 @@
             <a id="quicksync"></a>
             <div class="settings_block_header">QuickSync</div>
 
-            <div class="settings_block_subheader">Toggle QuickSync</div>
             {% if is_quicksync_disabled %}
-                Enabling QuickSync will help speed up syncing only during the initial block download period by downloading a pre-validated copy of the blockchain. It is no longer recommended.
-                <br/>
-                <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Enable QuickSync</a>
-            {% else %}
-                Disabling QuickSync will remove the QuickSync files and stop the process. This may save significant disk space.
-                <br/>
-                <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Disable QuickSync</a>
+            <p id="show_quicksync_message">QuickSync is no longer recommended.</p>
+            <button id="show_quicksync" class="ui-button ui-widget ui-corner-all settings_button">Show QuickSync Settings</button>
             {% endif %}
+            <div id="quicksync_container" {% if is_quicksync_disabled %}style="display: none;"{%endif%}>
+                <div class="settings_block_subheader">Toggle QuickSync</div>
+                {% if is_quicksync_disabled %}
+                    Enabling QuickSync will help speed up syncing only during the initial block download period by downloading a pre-validated copy of the blockchain. It is no longer recommended.
+                    <br/>
+                    <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Enable QuickSync</a>
+                {% else %}
+                    Disabling QuickSync will remove the QuickSync files and stop the process. This may save significant disk space.
+                    <br/>
+                    <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Disable QuickSync</a>
+                {% endif %}
 
-            {% if not is_quicksync_disabled %}
-            <div class="divider"></div>
+                {% if not is_quicksync_disabled %}
+                <div class="divider"></div>
 
-            <div class="settings_block_subheader">Restart QuickSync</div>
-            This will reset Bitcoin and redownload the blockchain via QuickSync.
-            <br/>
-            <button id="restart-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Restart QuickSync</button>
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">QuickSync Rates</div>
-            You can control the background upload and download rates for QuickSync. This helps the myNode network.
-            <br/>
-
-            <form action="/settings/quicksync_rates" method="POST">
-                <p><b>Download Rate</b></p>
-                <div id="download-slider">
-                    <div id="download-handle" class="quicksync-handle ui-slider-handle "></div>
-                </div>
-                <input type="hidden" id="download-rate" name="download-rate"/>
-
-                <p><b>Upload Rate</b></p>
-                <div id="upload-slider">
-                    <div id="upload-handle" class="quicksync-handle ui-slider-handle"></div>
-                </div>
-                <input type="hidden" id="upload-rate" name="upload-rate"/>
-                
+                <div class="settings_block_subheader">Restart QuickSync</div>
+                This will reset Bitcoin and redownload the blockchain via QuickSync.
                 <br/>
-                <input type="submit" id="quicksync_rates_submit" value="Save" class="ui-button ui-widget ui-corner-all settings_button"/>
-            </form>
-            {% endif %}
+                <button id="restart-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Restart QuickSync</button>
+
+                <div class="divider"></div>
+
+                <div class="settings_block_subheader">QuickSync Rates</div>
+                You can control the background upload and download rates for QuickSync. This helps the myNode network.
+                <br/>
+
+                <form action="/settings/quicksync_rates" method="POST">
+                    <p><b>Download Rate</b></p>
+                    <div id="download-slider">
+                        <div id="download-handle" class="quicksync-handle ui-slider-handle "></div>
+                    </div>
+                    <input type="hidden" id="download-rate" name="download-rate"/>
+
+                    <p><b>Upload Rate</b></p>
+                    <div id="upload-slider">
+                        <div id="upload-handle" class="quicksync-handle ui-slider-handle"></div>
+                    </div>
+                    <input type="hidden" id="upload-rate" name="upload-rate"/>
+                    
+                    <br/>
+                    <input type="submit" id="quicksync_rates_submit" value="Save" class="ui-button ui-widget ui-corner-all settings_button"/>
+                </form>
+                {% endif %}
+            </div>
         </div>
 
 
@@ -1077,6 +1088,13 @@
             <br/>
             <a href="/settings/mynode_web.cert" class="ui-button ui-widget ui-corner-all settings_button">Download</a>
             <a href="/settings/regen-https-certs" class="ui-button ui-widget ui-corner-all settings_button">Regenerate</a>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">SSH Keys</div>
+            This will regenerate your SSH host keys.
+            <br/>
+            <a href="/settings/regen-ssh-keys" class="ui-button ui-widget ui-corner-all settings_button">Regenerate</a>
 
             <div class="divider"></div>
 
