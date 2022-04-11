@@ -363,6 +363,12 @@ def get_local_ip():
 
     return local_ip
 
+def get_local_ip_subnet_conflict():
+    ip = get_local_ip()
+    if ip.startswith("172."):
+        return True
+    return False
+
 def get_device_changelog():
     changelog = ""
     try:
