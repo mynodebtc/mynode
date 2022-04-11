@@ -34,7 +34,12 @@
     </tr>
     <tr>
         <th>Local IP</th>
-        <td>{{local_ip}}</td>
+        <td>
+            {{local_ip}}
+            {% if local_ip_subnet_conflit %}
+                <br/><span style="color: red; font-size: 10px;">*Your IP address may conflict with internal subnets and cause issues</span>
+            {% endif %}
+        </td>
     </tr>
     {% if throttled_data['RAW_DATA'] != "0x0" and throttled_data['RAW_DATA'] != "MISSING" %}
     {% if throttled_data['UNDERVOLTED'] or throttled_data['CAPPED'] or throttled_data['THROTTLED'] or throttled_data['SOFT_TEMPLIMIT'] %}
