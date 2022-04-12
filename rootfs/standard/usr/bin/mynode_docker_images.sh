@@ -198,7 +198,7 @@ while true; do
                 fi
 
                 #Check for install/upgrade to finish to initialize Dojo mysql db
-                sudo /usr/bin/service_post/post_dojo.sh
+                sudo /usr/bin/service_scripts/post_dojo.sh
 
                 # Wait for install script to finish
                 wait $INSTALL_PID || MARK_DOJO_COMPLETE=0

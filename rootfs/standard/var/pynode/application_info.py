@@ -461,13 +461,13 @@ def init_dynamic_app(app_info):
     os.system("cp -f {} {}".format(app_dir+"/app.service", "/etc/systemd/system/"+app_name+".service"))
     os.system("cp -f {} {}".format(app_dir+"/"+app_name+".png", "/var/www/mynode/static/images/app_icons/"+app_name+".png"))
     if (os.path.isfile(app_dir+"/scripts/pre_"+app_name+".sh")):
-        os.system("cp -f {} {}".format(app_dir+"/scripts/pre_"+app_name+".sh",      "/usr/bin/service_post/pre_"+app_name+".sh"))
+        os.system("cp -f {} {}".format(app_dir+"/scripts/pre_"+app_name+".sh",      "/usr/bin/service_scripts/pre_"+app_name+".sh"))
     if (os.path.isfile(app_dir+"/scripts/post_"+app_name+".sh")):
-        os.system("cp -f {} {}".format(app_dir+"/scripts/post_"+app_name+".sh",     "/usr/bin/service_pre/post_"+app_name+".sh"))
+        os.system("cp -f {} {}".format(app_dir+"/scripts/post_"+app_name+".sh",     "/usr/bin/service_scripts/post_"+app_name+".sh"))
     if (os.path.isfile(app_dir+"/scripts/install"+app_name+".sh")):
-        os.system("cp -f {} {}".format(app_dir+"/scripts/install_"+app_name+".sh",  "/usr/bin/service_install/install_"+app_name+".sh"))
+        os.system("cp -f {} {}".format(app_dir+"/scripts/install_"+app_name+".sh",  "/usr/bin/service_scripts/install_"+app_name+".sh"))
     if (os.path.isfile(app_dir+"/scripts/uninstall"+app_name+".sh")):
-        os.system("cp -f {} {}".format(app_dir+"/scripts/uninstall"+app_name+".sh", "/usr/bin/service_uninstall/uninstall_"+app_name+".sh"))
+        os.system("cp -f {} {}".format(app_dir+"/scripts/uninstall"+app_name+".sh", "/usr/bin/service_scripts/uninstall_"+app_name+".sh"))
     
     log_message("  TODO: Install data files")
 
