@@ -143,8 +143,8 @@ if ! skip_base_upgrades ; then
     echo "" > /etc/nginx/sites-available/default
     dpkg --configure -a
 
-    # Install any pip software
-    pip2 install tzupdate virtualenv pysocks redis qrcode image subprocess32 --no-cache-dir
+    # Install any pip software (python2 should not longer be used)
+    #pip2 install tzupdate virtualenv pysocks redis qrcode image subprocess32 --no-cache-dir
 
 
     # Install Rust (only needed on 32-bit RPi for building some python wheels)
@@ -219,9 +219,9 @@ if ! skip_base_upgrades ; then
 
     # Install any pip3 software
     pip3 install --upgrade pip setuptools wheel || pip3 install --upgrade pip setuptools wheel --use-deprecated=html5lib
-    pip3 install gnureadline docker-compose pipenv bcrypt pysocks redis systemd --no-cache-dir
-    pip3 install flask pam python-bitcoinrpc prometheus_client psutil transmissionrpc --no-cache-dir
-    pip3 install qrcode image pyudev inotify_simple --no-cache-dir
+    
+    pip3 install -r /usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir || \
+        pip3 install -r /usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir --use-deprecated=html5lib
 
     # For RP4 32-bit, install specific grpcio version known to build (uses proper glibc for wheel)
     if [ $IS_32_BIT = 1 ]; then

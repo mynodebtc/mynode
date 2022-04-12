@@ -288,11 +288,11 @@ else
 fi
 
 
-# Install Python3 specific tools (run multiple times to make sure success)
+# Install Python3 specific tools
 pip3 install --upgrade pip wheel setuptools
-pip3 install gnureadline docker-compose pipenv bcrypt pysocks redis systemd --no-cache-dir
-pip3 install flask pam python-bitcoinrpc prometheus_client psutil transmissionrpc --no-cache-dir
-pip3 install qrcode image pyudev inotify_simple --no-cache-dir
+
+pip3 install -r $TMP_INSTALL_PATH/usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir || \
+    pip3 install -r $TMP_INSTALL_PATH/usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir --use-deprecated=html5lib
 
 # For RP4 32-bit, install specific grpcio version known to build (uses proper glibc for wheel)
 if [ $IS_32_BIT = 1 ]; then
