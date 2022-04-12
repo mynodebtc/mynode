@@ -1,0 +1,17 @@
+gnureadline
+docker-compose
+pipenv
+bcrypt
+pysocks
+redis
+systemd
+flask
+pam
+python-bitcoinrpc
+prometheus_client
+psutil
+transmissionrpc
+qrcode
+image
+pyudev
+inotify_simple
