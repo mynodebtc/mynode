@@ -9,7 +9,7 @@ After=bitcoin.service
 [Service]
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_lnd.sh
-ExecStartPre=+/usr/bin/service_pre/pre_rtl.sh
+ExecStartPre=+/usr/bin/service_scripts/pre_rtl.sh
 WorkingDirectory=/opt/mynode/RTL
 ExecStart=/usr/bin/node rtl
 
