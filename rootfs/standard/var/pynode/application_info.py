@@ -203,6 +203,7 @@ def get_all_applications(order_by="none", include_status=False):
     global mynode_applications
 
     if need_application_refresh():
+        clear_service_enabled_cache()
         initialize_applications()
     else:
         update_applications()
@@ -509,3 +510,26 @@ def init_dynamic_apps():
 
     # Mark app db for needing reload
     # TODO: Need to mark this? all json files should be found early
+
+def upgrade_dynamic_apps():
+    # Loop over each app
+    app_names = get_dynamic_app_names()
+    for app_name in app_names:
+        try:
+            app_data = get_application( app_name )
+            if app_data["is_installed"]:
+                if app_data["current_version"] != app_data["latest_version"]:
+                    # Run upgrade script
+                    # TODO
+                    # Mark update latest version if success
+                    # TODO
+                    pass
+
+        except Exception as e:
+            log_message("  ERROR: Error checking app {} for upgrade ({})".format(app_name, str(e)))
+
+def uninstall_dynamic_app(app_name):
+    # TODO
+    # Disable service file
+    # Delete SD card folder
+    pass
