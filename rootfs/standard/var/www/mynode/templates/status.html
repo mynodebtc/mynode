@@ -287,9 +287,9 @@
                 {{ btcpayserver_status }}
                 <span class='status_container_list'>
                     Running Containers: 
-                    {% if 'btcpayserver_btcpayserver_1' in running_containers %} btcpayserver {% endif %}
-                    {% if 'btcpayserver_nbxplorer_1' in running_containers %} nbxplorer {% endif %}
-                    {% if 'btcpayserver_postgres_1' in running_containers %} postgres {% endif %}
+                    {% if 'generated_btcpayserver_1' in running_containers %} btcpayserver {% endif %}
+                    {% if 'generated_nbxplorer_1' in running_containers %} nbxplorer {% endif %}
+                    {% if 'generated_postgres_1' in running_containers %} postgres {% endif %}
                 </span>
             </div>
             <button id="show_btcpayserver_status" onclick="showLog('btcpayserver')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
