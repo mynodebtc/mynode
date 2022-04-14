@@ -950,7 +950,7 @@ def get_docker_running_containers():
 
     # TODO: switch to subprocess after switch to python3 for web ui (timeout doesn't work w/ subprocess32, causes issues)
     try:
-        text = subprocess32.check_output("docker ps --format '{{.Names}}'", shell=True, timeout=3).decode("utf8")
+        text = subprocess.check_output("docker ps --format '{{.Names}}'", shell=True, timeout=3).decode("utf8")
         containers = text.splitlines()
     except Exception as e:
         containers = [str(e)]
