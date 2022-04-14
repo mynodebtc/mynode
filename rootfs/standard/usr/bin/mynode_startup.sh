@@ -388,16 +388,7 @@ fi
 # Moved to pre_rtl.sh
 
 # BTCPay Server Setup
-mkdir -p /opt/mynode/btcpayserver
-cp -n /usr/share/btcpayserver/env /opt/mynode/btcpayserver/.env
-cp -n /usr/share/btcpayserver/btcpay-env.sh /opt/mynode/btcpayserver/
-cp -n /usr/share/btcpayserver/docker-compose.generated.yml /opt/mynode/btcpayserver/
-cp -n /usr/share/btcpayserver/helpers.sh /opt/mynode/btcpayserver/
-if [ -f /opt/mynode/btcpayserver/.env ]; then
-    sed -i "s/BTCPAY_VERSION=.*/BTCPAY_VERSION=$BTCPAYSERVER_VERSION/g" /opt/mynode/btcpayserver/.env || true
-    sed -i "s/NBXPLORER_VERSION.*/NBXPLORER_VERSION=$BTCPAYSERVER_NBXPLORER_VERSION/g" /opt/mynode/btcpayserver/.env || true
-    sed -i "s/POSTGRES_VERSION.*/POSTGRES_VERSION=$BTCPAYSERVER_POSTGRES_VERSION/g" /opt/mynode/btcpayserver/.env || true
-fi
+# Now in mynode_docker_images.sh (any new setup should go into pre_btcpayserver.sh)
 
 # LNBits Config
 if [ -d /opt/mynode/lnbits ]; then

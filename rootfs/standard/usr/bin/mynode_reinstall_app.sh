@@ -34,12 +34,17 @@ elif [ "$APP" = "netdata" ]; then
     systemctl stop netdata
     docker rmi netdata/netdata || true
 elif [ "$APP" = "btcpayserver" ]; then
-    cp /usr/share/btcpayserver/env /opt/mynode/btcpayserver/.env
-    cp /usr/share/btcpayserver/btcpay-env.sh /opt/mynode/btcpayserver/
-    cp /usr/share/btcpayserver/docker-compose.generated.yml /opt/mynode/btcpayserver/
-    cp /usr/share/btcpayserver/helpers.sh /opt/mynode/btcpayserver/
-    . "/opt/mynode/btcpayserver/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY" && . helpers.sh && btcpay_remove
-    cd ~
+    # Stop and clean images
+    /usr/local/bin/btcpay-down.sh
+    /usr/local/bin/btcpay-clean.sh
+
+    # Remove files and data (don't remove volume for re-install)
+    rm -f /etc/profile.d/btcpay-env.sh
+    rm -rf /usr/local/bin/btcpay-*
+    rm -rf /usr/local/bin/changedomain.sh
+
+    # Finally remove main folder
+    rm -rf /mnt/hdd/mynode/btcpayserver
 elif [ "$APP" = "tor" ]; then
     apt-get remove -y tor
     apt-get install -y tor

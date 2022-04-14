@@ -25,12 +25,20 @@ sync
 if [ "$APP" = "bos" ]; then
     npm uninstall -g balanceofsatoshis
 elif [ "$APP" = "btcpayserver" ]; then
-    cp /usr/share/btcpayserver/env /opt/mynode/btcpayserver/.env
-    cp /usr/share/btcpayserver/btcpay-env.sh /opt/mynode/btcpayserver/
-    cp /usr/share/btcpayserver/docker-compose.generated.yml /opt/mynode/btcpayserver/
-    cp /usr/share/btcpayserver/helpers.sh /opt/mynode/btcpayserver/
-    . "/opt/mynode/btcpayserver/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY" && . helpers.sh && btcpay_remove
+    # Stop and clean images
+    /usr/local/bin/btcpay-down.sh
+    /usr/local/bin/btcpay-clean.sh
+
+    # Remove files and data
+    cd "$(dirname "$BTCPAY_ENV_FILE")"
+    docker-compose -f $BTCPAY_DOCKER_COMPOSE down --v # Remove volumes (uninstall only, not reinstall)
     cd ~
+    rm -f /etc/profile.d/btcpay-env.sh
+    rm -rf /usr/local/bin/btcpay-*
+    rm -rf /usr/local/bin/changedomain.sh
+
+    # Finally remove main folder
+    rm -rf /mnt/hdd/mynode/btcpayserver
 elif [ "$APP" = "btcrpcexplorer" ]; then
     rm -rf /opt/mynode/btc-rpc-explorer
 elif [ "$APP" = "dojo" ]; then
