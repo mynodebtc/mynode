@@ -54,7 +54,7 @@
         "short_name": "btcpayserver",
         "app_tile_default_status_text": "Merchant Tool",
         "can_uninstall": true,
-        "requires_lightning": true,
+        "requires_lightning": false,
         "show_on_homepage": true,
         "homepage_order": 13
     },
