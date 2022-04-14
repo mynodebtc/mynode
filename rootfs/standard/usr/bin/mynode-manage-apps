@@ -16,15 +16,30 @@ def main():
     parser = ArgumentParser(prog='mynode-manage-apps')
     action_choices = (
         'init',
-        'createfolders',
+        'createbasefolders',
+        'upgrade',
+        'uninstall',
+        'install',
     )
     parser.add_argument('action', help='action to manage mynode application', nargs='?', choices=action_choices)
+
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('--add', action='store_true')
+    group.add_argument('--subtract', action='store_true')
+
     args = parser.parse_args()
 
     if args.action == "createbasefolders":
         print("createbasefolders - not needed?")
     elif args.action == "init":
         init_dynamic_apps()
+    elif args.action == "install":
+        print("install - needed or upgrade works?")
+    elif args.action == "upgrade":
+        upgrade_dynamic_apps()
+    elif args.action == "uninstall":
+        app_name = args.uninstall # Need argument to get app name
+        uninstall_dynamic_app(app_name)
     else:
         print("UNKNOWN BASE ACTION")
 
