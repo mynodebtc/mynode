@@ -170,9 +170,6 @@ while true; do
             #. ./btcpay-setup.sh # Install and run
             bash -c ". ./btcpay-setup.sh --install-only --no-startup-register --no-systemd-reload"
 
-            systemctl enable btcpayserver
-            systemctl restart btcpayserver
-
             echo $BTCPAYSERVER_VERSION > $BTCPAYSERVER_VERSION_FILE
         fi
     fi

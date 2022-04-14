@@ -55,6 +55,7 @@
         "app_tile_default_status_text": "Merchant Tool",
         "can_uninstall": true,
         "requires_lightning": false,
+        "requires_docker_image_installation": true,
         "show_on_homepage": true,
         "homepage_order": 13
     },
