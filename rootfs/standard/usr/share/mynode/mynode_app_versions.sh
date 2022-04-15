@@ -77,7 +77,7 @@ RTL_VERSION="v0.12.2"
 RTL_VERSION_FILE=/home/bitcoin/.mynode/rtl_version
 RTL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/rtl_version_latest
 
-BTCPAYSERVER_VERSION="1.4.8"
+BTCPAYSERVER_VERSION="1.4.9"
 BTCPAYSERVER_NBXPLORER_VERSION="2.2.20"
 BTCPAYSERVER_POSTGRES_VERSION="13.6"
 BTCPAYSERVER_VERSION_FILE=/home/bitcoin/.mynode/btcpayserver_version
