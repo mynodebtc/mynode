@@ -163,7 +163,7 @@ while true; do
 
             cp -f /usr/share/btcpayserver/bitcoin.custom.yml /mnt/hdd/mynode/btcpayserver/btcpayserver-docker/docker-compose-generator/docker-fragments/bitcoin.custom.yml
             cp -f /usr/share/btcpayserver/lnd.custom.yml /mnt/hdd/mynode/btcpayserver/btcpayserver-docker/docker-compose-generator/docker-fragments/lnd.custom.yml
-            
+
             rm -rf /usr/local/bin/btcpay-*
             rm -rf /usr/local/bin/changedomain.sh
 
