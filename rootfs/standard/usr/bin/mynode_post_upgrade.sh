@@ -1047,7 +1047,8 @@ if should_install_app "bos" ; then
 fi
 
 
-
+# Upgrade Dyanmic Applications
+mynode-manage-apps upgrade
 
 
 # Upgrade Tor
