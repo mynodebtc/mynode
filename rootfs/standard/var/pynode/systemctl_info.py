@@ -17,7 +17,7 @@ def is_service_enabled(service_name, force_refresh=False):
     if service_name in service_enabled_cache and force_refresh == False:
         return service_enabled_cache[service_name]
 
-    code = os.system("systemctl is-enabled {} > /dev/null".format(service_name))
+    code = os.system("systemctl is-enabled {} > /dev/null 2>&1".format(service_name))
     if code == 0:
         service_enabled_cache[service_name] = True
         return True
@@ -25,14 +25,14 @@ def is_service_enabled(service_name, force_refresh=False):
     return False
 
 def get_service_status_code(service_name):
-    code = os.system("systemctl status {} --no-pager > /dev/null".format(service_name))
+    code = os.system("systemctl status {} --no-pager > /dev/null 2>&1".format(service_name))
     return code
 
 def get_service_status_basic_text(service_name):
     if not is_service_enabled(service_name):
         return "Disabled"
 
-    code = os.system("systemctl status {} --no-pager  > /dev/null".format(service_name))
+    code = os.system("systemctl status {} --no-pager  > /dev/null 2>&1".format(service_name))
     if code == 0:
         return "Running"
     return "Error"
@@ -41,7 +41,7 @@ def get_service_status_color(service_name):
     if not is_service_enabled(service_name):
         return "gray"
 
-    code = os.system("systemctl status {} --no-pager > /dev/null".format(service_name))
+    code = os.system("systemctl status {} --no-pager > /dev/null 2>&1".format(service_name))
     if code == 0:
         return "green"
     return "red"
