@@ -499,6 +499,7 @@ cp -f /usr/share/mynode/webssh2_config.json /opt/mynode/webssh2/config.json
 
 # Initialize Dynamic Apps
 mynode-manage-apps init || true
+mynode-manage-apps openports || true
 
 # Backup Tor files
 for f in /var/lib/tor/mynode*; do
