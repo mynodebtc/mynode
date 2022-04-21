@@ -74,6 +74,9 @@ ufw allow 61209 comment 'allow Glances HTTPS'
 ufw allow from 127.0.0.1 comment 'allow from localhost'
 #ufw allow from ::1 comment 'allow from localhost'
 
+# Open ports for additional apps
+mynode-manage-apps openports
+
 # Enable UFW
 ufw --force enable
 
