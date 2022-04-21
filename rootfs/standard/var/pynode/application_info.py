@@ -8,6 +8,7 @@ import copy
 import json
 import time
 import subprocess
+import pwd
 import re
 import os
 
@@ -106,6 +107,9 @@ def initialize_application_defaults(app):
     if not "description" in app: app["description"] = ""
     if not "screenshots" in app: app["screenshots"] = []
     if not "app_tile_name" in app: app["app_tile_name"] = app["name"]
+    if not "http_port" in app: app["http_port"] = None
+    if not "https_port" in app: app["https_port"] = None
+    if not "extra_ports" in app: app["extra_ports"] = []
     if not "is_premium" in app: app["is_premium"] = False
     if not "current_version" in app: app["current_version"] = get_app_current_version_from_file( app["short_name"] )
     if not "latest_version" in app: app["latest_version"] = get_app_latest_version_from_file( app["short_name"] )
@@ -199,6 +203,10 @@ def need_application_refresh():
         return True
     return False
 
+
+######################################################################################
+## Get Applications and App Info
+######################################################################################
 def get_all_applications(order_by="none", include_status=False):
     global mynode_applications
 
@@ -400,13 +408,10 @@ def get_application_sso_token_enabled(short_name):
         return "APP_NOT_FOUND"
     return get_sso_token_enabled(short_name)
 
-def restart_application(short_name):
-    try:
-        subprocess.check_output('systemctl restart {}'.format(short_name), shell=True)
-        return True
-    except Exception as e:
-        return False
 
+######################################################################################
+## Custom App Versions
+######################################################################################
 def has_customized_app_versions():
     if os.path.isfile("/usr/share/mynode/mynode_app_versions_custom.sh"):
         return True
@@ -441,6 +446,89 @@ def reset_custom_app_version_data():
     trigger_application_refresh()
 
 ######################################################################################
+## Single Application Actions
+######################################################################################
+def create_application_user(app_data):
+    username = app_data["linux_user"]
+    if not linux_user_exists(username):
+        linux_create_user(username)
+
+def create_application_folders(app_data):
+    app_folder = "/opt/mynode/" + app_data["short_name"]
+    data_folder = "/mnt/hdd/mynode/" + app_data["short_name"]
+
+    # Clear old data (not storage)
+    if os.path.isdir(app_folder):
+        log_message("  App folder exists, deleting...")
+        os.system("rm -rf {}".format(app_folder))
+
+    log_message("  Making application folders...")
+    os.system("mkdir {}".format(app_folder))
+    os.system("mkdir -p {}".format(data_folder))
+
+    # Set folder permissions (always set for now - could check to see if already proper user)
+    log_message("  Updating folder permissions...")
+    os.system("chmod -R {}:{} {}".format(app_data["linux_user"], app_data["linux_user"], app_folder))
+    os.system("chmod -R {}:{} {}".format(app_data["linux_user"], app_data["linux_user"], data_folder))
+
+
+def install_application_tarball(app_data):
+    log_message("  Running install_application_tarball...")
+    app_folder = "/opt/mynode/" + app_data["short_name"]
+
+    if "targz_download_url" not in app_data:
+        log_message("  APP MISSING TARGZ DOWNLOAD URL")
+        return
+
+    # Make tmp download folder
+    os.system("rf -rf /tmp/mynode_dynamic_app_download")
+    os.system("mkdir /tmp/mynode_dynamic_app_download")
+    os.system("rf -rf /tmp/mynode_dynamic_app_extract")
+    os.system("mkdir /tmp/mynode_dynamic_app_extract")
+
+    # Download and extract
+    os.system("wget -O /tmp/mynode_dynamic_app_download/app.tar.gz {}".format(app_data["targz_download_url"]))
+    time.sleep(1)
+    os.system("sync")
+    os.system("sudo -u {} tar -xvf /tmp/mynode_dynamic_app_download/app.tar.gz -C /tmp/mynode_dynamic_app_extract/".format(app_data["linux_user"]))
+    os.system("mv /tmp/mynode_dynamic_app_extract/* /tmp/mynode_dynamic_app_extract/app")
+
+    # Move contents to app folder
+    os.system("rsync -var --delete-after /tmp/mynode_dynamic_app_extract/app/* {}/".format(app_folder))
+
+
+def restart_application(short_name):
+    try:
+        subprocess.check_output('systemctl restart {}'.format(short_name), shell=True)
+        return True
+    except Exception as e:
+        return False
+
+######################################################################################
+## Bulk Application Actions
+######################################################################################
+def open_application_ports():
+    print("Running open_application_ports...")
+    trigger_application_refresh()
+    apps = get_all_applications()
+    for app in apps:
+        try:
+            print("Checking ports for {}".format(app["short_name"]))
+            if "http_port" in app and app["http_port"] != None:
+                print("  Opening HTTP {}".format(app["http_port"]))
+                os.system("ufw allow {}  comment 'allow {} HTTP'".format(app["http_port"], app["short_name"]))
+            if "https_port" in app and app["https_port"] != None:
+                print("  Opening HTTPS {}".format(app["https_port"]))
+                os.system("ufw allow {}  comment 'allow {} HTTPS'".format(app["https_port"], app["short_name"]))
+            if "extra_ports" in app and app["extra_ports"] != None:
+                for port in app["extra_ports"]:
+                    print("  Opening Extra Port {}".format(port))
+                    os.system("ufw allow {}  comment 'allow {} (extra)'".format(port, app["short_name"]))
+        except Exception as e:
+            log_message("ERROR: Error opening port for application {} - {}".format(app["short_name"], str(e))) 
+    return None
+
+######################################################################################
 ## Dynamic Apps
 ######################################################################################
 def get_dynamic_app_dir():
@@ -465,12 +553,15 @@ def init_dynamic_app(app_info):
         os.system("cp -f {} {}".format(app_dir+"/scripts/pre_"+app_name+".sh",      "/usr/bin/service_scripts/pre_"+app_name+".sh"))
     if (os.path.isfile(app_dir+"/scripts/post_"+app_name+".sh")):
         os.system("cp -f {} {}".format(app_dir+"/scripts/post_"+app_name+".sh",     "/usr/bin/service_scripts/post_"+app_name+".sh"))
-    if (os.path.isfile(app_dir+"/scripts/install"+app_name+".sh")):
+    if (os.path.isfile(app_dir+"/scripts/install_"+app_name+".sh")):
         os.system("cp -f {} {}".format(app_dir+"/scripts/install_"+app_name+".sh",  "/usr/bin/service_scripts/install_"+app_name+".sh"))
-    if (os.path.isfile(app_dir+"/scripts/uninstall"+app_name+".sh")):
-        os.system("cp -f {} {}".format(app_dir+"/scripts/uninstall"+app_name+".sh", "/usr/bin/service_scripts/uninstall_"+app_name+".sh"))
-    
-    log_message("  TODO: Install data files")
+    if (os.path.isfile(app_dir+"/scripts/uninstall_"+app_name+".sh")):
+        os.system("cp -f {} {}".format(app_dir+"/scripts/uninstall_"+app_name+".sh", "/usr/bin/service_scripts/uninstall_"+app_name+".sh"))
+    if (os.path.isfile(app_dir+"/nginx/https_"+app_name+".conf")):
+        os.system("cp -f {} {}".format(app_dir+"/nginx/https_"+app_name+".conf", "/etc/nginx/sites-enabled/https_"+app_name+".conf"))
+
+
+    log_message("  TODO: Install data files???")
 
     # For "node" type apps
     log_message("  TODO: Need node special files???")
@@ -482,10 +573,6 @@ def init_dynamic_app(app_info):
     log_message("  TODO: Build dockerfile???")
     log_message("  TODO: Install dockerfile???")
 
-    # Other init
-    log_message("  TODO: Other init")
-    log_message("  TODO:   Open Port")
-    log_message("  TODO:   More???")
 
     log_message(" Done.")
 
@@ -511,25 +598,58 @@ def init_dynamic_apps():
     # Mark app db for needing reload
     # TODO: Need to mark this? all json files should be found early
 
-def upgrade_dynamic_apps():
+def upgrade_dynamic_apps(short_name="all"):
+    log_message("Running upgrade_dynamic_apps...")
+
+    if short_name != "all" and not is_application_valid(short_name):
+        print("  Invalid app: {}".format(short_name))
+        return
+
     # Loop over each app
     app_names = get_dynamic_app_names()
     for app_name in app_names:
-        try:
-            app_data = get_application( app_name )
-            if app_data["is_installed"]:
-                if app_data["current_version"] != app_data["latest_version"]:
-                    # Run upgrade script
-                    # TODO
-                    # Mark update latest version if success
-                    # TODO
-                    pass
+        if short_name == "all" or short_name == app_name:
+            try:
+                app_data = get_application( app_name )
+                if app_data["is_installed"]:
+                    if app_data["current_version"] != app_data["latest_version"]:
+                        log_message("  Upgrading {} ({} vs {})...".format(app_name, app_data["current_version"], app_data["latest_version"]))
+                        try:
+                            # Make app linux user
+                            create_application_user(app_data)
 
-        except Exception as e:
-            log_message("  ERROR: Error checking app {} for upgrade ({})".format(app_name, str(e)))
+                            # Does any app user need extra groups/permissions
+                            # ???
 
-def uninstall_dynamic_app(app_name):
+                            # Clear old data, make app folder, make storage folder, and set folder ownership
+                            create_application_folders(app_data)
+                            
+                            # Download tarball, extract into install folder
+                            install_application_tarball(app_data)
+
+                            # Run upgrade script
+                            subprocess.check_output("bash /usr/bin/service_scripts/install_{}.sh".format(app_name), shell=True)
+
+                            # Mark update latest version if success
+                            log_message("  Upgrade success!")
+                            set_file_contents("/home/bitcoin/.mynode/{}_version".format(app_name), app_data["latest_version"])
+                        except Exception as e:
+                            # Write error to version file
+                            log_message("  Upgrade FAILED! ({})".format(str(e)))
+                            set_file_contents("/home/bitcoin/.mynode/{}_version".format(app_name), "error")
+            except Exception as e:
+                log_message("  ERROR: Error checking app {} for upgrade ({})".format(app_name, str(e)))
+
+
+def uninstall_dynamic_app(short_name):
+    print("Uninstalling app {}...".format(short_name))
+    if not is_application_valid(short_name):
+        print(" Invalid app: {}".format(short_name))
+        exit(1)
+
+    print("  NOT IMPLEMENTED")
     # TODO
+    # Run general uninstall script?
     # Disable service file
     # Delete SD card folder
     pass
