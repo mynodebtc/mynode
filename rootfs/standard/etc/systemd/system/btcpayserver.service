@@ -14,6 +14,7 @@ RemainAfterExit=yes
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/is_mainnet.sh
 ExecStartPre=/usr/bin/wait_on_docker_image_install.sh
+ExecStartPre=+/usr/bin/service_scripts/pre_btcpayserver.sh
 
 ExecStart=/bin/bash -c  '. "/etc/profile.d/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY/btcpayserver-docker" && . helpers.sh && btcpay_up'
 ExecStop=/bin/bash -c   '. "/etc/profile.d/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY/btcpayserver-docker" && . helpers.sh && btcpay_down'
