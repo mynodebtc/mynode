@@ -25,9 +25,10 @@ else
         echo "UAS FOUND"
         USBINFO=$(lsusb | grep "SATA 6Gb/s bridge")
         DEVID=$(egrep -o '[0-9a-f]+:[0-9a-f]+' <<< $USBINFO)
-        #echo $DEVID
+        echo "UAS IN USE ON $DEVID"
 
         if [ $IS_RASPI -eq 1 ]; then
+            echo "IS RASPBERRY PI"
             if [ -f /boot/cmdline.txt ]; then
                 QUIRK="${DEVID}:u"
                 CMDLINE=$(head -n 1 /boot/cmdline.txt)
@@ -36,13 +37,16 @@ else
                     cat /boot/cmdline.txt | grep "usb-storage.quirks=${QUIRK}"
                     if [ $? -eq 0 ]; then
                         # Quirk already added, exit 0
+                        echo "QUIRK ALREADY EXISTS, EXITING"
                         exit 0
                     else
                         # Different quirk exists, update and reboot
+                        echo "DIFFERENT QUIRK FOUND, UPDATING AND REBOOTING"
                         sed -i "s/usb-storage.quirks=.*/usb-storage.quirks=${QUIRK}/g" /boot/cmdline.txt
                     fi
                 else
                     # No quirk found, add it and reboot
+                    echo "NO QUIRK FOUND, ADDING AND REBOOTING"
                     echo "${CMDLINE} usb-storage.quirks=${QUIRK}" > /boot/cmdline.txt
                 fi
 
