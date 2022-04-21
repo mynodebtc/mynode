@@ -1,7 +1,14 @@
 {
     "name": "LNDg",
     "short_name": "lndg",
-    "latest_version": "v0.0.1",
+    "latest_version": "v1.0.5",
+    "linux_user": "lndg",
+    "targz_download_url": "https://github.com/cryptosharks131/lndg/archive/refs/tags/{APP_VERSION}.tar.gz",
+    "app_install_folder": "/opt/mynode/{SHORT_NAME}",
+    "app_storage_folder": "/mnt/hdd/mynode/{SHORT_NAME}",
+    "app_install_env_vars": [{"var1":"val2", "var2": "val2"}],
+    "http_port": "8889",
+    "https_port": "8890",
     "requires_lightning": true,
     "hide_status_icon": false,
     "app_tile_default_status_text": "Lightning Tool",
@@ -10,8 +17,8 @@
     "app_tile_button_text": "Info",
     "can_uninstall": true,
     "can_enable_disable": true,
-    "show_on_application_page": false,
-    "show_on_homepage": false,
+    "show_on_application_page": true,
+    "show_on_homepage": true,
     "port": 3000,
     "homepage_order": 99
 }
