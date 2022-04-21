@@ -7,6 +7,7 @@ import sys
 import codecs
 import urllib
 import requests
+import pwd
 
 mynode_logger = None
 
@@ -311,3 +312,24 @@ def make_tor_request(url, data, file_data=None, max_retries=5, fallback_to_ip=Tr
         time.sleep(fail_delay)
 
     return r
+
+#==================================
+# Linux Functions
+#==================================
+def linux_user_exists(username):
+    try:
+        pwd.getpwnam(username)
+        return True
+    except:
+        pass
+    return False
+
+# May need to add options for passwords, making home folder, etc... later. For now, no passwd.
+def linux_create_user(username, make_home_folder=False):
+    dash_m = ""
+
+    if make_home_folder:
+        dash_m = "-m"
+
+    cmd = "useradd {} -s /bin/bash {} {} || true".format(username, dash_m)
+    os.system(cmd, shell=True)
