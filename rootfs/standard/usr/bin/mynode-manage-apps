@@ -13,35 +13,66 @@ set_logger(log)
 
 
 def main():
+    # Check running as root
+    if os.geteuid() != 0:
+        print("This script needs to be run as root.")
+        exit(1)
+
+    # App name arguments should be in shortname format
+    # mynode-manage-apps [init, openports, install <all|app_name>, uninstall <app_name>, ...]
     parser = ArgumentParser(prog='mynode-manage-apps')
     action_choices = (
         'init',
-        'createbasefolders',
+        'openports',
         'upgrade',
         'uninstall',
         'install',
     )
-    parser.add_argument('action', help='action to manage mynode application', nargs='?', choices=action_choices)
+    #parser.add_argument('action', help='action to manage mynode application', nargs='?', choices=action_choices)
 
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument('--add', action='store_true')
-    group.add_argument('--subtract', action='store_true')
+    subparsers = parser.add_subparsers(dest='command')
+
+    parser_init = subparsers.add_parser('init', help='Initialize Apps')
+
+    parser_openports = subparsers.add_parser('openports', help='Open app ports in firewall')
+
+    parser_install = subparsers.add_parser('install', help='Install Dynamic Application')
+    parser_install.add_argument('app', help='App to install', default="all", nargs='*')
+
+    parser_uninstall = subparsers.add_parser('uninstall', help='Uninstall Dynamic Application')
+    parser_uninstall.add_argument('app', help='App to uninstall', nargs='+') # required
+
+    parser_upgrade = subparsers.add_parser('upgrade', help='Upgrade Dynamic Application')
+    parser_upgrade.add_argument('app', help='App to install', default="all", nargs='*')
+
+    parser_help = subparsers.add_parser('help', help='Display Help')
 
     args = parser.parse_args()
 
-    if args.action == "createbasefolders":
-        print("createbasefolders - not needed?")
-    elif args.action == "init":
+    if args.command == "init":
         init_dynamic_apps()
-    elif args.action == "install":
-        print("install - needed or upgrade works?")
-    elif args.action == "upgrade":
-        upgrade_dynamic_apps()
-    elif args.action == "uninstall":
-        app_name = args.uninstall # Need argument to get app name
-        uninstall_dynamic_app(app_name)
+    elif args.command == "openports":
+        open_application_ports()
+    elif args.command == "install":
+        app_names = args.app
+        if not isinstance(app_names, list):
+            app_names = [app_names]
+        for app_name in app_names:
+            upgrade_dynamic_apps()
+    elif args.command == "upgrade":
+        app_names = args.app
+        if not isinstance(app_names, list):
+            app_names = [app_names]
+        for app_name in app_names:
+            upgrade_dynamic_apps(app_name)
+    elif args.command == "uninstall":
+        app_names = args.app
+        for app_name in app_names:
+            uninstall_dynamic_app(app_name)
+    elif args.command == "help":
+        parser.print_help()
     else:
-        print("UNKNOWN BASE ACTION")
+        parser.print_help()
 
 
 if __name__ == '__main__':
