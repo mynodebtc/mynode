@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source /usr/share/mynode/mynode_device_info.sh
+
 BTC_VERSION="22.0"
 BTC_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version
 BTC_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version_latest
