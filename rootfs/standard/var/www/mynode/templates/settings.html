@@ -151,18 +151,6 @@
                                       okFunction)
                 });
 
-                $("#rescan-blockchain").on("click", function() {
-                    // Enable electrs
-                    var okFunction = function() {
-                        window.location.href="/settings/rescan-blockchain"
-                    }
-                    openConfirmDialog("confirm-dialog",
-                                      "Rescan Bitcoin Blockchain",
-                                      "This will take a few hours. " +
-                                      "Would you still like to rescan the bitcoin blockchain?",
-                                      okFunction)
-                });
-
                 $("#run-disk-benchmark").on("click", function() {
                     $("#run-disk-benchmark").prop("disabled",true);
                     $("#run-disk-benchmark-results").html("Loading...");
@@ -821,12 +809,10 @@
 
             <div class="divider"></div>
 
-            <div class="settings_block_subheader">Rescan Blockchain</div>
-            Advanced: If you are having issues seeing transactions in your wallets, try re-scanning the blockchain. If you
-            are having issues parsing the Bitcoin blockchain or blocks cannot be found, please try reindexing. This will 
+            <div class="settings_block_subheader">Reindex Blockchain</div>
+            Advanced: If you are having issues parsing the Bitcoin blockchain or blocks cannot be found, please try reindexing. This will 
             take a long time.
             <br/>
-            <button id="rescan-blockchain" class="ui-button ui-widget ui-corner-all settings_button">Rescan Blockchain</button>
             <button id="reindex-blockchain" class="ui-button ui-widget ui-corner-all settings_button">Reindex Blockchain</button>
 
         </div>
