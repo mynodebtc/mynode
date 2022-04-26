@@ -101,12 +101,22 @@ def get_app_latest_version_from_file(app):
 
     return to_string(version)
 
+def replace_app_info_variables(app_data, text):
+    text = text.replace("{VERSION}", app_data["latest_version"])
+    text = text.replace("{SHORT_NAME}", app_data["short_name"])
+    return text
+
 def initialize_application_defaults(app):
     if not "name" in app: app["name"] = "NO_NAME"
     if not "short_name" in app: app["short_name"] = "NO_SHORT_NAME"
     if not "description" in app: app["description"] = ""
     if not "screenshots" in app: app["screenshots"] = []
     if not "app_tile_name" in app: app["app_tile_name"] = app["name"]
+    if not "linux_user" in app: app["linux_user"] = "bitcoin"
+    if not "targz_download_url" in app: app["targz_download_url"] = "not_specified"
+    app["install_folder"] = "/opt/mynode/{}".format(app["short_name"])
+    app["storage_folder"] = "/mnt/hdd/mynode/{}".format(app["short_name"])
+    if not "install_env_vars" in app: app["install_env_vars"] = []
     if not "http_port" in app: app["http_port"] = None
     if not "https_port" in app: app["https_port"] = None
     if not "extra_ports" in app: app["extra_ports"] = []
@@ -139,6 +149,9 @@ def initialize_application_defaults(app):
     if not "app_tile_default_status_text" in app: app["app_tile_default_status_text"] = ""
     if not "app_tile_running_status_text" in app: app["app_tile_running_status_text"] = app["app_tile_default_status_text"]
     if not "app_tile_button_href" in app: app["app_tile_button_href"] = "#"
+
+    # Update fields that may use variables that need replacing, like {VERSION}, {SHORT_NAME}, etc...
+    app["targz_download_url"] = replace_app_info_variables(app, app["targz_download_url"])
 
     return app
 
@@ -454,48 +467,54 @@ def create_application_user(app_data):
         linux_create_user(username)
 
 def create_application_folders(app_data):
-    app_folder = "/opt/mynode/" + app_data["short_name"]
-    data_folder = "/mnt/hdd/mynode/" + app_data["short_name"]
+    app_folder = app_data["install_folder"]
+    data_folder = app_data["storage_folder"]
 
     # Clear old data (not storage)
     if os.path.isdir(app_folder):
         log_message("  App folder exists, deleting...")
-        os.system("rm -rf {}".format(app_folder))
+        run_linux_cmd("rm -rf {}".format(app_folder))
 
     log_message("  Making application folders...")
-    os.system("mkdir {}".format(app_folder))
-    os.system("mkdir -p {}".format(data_folder))
+    run_linux_cmd("mkdir {}".format(app_folder))
+    run_linux_cmd("mkdir -p {}".format(data_folder))
 
     # Set folder permissions (always set for now - could check to see if already proper user)
     log_message("  Updating folder permissions...")
-    os.system("chmod -R {}:{} {}".format(app_data["linux_user"], app_data["linux_user"], app_folder))
-    os.system("chmod -R {}:{} {}".format(app_data["linux_user"], app_data["linux_user"], data_folder))
+    run_linux_cmd("chown -R {}:{} {}".format(app_data["linux_user"], app_data["linux_user"], app_folder))
+    run_linux_cmd("chown -R {}:{} {}".format(app_data["linux_user"], app_data["linux_user"], data_folder))
 
 
 def install_application_tarball(app_data):
     log_message("  Running install_application_tarball...")
-    app_folder = "/opt/mynode/" + app_data["short_name"]
 
     if "targz_download_url" not in app_data:
         log_message("  APP MISSING TARGZ DOWNLOAD URL")
-        return
+        raise ValueError("APP MISSING TARGZ DOWNLOAD URL")
+
+    ignore_failure = True
 
     # Make tmp download folder
-    os.system("rf -rf /tmp/mynode_dynamic_app_download")
-    os.system("mkdir /tmp/mynode_dynamic_app_download")
-    os.system("rf -rf /tmp/mynode_dynamic_app_extract")
-    os.system("mkdir /tmp/mynode_dynamic_app_extract")
+    run_linux_cmd("rm -rf /tmp/mynode_dynamic_app_download", ignore_failure)
+    run_linux_cmd("mkdir /tmp/mynode_dynamic_app_download")
+    run_linux_cmd("chmod -R 777 /tmp/mynode_dynamic_app_download")
+    run_linux_cmd("rm -rf /tmp/mynode_dynamic_app_extract", ignore_failure)
+    run_linux_cmd("mkdir /tmp/mynode_dynamic_app_extract")
+    run_linux_cmd("chmod -R 777 /tmp/mynode_dynamic_app_extract")
 
     # Download and extract
-    os.system("wget -O /tmp/mynode_dynamic_app_download/app.tar.gz {}".format(app_data["targz_download_url"]))
+    run_linux_cmd("wget -O /tmp/mynode_dynamic_app_download/app.tar.gz {}".format(app_data["targz_download_url"]))
     time.sleep(1)
-    os.system("sync")
-    os.system("sudo -u {} tar -xvf /tmp/mynode_dynamic_app_download/app.tar.gz -C /tmp/mynode_dynamic_app_extract/".format(app_data["linux_user"]))
-    os.system("mv /tmp/mynode_dynamic_app_extract/* /tmp/mynode_dynamic_app_extract/app")
+    run_linux_cmd("sync")
+    run_linux_cmd("sudo -u {} tar -xvf /tmp/mynode_dynamic_app_download/app.tar.gz -C /tmp/mynode_dynamic_app_extract/".format(app_data["linux_user"]))
+    run_linux_cmd("mv /tmp/mynode_dynamic_app_extract/* /tmp/mynode_dynamic_app_extract/app")
 
     # Move contents to app folder
-    os.system("rsync -var --delete-after /tmp/mynode_dynamic_app_extract/app/* {}/".format(app_folder))
+    run_linux_cmd("rsync -var --delete-after /tmp/mynode_dynamic_app_extract/app/* {}/".format(app_data["install_folder"]))
 
+def clear_installed_version(short_name):
+    run_linux_cmd("rm -rf /home/bitcoin/.mynode/{}_version".format(short_name))
+    run_linux_cmd("rm -rf /mnt/hdd/mynode/settings/{}_version".format(short_name))
 
 def restart_application(short_name):
     try:
@@ -627,8 +646,15 @@ def upgrade_dynamic_apps(short_name="all"):
                             # Download tarball, extract into install folder
                             install_application_tarball(app_data)
 
-                            # Run upgrade script
-                            subprocess.check_output("bash /usr/bin/service_scripts/install_{}.sh".format(app_name), shell=True)
+                            # Run upgrade script (redirect to err so output is visible on console / print)
+                            my_env = os.environ.copy()
+                            my_env["VERSION"] = app_data["latest_version"]
+                            my_env["INSTALL_FOLDER"] = app_data["install_folder"]
+                            my_env["STORAGE_FOLDER"] = app_data["storage_folder"]
+                            if app_data["install_env_vars"]:
+                                for key in app_data["install_env_vars"]:
+                                    my_env["key"] = app_data["install_env_vars"][key]
+                            subprocess.check_output("cd {}; /bin/bash /usr/bin/service_scripts/install_{}.sh 1>&2".format(app_data["install_folder"], app_name), shell=True, env=my_env)
 
                             # Mark update latest version if success
                             log_message("  Upgrade success!")
