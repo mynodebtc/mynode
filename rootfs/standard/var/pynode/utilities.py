@@ -316,6 +316,24 @@ def make_tor_request(url, data, file_data=None, max_retries=5, fallback_to_ip=Tr
 #==================================
 # Linux Functions
 #==================================
+def run_linux_cmd(cmd, ignore_failure=False, print_command=False):
+    try:
+        output = to_string(subprocess.check_output(cmd, shell=True))
+        if print_command:
+            print(cmd)
+            if output != "":
+                print(output)
+        return output
+    except Exception as e:
+        print("Linux Command Failed!!!")
+        print("   Command: {}".format(cmd))
+        print("   Error: {}".format(str(e)))
+        if ignore_failure:
+            return "ERROR"
+        else:
+            raise e
+    return "UNKNOWN"
+
 def linux_user_exists(username):
     try:
         pwd.getpwnam(username)
@@ -331,5 +349,5 @@ def linux_create_user(username, make_home_folder=False):
     if make_home_folder:
         dash_m = "-m"
 
-    cmd = "useradd {} -s /bin/bash {} {} || true".format(username, dash_m)
-    os.system(cmd, shell=True)
+    cmd = "useradd {} -s /bin/bash {} || true".format(dash_m, username)
+    run_linux_cmd(cmd)
