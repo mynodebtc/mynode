@@ -11,7 +11,7 @@ ExecStartPre=/usr/bin/wait_on_uploader.sh
 ExecStartPre=/bin/sh -c 'cat /mnt/hdd/mynode/quicksync/.quicksync_complete'
 ExecStartPre=+/usr/bin/mynode_gen_bitcoin_config.sh
 EnvironmentFile=/mnt/hdd/mynode/bitcoin/env
-ExecStart=/usr/local/bin/bitcoind -daemon $BTCARGS -deprecatedrpc=accounts -par=-1 -conf=/home/bitcoin/.bitcoin/bitcoin.conf -printtoconsole -pid=/home/bitcoin/.bitcoin/bitcoin.pid
+ExecStart=/usr/local/bin/bitcoind -daemon $BTCARGS -deprecatedrpc=accounts -conf=/home/bitcoin/.bitcoin/bitcoin.conf -printtoconsole -pid=/home/bitcoin/.bitcoin/bitcoin.pid
 ExecStartPost=+/usr/bin/service_scripts/post_bitcoin.sh
 PIDFile=/home/bitcoin/.bitcoin/bitcoin.pid
 User=bitcoin
