@@ -21,15 +21,6 @@ def main():
     # App name arguments should be in shortname format
     # mynode-manage-apps [init, openports, install <all|app_name>, uninstall <app_name>, ...]
     parser = ArgumentParser(prog='mynode-manage-apps')
-    action_choices = (
-        'init',
-        'openports',
-        'upgrade',
-        'uninstall',
-        'install',
-    )
-    #parser.add_argument('action', help='action to manage mynode application', nargs='?', choices=action_choices)
-
     subparsers = parser.add_subparsers(dest='command')
 
     parser_init = subparsers.add_parser('init', help='Initialize Apps')
@@ -38,6 +29,9 @@ def main():
 
     parser_install = subparsers.add_parser('install', help='Install Dynamic Application')
     parser_install.add_argument('app', help='App to install', default="all", nargs='*')
+
+    parser_uninstall = subparsers.add_parser('reinstall', help='Reinstall Dynamic Application')
+    parser_uninstall.add_argument('app', help='App to reinstall', nargs='+') # required
 
     parser_uninstall = subparsers.add_parser('uninstall', help='Uninstall Dynamic Application')
     parser_uninstall.add_argument('app', help='App to uninstall', nargs='+') # required
@@ -53,11 +47,15 @@ def main():
         init_dynamic_apps()
     elif args.command == "openports":
         open_application_ports()
-    elif args.command == "install":
+    elif args.command == "install" or \
+         args.command == "upgrade" or \
+         args.command == "reinstall":
         app_names = args.app
         if not isinstance(app_names, list):
             app_names = [app_names]
         for app_name in app_names:
+            if args.command == "reinstall":
+                clear_installed_version(app_name)
             upgrade_dynamic_apps()
     elif args.command == "upgrade":
         app_names = args.app
