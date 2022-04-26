@@ -488,15 +488,6 @@ def reindex_blockchain_page():
     t.start()
     return redirect("/settings")
 
-@mynode_settings.route("/settings/rescan-blockchain")
-def rescan_blockchain_page():
-    check_logged_in()
-    os.system("echo 'BTCARGS=-rescan' > "+BITCOIN_ENV_FILE)
-    os.system("systemctl restart bitcoin")
-    t = Timer(30.0, reset_bitcoin_env_file)
-    t.start()
-    return redirect("/settings")
-
 @mynode_settings.route("/settings/reset-docker")
 def reset_docker_page():
     check_logged_in()
