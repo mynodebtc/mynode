@@ -12,6 +12,7 @@ ExecStartPre=/usr/bin/service_scripts/pre_lnd.sh
 ExecStartPre=/usr/bin/wait_on_bitcoin.sh
 ExecStartPre=+/usr/bin/mynode_gen_lnd_config.sh
 ExecStart=/usr/local/bin/lnd
+ExecStartPost=/usr/bin/service_scripts/post_lnd.sh
 
 User=bitcoin
 Group=bitcoin
