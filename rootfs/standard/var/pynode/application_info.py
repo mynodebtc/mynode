@@ -104,6 +104,10 @@ def get_app_latest_version_from_file(app):
 def replace_app_info_variables(app_data, text):
     text = text.replace("{VERSION}", app_data["latest_version"])
     text = text.replace("{SHORT_NAME}", app_data["short_name"])
+    if app_data["http_port"] != None:
+        text = text.replace("{HTTP_PORT}", app_data["http_port"])
+    if app_data["https_port"] != None:
+        text = text.replace("{HTTPS_PORT}", app_data["https_port"])
     return text
 
 def initialize_application_defaults(app):
@@ -149,9 +153,11 @@ def initialize_application_defaults(app):
     if not "app_tile_default_status_text" in app: app["app_tile_default_status_text"] = ""
     if not "app_tile_running_status_text" in app: app["app_tile_running_status_text"] = app["app_tile_default_status_text"]
     if not "app_tile_button_href" in app: app["app_tile_button_href"] = "#"
+    if not "app_tile_button_onclick" in app: app["app_tile_button_onclick"] = ""
 
     # Update fields that may use variables that need replacing, like {VERSION}, {SHORT_NAME}, etc...
     app["targz_download_url"] = replace_app_info_variables(app, app["targz_download_url"])
+    app["app_tile_button_onclick"] = replace_app_info_variables(app, app["app_tile_button_onclick"])
 
     return app
 
@@ -462,11 +468,16 @@ def reset_custom_app_version_data():
 ## Single Application Actions
 ######################################################################################
 def create_application_user(app_data):
+    log_message("  Running create_application_user...")
     username = app_data["linux_user"]
     if not linux_user_exists(username):
         linux_create_user(username)
+    
+    # Ensure user belongs to bitcoin group
+    add_user_to_group(username, "bitcoin")
 
 def create_application_folders(app_data):
+    log_message("  Running create_application_folders...")
     app_folder = app_data["install_folder"]
     data_folder = app_data["storage_folder"]
 
@@ -566,7 +577,7 @@ def init_dynamic_app(app_info):
     app_name = app_info["short_name"]
     app_dir = DYNAMIC_APPLICATIONS_FOLDER + "/" + app_name
     log_message(" Loading " + app_name + "...")
-    os.system("cp -f {} {}".format(app_dir+"/app.service", "/etc/systemd/system/"+app_name+".service"))
+    os.system("cp -f {} {}".format(app_dir+"/"+app_name+".service", "/etc/systemd/system/"+app_name+".service"))
     os.system("cp -f {} {}".format(app_dir+"/"+app_name+".png", "/var/www/mynode/static/images/app_icons/"+app_name+".png"))
     if (os.path.isfile(app_dir+"/scripts/pre_"+app_name+".sh")):
         os.system("cp -f {} {}".format(app_dir+"/scripts/pre_"+app_name+".sh",      "/usr/bin/service_scripts/pre_"+app_name+".sh"))
@@ -653,8 +664,8 @@ def upgrade_dynamic_apps(short_name="all"):
                             my_env["STORAGE_FOLDER"] = app_data["storage_folder"]
                             if app_data["install_env_vars"]:
                                 for key in app_data["install_env_vars"]:
-                                    my_env["key"] = app_data["install_env_vars"][key]
-                            subprocess.check_output("cd {}; /bin/bash /usr/bin/service_scripts/install_{}.sh 1>&2".format(app_data["install_folder"], app_name), shell=True, env=my_env)
+                                    my_env[key] = app_data["install_env_vars"][key]
+                            subprocess.check_output("cd {}; sudo -u {} /bin/bash /usr/bin/service_scripts/install_{}.sh 1>&2".format(app_data["install_folder"], app_data["linux_user"], app_name), shell=True, env=my_env)
 
                             # Mark update latest version if success
                             log_message("  Upgrade success!")
