@@ -350,4 +350,7 @@ def linux_create_user(username, make_home_folder=False):
         dash_m = "-m"
 
     cmd = "useradd {} -s /bin/bash {} || true".format(dash_m, username)
-    run_linux_cmd(cmd)
+    run_linux_cmd(cmd, print_command=True)
+
+def add_user_to_group(username, group):
+    run_linux_cmd("adduser {} {}".format(username, group), print_command=True)

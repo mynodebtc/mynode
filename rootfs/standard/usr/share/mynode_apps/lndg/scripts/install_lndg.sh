@@ -2,30 +2,25 @@
 set -x
 set -e
 
+echo "==================== INSTALLING APP ===================="
 
-# Helpful variables to add:
-#   VERSION?
-#   DOWNLOAD PATH TO TAR.GZ?
-#   PATH TO SD CARD FOLDER
-#   PATH TO DATA DRIVE FOLDER
-#
+# Install deps
+virtualenv -p python3 .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/pip install whitenoise
+.venv/bin/pip install supervisor
 
-echo "INSTALLING LNDG SCRIPT - START"
+# Patch to store file locally
+sed -i 's|/usr/local/etc/supervisord.conf|/opt/mynode/lndg/.venv/supervisord.conf|g' initialize.py
 
-echo "====== User Info ======"
-whoami
-id
+# Init LNDg
+.venv/bin/python initialize.py --lnddir=/mnt/hdd/mynode/lnd --adminpw=bolt -wn -dx -sd --sduser=lndg
 
-echo "====== ENV DATA ======"
-env
+# Patch supervisord config
+mkdir -p logs
+sed -i 's|/var/log|/opt/mynode/lndg/logs|g' .venv/supervisord.conf
 
-echo "====== CURRENT FOLDER DATA ======"
-pwd
-ls -lsa
+# Load initial data
+.venv/bin/python jobs.py
 
-
-echo "====== SLEEPING A BIT ======"
-sleep 3s
-
-
-echo "INSTALLING LNDG SCRIPT - END"
+echo "==================== DONE INSTALLING APP ===================="
