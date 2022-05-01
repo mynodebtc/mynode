@@ -1048,7 +1048,7 @@ fi
 
 
 # Upgrade Dyanmic Applications
-mynode-manage-apps upgrade
+mynode-manage-apps upgrade || true
 
 
 # Upgrade Tor
