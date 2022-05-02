@@ -607,6 +607,11 @@ def init_dynamic_app(app_info):
     log_message(" Done.")
 
 def init_dynamic_apps():
+    # Ensure external drive is mounted
+    if not is_mynode_drive_mounted():
+        log_message("  ERROR: Data drive not mounted")
+        return
+    
     # Loop over each app
     root_app_dir = get_dynamic_app_dir()
     app_names = get_dynamic_app_names()
@@ -614,13 +619,13 @@ def init_dynamic_apps():
         log_message("Found Application: {}".format(app_name))
         app_dir = root_app_dir + "/" + app_name
         try:
-            app_json_path = app_dir + "/app.json"
+            app_json_path = app_dir + "/{}.json".format(app_name)
             with open(app_json_path, 'r') as fp:
                 app_info = json.load(fp)
                 init_dynamic_app(app_info)
 
         except Exception as e:
-            log_message("  ERROR: Error loading app.json file ({})".format(str(e)))            
+            log_message("  ERROR: Error loading {}.json file ({})".format(app_name, str(e)))
 
     # Reload systemctl files
     os.system("systemctl daemon-reload")
