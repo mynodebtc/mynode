@@ -75,7 +75,7 @@ DOJO_TAR_HASH="17aa26481e0a569719875687ed1744e3e45f3a7a70306298345d0a59acd17ad3"
 DOJO_VERSION_FILE=/mnt/hdd/mynode/settings/dojo_version
 DOJO_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/dojo_version_latest
 
-RTL_VERSION="v0.12.2"
+RTL_VERSION="v0.12.3"
 RTL_VERSION_FILE=/home/bitcoin/.mynode/rtl_version
 RTL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/rtl_version_latest
 
