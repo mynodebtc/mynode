@@ -32,6 +32,7 @@ have support or patial support.
 ## BTC Pay Server
 
 - The upgrade button within BTC Pay Server will not work on myNode. Upgrades are performed as part of the myNode upgrade process.
+- On 32-bit ARM devices BTC Pay Server can only upgrade to version 1.3.6
 
 ## CKBunker
 
