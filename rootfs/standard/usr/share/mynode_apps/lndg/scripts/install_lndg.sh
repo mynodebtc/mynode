@@ -12,6 +12,7 @@ virtualenv -p python3 .venv
 
 # Patch to store file locally
 sed -i 's|/usr/local/etc/supervisord.conf|/opt/mynode/lndg/.venv/supervisord.conf|g' initialize.py
+sed -i 's|lndg-admin|admin|g' initialize.py
 
 # Init LNDg
 .venv/bin/python initialize.py --lnddir=/mnt/hdd/mynode/lnd --adminpw=bolt -wn -dx -sd --sduser=lndg

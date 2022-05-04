@@ -55,3 +55,7 @@ have support or patial support.
 
 - Specter authentication is off by default, but it will store and use its own password.
 - It is highly recommended to enable authentication.
+
+## LNDg
+
+- The default credentials for LNDg are "admin" / "bolt"

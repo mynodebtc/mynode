@@ -42,6 +42,9 @@ echo "Syncing filesystem..."
 sleep 1
 sync
 
+# Init Dynamic Apps
+mynode-manage-apps init 
+
 # Reload systemd files
 systemctl daemon-reload
 
