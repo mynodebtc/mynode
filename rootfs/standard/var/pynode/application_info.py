@@ -2,6 +2,7 @@ from bitcoin_info import *
 from lightning_info import *
 from electrum_info import *
 from device_info import *
+from drive_info import *
 from systemctl_info import *
 from utilities import *
 import copy
@@ -603,13 +604,15 @@ def init_dynamic_app(app_info):
     log_message("  TODO: Build dockerfile???")
     log_message("  TODO: Install dockerfile???")
 
+    # Setup tor hidden service
+    log_message("  TODO: Setup Tor Hidden service")
 
     log_message(" Done.")
 
 def init_dynamic_apps():
     # Ensure external drive is mounted
     if not is_mynode_drive_mounted():
-        log_message("  ERROR: Data drive not mounted")
+        log_message("  ERROR: Data drive not mounted. Cannot Init Dynamic Apps.")
         return
     
     # Loop over each app
