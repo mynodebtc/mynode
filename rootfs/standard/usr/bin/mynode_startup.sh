@@ -648,6 +648,8 @@ if [ "$USER" != "bitcoin" ]; then
 fi
 chown bitcoin:bitcoin /mnt/hdd/
 chown bitcoin:bitcoin /mnt/hdd/mynode/
+mkdir -p $LND_BACKUP_FOLDER
+chown -R bitcoin:bitcoin $LND_BACKUP_FOLDER
 
 
 # Setup swap on new HDD
