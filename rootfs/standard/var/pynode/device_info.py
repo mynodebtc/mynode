@@ -1132,19 +1132,22 @@ def reset_tor():
 
 def is_btc_lnd_tor_enabled():
     return settings_file_exists("btc_lnd_tor_enabled")
-
 def enable_btc_lnd_tor():
     create_settings_file("btc_lnd_tor_enabled")
-
 def disable_btc_lnd_tor():
     delete_settings_file("btc_lnd_tor_enabled")
 
+def is_streamisolation_tor_enabled():
+    return not settings_file_exists("streamisolation_tor_disabled")
+def enable_streamisolation_tor():
+    delete_settings_file("streamisolation_tor_disabled")
+def disable_streamisolation_tor():
+    create_settings_file("streamisolation_tor_disabled")
+
 def is_aptget_tor_enabled():
     return os.path.isfile("/mnt/hdd/mynode/settings/torify_apt_get")
-
 def enable_aptget_tor():
     touch("/mnt/hdd/mynode/settings/torify_apt_get")
-
 def disable_aptget_tor():
     delete_file("/mnt/hdd/mynode/settings/torify_apt_get")
 

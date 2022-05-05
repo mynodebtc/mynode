@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, session, abort, Markup, request, r
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from bitcoin import is_bitcoin_synced
 from bitcoin_info import using_bitcoin_custom_config
-from lightning_info import using_lnd_custom_config
+from lightning_info import using_lnd_custom_config, restart_lnd
 from pprint import pprint, pformat
 from threading import Timer
 from thread_functions import *
@@ -95,6 +95,7 @@ def page_settings():
         "btcrpcexplorer_token_enabled": is_btcrpcexplorer_token_enabled(),
         "is_btc_lnd_tor_enabled": is_btc_lnd_tor_enabled(),
         "is_aptget_tor_enabled": is_aptget_tor_enabled(),
+        "is_streamisolation_tor_enabled": is_streamisolation_tor_enabled(),
         "skip_fsck": skip_fsck(),
         "uptime": uptime,
         "date": date,
@@ -785,6 +786,22 @@ def page_enable_btc_lnd_tor():
         "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
+
+@mynode_settings.route("/settings/enable_streamisolation_tor")
+def page_enable_streamisolation_tor():
+    check_logged_in()
+    
+    enable = request.args.get('enable')
+    if enable == "1":
+        enable_streamisolation_tor()
+    else:
+        disable_streamisolation_tor()
+
+    # Restart LND
+    restart_lnd()
+
+    flash("Restarting lnd...", category="message")
+    return redirect("/settings")
 
 @mynode_settings.route("/settings/set_https_forced")
 def page_set_https_forced_page():

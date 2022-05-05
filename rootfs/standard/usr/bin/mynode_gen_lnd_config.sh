@@ -26,6 +26,11 @@ else
     # Append Tor/IP section (check new file or old file, should be migrated to new)
     if [ -f /mnt/hdd/mynode/settings/btc_lnd_tor_enabled ] || [ -f /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled ]; then
         cat /usr/share/mynode/lnd_tor.conf >> /mnt/hdd/mynode/lnd/lnd.conf
+
+        # Upadte LND Tor stream isolation (true is default)
+        if [ -f /mnt/hdd/mynode/settings/streamisolation_tor_disabled ]; then
+            sed -i "s/tor.streamisolation=.*/tor.streamisolation=false/g" /mnt/hdd/mynode/lnd/lnd.conf
+        fi
     else
         cat /usr/share/mynode/lnd_ipv4.conf >> /mnt/hdd/mynode/lnd/lnd.conf
     fi
