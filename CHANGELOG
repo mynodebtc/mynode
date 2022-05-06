@@ -1,3 +1,20 @@
+=== v0.2.55 ===
+- Released: 05/06/22
+- Add LNDg (beta)
+- Upgrade LND to v0.14.3
+- Upgrade Specter to v1.9.4
+- Upgrade BTC Pay to v1.5.1
+- Upgrade RTL to v0.12.3
+- Upgrade Thunderhub to v0.13.11
+- Upgrade Sphinx Relay to v2.2.8
+- Upgrade BoS to v12.7.0
+- Upgrade LiT to v0.6.7
+- Upgrade Pool to v0.5.6
+- Refactor BTC Pay Server Install
+- Add option to regenerate SSH keys
+- Add warning for subnet conflicts
+- Basic dynamic app support
+
 === v0.2.54 ===
 - Released: 04/04/22
 - Add UI for LND Watchtower
