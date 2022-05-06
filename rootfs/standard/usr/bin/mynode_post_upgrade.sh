@@ -836,7 +836,7 @@ if should_install_app "thunderhub" ; then
         sudo -u bitcoin mv thunderhub-* thunderhub
         cd thunderhub
 
-        sudo -u bitcoin npm install # --only=production # (can't build with only production)
+        sudo -u bitcoin npm install --legacy-peer-deps # --only=production # (can't build with only production)
         sudo -u bitcoin npm run build
         sudo -u bitcoin npx next telemetry disable
 
