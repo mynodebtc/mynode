@@ -72,6 +72,10 @@ if ! skip_base_upgrades ; then
         grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
         grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
     fi
+    if [ -f /mnt/hdd/mynode/settings/tor_repo_disabled ]; then
+        sed -i '/^deb https:\/\/deb.torproject.org/d' /etc/apt/sources.list
+        sed -i '/^deb-src https:\/\/deb.torproject.org/d' /etc/apt/sources.list
+    fi
     # Raspbian mirrors
     #if [ $IS_RASPI = 1 ]; then
     #    grep -qxF "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" >> /etc/apt/sources.list

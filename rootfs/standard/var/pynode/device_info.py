@@ -1144,6 +1144,13 @@ def enable_streamisolation_tor():
 def disable_streamisolation_tor():
     create_settings_file("streamisolation_tor_disabled")
 
+def is_tor_repo_enabled():
+    return not settings_file_exists("tor_repo_disabled")
+def enable_tor_repo():
+    delete_settings_file("tor_repo_disabled")
+def disable_tor_repo():
+    create_settings_file("tor_repo_disabled")
+
 def is_aptget_tor_enabled():
     return os.path.isfile("/mnt/hdd/mynode/settings/torify_apt_get")
 def enable_aptget_tor():

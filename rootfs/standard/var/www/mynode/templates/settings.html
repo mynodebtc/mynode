@@ -524,6 +524,21 @@
                     }
                 });
 
+                $('#tor_repo_checkbox').change(function () {
+                    $("#tor_repo").show();
+                });
+                $("#tor_repo").on("click", function() {
+                    enabled=$('#tor_repo_checkbox').is(":checked")
+                    if (enabled)
+                    {
+                        window.location.href='/settings/enable_tor_repo?enable=1'
+                    }
+                    else
+                    {
+                        window.location.href='/settings/enable_tor_repo?enable=0'
+                    }
+                });
+
                 $('#aptget_tor_checkbox').change(function () {
                     $("#aptget_tor").show();
                 });
@@ -949,6 +964,20 @@
             </label>
             <br/><br/>
             <button id="btc_lnd_tor" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Upgrade Tor</div>
+            During upgrades, the tor package is updated. In some locations, this can fail causing upgrade issues.
+            <br/><br/>
+            This should not be disabled unless you are having a specific upgrade issue accessing some package servers.
+            <br/><br/>
+            <label class="switch">
+                <input type="checkbox" id="tor_repo_checkbox" {% if is_tor_repo_enabled %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <br/><br/>
+            <button id="tor_repo" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
 
             <div class="divider"></div>
 
