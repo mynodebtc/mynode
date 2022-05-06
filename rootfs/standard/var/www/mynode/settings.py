@@ -94,6 +94,7 @@ def page_settings():
         "upload_rate": upload_rate,
         "btcrpcexplorer_token_enabled": is_btcrpcexplorer_token_enabled(),
         "is_btc_lnd_tor_enabled": is_btc_lnd_tor_enabled(),
+        "is_tor_repo_enabled": is_tor_repo_enabled(),
         "is_aptget_tor_enabled": is_aptget_tor_enabled(),
         "is_streamisolation_tor_enabled": is_streamisolation_tor_enabled(),
         "skip_fsck": skip_fsck(),
@@ -830,6 +831,18 @@ def page_btcrpcexplorer_token():
     flash("BTC RPC Explorer Token Setting Saved", category="message")
     return redirect(url_for(".page_settings")) 
     
+@mynode_settings.route("/settings/enable_tor_repo")
+def page_enable_tor_repo():
+    check_logged_in()
+    
+    enable = request.args.get('enable')
+    if enable == "1":
+        enable_tor_repo()
+    else:
+        disable_tor_repo()
+    
+    flash("Tor Setting Saved", category="message")
+    return redirect(url_for(".page_settings"))
 
 @mynode_settings.route("/settings/enable_aptget_tor")
 def page_enable_aptget_tor():
