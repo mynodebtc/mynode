@@ -126,6 +126,7 @@ source /tmp/upgrade/out/rootfs_*/usr/share/mynode/mynode_app_versions.sh
 # Create any necessary users
 useradd -m -s /bin/bash bitcoin || true
 useradd -m -s /bin/bash joinmarket || true
+passwd -l root
 
 # Setup bitcoin user folders
 mkdir -p /home/bitcoin/.mynode/
