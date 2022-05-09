@@ -43,6 +43,7 @@ if ! skip_base_upgrades ; then
     # User updates and settings
     adduser admin bitcoin
     grep "joinmarket" /etc/sudoers || (echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo)
+    passwd -l root
 
     # Migrate from version file to version+install combo
     /usr/bin/mynode_migrate_version_files.sh
