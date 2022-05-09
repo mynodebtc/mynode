@@ -25,12 +25,13 @@ else
         echo "UAS FOUND"
         USBINFO=$(lsusb | grep "SATA 6Gb/s bridge")
         DEVID=$(egrep -o '[0-9a-f]+:[0-9a-f]+' <<< $USBINFO)
+        QUIRK="${DEVID}:u"
         echo "UAS IN USE ON $DEVID"
 
+        # Raspberry Pi
         if [ $IS_RASPI -eq 1 ]; then
             echo "IS RASPBERRY PI"
             if [ -f /boot/cmdline.txt ]; then
-                QUIRK="${DEVID}:u"
                 CMDLINE=$(head -n 1 /boot/cmdline.txt)
                 cat /boot/cmdline.txt | grep "usb-storage.quirks"
                 if [ $? -eq 0 ]; then
@@ -53,6 +54,26 @@ else
                 sync
                 sleep 5s
                 /usr/bin/mynode-reboot
+            fi
+        fi
+
+        # RockPi 4
+        if [ $IS_ROCKPI4 -eq 1 ]; then
+            echo "IS ROCKPI 4"
+            if [ -f /boot/armbianEnv.txt ]; then
+                cat /boot/armbianEnv.txt | grep "${QUIRK}"
+                if [ $? -eq 0 ]; then
+                    # Quirk already added, exit 0
+                    echo "QUIRK ALREADY EXISTS, EXITING"
+                    exit 0
+                else
+                    echo "ADDING QUIRK AND REBOOTING"
+                    sed -i "s/usbstoragequirks=.*/&,${QUIRK}/g" cat /boot/armbianEnv.txt
+                    mkimage -C none -A arm -T script -d /boot/boot.cmd /boot/boot.scr
+                    sync
+                    sleep 5s
+                    /usr/bin/mynode-reboot
+                fi
             fi
         fi
     else
