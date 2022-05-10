@@ -1298,7 +1298,7 @@ def get_sso_token(short_name):
     elif short_name == "thunerhub":
         token = get_file_contents("/opt/mynode/thunderhub/.cookie")
     else:
-        token = "UNKOWN_APP"
+        token = "UNKNOWN_APP"
     return to_string(token)
 
 def get_sso_token_enabled(short_name):

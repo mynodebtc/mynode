@@ -91,6 +91,7 @@ def api_get_service_status():
 
     # Try standard status API
     data["status"] = get_application_status(service)
+    data["status_basic"] = get_service_status_basic_text(service)
     data["color"] = get_application_status_color(service)
     data["sso_token"] = get_application_sso_token(service)
     data["sso_token_enabled"] = get_application_sso_token_enabled(service)
