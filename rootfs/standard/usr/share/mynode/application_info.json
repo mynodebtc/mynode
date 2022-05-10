@@ -14,17 +14,20 @@
     {
         "name": "Loop",
         "short_name": "loop",
-        "requires_lightning": true
+        "requires_lightning": true,
+        "show_on_status_page": true
     },
     {
         "name": "Pool",
         "short_name": "pool",
-        "requires_lightning": true
+        "requires_lightning": true,
+        "show_on_status_page": true
     },
     {
         "name": "Lightning Terminal",
         "short_name": "lit",
-        "requires_lightning": true
+        "requires_lightning": true,
+        "show_on_status_page": true
     },
     {
         "name": "Ride the Lightning",
@@ -32,6 +35,7 @@
         "app_tile_name": "RTL",
         "app_tile_default_status_text": "Lightning Wallet",
         "can_uninstall": true,
+        "show_on_status_page": true,
         "show_on_homepage": true,
         "requires_lightning": true,
         "supports_testnet": true,
@@ -45,6 +49,7 @@
         "app_tile_default_status_text": "",
         "app_tile_running_status_text": "Running",
         "can_reinstall": false,
+        "show_on_status_page": true,
         "show_on_homepage": true,
         "supports_testnet": true,
         "homepage_order": 12
@@ -75,6 +80,7 @@
         "app_tile_default_status_text": "BlueWallet Backend",
         "can_uninstall": true,
         "requires_lightning": true,
+        "show_on_status_page": true,
         "show_on_homepage": true,
         "homepage_order": 15
     },
@@ -82,7 +88,8 @@
         "name": "Corsproxy",
         "short_name": "corsproxy",
         "can_enable_disable": false,
-        "show_on_application_page": false
+        "show_on_application_page": false,
+        "show_on_status_page": true
     },
     {
         "name": "LNDConnect",
@@ -108,6 +115,7 @@
         "app_tile_default_status_text": "BTC RPC Explorer",
         "can_uninstall": true,
         "requires_bitcoin": true,
+        "show_on_status_page": true,
         "show_on_homepage": true,
         "supports_testnet": true,
         "requires_electrs": true,
@@ -164,6 +172,7 @@
         "can_uninstall": true,
         "requires_lightning": true,
         "supports_testnet": true,
+        "show_on_status_page": true,
         "show_on_homepage": true,
         "homepage_order": 25,
         "is_premium": true
@@ -176,6 +185,7 @@
         "app_tile_button_href": "/caravan",
         "app_tile_default_status_text": "Multisig Tool",
         "can_uninstall": true,
+        "show_on_status_page": true,
         "show_on_homepage": true,
         "homepage_order": 31,
         "supports_testnet": true,
@@ -187,6 +197,7 @@
         "requires_bitcoin": true,
         "app_tile_default_status_text": "Multisig Tool",
         "can_uninstall": true,
+        "show_on_status_page": true,
         "show_on_homepage": true,
         "homepage_order": 32,
         "supports_testnet": true,
@@ -198,6 +209,7 @@
         "requires_bitcoin": true,
         "app_tile_default_status_text": "Coldcard Signing Tool",
         "can_uninstall": true,
+        "show_on_status_page": true,
         "show_on_homepage": true,
         "homepage_order": 33,
         "supports_testnet": true,
@@ -212,6 +224,7 @@
         "app_tile_running_status_text": "Running",
         "can_uninstall": true,
         "requires_lightning": true,
+        "show_on_status_page": true,
         "show_on_homepage": true,
         "homepage_order": 34,
         "is_premium": true
@@ -221,6 +234,7 @@
         "short_name": "lnbits",
         "app_tile_default_status_text": "Lightning Wallet",
         "can_uninstall": true,
+        "show_on_status_page": true,
         "show_on_homepage": true,
         "homepage_order": 35,
         "requires_lightning": true,
@@ -272,6 +286,7 @@
     {
         "name": "Netdata",
         "short_name": "netdata",
+        "show_on_status_page": true,
         "can_reinstall": false
     },
     {

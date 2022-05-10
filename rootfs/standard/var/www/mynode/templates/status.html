@@ -5,29 +5,20 @@
 
         <script>
             function showLog(name) {
-                visible = $("#"+name+"_status").is(':visible');
+                visible = $("#"+name+"_log").is(':visible');
                 if (visible) {
-                    $("#show_"+name+"_status").html("Show Log");
-                    $("#"+name+"_status").hide();
+                    $("#show_"+name+"_log").html("Show Log");
+                    $("#"+name+"_log").hide();
                 } else {
-                    $("#show_"+name+"_status").html("Hide Log");
+                    $("#show_"+name+"_log").html("Hide Log");
                     $.get( "/api/get_log?app="+name, function( data ) {
-                        $("#"+name+"_status").html("<pre>"+data["log"]+"</pre>");
-                        $("#"+name+"_status").show();
+                        $("#"+name+"_log").html("<pre>"+data["log"]+"</pre>");
+                        $("#"+name+"_log").show();
                     });
                 }
             }
 
             $(document).ready(function() {
-                $("#show_upgrade_status").on("click", function() {
-                    $("#show_upgrade_status").hide(0);
-                    $("#upgrade_status").show();
-                });
-
-                $("#show_upgrade_status_beta").on("click", function() {
-                    $("#show_upgrade_status_beta").hide(0);
-                    $("#upgrade_status_beta").show();
-                });
 
                 $("#show_product_key").on("click", function() {
                     $("#show_product_key").hide(0);
@@ -60,6 +51,32 @@
                     url = location.protocol+'//'+location.hostname+':'+port+'/ssh/host/'+"{{local_ip}}";
                     window.open(url,'_blank');
                 })
+
+                // Functions to update status and status color
+                function update_status_basic(status_name, data) {
+                    if (data != null && "status" in data && data["status_basic"] != null) {
+                        $("#"+status_name).html(data["status_basic"]);
+                    }
+                }
+                function update_status_icon(status_icon_name, data) {
+                    if (data != null && "color" in data && data["color"] != null) {
+                        $("#"+status_icon_name).removeClass("red");
+                        $("#"+status_icon_name).removeClass("yellow");
+                        $("#"+status_icon_name).removeClass("green");
+                        $("#"+status_icon_name).removeClass("gray");
+                        $("#"+status_icon_name).removeClass("blue");
+                        $("#"+status_icon_name).removeClass("clear");
+                        $("#"+status_icon_name).addClass(data["color"]);
+                    }
+                }
+                {% for app in apps %}
+                    {% if app.show_on_status_page %}
+                        $.getJSON("/api/get_service_status?service={{app.short_name}}", function( data ) {
+                            update_status_basic("{{app.short_name}}_status", data);
+                            update_status_icon("{{app.short_name}}_status_icon", data);
+                        });
+                    {% endif %}
+                {% endfor %}
             });
         </script>
      </head>
@@ -106,8 +123,8 @@
                 <div class="settings_block_subheader_status_icon {{ startup_status_color }}"></div>
                 {{ startup_status }}
             </div>
-            <button id="show_startup_status" onclick="showLog('startup')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="startup_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{startup_status_log}}</pre></div>
+            <button id="show_startup_log" onclick="showLog('startup')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="startup_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{startup_status_log}}</pre></div>
             <div class="divider"></div>
 
             {% if is_quicksync_enabled %}
@@ -116,8 +133,8 @@
                 <div class="settings_block_subheader_status_icon {{ quicksync_status_color }}"></div>
                 {{ quicksync_status }}
             </div>
-            <button id="show_quicksync_status" onclick="showLog('quicksync')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="quicksync_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{quicksync_status_log}}</pre></div>
+            <button id="show_quicksync_log" onclick="showLog('quicksync')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="quicksync_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{quicksync_status_log}}</pre></div>
             <div class="divider"></div>
             {% endif %}
 
@@ -126,8 +143,8 @@
                 <div class="settings_block_subheader_status_icon {{ tor_status_color }}"></div>
                 {{ tor_status }}
             </div>
-            <button id="show_tor_status" onclick="showLog('tor')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="tor_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{tor_status_log}}</pre></div>
+            <button id="show_tor_log" onclick="showLog('tor')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="tor_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{tor_status_log}}</pre></div>
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Bitcoin Status</div>
@@ -135,8 +152,8 @@
                 <div class="settings_block_subheader_status_icon {{ bitcoin_status_color }}"></div>
                 {{ bitcoin_status }}
             </div>
-            <button id="show_bitcoin_status" onclick="showLog('bitcoin')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="bitcoin_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{bitcoin_status_log}}</pre></div>
+            <button id="show_bitcoin_log" onclick="showLog('bitcoin')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="bitcoin_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{bitcoin_status_log}}</pre></div>
             <div class="divider"></div>
 
             {% if is_bitcoin_synced %}
@@ -146,122 +163,49 @@
                 <div class="settings_block_subheader_status_icon {{ lnd_status_color }}"></div>
                 {{ lnd_status }}
             </div>
-            <button id="show_lnd_status" onclick="showLog('lnd')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="lnd_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lnd_status_log}}</pre></div>
+            <button id="show_lnd_log" onclick="showLog('lnd')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="lnd_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lnd_status_log}}</pre></div>
             <div class="divider"></div>
 
-            {% if lnd_wallet_exists and lnd_ready %}
-            <div class="settings_block_subheader">Loop Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ loop_status_color }}"></div>
-                {{ loop_status }}
-            </div>
-            <button id="show_loop_status" onclick="showLog('loop')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="loop_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{loop_status_log}}</pre></div>
-            <div class="divider"></div>
-            {% endif %}
+            {% for app in apps %}
+                {% if app.show_on_status_page %}
+                    {% set display = 1 %}
 
-            {% if lnd_wallet_exists and lnd_ready %}
-            <div class="settings_block_subheader">Pool Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ pool_status_color }}"></div>
-                {{ pool_status }}
-            </div>
-            <button id="show_pool_status" onclick="showLog('pool')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="pool_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{pool_status_log}}</pre></div>
-            <div class="divider"></div>
-            {% endif %}
+                    {% if app.requires_bitcoin and not is_bitcoin_synced %}
+                        {% set display = 0 %}
+                    {% endif %}
+                    {% if app.requires_lightning %}
+                        {% set display = 0 %}
+                        {% if lnd_wallet_exists and lnd_ready %}
+                            {% set display = 1 %}
+                        {% endif %}
+                    {% endif %}
+                    {% if not app.is_enabled %}
+                        {% set display = 0 %}
+                    {% endif %}
 
-            {% if lnd_wallet_exists and lnd_ready %}
-            <div class="settings_block_subheader">Lightning Terminal Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ lit_status_color }}"></div>
-                {{ lit_status }}
-            </div>
-            <button id="show_lit_status" onclick="showLog('lit')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="lit_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lit_status_log}}</pre></div>
-            <div class="divider"></div>
-            {% endif %}
+                    
+                    {% if display %}
+                        <div class="settings_block_subheader">{{app.name}} Status</div>
+                        <div class="settings_block_subheader_status">
+                            <div id="{{app.short_name}}_status_icon" class="settings_block_subheader_status_icon clear"></div>
+                            <span id="{{app.short_name}}_status">Loading....</span>
+                        </div>
+                        <button id="show_{{app.short_name}}_log" onclick="showLog('{{app.short_name}}')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+                        <div id="{{app.short_name}}_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>Loading...</pre></div>
+                        <div class="divider"></div>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
 
-            <div class="settings_block_subheader">Electrum Server Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ electrs_status_color }}"></div>
-                {{ electrs_status }}
-            </div>
-            <button id="show_electrs_status" onclick="showLog('electrs')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="electrs_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{electrs_status_log}}</pre></div>
-            <div class="divider"></div>
 
-            {% if lnd_wallet_exists and lnd_ready %}
-            <div class="settings_block_subheader">LNDHub Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ lndhub_status_color }}"></div>
-                {{ lndhub_status }}
-            </div>
-            <button id="show_lndhub_status" onclick="showLog('lndhub')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="lndhub_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lndhub_status_log}}</pre></div>
-            <div class="divider"></div>
-            {% endif %}
-
-            {% if lnd_wallet_exists and lnd_ready %}
-            <div class="settings_block_subheader">RTL Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ rtl_status_color }}"></div>
-                {{ rtl_status }}
-            </div>
-            <button id="show_rtl_status" onclick="showLog('rtl')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="rtl_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{rtl_status_log}}</pre></div>
-            <div class="divider"></div>
-            {% endif %}
-
-            {% if lnd_wallet_exists and lnd_ready %}
-            <div class="settings_block_subheader">LNbits Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ lnbits_status_color }}"></div>
-                {{ lnbits_status }}
-            </div>
-            <button id="show_lnbits_status" onclick="showLog('lnbits')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="lnbits_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lnbits_status_log}}</pre></div>
-            <div class="divider"></div>
-            {% endif %}
-
-            {% if lnd_wallet_exists and lnd_ready %}
-            <div class="settings_block_subheader">Thunderhub Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ thunderhub_status_color }}"></div>
-                {{ thunderhub_status }}
-            </div>
-            <button id="show_thunderhub_status" onclick="showLog('thunderhub')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="thunderhub_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{thunderhub_status_log}}</pre></div>
-            <div class="divider"></div>
-            {% endif %}
-
-            <div class="settings_block_subheader">Docker Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ docker_status_color }}"></div>
-                {{ docker_status }}
-            </div>
-            <button id="show_docker_status" onclick="showLog('docker')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="docker_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_status_log}}</pre></div>
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Docker Image Build Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ docker_image_build_status_color }}"></div>
-                {{ docker_image_build_status }}
-            </div>
-            <button id="show_docker_image_build_status" onclick="showLog('docker_image_build')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="docker_image_build_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_image_build_status_log}}</pre></div>
-            <div class="divider"></div>
-
-            {% if not ui_settings['reseller'] %}
             <div class="settings_block_subheader">Whirlpool Status</div>
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ whirlpool_status_color }}"></div>
                 {{ whirlpool_status }}
             </div>
-            <button id="show_whirlpool_status" onclick="showLog('whirlpool')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="whirlpool_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{whirlpool_status_log}}</pre></div>
+            <button id="show_whirlpool_log" onclick="showLog('whirlpool')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="whirlpool_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{whirlpool_status_log}}</pre></div>
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Dojo Status</div>
@@ -276,10 +220,9 @@
                     {% if 'nginx' in running_containers %} nginx {% endif %}
                 </span>
             </div>
-            <button id="show_dojo_status" onclick="showLog('dojo')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="dojo_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{dojo_status_log}}</pre></div>
+            <button id="show_dojo_log" onclick="showLog('dojo')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="dojo_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{dojo_status_log}}</pre></div>
             <div class="divider"></div>
-            {% endif %}
 
             <div class="settings_block_subheader">BTCPay Server Status</div>
             <div class="settings_block_subheader_status">
@@ -292,8 +235,8 @@
                     {% if 'generated_postgres_1' in running_containers %} postgres {% endif %}
                 </span>
             </div>
-            <button id="show_btcpayserver_status" onclick="showLog('btcpayserver')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="btcpayserver_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{btcpayserver_status_log}}</pre></div>
+            <button id="show_btcpayserver_log" onclick="showLog('btcpayserver')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="btcpayserver_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{btcpayserver_status_log}}</pre></div>
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Mempool Status</div>
@@ -307,58 +250,27 @@
                     {% if 'mempool_api_1' in running_containers %} mempool_api_1 {% endif %}
                 </span>
             </div>
-            <button id="show_mempool_status" onclick="showLog('mempool')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="mempool_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{mempool_status_log}}</pre></div>
+            <button id="show_mempool_log" onclick="showLog('mempool')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="mempool_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{mempool_status_log}}</pre></div>
             <div class="divider"></div>
 
-            <div class="settings_block_subheader">Caravan Status</div>
+            <div class="settings_block_subheader">Docker Status</div>
             <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ caravan_status_color }}"></div>
-                {{ caravan_status }}
+                <div class="settings_block_subheader_status_icon {{ docker_status_color }}"></div>
+                {{ docker_status }}
             </div>
-            <button id="show_caravan_status" onclick="showLog('caravan')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="caravan_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{caravan_status_log}}</pre></div>
+            <button id="show_docker_log" onclick="showLog('docker')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="docker_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_status_log}}</pre></div>
             <div class="divider"></div>
 
-            <div class="settings_block_subheader">CKBunker Status</div>
+            <div class="settings_block_subheader">Docker Image Build Status</div>
             <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ ckbunker_status_color }}"></div>
-                {{ ckbunker_status }}
+                <div class="settings_block_subheader_status_icon {{ docker_image_build_status_color }}"></div>
+                {{ docker_image_build_status }}
             </div>
-            <button id="show_ckbunker_status" onclick="showLog('ckbunker')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="ckbunker_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{ckbunker_status_log}}</pre></div>
+            <button id="show_docker_image_build_log" onclick="showLog('docker_image_build')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="docker_image_build_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_image_build_status_log}}</pre></div>
             <div class="divider"></div>
-
-            <div class="settings_block_subheader">Specter Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ specter_status_color }}"></div>
-                {{ specter_status }}
-            </div>
-            <button id="show_specter_status" onclick="showLog('specter')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="specter_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{specter_status_log}}</pre></div>
-            <div class="divider"></div>
-
-            {% if lnd_wallet_exists and lnd_ready %}
-            <div class="settings_block_subheader">Sphinx Relay Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ sphinxrelay_status_color }}"></div>
-                {{ sphinxrelay_status }}
-            </div>
-            <button id="show_sphinxrelay_status" onclick="showLog('sphinxrelay')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="sphinxrelay_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{sphinxrelay_status_log}}</pre></div>
-            <div class="divider"></div>
-            {% endif %}
-
-            {% if netdata_enabled %}
-            <div class="settings_block_subheader">Netdata Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ netdata_status_color }}"></div>
-                {{ netdata_status }}
-            </div>
-            <button id="show_netdata_status" onclick="showLog('netdata')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="netdata_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{netdata_status_log}}</pre></div>
-            <div class="divider"></div>
-            {% endif %}
 
             {% endif %}
 
@@ -367,8 +279,8 @@
                 <div class="settings_block_subheader_status_icon {{ nginx_status_color }}"></div>
                 {{ nginx_status }}
             </div>
-            <button id="show_nginx_status" onclick="showLog('nginx')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="nginx_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{nginx_status_log}}</pre></div>
+            <button id="show_nginx_log" onclick="showLog('nginx')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="nginx_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{nginx_status_log}}</pre></div>
             <div class="divider"></div>
 
             {% if is_bitcoin_synced %}
@@ -377,19 +289,8 @@
                 <div class="settings_block_subheader_status_icon {{ usb_extras_status_color }}"></div>
                 {{ usb_extras_status }}
             </div>
-            <button id="show_usb_extras_status" onclick="showLog('usb_extras')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="usb_extras_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{usb_extras_status_log}}</pre></div>
-            <div class="divider"></div>
-            {% endif %}
-
-            {% if is_bitcoin_synced %}
-            <div class="settings_block_subheader">CORS Proxy</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ corsproxy_status_color }}"></div>
-                {{ corsproxy_status }}
-            </div>
-            <button id="show_corsproxy_status" onclick="showLog('corsproxy')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="corsproxy_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{corsproxy_status_log}}</pre></div>
+            <button id="show_usb_extras_log" onclick="showLog('usb_extras')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="usb_extras_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{usb_extras_status_log}}</pre></div>
             <div class="divider"></div>
             {% endif %}
 
@@ -398,8 +299,8 @@
                 <div class="settings_block_subheader_status_icon {{ www_status_color }}"></div>
                 {{ www_status }}
             </div>
-            <button id="show_www_status" onclick="showLog('www')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="www_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{www_status_log}}</pre></div>
+            <button id="show_www_log" onclick="showLog('www')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="www_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{www_status_log}}</pre></div>
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Firewall Status</div>
@@ -407,8 +308,8 @@
                 <div class="settings_block_subheader_status_icon {{ ufw_status_color }}"></div>
                 {{ ufw_status }}
             </div>
-            <button id="show_ufw_status" onclick="showLog('ufw')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="ufw_status" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{ufw_status_log}}</pre></div>
+            <button id="show_ufw_log" onclick="showLog('ufw')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="ufw_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{ufw_status_log}}</pre></div>
         </div>
 
 
