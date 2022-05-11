@@ -122,6 +122,8 @@ TMP_INSTALL_PATH="/tmp/upgrade/out/rootfs_*"
 # Source file containing app versions
 source /tmp/upgrade/out/rootfs_*/usr/share/mynode/mynode_app_versions.sh
 
+# Update SD card
+mkdir -p /etc/torrc.d
 
 # Create any necessary users
 useradd -m -s /bin/bash bitcoin || true

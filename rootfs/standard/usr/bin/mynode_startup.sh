@@ -72,6 +72,7 @@ mkdir -p /run/tor
 mkdir -p /var/run/tor
 mkdir -p /home/bitcoin/.mynode/
 mkdir -p /home/admin/.bitcoin/
+mkdir -p /etc/torrc.d
 chown admin:admin /home/admin/.bitcoin/
 rm -rf /etc/motd # Remove simple motd for update-motd.d
 
