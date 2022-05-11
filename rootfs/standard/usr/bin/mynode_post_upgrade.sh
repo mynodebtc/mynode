@@ -33,6 +33,9 @@ fi
 # Skip base upgrades if we are doing an app install / uninstall
 if ! skip_base_upgrades ; then
 
+    # Update SD card
+    mkdir -p /etc/torrc.d
+    
     # Create any necessary users
     useradd -m -s /bin/bash joinmarket || true
 

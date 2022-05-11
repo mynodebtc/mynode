@@ -292,3 +292,7 @@ HiddenServicePort 49393 127.0.0.1:49393
 HiddenServiceDir /var/lib/tor/mynode_sphinx/
 HiddenServiceVersion 3
 HiddenServicePort 53001 127.0.0.1:53001
+
+
+# Include tor settings for other apps
+%include /etc/torrc.d/

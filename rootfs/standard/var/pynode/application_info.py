@@ -497,6 +497,20 @@ def create_application_folders(app_data):
     run_linux_cmd("chown -R {}:{} {}".format(app_data["linux_user"], app_data["linux_user"], app_folder))
     run_linux_cmd("chown -R {}:{} {}".format(app_data["linux_user"], app_data["linux_user"], data_folder))
 
+def create_application_tor_service(app_data):
+    run_linux_cmd("mkdir -p /etc/torrc.d")
+    torrc_file = "/etc/torrc.d/"+app_data["short_name"]
+    with open(torrc_file, "w") as f:
+        f.write("# Hidden Service for {}".format(app_data["short_name"]))
+        f.write("HiddenServiceDir /var/lib/tor/{}/".format(app_data["short_name"]))
+        f.write("HiddenServiceVersion 3")
+        if "http_port" in app_data and app_data["http_port"] != None:
+            f.write("HiddenServicePort 80 127.0.0.1:{}".format(app_data["http_port"]))
+        if "http_port" in app_data and app_data["http_port"] != None:
+            f.write("HiddenServicePort 443 127.0.0.1:{}".format(app_data["https_port"]))
+        if "extra_ports" in app_data and app_data["extra_ports"] != None:
+            for p in app_data["extra_ports"]:
+                f.write("HiddenServicePort {} 127.0.0.1:{}".format(p, p))
 
 def install_application_tarball(app_data):
     log_message("  Running install_application_tarball...")
@@ -522,8 +536,13 @@ def install_application_tarball(app_data):
     run_linux_cmd("sudo -u {} tar -xvf /tmp/mynode_dynamic_app_download/app.tar.gz -C /tmp/mynode_dynamic_app_extract/".format(app_data["linux_user"]))
     run_linux_cmd("mv /tmp/mynode_dynamic_app_extract/* /tmp/mynode_dynamic_app_extract/app")
 
-    # Move contents to app folder
+    # Move tarball contents to app folder
     run_linux_cmd("rsync -var --delete-after /tmp/mynode_dynamic_app_extract/app/* {}/".format(app_data["install_folder"]))
+
+    # Move app data to app folder
+    app_data_source = get_dynamic_app_dir() + "/" + app_data["short_name"] + "/app_data"
+    run_linux_cmd("rm -rf {}/app_data".format(app_data["install_folder"]))
+    run_linux_cmd("cp -r -f {} {}/app_data".format(app_data_source, app_data["install_folder"]))
 
 def clear_installed_version(short_name):
     run_linux_cmd("rm -rf /home/bitcoin/.mynode/{}_version".format(short_name))
@@ -592,9 +611,6 @@ def init_dynamic_app(app_info):
     if (os.path.isfile(app_dir+"/nginx/https_"+app_name+".conf")):
         os.system("cp -f {} {}".format(app_dir+"/nginx/https_"+app_name+".conf", "/etc/nginx/sites-enabled/https_"+app_name+".conf"))
 
-
-    log_message("  TODO: Install data files???")
-
     # For "node" type apps
     log_message("  TODO: Need node special files???")
 
@@ -606,7 +622,7 @@ def init_dynamic_app(app_info):
     log_message("  TODO: Install dockerfile???")
 
     # Setup tor hidden service
-    log_message("  TODO: Setup Tor Hidden service")
+    create_application_tor_service(app_info)
 
     log_message(" Done.")
 
