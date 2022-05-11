@@ -119,6 +119,13 @@ wget http://${SERVER_IP}:8000/${TARBALL} -O /tmp/rootfs.tar.gz
 tar -xvf /tmp/rootfs.tar.gz -C /tmp/upgrade/
 TMP_INSTALL_PATH="/tmp/upgrade/out/rootfs_*"
 
+# Setup some dependencies
+mkdir -p /usr/share/mynode/
+cp -f /tmp/upgrade/out/rootfs_*/usr/share/mynode/mynode_device_info.sh /usr/share/mynode/mynode_device_info.sh
+cp -f /tmp/upgrade/out/rootfs_*/usr/share/mynode/mynode_config.sh /usr/share/mynode/mynode_config.sh
+cp -f /tmp/upgrade/out/rootfs_*/usr/share/mynode/mynode_functions.sh /usr/share/mynode/mynode_functions.sh
+cp -f /tmp/upgrade/out/rootfs_*/usr/bin/mynode-get-device-serial /usr/bin/mynode-get-device-serial
+
 # Source file containing app versions
 source /tmp/upgrade/out/rootfs_*/usr/share/mynode/mynode_app_versions.sh
 
