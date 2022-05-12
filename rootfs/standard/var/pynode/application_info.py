@@ -501,16 +501,16 @@ def create_application_tor_service(app_data):
     run_linux_cmd("mkdir -p /etc/torrc.d")
     torrc_file = "/etc/torrc.d/"+app_data["short_name"]
     with open(torrc_file, "w") as f:
-        f.write("# Hidden Service for {}".format(app_data["short_name"]))
-        f.write("HiddenServiceDir /var/lib/tor/{}/".format(app_data["short_name"]))
-        f.write("HiddenServiceVersion 3")
+        f.write("# Hidden Service for {}\n".format(app_data["short_name"]))
+        f.write("HiddenServiceDir /var/lib/tor/mynode_{}/\n".format(app_data["short_name"]))
+        f.write("HiddenServiceVersion 3\n")
         if "http_port" in app_data and app_data["http_port"] != None:
-            f.write("HiddenServicePort 80 127.0.0.1:{}".format(app_data["http_port"]))
+            f.write("HiddenServicePort 80 127.0.0.1:{}\n".format(app_data["http_port"]))
         if "http_port" in app_data and app_data["http_port"] != None:
-            f.write("HiddenServicePort 443 127.0.0.1:{}".format(app_data["https_port"]))
+            f.write("HiddenServicePort 443 127.0.0.1:{}\n".format(app_data["https_port"]))
         if "extra_ports" in app_data and app_data["extra_ports"] != None:
             for p in app_data["extra_ports"]:
-                f.write("HiddenServicePort {} 127.0.0.1:{}".format(p, p))
+                f.write("HiddenServicePort {} 127.0.0.1:{}\n".format(p, p))
 
 def install_application_tarball(app_data):
     log_message("  Running install_application_tarball...")
