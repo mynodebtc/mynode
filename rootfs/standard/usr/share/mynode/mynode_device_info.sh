@@ -14,7 +14,7 @@ IS_32_BIT=0
 IS_64_BIT=0
 DEVICE_TYPE="unknown"
 MODEL=$(tr -d '\0' < /proc/device-tree/model) || MODEL="unknown"
-uname -a | grep amd64 && IS_X86=1 || true
+uname -a | grep amd64 && IS_X86=1 && IS_64_BIT=1 || true
 if [[ $MODEL == *"Rock64"* ]]; then 
     IS_ARMBIAN=1
     IS_ROCK64=1
