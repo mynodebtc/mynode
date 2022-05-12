@@ -295,4 +295,4 @@ HiddenServicePort 53001 127.0.0.1:53001
 
 
 # Include tor settings for other apps
-%include /etc/torrc.d/
+%include /etc/torrc.d
