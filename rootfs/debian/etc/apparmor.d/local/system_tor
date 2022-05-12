@@ -1,0 +1,2 @@
+/etc/torrc.d/ r,
+/etc/torrc.d/** r,

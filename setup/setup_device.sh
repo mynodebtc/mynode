@@ -29,7 +29,7 @@ IS_64_BIT=0
 IS_UNKNOWN=0
 DEVICE_TYPE="unknown"
 MODEL=$(cat /proc/device-tree/model) || IS_UNKNOWN=1
-uname -a | grep amd64 && IS_X86=1 && IS_UNKNOWN=0 || true
+uname -a | grep amd64 && IS_X86=1 && IS_64_BIT=1 && IS_UNKNOWN=0 || true
 if [[ $MODEL == *"Rock64"* ]]; then
     IS_ARMBIAN=1
     IS_ROCK64=1
@@ -918,13 +918,6 @@ touch /home/bitcoin/.mynode/install_dojo
 # SKIPPING WARDEN - OPTIONAL APP
 
 
-# Mark dynamic applications as defalt application
-# ...
-
-# Upgrade Dyanmic Applications
-mynode-manage-apps upgrade
-
-
 # Make sure we are using legacy iptables
 update-alternatives --set iptables /usr/sbin/iptables-legacy || true
 update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy || true
@@ -937,6 +930,13 @@ update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy || true
 rsync -r -K /tmp/upgrade/out/rootfs_*/* /
 sync
 sleep 1
+
+
+# Mark dynamic applications as defalt application
+# ... (none yet)
+
+# Upgrade Dyanmic Applications (must be done after file installation)
+# mynode-manage-apps upgrade # not yet working during setup process
 
 
 # Enable fan control
