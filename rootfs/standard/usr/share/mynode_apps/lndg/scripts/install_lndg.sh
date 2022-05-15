@@ -20,6 +20,8 @@ sed -i 's|lndg-admin|admin|g' initialize.py
 # Patch supervisord config
 mkdir -p logs
 sed -i 's|/var/log|/opt/mynode/lndg/logs|g' .venv/supervisord.conf
+sed -i 's|/var/supervisord.pid|/tmp/supervisord.pid|g' .venv/supervisord.conf
+sed -i 's|"python|".venv/bin/python|g' .venv/supervisord.conf
 
 # Load initial data
 .venv/bin/python jobs.py
