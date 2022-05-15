@@ -541,8 +541,11 @@ def install_application_tarball(app_data):
 
     # Move app data to app folder
     app_data_source = get_dynamic_app_dir() + "/" + app_data["short_name"] + "/app_data"
-    run_linux_cmd("rm -rf {}/app_data".format(app_data["install_folder"]))
-    run_linux_cmd("cp -r -f {} {}/app_data".format(app_data_source, app_data["install_folder"]))
+    app_data_dest = app_data["install_folder"] + "/app_data"
+    run_linux_cmd("rm -rf {}".format(app_data_dest))
+    if os.path.isdir(app_data_source):
+        run_linux_cmd("cp -r -f {} {}".format(app_data_source, app_data_dest))
+        run_linux_cmd("chown -R {}:{} {}".format(app_data["linux_user"],app_data["linux_user"],app_data_dest))
 
 def clear_installed_version(short_name):
     run_linux_cmd("rm -rf /home/bitcoin/.mynode/{}_version".format(short_name))
