@@ -4,8 +4,8 @@ source /usr/share/mynode/mynode_config.sh
 
 set -x
 
-# Update Bitcoin RPC Password
+# Update Bitcoin RPC Credentials
 BTCRPCPW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
-if [ -f /mnt/hdd/mynode/btcpayserver/.env ]; then
-    sed -i "s/REMOTE_BTC_RPC_PASSWORD=.*/REMOTE_BTC_RPC_PASSWORD=$BTCRPCPW/g" /mnt/hdd/mynode/btcpayserver/.env
-fi
+NBXPLORER_VARIABLES_FILE=/mnt/hdd/mynode/btcpayserver/btcpayserver-docker/Generated/nbxplorer-variables.env
+echo "NBXPLORER_BTCRPCUSER=mynode"            > $NBXPLORER_VARIABLES_FILE
+echo "NBXPLORER_BTCRPCPASSWORD=$BTCRPCPW"    >> $NBXPLORER_VARIABLES_FILE

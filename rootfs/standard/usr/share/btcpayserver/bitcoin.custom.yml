@@ -6,11 +6,11 @@ services:
       BTCPAY_CHAINS: "btc"
       BTCPAY_BTCEXPLORERURL: http://nbxplorer:32838/
   nbxplorer:
+    env_file:
+      - nbxplorer-variables.env
     environment:
       NBXPLORER_CHAINS: "btc"
       NBXPLORER_BTCRPCURL: http://host.docker.internal:8332/
-      NBXPLORER_BTCRPCUSER: "${REMOTE_BTC_RPC_USERNAME}"
-      NBXPLORER_BTCRPCPASSWORD: "${REMOTE_BTC_RPC_PASSWORD}"
       NBXPLORER_BTCNODEENDPOINT: host.docker.internal:8333
     volumes:
       - "/mnt/hdd/mynode/bitcoin:/root/.bitcoin"
