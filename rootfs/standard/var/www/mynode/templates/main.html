@@ -252,13 +252,19 @@
                 port_string=""
 
                 if (is_using_tor() && custom_tor_address != "NA") {
-                    hostname="{{custom_tor_address}}"
+                    hostname=custom_tor_address
                     // Use "default" port - either 80 or 443 for HTTP/HTTPS unless overriden
                     if (protocol == "http:" && tor_http_port != "80") {
                         port_string=":"+tor_http_port
                     }
                     if (protocol == "https:" && tor_https_port != "443") {
                         port_string=":"+tor_https_port
+                    }
+
+                    // If app is HTTP only
+                    if (tor_https_port == "NA") {
+                        protocol = "http:"
+                        port_string = ":"+tor_http_port
                     }
                 } else {
                     if (protocol == "http:" && http_port != "80") {
@@ -267,14 +273,11 @@
                     if (protocol == "https:" && https_port != "443") {
                         port_string=":"+https_port
                     }
-                }
 
-                // If app is HTTP only
-                if (https_port == "NA") {
-                    protocol = "http:"
-                    port_string = ":"+http_port
-                    if (is_using_tor() && custom_tor_address == "NA") {
-                        port_string=":"+tor_http_port
+                    // If app is HTTP only
+                    if (https_port == "NA") {
+                        protocol = "http:"
+                        port_string = ":"+http_port
                     }
                 }
                 
