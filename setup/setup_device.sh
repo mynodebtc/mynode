@@ -1020,6 +1020,12 @@ if [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ] ; then
     nmcli connection modify $UUID -ethernet.mac-address ""
 fi
 
+# Add generic boot option if UEFI
+if [ -f /boot/efi/EFI/debian/grubx64.efi ]; then
+    mkdir -p /boot/efi/EFI/BOOT
+    cp -f /boot/efi/EFI/debian/grubx64.efi /boot/efi/EFI/BOOT/bootx64.efi
+fi
+
 sync
 
 set +x
