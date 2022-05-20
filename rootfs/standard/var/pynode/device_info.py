@@ -1248,6 +1248,16 @@ def get_onion_url_sphinxrelay():
         pass
     return "error"
 
+def get_onion_url_for_service(short_name):
+    if is_community_edition(): return "not_available"
+    try:
+        if os.path.isfile("/var/lib/tor/mynode_{}/hostname".format(short_name)):
+            with open("/var/lib/tor/mynode_{}/hostname".format(short_name)) as f:
+                return f.read().strip()
+    except:
+        pass
+    return "error"
+
 def get_onion_info_btc_v2():
     info = {}
     info["url"] = "unknown"

@@ -109,6 +109,7 @@ def replace_app_info_variables(app_data, text):
         text = text.replace("{HTTP_PORT}", app_data["http_port"])
     if app_data["https_port"] != None:
         text = text.replace("{HTTPS_PORT}", app_data["https_port"])
+    text = text.replace("{APP_TOR_ADDRESS}", get_onion_url_for_service(app_data["short_name"]))
     return text
 
 def initialize_application_defaults(app):

@@ -22,7 +22,7 @@
                         {% if not is_installing_docker_images or ( is_installing_docker_images and not app.requires_docker_image_installation ) %}
                             {% if app.is_enabled or not app.can_enable_disable %}
                                 <a class="ui-button ui-widget ui-corner-all mynode_button"
-                                    {% if app.app_tile_button_onclick != "" %} onclick="{{app.app_tile_button_onclick}}" {% endif %} 
+                                    {% if app.app_tile_button_onclick != "" %} onclick="{{app.app_tile_button_onclick|safe}}" {% endif %} 
                                     href="{{app.app_tile_button_href}}"
                                     id="{{app.short_name}}">{{app.app_tile_button_text}}</a>
                             {% endif %}

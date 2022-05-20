@@ -12,7 +12,7 @@
     "hide_status_icon": false,
     "app_tile_default_status_text": "Lightning Tool",
     "app_tile_running_status_text": "Running",
-    "app_tile_button_onclick": "open_app_in_new_tab({HTTP_PORT})",
+    "app_tile_button_onclick": "open_app_in_new_tab({HTTP_PORT}, {HTTPS_PORT}, false, '{APP_TOR_ADDRESS}')",
     "can_uninstall": true,
     "can_enable_disable": true,
     "show_on_application_page": true,
