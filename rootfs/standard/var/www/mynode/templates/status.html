@@ -253,6 +253,8 @@
             <div id="mempool_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{mempool_status_log}}</pre></div>
             <div class="divider"></div>
 
+            {% endif %}
+
             <div class="settings_block_subheader">Docker Status</div>
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ docker_status_color }}"></div>
@@ -262,6 +264,7 @@
             <div id="docker_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_status_log}}</pre></div>
             <div class="divider"></div>
 
+            {% if is_bitcoin_synced %}
             <div class="settings_block_subheader">Docker Image Build Status</div>
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ docker_image_build_status_color }}"></div>
@@ -270,7 +273,6 @@
             <button id="show_docker_image_build_log" onclick="showLog('docker_image_build')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="docker_image_build_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_image_build_status_log}}</pre></div>
             <div class="divider"></div>
-
             {% endif %}
 
             <div class="settings_block_subheader">NGINX Status</div>
