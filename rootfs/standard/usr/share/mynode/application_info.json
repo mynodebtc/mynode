@@ -336,6 +336,14 @@
         "show_on_application_page": false
     },
     {
+        "name": "Docker",
+        "short_name": "docker",
+        "show_on_application_page": false,
+        "show_on_homepage": false,
+        "show_on_status_page": false,
+        "can_reinstall": true
+    },
+    {
         "name": "Firewall",
         "short_name": "ufw",
         "show_on_application_page": false,

@@ -45,6 +45,8 @@ elif [ "$APP" = "btcpayserver" ]; then
 
     # Finally remove main folder
     rm -rf /mnt/hdd/mynode/btcpayserver
+elif [ "$APP" = "docker" ]; then
+    apt-get install --reinstall docker-ce
 elif [ "$APP" = "tor" ]; then
     apt-get remove -y tor
     apt-get install -y tor
