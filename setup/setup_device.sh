@@ -812,6 +812,9 @@ if [ "$CURRENT" != "$THUNDERHUB_VERSION" ]; then
     sudo -u bitcoin mv thunderhub-* thunderhub
     cd thunderhub
 
+    # Patch versions
+    sed -i 's/\^5.3.5/5.3.3/g' package.json || true     # Fixes segfault with 5.3.5 on x86
+
     sudo -u bitcoin npm install --legacy-peer-deps # --only=production # (can't build with only production)
     sudo -u bitcoin npm run build
     sudo -u bitcoin npx next telemetry disable
