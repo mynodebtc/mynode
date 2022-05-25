@@ -341,7 +341,7 @@ Section 9 -- myNode License Additions
        1. Modifications remain public and can be merged back into the 
           main myNode repo without restriction.
 
-       2. Distribtution of modifications to the licensing, product key,
+       2. Distribution of modifications to the licensing, product key,
           or access to premium features is prohibited.
 
        3. Use of the myNode logo or brand material to act on behalf of
