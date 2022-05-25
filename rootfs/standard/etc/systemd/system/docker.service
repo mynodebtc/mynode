@@ -1,10 +1,9 @@
 [Unit]
 Description=Docker Application Container Engine
 Documentation=https://docs.docker.com
-BindsTo=containerd.service
-After=network-online.target firewalld.service containerd.service
-Wants=network-online.target 
-Requires=docker.socket
+After=network-online.target docker.socket firewalld.service containerd.service
+Wants=network-online.target
+Requires=docker.socket containerd.service
 
 [Service]
 Type=notify
@@ -42,6 +41,7 @@ Delegate=yes
 
 # kill only the docker process, not all processes in the cgroup
 KillMode=process
+OOMScoreAdjust=-500
 
 [Install]
 WantedBy=multi-user.target
