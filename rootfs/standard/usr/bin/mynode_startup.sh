@@ -64,6 +64,32 @@ if [ ! -f /var/lib/mynode/.expanded_rootfs ]; then
         /usr/lib/armbian/armbian-resize-filesystem start
         touch /var/lib/mynode/.expanded_rootfs 
     fi
+    if [ $IS_X86 = 1 ]; then
+        X86_ROOT_PARTITION="$(mount | grep ' / ' | cut -d ' ' -f1)"
+        X86_DEVICE="$(lsblk -no pkname $X86_ROOT_PARTITION)"
+        X86_DEVICE_PATH="/dev/$X86_DEVICE"
+        X86_PARTITION_NUMBER=$(cat /proc/partitions | grep -c "${X86_DEVICE}[0-9]")
+        X86_FDISK_TYPE=$(fdisk -l "$X86_DEVICE_PATH" | grep "Disklabel")
+        echo "Root Partition:   $X86_ROOT_PARTITION"
+        echo "Root Device:      $X86_DEVICE"
+        echo "Root Dev Path:    $X86_DEVICE_PATH"
+        echo "Root Partition #: $X86_PARTITION_NUMBER"
+        if [[ "$X86_FDISK_TYPE" = *"Disklabel type: gpt"* ]]; then
+            if [ "$X86_PARTITION_NUMBER" = "2" ]; then
+                sgdisk -e $X86_DEVICE_PATH
+                sgdisk -d $X86_PARTITION_NUMBER $X86_DEVICE_PATH
+                sgdisk -N $X86_PARTITION_NUMBER $X86_DEVICE_PATH
+                partprobe $X86_DEVICE_PATH
+                resize2fs $X86_ROOT_PARTITION
+                touch /var/lib/mynode/.expanded_rootfs
+            else
+                echo "Not resizing - Expected 2 partitions, found $X86_PARTITION_NUMBER"
+            fi
+        else
+            echo "Not resizing - Expected GPT partition"
+            echo "$X86_FDISK"
+        fi
+    fi
 fi
 
 
