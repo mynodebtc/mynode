@@ -141,8 +141,8 @@ while true; do
             cd /mnt/hdd/mynode/btcpayserver
 
             # Clone this repository
-            #git clone https://github.com/btcpayserver/btcpayserver-docker
-            git clone https://github.com/tehelsper/btcpayserver-docker.git
+            git clone https://github.com/btcpayserver/btcpayserver-docker
+            #git clone https://github.com/tehelsper/btcpayserver-docker.git
             cd btcpayserver-docker
 
             # Run btcpay-setup.sh with the right parameters
