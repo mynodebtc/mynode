@@ -25,6 +25,26 @@
                     $("#product_key").show();
                 });
 
+                $("#show_os_drive_usage_details").on("click", function() {
+                    if($("#os_drive_usage_details").is(":visible")){
+                        $("#show_os_drive_usage_details").text("Show Details")
+                        $("#os_drive_usage_details").hide();
+                    } else {
+                        $("#show_os_drive_usage_details").text("Hide Details")
+                        $("#os_drive_usage_details").show();
+                    }
+                });
+
+                $("#show_data_drive_usage_details").on("click", function() {
+                    if($("#data_drive_usage_details").is(":visible")){
+                        $("#show_data_drive_usage_details").text("Show Details")
+                        $("#data_drive_usage_details").hide();
+                    } else {
+                        $("#show_data_drive_usage_details").text("Hide Details")
+                        $("#data_drive_usage_details").show();
+                    }
+                });
+
                 $("#glances").on("click", function() {
                     port="61208";
                     if (location.protocol == "https:") {

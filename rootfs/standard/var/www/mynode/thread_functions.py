@@ -19,6 +19,8 @@ has_updated_btc_info = False
 cpu_usage = "..."
 ram_usage = "..."
 swap_usage = "..."
+os_drive_usage_details = "..."
+data_drive_usage_details = "..."
 public_ip = "not_detected"
 
 # Getters
@@ -28,13 +30,23 @@ def get_has_updated_btc_info():
 def get_cpu_usage():
     global cpu_usage
     return cpu_usage
+def get_os_drive_usage_details():
+    global os_drive_usage_details
+    return os_drive_usage_details
+def get_data_drive_usage_details():
+    global data_drive_usage_details
+    return data_drive_usage_details
 def get_public_ip():
     global public_ip
     return public_ip
 
 # Updates device info every 60 seconds
+device_info_call_count = 0
 def update_device_info():
     global cpu_usage
+    global os_drive_usage_details
+    global data_drive_usage_details
+    global device_info_call_count
 
     # Get drive info
     try:
@@ -45,9 +57,32 @@ def update_device_info():
         cpu_info = psutil.cpu_times_percent(interval=10.0, percpu=False)
         cpu_usage = "{:.1f}%".format(100.0 - cpu_info.idle)
 
+        # Update every 24 hrs
+        if device_info_call_count % 60*24 == 0:
+            os_drive_usage_details = ""
+            os_drive_usage_details += "<small>"
+            os_drive_usage_details += "<b>App Storage</b><br/>"
+            os_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /opt/mynode/", ignore_failure=True) + "</pre><br/>"
+            os_drive_usage_details += "<b>User Storage</b><br/>"
+            os_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /home/", ignore_failure=True) + "</pre><br/>"
+            os_drive_usage_details += "<b>Rust Toolchain Storage</b><br/>"
+            if os.path.isdir("/root/.cargo/"):
+                os_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /root/.cargo/", ignore_failure=True) + "</pre><br/>"
+            if os.path.isdir("/home/admin/.cargo/"):
+                os_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /home/admin/.cargo/", ignore_failure=True) + "</pre><br/>"
+            os_drive_usage_details += "</small>"
+
+            data_drive_usage_details = ""
+            data_drive_usage_details += "<small>"
+            data_drive_usage_details += "<b>Data Storage</b><br/>"
+            data_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /mnt/hdd/mynode/", ignore_failure=True) + "</pre><br/>"
+            data_drive_usage_details += "</small>"
+
     except Exception as e:
         log_message("CAUGHT update_device_info EXCEPTION: " + str(e))
         return
+
+    device_info_call_count = device_info_call_count + 1
 
 # Updates main bitcoin info every 30 seconds
 def update_bitcoin_main_info_thread():
