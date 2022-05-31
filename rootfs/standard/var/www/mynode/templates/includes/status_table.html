@@ -25,11 +25,33 @@
     </tr>
     <tr>
         <th>Data Disk Usage</th>
-        <td>{{data_drive_usage}}</td>
+        <td>
+            {{data_drive_usage}}
+            {% set data_drive_usage_num = data_drive_usage | replace("%", "") | int %}
+            {% if data_drive_usage_num >= 90 %}
+            <i class="fas fa-exclamation-triangle" title="Drive is nearly full!"></i>
+            {% endif %}
+            <button id="show_data_drive_usage_details" class="ui-button ui-widget ui-corner-all settings_button_small" style="margin-left: 20px;">Show Details</button>
+            <span id="data_drive_usage_details" style="display: none">
+            <br/><br/>
+            {{data_drive_usage_details}}
+            </span>
+        </td>
     </tr>
     <tr>
         <th>OS Disk Usage</th>
-        <td>{{os_drive_usage}}</td>
+        <td>
+            {{os_drive_usage}}
+            {% set os_drive_usage_num = os_drive_usage | replace("%", "") | int %}
+            {% if os_drive_usage_num >= 90 %}
+            <i class="fas fa-exclamation-triangle" title="Drive is nearly full!"></i>
+            {% endif %}
+            <button id="show_os_drive_usage_details" class="ui-button ui-widget ui-corner-all settings_button_small" style="margin-left: 20px;">Show Details</button>
+            <span id="os_drive_usage_details" style="display: none">
+            <br/><br/>
+            {{os_drive_usage_details}}
+            </span>
+        </td>
     </tr>
     <tr>
         <th>CPU</th>
