@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect
 from user_management import check_logged_in
 from enable_disable_functions import *
-from device_info import read_ui_settings, is_testnet_enabled, get_local_ip
+from device_info import read_ui_settings, is_testnet_enabled, get_local_ip, get_onion_url_for_service
 from application_info import *
 from systemctl_info import *
 import subprocess
@@ -37,6 +37,7 @@ def whirlpool_page():
         "title": "myNode Whirlpool",
         "ui_settings": read_ui_settings(),
         "local_ip": get_local_ip(),
+        "whirlpool_onion_url": get_onion_url_for_service("whirlpool"),
         "whirlpool_status": whirlpool_status,
         "whirlpool_enabled": is_service_enabled("whirlpool"),
         "whirlpool_initialized": is_whirlpool_initialized(),

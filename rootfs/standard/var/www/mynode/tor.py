@@ -66,6 +66,7 @@ def page_tor():
     electrs_onion_url = get_onion_url_electrs()
     btcpay_onion_url = get_onion_url_btcpay()
     sphinxrelay_onion_url = get_onion_url_sphinxrelay()
+    whirlpool_onion_url = get_onion_url_for_service("whirlpool")
 
     # v3 Services
     v3_services = []
@@ -79,7 +80,7 @@ def page_tor():
     v3_services.append(create_v3_service("Mempool", general_onion_url, "4080 / 4081", True, ""))
     v3_services.append(create_v3_service("LNbits", lnbits_onion_url, "80 / 443", True, ""))
     v3_services.append(create_v3_service("Lightning Terminal", general_onion_url, "8443", True, ""))
-    v3_services.append(create_v3_service("Whirlpool", general_onion_url, "8899", False, ""))
+    v3_services.append(create_v3_service("Whirlpool", whirlpool_onion_url, "8899", False, ""))
     v3_services.append(create_v3_service("Netdata", general_onion_url, "19999 / 20000", True, ""))
     v3_services.append(create_v3_service("Specter Desktop", general_onion_url, "25441", True, "", force_https=True))
     v3_services.append(create_v3_service("Glances", general_onion_url, "61208 / 61209", True, ""))
