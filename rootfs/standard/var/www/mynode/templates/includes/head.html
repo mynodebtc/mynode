@@ -7,15 +7,17 @@
 <meta name="theme-color" content="#ffffff">
 
 <link href="{{ url_for('static', filename='jquery_ui/jquery-ui.css')}}" rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/mynode.css')}}">
+<link href="{{ url_for('static', filename='css/mynode.css')}}" rel="stylesheet">
 {% if ui_settings['darkmode'] %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/mynode_dark.css')}}">
+<link href="{{ url_for('static', filename='css/mynode_dark.css')}}" rel="stylesheet">
 {% endif %}
 <link href="{{ url_for('static', filename='jquery_ui/jquery-ui.css')}}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/font-awesome-all.css')}}" rel="stylesheet">
 <meta http-equiv="Content-Language" content="en">
 <meta name="google" content="notranslate">
 <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js')}}"></script>
 <script src="{{ url_for('static', filename='jquery_ui/jquery-ui.js')}}"></script>
+<script src="{{ url_for('static', filename='js/font-awesome-all.js')}}"></script>
 <script src="{{ url_for('static', filename='js/mynode.js')}}"></script>
 
 {% if ui_settings['background'] and ui_settings['background'] != "none" %}
