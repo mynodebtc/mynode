@@ -219,7 +219,9 @@ while true; do
 
                 # Fix for v1.12.1 (may need to remove later)
                 docker rmi node:14-alpine || true
-                sed -i "s/node:14-alpine.*/node:14-alpine3.12/g" /mnt/hdd/mynode/dojo/docker/my-dojo/node/Dockerfile
+                if [ "$IS_32_BIT" = "1" ]; then
+                    sed -i "s/node:14-alpine.*/node:14-alpine3.12/g" /mnt/hdd/mynode/dojo/docker/my-dojo/node/Dockerfile
+                fi
 
                 # Run Dojo Install or Upgrade
                 cd /mnt/hdd/mynode/dojo/docker/my-dojo
