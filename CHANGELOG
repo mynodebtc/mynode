@@ -1,3 +1,20 @@
+=== v0.2.56 ===
+- Released: 06/01/22
+- Upgrade Bitcoin v23.0
+- Upgrade BTCPay to v1.5.4
+- Upgrade Thunderhub to v0.13.13
+- Upgrade Specter to v1.10.0
+- Upgrade Dojo to v1.15.0
+- Upgrade Whirlpool CLI to v0.10.15
+- Upgrade LNDg to v1.1.1
+- Upgrade SphinxRelay to v2.2.9
+- Upgrade JoininBox to v0.6.8
+- Upgrade BoS to 12.8.4
+- Improve add more details and warning when drive space is low
+- Add message encouraging RP4 32-bit users to upgrade to 64-bit
+- Dev: Better UEFI support
+- Dev: Improve SDK-based apps
+
 === v0.2.55 ===
 - Released: 05/06/22
 - Add LNDg (beta)

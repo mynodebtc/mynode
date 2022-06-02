@@ -9,6 +9,9 @@ behavior. If this happens, try disabling some applications. Some examples of thi
   - The Bitcoin log may show numerous "RPC Work Queue" errors
   - Electrum may stop syncing at a specific block until the device is rebooted.
 
+## Device Specific Notes
+- Raspberry Pi 4 users who are still using a 32-bit based Operating System may not see all new application versions. They are encouraged to upgrade to a 64-bit OS by downloading a new 64-bit image from mynodebtc.com/download.
+
 ## Testnet Toggle
 - Testnet can be enabled via the settings page. This is a great way to test various Bitcoin and Lightning applications. However, not all apps support testnet yet or have not been integrated within myNode to work on testnet. The following apps
 have support or patial support.
