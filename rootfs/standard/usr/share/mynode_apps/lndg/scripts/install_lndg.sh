@@ -1,8 +1,17 @@
 #!/bin/bash
+
+source /usr/share/mynode/mynode_device_info.sh
+source /usr/share/mynode/mynode_app_versions.sh
+
 set -x
 set -e
 
 echo "==================== INSTALLING APP ===================="
+
+# Update grpcio for last working arm32 version on Buster
+if [ "$IS_RASPI4" = 1 ] && [ "$IS_32_BIT" = 1 ]; then
+    sed -i "s|grpcio|grpcio==$PYTHON_ARM32_GRPCIO_VERSION|g" requirements.txt
+fi
 
 # Install deps
 virtualenv -p python3 .venv
