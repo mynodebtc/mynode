@@ -88,7 +88,8 @@ def page_settings():
         "netdata_enabled": is_service_enabled("netdata"),
         "www_python3": is_www_python3(),
         "uas_usb": is_uas_usb_enabled(),
-        "randomize_balances": get_randomize_balances(),
+        "randomize_balances": settings_file_exists("randomize_balances"),
+        "hide_password_warning": settings_file_exists("hide_password_warning"),
         "is_uploader_device": is_uploader(),
         "download_rate": download_rate,
         "upload_rate": upload_rate,
@@ -1173,15 +1174,19 @@ def page_enable_enable_www_python3():
     flash("WWW Python 3 Setting Updated", category="message")
     return redirect("/settings")
 
-@mynode_settings.route("/settings/enable_randomize_balances")
-def page_enable_enable_randomize_balances():
+@mynode_settings.route("/settings/toggle_setting")
+def page_toggle_setting():
     check_logged_in()
     
+    name = request.args.get('name')
     enable = request.args.get('enable')
     if enable == "1":
-        set_randomize_balances(True)
+        create_settings_file(name)
+    elif enable == "0":
+        delete_settings_file(name)
     else:
-        set_randomize_balances(False)
+        flash("Error Updating Setting", category="error")
+        return redirect("/settings")
 
-    flash("Randomize Balance Setting Updated", category="message")
+    flash("Setting Updated", category="message")
     return redirect("/settings")

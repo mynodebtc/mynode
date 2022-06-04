@@ -568,7 +568,7 @@ def index():
             "swap_usage": get_swap_usage(),
             "device_temp": get_device_temp(),
             "upgrade_available": upgrade_available,
-            "hide_password_warning": hide_password_warning(),
+            "hide_password_warning": settings_file_exists("hide_password_warning"),
             "has_changed_password": has_changed_password(),
             "ui_settings": read_ui_settings()
         }

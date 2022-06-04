@@ -506,11 +506,26 @@
                     enabled=$('#randomize_balances_checkbox').is(":checked")
                     if (enabled)
                     {
-                        window.location.href='/settings/enable_randomize_balances?enable=1'
+                        window.location.href='/settings/toggle_setting?name=randomize_balances&enable=1'
                     }
                     else
                     {
-                        window.location.href='/settings/enable_randomize_balances?enable=0'
+                        window.location.href='/settings/toggle_setting?name=randomize_balances&enable=0'
+                    }
+                });
+
+                $('#hide_password_warning_checkbox').change(function () {
+                    $("#hide_password_warning_button").show();
+                });
+                $("#hide_password_warning_button").on("click", function() {
+                    enabled=$('#hide_password_warning_checkbox').is(":checked")
+                    if (enabled)
+                    {
+                        window.location.href='/settings/toggle_setting?name=hide_password_warning&enable=1'
+                    }
+                    else
+                    {
+                        window.location.href='/settings/toggle_setting?name=hide_password_warning&enable=0'
                     }
                 });
 
@@ -1324,6 +1339,18 @@
             </label>
             <br/><br/>
             <button id="randomize_balances_button" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Hide Password Warning</div>
+            This hides the default password warning for taking screenshots.
+            <br/><br/>
+            <label class="switch">
+                <input type="checkbox" id="hide_password_warning_checkbox" {% if hide_password_warning %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <br/><br/>
+            <button id="hide_password_warning_button" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
 
             <div class="divider"></div>
 
