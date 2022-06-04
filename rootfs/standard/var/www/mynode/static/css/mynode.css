@@ -6,7 +6,8 @@ body, input, select, textarea {
 
 .logo_header {
     margin: auto;
-    width: 300px;
+    width: 350px;
+    padding-top: 20px;
     padding-bottom: 20px;
     cursor: pointer;
 }
