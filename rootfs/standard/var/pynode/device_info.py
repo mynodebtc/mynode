@@ -633,15 +633,6 @@ def set_flask_session_timeout(days, hours):
     set_file_contents("/home/bitcoin/.mynode/flask_session_timeout", "{},{}".format(days, hours))
     os.system("sync")
 
-def get_randomize_balances():
-    return os.path.isfile('/home/bitcoin/.mynode/randomize_balances')
-
-def set_randomize_balances(randomize):
-    if randomize:
-        touch("/home/bitcoin/.mynode/randomize_balances")
-    else:
-        delete_file("rm -f /home/bitcoin/.mynode/randomize_balances")
-
 def is_www_python3():
     return os.path.isfile('/home/bitcoin/.mynode/.www_use_python3')
 

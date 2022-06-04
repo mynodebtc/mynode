@@ -309,7 +309,7 @@ def get_lightning_balance_info():
     if channel_num >= 0 and wallet_num >= 0:
         balance_data["total_balance"] = format_sat_amount(channel_num + wallet_num)
 
-    if get_randomize_balances():
+    if settings_file_exists("randomize_balances"):
         channel_num = random.randint(40000,1000000)
         wallet_num = random.randint(100000,1500000)
         balance_data["channel_balance"] = format_sat_amount(channel_num)
