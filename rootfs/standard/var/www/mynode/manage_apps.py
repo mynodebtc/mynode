@@ -55,6 +55,7 @@ def restart_app_page():
 def customize_app_versions_page():
     check_logged_in()
 
+    apps = get_all_applications(order_by="alphabetic")
     app_version_data=get_app_version_data()
     custom_app_version_data=get_custom_app_version_data()
 
@@ -76,8 +77,38 @@ def customize_app_versions_page():
         "title": "myNode Customize App Versions",
         "ui_settings": read_ui_settings(),
         "product_key_skipped": skipped_product_key(),
+        "apps": apps,
         "has_customized_app_versions": has_customized_app_versions(),
         "app_version_data": app_version_data,
         "custom_app_version_data": custom_app_version_data
     }
     return render_template('customize_app_versions.html', **templateData)
+
+@mynode_manage_apps.route("/apps/save-app-version", methods=['POST'])
+def save_app_version_page():
+    check_logged_in()
+
+    if not request.form.get("app") or not request.form.get("version"):
+        flash("Missing data", category="error")
+        return redirect("/apps/customize-app-versions")
+
+    short_name = request.form.get("app")
+    version = request.form.get("version")
+    save_custom_app_version(short_name, version)
+
+    flash("Application Version Saved!", category="message")
+    return redirect("/apps/customize-app-versions")
+
+@mynode_manage_apps.route("/apps/clear-app-version", methods=['POST'])
+def clear_app_version_page():
+    check_logged_in()
+
+    if not request.form.get("app"):
+        flash("Missing data", category="error")
+        return redirect("/apps/customize-app-versions")
+
+    short_name = request.form.get("app")
+    clear_custom_app_version(short_name)
+
+    flash("Custom Application Version Cleared!", category="message")
+    return redirect("/apps/customize-app-versions")

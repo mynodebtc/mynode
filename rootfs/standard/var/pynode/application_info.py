@@ -87,15 +87,30 @@ def get_app_current_version_from_file(short_name):
     return to_string(version)
 
 def get_app_latest_version_from_file(app):
+    short_name = app["short_name"]
     version = "unknown"
-    filename1 = "/home/bitcoin/.mynode/"+app+"_version_latest"
-    filename2 = "/mnt/hdd/mynode/settings/"+app+"_version_latest"
-    if os.path.isfile(filename1):
-        version = get_file_contents(filename1)
-    elif os.path.isfile(filename2):
-        version = get_file_contents(filename2)
+
+    # Check for custom version
+    filename1_custom = "/home/bitcoin/.mynode/"+short_name+"_version_latest_custom"
+    filename2_custom = "/mnt/hdd/mynode/settings/"+short_name+"_version_latest_custom"
+    if os.path.isfile(filename1_custom):
+        version = get_file_contents(filename1_custom)
+    elif os.path.isfile(filename2_custom):
+        version = get_file_contents(filename2_custom)
     else:
-        version = "error"
+        # Check for official version in JSON
+        if "latest_version" in app:
+            version = app["latest_version"]
+
+        # Check for official version in file
+        filename1 = "/home/bitcoin/.mynode/"+short_name+"_version_latest"
+        filename2 = "/mnt/hdd/mynode/settings/"+short_name+"_version_latest"
+        if os.path.isfile(filename1):
+            version = get_file_contents(filename1)
+        elif os.path.isfile(filename2):
+            version = get_file_contents(filename2)
+        else:
+            version = "error"
 
     # For versions that are hashes, shorten them
     version = version[0:16]
@@ -128,7 +143,8 @@ def initialize_application_defaults(app):
     if not "extra_ports" in app: app["extra_ports"] = []
     if not "is_premium" in app: app["is_premium"] = False
     if not "current_version" in app: app["current_version"] = get_app_current_version_from_file( app["short_name"] )
-    if not "latest_version" in app: app["latest_version"] = get_app_latest_version_from_file( app["short_name"] )
+    app["latest_version"] = get_app_latest_version_from_file( app )
+    if not "has_custom_version" in app: app["has_custom_version"] = has_custom_app_version( app["short_name"] )
     if not "is_beta" in app: app["is_beta"] = False
     app["is_installed"] = is_installed( app["short_name"] )
     if not "can_reinstall" in app: app["can_reinstall"] = True
@@ -432,7 +448,7 @@ def get_application_sso_token_enabled(short_name):
 
 
 ######################################################################################
-## Custom App Versions
+## Legacy Custom App Versions
 ######################################################################################
 def has_customized_app_versions():
     if os.path.isfile("/usr/share/mynode/mynode_app_versions_custom.sh"):
@@ -466,6 +482,29 @@ def reset_custom_app_version_data():
     os.system("rm -f /mnt/hdd/mynode/settings/mynode_app_versions_custom.sh")
     os.system("sync")
     trigger_application_refresh()
+
+######################################################################################
+## Custom App Versions
+######################################################################################
+def has_custom_app_version(short_name):
+    if os.path.isfile("/home/bitcoin/.mynode/"+short_name+"_version_latest_custom"):
+        return True
+    if os.path.isfile("/mnt/hdd/mynode/settings/"+short_name+"_version_latest_custom"):
+        return True
+    return False
+
+def save_custom_app_version(short_name, version):
+    set_file_contents("/home/bitcoin/.mynode/"+short_name+"_version_latest_custom", version)
+    set_file_contents("/mnt/hdd/mynode/settings/"+short_name+"_version_latest_custom", version)
+    os.system("sync")
+    trigger_application_refresh()
+
+def clear_custom_app_version(short_name):
+    os.system("rm -f /home/bitcoin/.mynode/"+short_name+"_version_latest_custom")
+    os.system("rm -f /mnt/hdd/mynode/settings/"+short_name+"_version_latest_custom")
+    os.system("sync")
+    trigger_application_refresh()
+
 
 ######################################################################################
 ## Single Application Actions

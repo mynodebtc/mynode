@@ -4,6 +4,28 @@
         {% include 'includes/head.html' %}
 
         <script>
+            function show_customize_fields(short_name) {
+                $("#customize_"+short_name).hide();
+                $("#custom_save_"+short_name).show();
+                $("#custom_hide_"+short_name).show();
+                $("#custom_input_"+short_name).show();
+            }
+
+            function hide_customize_fields(short_name) {
+                $("#customize_"+short_name).show();
+                $("#custom_save_"+short_name).hide();
+                $("#custom_hide_"+short_name).hide();
+                $("#custom_input_"+short_name).hide();
+            }
+
+            function save_customize_fields(short_name) {
+                $("#custom_form_"+short_name).submit();
+            }
+
+            function clear_customize_fields(short_name) {
+                $("#custom_clear_form_"+short_name).submit();
+            }
+
             $(document).ready(function() {
                 $("#show_config_button").on("click", function() {
                     visible = $("#default_version_config").is(':visible');
@@ -29,11 +51,11 @@
 
         {% include 'includes/message_display.html' %}
 
-        <div class="main_header">Custom Application Versions</div>
+        <div class="main_header">Customize Application Versions</div>
         <br/>
 
         {% if product_key_skipped %}
-            <div class="text_block">Customizing app versions via the GUI is a Premium Feature</div>
+        <div class="text_block">Customizing app versions via the GUI is a Premium Feature</div>
         {% else %}
 
         <div class="text_block">
@@ -44,7 +66,60 @@
             Saving will update the "Latest Version" of an app shown on the application page. To perform the upgrade,
             you will need to update it there.
             <br/><br/>
+        </div>
 
+        <table class="bitcoin_table" style="width: 800px;">
+            <thead class="bitcoin_table_header">
+                <td><!-- Icon --></td>
+                <td>Application</td>
+                <td>Current Version</td>
+                <td>Latest Version</td>
+                <td style="width: 300px;">Customize</td>
+            </thead>
+            <tbody>
+                {% for app in apps %}
+                    {% if app.show_on_application_page and app.can_reinstall %}
+                        <tr>
+                            <td><img class="app_logo_icon" style="width: 32px;" src="{{ url_for('static', filename="images/app_icons/")}}{{app.short_name}}.png"/></td>
+                            <td>{{ app.name }}</td>
+                            <td>
+                                {% if app.is_installed %}
+                                {{ app.current_version }}
+                                {% endif %}
+                            </td>
+                            <td>{{ app.latest_version }}</td>
+                            <td>
+                                {% if app.has_custom_version %}
+                                    <form id="custom_clear_form_{{app.short_name}}" action="/apps/clear-app-version" method="POST" style="margin: 0px;">
+                                        <input type="hidden" name="app" value="{{app.short_name}}">
+                                        <img style="display: inline; vertical-align: middle; width: 24px; padding-bottom: 2px;" src="{{ url_for('static', filename="images/pin.png")}}"/>
+                                        <span style="vertical-align: middle;">{{app.latest_version}}</span>
+                                        <!--<input id="custom_input_{{app.short_name}}" name="version" type="text" class="text ui-widget-content ui-corner-all ui-state-disabled" style="width: 80px;" value="{{app.latest_version}}"/>-->
+                                        <button id="custom_clear_{{app.short_name}}" type="button" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70px; margin-left: 15px;" onclick="clear_customize_fields('{{ app.short_name }}');">Clear</button>
+                                    </form>
+                                {% else %}
+                                    <button id="customize_{{app.short_name}}" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" onclick="show_customize_fields('{{ app.short_name }}');">Customize</button>
+
+                                    <form id="custom_form_{{app.short_name}}" action="/apps/save-app-version" method="POST" style="margin: 0px;">
+                                        <input type="hidden" name="app" value="{{app.short_name}}">
+                                        <input id="custom_input_{{app.short_name}}" name="version" type="text" class="text ui-widget-content ui-corner-all" style="width: 80px; vertical-align: middle; display: none;"/>
+                                        <button id="custom_save_{{app.short_name}}" type="button" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70px; display: none;" onclick="save_customize_fields('{{ app.short_name }}');">Save</button>
+                                        <button id="custom_hide_{{app.short_name}}" type="button" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70px; display: none;" onclick="hide_customize_fields('{{ app.short_name }}');">Cancel</button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+        <br/><br/>
+
+
+        <div class="main_header">Legacy Custom Application Versions</div>
+        <br/>
+
+        <div class="text_block">
             <b>Caution:</b> Errors in this file may prevent myNode from booting properly.
 
             To see the available variables, use the format from the included default myNode version configuration.
@@ -63,7 +138,7 @@
 
         <div class="centered_text_div">
             <form action="/apps/customize-app-versions" method="POST">
-                <textarea class="config_textarea" name="app_data" id="app_data">{{ custom_app_version_data }}</textarea>
+                <textarea class="config_textarea" style="height: 100px;" name="app_data" id="app_data">{{ custom_app_version_data }}</textarea>
                 <br/><br/>
                 <input class="ui-button ui-widget ui-corner-all" type="submit" value="Save"/>
                 <a href="/apps/customize-app-versions?reset=1" class="ui-button ui-widget ui-corner-all">Reset Customization</a>
