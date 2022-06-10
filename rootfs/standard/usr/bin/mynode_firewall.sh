@@ -74,6 +74,17 @@ ufw allow 61209 comment 'allow Glances HTTPS'
 ufw allow from 127.0.0.1 comment 'allow from localhost'
 #ufw allow from ::1 comment 'allow from localhost'
 
+# Allow all local traffic
+if [ -f /mnt/hdd/mynode/settings/local_traffic_allowed ]; then
+    ufw allow from 10.0.0.0/8
+    ufw allow from 192.168.0.0/16
+    ufw allow from 172.16.0.0/12
+else
+    ufw delete allow from 10.0.0.0/8
+    ufw delete allow from 192.168.0.0/16
+    ufw delete allow from 172.16.0.0/12
+fi
+
 # Open ports for additional apps
 mynode-manage-apps openports
 

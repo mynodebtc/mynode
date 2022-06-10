@@ -83,6 +83,7 @@ def page_settings():
         "is_bitcoin_synced": is_bitcoin_synced(),
         "is_installing_docker_images": is_installing_docker_images(),
         "firewall_rules": get_firewall_rules(),
+        "is_local_traffic_allowed": settings_file_exists("local_traffic_allowed"),
         "is_testnet_enabled": is_testnet_enabled(),
         "is_quicksync_disabled": not is_quicksync_enabled(),
         "netdata_enabled": is_service_enabled("netdata"),
@@ -742,6 +743,19 @@ def page_lnd_delete_wallet():
     }
     return render_template('reboot.html', **templateData)
 
+@mynode_settings.route("/settings/delete-lnd-wallet", methods=['POST'])
+def page_lnd_delete_watchtower():
+    check_logged_in()
+
+    # Successful Auth
+    delete_lnd_watchtower_data()
+    
+    # Restart LND
+    restart_lnd()
+
+    # Wait until device is restarted
+    flash("Restarting lnd...", category="message")
+    return redirect("/settings")
 
 @mynode_settings.route("/settings/reset-tor", methods=['POST'])
 def page_reset_tor():
@@ -1187,6 +1201,26 @@ def page_toggle_setting():
     else:
         flash("Error Updating Setting", category="error")
         return redirect("/settings")
+
+    # Restart service if necessary
+    restart_service = request.args.get('restart_service')
+    if restart_service == "1":
+        # TODO: Add if necessary
+        pass
+
+    # Reboot if necessary
+    reboot = request.args.get('reboot')
+    if reboot == "1":
+        t = Timer(1.0, reboot_device)
+        t.start()
+
+        templateData = {
+            "title": "myNode Reboot",
+            "header_text": "Restarting",
+            "subheader_text": "This will take several minutes...",
+            "ui_settings": read_ui_settings()
+        }
+        return render_template('reboot.html', **templateData)
 
     flash("Setting Updated", category="message")
     return redirect("/settings")

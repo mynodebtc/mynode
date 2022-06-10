@@ -1009,6 +1009,11 @@ def delete_lnd_data():
     os.system("rm -rf /home/admin/.lnd/")
     return True
 
+def delete_lnd_watchtower_data():
+    os.system("rm -rf /mnt/hdd/mynode/lnd/data/graph/mainnet/wtclient.db")
+    os.system("rm -rf /mnt/hdd/mynode/lnd/data/graph/mainnet/wtclient.db.last-compacted")
+    return True
+
 
 #==================================
 # Mainnet / Testnet Functions

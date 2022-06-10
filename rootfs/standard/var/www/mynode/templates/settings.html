@@ -58,6 +58,17 @@
                     delete_lnd_wallet_dialog.dialog( "open" );
                 });
 
+                $("#delete_lnd_watchtower").on("click", function() {
+                    var okFunction = function() {
+                        window.location.href="/settings/reset-lnd-watchtower"
+                    }
+                    openConfirmDialog("confirm-dialog",
+                                      "Reset Lightning Watchtower",
+                                      "Resetting the Lightning watchtower will erase watchtower settings and restart LND. "+
+                                      "Would you still like to reset Lightning watchtower data?",
+                                      okFunction)
+                });
+
 
                 function resetTor() {
                     $("#reset_tor_form").submit();
@@ -87,7 +98,6 @@
 
 
                 $("#reset-blockchain").on("click", function() {
-                    // Enable electrs
                     var okFunction = function() {
                         window.location.href="/settings/reset-blockchain"
                     }
@@ -100,7 +110,6 @@
                 });
 
                 $("#restart-quicksync").on("click", function() {
-                    // Enable electrs
                     var okFunction = function() {
                         window.location.href="/settings/restart-quicksync"
                     }
@@ -504,14 +513,12 @@
                 });
                 $("#randomize_balances_button").on("click", function() {
                     enabled=$('#randomize_balances_checkbox').is(":checked")
+                    val = "0"
                     if (enabled)
                     {
-                        window.location.href='/settings/toggle_setting?name=randomize_balances&enable=1'
+                        val = "1"
                     }
-                    else
-                    {
-                        window.location.href='/settings/toggle_setting?name=randomize_balances&enable=0'
-                    }
+                    window.location.href='/settings/toggle_setting?name=randomize_balances&enable='+val
                 });
 
                 $('#hide_password_warning_checkbox').change(function () {
@@ -519,14 +526,12 @@
                 });
                 $("#hide_password_warning_button").on("click", function() {
                     enabled=$('#hide_password_warning_checkbox').is(":checked")
+                    val = "0"
                     if (enabled)
                     {
-                        window.location.href='/settings/toggle_setting?name=hide_password_warning&enable=1'
+                        val = "1"
                     }
-                    else
-                    {
-                        window.location.href='/settings/toggle_setting?name=hide_password_warning&enable=0'
-                    }
+                    window.location.href='/settings/toggle_setting?name=hide_password_warning&enable='+val
                 });
 
                 $('#https_forced_checkbox').change(function () {
@@ -542,6 +547,19 @@
                     {
                         window.location.href='/settings/set_https_forced?forced=0'
                     }
+                });
+
+                $('#local_traffic_allowed_checkbox').change(function () {
+                    $("#local_traffic_allowed").show();
+                });
+                $("#local_traffic_allowed").on("click", function() {
+                    enabled=$('#local_traffic_allowed_checkbox').is(":checked")
+                    val = "0"
+                    if (enabled)
+                    {
+                        val = "1"
+                    }
+                    window.location.href='/settings/toggle_setting?name=local_traffic_allowed&reboot=1&enable='+val
                 });
 
                 $('#btcrpcexplorer_token_checkbox').change(function () {
@@ -831,26 +849,6 @@
 
 
         <div class="settings_block">
-            <a id="firewall"></a>
-            <div class="settings_block_header">Firewall</div>
-
-            <div class="settings_block_subheader">Rules</div>
-            Show the current firewall configuration.
-            <br/>
-            <button id="show_firewall_rules" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
-            <div id="firewall_rules" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{firewall_rules}}</pre></div>
-            
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Reset</div>
-            Resetting the firewall will disable and reenable the firewall and then reboot the device.
-            <br/>
-            <a href="/settings/reset-firewall" class="ui-button ui-widget ui-corner-all settings_button">Reset Firewall</a>
-
-        </div>
-
-
-        <div class="settings_block">
             <a id="bitcoin"></a>
             <div class="settings_block_header">Bitcoin</div>
 
@@ -912,6 +910,14 @@
             Advanced: This will delete your Lightning Wallet. It will delete both mainnet and testnet wallets if you have them.
             <br/>
             <button id="delete_lnd_wallet" class="ui-button ui-widget ui-corner-all settings_button">Delete Wallet</button>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Reset Watchtower Info</div>
+            Advanced: This will reset the Watchtower information. This can be used if LND is having issues after adding watchtowers.
+            <br/>
+            <button id="delete_lnd_watchtower" class="ui-button ui-widget ui-corner-all settings_button">Delete Wallet</button>
+
         </div>
 
 
@@ -980,6 +986,39 @@
             This will delete your Specter configuration and restart Specter. This should not impact wallets and devices stored in Specter. If Specter is having issues starting, this may help.
             <br/>
             <a href="/settings/reset-specter-config" class="ui-button ui-widget ui-corner-all settings_button">Reset Configuration</a>
+        </div>
+
+
+        <div class="settings_block">
+            <a id="firewall"></a>
+            <div class="settings_block_header">Firewall</div>
+
+            <div class="settings_block_subheader">Rules</div>
+            Show the current firewall configuration.
+            <br/>
+            <button id="show_firewall_rules" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
+            <div id="firewall_rules" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{firewall_rules}}</pre></div>
+            
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Allow All Local Network Traffic</div>
+            This will allow all local network traffic from 10.0.0.0/8, 192.168.0.0/16, and 172.16.0.0/12. This can be
+            helpful if you are having NAT-PMP or UPnP issues with LND. This will reboot the device.
+            <br/><br/>
+            <label class="switch">
+                <input type="checkbox" id="local_traffic_allowed_checkbox" {% if is_local_traffic_allowed %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <br/><br/>
+            <button id="local_traffic_allowed" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Reset</div>
+            Resetting the firewall will disable and reenable the firewall and then reboot the device.
+            <br/>
+            <a href="/settings/reset-firewall" class="ui-button ui-widget ui-corner-all settings_button">Reset Firewall</a>
+
         </div>
 
 
