@@ -32,6 +32,10 @@ sed -i 's|/var/log|/opt/mynode/lndg/logs|g' .venv/supervisord.conf
 sed -i 's|/var/supervisord.pid|/tmp/supervisord.pid|g' .venv/supervisord.conf
 sed -i 's|"python|".venv/bin/python|g' .venv/supervisord.conf
 
+# Patch Django
+echo "" >> lndg/settings.py
+echo "SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')" >> lndg/settings.py
+
 # Load initial data
 .venv/bin/python jobs.py
 
