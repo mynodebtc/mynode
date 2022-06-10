@@ -1014,36 +1014,6 @@ if should_install_app "warden" ; then
 fi
 
 
-# Upgrade WARden Terminal
-if should_install_app "wardenterminal" ; then
-    WARDEN_TERMINAL_UPGRADE_URL=https://github.com/pxsocs/warden_terminal/archive/$WARDEN_TERMINAL_VERSION.tar.gz
-    CURRENT=""
-    if [ -f $WARDEN_TERMINAL_VERSION_FILE ]; then
-        CURRENT=$(cat $WARDEN_TERMINAL_VERSION_FILE)
-    fi
-    if [ "$CURRENT" != "$WARDEN_TERMINAL_VERSION" ]; then
-        cd /opt/mynode
-        rm -rf wardenterminal
-
-        sudo -u bitcoin wget $WARDEN_TERMINAL_UPGRADE_URL -O wardenterminal.tar.gz
-        sudo -u bitcoin tar -xvf wardenterminal.tar.gz
-        sudo -u bitcoin rm wardenterminal.tar.gz
-        sudo -u bitcoin mv warden_terminal-* wardenterminal
-        cd wardenterminal
-
-        # Make venv
-        if [ ! -d env ]; then
-            sudo -u bitcoin python3 -m venv env
-        fi
-        source env/bin/activate
-        pip3 install -r requirements.txt
-        deactivate
-
-        echo $WARDEN_TERMINAL_VERSION > $WARDEN_TERMINAL_VERSION_FILE
-    fi
-fi
-
-
 # Upgrade Balance of Satoshis
 if should_install_app "bos" ; then
     CURRENT=""
