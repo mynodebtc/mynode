@@ -164,6 +164,13 @@
             </tbody>
         </table>
 
+        {% if not product_key_skipped %}
+        <br/><br/><br/>
+        <div style="margin: auto; text-align: center;">
+            <a href="/apps/customize-app-versions" class="ui-button ui-widget ui-corner-all">Customize Application Versions</a>
+        </div>
+        {% endif %}
+
         <div id="loading_spinner_overlay" class="loading_spinner_overlay" style="display:none;">
             <img id="loading_spinner" class="loading_image" src="{{ url_for('static', filename="images/loading.gif")}}"/>
             <br/>
