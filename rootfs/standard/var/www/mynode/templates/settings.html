@@ -58,14 +58,25 @@
                     delete_lnd_wallet_dialog.dialog( "open" );
                 });
 
-                $("#delete_lnd_watchtower").on("click", function() {
+                $("#reset_lnd_watchtower_client").on("click", function() {
                     var okFunction = function() {
-                        window.location.href="/settings/reset-lnd-watchtower"
+                        window.location.href="/settings/reset-lnd-watchtower?type=client"
                     }
                     openConfirmDialog("confirm-dialog",
-                                      "Reset Lightning Watchtower",
+                                      "Reset Lightning Watchtower Client",
                                       "Resetting the Lightning watchtower will erase watchtower settings and restart LND. "+
-                                      "Would you still like to reset Lightning watchtower data?",
+                                      "Would you still like to reset Lightning watchtower?",
+                                      okFunction)
+                });
+
+                $("#reset_lnd_watchtower_server").on("click", function() {
+                    var okFunction = function() {
+                        window.location.href="/settings/reset-lnd-watchtower?type=server"
+                    }
+                    openConfirmDialog("confirm-dialog",
+                                      "Reset Lightning Watchtower Server",
+                                      "Resetting the Lightning watchtower will erase watchtower settings and restart LND. "+
+                                      "Would you still like to reset Lightning watchtower?",
                                       okFunction)
                 });
 
@@ -916,7 +927,8 @@
             <div class="settings_block_subheader">Reset Watchtower Info</div>
             Advanced: This will reset the Watchtower information. This can be used if LND is having issues after adding watchtowers.
             <br/>
-            <button id="delete_lnd_watchtower" class="ui-button ui-widget ui-corner-all settings_button">Delete Wallet</button>
+            <button id="reset_lnd_watchtower_client" class="ui-button ui-widget ui-corner-all settings_button">Reset Watchtower Client</button>
+            <button id="reset_lnd_watchtower_server" class="ui-button ui-widget ui-corner-all settings_button">Reset Watchtower Server</button>
 
         </div>
 

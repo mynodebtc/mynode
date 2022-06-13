@@ -727,7 +727,6 @@ def page_lnd_delete_wallet():
 
     check_and_mark_reboot_action("delete_lnd_data")
 
-    # Successful Auth
     delete_lnd_data()
     
     # Trigger reboot
@@ -743,17 +742,21 @@ def page_lnd_delete_wallet():
     }
     return render_template('reboot.html', **templateData)
 
-@mynode_settings.route("/settings/delete-lnd-wallet", methods=['POST'])
-def page_lnd_delete_watchtower():
+@mynode_settings.route("/settings/reset-lnd-watchtower")
+def page_lnd_reset_lnd_watchtower():
     check_logged_in()
 
-    # Successful Auth
-    delete_lnd_watchtower_data()
+    type = request.args.get('type')
+    if type == "client":
+        delete_lnd_watchtower_client_data()
+    elif type == "server":
+        delete_lnd_watchtower_server_data()
+    else:
+        flash("Invalid Type", category="error")
+        return redirect(url_for(".page_settings"))
     
-    # Restart LND
     restart_lnd()
 
-    # Wait until device is restarted
     flash("Restarting lnd...", category="message")
     return redirect("/settings")
 
