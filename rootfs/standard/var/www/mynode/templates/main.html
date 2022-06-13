@@ -157,7 +157,11 @@
             }
 
             function refresh_page() {
-                window.location.href=location.protocol+'//'+location.hostname+"/";
+                p = ""
+                if ( location.port != "" && location.port != "80" && location.port != "443" ) {
+                    p = ":" + location.port
+                }
+                window.location.href=location.protocol+'//'+location.hostname+p+"/";
             }
 
             function need_to_update_tx_table(transactions, last_displayed_tx) {
