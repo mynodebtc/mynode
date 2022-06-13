@@ -43,7 +43,7 @@ sleep 1
 sync
 
 # Init Dynamic Apps
-mynode-manage-apps init 
+mynode-manage-apps init || true
 
 # Reload systemd files
 systemctl daemon-reload
