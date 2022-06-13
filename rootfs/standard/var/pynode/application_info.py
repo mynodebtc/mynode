@@ -98,10 +98,6 @@ def get_app_latest_version_from_file(app):
     elif os.path.isfile(filename2_custom):
         version = get_file_contents(filename2_custom)
     else:
-        # Check for official version in JSON
-        if "latest_version" in app:
-            version = app["latest_version"]
-
         # Check for official version in file
         filename1 = "/home/bitcoin/.mynode/"+short_name+"_version_latest"
         filename2 = "/mnt/hdd/mynode/settings/"+short_name+"_version_latest"
@@ -110,7 +106,11 @@ def get_app_latest_version_from_file(app):
         elif os.path.isfile(filename2):
             version = get_file_contents(filename2)
         else:
-            version = "error"
+            # Check for official version in JSON
+            if "latest_version" in app:
+                version = app["latest_version"]
+            else:
+                version = "error"
 
     # For versions that are hashes, shorten them
     version = version[0:16]
