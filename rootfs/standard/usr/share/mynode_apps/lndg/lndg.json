@@ -1,8 +1,7 @@
 {
     "name": "LNDg",
-    "is_beta": true,
     "short_name": "lndg",
-    "latest_version": "v1.1.1",
+    "latest_version": "v1.1.2",
     "linux_user": "lndg",
     "targz_download_url": "https://github.com/cryptosharks131/lndg/archive/refs/tags/{VERSION}.tar.gz",
     "install_env_vars": {"var1":"val2", "var2": "val2"},
