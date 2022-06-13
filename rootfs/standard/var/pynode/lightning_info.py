@@ -423,7 +423,9 @@ def get_lightning_watchtower_server_info():
             elif "pubkey" in server_info or "listeners" in server_info:
                 server_info["watchtower_server_uri"] = ""
                 if "pubkey" in server_info:
-                    server_info["watchtower_server_uri"] += server_info["pubkey"]
+                    pubkey_decoded = base64.b64decode(server_info['pubkey'])
+                    pubkey_b16 = to_string(base64.b16encode( pubkey_decoded )).lower()
+                    server_info["watchtower_server_uri"] += pubkey_b16
                 #if "listeners":
                 #    server_info["watchtower_server_uri"] += "listeners: " + watchtower_server_info["listeners"][0]
         except:
