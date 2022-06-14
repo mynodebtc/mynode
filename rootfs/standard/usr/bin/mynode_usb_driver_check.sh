@@ -2,7 +2,7 @@
 
 set -x
 
-source /usr/share/mynode/mynode_config.sh
+source /usr/share/mynode/mynode_device_info.sh
 
 # Allow UAS
 if [ -f /mnt/hdd/mynode/settings/.uas_usb_enabled ] || [ -f /home/bitcoin/.mynode/.uas_usb_enabled ]; then
