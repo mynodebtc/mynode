@@ -183,9 +183,15 @@ def get_lightning_peers():
             else:
                 peer["bytes_sent"] = "N/A"
             if "sat_sent" in p:
-                peer["sat_sent"] = format_sat_amount(peer["sat_sent"])
+                if settings_file_exists("randomize_balances"):
+                    peer["sat_sent"] = "0"
+                else:
+                    peer["sat_sent"] = format_sat_amount(peer["sat_sent"])
             if "sat_recv" in p:
-                peer["sat_recv"] = format_sat_amount(peer["sat_recv"])
+                if settings_file_exists("randomize_balances"):
+                    peer["sat_recv"] = "0"
+                else:
+                    peer["sat_recv"] = format_sat_amount(peer["sat_recv"])
             if "ping_time" not in p:
                 peer["ping_time"] = "N/A"
             if "pub_key" in p:
@@ -225,6 +231,14 @@ def get_lightning_channels():
     if channeldata != None and "channels" in channeldata:
         for c in channeldata["channels"]:
             channel = c
+
+            if settings_file_exists("randomize_balances"):
+                c = random.randint(200000,2500000)
+                p = random.random()
+                channel["capacity"] = str(c)
+                channel["local_balance"] = str( int(c * p) )
+                channel["remote_balance"] = str( int(c * (1-p)) )
+                channel["commit_fee"] = str(random.randint(1000,5000))
 
             channel["status_color"] = "gray"
             if "active" in channel:
@@ -310,8 +324,18 @@ def get_lightning_balance_info():
         balance_data["total_balance"] = format_sat_amount(channel_num + wallet_num)
 
     if settings_file_exists("randomize_balances"):
-        channel_num = random.randint(40000,1000000)
-        wallet_num = random.randint(100000,1500000)
+        if is_cached("randomized_channel_balance", 3600):
+            channel_num = get_cached_data("randomized_channel_balance")
+        else:
+            channel_num = random.randint(40000,1000000)
+            update_cached_data("randomized_channel_balance", channel_num)
+
+        if is_cached("randomized_wallet_balance", 3600):
+            wallet_num = get_cached_data("randomized_wallet_balance")
+        else:
+            wallet_num = random.randint(40000,1000000)
+            update_cached_data("randomized_wallet_balance", wallet_num)
+
         balance_data["channel_balance"] = format_sat_amount(channel_num)
         balance_data["channel_pending"] = "0"
         balance_data["wallet_balance"] = format_sat_amount(wallet_num)
@@ -327,7 +351,10 @@ def get_lightning_transactions():
         data = copy.deepcopy(lightning_transactions)
         for tx in data["transactions"]:
             tx["id"] = tx["tx_hash"]
-            tx["amount_str"] = format_sat_amount(tx["amount"])
+            if settings_file_exists("randomize_balances"):
+                tx["amount_str"] = format_sat_amount(str(random.randint(-200000,500000)))
+            else:
+                tx["amount_str"] = format_sat_amount(tx["amount"])
             tx["date_str"] = time.strftime("%D %H:%M", time.localtime(int(tx["time_stamp"])))
             transactions.append(tx)
         return transactions
@@ -342,8 +369,12 @@ def get_lightning_payments():
         for tx in data["payments"]:
             tx["id"] = tx["payment_hash"]
             tx["type"] = "PAYMENT"
-            tx["value_str"] = format_sat_amount(tx["value_sat"])
-            tx["fee_str"] = format_sat_amount(tx["fee"])
+            if settings_file_exists("randomize_balances"):
+                tx["value_str"] = format_sat_amount( str(random.randint(1000,40000)) )
+                tx["fee_str"] = format_sat_amount( str(random.randint(0,60)) )
+            else:
+                tx["value_str"] = format_sat_amount(tx["value_sat"])
+                tx["fee_str"] = format_sat_amount(tx["fee"])
             tx["date_str"] = time.strftime("%D %H:%M", time.localtime(int(tx["creation_date"])))
             tx["memo"] = ""
             payments.append(tx)
@@ -360,7 +391,10 @@ def get_lightning_invoices():
         for tx in data["invoices"]:
             tx["id"] = tx["r_hash"]
             tx["type"] = "INVOICE"
-            tx["value_str"] = format_sat_amount(tx["value"])
+            if settings_file_exists("randomize_balances"):
+                tx["value_str"] = format_sat_amount( str(random.randint(1000,60000)) )
+            else:
+                tx["value_str"] = format_sat_amount(tx["value"])
             tx["date_str"] = time.strftime("%D %H:%M", time.localtime(int(tx["creation_date"])))
             tx["memo"] = unquote_plus(tx["memo"])
             invoices.append(tx)
