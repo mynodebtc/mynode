@@ -50,7 +50,7 @@ else
     fi
 
     # Append Tor/IP section (check new file or old file, should be migrated to new)
-    if [ -f /mnt/hdd/mynode/settings/btc_lnd_tor_enabled ] || [ -f /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled ]; then
+    if [ -f /mnt/hdd/mynode/settings/btc_lnd_tor_enabled ] || [ -f /home/bitcoin/.mynode/btc_lnd_tor_enabled ]; then
         cat /usr/share/mynode/bitcoin_tor.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
     else
         cat /usr/share/mynode/bitcoin_ipv4.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
