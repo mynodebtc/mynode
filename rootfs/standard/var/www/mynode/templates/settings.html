@@ -463,53 +463,35 @@
                     $("#btc_lnd_tor").show();
                 });
                 $("#btc_lnd_tor").on("click", function() {
-                    enabled=$('#btc_lnd_tor_checkbox').is(":checked")
-                    if (enabled)
+                    checked=$('#btc_lnd_tor_checkbox').is(":checked")
+                    val = "0"
+                    if (checked)
                     {
-                        window.location.href='/settings/enable_btc_lnd_tor?enable=1'
+                        val = "1"
                     }
-                    else
-                    {
-                        window.location.href='/settings/enable_btc_lnd_tor?enable=0'
-                    }
+                    window.location.href='/settings/toggle_setting?name=enable_btc_lnd_tor&reboot=1&enable='+val
                 });
 
                 $('#streamisolation_tor_checkbox').change(function () {
                     $("#streamisolation_tor").show();
                 });
                 $("#streamisolation_tor").on("click", function() {
-                    enabled=$('#streamisolation_tor_checkbox').is(":checked")
-                    if (enabled)
+                    // This setting is inverted (uses disable flag)
+                    checked=$('#streamisolation_tor_checkbox').is(":checked")
+                    val = "1"
+                    if (checked)
                     {
-                        window.location.href='/settings/enable_streamisolation_tor?enable=1'
+                        val = "0"
                     }
-                    else
-                    {
-                        window.location.href='/settings/enable_streamisolation_tor?enable=0'
-                    }
-                });
-
-                $('#www_python3_checkbox').change(function () {
-                    $("#www_python3_button").show();
-                });
-                $("#www_python3_button").on("click", function() {
-                    enabled=$('#www_python3_checkbox').is(":checked")
-                    if (enabled)
-                    {
-                        window.location.href='/settings/enable_www_python3?enable=1'
-                    }
-                    else
-                    {
-                        window.location.href='/settings/enable_www_python3?enable=0'
-                    }
+                    window.location.href='/settings/toggle_setting?name=streamisolation_tor_disabled&restart_service=lnd&enable='+val
                 });
 
                 $('#uas_usb_checkbox').change(function () {
                     $("#uas_usb_button").show();
                 });
                 $("#uas_usb_button").on("click", function() {
-                    enabled=$('#uas_usb_checkbox').is(":checked")
-                    if (enabled)
+                    checked=$('#uas_usb_checkbox').is(":checked")
+                    if (checked)
                     {
                         window.location.href='/settings/enable_uas_usb?enable=1'
                     }
@@ -523,9 +505,9 @@
                     $("#randomize_balances_button").show();
                 });
                 $("#randomize_balances_button").on("click", function() {
-                    enabled=$('#randomize_balances_checkbox').is(":checked")
+                    checked=$('#randomize_balances_checkbox').is(":checked")
                     val = "0"
-                    if (enabled)
+                    if (checked)
                     {
                         val = "1"
                     }
@@ -536,9 +518,9 @@
                     $("#hide_password_warning_button").show();
                 });
                 $("#hide_password_warning_button").on("click", function() {
-                    enabled=$('#hide_password_warning_checkbox').is(":checked")
+                    checked=$('#hide_password_warning_checkbox').is(":checked")
                     val = "0"
-                    if (enabled)
+                    if (checked)
                     {
                         val = "1"
                     }
@@ -549,24 +531,22 @@
                     $("#https_forced").show();
                 });
                 $("#https_forced").on("click", function() {
-                    enabled=$('#https_forced_checkbox').is(":checked")
-                    if (enabled)
+                    checked=$('#https_forced_checkbox').is(":checked")
+                    val = "0"
+                    if (checked)
                     {
-                        window.location.href='/settings/set_https_forced?forced=1'
+                        val = "1"
                     }
-                    else
-                    {
-                        window.location.href='/settings/set_https_forced?forced=0'
-                    }
+                    window.location.href='/settings/toggle_setting?name=https_forced&enable='+val
                 });
 
                 $('#local_traffic_allowed_checkbox').change(function () {
                     $("#local_traffic_allowed").show();
                 });
                 $("#local_traffic_allowed").on("click", function() {
-                    enabled=$('#local_traffic_allowed_checkbox').is(":checked")
+                    checked=$('#local_traffic_allowed_checkbox').is(":checked")
                     val = "0"
-                    if (enabled)
+                    if (checked)
                     {
                         val = "1"
                     }
@@ -577,8 +557,8 @@
                     $("#btcrpcexplorer_token").show();
                 });
                 $("#btcrpcexplorer_token").on("click", function() {
-                    enabled=$('#btcrpcexplorer_token_checkbox').is(":checked")
-                    if (enabled)
+                    checked=$('#btcrpcexplorer_token_checkbox').is(":checked")
+                    if (checked)
                     {
                         window.location.href='/settings/btcrpcexplorer_token?enable=1'
                     }
@@ -592,30 +572,27 @@
                     $("#tor_repo").show();
                 });
                 $("#tor_repo").on("click", function() {
-                    enabled=$('#tor_repo_checkbox').is(":checked")
-                    if (enabled)
+                    checked=$('#tor_repo_checkbox').is(":checked")
+                    // Inverted setting (uses disable flag)
+                    val = "1"
+                    if (checked)
                     {
-                        window.location.href='/settings/enable_tor_repo?enable=1'
+                        val = "0"
                     }
-                    else
-                    {
-                        window.location.href='/settings/enable_tor_repo?enable=0'
-                    }
+                    window.location.href='/settings/toggle_setting?name=tor_repo_disabled&enable='+val
                 });
 
                 $('#aptget_tor_checkbox').change(function () {
                     $("#aptget_tor").show();
                 });
                 $("#aptget_tor").on("click", function() {
-                    enabled=$('#aptget_tor_checkbox').is(":checked")
-                    if (enabled)
+                    checked=$('#aptget_tor_checkbox').is(":checked")
+                    val = "0"
+                    if (checked)
                     {
-                        window.location.href='/settings/enable_aptget_tor?enable=1'
+                        val = "1"
                     }
-                    else
-                    {
-                        window.location.href='/settings/enable_aptget_tor?enable=0'
-                    }
+                    window.location.href='/settings/toggle_setting?name=torify_apt_get&enable='+val
                 });
             });
 
@@ -1368,18 +1345,6 @@
 
                 <div class="divider"></div>
             {% endif %}
-
-            <div class="settings_block_subheader">Use Python 3 for Web Interface</div>
-            This will use the beta version of the web UI, which relies on python 3.
-            <br/><br/>
-            <label class="switch">
-                <input type="checkbox" id="www_python3_checkbox" {% if www_python3 %}checked{% endif %}>
-                <span class="slider round"></span>
-            </label>
-            <br/><br/>
-            <button id="www_python3_button" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
-
-            <div class="divider"></div>
 
             <div class="settings_block_subheader">Randomize Balances</div>
             This shows random balances for taking screenshots and testing the interface.

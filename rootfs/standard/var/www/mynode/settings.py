@@ -87,7 +87,6 @@ def page_settings():
         "is_testnet_enabled": is_testnet_enabled(),
         "is_quicksync_disabled": not is_quicksync_enabled(),
         "netdata_enabled": is_service_enabled("netdata"),
-        "www_python3": is_www_python3(),
         "uas_usb": is_uas_usb_enabled(),
         "randomize_balances": settings_file_exists("randomize_balances"),
         "hide_password_warning": settings_file_exists("hide_password_warning"),
@@ -95,10 +94,10 @@ def page_settings():
         "download_rate": download_rate,
         "upload_rate": upload_rate,
         "btcrpcexplorer_token_enabled": is_btcrpcexplorer_token_enabled(),
-        "is_btc_lnd_tor_enabled": is_btc_lnd_tor_enabled(),
-        "is_tor_repo_enabled": is_tor_repo_enabled(),
-        "is_aptget_tor_enabled": is_aptget_tor_enabled(),
-        "is_streamisolation_tor_enabled": is_streamisolation_tor_enabled(),
+        "is_btc_lnd_tor_enabled": settings_file_exists("btc_lnd_tor_enabled"),
+        "is_tor_repo_enabled": not settings_file_exists("tor_repo_disabled"),
+        "is_aptget_tor_enabled": settings_file_exists("torify_apt_get"),
+        "is_streamisolation_tor_enabled": not settings_file_exists("streamisolation_tor_disabled"),
         "skip_fsck": skip_fsck(),
         "uptime": uptime,
         "date": date,
@@ -787,61 +786,6 @@ def page_reset_tor():
     }
     return render_template('reboot.html', **templateData)
 
-@mynode_settings.route("/settings/enable_btc_lnd_tor")
-def page_enable_btc_lnd_tor():
-    check_logged_in()
-
-    check_and_mark_reboot_action("enable_btc_lnd_tor")
-    
-    enable = request.args.get('enable')
-    if enable == "1":
-        enable_btc_lnd_tor()
-    else:
-        disable_btc_lnd_tor()
-
-    # Trigger reboot
-    t = Timer(1.0, reboot_device)
-    t.start()
-
-    # Wait until device is restarted
-    templateData = {
-        "title": "myNode Reboot",
-        "header_text": "Restarting",
-        "subheader_text": "This will take several minutes...",
-        "ui_settings": read_ui_settings()
-    }
-    return render_template('reboot.html', **templateData)
-
-@mynode_settings.route("/settings/enable_streamisolation_tor")
-def page_enable_streamisolation_tor():
-    check_logged_in()
-    
-    enable = request.args.get('enable')
-    if enable == "1":
-        enable_streamisolation_tor()
-    else:
-        disable_streamisolation_tor()
-
-    # Restart LND
-    restart_lnd()
-
-    flash("Restarting lnd...", category="message")
-    return redirect("/settings")
-
-@mynode_settings.route("/settings/set_https_forced")
-def page_set_https_forced_page():
-    check_logged_in()
-    
-    forced = request.args.get('forced')
-    if forced == "1":
-        force_https(True)
-    else:
-        force_https(False)
-
-    flash("HTTPS Settings Saved", category="message")
-    return redirect(url_for(".page_settings"))
-
-
 @mynode_settings.route("/settings/btcrpcexplorer_token")
 def page_btcrpcexplorer_token():
     check_logged_in()
@@ -854,32 +798,6 @@ def page_btcrpcexplorer_token():
 
     flash("BTC RPC Explorer Token Setting Saved", category="message")
     return redirect(url_for(".page_settings")) 
-    
-@mynode_settings.route("/settings/enable_tor_repo")
-def page_enable_tor_repo():
-    check_logged_in()
-    
-    enable = request.args.get('enable')
-    if enable == "1":
-        enable_tor_repo()
-    else:
-        disable_tor_repo()
-    
-    flash("Tor Setting Saved", category="message")
-    return redirect(url_for(".page_settings"))
-
-@mynode_settings.route("/settings/enable_aptget_tor")
-def page_enable_aptget_tor():
-    check_logged_in()
-    
-    enable = request.args.get('enable')
-    if enable == "1":
-        enable_aptget_tor()
-    else:
-        disable_aptget_tor()
-    
-    flash("Tor Setting Saved", category="message")
-    return redirect(url_for(".page_settings"))
 
 @mynode_settings.route("/settings/mynode_logs.tar.gz")
 def download_logs_page():
@@ -1151,6 +1069,8 @@ def page_clear_oom_error():
 @mynode_settings.route("/settings/enable_uas_usb")
 def page_enable_enable_uas_usb():
     check_logged_in()
+
+    check_and_mark_reboot_action("enable_uas")
     
     enable = request.args.get('enable')
     if enable == "1":
@@ -1174,23 +1094,6 @@ def page_enable_enable_uas_usb():
     }
     return render_template('reboot.html', **templateData)
 
-@mynode_settings.route("/settings/enable_www_python3")
-def page_enable_enable_www_python3():
-    check_logged_in()
-    
-    enable = request.args.get('enable')
-    if enable == "1":
-        set_www_python3(True)
-    else:
-        set_www_python3(False)
-
-    # Restart web server
-    t = Timer(3.0, restart_service, ["www"])
-    t.start()
-
-    flash("WWW Python 3 Setting Updated", category="message")
-    return redirect("/settings")
-
 @mynode_settings.route("/settings/toggle_setting")
 def page_toggle_setting():
     check_logged_in()
@@ -1206,14 +1109,15 @@ def page_toggle_setting():
         return redirect("/settings")
 
     # Restart service if necessary
-    restart_service = request.args.get('restart_service')
-    if restart_service == "1":
-        # TODO: Add if necessary
-        pass
+    service_to_restart = request.args.get('restart_service')
+    if is_application_valid(service_to_restart):
+        restart_service(service_to_restart)
 
     # Reboot if necessary
     reboot = request.args.get('reboot')
     if reboot == "1":
+        check_and_mark_reboot_action("toggle_setting_reboot")
+
         t = Timer(1.0, reboot_device)
         t.start()
 

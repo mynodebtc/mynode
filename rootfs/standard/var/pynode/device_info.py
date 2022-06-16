@@ -590,13 +590,7 @@ def toggle_ui_setting(name):
 #     return choices
 
 def is_https_forced():
-    return os.path.isfile('/home/bitcoin/.mynode/https_forced')
-
-def force_https(force):
-    if force:
-        touch("/home/bitcoin/.mynode/https_forced")
-    else:
-        delete_file("/home/bitcoin/.mynode/https_forced")
+    return settings_file_exists("https_forced")
 
 # Regen cert
 def regen_https_cert():
@@ -632,15 +626,6 @@ def get_flask_session_timeout():
 def set_flask_session_timeout(days, hours):
     set_file_contents("/home/bitcoin/.mynode/flask_session_timeout", "{},{}".format(days, hours))
     os.system("sync")
-
-def is_www_python3():
-    return os.path.isfile('/home/bitcoin/.mynode/.www_use_python3')
-
-def set_www_python3(use_python3):
-    if use_python3:
-        touch("/home/bitcoin/.mynode/.www_use_python3")
-    else:
-        delete_file("/home/bitcoin/.mynode/.www_use_python3")
 
 
 #==================================
@@ -1129,34 +1114,6 @@ def reset_tor():
     os.system("rm -rf /mnt/hdd/mynode/bitcoin/onion_private_key")
     os.system("rm -rf /mnt/hdd/mynode/lnd/v2_onion_private_key")
     os.system("rm -rf /mnt/hdd/mynode/lnd/v3_onion_private_key")
-
-def is_btc_lnd_tor_enabled():
-    return settings_file_exists("btc_lnd_tor_enabled")
-def enable_btc_lnd_tor():
-    create_settings_file("btc_lnd_tor_enabled")
-def disable_btc_lnd_tor():
-    delete_settings_file("btc_lnd_tor_enabled")
-
-def is_streamisolation_tor_enabled():
-    return not settings_file_exists("streamisolation_tor_disabled")
-def enable_streamisolation_tor():
-    delete_settings_file("streamisolation_tor_disabled")
-def disable_streamisolation_tor():
-    create_settings_file("streamisolation_tor_disabled")
-
-def is_tor_repo_enabled():
-    return not settings_file_exists("tor_repo_disabled")
-def enable_tor_repo():
-    delete_settings_file("tor_repo_disabled")
-def disable_tor_repo():
-    create_settings_file("tor_repo_disabled")
-
-def is_aptget_tor_enabled():
-    return os.path.isfile("/mnt/hdd/mynode/settings/torify_apt_get")
-def enable_aptget_tor():
-    touch("/mnt/hdd/mynode/settings/torify_apt_get")
-def disable_aptget_tor():
-    delete_file("/mnt/hdd/mynode/settings/torify_apt_get")
 
 def get_onion_url_ssh():
     if is_community_edition(): return "not_available"
