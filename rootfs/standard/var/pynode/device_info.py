@@ -67,6 +67,11 @@ def factory_reset():
     # Trigger drive to be reformatted on reboot
     os.system("rm -f /mnt/hdd/.mynode")
 
+    # Delete settings files on SD card
+    os.system("rm -f /home/bitcoin/.mynode/.btc_lnd_tor_enabled_defaulted")
+    os.system("rm -f /home/bitcoin/.mynode/.product_key")
+    os.system("rm -f /home/bitcoin/.mynode/ui.json")
+
     # Reset password
     os.system("/usr/bin/mynode_chpasswd.sh bolt")
 
