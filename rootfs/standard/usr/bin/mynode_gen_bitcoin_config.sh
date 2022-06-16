@@ -3,8 +3,10 @@
 TOTAL_RAM_GB=$(free --giga | grep Mem | awk '{print $2}')
 
 # Setup default settings
-if [ ! -f /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled_defaulted ]; then
+if [ ! -f /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled_defaulted ] && [ ! -f /home/bitcoin/.mynode/.btc_lnd_tor_enabled_defaulted ]; then
+    touch /home/bitcoin/.mynode/.btc_lnd_tor_enabled_defaulted
     touch /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled_defaulted
+    touch /home/bitcoin/.mynode/btc_lnd_tor_enabled
     touch /mnt/hdd/mynode/settings/btc_lnd_tor_enabled
     sync
 fi
