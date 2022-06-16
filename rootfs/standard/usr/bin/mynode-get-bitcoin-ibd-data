@@ -1,0 +1,27 @@
+#!/bin/bash
+# Need to run as sudo
+
+NUM_HOURS=48
+
+export TZ="GMT"
+
+echo "Bitcoin Blocks Processed per Hour"
+echo "================================="
+
+# Check for arg to change hours
+if [ "$#" -eq "1" ]; then
+    NUM_HOURS=$1
+fi
+
+# Show current hour
+d=$(date "+%Y-%m-%dT%H:")
+c=$(grep --text "$d" /mnt/hdd/mynode/bitcoin/debug.log | grep "UpdateTip" | wc -l)
+echo "${d}00 - ${d}59 | $c (current hour)"
+
+# Show historical hours
+for (( i=1; i<=$NUM_HOURS; i++ ))
+do
+    d=$(date -d "$i hour ago" "+%Y-%m-%dT%H:")
+    c=$(grep --text "$d" /mnt/hdd/mynode/bitcoin/debug.log | grep "UpdateTip" | wc -l)
+    echo "${d}00 - ${d}59 | $c"
+done
