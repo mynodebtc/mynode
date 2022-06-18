@@ -1,3 +1,19 @@
+=== v0.2.57 ===
+- Released: 06/18/22
+- New Customize App Version Interface
+- Upgrade Mempool to v2.4.0
+- Upgrade Specter to v1.10.2
+- Upgrade LNDg to v1.1.2
+- Upgrade BoS to v12.13.2
+- Upgrade PyBlock to v2.0.3
+- Improve Balance Randomization
+- Improve USB driver management
+- Fix Watchtower pubkey display
+- Fix LiT icon path
+- Add reset button for Watchtower client and server
+- Add setting for 
+- Add setting to allow all local network traffic (fixes NAT-PMP)
+
 === v0.2.56 ===
 - Released: 06/01/22
 - Upgrade Bitcoin v23.0
