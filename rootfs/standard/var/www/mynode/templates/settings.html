@@ -469,6 +469,7 @@
                     {
                         val = "1"
                     }
+                    $('#loading_spinner_overlay').fadeIn();
                     window.location.href='/settings/toggle_setting?name=enable_btc_lnd_tor&reboot=1&enable='+val
                 });
 
@@ -483,6 +484,7 @@
                     {
                         val = "0"
                     }
+                    $('#loading_spinner_overlay').fadeIn();
                     window.location.href='/settings/toggle_setting?name=streamisolation_tor_disabled&restart_service=lnd&enable='+val
                 });
 
@@ -491,14 +493,13 @@
                 });
                 $("#uas_usb_button").on("click", function() {
                     checked=$('#uas_usb_checkbox').is(":checked")
+                    val = "0"
                     if (checked)
                     {
-                        window.location.href='/settings/enable_uas_usb?enable=1'
+                        val = "1"
                     }
-                    else
-                    {
-                        window.location.href='/settings/enable_uas_usb?enable=0'
-                    }
+                    $('#loading_spinner_overlay').fadeIn();
+                    window.location.href='/settings/toggle_setting?name=uas_usb_enabled&reboot=1&enable='+val
                 });
 
                 $('#randomize_balances_checkbox').change(function () {
@@ -511,6 +512,7 @@
                     {
                         val = "1"
                     }
+                    $('#loading_spinner_overlay').fadeIn();
                     window.location.href='/settings/toggle_setting?name=randomize_balances&enable='+val
                 });
 
@@ -524,7 +526,22 @@
                     {
                         val = "1"
                     }
+                    $('#loading_spinner_overlay').fadeIn();
                     window.location.href='/settings/toggle_setting?name=hide_password_warning&enable='+val
+                });
+
+                $('#keep_bitcoin_debug_log_checkbox').change(function () {
+                    $("#keep_bitcoin_debug_log_button").show();
+                });
+                $("#keep_bitcoin_debug_log_button").on("click", function() {
+                    checked=$('#keep_bitcoin_debug_log_checkbox').is(":checked")
+                    val = "0"
+                    if (checked)
+                    {
+                        val = "1"
+                    }
+                    $('#loading_spinner_overlay').fadeIn();
+                    window.location.href='/settings/toggle_setting?name=keep_bitcoin_debug_log&restart_service=bitcoin&enable='+val
                 });
 
                 $('#https_forced_checkbox').change(function () {
@@ -537,6 +554,7 @@
                     {
                         val = "1"
                     }
+                    $('#loading_spinner_overlay').fadeIn();
                     window.location.href='/settings/toggle_setting?name=https_forced&enable='+val
                 });
 
@@ -550,6 +568,7 @@
                     {
                         val = "1"
                     }
+                    $('#loading_spinner_overlay').fadeIn();
                     window.location.href='/settings/toggle_setting?name=local_traffic_allowed&reboot=1&enable='+val
                 });
 
@@ -558,6 +577,7 @@
                 });
                 $("#btcrpcexplorer_token").on("click", function() {
                     checked=$('#btcrpcexplorer_token_checkbox').is(":checked")
+                    $('#loading_spinner_overlay').fadeIn();
                     if (checked)
                     {
                         window.location.href='/settings/btcrpcexplorer_token?enable=1'
@@ -579,6 +599,7 @@
                     {
                         val = "0"
                     }
+                    $('#loading_spinner_overlay').fadeIn();
                     window.location.href='/settings/toggle_setting?name=tor_repo_disabled&enable='+val
                 });
 
@@ -592,6 +613,7 @@
                     {
                         val = "1"
                     }
+                    $('#loading_spinner_overlay').fadeIn();
                     window.location.href='/settings/toggle_setting?name=torify_apt_get&enable='+val
                 });
             });
@@ -1370,6 +1392,18 @@
 
             <div class="divider"></div>
 
+            <div class="settings_block_subheader">Keep Bitcoin Debug Log</div>
+            The Bitcoin debug log will shrink once it reaches 10MB. This will stop shrinking the Bitcoin log.
+            <br/><br/>
+            <label class="switch">
+                <input type="checkbox" id="keep_bitcoin_debug_log_checkbox" {% if keep_bitcoin_debug_log %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <br/><br/>
+            <button id="keep_bitcoin_debug_log_button" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+
+            <div class="divider"></div>
+
             <div class="settings_block_subheader">Uploader Device</div>
             This disables most features and prioritize sharing QuickSync files. It can be reversed later.
             <br/>
@@ -1443,6 +1477,12 @@
                 <!-- Allow form submission with keyboard without duplicating the dialog button -->
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
             </form>
+        </div>
+
+        <div id="loading_spinner_overlay" class="loading_spinner_overlay" style="display:none;">
+            <img id="loading_spinner" class="loading_image" src="{{ url_for('static', filename="images/loading.gif")}}"/>
+            <br/>
+            <span id="loading_spinner_message">Saving...</span>
         </div>
 
         {% include 'includes/footer.html' %}

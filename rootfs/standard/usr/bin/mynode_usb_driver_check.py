@@ -17,8 +17,8 @@ def set_args(a):
     args = a
 
 def is_uas_forced():
-    if os.path.isfile("/home/bitcoin/.mynode/.uas_usb_enabled") or \
-       os.path.isfile("/mnt/hdd/mynode/settings/.uas_usb_enabled"):
+    if os.path.isfile("/home/bitcoin/.mynode/uas_usb_enabled") or \
+       os.path.isfile("/mnt/hdd/mynode/settings/uas_usb_enabled"):
         return True
     return False
 
