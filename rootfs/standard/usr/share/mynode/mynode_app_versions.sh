@@ -164,7 +164,7 @@ SPHINXRELAY_VERSION=$(get_app_version "$SPHINXRELAY_VERSION" "sphinxrelay")
 SPHINXRELAY_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version
 SPHINXRELAY_LATEST_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version_latest
 
-PYBLOCK_VERSION="v1.1.9"
+PYBLOCK_VERSION="v2.0.3"
 PYBLOCK_VERSION=$(get_app_version "$PYBLOCK_VERSION" "pyblock")
 PYBLOCK_VERSION_FILE=/home/bitcoin/.mynode/pyblock_version
 PYBLOCK_LATEST_VERSION_FILE=/home/bitcoin/.mynode/pyblock_version_latest
