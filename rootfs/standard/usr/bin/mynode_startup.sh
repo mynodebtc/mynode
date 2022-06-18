@@ -137,6 +137,8 @@ do
     chmod 644 /home/bitcoin/.mynode/mynode_serial
 done
 
+# Check for USB driver updates before mount or clone tool opening
+/usr/local/bin/python3 /usr/bin/mynode_usb_driver_check.py
 
 # Clone tool was opened
 if [ -f /home/bitcoin/open_clone_tool ]; then
