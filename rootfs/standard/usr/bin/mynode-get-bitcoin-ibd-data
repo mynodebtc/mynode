@@ -14,13 +14,23 @@ echo "================================="
 
 # Show current hour
 d=$(date "+%Y-%m-%dT%H:")
-c=$(grep --text "$d" /mnt/hdd/mynode/bitcoin/debug.log | grep "UpdateTip" | wc -l)
+data_check=$(grep --text "$d" /mnt/hdd/mynode/bitcoin/debug.log | wc -l)
+if [ "$data_check" -ne "0" ]; then
+    c=$(grep --text "$d" /mnt/hdd/mynode/bitcoin/debug.log | grep "UpdateTip" | wc -l)
+else
+    c="No Data"
+fi
 echo "${d}00 - ${d}59 | $c (current hour)"
 
 # Show historical hours
 for (( i=1; i<=$NUM_HOURS; i++ ))
 do
     d=$(date -d "$i hour ago" "+%Y-%m-%dT%H:")
-    c=$(grep --text "$d" /mnt/hdd/mynode/bitcoin/debug.log | grep "UpdateTip" | wc -l)
+    data_check=$(grep --text "$d" /mnt/hdd/mynode/bitcoin/debug.log | wc -l)
+    if [ "$data_check" -ne "0" ]; then
+        c=$(grep --text "$d" /mnt/hdd/mynode/bitcoin/debug.log | grep "UpdateTip" | wc -l)
+    else
+        c="No Data"
+    fi
     echo "${d}00 - ${d}59 | $c"
 done
