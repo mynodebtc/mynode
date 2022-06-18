@@ -295,6 +295,17 @@
                     }
                 });
 
+                $("#check_for_updates").on("click", function() {
+                    $('#loading_spinner_message').html("Checking...");
+                    $('#loading_spinner_overlay').fadeIn();
+                    window.location.href='/settings/get-latest-version'
+                });
+                $("#check_for_updates_beta").on("click", function() {
+                    $('#loading_spinner_message').html("Checking...");
+                    $('#loading_spinner_overlay').fadeIn();
+                    window.location.href='/settings/get-latest-version'
+                });
+
                 showing_upgrade_log=0;
                 $("#show_upgrade_logs").on("click", function() {
                     if (showing_upgrade_log == 0) {
@@ -658,7 +669,7 @@
                     <th>Latest Version</th>
                     <td>{{latest_version}}</td>
                     <td>
-                        &nbsp;<a href="/settings/get-latest-version" class="ui-button ui-widget ui-corner-all settings_button_small">Check for Updates</a>
+                        &nbsp;<button id="check_for_updates" class="ui-button ui-widget ui-corner-all settings_button_small">Check for Updates</button>
                         &nbsp;<button id="show_upgrade_logs" class="ui-button ui-widget ui-corner-all settings_button_small">Show Upgrade Logs</button>
                     </td>
                 </tr>
@@ -1349,7 +1360,7 @@
                     <tr>
                         <th>Latest Beta Version</th>
                         <td>{{latest_beta_version}}</td>
-                        <td>&nbsp;<a href="/settings/get-latest-version" class="ui-button ui-widget ui-corner-all settings_button_small">Check for Updates</a></td>
+                        <td>&nbsp;<button id="check_for_updates_beta" class="ui-button ui-widget ui-corner-all settings_button_small">Check for Updates</button></td>
                     </tr>
                 </table>
                 {% if current_beta_version != latest_beta_version and latest_beta_version != "" %}
