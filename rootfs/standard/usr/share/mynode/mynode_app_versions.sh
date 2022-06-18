@@ -28,7 +28,7 @@ LND_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnd_version_latest
 LND_UPGRADE_MANIFEST_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
 LND_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-guggero-$LND_VERSION.sig
 
-LOOP_VERSION="v0.18.0-beta"
+LOOP_VERSION="v0.19.1-beta"
 LOOP_VERSION=$(get_app_version "$LOOP_VERSION" "loop")
 LOOP_VERSION_FILE=/home/bitcoin/.mynode/loop_version
 LOOP_LATEST_VERSION_FILE=/home/bitcoin/.mynode/loop_version_latest
