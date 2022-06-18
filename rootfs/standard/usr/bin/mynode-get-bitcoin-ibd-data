@@ -1,17 +1,16 @@
 #!/bin/bash
 # Need to run as sudo
 
-NUM_HOURS=48
-
+NUM_HOURS=24
 export TZ="GMT"
-
-echo "Bitcoin Blocks Processed per Hour"
-echo "================================="
 
 # Check for arg to change hours
 if [ "$#" -eq "1" ]; then
     NUM_HOURS=$1
 fi
+
+echo "Bitcoin Blocks Processed per Hour"
+echo "================================="
 
 # Show current hour
 d=$(date "+%Y-%m-%dT%H:")
