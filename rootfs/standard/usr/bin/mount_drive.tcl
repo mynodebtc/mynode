@@ -79,7 +79,7 @@ proc createMyNodeFsOnBlockDevice {blockDevice} {
 
     if [catch {
         # Run USB check to make sure we are using a good driver
-        runCommand /usr/bin/mynode_usb_driver_check.sh > /dev/null
+        runCommand /usr/local/bin/python3 /usr/bin/mynode_usb_driver_check.py > /dev/null
 
         puts "Waiting on format confirmation..."
         runCommand echo "drive_format_confirm" > /tmp/.mynode_status
