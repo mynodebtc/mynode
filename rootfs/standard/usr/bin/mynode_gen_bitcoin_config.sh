@@ -73,6 +73,11 @@ else
     if [ -f /mnt/hdd/mynode/settings/.bip158_enabled ]; then
         cat /usr/share/mynode/bitcoin_bip158.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
     fi
+
+    # Update Debug Log Settings
+    if [ -f /home/bitcoin/.mynode/keep_bitcoin_debug_log ] || [ -f /mnt/hdd/mynode/settings/keep_bitcoin_debug_log ]; then
+        sed -i "s/shrinkdebugfile=.*/shrinkdebugfile=0/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    fi
 fi
 
 PW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)

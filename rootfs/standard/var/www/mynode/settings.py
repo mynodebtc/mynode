@@ -90,6 +90,7 @@ def page_settings():
         "uas_usb": is_uas_usb_enabled(),
         "randomize_balances": settings_file_exists("randomize_balances"),
         "hide_password_warning": settings_file_exists("hide_password_warning"),
+        "keep_bitcoin_debug_log": settings_file_exists("keep_bitcoin_debug_log"),
         "is_uploader_device": is_uploader(),
         "download_rate": download_rate,
         "upload_rate": upload_rate,
@@ -1066,34 +1067,6 @@ def page_clear_oom_error():
     flash("Warning Cleared", category="message")
     return redirect("/settings")
 
-@mynode_settings.route("/settings/enable_uas_usb")
-def page_enable_enable_uas_usb():
-    check_logged_in()
-
-    check_and_mark_reboot_action("enable_uas")
-    
-    enable = request.args.get('enable')
-    if enable == "1":
-        set_uas_usb_enabled(True)
-    else:
-        set_uas_usb_enabled(False)
-
-    os.system("systemctl restart usb_driver_check")
-    time.sleep(1)
-
-    # Trigger reboot
-    t = Timer(1.0, reboot_device)
-    t.start()
-
-    # Display wait page
-    templateData = {
-        "title": "myNode Reboot",
-        "header_text": "Restarting",
-        "subheader_text": "This will take several minutes...",
-        "ui_settings": read_ui_settings()
-    }
-    return render_template('reboot.html', **templateData)
-
 @mynode_settings.route("/settings/toggle_setting")
 def page_toggle_setting():
     check_logged_in()
@@ -1111,7 +1084,8 @@ def page_toggle_setting():
     # Restart service if necessary
     service_to_restart = request.args.get('restart_service')
     if is_application_valid(service_to_restart):
-        restart_service(service_to_restart)
+        t = Timer(1.0, restart_service, [service_to_restart])
+        t.start()
 
     # Reboot if necessary
     reboot = request.args.get('reboot')

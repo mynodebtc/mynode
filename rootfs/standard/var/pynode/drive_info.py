@@ -147,13 +147,4 @@ def unmount_partition(folder_name):
 # Drive Driver Functions
 #==================================
 def is_uas_usb_enabled():
-    return os.path.isfile('/home/bitcoin/.mynode/.uas_usb_enabled') or \
-           os.path.isfile('/mnt/hdd/mynode/settings/.uas_usb_enabled')
-
-def set_uas_usb_enabled(use_uas):
-    if use_uas:
-        touch("/home/bitcoin/.mynode/.uas_usb_enabled")
-        touch("/mnt/hdd/mynode/settings/.uas_usb_enabled")
-    else:
-        delete_file("/home/bitcoin/.mynode/.uas_usb_enabled")
-        delete_file("/mnt/hdd/mynode/settings/.uas_usb_enabled")
+    return settings_file_exists("uas_usb_enabled")
