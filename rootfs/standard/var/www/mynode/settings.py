@@ -410,14 +410,7 @@ def reset_blockchain_page():
     t = Timer(1.0, reset_blockchain)
     t.start()
     
-    # Display wait page
-    templateData = {
-        "title": "myNode",
-        "header_text": "Reset Blockchain",
-        "subheader_text": "This will take several minutes...",
-        "ui_settings": read_ui_settings()
-    }
-    return render_template('reboot.html', **templateData)
+    return redirect("/rebooting")
 
 @mynode_settings.route("/settings/restart-quicksync")
 def restart_quicksync_page():
@@ -428,14 +421,7 @@ def restart_quicksync_page():
     t = Timer(1.0, restart_quicksync)
     t.start()
 
-    # Display wait page
-    templateData = {
-        "title": "myNode",
-        "header_text": "Restart Quicksync",
-        "subheader_text": "This will take several minutes...",
-        "ui_settings": read_ui_settings()
-    }
-    return render_template('reboot.html', **templateData)
+    return redirect("/rebooting")
 
 @mynode_settings.route("/settings/reboot-device")
 def reboot_device_page():
@@ -446,13 +432,7 @@ def reboot_device_page():
     t.start()
 
     # Wait until device is restarted
-    templateData = {
-        "title": "myNode Reboot",
-        "header_text": "Restarting",
-        "subheader_text": "This will take several minutes...",
-        "ui_settings": read_ui_settings()
-    }
-    return render_template('reboot.html', **templateData)
+    return redirect("/rebooting")
 
 @mynode_settings.route("/settings/reboot-device-no-format")
 def reboot_device_no_format_page():
@@ -464,14 +444,7 @@ def reboot_device_no_format_page():
     t = Timer(1.0, reboot_device)
     t.start()
 
-    # Wait until device is restarted
-    templateData = {
-        "title": "myNode Reboot",
-        "header_text": "Restarting",
-        "subheader_text": "This will take several minutes...",
-        "ui_settings": read_ui_settings()
-    }
-    return render_template('reboot.html', **templateData)
+    return redirect("/rebooting")
 
 @mynode_settings.route("/settings/shutdown-device")
 def shutdown_device_page():
@@ -507,14 +480,7 @@ def reset_docker_page():
     t = Timer(1.0, reset_docker)
     t.start()
 
-    # Display wait page
-    templateData = {
-        "title": "myNode",
-        "header_text": "Rebooting",
-        "subheader_text": "This will take several minutes...",
-        "ui_settings": read_ui_settings()
-    }
-    return render_template('reboot.html', **templateData)
+    return redirect("/rebooting")
 
 @mynode_settings.route("/settings/open-clone-tool")
 def open_clone_tool_page():
@@ -617,13 +583,7 @@ def format_external_drive_page():
         t = Timer(1.0, reboot_device)
         t.start()
 
-        templateData = {
-            "title": "myNode",
-            "header_text": "Rebooting",
-            "subheader_text": "This will take several minutes...",
-            "ui_settings": read_ui_settings()
-        }
-        return render_template('reboot.html', **templateData)
+        return redirect("/rebooting")
 
 @mynode_settings.route("/settings/factory-reset", methods=['POST'])
 def factory_reset_page():
@@ -639,13 +599,7 @@ def factory_reset_page():
         t = Timer(2.0, factory_reset)
         t.start()
 
-        templateData = {
-            "title": "myNode Factory Reset",
-            "header_text": "Factory Reset",
-            "subheader_text": "This will take several minutes...",
-            "ui_settings": read_ui_settings()
-        }
-        return render_template('reboot.html', **templateData)
+        return redirect("/rebooting")
 
 
 @mynode_settings.route("/settings/password", methods=['POST'])
@@ -733,14 +687,7 @@ def page_lnd_delete_wallet():
     t = Timer(1.0, reboot_device)
     t.start()
 
-    # Wait until device is restarted
-    templateData = {
-        "title": "myNode Reboot",
-        "header_text": "Restarting",
-        "subheader_text": "This will take several minutes...",
-        "ui_settings": read_ui_settings()
-    }
-    return render_template('reboot.html', **templateData)
+    return redirect("/rebooting")
 
 @mynode_settings.route("/settings/reset-lnd-watchtower")
 def page_lnd_reset_lnd_watchtower():
@@ -778,14 +725,7 @@ def page_reset_tor():
         t = Timer(1.0, reboot_device)
         t.start()
 
-    # Wait until device is restarted
-    templateData = {
-        "title": "myNode Reboot",
-        "header_text": "Restarting",
-        "subheader_text": "This will take several minutes...",
-        "ui_settings": read_ui_settings()
-    }
-    return render_template('reboot.html', **templateData)
+    return redirect("/rebooting")
 
 @mynode_settings.route("/settings/btcrpcexplorer_token")
 def page_btcrpcexplorer_token():
@@ -922,14 +862,7 @@ def toggle_uploader_page():
     t = Timer(1.0, reboot_device)
     t.start()
 
-    # Wait until device is restarted
-    templateData = {
-        "title": "myNode Reboot",
-        "header_text": "Restarting",
-        "subheader_text": "This will take several minutes...",
-        "ui_settings": read_ui_settings()
-    }
-    return render_template('reboot.html', **templateData)
+    return redirect("/rebooting")
 
 @mynode_settings.route("/settings/toggle-quicksync")
 def toggle_quicksync_page():
@@ -945,14 +878,7 @@ def toggle_quicksync_page():
         t = Timer(1.0, settings_enable_quicksync)
         t.start()
 
-    # Wait until device is restarted
-    templateData = {
-        "title": "myNode Reboot",
-        "header_text": "Restarting",
-        "subheader_text": "This will take several minutes...",
-        "ui_settings": read_ui_settings()
-    }
-    return render_template('reboot.html', **templateData)
+    return redirect("/rebooting")
 
 @mynode_settings.route("/settings/toggle-testnet")
 def toggle_testnet_page():
@@ -967,14 +893,7 @@ def toggle_testnet_page():
     t = Timer(1.0, reboot_device)
     t.start()
 
-    # Wait until device is restarted
-    templateData = {
-        "title": "myNode Reboot",
-        "header_text": "Restarting",
-        "subheader_text": "This will take several minutes...",
-        "ui_settings": read_ui_settings()
-    }
-    return render_template('reboot.html', **templateData)
+    return redirect("/rebooting")
 
 @mynode_settings.route("/settings/ping")
 def ping_page():
@@ -1052,13 +971,7 @@ def modify_swap_page():
     t.start()
 
     # Display wait page
-    templateData = {
-        "title": "myNode Reboot",
-        "header_text": "Restarting",
-        "subheader_text": "This will take several minutes...",
-        "ui_settings": read_ui_settings()
-    }
-    return render_template('reboot.html', **templateData)
+    return redirect("/rebooting")
 
 @mynode_settings.route("/settings/clear-oom-error")
 def page_clear_oom_error():
@@ -1095,13 +1008,7 @@ def page_toggle_setting():
         t = Timer(1.0, reboot_device)
         t.start()
 
-        templateData = {
-            "title": "myNode Reboot",
-            "header_text": "Restarting",
-            "subheader_text": "This will take several minutes...",
-            "ui_settings": read_ui_settings()
-        }
-        return render_template('reboot.html', **templateData)
+        return redirect("/rebooting")
 
     flash("Setting Updated", category="message")
     return redirect("/settings")
