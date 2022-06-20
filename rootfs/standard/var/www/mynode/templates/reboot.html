@@ -3,6 +3,8 @@
         <title>{{ title }}</title>
         {% include 'includes/head.html' %}
 
+        <meta http-equiv="refresh" content="43200; URL=/" /> <!-- Backup: reload home page after 12 hours if JS didn't detect reboot -->
+
         <script>
             $(document).ready(function() {
                 hasShutdown = 0
