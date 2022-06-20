@@ -424,14 +424,7 @@ def index():
         }
         return render_template('state.html', **templateData)
     elif status == STATE_SHUTTING_DOWN or is_shutting_down():
-        templateData = {
-            "title": "myNode Reboot",
-            "header_text": "Restarting",
-            "subheader_text": "This will take several minutes...",
-            "refresh_rate": 120,
-            "ui_settings": read_ui_settings()
-        }
-        return render_template('state.html', **templateData)
+        return redirect("/rebooting")
     elif status == STATE_STABLE:
         bitcoin_status_code = get_service_status_code("bitcoin")
         bitcoin_status_color = "red"
@@ -694,6 +687,19 @@ def page_help():
     check_logged_in()
     templateData = {"ui_settings": read_ui_settings()}
     return render_template('help.html', **templateData)
+
+@app.route("/rebooting")
+def page_rebooting():
+    check_logged_in()
+    
+    # Show that device is rebooting and use JS to refresh once back online
+    templateData = {
+        "title": "myNode Reboot",
+        "header_text": "Restarting",
+        "subheader_text": "This will take several minutes...",
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('reboot.html', **templateData)
 
 ## Error handlers
 @app.errorhandler(404)
