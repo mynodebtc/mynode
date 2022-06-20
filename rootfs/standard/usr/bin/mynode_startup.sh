@@ -171,6 +171,11 @@ fi
 rm -f /tmp/repairing_drive
 set -e
 
+# Delay startup for checking drives, etc..
+while [ -f /home/bitcoin/.mynode/delay_startup ]; do
+    sleep 5s
+done
+
 # Custom startup hook - pre-startup
 if [ -f /usr/local/bin/mynode_hook_pre_startup.sh ]; then
     /bin/bash /usr/local/bin/mynode_hook_pre_startup.sh || true
