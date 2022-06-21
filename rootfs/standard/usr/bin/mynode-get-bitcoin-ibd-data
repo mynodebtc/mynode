@@ -2,6 +2,7 @@
 # Need to run as sudo
 
 NUM_HOURS=24
+TOTAL=0
 export TZ="GMT"
 
 # Check for arg to change hours
@@ -17,6 +18,7 @@ d=$(date "+%Y-%m-%dT%H:")
 data_check=$(grep --text "$d" /mnt/hdd/mynode/bitcoin/debug.log | wc -l)
 if [ "$data_check" -ne "0" ]; then
     c=$(grep --text "$d" /mnt/hdd/mynode/bitcoin/debug.log | grep "UpdateTip" | wc -l)
+    (( TOTAL+=c ))
 else
     c="No Data"
 fi
@@ -29,8 +31,12 @@ do
     data_check=$(grep --text "$d" /mnt/hdd/mynode/bitcoin/debug.log | wc -l)
     if [ "$data_check" -ne "0" ]; then
         c=$(grep --text "$d" /mnt/hdd/mynode/bitcoin/debug.log | grep "UpdateTip" | wc -l)
+        (( TOTAL+=c ))
     else
         c="No Data"
     fi
     echo "${d}00 - ${d}59 | $c"
 done
+
+echo ""
+echo "Total in $NUM_HOURS hour(s) + current hour  | $TOTAL"
