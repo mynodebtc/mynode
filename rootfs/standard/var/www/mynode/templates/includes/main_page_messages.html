@@ -55,6 +55,16 @@
 -->
 {% endif %}
 
+{% if usb_error %}
+<div class="main_page_error_block">
+    <center>
+    <p><b>USB Error Detected</b></p>
+    <p>Your device has detected several read/write issues. Your USB->SATA adapter may be having issues or it may be a bad USB cable. View the Linux log on the <a href="/status">status</a> page for more details.</p>
+    <a href="/settings/clear-usb-error" class="ui-button ui-widget ui-corner-all settings_button_small">OK</a>
+    </center>
+</div>
+{% endif %}
+
 {% if not has_changed_password and not hide_password_warning %}
 <div class="main_page_warning_block">
     <p style="text-align: center;"><b>Warning!</b></p>
