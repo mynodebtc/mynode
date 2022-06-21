@@ -291,6 +291,8 @@ def page_status():
         #"ufw_status_log": get_journalctl_log("ufw"),
         "ufw_status": get_service_status_basic_text("ufw"),
         "ufw_status_color": get_service_status_color("ufw"),
+        "linux_status": "Running",
+        "linux_status_color": "green",
         "dynamic_app_names": get_dynamic_app_names(),
         "firewall_rules": get_firewall_rules(),
         "is_quicksync_disabled": not quicksync_enabled,
@@ -979,6 +981,13 @@ def page_clear_oom_error():
     clear_oom_error()
     flash("Warning Cleared", category="message")
     return redirect("/settings")
+
+@mynode_settings.route("/settings/clear-usb-error")
+def page_clear_usb_error():
+    check_logged_in()
+    clear_usb_error()
+    flash("Warning Cleared", category="message")
+    return redirect("/")
 
 @mynode_settings.route("/settings/toggle_setting")
 def page_toggle_setting():
