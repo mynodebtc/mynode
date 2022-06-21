@@ -200,9 +200,19 @@ def monitor_dmesg():
         try:
             l = to_bytes(l).decode('utf-8')
 
-            #TODO: Check for things like OOM, etc...
+            # Check for things like OOM, USB errors, etc...
             if "Out of memory" in l:
                 set_oom_error(l)
+                dmesg_log(l)
+            elif "reset SuperSpeed Gen 1 USB device" in l:
+                increment_cached_integer("dmesg_reset_usb_count")
+                if get_cached_data("dmesg_reset_usb_count") >= 2:
+                    set_usb_error()
+                dmesg_log(l)
+            elif "blk_update_request: I/O error, dev sd" in l:
+                increment_cached_integer("dmesg_io_error_count")
+                if get_cached_data("dmesg_io_error_count") >= 2:
+                    set_usb_error()
                 dmesg_log(l)
             else:
                 #dmesg_log(l)

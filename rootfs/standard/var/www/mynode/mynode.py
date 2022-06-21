@@ -554,6 +554,7 @@ def index():
             "os_drive_usage": os_drive_usage,
             "low_drive_space_error": low_drive_space_error,
             "low_os_drive_space_error": low_os_drive_space_error,
+            "usb_error": has_usb_error(),
             "is_quicksync_disabled": not is_quicksync_enabled(),
             "usb_extras": get_usb_extras(),
             "cpu_usage": get_cpu_usage(),

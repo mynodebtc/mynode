@@ -93,15 +93,15 @@ def set_file_contents(filename, data):
 #==================================
 utilities_cached_data = {}
 
-def is_cached(key, refresh_time=3600): # refresh=1hr
+def is_cached(key, refresh_time=0): # Don't timeout by default
     global utilities_cached_data
     cache_time_key = key + "_cache_time"
     now_time = int(time.time())
-    if key in utilities_cached_data and cache_time_key in utilities_cached_data:
-        if utilities_cached_data[cache_time_key] + refresh_time < now_time:
-            return False
-        else:
-            return True
+    if key in utilities_cached_data:
+        if refresh_time != 0 and cache_time_key in utilities_cached_data:
+            if utilities_cached_data[cache_time_key] + refresh_time < now_time:
+                return False
+        return True
     else:
         return False
 
@@ -111,12 +111,28 @@ def get_cached_data(key):
         return utilities_cached_data[key]
     return None
 
+def set_cached_data(key, value):
+    update_cached_data(key, value)
+
 def update_cached_data(key, value):
     global utilities_cached_data
     cache_time_key = key + "_cache_time"
     now_time = int(time.time())
     utilities_cached_data[key] = value
     utilities_cached_data[cache_time_key] = now_time
+
+def clear_cached_data(key):
+    global utilities_cached_data
+    cache_time_key = key + "_cache_time"
+    utilities_cached_data.pop(key, None)
+    utilities_cached_data.pop(cache_time_key, None)
+
+def increment_cached_integer(key):
+    if is_cached(key):
+        val = get_cached_data(key)
+        update_cached_data(key, val+1)
+    else:
+        update_cached_data(key, 1)
 
 
 #==================================

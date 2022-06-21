@@ -862,7 +862,7 @@ def has_sd_rw_error():
 
 
 #==================================
-# Out of Memory Error Functions
+# Dmesg Device Error Functions
 #==================================
 def has_oom_error():
     return os.path.isfile("/tmp/oom_error")
@@ -880,6 +880,14 @@ def get_oom_error_info():
         return "ERROR"
     return "ERROR"
 
+def has_usb_error():
+    return os.path.isfile("/tmp/usb_error")
+def set_usb_error():
+    touch("/tmp/usb_error")
+def clear_usb_error():
+    clear_cached_data("dmesg_reset_usb_count")
+    clear_cached_data("dmesg_io_error_count")
+    delete_file("/tmp/usb_error")
 
 #==================================
 # Docker Functions
