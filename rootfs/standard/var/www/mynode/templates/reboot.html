@@ -3,27 +3,45 @@
         <title>{{ title }}</title>
         {% include 'includes/head.html' %}
 
-        <meta http-equiv="refresh" content="43200; URL=/" /> <!-- Backup: reload home page after 12 hours if JS didn't detect reboot -->
+        <!-- Backup: reload home page after 12 hours if JS didn't detect reboot -->
+        <meta http-equiv="refresh" content="43200; URL=/" />
 
         <script>
             $(document).ready(function() {
                 hasShutdown = 0
+                uptime = null
 
                 function redirectHome() {
                     window.location.replace("/");
                 }
 
                 function checkStatus() {
-                    var jqxhr = $.get("/settings/ping", function() {
+                    var jqxhr = $.getJSON("/api/ping", function(data) {
                         if (hasShutdown) {
                             // Redirect to home
                             setTimeout(redirectHome, 2500)
+                        } else {
+                            if ("uptime_seconds" in data) {
+                                if (uptime == null || data["uptime_seconds"] > uptime) {
+                                    uptime = data["uptime_seconds"]
+                                } else if (data["uptime_seconds"] < uptime) {
+                                    setTimeout(redirectHome, 2500)
+                                }
+                            }
                         }
                     })
-                    .done(function() {
+                    .done(function(data) {
                         if (hasShutdown) {
                             // Redirect to home
                             setTimeout(redirectHome, 2500)
+                        } else {
+                            if ("uptime_seconds" in data) {
+                                if (uptime == null || data["uptime_seconds"] > uptime) {
+                                    uptime = data["uptime_seconds"]
+                                } else if (data["uptime_seconds"] < uptime) {
+                                    setTimeout(redirectHome, 2500)
+                                }
+                            }
                         }
                     })
                     .fail(function() {

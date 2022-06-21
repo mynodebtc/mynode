@@ -25,6 +25,15 @@ mynode_api = Blueprint('mynode_api',__name__)
 
 
 ### Page functions
+@mynode_api.route("/api/ping")
+def api_ping():
+    check_logged_in()
+
+    data = {}
+    data["status"] = get_mynode_status()
+    data["uptime_seconds"] = get_system_uptime_in_seconds()
+    return jsonify(data)
+
 @mynode_api.route("/api/get_bitcoin_info")
 def api_get_bitcoin_info():
     check_logged_in()
