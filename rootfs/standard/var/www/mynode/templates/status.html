@@ -331,6 +331,15 @@
             </div>
             <button id="show_ufw_log" onclick="showLog('ufw')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="ufw_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{ufw_status_log}}</pre></div>
+            <div class="divider"></div>
+            
+            <div class="settings_block_subheader">Linux Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ linux_status_color }}"></div>
+                {{ linux_status }}
+            </div>
+            <button id="show_linux_log" onclick="showLog('linux')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="linux_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{linux_status_log}}</pre></div>
         </div>
 
 

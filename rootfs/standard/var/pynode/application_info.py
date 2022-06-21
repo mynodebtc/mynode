@@ -314,6 +314,8 @@ def get_application_log(short_name):
             return get_journalctl_log("usb_extras")
         elif short_name == "www":
             return get_journalctl_log("www")
+        elif short_name == "linux":
+            return run_linux_cmd("dmesg | tac | head -n 200")
         else:
             return "ERROR: App or log not found ({})".format(short_name)
 
