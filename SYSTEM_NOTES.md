@@ -10,7 +10,11 @@ behavior. If this happens, try disabling some applications. Some examples of thi
   - Electrum may stop syncing at a specific block until the device is rebooted.
 
 ## Device Specific Notes
-- Raspberry Pi 4 users who are still using a 32-bit based Operating System may not see all new application versions. They are encouraged to upgrade to a 64-bit OS by downloading a new 64-bit image from mynodebtc.com/download.
+- Raspberry Pi 4 users who are still using a 32-bit based Operating System may not see all new application versions. They are encouraged to upgrade to a 64-bit OS by downloading a new 64-bit image from mynodebtc.com/download. Known
+differences are:
+ - BTC Pay Server versions are locked to v1.3.x
+ - grpcio is locked to v1.40.0 due to GLIBC compatibility
+ - LNDg requires a custom grpcio version, may cause issues
 
 ## Testnet Toggle
 - Testnet can be enabled via the settings page. This is a great way to test various Bitcoin and Lightning applications. However, not all apps support testnet yet or have not been integrated within myNode to work on testnet. The following apps
