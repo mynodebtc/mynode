@@ -1,0 +1,51 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>myNode - {{app.name}}</title>
+        {% include 'includes/head.html' %}
+    </head>
+    <body>
+        {% include 'includes/logo_header.html' %}
+        <div class="mynode_back_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        </div>
+
+        <div class="main_header">{{app.name}}</div>
+        <br/>
+
+         <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Status</div>
+                <div class="info_tile_contents">
+                    <table class="info_table">
+                        <tr>
+                            <th>Status</th>
+                            <td>{{whirlpool_status}}</td>
+                        </tr>
+                        {% if whirlpool_enabled and whirlpool_initialized %}
+                        <tr>
+                            <th>API Key for Whirlpool GUI</th>
+                            <td>{{whirlpool_api_key}}</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <th>Actions</th>
+                            <td>
+                                FILL IN BUTTONS?
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="instructions">
+            <div class="instructions-header">Instructions to setup APPLICATION / DESCRIPTION</div>
+            <ol class="instructions-steps">
+                <li>AAAAAAAA</li>
+                <li>BBBBBBBBBBB</li>
+                <li>Enjoy!</li>
+            </ol>
+        </div>
+    </body>
+</html>

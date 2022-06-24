@@ -21,10 +21,11 @@
                             // Redirect to home
                             setTimeout(redirectHome, 2500)
                         } else {
-                            if ("uptime_seconds" in data) {
+                            if (data && "uptime_seconds" in data) {
                                 if (uptime == null || data["uptime_seconds"] > uptime) {
                                     uptime = data["uptime_seconds"]
                                 } else if (data["uptime_seconds"] < uptime) {
+                                    //alert("Restarting due to uptime A (" + data["uptime_seconds"] + " < " + uptime + ")")
                                     setTimeout(redirectHome, 2500)
                                 }
                             }
@@ -35,10 +36,11 @@
                             // Redirect to home
                             setTimeout(redirectHome, 2500)
                         } else {
-                            if ("uptime_seconds" in data) {
+                            if (data && "uptime_seconds" in data) {
                                 if (uptime == null || data["uptime_seconds"] > uptime) {
                                     uptime = data["uptime_seconds"]
                                 } else if (data["uptime_seconds"] < uptime) {
+                                    //alert("Restarting due to uptime B (" + data["uptime_seconds"] + " < " + uptime + ")")
                                     setTimeout(redirectHome, 2500)
                                 }
                             }
