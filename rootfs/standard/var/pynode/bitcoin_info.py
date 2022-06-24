@@ -47,7 +47,7 @@ def is_bitcoin_synced():
     return False
 
 def run_bitcoincli_command(cmd):
-    cmd = "bitcoin-cli --conf=/home/admin/.bitcoin/bitcoin.conf --datadir=/mnt/hdd/mynode/bitcoin "+cmd+"; exit 0"
+    cmd = "bitcoin-cli --conf=/mnt/hdd/mynode/bitcoin/bitcoin.conf --datadir=/mnt/hdd/mynode/bitcoin "+cmd+"; exit 0"
     log_message("Running bitcoin-cli cmd:  {}".format(cmd))
     try:
         results = to_string(subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True))
