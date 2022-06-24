@@ -656,6 +656,10 @@ def init_dynamic_app(app_info):
     if (os.path.isfile(app_dir+"/nginx/https_"+app_name+".conf")):
         os.system("cp -f {} {}".format(app_dir+"/nginx/https_"+app_name+".conf", "/etc/nginx/sites-enabled/https_"+app_name+".conf"))
 
+    # TODO: Install web files
+    # Install python files www/python/*.py      (<short_name>.py required)
+    # Install templates    www/templates/*.html (optional)
+
     # For "node" type apps
     log_message("  TODO: Need node special files???")
 
@@ -748,15 +752,38 @@ def upgrade_dynamic_apps(short_name="all"):
                 log_message("  ERROR: Error checking app {} for upgrade ({})".format(app_name, str(e)))
 
 
+# Typically, the mynode_uninstall_app.sh runs first and calls mynode-manage-apps uninstall to run this
+#   Prior to running, service should have been stopped and disabled
+#   Post running, the app install folder will be deleted (not the storage folder on data drive)
+# HOWEVER! To make sure running this alone works if managing apps via the CLI, those actions are repeated
 def uninstall_dynamic_app(short_name):
     print("Uninstalling app {}...".format(short_name))
-    if not is_application_valid(short_name):
+
+    app_data = get_application(short_name)
+    if app_data == None:
         print(" Invalid app: {}".format(short_name))
         exit(1)
 
-    print("  NOT IMPLEMENTED")
-    # TODO
-    # Run general uninstall script?
-    # Disable service file
+    # Run app-specific uninstall script
+    uninstall_script = "/bin/bash /usr/bin/service_scripts/install_{}.sh".format(short_name)
+    if os.path.isfile(uninstall_script):
+        try:
+            my_env = os.environ.copy()
+            my_env["VERSION"] = app_data["latest_version"]
+            my_env["INSTALL_FOLDER"] = app_data["install_folder"]
+            my_env["STORAGE_FOLDER"] = app_data["storage_folder"]
+            if app_data["install_env_vars"]:
+                for key in app_data["install_env_vars"]:
+                    my_env[key] = app_data["install_env_vars"][key]
+            subprocess.check_output("cd {}; sudo -u {} /bin/bash /usr/bin/service_scripts/uninstall_{}.sh 1>&2".format(app_data["install_folder"], app_data["linux_user"], short_name), shell=True, env=my_env)
+        except Exception as e:
+            print("  Exception: {}".format(str(e)))
+    
+    # Disable service 
+    disable_service(short_name)
+
     # Delete SD card folder
-    pass
+    run_linux_cmd("rm -rf {}".format(app_data["install_folder"]))
+
+    # Clear app data
+    clear_application_cache()

@@ -50,6 +50,8 @@ def main():
     elif args.command == "install" or \
          args.command == "upgrade" or \
          args.command == "reinstall":
+        # If no app name, install all
+        # Re-install requires app name (from above)
         app_names = args.app
         if not isinstance(app_names, list):
             app_names = [app_names]
@@ -58,12 +60,14 @@ def main():
                 clear_installed_version(app_name)
             upgrade_dynamic_apps()
     elif args.command == "upgrade":
+        # If no app name, upgrade all
         app_names = args.app
         if not isinstance(app_names, list):
             app_names = [app_names]
         for app_name in app_names:
             upgrade_dynamic_apps(app_name)
     elif args.command == "uninstall":
+        # Requires specified application
         app_names = args.app
         for app_name in app_names:
             uninstall_dynamic_app(app_name)

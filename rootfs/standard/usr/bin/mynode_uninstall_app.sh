@@ -68,9 +68,11 @@ else
     echo "No custom uninstall steps"
 fi
 
-# Attempt generic uninstall
-rm -rf /opt/mynode/${APP}
+# Attempt dynamic app uninstall
+mynode-manage-apps uninstall "$APP"
 
+# Remove app folder
+rm -rf /opt/mynode/${APP}
 
 chown -R admin:admin /home/admin/upgrade_logs
 sync
