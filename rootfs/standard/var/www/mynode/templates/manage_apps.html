@@ -101,7 +101,7 @@
             <thead class="bitcoin_table_header">
                 <td><!-- Icon --></td>
                 <td>Application</td>
-                <td>Current Version</td>
+                <td>Installed Version</td>
                 <td>Latest Version</td>
                 <td><!-- Status Icon --></td>
                 <td colspan="4">Actions</td>
@@ -118,7 +118,12 @@
                                     {{ app.current_version }}
                                     {% endif %}
                                 </td>
-                                <td>{{ app.latest_version }}</td>
+                                <td>
+                                    {{ app.latest_version }}
+                                    {% if app.has_custom_version %}
+                                    <img style="display: inline; vertical-align: middle; width: 24px; padding-bottom: 2px;" src="{{ url_for('static', filename="images/pin.png")}}"/>
+                                    {% endif %}
+                                </td>
                                 <td>
                                     {% if app.is_installed %}
                                     <div class="generic_status_icon" id="{{app.short_name}}_status_icon"></div>
