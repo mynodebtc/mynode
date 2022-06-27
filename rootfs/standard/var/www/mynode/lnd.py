@@ -233,8 +233,8 @@ def lnd_tls_cert():
     check_logged_in()
     return download_file(directory="/mnt/hdd/mynode/lnd/", filename="tls.cert")
 
-@mynode_lnd.route("/lnd/admin.macaroon")
-def lnd_admin_macaroon():
+@mynode_lnd.route("/lnd/<name>.macaroon")
+def lnd_download_macaroon(name):
     check_logged_in()
 
     folder = "mainnet"
@@ -242,18 +242,7 @@ def lnd_admin_macaroon():
         folder = "testnet"
 
     # Download macaroon
-    return download_file(directory="/mnt/hdd/mynode/lnd/data/chain/bitcoin/{}/".format(folder), filename="admin.macaroon")
-
-@mynode_lnd.route("/lnd/readonly.macaroon")
-def lnd_readonly_macaroon():
-    check_logged_in()
-
-    folder = "mainnet"
-    if is_testnet_enabled():
-        folder = "testnet"
-
-    # Download macaroon
-    return download_file(directory="/mnt/hdd/mynode/lnd/data/chain/bitcoin/{}/".format(folder), filename="readonly.macaroon")
+    return download_file(directory="/mnt/hdd/mynode/lnd/data/chain/bitcoin/{}/".format(folder), filename="{}.macaroon".format(name))
 
 @mynode_lnd.route("/lnd/channel.backup")
 def lnd_channel_backup():
