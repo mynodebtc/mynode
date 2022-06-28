@@ -37,6 +37,7 @@ from systemctl_info import *
 from application_info import *
 from price_info import *
 from utilities import *
+import importlib
 import pam
 import re
 import json
@@ -104,6 +105,11 @@ app.register_blueprint(mynode_electrum_server)
 app.register_blueprint(mynode_vpn)
 app.register_blueprint(mynode_usb_extras)
 app.register_blueprint(mynode_settings)
+
+
+# Register blueprints for dynamic apps
+register_dynamic_app_flask_blueprints(app)
+
 
 ### Definitions
 MYNODE_DIR =    "/mnt/hdd/mynode"
@@ -739,8 +745,12 @@ def before_request():
 # Disable browser caching
 @app.after_request
 def set_response_headers(response):
-    # Prevents 301 from saving forever
-    response.headers['Cache-Control'] = 'no-store'
+    # Cache OK responses for 24 hrs
+    if response.status_code in [200]:
+        response.headers['Cache-Control'] = 'max-age=86400, private'
+    else:
+        # Prevents 301 from saving forever
+        response.headers['Cache-Control'] = 'no-store'
 
     # No Caching
     #response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
@@ -825,6 +835,9 @@ if __name__ == "__main__":
 
     # Setup and start threads
     start_threads()
+
+    # Register blueprints for dynamic apps
+    #register_dynamic_app_flask_blueprints(app)
 
     try:
         app.run(host='0.0.0.0', port=80)
