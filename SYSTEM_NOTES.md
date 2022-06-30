@@ -15,6 +15,8 @@ differences are:
  - BTC Pay Server versions are locked to v1.3.x
  - grpcio is locked to v1.40.0 due to GLIBC compatibility
  - LNDg requires a custom grpcio version, may cause issues
+ - Dojo is locked to v1.14.0
+ - Mempool is locked to v2.3.1
 
 ## Testnet Toggle
 - Testnet can be enabled via the settings page. This is a great way to test various Bitcoin and Lightning applications. However, not all apps support testnet yet or have not been integrated within myNode to work on testnet. The following apps
