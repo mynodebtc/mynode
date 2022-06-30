@@ -54,6 +54,9 @@ ELECTRS_VERSION_FILE=/home/bitcoin/.mynode/electrs_version
 ELECTRS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/electrs_version_latest
 
 MEMPOOL_VERSION="v2.4.0"
+if [ "$IS_32_BIT" = "1" ]; then
+    MEMPOOL_VERSION="v2.3.1"
+fi
 MEMPOOL_VERSION=$(get_app_version "$MEMPOOL_VERSION" "mempool")
 MEMPOOL_VERSION_FILE=/mnt/hdd/mynode/settings/mempool_version
 MEMPOOL_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/mempool_version_latest
