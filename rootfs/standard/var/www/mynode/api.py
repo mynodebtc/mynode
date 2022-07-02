@@ -124,6 +124,20 @@ def api_get_app_info():
 
     return jsonify(data)
 
+@mynode_api.route("/api/restart_app")
+def api_restart_app():
+    check_logged_in()
+
+    app = request.args.get("app")
+    if not app:
+        return "NO_APP_SPECIFIED"
+    if not is_application_valid(app):
+        return "INVALID_APP_NAME"
+    if not restart_application(app):
+        return "ERROR"
+
+    return "OK"
+
 @mynode_api.route("/api/get_device_info")
 def api_get_device_info():
     check_logged_in()
