@@ -2,30 +2,35 @@
     {
         "name": "Bitcoin",
         "short_name": "bitcoin",
+        "short_description": "Bitcoin Core",
         "app_tile_running_status_text": "Running",
         "supports_testnet": true
     },
     {
         "name": "LND",
         "short_name": "lnd",
+        "short_description": "Lightning",
         "app_tile_running_status_text": "Running",
         "supports_testnet": true
     },
     {
         "name": "Loop",
         "short_name": "loop",
+        "short_description": "Lightning Liquidity Tool",
         "requires_lightning": true,
         "show_on_status_page": true
     },
     {
         "name": "Pool",
         "short_name": "pool",
+        "short_description": "Lightning Liquidity Tool",
         "requires_lightning": true,
         "show_on_status_page": true
     },
     {
         "name": "Lightning Terminal",
         "short_name": "lit",
+        "short_description": "Lightning Liquidity Tool",
         "requires_lightning": true,
         "show_on_status_page": true
     },
@@ -33,7 +38,7 @@
         "name": "Ride the Lightning",
         "short_name": "rtl",
         "app_tile_name": "RTL",
-        "app_tile_default_status_text": "Lightning Wallet",
+        "short_description": "Lightning Wallet",
         "can_uninstall": true,
         "show_on_status_page": true,
         "show_on_homepage": true,
@@ -44,9 +49,9 @@
     {
         "name": "Electrum Server",
         "short_name": "electrs",
+        "short_description": "Wallet Backend",
         "app_tile_button_text": "Info",
         "app_tile_button_href": "/electrum-server",
-        "app_tile_default_status_text": "",
         "app_tile_running_status_text": "Running",
         "can_reinstall": false,
         "show_on_status_page": true,
@@ -57,7 +62,7 @@
     {
         "name": "BTCPay Server",
         "short_name": "btcpayserver",
-        "app_tile_default_status_text": "Merchant Tool",
+        "short_description": "Merchant Tool",
         "can_uninstall": true,
         "requires_lightning": false,
         "requires_docker_image_installation": true,
@@ -67,7 +72,7 @@
     {
         "name": "Mempool",
         "short_name": "mempool",
-        "app_tile_default_status_text": "Mempool Viewer",
+        "short_description": "Mempool Viewer",
         "can_uninstall": true,
         "show_on_homepage": true,
         "supports_testnet": true,
@@ -77,7 +82,7 @@
     {
         "name": "LND Hub",
         "short_name": "lndhub",
-        "app_tile_default_status_text": "BlueWallet Backend",
+        "short_description": "BlueWallet Backend",
         "can_uninstall": true,
         "requires_lightning": true,
         "show_on_status_page": true,
@@ -98,9 +103,9 @@
     {
         "name": "LNDManage",
         "short_name": "lndmanage",
+        "short_description": "Lightning Utility",
         "requires_lightning": true,
         "hide_status_icon": true,
-        "app_tile_default_status_text": "Lightning Utility",
         "app_tile_button_href": "/lndmanage",
         "app_tile_button_text": "Info",
         "can_uninstall": true,
@@ -112,7 +117,7 @@
         "name": "BTC RPC Explorer",
         "short_name": "btcrpcexplorer",
         "app_tile_name": "Explorer",
-        "app_tile_default_status_text": "BTC RPC Explorer",
+        "short_description": "BTC RPC Explorer",
         "can_uninstall": true,
         "requires_bitcoin": true,
         "show_on_status_page": true,
@@ -124,9 +129,9 @@
     {
         "name": "Dojo",
         "short_name": "dojo",
+        "short_description": "Mixing Tool",
         "app_tile_button_text": "Info",
         "app_tile_button_href": "/dojo",
-        "app_tile_default_status_text": "Mixing Tool",
         "app_tile_running_status_text": "Running",
         "can_uninstall": true,
         "show_on_application_page": true,
@@ -138,9 +143,9 @@
     {
         "name": "Whirlpool",
         "short_name": "whirlpool",
+        "short_description": "Mixing Tool",
         "app_tile_button_text": "Info",
         "app_tile_button_href": "/whirlpool",
-        "app_tile_default_status_text": "Mixing Tool",
         "app_tile_running_status_text": "Running",
         "can_uninstall": true,
         "show_on_homepage": true,
@@ -149,10 +154,10 @@
     {
         "name": "JoininBox",
         "short_name": "joininbox",
+        "short_description": "JoinMarket Mixing",
         "hide_status_icon": true,
         "app_tile_button_text": "Info",
         "app_tile_button_href": "/joininbox",
-        "app_tile_default_status_text": "JoinMarket Mixing",
         "can_uninstall": true,
         "show_on_homepage": true,
         "homepage_order": 24,
@@ -168,7 +173,7 @@
     {
         "name": "Thunderhub",
         "short_name": "thunderhub",
-        "app_tile_default_status_text": "Lightning Wallet",
+        "short_description": "Lightning Wallet",
         "can_uninstall": true,
         "requires_lightning": true,
         "supports_testnet": true,
@@ -180,10 +185,10 @@
     {
         "name": "Caravan",
         "short_name": "caravan",
+        "short_description": "Multisig Tool",
         "requires_bitcoin": true,
         "app_tile_button_text": "Info",
         "app_tile_button_href": "/caravan",
-        "app_tile_default_status_text": "Multisig Tool",
         "can_uninstall": true,
         "show_on_status_page": true,
         "show_on_homepage": true,
@@ -194,8 +199,8 @@
     {
         "name": "Specter",
         "short_name": "specter",
+        "short_description": "Multisig Tool",
         "requires_bitcoin": true,
-        "app_tile_default_status_text": "Multisig Tool",
         "can_uninstall": true,
         "show_on_status_page": true,
         "show_on_homepage": true,
@@ -206,8 +211,8 @@
     {
         "name": "CKBunker",
         "short_name": "ckbunker",
+        "short_description": "Coldcard Signing Tool",
         "requires_bitcoin": true,
-        "app_tile_default_status_text": "Coldcard Signing Tool",
         "can_uninstall": true,
         "show_on_status_page": true,
         "show_on_homepage": true,
@@ -218,9 +223,9 @@
     {
         "name": "Sphinx Relay",
         "short_name": "sphinxrelay",
+        "short_description": "Sphinx Chat Backend",
         "app_tile_button_text": "Info",
         "app_tile_button_href": "/sphinxrelay",
-        "app_tile_default_status_text": "Sphinx Chat Backend",
         "app_tile_running_status_text": "Running",
         "can_uninstall": true,
         "requires_lightning": true,
@@ -232,7 +237,7 @@
     {
         "name": "LNbits",
         "short_name": "lnbits",
-        "app_tile_default_status_text": "Lightning Wallet",
+        "short_description": "Lightning Wallet",
         "can_uninstall": true,
         "show_on_status_page": true,
         "show_on_homepage": true,
@@ -243,8 +248,8 @@
     {
         "name": "Warden Terminal",
         "short_name": "wardenterminal",
+        "short_description": "Bitcoin Dashboard",
         "hide_status_icon": true,
-        "app_tile_default_status_text": "Bitcoin Dashboard",
         "app_tile_button_href": "/wardenterminal",
         "app_tile_button_text": "Info",
         "can_uninstall": true,
@@ -256,9 +261,9 @@
     {
         "name": "PyBlock",
         "short_name": "pyblock",
+        "short_description": "Blockchain Info",
         "requires_lightning": true,
         "hide_status_icon": true,
-        "app_tile_default_status_text": "Blockchain Info",
         "app_tile_button_href": "/pyblock",
         "app_tile_button_text": "Info",
         "can_uninstall": true,
@@ -269,9 +274,9 @@
     {
         "name": "Balance of Satoshis",
         "short_name": "bos",
+        "short_description": "Lightning Utility",
         "requires_lightning": true,
         "hide_status_icon": true,
-        "app_tile_default_status_text": "Lightning Utility",
         "app_tile_button_href": "/bos",
         "app_tile_button_text": "Info",
         "can_uninstall": true,
@@ -293,9 +298,9 @@
         "comment": "HIDDEN FOR NOW - Enable show_on_homepage",
         "name": "Premium+",
         "short_name": "premium_plus",
+        "short_description": "Access and Backup",
         "can_enable_disable": false,
         "app_tile_button_text": "Manage",
-        "app_tile_default_status_text": "Access and Backup",
         "app_tile_button_href": "/premium-plus",
         "show_on_application_page": false,
         "show_on_homepage": false,
@@ -308,9 +313,9 @@
     {
         "name": "Tor",
         "short_name": "tor",
+        "short_description": "Private Connections",
         "can_enable_disable": false,
         "app_tile_button_text": "Tor Services",
-        "app_tile_default_status_text": "Private Connections",
         "app_tile_button_href": "/tor",
         "show_on_application_page": false,
         "show_on_homepage": true,
@@ -322,6 +327,7 @@
     {
         "name": "VPN",
         "short_name": "vpn",
+        "short_description": "Private Connections",
         "app_tile_button_text": "Info",
         "app_tile_button_href": "/vpn-info",
         "show_on_homepage": true,
