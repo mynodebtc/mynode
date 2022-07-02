@@ -1027,6 +1027,8 @@ if should_install_app "bos" ; then
     fi
 fi
 
+# Init dynamic apps, so any new applications are picked up before reboot
+mynode-manage-apps init || true
 
 # Upgrade Dyanmic Applications
 mynode-manage-apps upgrade || true
