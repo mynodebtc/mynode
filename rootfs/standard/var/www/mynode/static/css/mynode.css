@@ -282,6 +282,29 @@ td, th {
     margin: 6px 10px 6px 10px;
     background: #f0f0f0;
 }
+.app_tile_device_info_container {
+    width: 470px; font-size: 12px;
+}
+.app_tile_device_info_block {
+    display: inline-block;
+    text-align: center;
+    width: 150px;
+    margin-bottom: 15px;
+}
+.app_tile_device_info_icon {
+    margin-bottom: 5px;
+}
+.app_tile_device_info_icon_img {
+    height: 40px;
+}
+.app_tile_device_info_name {
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+.app_tile_device_info_value {
+    font-size: 12px;
+    font-weight: bold;
+}
 .bitcoin_block_set {
     margin-left: auto;
     margin-right: auto;
