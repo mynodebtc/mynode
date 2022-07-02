@@ -1,0 +1,255 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>myNode - {{app.name}}</title>
+        {% include 'includes/head.html' %}
+
+        <script src="{{ url_for('static', filename='js/manage_apps.js')}}"></script>
+
+        <style>
+            .hes-gallery {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+                grid-gap: 10px;
+                padding: 10px;
+                columns: 4;
+            }
+            .hes-gallery img {
+                width: 100%;
+                object-fit: cover;
+                transition: 0.3s;
+                cursor: pointer;
+            }
+            .hes-gallery img:hover {
+                transform: scale(1.04);
+                box-shadow: 2px 2px 6px #555;
+            }
+
+
+            .app_page_container {
+                margin: auto;
+                width: 1000px;
+            }
+            .app_page_block_header {
+                width: 1000px;
+                height: 12px;
+                padding: 0px 20px 0px 20px;
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+                background-color: orange;
+            }
+            .app_page_block_contents {
+                width: 1000px;
+                padding: 20px 20px 20px 20px;
+                border-bottom-left-radius: 8px;
+                border-bottom-right-radius: 8px;
+                background: #f0f0f0;
+                overflow: auto;
+            }
+            .app_page_block_contents_left {
+                width: 150px;
+                float: left;
+            }
+            .app_page_block_contents_right {
+                width: 820px;
+                float: right;
+                margin-left: 30px;
+            }
+            .app_page_icon {
+                margin: auto;
+                display: block;
+                width: 150px;
+            }
+            .app_page_button {
+                margin: auto;
+                display: block;
+                width: 150px;
+                margin-bottom: 10px;
+                font-size: 14px !important;
+            }
+            .app_page_block_contents_heading {
+                font-size: 16px;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+            .app_page_block_contents_text {
+                font-size: 14px;
+                margin-bottom: 30px;
+            }
+        </style>
+
+        <!-- Hes Gallery -->
+        <link href="{{ url_for('static', filename='css/hes-gallery.min.css')}}" rel="stylesheet">
+        <script src="{{ url_for('static', filename='js/hes-gallery.min.js')}}"></script>
+
+        <script>
+        function restart_app_via_api(name, short_name) {
+            if ( confirm("Are you sure you want to restart "+name+"?") ) {
+                $('#loading_spinner_message').html("Restarting...");
+                $('#loading_spinner_overlay').fadeIn();
+                $.getJSON('/api/restart_app?app='+short_name, function( data ) {
+                    alert(data)
+                    if (data != "OK") {
+                        alert("Error restarting app: "+data)
+                    }
+                });
+            }
+        }
+        $(document).ready(function() {
+            HesGallery.init({
+                disableScrolling: false,
+                wrapAround: true,
+                animations: true,
+                keyboardControl: true,
+                showImageCount: true,
+            });
+        });
+        </script>
+    </head>
+    <body>
+        {% include 'includes/logo_header.html' %}
+        <div class="mynode_back_div">
+            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        </div>
+
+        <div class="main_header">{{app.name}}</div>
+        <br/>
+
+        <div class="app_page_container">
+            <div class="app_page_block_header">&nbsp;</div>
+            <div class="app_page_block_contents">
+
+                <div class="app_page_block_contents_left">
+                    <img class="app_page_icon" src="{{ url_for('static', filename="images/app_icons/")}}{{app.short_name}}.png"/>
+                    <p style="font-size: 14px; text-align: center;">{{app_status}}</p>
+
+                    <br/>
+
+                    {% if not app.is_installed %}
+                        <!-- Install -->
+                        <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button install_button" onclick="install('{{ app.name }}', '{{ app.short_name }}');">Install</button>
+                    {% else %}
+
+                        <!-- Open, Enable / Disable-->
+                        <!-- TODO: ADD ENABLE / DISABLE BUTTON -->
+                        {% if app.is_enabled %}
+                            {% if app.http_port != "" or app.https_port != "" %}
+                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="open_app_in_new_tab('{{app.http_port}}', '{{app.https_port}}', false, '{APP_TOR_ADDRESS}')">Open</button>
+                            {% endif %}
+                        {% endif %}
+
+                        <div class="divider"></div>
+
+                        <!-- Manage App: Restart, Reset Data, Etc... -->
+                        {% if app.is_enabled %}
+                            <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="restart_app_via_api('{{ app.name }}', '{{ app.short_name }}');">Restart</button>
+
+                            {% for btn in app.app_page_additional_buttons %}
+                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button"
+                                    {% if btn.href is defined and btn.href != "" %}
+                                        onclick="window.location='{{btn.href}}'"
+                                    {% elif btn.onclick is defined and btn.onclick != "" %}
+                                        onclick="{{btn.onclick|safe}}"
+                                    {% endif %}
+                                        >{{btn.title}}</button>
+                            {% endfor %}
+
+                            <div class="divider"></div>
+                        {% endif %}
+
+                        
+
+                        <!-- Upgrade / Re-install / Uninstall -->
+                        {% if app.current_version != app.latest_version %}
+                            <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="upgrade('{{ app.name }}', '{{ app.short_name }}');">Upgrade</button>
+                        {% endif %}
+                        {% if app.can_reinstall %}
+                            <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="reinstall('{{ app.name }}', '{{ app.short_name }}');">Reinstall</button>
+                        {% endif %}
+                        {% if app.can_uninstall %}
+                            <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button uninstall_button" onclick="uninstall('{{ app.name }}', '{{ app.short_name }}');">Uninstall</button>
+                        {% endif %}
+                    {% endif %}
+
+                </div>
+
+                <div class="app_page_block_contents_right">
+                    <div class="app_page_block_contents_heading">
+                        <div class="info-page-block">Info</div>
+                    </div>
+                    <div class="app_page_block_contents_text">
+                        <table class="info_table" style="font-size: 12px; margin-left: 10px">
+                            <tr>
+                                <th>Installed Version</th>
+                                <td>
+                                    {% if app.is_installed %}
+                                        {{app.current_version}}
+                                    {% else %}
+                                        Not Installed
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Latest Version</th>
+                                <td>{{app.latest_version}}</td>
+                            </tr>
+                            {% if app.author.name is defined %}
+                            <tr>
+                                <th>Author</th>
+                                <td>
+                                    {% if app.author.link is defined and app.author.link != "" %}
+                                        <a href="{{app.author.link}}" target="_blank">{{app.author.name}}</a>
+                                    {% else %}
+                                        {{app.author.name}}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% if app.website.name is defined and app.website.link is defined %}
+                            <tr>
+                                <th>Website</th>
+                                <td>
+                                    <a href="{{app.website.link}}" target="_blank">{{app.website.name}}</a>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </table>
+                    </div>
+
+                    <div class="app_page_block_contents_heading">
+                        <div class="info-page-block">Description</div>
+                    </div>
+                    <div class="app_page_block_contents_text">
+                        {% if app.description is defined and app.description|length > 0 %}
+                            {% for parapraph in app.description %}
+                                <p>{{parapraph}}</p>
+                            {% endfor %}
+                        {% else %}
+                            No description available.
+                        {% endif %}
+                    </div>
+
+                    {% if app.screenshots is defined and app.screenshots|length > 0 %}
+                    <div class="app_page_block_contents_heading">
+                        <div class="info-page-block">Screenshots</div>
+                    </div>
+                    <div class="app_page_block_contents_text">
+                        <div class="hes-gallery">
+                            {% for screenshot in app.screenshots %}
+                                <img src="{{ url_for('static', filename="images/screenshots/")}}{{app.short_name}}/{{screenshot}}" alt="{{app.name}} Image" data-subtext=""/>
+                            {% endfor %}
+                          </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+
+        <div id="loading_spinner_overlay" class="loading_spinner_overlay" style="display:none;">
+            <img id="loading_spinner" class="loading_image" src="{{ url_for('static', filename="images/loading.gif")}}"/>
+            <br/>
+            <span id="loading_spinner_message">Loading...</span>
+        </div>
+
+    </body>
+</html>
