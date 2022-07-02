@@ -9,8 +9,7 @@ import copy
 import json
 import time
 import subprocess
-import pwd
-import re
+import importlib
 import os
 
 # Globals
@@ -117,6 +116,16 @@ def get_app_latest_version_from_file(app):
 
     return to_string(version)
 
+def get_app_screenshots(short_name):
+    screenshots = []
+    screenshot_folder = "/var/www/mynode/static/images/screenshots/{}/".format(short_name)
+    if os.path.isdir(screenshot_folder):
+        for s in os.listdir(screenshot_folder):
+            if s.endswith(".png"):
+                screenshots.append(s)
+        return sorted(screenshots)
+    return screenshots
+
 def replace_app_info_variables(app_data, text):
     text = text.replace("{VERSION}", app_data["latest_version"])
     text = text.replace("{SHORT_NAME}", app_data["short_name"])
@@ -130,8 +139,13 @@ def replace_app_info_variables(app_data, text):
 def initialize_application_defaults(app):
     if not "name" in app: app["name"] = "NO_NAME"
     if not "short_name" in app: app["short_name"] = "NO_SHORT_NAME"
-    if not "description" in app: app["description"] = ""
-    if not "screenshots" in app: app["screenshots"] = []
+    if not "app_type" in app: app["app_type"] = "custom"
+    if not "category" in app: app["category"] = "uncategorized"
+    if not "author" in app: app["author"] = {"name": "", "link": ""}
+    if not "website" in app: app["website"] = {"name": "", "link": ""}
+    if not "short_description" in app: app["short_description"] = "MISSING"
+    if not "description" in app: app["description"] = []
+    if not "screenshots" in app: app["screenshots"] = get_app_screenshots( app["short_name"] )
     if not "app_tile_name" in app: app["app_tile_name"] = app["name"]
     if not "linux_user" in app: app["linux_user"] = "bitcoin"
     if not "targz_download_url" in app: app["targz_download_url"] = "not_specified"
@@ -141,6 +155,7 @@ def initialize_application_defaults(app):
     if not "http_port" in app: app["http_port"] = None
     if not "https_port" in app: app["https_port"] = None
     if not "extra_ports" in app: app["extra_ports"] = []
+    if not "tor_address" in app: app["tor_address"] = get_onion_url_for_service( app["short_name"] )
     if not "is_premium" in app: app["is_premium"] = False
     if not "current_version" in app: app["current_version"] = get_app_current_version_from_file( app["short_name"] )
     app["latest_version"] = get_app_latest_version_from_file( app )
@@ -156,6 +171,7 @@ def initialize_application_defaults(app):
     if not "supports_testnet" in app: app["supports_testnet"] = False
     if not "show_on_homepage" in app: app["show_on_homepage"] = False
     if not "show_on_application_page" in app: app["show_on_application_page"] = True
+    if not "supports_app_page" in app: app["supports_app_page"] = True
     if not "show_on_status_page" in app: app["show_on_status_page"] = False             # New apps should set to true
     if not "can_enable_disable" in app: app["can_enable_disable"] = True
     if not "is_enabled" in app: app["is_enabled"] = is_service_enabled( app["short_name"] )
@@ -169,14 +185,17 @@ def initialize_application_defaults(app):
     if app["homepage_section"] == "" and app["show_on_homepage"]:
         app["homepage_section"] = "apps"
     if not "app_tile_button_text" in app: app["app_tile_button_text"] = app["app_tile_name"]
-    if not "app_tile_default_status_text" in app: app["app_tile_default_status_text"] = ""
-    if not "app_tile_running_status_text" in app: app["app_tile_running_status_text"] = app["app_tile_default_status_text"]
+    if not "app_tile_running_status_text" in app: app["app_tile_running_status_text"] = app["short_description"]
     if not "app_tile_button_href" in app: app["app_tile_button_href"] = "#"
     if not "app_tile_button_onclick" in app: app["app_tile_button_onclick"] = ""
+    if not "app_page_additional_buttons" in app: app["app_page_additional_buttons"] = []
 
     # Update fields that may use variables that need replacing, like {VERSION}, {SHORT_NAME}, etc...
     app["targz_download_url"] = replace_app_info_variables(app, app["targz_download_url"])
     app["app_tile_button_onclick"] = replace_app_info_variables(app, app["app_tile_button_onclick"])
+    for btn in app["app_page_additional_buttons"]:
+        if "onclick" in btn:
+            btn["onclick"] = replace_app_info_variables(app, btn["onclick"])
 
     return app
 
@@ -366,7 +385,7 @@ def get_application_status(short_name):
     if app["requires_electrs"] and not is_electrs_active():
         return "Waiting on Electrum"
     if not app["is_enabled"]:
-        return to_string(app["app_tile_default_status_text"])
+        return to_string(app["short_description"])
     if app["requires_bitcoin"] and not is_bitcoin_synced():
         return "Waiting on Bitcoin"
 
@@ -639,12 +658,37 @@ def get_dynamic_app_names():
             app_names.append(app_folder_name)
     return app_names
 
+def register_dynamic_app_flask_blueprints(flask_app):
+    try:
+        app_names = get_dynamic_app_names()
+        for app_name in app_names:
+            if os.path.isfile("/var/www/mynode/app/{}/{}.py".format(app_name, app_name)):
+                log_message("Registering Flask Blueprint for {}".format(app_name))
+                try:
+                    mynode_app = getattr(importlib.import_module("app.{}.{}".format(app_name, app_name)), "mynode_{}".format(app_name))
+                    flask_app.register_blueprint(mynode_app, url_prefix="/app/{}".format(app_name))
+                except Exception as e:
+                    log_message("register_dynamic_app_flask_blueprints import error - ({})".format(str(e)))
+    except Exception as e:
+        log_message("register_dynamic_app_flask_blueprints error - ({})".format(str(e)))
+
 def init_dynamic_app(app_info):
     app_name = app_info["short_name"]
     app_dir = DYNAMIC_APPLICATIONS_FOLDER + "/" + app_name
     log_message(" Loading " + app_name + "...")
+    # Install Service File
     os.system("cp -f {} {}".format(app_dir+"/"+app_name+".service", "/etc/systemd/system/"+app_name+".service"))
+    # Install App Icon
     os.system("cp -f {} {}".format(app_dir+"/"+app_name+".png", "/var/www/mynode/static/images/app_icons/"+app_name+".png"))
+    # Install Screenshots
+    os.system("mkdir -p /var/www/mynode/static/images/screenshots/{}".format(app_name))
+    if os.path.isdir(app_dir+"/screenshots/"):
+        for s in os.listdir(app_dir+"/screenshots/"):
+            if s.endswith(".png"):
+                src=app_dir+"/screenshots/{}".format(s)
+                dst="/var/www/mynode/static/images/screenshots/{}/{}".format(app_name, s)
+                os.system("cp -f {} {}".format(src, dst))
+    # Install scripts (pre, post, install, uninstall)
     if (os.path.isfile(app_dir+"/scripts/pre_"+app_name+".sh")):
         os.system("cp -f {} {}".format(app_dir+"/scripts/pre_"+app_name+".sh",      "/usr/bin/service_scripts/pre_"+app_name+".sh"))
     if (os.path.isfile(app_dir+"/scripts/post_"+app_name+".sh")):
@@ -653,22 +697,34 @@ def init_dynamic_app(app_info):
         os.system("cp -f {} {}".format(app_dir+"/scripts/install_"+app_name+".sh",  "/usr/bin/service_scripts/install_"+app_name+".sh"))
     if (os.path.isfile(app_dir+"/scripts/uninstall_"+app_name+".sh")):
         os.system("cp -f {} {}".format(app_dir+"/scripts/uninstall_"+app_name+".sh", "/usr/bin/service_scripts/uninstall_"+app_name+".sh"))
+    # Install NGINX config
     if (os.path.isfile(app_dir+"/nginx/https_"+app_name+".conf")):
         os.system("cp -f {} {}".format(app_dir+"/nginx/https_"+app_name+".conf", "/etc/nginx/sites-enabled/https_"+app_name+".conf"))
 
-    # TODO: Install web files
-    # Install python files www/python/*.py      (<short_name>.py required)
-    # Install templates    www/templates/*.html (optional)
+    # Install python web files (one with <short_name>.py is required)
+    os.system("mkdir -p /var/www/mynode/app/{}/".format(app_name))
+    for filename in os.listdir(app_dir+"/www/python"):
+        if filename.endswith(".py"):
+            src = app_dir+"/www/python/"+filename
+            dst = "/var/www/mynode/app/"+app_name+"/"+filename
+            os.system("cp -f {} {}".format(src, dst))
+    os.system("mkdir -p /var/www/mynode/templates/app/{}/".format(app_name))
+    # Install template web files
+    for filename in os.listdir(app_dir+"/www/templates"):
+        if filename.endswith(".html"):
+            src = app_dir+"/www/templates/"+filename
+            dst = "/var/www/mynode/templates/app/"+app_name+"/"+filename
+            os.system("cp -f {} {}".format(src, dst))
 
     # For "node" type apps
-    log_message("  TODO: Need node special files???")
+    #log_message("  TODO: Need node special files???")
 
     # For "python" type apps
-    log_message("  TODO: Need python special files???")
+    #log_message("  TODO: Need python special files???")
 
     # For "docker" type apps
-    log_message("  TODO: Build dockerfile???")
-    log_message("  TODO: Install dockerfile???")
+    #log_message("  TODO: Build dockerfile???")
+    #log_message("  TODO: Install dockerfile???")
 
     # Setup tor hidden service
     create_application_tor_service(app_info)
