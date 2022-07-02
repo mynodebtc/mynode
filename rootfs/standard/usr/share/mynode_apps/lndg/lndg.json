@@ -1,6 +1,13 @@
 {
     "name": "LNDg",
     "short_name": "lndg",
+    "author": {"name": "cryptosharks131", "link":""},
+    "website": {"name": "GitHub", "link": "https://github.com/cryptosharks131/lndg"},
+    "category": "lightning_app",
+    "short_description": "Lightning Tool",
+    "description": [
+        "Lite GUI web interface to analyze lnd data and manage your node with automation."
+    ],
     "latest_version": "v1.1.2",
     "linux_user": "lndg",
     "targz_download_url": "https://github.com/cryptosharks131/lndg/archive/refs/tags/{VERSION}.tar.gz",
@@ -9,9 +16,13 @@
     "https_port": "8890",
     "requires_lightning": true,
     "hide_status_icon": false,
-    "app_tile_default_status_text": "Lightning Tool",
     "app_tile_running_status_text": "Running",
-    "app_tile_button_onclick": "open_app_in_new_tab({HTTP_PORT}, {HTTPS_PORT}, false, '{APP_TOR_ADDRESS}')",
+    "app_tile_button_text": "Info",
+    "app_tile_button_href": "/app/lndg/info",
+    "app_page_additional_buttons": [
+        {"title": "Button A", "href": "https://mynodebtc.com", "onclick": ""},
+        {"title": "Button B", "href": "https://twitter.com"}
+    ],
     "can_uninstall": true,
     "can_enable_disable": true,
     "show_on_application_page": true,
