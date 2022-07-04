@@ -79,9 +79,7 @@
                                             <a class="ui-button ui-widget ui-corner-all mynode_button" href="{{app.app_tile_button_href}}" id="{{app.short_name}}">{{app.app_tile_button_text}}</a>
                                         {% endif %}
                                         {% if app.can_enable_disable %}
-                                            {% if app.is_enabled %}
-                                                <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('{{app.short_name}}', '{{app.name}}', false)">Disable</a>
-                                            {% else %}
+                                            {% if not app.is_enabled %}
                                                 <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('{{app.short_name}}', '{{app.name}}', true)">Enable</a>
                                             {% endif %}
                                         {% endif %}
