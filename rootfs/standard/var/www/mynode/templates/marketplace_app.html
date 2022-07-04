@@ -8,10 +8,10 @@
         <style>
             .hes-gallery {
                 display: grid;
-                grid-template-columns: 1fr 1fr 1fr 1fr;
-                grid-gap: 10px;
-                padding: 10px;
-                columns: 4;
+                grid-template-columns: 1fr 1fr 1fr;
+                grid-gap: 20px;
+                padding: 20px;
+                columns: 3;
             }
             .hes-gallery img {
                 width: 100%;
@@ -103,7 +103,6 @@
         </div>
 
         <div class="main_header">{{app.name}}</div>
-        <br/>
 
         <div class="app_page_container">
             <div class="app_page_block_header">&nbsp;</div>
@@ -157,7 +156,7 @@
                                 <th>Latest Version</th>
                                 <td>{{app.latest_version}}</td>
                             </tr>
-                            {% if app.author.name is defined %}
+                            {% if app.author.name is defined and app.author.name != "" %}
                             <tr>
                                 <th>Author</th>
                                 <td>
@@ -169,7 +168,7 @@
                                 </td>
                             </tr>
                             {% endif %}
-                            {% if app.website.name is defined and app.website.link is defined %}
+                            {% if app.website.name is defined and app.website.link is defined and app.website.name != ""%}
                             <tr>
                                 <th>Website</th>
                                 <td>
@@ -185,9 +184,15 @@
                     </div>
                     <div class="app_page_block_contents_text">
                         {% if app.description is defined and app.description|length > 0 %}
-                            {% for parapraph in app.description %}
-                                <p>{{parapraph}}</p>
-                            {% endfor %}
+                            {% if app.description is string %}
+                                <p>{{app.description}}</p>
+                            {% elif app.description is iterable %}
+                                {% for parapraph in app.description %}
+                                    <p>{{parapraph}}</p>
+                                {% endfor %}
+                            {% else %}
+                                <p>Unknown description format.</p>
+                            {% endif %}
                         {% else %}
                             No description available.
                         {% endif %}

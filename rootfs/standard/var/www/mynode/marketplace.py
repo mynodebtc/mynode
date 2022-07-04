@@ -19,8 +19,11 @@ def marketplace_page():
     apps = get_all_applications(order_by="alphabetic")
     t2 = get_system_time_in_ms()
 
-    categories = [{"name": "bitcoin_app", "title": "Bitcoin Apps"},
+    categories = [{"name": "core", "title": "Core Apps"},
+                  {"name": "bitcoin_app", "title": "Bitcoin Apps"},
                   {"name": "lightning_app", "title": "Lightning Apps"},
+                  {"name": "networking", "title": "Networking"},
+                  {"name": "device_management", "title": "Device Management Apps"},
                   {"name": "uncategorized", "title": "Uncategorized"}
                 ]
 

@@ -775,6 +775,9 @@ def get_premium_plus_token():
         elif os.path.isfile("/mnt/hdd/mynode/settings/.premium_plus_token"):
             with open("/mnt/hdd/mynode/settings/.premium_plus_token", "r") as f:
                 token = f.read().strip()
+
+                # Re-save to SD card since it was missing
+                set_file_contents("/home/bitcoin/.mynode/.premium_plus_token", token)
     except:
         token = "error_2"
     return token

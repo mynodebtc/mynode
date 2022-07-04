@@ -2,6 +2,10 @@
     {
         "name": "Bitcoin",
         "short_name": "bitcoin",
+        "author": {"name": "Satoshi Nakamoto", "link":""},
+        "website": {"name": "GitHub", "link": "https://github.com/bitcoin/bitcoin"},
+        "description": "Bitcoin Core connects to the Bitcoin peer-to-peer network to download and fully validate blocks and transactions.",
+        "category": "core",
         "short_description": "Bitcoin Core",
         "app_tile_running_status_text": "Running",
         "supports_testnet": true
@@ -9,6 +13,10 @@
     {
         "name": "LND",
         "short_name": "lnd",
+        "author": {"name": "Lightning Labs", "link":"https://lightning.engineering/"},
+        "website": {"name": "GitHub", "link": "https://github.com/lightningnetwork/lnd"},
+        "description": "The Lightning Network Daemon (lnd) - is a complete implementation of a Lightning Network node.",
+        "category": "core",
         "short_description": "Lightning",
         "app_tile_running_status_text": "Running",
         "supports_testnet": true
@@ -16,6 +24,16 @@
     {
         "name": "Loop",
         "short_name": "loop",
+        "author": {"name": "Lightning Labs", "link":"https://lightning.engineering/"},
+        "website": {"name": "GitHub", "link": "https://github.com/lightninglabs/loop"},
+        "description": [
+            "The easiest way to manage inbound and outbound liquidity on the Lightning Network. Keep your channels open and the funds flowing.",
+            "Loop Out",
+            "For merchants, services, and users who primarily receive funds via Lightning, Loop Out serves as a bridge, allowing funds to be sent out of the Lightning Network to 'on-chain' destinations like exchange accounts or cold storage systems. This can also be useful for users who want to: Manage capacity so that channels can be used indefinitely to receive more funds, Send funds on-chain to merchants or services that aren't yet Lightning enabled, Rebalance routing channels so payments can be routed in any direction.",
+            "Loop In",
+            "Loop In enables typical users to 'refill' their Lightning wallets when funds are depleted. In these cases, users 'Loop' funds into Lightning wallets from 'on-chain' sources (e.g. exchanges or cold storage). Loop In can also be useful for: Operating fiat bridges that deliver funds to Lightning Network users, Services that pay users via Lightning (e.g. for content creation, rewards programs, microwork, etc.)"
+        ],
+        "category": "lightning_app",
         "short_description": "Lightning Liquidity Tool",
         "requires_lightning": true,
         "show_on_status_page": true
@@ -23,6 +41,13 @@
     {
         "name": "Pool",
         "short_name": "pool",
+        "author": {"name": "Lightning Labs", "link":"https://lightning.engineering/"},
+        "website": {"name": "GitHub", "link": "https://github.com/lightninglabs/pool"},
+        "description": [
+            "Lightning Pool is a marketplace for Lightning channels.",
+            "Lightning Pool connects users who need access to bitcoin liquidity to those who have capital to deploy on the Lightning Network."
+        ],
+        "category": "lightning_app",
         "short_description": "Lightning Liquidity Tool",
         "requires_lightning": true,
         "show_on_status_page": true
@@ -30,7 +55,11 @@
     {
         "name": "Lightning Terminal",
         "short_name": "lit",
-        "short_description": "Lightning Liquidity Tool",
+        "author": {"name": "Lightning Labs", "link":"https://lightning.engineering/"},
+        "website": {"name": "GitHub", "link": "https://github.com/lightninglabs/lightning-terminal"},
+        "description": "Lightning Terminal is the home of Lightning Labs products that help you make the most of your Bitcoin. Lightning Terminal’s initial functionality provides a visual interface for interacting with your channels and balances using Loop. Making the process of managing your funds easier and more intuitive allows you to focus on running your business, not on your liquidity. Loop is the first of several upcoming Terminal features that enable new use cases and open up a new world of possibilities on Lightning.",
+        "category": "lightning_app",
+        "short_description": "Lightning Management Tool",
         "requires_lightning": true,
         "show_on_status_page": true
     },
@@ -38,6 +67,10 @@
         "name": "Ride the Lightning",
         "short_name": "rtl",
         "app_tile_name": "RTL",
+        "author": {"name": "", "link":""},
+        "website": {"name": "GitHub", "link": "https://github.com/Ride-The-Lightning/RTL"},
+        "description": "RTL is a full function, device agnostic, web user interface to help manage lightning node operations. RTL is available on LND, CoreLightning and Eclair implementations.",
+        "category": "lightning_app",
         "short_description": "Lightning Wallet",
         "can_uninstall": true,
         "show_on_status_page": true,
@@ -49,6 +82,13 @@
     {
         "name": "Electrum Server",
         "short_name": "electrs",
+        "author": {"name": "romanz", "link":""},
+        "website": {"name": "GitHub", "link": "https://github.com/romanz/electrs"},
+        "description": [
+            "An efficient re-implementation of Electrum Server, inspired by ElectrumX, Electrum Personal Server and bitcoincore-indexd.",
+            "The motivation behind this project is to enable a user to self host an Electrum server, with required hardware resources not much beyond those of a full node. The server indexes the entire Bitcoin blockchain, and the resulting index enables fast queries for any given user wallet, allowing the user to keep real-time track of balances and transaction history using the Electrum wallet. Since it runs on the user's own machine, there is no need for the wallet to communicate with external Electrum servers, thus preserving the privacy of the user's addresses and balances."
+        ],
+        "category": "bitcoin_app",
         "short_description": "Wallet Backend",
         "app_tile_button_text": "Info",
         "app_tile_button_href": "/electrum-server",
@@ -62,6 +102,15 @@
     {
         "name": "BTCPay Server",
         "short_name": "btcpayserver",
+        "author": {"name": "BTC Pay Server", "link":"https://btcpayserver.org/"},
+        "website": {"name": "GitHub", "link": "https://github.com/btcpayserver/btcpayserver"},
+        "description": [
+            "BTCPay Server is a self-hosted, open-source cryptocurrency payment processor. It's secure, private, censorship-resistant and free.",
+            "Features you use the most are baked right into every instance so you can hit the ground running. Create a Point-of-Sale app for your store, easily embed a tipping button on your website, send a payment link to a client across the globe, or launch a crowdfunding campaign to raise funds for your cause",
+            "Generate and manage invoices with ease. Get notified when they get paid. Export your invoices in different format for smoother bookkeeping",
+            "Manage your incoming and outgoing funds with a built-in wallet that has hardware wallet support."
+        ],
+        "category": "bitcoin_app",
         "short_description": "Merchant Tool",
         "can_uninstall": true,
         "requires_lightning": false,
@@ -72,6 +121,10 @@
     {
         "name": "Mempool",
         "short_name": "mempool",
+        "author": {"name": "Mempool", "link":"https://mempool.space/"},
+        "website": {"name": "GitHub", "link": "https://github.com/mempool/mempool"},
+        "description": "Our mempool and blockchain explorer for the Bitcoin community, focusing on the transaction fee market and multi-layer ecosystem, completely self-hosted without any trusted third-parties.",
+        "category": "bitcoin_app",
         "short_description": "Mempool Viewer",
         "can_uninstall": true,
         "show_on_homepage": true,
@@ -82,6 +135,13 @@
     {
         "name": "LND Hub",
         "short_name": "lndhub",
+        "author": {"name": "BlueWallet", "link":"https://bluewallet.io/"},
+        "website": {"name": "GitHub", "link": "https://github.com/BlueWallet/LndHub"},
+        "description": [
+            "A free and open source, multiple account plugin for Lightning built on top of the Lightning Network Deamon. It allows that a group of users run different accounts with only one node in a trust-minimized setup.",
+            "Ideal for hosted shared services or groups, families and friends that want to share their own node."
+        ],
+        "category": "bitcoin_app",
         "short_description": "BlueWallet Backend",
         "can_uninstall": true,
         "requires_lightning": true,
@@ -98,11 +158,20 @@
     },
     {
         "name": "LNDConnect",
-        "short_name": "lndconnect"
+        "short_name": "lndconnect",
+        "author": {"name": "Zap", "link":"https://zaphq.io/"},
+        "website": {"name": "GitHub", "link": "https://github.com/LN-Zap/lndconnect"},
+        "description": "Generate a QRCode or URI to connect applications to lnd instances.",
+        "category": "lightning_app",
+        "short_description": "Wallet Pairing Tool"
     },
     {
         "name": "LNDManage",
         "short_name": "lndmanage",
+        "author": {"name": "bitromortac", "link":""},
+        "website": {"name": "GitHub", "link": "https://github.com/bitromortac/lndmanage"},
+        "description": "lndmanage is a command line tool for advanced channel management of an LND node.",
+        "category": "lightning_app",
         "short_description": "Lightning Utility",
         "requires_lightning": true,
         "hide_status_icon": true,
@@ -116,6 +185,13 @@
     {
         "name": "BTC RPC Explorer",
         "short_name": "btcrpcexplorer",
+        "author": {"name": "janoside", "link":""},
+        "website": {"name": "GitHub", "link": "https://github.com/janoside/btc-rpc-explorer"},
+        "description": [
+            "This is a self-hosted explorer for the Bitcoin blockchain, driven by RPC calls to your own Bitcoin node. It is easy to run and can be connected to other tools (like Electrum servers) to achieve a full-featured explorer.",
+            "Whatever reasons you may have for running a full node (trustlessness, technical curiosity, supporting the network, etc) it's valuable to appreciate the fullness of your node. With this explorer, you can explore not just the blockchain database, but also explore all of the functional capabilities of your own node."
+        ],
+        "category": "bitcoin_app",
         "app_tile_name": "Explorer",
         "short_description": "BTC RPC Explorer",
         "can_uninstall": true,
@@ -129,6 +205,17 @@
     {
         "name": "Dojo",
         "short_name": "dojo",
+        "author": {"name": "Samourai", "link":"https://samouraiwallet.com/"},
+        "website": {"name": "Dojo", "link": "https://samouraiwallet.com/dojo"},
+        "description": [
+            "Running a bitcoin full node is the only way to interact with the network in a truly sovereign way. Until now, it has been a complex and unfriendly process to install and configure a Bitcoin full node. Dojo changes that.",
+            "Samourai Wallet is already unrivaled in transaction privacy, but the default configuration is still subject to network level privacy loss. Hosting your own Dojo allows you to simply bypass our default servers and circumvent these concerns. Simple.",
+            "Dojo can handle all the advanced functionality provided within Samourai Wallet. Full SegWit support is provided by default as well as support for all standard Bitcoin address and Extended Public Key (XPUB) types.",
+            "Dojo is designed to operate over the Tor network by default. The configuration has been fine tuned to offer both network security and privacy protection while still allowing your wallet remote access. All handled automatically so you don't have to worry about it.",
+            "Connect to and manage your Dojo from anywhere with an easy to use interface served over a Tor hidden service.",
+            "Execute maintenance tasks and view node status, or interact with your Dojo from any Tor web browser allowing for easy management of your Dojo, even when you are on the go."
+        ],
+        "category": "bitcoin_app",
         "short_description": "Mixing Tool",
         "app_tile_button_text": "Info",
         "app_tile_button_href": "/dojo",
@@ -143,6 +230,17 @@
     {
         "name": "Whirlpool",
         "short_name": "whirlpool",
+        "author": {"name": "Samourai", "link":"https://samouraiwallet.com/"},
+        "website": {"name": "Whirlpool", "link": "https://samouraiwallet.com/whirlpool"},
+        "description": [
+            "Break the link your coins leave behind with built in CoinJoin available on any platform.",
+            "Three available liquidity pools gives you the most flexibility when cycling your coins through the Whirlpool. Choose a pool based on the total amount you are cycling and the desired number of newly cycled outputs that are created.",
+            "Designed with a mobile first approach, Whirlpool cycles provide strong privacy protection in minutes not hours. Whirlpool is designed around many small fast CoinJoin cycles instead of slow single cycle.",
+            "Stop overpaying, Whirlpool creates perfect CoinJoins at a fraction of the price. Unlike other services that charge a volume based fee - meaning the more you mix the more you pay - Whirlpool charges a flat fee - meaning you end up paying less the more you mix! - You pay the same Whirlpool fee to mix 1 BTC or 1000 BTC",
+            "Mathematics is the driving force behind Whirlpool. Every cycle can be interpreted 1,496 different ways. With each cycle increasing interpretations exponentially. Break the link your coins leave behind with built in CoinJoin available on any platform. Every Whirlpool is structurally sound with 100% maximum entropy; Never cycling with yourself; Never cycling previously seen coins together; Never any deterministic links between inputs and outputs; And never any address reuse.",
+            "While being specifically designed with a mobile first mindset and is available fully implemented within Samourai Wallet, we have made efforts to bring Whirlpool technology to all platforms. Whirlpool is built in to Samourai Wallet and available as a stand alone desktop app available on all platforms."
+        ],
+        "category": "bitcoin_app",
         "short_description": "Mixing Tool",
         "app_tile_button_text": "Info",
         "app_tile_button_href": "/whirlpool",
@@ -154,6 +252,16 @@
     {
         "name": "JoininBox",
         "short_name": "joininbox",
+        "author": {"name": "openoms", "link":""},
+        "website": {"name": "GitHub", "link": "https://github.com/openoms/joininbox"},
+        "description": [
+            "A minimalistic, security focused linux environment for JoinMarket with a terminal based graphical menu.",
+            "JoinMarket is software to create a special kind of bitcoin transaction called a CoinJoin transaction. Its aim is to improve the confidentiality and privacy of bitcoin transactions.",
+            "A CoinJoin transaction requires other people to take part. The right resources (coins) have to be in the right place, at the right time, in the right quantity. This isn't a software or tech problem, it's an economic problem. JoinMarket works by creating a new kind of market that would allocate these resources in the best way.",
+            "One group of participants (called market makers) will always be available to take part in CoinJoins at any time. Other participants (called market takers) can create a CoinJoin at any time. The takers pay a fee which incentivizes the makers. A form of smart contract is created, meaning the private keys will never be broadcasted outside of your computer, resulting in virtually zero risk of loss (aside from malware or bugs). As a result of free-market forces the fees will eventually be next to nothing.",
+            "Widespread use of JoinMarket improves bitcoin's fungibility and privacy. This implementation of JoinMarket also implements PayJoin."
+        ],
+        "category": "bitcoin_app",
         "short_description": "JoinMarket Mixing",
         "hide_status_icon": true,
         "app_tile_button_text": "Info",
@@ -173,6 +281,17 @@
     {
         "name": "Thunderhub",
         "short_name": "thunderhub",
+        "author": {"name": "Thunderhub", "link":"https://thunderhub.io"},
+        "website": {"name": "GitHub", "link": "https://github.com/apotdevin/thunderhub"},
+        "description": [
+            "Monitor and manage your node from any browser and any device.",
+            "Send and Receive - Send and receive both Lightning and Bitcoin payments in a simple and easy to use interface with both basic and advanced features.",
+            "Transaction Reports - Have a quick overview of the invoices coming into your node and payments being made. Check both the amount and value of your transactions. See total amount together with confirmed and unconfirmed invoices.",
+            "Channel Management - See all your channels and get a quick preview of how balanced and active they are. Open new channels or close them.",
+            "Forward Payments - Quick glance at the forwarded payments that have been going through your node. See the incoming and outgoing channels being used.",
+            "Night / Day Mode - Prefer working in the dark? We have an awesome night mode just for you. Want it more bright? Got you covered as well."
+        ],
+        "category": "lightning_app",
         "short_description": "Lightning Wallet",
         "can_uninstall": true,
         "requires_lightning": true,
@@ -186,6 +305,15 @@
         "name": "Caravan",
         "short_name": "caravan",
         "short_description": "Multisig Tool",
+        "author": {"name": "Unchained Capital", "link":"https://unchained.com/"},
+        "website": {"name": "GitHub", "link": "https://github.com/unchained-capital/caravan"},
+        "description": [
+            "Caravan is making bitcoin multisig custody easier and safer through transparency and standards.",
+            "Caravan is a coordination software. It connects to a source of consensus and your keys to build and interact with multisig bitcoin addresses.",    
+            "Caravan is also stateless. It does not itself store any data. You must safekeep the addresses (and redeem scripts & BIP32 paths) you create.",
+            "Caravan is a stateless pure HTML & JavaScript web application. It can be run in any web browser from a local or remote installation."
+        ],
+        "category": "bitcoin_app",
         "requires_bitcoin": true,
         "app_tile_button_text": "Info",
         "app_tile_button_href": "/caravan",
@@ -200,6 +328,10 @@
         "name": "Specter",
         "short_name": "specter",
         "short_description": "Multisig Tool",
+        "author": {"name": "Specter", "link": "https://specter.solutions/"},
+        "website": {"name": "GitHub", "link": "https://github.com/cryptoadvance/specter-desktop"},
+        "description": "The goal of this project is to make a convenient and user-friendly GUI around Bitcoin Core with a focus on multisignature setup with hardware wallets and airgapped devices.",
+        "category": "bitcoin_app",
         "requires_bitcoin": true,
         "can_uninstall": true,
         "show_on_status_page": true,
@@ -212,6 +344,17 @@
         "name": "CKBunker",
         "short_name": "ckbunker",
         "short_description": "Coldcard Signing Tool",
+        "author": {"name": "Coldcard", "link": "https://coldcard.com/"},
+        "website": {"name": "GitHub", "link": "https://github.com/Coldcard/ckbunker"},
+        "description": [
+            "CKBunker is a python program that you run on a computer attached to a Coldcard. It will setup and operate the Coldcard in “HSM Mode” where it signs without a human pressing the OK key. To keep your funds safe, the Coldcard implements a complex set of spending rules which cannot be changed once HSM mode is started.",
+            "Using the tord (Tor deamon) you already have, the CK Bunker can make itself available as a hidden service for remote access over Tor. A pretty website for setup and operation allows access to all HSM-related Coldcard features, including:",
+            " - transaction signing, by uploading a PSBT; can broadcast signed txn using Blockstream.info (onion)",
+            " - define policy rules, spending limits, velocity controls, logging policy",
+            " - user setup (TOTP QR scan to enroll on Coldcard, or random passwords (Coldcard) or known password",
+            "The bunker encrypts its own settings and stores the private key for that inside Coldcard’s storage locker (which is kept inside the secure element of the Coldcard). The private key for the onion service, for example, is protected by that key."
+        ],
+        "category": "bitcoin_app",
         "requires_bitcoin": true,
         "can_uninstall": true,
         "show_on_status_page": true,
@@ -224,6 +367,10 @@
         "name": "Sphinx Relay",
         "short_name": "sphinxrelay",
         "short_description": "Sphinx Chat Backend",
+        "author": {"name": "Sphinx Chat", "link": "https://sphinx.chat/"},
+        "website": {"name": "GitHub", "link": "https://github.com/stakwork/sphinx-relay"},
+        "description": "Relay is a Node.js wrapper around LND, handling connectivity and storage for Sphinx. Communication between Relay nodes takes place entirely on the Lightning Network, so it is decentralized, untraceable, and encrypted. Message content is also end-to-end encrypted using client public keys, on the Sphinx app itself.",
+        "category": "lightning_app",
         "app_tile_button_text": "Info",
         "app_tile_button_href": "/sphinxrelay",
         "app_tile_running_status_text": "Running",
@@ -238,6 +385,10 @@
         "name": "LNbits",
         "short_name": "lnbits",
         "short_description": "Lightning Wallet",
+        "author": {"name": "LNbits", "link": "https://lnbits.com"},
+        "website": {"name": "GitHub", "link": "https://github.com/lnbits/lnbits-legend"},
+        "description": "LNbits can run on top of any lightning-network funding source, currently there is support for LND, c-lightning, Spark, LNpay, OpenNode, lntxbot, with more being added regularly.",
+        "category": "lightning_app",
         "can_uninstall": true,
         "show_on_status_page": true,
         "show_on_homepage": true,
@@ -249,6 +400,10 @@
         "name": "Warden Terminal",
         "short_name": "wardenterminal",
         "short_description": "Bitcoin Dashboard",
+        "author": {"name": "Alpha Zeta", "link": ""},
+        "website": {"name": "GitHub", "link": "https://github.com/pxsocs/warden_terminal"},
+        "description": "A light weight text based Bitcoin Dashboard for Linux based systems.",
+        "category": "bitcoin_app",
         "hide_status_icon": true,
         "app_tile_button_href": "/wardenterminal",
         "app_tile_button_text": "Info",
@@ -262,7 +417,10 @@
         "name": "PyBlock",
         "short_name": "pyblock",
         "short_description": "Blockchain Info",
-        "requires_lightning": true,
+        "author": {"name": "curly60e", "link": ""},
+        "website": {"name": "GitHub", "link": "https://github.com/curly60e/pyblock"},
+        "description": "PyBlock is a Bitcoin Dashboard with a Cypherpunk aesthetic.",
+        "category": "bitcoin_app",
         "hide_status_icon": true,
         "app_tile_button_href": "/pyblock",
         "app_tile_button_text": "Info",
@@ -275,6 +433,10 @@
         "name": "Balance of Satoshis",
         "short_name": "bos",
         "short_description": "Lightning Utility",
+        "author": {"name": "Alex Bosworth", "link": ""},
+        "website": {"name": "GitHub", "link": "https://github.com/alexbosworth/balanceofsatoshis"},
+        "description": "Commands for working with LND balances.",
+        "category": "lightning_app",
         "requires_lightning": true,
         "hide_status_icon": true,
         "app_tile_button_href": "/bos",
@@ -286,11 +448,29 @@
     },
     {
         "name": "Web SSH",
-        "short_name": "webssh2"
+        "short_name": "webssh2",
+        "short_description": "SSH Utility",
+        "author": {"name": "Bill Church", "link": ""},
+        "website": {"name": "GitHub", "link": "https://github.com/billchurch/webssh2"},
+        "description": [
+            "Web SSH Client using ssh2, socket.io, xterm.js, and express",
+            "A bare bones example of an HTML5 web-based terminal emulator and SSH client. We use SSH2 as a client on a host to proxy a Websocket / Socket.io connection to a SSH2 server."
+        ],
+        "category": "device_management"
     },
     {
         "name": "Netdata",
         "short_name": "netdata",
+        "short_description": "Device Monitor",
+        "author": {"name": "Netdata", "link": "https://www.netdata.cloud/"},
+        "website": {"name": "GitHub", "link": "https://github.com/netdata/netdata"},
+        "description": [
+            "Netdata's distributed, real-time monitoring Agent collects thousands of metrics from systems, hardware, containers, and applications with zero configuration. It runs permanently on all your physical/virtual servers, containers, cloud deployments, and edge/IoT devices, and is perfectly safe to install on your systems mid-incident without any preparation.",
+            "You can install Netdata on most Linux distributions (Ubuntu, Debian, CentOS, and more), container platforms (Kubernetes clusters, Docker), and many other operating systems (FreeBSD, macOS). No sudo required.",
+            "Netdata is designed by system administrators, DevOps engineers, and developers to collect everything, help you visualize metrics, troubleshoot complex performance problems, and make data interoperable with the rest of your monitoring stack.",
+            "People get addicted to Netdata. Once you use it on your systems, there's no going back! You've been warned..."
+        ],
+        "category": "device_management",
         "show_on_status_page": true,
         "can_reinstall": false
     },
@@ -299,10 +479,20 @@
         "name": "Premium+",
         "short_name": "premium_plus",
         "short_description": "Access and Backup",
+        "description": [
+            "Premium Plus (Premium+) is a service enabling backup, monitoring, and simpler remote access to your device.",
+            "It offers a number of additional features and includes additional support while subscribed. Features include:",
+            " - Remote Static Channel Backup (SCB) file backups",
+            " - Lightning Watchtower Monitors Node",
+            " - View Node Status on mynodebtc.com",
+            " - myNode Support"
+        ],
+        "category": "networking",
+        "latest_version": "v1.0",
         "can_enable_disable": false,
         "app_tile_button_text": "Manage",
         "app_tile_button_href": "/premium-plus",
-        "show_on_application_page": false,
+        "show_on_application_page": true,
         "show_on_homepage": false,
         "can_uninstall": false,
         "can_reinstall": false,
@@ -314,11 +504,20 @@
         "name": "Tor",
         "short_name": "tor",
         "short_description": "Private Connections",
+        "author": {"name": "Tor", "link": "https://www.torproject.org/"},
+        "website": {"name": "GitHub", "link": "https://github.com/TheTorProject"},
+        "description": [
+            "Tor services are avilable for remotely connecting and using myNode services and applications. It can provide access to web-based wallets and well as support remote connections to LND and Bitcoin directly.",
+            "Tor Mission - To advance human rights and freedoms by creating and deploying free and open source anonymity and privacy technologies, supporting their unrestricted availability and use, and furthering their scientific and popular understanding."
+        ],
+        "category": "networking",
+        "latest_version": "v1.0",
         "can_enable_disable": false,
         "app_tile_button_text": "Tor Services",
         "app_tile_button_href": "/tor",
-        "show_on_application_page": false,
         "show_on_homepage": true,
+        "show_on_application_page": true,
+        "can_reinstall": false,
         "journalctl_log_name": "tor@default",
         "homepage_section": "remote_services",
         "supports_testnet": true,
@@ -328,10 +527,14 @@
         "name": "VPN",
         "short_name": "vpn",
         "short_description": "Private Connections",
+        "description": "VPN services on myNode allow simple, remote access to your node no matter where are you are! When VPN is enabled, a server runs on your device which allows secure connections between remote devices and your node using OpenVPN. This not only allows access to your node, but also provides additional security and privacy by encrypting data being sent and received by your phone, tablet, or laptop and hiding it from the local network you are connected to.",
+        "category": "networking",
+        "latest_version": "v1.0",
         "app_tile_button_text": "Info",
         "app_tile_button_href": "/vpn-info",
         "show_on_homepage": true,
-        "show_on_application_page": false,
+        "show_on_application_page": true,
+        "can_reinstall": false,
         "homepage_section": "remote_services",
         "supports_testnet": true,
         "is_premium": true
