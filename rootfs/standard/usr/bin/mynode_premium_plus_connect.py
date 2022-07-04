@@ -165,7 +165,7 @@ if __name__ == "__main__":
 
             # Wait on token
             log_message("Looking for Premium+ Token...")
-            while not os.path.isfile("/home/bitcoin/.mynode/.premium_plus_token"):
+            while not has_premium_plus_token():
                 time.sleep(10)
             log_message("Token found!")
             premium_plus_connect()
