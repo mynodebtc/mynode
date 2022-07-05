@@ -19,9 +19,20 @@
     "app_tile_running_status_text": "Running",
     "app_tile_button_text": "Info",
     "app_tile_button_href": "/app/lndg/info",
-    "app_page_additional_buttons": [
-        {"title": "Button A", "href": "https://mynodebtc.com", "onclick": ""},
-        {"title": "Button B", "href": "https://twitter.com"}
+    "app_page_show_open_button": true,
+    "app_page_content": [
+        {"heading": "Setup Instructions",
+         "content": [
+            "AAA",
+            "BBB",
+            "CCC"
+        ]},
+        {"heading": "Instructions",
+         "content": [
+            "AAA",
+            "BBB",
+            "CCC"
+        ]}
     ],
     "can_uninstall": true,
     "can_enable_disable": true,

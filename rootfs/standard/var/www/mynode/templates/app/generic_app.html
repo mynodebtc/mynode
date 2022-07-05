@@ -24,57 +24,6 @@
                 box-shadow: 2px 2px 6px #555;
             }
 
-
-            .app_page_container {
-                margin: auto;
-                width: 1000px;
-            }
-            .app_page_block_header {
-                width: 1000px;
-                height: 12px;
-                padding: 0px 20px 0px 20px;
-                border-top-left-radius: 8px;
-                border-top-right-radius: 8px;
-                background-color: orange;
-            }
-            .app_page_block_contents {
-                width: 1000px;
-                padding: 20px 20px 20px 20px;
-                border-bottom-left-radius: 8px;
-                border-bottom-right-radius: 8px;
-                background: #f0f0f0;
-                overflow: auto;
-            }
-            .app_page_block_contents_left {
-                width: 150px;
-                float: left;
-            }
-            .app_page_block_contents_right {
-                width: 820px;
-                float: right;
-                margin-left: 30px;
-            }
-            .app_page_icon {
-                margin: auto;
-                display: block;
-                width: 150px;
-            }
-            .app_page_button {
-                margin: auto;
-                display: block;
-                width: 150px;
-                margin-bottom: 10px;
-                font-size: 14px !important;
-            }
-            .app_page_block_contents_heading {
-                font-size: 16px;
-                font-weight: bold;
-                margin-bottom: 10px;
-            }
-            .app_page_block_contents_text {
-                font-size: 14px;
-                margin-bottom: 30px;
-            }
         </style>
 
         <!-- Hes Gallery -->
@@ -131,13 +80,13 @@
 
                         <!-- Open, Enable / Disable-->
                         <!-- TODO: ADD ENABLE / DISABLE BUTTON -->
-                        {% if app.is_enabled %}
+                        {% if app.is_enabled and app.app_page_show_open_button %}
                             {% if app.http_port != "" or app.https_port != "" %}
                                 <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="open_app_in_new_tab('{{app.http_port}}', '{{app.https_port}}', false, '{APP_TOR_ADDRESS}')">Open</button>
                             {% endif %}
                         {% endif %}
 
-                        <div class="divider"></div>
+                        <div class="divider button_divider"></div>
 
                         <!-- Manage App: Restart, Reset Data, Etc... -->
                         {% if app.is_enabled %}
@@ -153,7 +102,7 @@
                                         >{{btn.title}}</button>
                             {% endfor %}
 
-                            <div class="divider"></div>
+                            <div class="divider button_divider"></div>
                         {% endif %}
 
                         
@@ -188,10 +137,6 @@
                                     {% endif %}
                                 </td>
                             </tr>
-                            <tr>
-                                <th>Latest Version</th>
-                                <td>{{app.latest_version}}</td>
-                            </tr>
                             {% if app.author.name is defined %}
                             <tr>
                                 <th>Author</th>
@@ -215,31 +160,19 @@
                         </table>
                     </div>
 
-                    <div class="app_page_block_contents_heading">
-                        <div class="info-page-block">Description</div>
-                    </div>
-                    <div class="app_page_block_contents_text">
-                        {% if app.description is defined and app.description|length > 0 %}
-                            {% for parapraph in app.description %}
-                                <p>{{parapraph}}</p>
-                            {% endfor %}
-                        {% else %}
-                            No description available.
-                        {% endif %}
-                    </div>
-
-                    {% if app.screenshots is defined and app.screenshots|length > 0 %}
-                    <div class="app_page_block_contents_heading">
-                        <div class="info-page-block">Screenshots</div>
-                    </div>
-                    <div class="app_page_block_contents_text">
-                        <div class="hes-gallery">
-                            {% for screenshot in app.screenshots %}
-                                <img src="{{ url_for('static', filename="images/screenshots/")}}{{app.short_name}}/{{screenshot}}" alt="{{app.name}} Image" data-subtext=""/>
-                            {% endfor %}
-                          </div>
-                    </div>
+                    {% if app.app_page_content is defined and app.app_page_content|length > 0 %}
+                        {% for section in app.app_page_content %}
+                            <div class="app_page_block_contents_heading">
+                                <div class="info-page-block">{{section.heading}}</div>
+                            </div>
+                            <div class="app_page_block_contents_text">
+                                {% for parapraph in section.content %}
+                                    <p>{{parapraph}}</p>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
                     {% endif %}
+
                 </div>
 
             </div>
