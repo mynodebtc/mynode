@@ -664,6 +664,10 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     margin-left: auto;
     margin-right: auto;
 }
+.button_divider {
+    margin-top: 5px !important;
+    margin-bottom: 15px !important;
+}
 .settings_button {
     font-size: 14px;
     margin-top: 15px;
@@ -1023,4 +1027,187 @@ input:checked + .slider:before {
 }
 ::placeholder {
     color: #CCCCCC;
+}
+
+
+.marketplace_category_header {
+    color: #555555;
+    text-align: center;
+    font-size: 26px;
+    margin: auto;
+    padding: 5px;
+    margin-bottom: 20px;
+    width: 1030px;
+    background-color: #f2f2f2;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.2), 0 4px 10px 0 rgba(0, 0, 0, 0.19);
+}
+.marketplace_category_container {
+    width: 1020px;
+    display: flex;
+    margin: auto;
+    margin-bottom: 40px;
+    flex-wrap:wrap;
+    flex-direction: row;
+}
+.marketplace_app_tile {
+    width: 320px;
+    height: 80px;
+    margin: 10px;
+    display: inline-block;
+    position: relative;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.marketplace_app_tile:hover {
+    cursor: pointer;
+    box-shadow: 0 4px 8px 0 rgba(180, 117, 0, 0.2), 0 6px 20px 0 rgba(180, 117, 0, 0.19);
+}
+.marketplace_app_tile_left {
+    float: left;
+    width: 80px;
+    height: 80px;
+}
+.marketplace_app_tile_icon {
+    float: left;
+    width: 60px;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+.marketplace_app_tile_right {
+    float: right;
+    width: 230px;
+    height: 80px;
+    font-size: 11px;
+    padding-top: 10px;
+}
+.marketplace_app_tile_name {
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 4px;
+    font-weight: bold;
+    font-size: 14px;
+}
+.marketplace_app_tile_description {
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 10px;
+    font-size: 12px;
+}
+.marketplace_app_tile_version {
+    display: inline-block;
+    width: 100%;
+    font-size: 12px;
+}
+.marketplace_app_tile_installed {
+    position: absolute;
+    width: 18px;
+    top: 10px;
+    right: 10px;
+}
+
+.marketplace_app_page_container {
+    margin: auto;
+    width: 1000px;
+}
+.marketplace_app_page_block_header {
+    width: 1000px;
+    height: 12px;
+    padding: 0px 20px 0px 20px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    
+}
+.marketplace_app_page_block_contents {
+    width: 1000px;
+    padding: 20px 20px 20px 20px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    overflow: auto;
+}
+.marketplace_app_page_block_contents_left {
+    width: 150px;
+    float: left;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.marketplace_app_page_block_contents_right {
+    width: 760px;
+    float: right;
+    margin-left: 30px;
+}
+.marketplace_app_page_icon {
+    margin: auto;
+    display: block;
+    width: 150px;
+}
+.marketplace_app_page_button {
+    margin: auto;
+    display: block;
+    width: 150px;
+    margin-bottom: 10px;
+    font-size: 14px !important;
+}
+.marketplace_app_page_block_contents_heading {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.marketplace_app_page_block_contents_text {
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+.app_page_container {
+    margin: auto;
+    width: 1000px;
+}
+.app_page_block_header {
+    width: 1000px;
+    height: 12px;
+    padding: 0px 20px 0px 20px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    background-color: orange;
+}
+.app_page_block_contents {
+    width: 1000px;
+    padding: 20px 20px 20px 20px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    background: #f0f0f0;
+    overflow: auto;
+}
+.app_page_block_contents_left {
+    width: 150px;
+    float: left;
+}
+.app_page_block_contents_right {
+    width: 820px;
+    float: right;
+    margin-left: 30px;
+}
+.app_page_icon {
+    margin: auto;
+    display: block;
+    width: 150px;
+}
+.app_page_button {
+    margin: auto;
+    display: block;
+    width: 150px;
+    margin-bottom: 10px;
+    font-size: 14px !important;
+}
+.app_page_block_contents_heading {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.app_page_block_contents_text {
+    font-size: 14px;
+    margin-bottom: 30px;
 }

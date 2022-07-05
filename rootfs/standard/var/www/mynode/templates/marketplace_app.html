@@ -23,61 +23,6 @@
                 transform: scale(1.04);
                 box-shadow: 2px 2px 6px #555;
             }
-
-
-            .app_page_container {
-                margin: auto;
-                width: 1000px;
-            }
-            .app_page_block_header {
-                width: 1000px;
-                height: 12px;
-                padding: 0px 20px 0px 20px;
-                border-top-left-radius: 8px;
-                border-top-right-radius: 8px;
-                
-            }
-            .app_page_block_contents {
-                width: 1000px;
-                padding: 20px 20px 20px 20px;
-                border-bottom-left-radius: 8px;
-                border-bottom-right-radius: 8px;
-                overflow: auto;
-            }
-            .app_page_block_contents_left {
-                width: 150px;
-                float: left;
-                padding: 20px;
-                background-color: #f9f9f9;
-                border-radius: 10px;
-                box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-            }
-            .app_page_block_contents_right {
-                width: 760px;
-                float: right;
-                margin-left: 30px;
-            }
-            .app_page_icon {
-                margin: auto;
-                display: block;
-                width: 150px;
-            }
-            .app_page_button {
-                margin: auto;
-                display: block;
-                width: 150px;
-                margin-bottom: 10px;
-                font-size: 14px !important;
-            }
-            .app_page_block_contents_heading {
-                font-size: 16px;
-                font-weight: bold;
-                margin-bottom: 10px;
-            }
-            .app_page_block_contents_text {
-                font-size: 14px;
-                margin-bottom: 30px;
-            }
         </style>
 
         <!-- Hes Gallery -->
@@ -104,12 +49,12 @@
 
         <div class="main_header">{{app.name}}</div>
 
-        <div class="app_page_container">
-            <div class="app_page_block_header">&nbsp;</div>
-            <div class="app_page_block_contents">
+        <div class="marketplace_app_page_container">
+            <div class="marketplace_app_page_block_header">&nbsp;</div>
+            <div class="marketplace_app_page_block_contents">
 
-                <div class="app_page_block_contents_left">
-                    <img class="app_page_icon" src="{{ url_for('static', filename="images/app_icons/")}}{{app.short_name}}.png"/>
+                <div class="marketplace_app_page_block_contents_left">
+                    <img class="marketplace_app_page_icon" src="{{ url_for('static', filename="images/app_icons/")}}{{app.short_name}}.png"/>
                     <p style="font-size: 14px; text-align: center;">{{app.short_description}}</p>
                     <br/>
 
@@ -117,17 +62,17 @@
                         <!-- On Marketplace, only show install / uninstall (app pages show others) -->
                         {% if not app.is_installed %}
                             <!-- Install -->
-                            <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button install_button" onclick="install('{{ app.name }}', '{{ app.short_name }}');">Install</button>
+                            <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button install_button" onclick="install('{{ app.name }}', '{{ app.short_name }}');">Install</button>
                         {% else %}
                             <!-- Upgrade / Re-install / Uninstall -->
                             {% if app.current_version != app.latest_version %}
-                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button install_button" onclick="upgrade('{{ app.name }}', '{{ app.short_name }}');">Upgrade</button>
+                                <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button install_button" onclick="upgrade('{{ app.name }}', '{{ app.short_name }}');">Upgrade</button>
                             {% endif %}
                             {% if app.can_reinstall %}
-                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="reinstall('{{ app.name }}', '{{ app.short_name }}');">Reinstall</button>
+                                <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button" onclick="reinstall('{{ app.name }}', '{{ app.short_name }}');">Reinstall</button>
                             {% endif %}
                             {% if app.can_uninstall %}
-                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button uninstall_button" onclick="uninstall('{{ app.name }}', '{{ app.short_name }}');">Uninstall</button>
+                                <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button uninstall_button" onclick="uninstall('{{ app.name }}', '{{ app.short_name }}');">Uninstall</button>
                             {% endif %}
                         {% endif %}
                     {% else %}
@@ -136,11 +81,11 @@
 
                 </div>
 
-                <div class="app_page_block_contents_right">
-                    <div class="app_page_block_contents_heading">
+                <div class="marketplace_app_page_block_contents_right">
+                    <div class="marketplace_app_page_block_contents_heading">
                         <div class="info-page-block">Info</div>
                     </div>
-                    <div class="app_page_block_contents_text">
+                    <div class="marketplace_app_page_block_contents_text">
                         <table class="info_table" style="font-size: 12px; margin-left: 10px">
                             <tr>
                                 <th>Installed Version</th>
@@ -179,10 +124,10 @@
                         </table>
                     </div>
 
-                    <div class="app_page_block_contents_heading">
+                    <div class="marketplace_app_page_block_contents_heading">
                         <div class="info-page-block">Description</div>
                     </div>
-                    <div class="app_page_block_contents_text">
+                    <div class="marketplace_app_page_block_contents_text">
                         {% if app.description is defined and app.description|length > 0 %}
                             {% if app.description is string %}
                                 <p>{{app.description}}</p>
@@ -199,10 +144,10 @@
                     </div>
 
                     {% if app.screenshots is defined and app.screenshots|length > 0 %}
-                    <div class="app_page_block_contents_heading">
+                    <div class="marketplace_app_page_block_contents_heading">
                         <div class="info-page-block">Screenshots</div>
                     </div>
-                    <div class="app_page_block_contents_text">
+                    <div class="marketplace_app_page_block_contents_text">
                         <div class="hes-gallery">
                             {% for screenshot in app.screenshots %}
                                 <img src="{{ url_for('static', filename="images/screenshots/")}}{{app.short_name}}/{{screenshot}}" alt="{{app.name}} Image" data-subtext=""/>
