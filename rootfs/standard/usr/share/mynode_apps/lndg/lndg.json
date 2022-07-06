@@ -21,17 +21,12 @@
     "app_tile_button_href": "/app/lndg/info",
     "app_page_show_open_button": true,
     "app_page_content": [
-        {"heading": "Setup Instructions",
-         "content": [
-            "AAA",
-            "BBB",
-            "CCC"
-        ]},
         {"heading": "Instructions",
          "content": [
-            "AAA",
-            "BBB",
-            "CCC"
+            "LNDg is a lite GUI web interface to analyze lnd data and manage your node with automation. You can open the app with the Open button on the left.",
+            "Once open, you will need to login. The default credentials are 'admin' and 'bolt'.",
+            "After logging in, you can view your lighting node's information and open channels, close channels, rebalance channels, and update fee rates.",
+            "Enjoy!"
         ]}
     ],
     "can_uninstall": true,
@@ -39,6 +34,5 @@
     "show_on_application_page": true,
     "show_on_homepage": true,
     "show_on_status_page": true,
-    "port": 3000,
     "homepage_order": 99
 }
