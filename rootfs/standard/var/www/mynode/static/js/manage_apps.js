@@ -68,11 +68,11 @@ function get_custom_enable_message(short_name) {
     return message;
 }
 
-function toggleEnabled(short_name, full_name, is_enabled) {
+function toggleEnabled(short_name, full_name, enable) {
     //enabled = application_data[short_name]["is_enabled"];
     //full_name = application_data[short_name]["name"];
     
-    if ( is_enabled ) {
+    if ( !enable ) {
         // Disabling
         openConfirmDialog("confirm-dialog", 
                           "Disable "+full_name, 
