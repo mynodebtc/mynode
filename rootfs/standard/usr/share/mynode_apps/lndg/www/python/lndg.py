@@ -18,12 +18,14 @@ def lndg_page():
 
     app = get_application("lndg")
     app_status = get_application_status("lndg")
+    app_status_color = get_application_status_color("lndg")
 
     # Load page
     templateData = {
         "title": "myNode - " + app["name"],
         "ui_settings": read_ui_settings(),
         "app_status": app_status,
+        "app_status_color": app_status_color,
         "app": app
     }
     return render_template('/app/generic_app.html', **templateData)

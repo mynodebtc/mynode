@@ -21,12 +21,14 @@ def app_generic_info_page(name):
         return redirect("/apps")
 
     app_status = get_application_status(name)
+    app_status_color = get_application_status_color(name)
 
     # Load page
     templateData = {
         "title": "myNode - " + app["name"],
         "ui_settings": read_ui_settings(),
         "app_status": app_status,
+        "app_status_color": app_status_color,
         "app": app
     }
     return render_template('/app/generic_app.html', **templateData)
