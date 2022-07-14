@@ -1195,6 +1195,14 @@ input:checked + .slider:before {
     display: block;
     width: 150px;
 }
+.app_page_status_bar {
+    margin: auto;
+    display: block;
+    width: 140px;
+    height: 14px;
+    border-radius: 7px;
+    margin-top: 10px;
+}
 .app_page_button {
     margin: auto;
     display: block;

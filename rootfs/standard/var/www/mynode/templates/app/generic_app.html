@@ -69,6 +69,9 @@
 
                 <div class="app_page_block_contents_left">
                     <img class="app_page_icon" src="{{ url_for('static', filename="images/app_icons/")}}{{app.short_name}}.png"/>
+                    {% if not app.hide_status_icon %}
+                    <div class="app_page_status_bar {{app_status_color}}"></div>
+                    {% endif %}
                     <p style="font-size: 14px; text-align: center;">{{app_status}}</p>
 
                     <br/>
@@ -78,15 +81,14 @@
                         <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button install_button" onclick="install('{{ app.name }}', '{{ app.short_name }}');">Install</button>
                     {% else %}
 
-                        <!-- Open, Enable / Disable-->
-                        <!-- TODO: ADD ENABLE / DISABLE BUTTON -->
+                        <!-- Open -->
                         {% if app.is_enabled and app.app_page_show_open_button %}
                             {% if app.http_port != "" or app.https_port != "" %}
                                 <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="open_app_in_new_tab('{{app.http_port}}', '{{app.https_port}}', false, '{APP_TOR_ADDRESS}')">Open</button>
+
+                                <div class="divider button_divider"></div>
                             {% endif %}
                         {% endif %}
-
-                        <div class="divider button_divider"></div>
 
                         <!-- Manage App: Restart, Reset Data, Etc... -->
                         {% if app.is_enabled %}
@@ -105,17 +107,13 @@
                             <div class="divider button_divider"></div>
                         {% endif %}
 
-                        
-
-                        <!-- Upgrade / Re-install / Uninstall -->
-                        {% if app.current_version != app.latest_version %}
-                            <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="upgrade('{{ app.name }}', '{{ app.short_name }}');">Upgrade</button>
-                        {% endif %}
-                        {% if app.can_reinstall %}
-                            <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="reinstall('{{ app.name }}', '{{ app.short_name }}');">Reinstall</button>
-                        {% endif %}
-                        {% if app.can_uninstall %}
-                            <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button uninstall_button" onclick="uninstall('{{ app.name }}', '{{ app.short_name }}');">Uninstall</button>
+                        <!-- Enable / Disable -->
+                        {% if app.can_enable_disable %}
+                            {% if not app.is_enabled %}
+                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="toggleEnabled('{{app.short_name}}', '{{app.name}}', true)">Enable</button>
+                            {% else %}
+                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="toggleEnabled('{{app.short_name}}', '{{app.name}}', false)">Disable</button>
+                            {% endif %}
                         {% endif %}
                     {% endif %}
 
