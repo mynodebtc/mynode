@@ -50,18 +50,25 @@ while true; do
 
     # Upgrade Netdata
     echo "Checking for new netdata..."
-    CURRENT=""
-    if [ -f $NETDATA_VERSION_FILE ]; then
-        CURRENT=$(cat $NETDATA_VERSION_FILE)
+    enabled=$(systemctl is-enabled netdata)
+    if [ "$enabled" = "enabled" ]; then
+        touch /mnt/hdd/mynode/settings/install_netdata
+        sync
     fi
-    if [ "$CURRENT" != "$NETDATA_VERSION" ]; then
-        docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'netdata') || true
+    if should_install_app "mempool" ; then
+        CURRENT=""
+        if [ -f $NETDATA_VERSION_FILE ]; then
+            CURRENT=$(cat $NETDATA_VERSION_FILE)
+        fi
+        if [ "$CURRENT" != "$NETDATA_VERSION" ]; then
+            docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'netdata') || true
 
-        docker pull netdata/netdata:${NETDATA_VERSION}
+            docker pull netdata/netdata:${NETDATA_VERSION}
 
-        echo $NETDATA_VERSION > $NETDATA_VERSION_FILE
+            echo $NETDATA_VERSION > $NETDATA_VERSION_FILE
+        fi
+        touch /tmp/need_application_refresh
     fi
-    touch /tmp/need_application_refresh
     
 
     # Upgrade WebSSH2
