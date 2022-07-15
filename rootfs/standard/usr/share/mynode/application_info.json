@@ -471,11 +471,26 @@
             "People get addicted to Netdata. Once you use it on your systems, there's no going back! You've been warned..."
         ],
         "category": "device_management",
+        "http_port": "19999",
+        "https_port": "20000",
+        "app_tile_button_text": "Info",
+        "app_tile_button_href": "/app/netdata/info",
+        "app_page_content": [
+            {"heading": "Description",
+             "content": [
+                "Netdata's distributed, real-time monitoring Agent collects thousands of metrics from systems, hardware, containers, and applications with zero configuration. It runs permanently on all your physical/virtual servers, containers, cloud deployments, and edge/IoT devices, and is perfectly safe to install on your systems mid-incident without any preparation.",
+                "You can install Netdata on most Linux distributions (Ubuntu, Debian, CentOS, and more), container platforms (Kubernetes clusters, Docker), and many other operating systems (FreeBSD, macOS). No sudo required.",
+                "Netdata is designed by system administrators, DevOps engineers, and developers to collect everything, help you visualize metrics, troubleshoot complex performance problems, and make data interoperable with the rest of your monitoring stack.",
+                "People get addicted to Netdata. Once you use it on your systems, there's no going back! You've been warned..."
+            ]}
+        ],
+        "can_uninstall": true,
+        "can_enable_disable": true,
         "show_on_status_page": true,
-        "can_reinstall": false
+        "show_on_homepage": true,
+        "homepage_order": 91
     },
     {
-        "comment": "HIDDEN FOR NOW - Enable show_on_homepage",
         "name": "Premium+",
         "short_name": "premium_plus",
         "short_description": "Access and Backup",
@@ -493,7 +508,7 @@
         "app_tile_button_text": "Manage",
         "app_tile_button_href": "/premium-plus",
         "show_on_application_page": true,
-        "show_on_homepage": false,
+        "show_on_homepage": true,
         "can_uninstall": false,
         "can_reinstall": false,
         "journalctl_log_name": "premium_plus_connect",
