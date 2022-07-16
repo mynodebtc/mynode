@@ -290,6 +290,12 @@ def get_all_applications(order_by="none", include_status=False):
 def update_application_json_cache():
     global JSON_APPLICATION_CACHE_FILE
     apps = get_all_applications(order_by="alphabetic", include_status=True)
+
+    # Filter data not necessary for cache
+    for app in apps:
+        app["description"] = ""
+        app["app_page_content"] = ""
+
     return set_dictionary_file_cache(apps, JSON_APPLICATION_CACHE_FILE)
 
 # Getting the data can be called from any process

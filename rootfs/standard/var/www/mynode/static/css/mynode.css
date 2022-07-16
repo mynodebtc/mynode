@@ -90,10 +90,11 @@ td, th {
     box-shadow: none !important;
 }
 .mynode_nav_icon:hover {
-    filter: brightness(75%);
+    background-color: rgba(255, 166, 0, 0.15);
+    box-shadow: 0px 0px 5px 5px rgba(255, 166, 0, 0.15);
 }
 .mynode_nav_icon_NOT_USED:hover {
-    filter: brightness(100%);
+    filter: brightness(75%);
     background-color: rgba(255, 166, 0, 0.15);
     box-shadow: 0px 0px 5px 5px rgba(255, 166, 0, 0.15);
 }

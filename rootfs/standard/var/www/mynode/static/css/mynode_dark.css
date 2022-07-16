@@ -221,5 +221,7 @@ input:focus + .slider {
 }
 
 .mynode_nav_icon:hover {
+}
+.mynode_nav_icon_NOT_USED:hover {
     filter: brightness(125%);
 }
