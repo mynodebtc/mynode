@@ -65,12 +65,6 @@ td, th {
     text-align: left;
 }
 
-.mynode_back_div {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-}
-
 .mynode_top_left_div {
     position: fixed;
     font-size: 14px;
@@ -83,6 +77,25 @@ td, th {
     font-size: 14px;
     top: 20px;
     right: 20px;
+}
+
+.mynode_nav_icon {
+    width: 32px;
+    height: 32px;
+    margin-left: 5px;
+}
+.mynode_nav_icon_no_hover {
+    filter: none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+.mynode_nav_icon:hover {
+    filter: brightness(75%);
+}
+.mynode_nav_icon_NOT_USED:hover {
+    filter: brightness(100%);
+    background-color: rgba(255, 166, 0, 0.15);
+    box-shadow: 0px 0px 5px 5px rgba(255, 166, 0, 0.15);
 }
 
 .state_header {

@@ -38,8 +38,8 @@
     </head>
     <body>
         {% include 'includes/logo_header.html' %}
-        <div class="mynode_back_div">
-            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        <div class="mynode_top_left_div">
+            <a href="/" title="Home"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/home.png")}}"/></a>
         </div>
 
         <div class="main_header">Manage Applications</div>
@@ -131,7 +131,9 @@
         </table>
 
         <br/>
-        <p style="font-size: 12px; text-align: center;">*Only displaying installed applications</p>
+        <div class="text_block" style="font-size: 12px; text-align: center;">
+            <p>*Only displaying installed applications</p>
+        </div>
 
         {% if not product_key_skipped %}
         <br/><br/>
