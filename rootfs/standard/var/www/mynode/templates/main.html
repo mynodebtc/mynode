@@ -605,24 +605,34 @@
         {% include 'includes/logo_header.html' %}
         
         <div class="mynode_top_left_div">
-            <!-- Nothing yet -->
+            {% if product_key_skipped %}
+                <img class="mynode_nav_icon mynode_nav_icon_no_hover" title="Community Edition" src="{{ url_for('static', filename="images/mynode_community_icon.png")}}"/>
+            {% else %}
+                <img class="mynode_nav_icon mynode_nav_icon_no_hover" title="Premium" src="{{ url_for('static', filename="images/mynode_premium_icon.png")}}"/>
+            {% endif %}
+
+            {% if premium_plus_active or true %}
+                <img class="mynode_nav_icon mynode_nav_icon_no_hover" title="Premium+ Active" src="{{ url_for('static', filename="images/mynode_premium_plus_icon.png")}}"/>
+            {% endif %}
+
             {% if upgrade_available %}
-                <a class="ui-button ui-widget ui-corner-all mynode_back" href="/settings" title="Upgrade Available"><span class="ui-icon ui-icon-arrowthick-1-n"></span>upgrade available&nbsp;</a>
+                <a href="/settings" title="Upgrade Available"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/upgrade2.png")}}"/></a>
             {% endif %}
         </div>
 
         <div class="mynode_top_right_div">
             {% if upgrade_available %}
-                <a class="ui-button ui-widget ui-corner-all mynode_back" href="/settings" title="Upgrade Available">&nbsp;<span class="ui-icon ui-icon-arrowthick-1-n"></span>&nbsp;</a>
+                <a href="/settings" title="Upgrade Available"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/upgrade.png")}}"/></a>
             {% endif %}
+
             {% if ui_settings['darkmode'] %}
-                <a class="ui-button ui-widget ui-corner-all mynode_back" href="/settings/toggle-darkmode-home" title="Disable Darkmode">&nbsp;<span class="ui-icon ui-icon-lightbulb"></span>&nbsp;</a>
+                <a href="/settings/toggle-darkmode-home" title="Disable Darkmode"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/lightbulb.png")}}"/></a>
             {% else %}
-                <a class="ui-button ui-widget ui-corner-all mynode_back" href="/settings/toggle-darkmode-home" title="Enable Darkmode">&nbsp;<span class="ui-icon ui-icon-lightbulb"></span>&nbsp;</a>
+                <a href="/settings/toggle-darkmode-home" title="Enable Darkmode"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/lightbulb.png")}}"/></a>
             {% endif %}
-            <a class="ui-button ui-widget ui-corner-all mynode_back" id="https" title="Use HTTPS" style="display: none;" href="#">&nbsp;<span class="ui-icon ui-icon-locked"></span>&nbsp;</a>
-            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/logout" title="Logout"><span class="ui-icon ui-icon-close"></span>&nbsp;</a>
-            <a class="ui-button ui-widget ui-corner-all mynode_back" id="power_button" title="Reboot or Shutdown"><span class="ui-icon ui-icon-power"></span>&nbsp;</a> 
+            <a href="#" id="https" title="Use HTTPS" style="display: none;"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/https_lock.png")}}"/></a>
+            <a href="/logout" title="Logout"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/logout.png")}}"/></a>
+            <a href="#" id="power_button" title="Reboot or Shutdown"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/power.png")}}"/></a>
         </div> 
         
 

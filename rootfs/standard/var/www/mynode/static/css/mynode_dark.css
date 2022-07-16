@@ -219,3 +219,7 @@ input:focus + .slider {
 .app_page_block_contents {
     background: #121C21;
 }
+
+.mynode_nav_icon:hover {
+    filter: brightness(125%);
+}

@@ -645,8 +645,8 @@
 
     <body>
         {% include 'includes/logo_header.html' %}
-        <div class="mynode_back_div">
-            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        <div class="mynode_top_left_div">
+            <a href="/" title="Home"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/home.png")}}"/></a>
         </div>
 
         <div class="main_header">Settings</div>
@@ -1111,22 +1111,6 @@
             This will reset all of your Tor service settings and regenerate your Onion URLs.
             <br/>
             <button id="reset_tor" class="ui-button ui-widget ui-corner-all settings_button">Reset Tor</button>
-
-        </div>
-
-
-        <div class="settings_block">
-            <a id="services"></a>
-            <div class="settings_block_header">Services</div>
-            
-            <div class="settings_block_subheader">Netdata</div>
-            This will enable or disable Netdata device monitoring.
-            <br/>
-            {% if netdata_enabled %}
-                <a href="/settings/toggle-netdata" class="ui-button ui-widget ui-corner-all settings_button">Disable</a>
-            {% else %}
-                <a href="/settings/toggle-netdata" class="ui-button ui-widget ui-corner-all settings_button">Enable</a>
-            {% endif %}
 
         </div>
 
