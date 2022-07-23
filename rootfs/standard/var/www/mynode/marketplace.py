@@ -39,6 +39,19 @@ def marketplace_page():
     }
     return render_template('marketplace.html', **templateData)
 
+@mynode_marketplace.route("/marketplace/add_app")
+def marketplace_add_app_page():
+    check_logged_in()
+
+    # Load page
+    templateData = {
+        "title": "myNode - Add Community Application",
+        "ui_settings": read_ui_settings(),
+        "product_key_skipped": skipped_product_key()
+    }
+    return render_template('/marketplace_add_app.html', **templateData)
+
+
 @mynode_marketplace.route("/marketplace/<app_name>")
 def marketplace_app_page(app_name):
     check_logged_in()

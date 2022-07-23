@@ -9,7 +9,9 @@
             $(document).ready(function() {
                 $(".marketplace_app_tile").on("click", function() {
                     shortname = $(this).data("shortname");
-                    window.location = "/marketplace/" + shortname;
+                    if (shortname != undefined) {
+                        window.location = "/marketplace/" + shortname;
+                    }
                 });
             });
         </script>
@@ -67,6 +69,25 @@
                 </div>
             {% endif %}
         {% endfor %}
+
+        <!-- Special Section for Comunity Apps -->
+        <div class="marketplace_category_header">Community Apps</div>
+
+        <div class="marketplace_category_container">
+            <div class="marketplace_app_tile" data-shortname="add_app">
+                <div class="marketplace_app_tile_left">
+                    <img class="marketplace_app_tile_icon" src="{{ url_for('static', filename="images/")}}add_app.png"/>
+                </div>
+                <div class="marketplace_app_tile_right">
+                    <div class="marketplace_app_tile_name">Add Application</div>
+                    <div class="marketplace_app_tile_description">Add Community App to Device</div>
+
+                    {% if product_key_skipped %}
+                        <div class="marketplace_app_tile_version"><i>Premium Feature</i></div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
 
 
 
