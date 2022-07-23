@@ -40,11 +40,15 @@ function install(name, short_name) {
     }
 }
 
-function uninstall(name, short_name) {
+function uninstall(name, short_name, return_page="") {
     if ( confirm("Are you sure you want to uninstall "+name+"? ") ) {
         $('#loading_spinner_message').html("Uninstalling...");
         $('#loading_spinner_overlay').fadeIn();
-        window.location.href='/settings/uninstall-app?app='+short_name;
+        r = ""
+        if (return_page != "") {
+            r = "&return_page="+return_page
+        }
+        window.location.href='/settings/uninstall-app?app='+short_name+r;
     }
 }
 

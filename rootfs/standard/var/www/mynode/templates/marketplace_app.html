@@ -49,6 +49,8 @@
 
         <div class="main_header">{{app.name}}</div>
 
+        {% include 'includes/message_display.html' %}
+
         <div class="marketplace_app_page_container">
             <div class="marketplace_app_page_block_header">&nbsp;</div>
             <div class="marketplace_app_page_block_contents">
@@ -72,7 +74,7 @@
                                 <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button" onclick="reinstall('{{ app.name }}', '{{ app.short_name }}');">Reinstall</button>
                             {% endif %}
                             {% if app.can_uninstall %}
-                                <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button uninstall_button" onclick="uninstall('{{ app.name }}', '{{ app.short_name }}');">Uninstall</button>
+                                <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button uninstall_button" onclick="uninstall('{{ app.name }}', '{{ app.short_name }}', 'marketplace_app');">Uninstall</button>
                             {% endif %}
                         {% endif %}
                     {% else %}

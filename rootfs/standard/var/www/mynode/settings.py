@@ -846,6 +846,13 @@ def uninstall_app_page():
     uninstall_app(app_name)
 
     flash("Application Uninstalled", category="message")
+    r = request.args.get("return_page")
+    if r:
+        if r == "marketplace_app":
+            return redirect("/marketplace/{}".format(app_name))
+        elif r == "settings":
+            return redirect("/settings")
+
     return redirect("/apps")
 
 @mynode_settings.route("/settings/toggle-uploader")
