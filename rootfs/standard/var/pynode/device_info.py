@@ -820,6 +820,15 @@ def save_premium_plus_token(token):
     set_file_contents("/home/bitcoin/.mynode/.premium_plus_token", token)
     set_file_contents("/mnt/hdd/mynode/settings/.premium_plus_token", token)
 
+def get_premium_plus_response_data():
+    data = []
+    try:
+        with open("/tmp/premium_plus_response.json", "r") as f:
+            data = json.load(f)
+    except Exception as e:
+        data = None
+    return data
+
 def recheck_premium_plus_token():
     reset_premium_plus_token_status()
     os.system("systemctl restart premium_plus_connect")

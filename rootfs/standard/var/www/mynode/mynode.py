@@ -553,6 +553,8 @@ def index():
             "is_device_from_reseller": is_device_from_reseller(),
             "product_key_skipped": pk_skipped,
             "product_key_error": pk_error,
+            "premium_plus_has_access_token": has_premium_plus_token(),
+            "premium_plus_is_connected": get_premium_plus_is_connected(),
             "fsck_error": has_fsck_error(),
             "fsck_results": get_fsck_results(),
             "sd_rw_error": has_sd_rw_error(),
