@@ -85,7 +85,6 @@ td, th {
     margin-left: 5px;
 }
 .mynode_nav_icon_no_hover {
-    filter: none !important;
     background-color: transparent !important;
     box-shadow: none !important;
 }
@@ -1232,4 +1231,8 @@ input:checked + .slider:before {
 .app_page_block_contents_text {
     font-size: 14px;
     margin-bottom: 30px;
+}
+
+.grayscale_image {
+    filter: grayscale(100%);
 }

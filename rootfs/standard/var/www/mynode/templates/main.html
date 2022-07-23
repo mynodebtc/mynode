@@ -611,8 +611,12 @@
                 <img class="mynode_nav_icon mynode_nav_icon_no_hover" title="Premium" src="{{ url_for('static', filename="images/mynode_premium_icon.png")}}"/>
             {% endif %}
 
-            {% if premium_plus_active or true %}
-                <img class="mynode_nav_icon mynode_nav_icon_no_hover" title="Premium+ Active" src="{{ url_for('static', filename="images/mynode_premium_plus_icon.png")}}"/>
+            {% if premium_plus_has_access_token %}
+                {% if premium_plus_is_connected %}
+                    <img class="mynode_nav_icon mynode_nav_icon_no_hover" title="Premium+ Active" src="{{ url_for('static', filename="images/mynode_premium_plus_icon.png")}}"/>
+                {% else %}
+                    <img class="mynode_nav_icon mynode_nav_icon_no_hover grayscale_image" title="Premium+ Disconnected" src="{{ url_for('static', filename="images/mynode_premium_plus_icon.png")}}"/>
+                {% endif %}
             {% endif %}
 
             {% if upgrade_available %}

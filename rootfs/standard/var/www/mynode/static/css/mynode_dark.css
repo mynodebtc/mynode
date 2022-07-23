@@ -220,8 +220,7 @@ input:focus + .slider {
     background: #121C21;
 }
 
-.mynode_nav_icon:hover {
-}
+
 .mynode_nav_icon_NOT_USED:hover {
     filter: brightness(125%);
 }
