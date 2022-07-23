@@ -30,12 +30,14 @@ def premium_plus_page():
     # Load page
     templateData = {
         "title": "myNode Premium+",
+        "product_key_skipped": skipped_product_key(),
         "has_access_token": has_premium_plus_token(),
         "access_token": get_premium_plus_token(),
         "premium_plus_settings": get_premium_plus_settings(),
         "status": status,
         "status_text": status_text,
         "is_connected": get_premium_plus_is_connected(),
+        "response_data": get_premium_plus_response_data(),
         "last_sync": get_premium_plus_last_sync(),
         "ui_settings": read_ui_settings()
     }
