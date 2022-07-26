@@ -65,6 +65,11 @@
                         {% if not app.is_installed %}
                             <!-- Install -->
                             <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button install_button" onclick="install('{{ app.name }}', '{{ app.short_name }}');">Install</button>
+
+                            {% if app.is_manually_added %}
+                                <br/><br/>
+                                <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button uninstall_button" onclick="remove_from_device('{{ app.name }}', '{{ app.short_name }}');">Remove from Device</button>
+                            {% endif %}
                         {% else %}
                             <!-- Upgrade / Re-install / Uninstall -->
                             {% if app.current_version != app.latest_version %}
@@ -115,12 +120,18 @@
                                 </td>
                             </tr>
                             {% endif %}
-                            {% if app.website.name is defined and app.website.link is defined and app.website.name != ""%}
+                            {% if app.website.name is defined and app.website.link is defined and app.website.name != "" %}
                             <tr>
                                 <th>Website</th>
                                 <td>
                                     <a href="{{app.website.link}}" target="_blank">{{app.website.name}}</a>
                                 </td>
+                            </tr>
+                            {% endif %}
+                            {% if app.error is defined and app.error != "" %}
+                            <tr>
+                                <th>Error</th>
+                                <td style="color: red;">{{app.error}}</td>
                             </tr>
                             {% endif %}
                         </table>
@@ -162,11 +173,14 @@
             </div>
         </div>
 
+        <br/><br/>
+
         <div id="loading_spinner_overlay" class="loading_spinner_overlay" style="display:none;">
             <img id="loading_spinner" class="loading_image" src="{{ url_for('static', filename="images/loading.gif")}}"/>
             <br/>
             <span id="loading_spinner_message">Loading...</span>
         </div>
 
+        {% include 'includes/footer.html' %}
     </body>
 </html>

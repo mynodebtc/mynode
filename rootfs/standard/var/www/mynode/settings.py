@@ -855,6 +855,27 @@ def uninstall_app_page():
 
     return redirect("/apps")
 
+@mynode_settings.route("/settings/remove-app")
+def remove_app_page():
+    check_logged_in()
+
+    # Check application specified
+    if not request.args.get("app"):
+        flash("No application specified", category="error")
+        return redirect("/marketplace")
+    
+    # Check application name is valid
+    app_name = request.args.get("app")
+    if not is_application_valid(app_name):
+        flash("Application is invalid", category="error")
+        return redirect("/marketplace")
+
+    # Remove app from device (for dynamic apps)
+    remove_app(app_name)
+
+    flash("Application Removed", category="message")
+    return redirect("/marketplace")
+
 @mynode_settings.route("/settings/toggle-uploader")
 def toggle_uploader_page():
     check_logged_in()

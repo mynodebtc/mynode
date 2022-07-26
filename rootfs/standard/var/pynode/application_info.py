@@ -60,6 +60,17 @@ def uninstall_app(app):
     # Sync
     os.system("sync")
 
+def remove_app(app):
+    # Make sure app is disabled
+    disable_service(app)
+
+    # Clear app data
+    clear_application_cache()
+
+    # Remove App
+    os.system("rm -rf /usr/share/mynode_apps/{}".format(app))
+    os.system("sync")
+
 def is_installed(short_name):
     filename1 = "/home/bitcoin/.mynode/install_"+short_name
     filename2 = "/mnt/hdd/mynode/settings/install_"+short_name
@@ -130,9 +141,9 @@ def replace_app_info_variables(app_data, text):
     text = text.replace("{VERSION}", app_data["latest_version"])
     text = text.replace("{SHORT_NAME}", app_data["short_name"])
     if app_data["http_port"] != None:
-        text = text.replace("{HTTP_PORT}", app_data["http_port"])
+        text = text.replace("{HTTP_PORT}", str(app_data["http_port"]))
     if app_data["https_port"] != None:
-        text = text.replace("{HTTPS_PORT}", app_data["https_port"])
+        text = text.replace("{HTTPS_PORT}", str(app_data["https_port"]))
     text = text.replace("{APP_TOR_ADDRESS}", get_onion_url_for_service(app_data["short_name"]))
     return text
 
@@ -148,6 +159,7 @@ def initialize_application_defaults(app):
     if not "screenshots" in app: app["screenshots"] = get_app_screenshots( app["short_name"] )
     if not "app_tile_name" in app: app["app_tile_name"] = app["name"]
     if not "linux_user" in app: app["linux_user"] = "bitcoin"
+    if not "skip_targz_download" in app: app["skip_targz_download"] = False
     if not "targz_download_url" in app: app["targz_download_url"] = "not_specified"
     app["install_folder"] = "/opt/mynode/{}".format(app["short_name"])
     app["storage_folder"] = "/mnt/hdd/mynode/{}".format(app["short_name"])
@@ -162,6 +174,7 @@ def initialize_application_defaults(app):
     if not "has_custom_version" in app: app["has_custom_version"] = has_custom_app_version( app["short_name"] )
     if not "is_beta" in app: app["is_beta"] = False
     app["is_installed"] = is_installed( app["short_name"] )
+    app["is_manually_added"] = os.path.isfile("/usr/share/mynode_apps/{}/is_manually_added".format(app["short_name"]))
     if not "can_reinstall" in app: app["can_reinstall"] = True
     if not "can_uninstall" in app: app["can_uninstall"] = False
     if not "requires_lightning" in app: app["requires_lightning"] = False
@@ -234,9 +247,10 @@ def initialize_applications():
 
         except Exception as e:
             log_message("ERROR: Could not initialize dynamic app {} - {}".format(app_name, str(e)))
+            app = {"name":"???", "short_name": app_name, "error": "APP INIT EXCEPTION: {}".format(str(e))}
+            apps.append( initialize_application_defaults( app ) )
 
     mynode_applications = copy.deepcopy(apps)
-
     return
 
 def update_applications(include_status=False):
@@ -584,10 +598,6 @@ def create_application_tor_service(app_data):
 def install_application_tarball(app_data):
     log_message("  Running install_application_tarball...")
 
-    if "targz_download_url" not in app_data:
-        log_message("  APP MISSING TARGZ DOWNLOAD URL")
-        raise ValueError("APP MISSING TARGZ DOWNLOAD URL")
-
     ignore_failure = True
 
     # Make tmp download folder
@@ -599,16 +609,20 @@ def install_application_tarball(app_data):
     run_linux_cmd("chmod -R 777 /tmp/mynode_dynamic_app_extract")
 
     # Download and extract
-    run_linux_cmd("wget -O /tmp/mynode_dynamic_app_download/app.tar.gz {}".format(app_data["targz_download_url"]))
-    time.sleep(1)
-    run_linux_cmd("sync")
-    run_linux_cmd("sudo -u {} tar -xvf /tmp/mynode_dynamic_app_download/app.tar.gz -C /tmp/mynode_dynamic_app_extract/".format(app_data["linux_user"]))
-    run_linux_cmd("mv /tmp/mynode_dynamic_app_extract/* /tmp/mynode_dynamic_app_extract/app")
+    if not app_data["skip_targz_download"]:
+        if "targz_download_url" not in app_data:
+            log_message("  APP MISSING TARGZ DOWNLOAD URL")
+            raise ValueError("APP MISSING TARGZ DOWNLOAD URL")
+        run_linux_cmd("wget -O /tmp/mynode_dynamic_app_download/app.tar.gz {}".format(app_data["targz_download_url"]))
+        time.sleep(1)
+        run_linux_cmd("sync")
+        run_linux_cmd("sudo -u {} tar -xvf /tmp/mynode_dynamic_app_download/app.tar.gz -C /tmp/mynode_dynamic_app_extract/".format(app_data["linux_user"]))
+        run_linux_cmd("mv /tmp/mynode_dynamic_app_extract/* /tmp/mynode_dynamic_app_extract/app")
 
-    # Move tarball contents to app folder
-    run_linux_cmd("rsync -var --delete-after /tmp/mynode_dynamic_app_extract/app/* {}/".format(app_data["install_folder"]))
+        # Move tarball contents to app folder
+        run_linux_cmd("rsync -var --delete-after /tmp/mynode_dynamic_app_extract/app/* {}/".format(app_data["install_folder"]))
 
-    # Move app data to app folder
+    # Move additional app data to app installation folder
     app_data_source = get_dynamic_app_dir() + "/" + app_data["short_name"] + "/app_data"
     app_data_dest = app_data["install_folder"] + "/app_data"
     run_linux_cmd("rm -rf {}".format(app_data_dest))
@@ -689,6 +703,7 @@ def init_dynamic_app(app_info):
     # Install App Icon
     os.system("cp -f {} {}".format(app_dir+"/"+app_name+".png", "/var/www/mynode/static/images/app_icons/"+app_name+".png"))
     # Install Screenshots
+    os.system("rm -rf /var/www/mynode/static/images/screenshots/{}".format(app_name))
     os.system("mkdir -p /var/www/mynode/static/images/screenshots/{}".format(app_name))
     if os.path.isdir(app_dir+"/screenshots/"):
         for s in os.listdir(app_dir+"/screenshots/"):
@@ -739,7 +754,7 @@ def init_dynamic_app(app_info):
 
     log_message(" Done.")
 
-def init_dynamic_apps():
+def init_dynamic_apps(short_name="all"):
     # Ensure external drive is mounted
     if not is_mynode_drive_mounted():
         log_message("  ERROR: Data drive not mounted. Cannot Init Dynamic Apps.")
@@ -749,22 +764,23 @@ def init_dynamic_apps():
     root_app_dir = get_dynamic_app_dir()
     app_names = get_dynamic_app_names()
     for app_name in app_names:
-        log_message("Found Application: {}".format(app_name))
-        app_dir = root_app_dir + "/" + app_name
-        try:
-            app_json_path = app_dir + "/{}.json".format(app_name)
-            with open(app_json_path, 'r') as fp:
-                app_info = json.load(fp)
-                init_dynamic_app(app_info)
+        if short_name == "all" or short_name == app_name:
+            log_message("Found Application: {}".format(app_name))
+            app_dir = root_app_dir + "/" + app_name
+            try:
+                app_json_path = app_dir + "/{}.json".format(app_name)
+                with open(app_json_path, 'r') as fp:
+                    app_info = json.load(fp)
+                    init_dynamic_app(app_info)
 
-        except Exception as e:
-            log_message("  ERROR: Error loading {}.json file ({})".format(app_name, str(e)))
+            except Exception as e:
+                log_message("  ERROR: Error loading {}.json file ({})".format(app_name, str(e)))
 
     # Reload systemctl files
     os.system("systemctl daemon-reload")
 
     # Mark app db for needing reload
-    # TODO: Need to mark this? all json files should be found early
+    clear_application_cache()
 
 def upgrade_dynamic_apps(short_name="all"):
     log_message("Running upgrade_dynamic_apps...")

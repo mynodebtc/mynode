@@ -58,9 +58,14 @@
                                         <div class="marketplace_app_tile_version"><i>Premium Feature</i></div>
                                     {% endif %}
 
-                                    {% if app.is_installed %}
-                                        <img class="marketplace_app_tile_installed" title="Installed" src="{{ url_for('static', filename="images/")}}app_installed.png"/>
-                                    {% endif %}
+                                    <div class="marketplace_app_tile_top_right">
+                                        {% if app.is_manually_added %}
+                                            <img class="marketplace_app_tile_top_right_icon" title="Manually Added" src="{{ url_for('static', filename="images/")}}app_manually_added.png"/>
+                                        {% endif %}
+                                        {% if app.is_installed %}
+                                            <img class="marketplace_app_tile_top_right_icon" title="Installed" src="{{ url_for('static', filename="images/")}}app_installed.png"/>
+                                        {% endif %}
+                                    </div>
                                 </div>
                                 
                             </div>
