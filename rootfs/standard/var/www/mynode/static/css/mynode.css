@@ -1113,9 +1113,11 @@ input:checked + .slider:before {
     width: 100%;
     font-size: 12px;
 }
-.marketplace_app_tile_installed {
-    position: absolute;
+.marketplace_app_tile_top_right_icon {
     width: 18px;
+}
+.marketplace_app_tile_top_right {
+    position: absolute;
     top: 10px;
     right: 10px;
 }

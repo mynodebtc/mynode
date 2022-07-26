@@ -52,6 +52,14 @@ function uninstall(name, short_name, return_page="") {
     }
 }
 
+function remove_from_device(name, short_name) {
+    if ( confirm("Are you sure you want to uninstall "+name+"? ") ) {
+        $('#loading_spinner_message').html("Removing...");
+        $('#loading_spinner_overlay').fadeIn();
+        window.location.href='/settings/remove-app?app='+short_name;
+    }
+}
+
 // ==========================================
 // Toggle enable/disable functions
 // ==========================================
