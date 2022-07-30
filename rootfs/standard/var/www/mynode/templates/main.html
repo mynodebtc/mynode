@@ -621,7 +621,7 @@
         </div>
 
         <div class="mynode_top_right_div">
-            {% if upgrade_available or 1 %}
+            {% if upgrade_available %}
                 <a href="/settings" title="Upgrade Available"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/upgrade.png")}}"/></a>
             {% endif %}
 
