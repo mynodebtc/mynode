@@ -184,7 +184,6 @@ def initialize_application_defaults(app):
     if not "supports_testnet" in app: app["supports_testnet"] = False
     if not "show_on_homepage" in app: app["show_on_homepage"] = False
     if not "show_on_application_page" in app: app["show_on_application_page"] = True
-    if not "supports_app_page" in app: app["supports_app_page"] = True
     if not "show_on_status_page" in app: app["show_on_status_page"] = False             # New apps should set to true
     if not "can_enable_disable" in app: app["can_enable_disable"] = True
     if not "is_enabled" in app: app["is_enabled"] = is_service_enabled( app["short_name"] )
