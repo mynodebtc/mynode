@@ -130,7 +130,7 @@ if ! skip_base_upgrades ; then
     $TORIFY apt-get -y install libudev-dev libusb-1.0-0-dev python3-venv gunicorn sqlite3 libsqlite3-dev
     $TORIFY apt-get -y install torsocks python3-requests libsystemd-dev libjpeg-dev zlib1g-dev psmisc
     $TORIFY apt-get -y install hexyl libbz2-dev liblzma-dev netcat-openbsd hdparm iotop nut obfs4proxy
-    $TORIFY apt-get -y install libpq-dev socat
+    $TORIFY apt-get -y install libpq-dev socat btrfs-tools
 
     # Install software from backports
     $TORIFY apt-get -y -t buster-backports install wireguard
