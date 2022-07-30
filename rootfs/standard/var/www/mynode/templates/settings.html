@@ -803,6 +803,7 @@
                 <select name="background" id="background">
                     <option value="none" {% if not ui_settings['background'] or ui_settings['background'] == "none" %}selected{% endif %}>None</option>
                     <option value="digital" {% if ui_settings['background'] == "digital" %}selected{% endif %}>Digital</option>
+                    <option value="digital_mesh" {% if ui_settings['background'] == "digital_mesh" %}selected{% endif %}>Digital Mesh</option>
                     <option value="laser_eyes" {% if ui_settings['background'] == "laser_eyes" %}selected{% endif %}>Laser Eyes</option>
                     <option value="moon" {% if ui_settings['background'] == "moon" %}selected{% endif %}>Moon</option>
                 </select>
