@@ -544,6 +544,7 @@ def read_ui_settings():
     need_file_write = False
     if ui_settings == None:
         ui_settings = {}
+        ui_settings["background"] = "digital"
         need_file_write = True
 
     # Set reseller

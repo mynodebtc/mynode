@@ -615,17 +615,13 @@
                 {% if premium_plus_is_connected %}
                     <img class="mynode_nav_icon mynode_nav_icon_no_hover" title="Premium+ Active" src="{{ url_for('static', filename="images/mynode_premium_plus_icon.png")}}"/>
                 {% else %}
-                    <img class="mynode_nav_icon mynode_nav_icon_no_hover grayscale_image" title="Premium+ Disconnected" src="{{ url_for('static', filename="images/mynode_premium_plus_icon.png")}}"/>
+                    <img class="mynode_nav_icon mynode_nav_icon_no_hover grayscale_image" title="Premium+ Disconnected" src="{{ url_for('static', filename="images/mynode_premium_plus_icon_disconnected.png")}}"/>
                 {% endif %}
-            {% endif %}
-
-            {% if upgrade_available %}
-                <a href="/settings" title="Upgrade Available"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/upgrade2.png")}}"/></a>
             {% endif %}
         </div>
 
         <div class="mynode_top_right_div">
-            {% if upgrade_available %}
+            {% if upgrade_available or 1 %}
                 <a href="/settings" title="Upgrade Available"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/upgrade.png")}}"/></a>
             {% endif %}
 
