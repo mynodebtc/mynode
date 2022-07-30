@@ -4,6 +4,8 @@
         {% include 'includes/head.html' %}
         <meta http-equiv="refresh" content="{{ refresh_rate }}">
 
+        <script src="{{ url_for('static', filename='js/manage_apps.js')}}"></script>
+
         <script>
             // Data
             var application_data = {};
@@ -22,53 +24,6 @@
             var device_info = null;
             var bitcoin_info = null;
             var lnd_info = null;
-
-            // Toggle enable/disable functions
-            function get_custom_enable_message(short_name) {
-                message = "";
-                if (short_name == "electrs") {
-                    message = "Enabling Electrum Server will take several days to fully sync for \
-                               the first time. Your myNode may run slowly during this period.";
-                } else if (short_name == "vpn") {
-                    message = "Enabling VPN will set your IP to a static IP rather than a dynamic one via DHCP. \
-                               The initial setup may take about an hour.";
-                } else if (short_name == "dojo") {
-                    message = "Enabling Dojo for the first time will reboot your device and install Dojo.";
-                }
-                if (message != "") {
-                    message += "<br/><br/>";
-                }
-                return message;
-            }
-
-            function toggleEnabled(short_name) {
-                enabled = application_data[short_name]["is_enabled"];
-                full_name = application_data[short_name]["name"];
-                
-                if ( enabled ) {
-                    // Disabling
-                    openConfirmDialog("confirm-dialog", 
-                                      "Disable "+full_name, 
-                                      "Are you sure you want to disable "+full_name+"?",
-                                       function(){
-                                            $( this ).dialog( "close" );
-                                            $('#loading_spinner_overlay').fadeIn();
-                                            window.location.href="/toggle-enabled?app="+short_name
-                                       });
-                } else {
-                    custom_message = "";
-                    // Enabling
-                    openConfirmDialog("confirm-dialog", 
-                                      "Enable "+full_name, 
-                                      get_custom_enable_message(short_name) +
-                                      "Are you sure you want to enable "+full_name+"?",
-                                       function(){
-                                            $( this ).dialog( "close" );
-                                            $('#loading_spinner_overlay').fadeIn();
-                                            window.location.href="/toggle-enabled?app="+short_name
-                                       });
-                }
-            }
 
             // Update status functions
             function update_status(status_name, data) {
@@ -650,24 +605,34 @@
         {% include 'includes/logo_header.html' %}
         
         <div class="mynode_top_left_div">
-            <!-- Nothing yet -->
-            {% if upgrade_available %}
-                <a class="ui-button ui-widget ui-corner-all mynode_back" href="/settings" title="Upgrade Available"><span class="ui-icon ui-icon-arrowthick-1-n"></span>upgrade available&nbsp;</a>
+            {% if product_key_skipped %}
+                <img class="mynode_nav_icon mynode_nav_icon_no_hover" title="Community Edition" src="{{ url_for('static', filename="images/mynode_community_icon.png")}}"/>
+            {% else %}
+                <img class="mynode_nav_icon mynode_nav_icon_no_hover" title="Premium" src="{{ url_for('static', filename="images/mynode_premium_icon.png")}}"/>
+            {% endif %}
+
+            {% if premium_plus_has_access_token %}
+                {% if premium_plus_is_connected %}
+                    <img class="mynode_nav_icon mynode_nav_icon_no_hover" title="Premium+ Active" src="{{ url_for('static', filename="images/mynode_premium_plus_icon.png")}}"/>
+                {% else %}
+                    <img class="mynode_nav_icon mynode_nav_icon_no_hover grayscale_image" title="Premium+ Disconnected" src="{{ url_for('static', filename="images/mynode_premium_plus_icon_disconnected.png")}}"/>
+                {% endif %}
             {% endif %}
         </div>
 
         <div class="mynode_top_right_div">
-            {% if upgrade_available %}
-                <a class="ui-button ui-widget ui-corner-all mynode_back" href="/settings" title="Upgrade Available">&nbsp;<span class="ui-icon ui-icon-arrowthick-1-n"></span>&nbsp;</a>
+            {% if upgrade_available or 1 %}
+                <a href="/settings" title="Upgrade Available"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/upgrade.png")}}"/></a>
             {% endif %}
+
             {% if ui_settings['darkmode'] %}
-                <a class="ui-button ui-widget ui-corner-all mynode_back" href="/settings/toggle-darkmode-home" title="Disable Darkmode">&nbsp;<span class="ui-icon ui-icon-lightbulb"></span>&nbsp;</a>
+                <a href="/settings/toggle-darkmode-home" title="Disable Darkmode"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/lightbulb.png")}}"/></a>
             {% else %}
-                <a class="ui-button ui-widget ui-corner-all mynode_back" href="/settings/toggle-darkmode-home" title="Enable Darkmode">&nbsp;<span class="ui-icon ui-icon-lightbulb"></span>&nbsp;</a>
+                <a href="/settings/toggle-darkmode-home" title="Enable Darkmode"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/lightbulb.png")}}"/></a>
             {% endif %}
-            <a class="ui-button ui-widget ui-corner-all mynode_back" id="https" title="Use HTTPS" style="display: none;" href="#">&nbsp;<span class="ui-icon ui-icon-locked"></span>&nbsp;</a>
-            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/logout" title="Logout"><span class="ui-icon ui-icon-close"></span>&nbsp;</a>
-            <a class="ui-button ui-widget ui-corner-all mynode_back" id="power_button" title="Reboot or Shutdown"><span class="ui-icon ui-icon-power"></span>&nbsp;</a> 
+            <a href="#" id="https" title="Use HTTPS" style="display: none;"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/https_lock.png")}}"/></a>
+            <a href="/logout" title="Logout"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/logout.png")}}"/></a>
+            <a href="#" id="power_button" title="Reboot or Shutdown"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/power.png")}}"/></a>
         </div> 
         
 
@@ -724,49 +689,51 @@
                 <div class="app_title">Settings</div>
                 <div class="app_status"></div>
                 <div class="app_contents">
-                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="/apps">Applications</a>
                     <a class="ui-button ui-widget ui-corner-all mynode_button" href="/status">Status</a>
                     <a class="ui-button ui-widget ui-corner-all mynode_button" href="/settings">Settings</a>
                 </div>
             </div>
             <div class="app_tile">
                 <div class="app_status_icon"></div>
-                <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/drive.png")}}"/></div>
-                <div class="app_title">Disk Usage</div>
+                <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/apps.png")}}"/></div>
+                <div class="app_title">Applications</div>
                 <div class="app_status"></div>
-                <div class="app_contents"><div class="device_status_info" id="data_drive_usage">{{data_drive_usage}}</div></div>
+                <div class="app_contents">
+                    <a class="ui-button ui-widget ui-corner-all mynode_button" href="/apps">Manage</a>
+                </div>
             </div>
-            <div class="app_tile">
-                <div class="app_status_icon"></div>
-                <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/cpu.png")}}"/></div>
-                <div class="app_title">CPU</div>
-                <div class="app_status"></div>
-                <div class="app_contents"><div class="device_status_info" id="device_cpu_usage">{{cpu_usage}}</div></div>
+            <div class="app_tile app_tile_device_info_container">
+                <div class="app_tile_device_info_block">
+                    <div class="app_tile_device_info_icon"><img class="app_tile_device_info_icon_img" src="{{ url_for('static', filename="images/temperature.png")}}"/></div>
+                    <div class="app_tile_device_info_name">Temperature</div>
+                    <div class="app_tile_device_info_value" id="device_temp">{{device_temp}}</div>
+                </div>
+                <div class="app_tile_device_info_block">
+                    <div class="app_tile_device_info_icon"><img class="app_tile_device_info_icon_img" src="{{ url_for('static', filename="images/cpu.png")}}"/></div>
+                    <div class="app_tile_device_info_name">CPU</div>
+                    <div class="app_tile_device_info_value" id="device_cpu_usage">{{cpu_usage}}</div>
+                </div>
+                <div class="app_tile_device_info_block">
+                    <div class="app_tile_device_info_icon"><img class="app_tile_device_info_icon_img" src="{{ url_for('static', filename="images/ram.png")}}"/></div>
+                    <div class="app_tile_device_info_name">RAM</div>
+                    <div class="app_tile_device_info_value" id="device_ram_usage">{{ram_usage}}</div>
+                </div>
+                <div class="app_tile_device_info_block">
+                    <div class="app_tile_device_info_icon"><img class="app_tile_device_info_icon_img" src="{{ url_for('static', filename="images/drive.png")}}"/></div>
+                    <div class="app_tile_device_info_name">OS Drive Usage</div>
+                    <div class="app_tile_device_info_value" id="os_drive_usage">{{os_drive_usage}}</div>
+                </div>
+                <div class="app_tile_device_info_block">
+                    <div class="app_tile_device_info_icon"><img class="app_tile_device_info_icon_img" src="{{ url_for('static', filename="images/drive.png")}}"/></div>
+                    <div class="app_tile_device_info_name">Data Drive Usage</div>
+                    <div class="app_tile_device_info_value" id="data_drive_usage">{{data_drive_usage}}</div>
+                </div>
+                <div class="app_tile_device_info_block">
+                    <div class="app_tile_device_info_icon"><img class="app_tile_device_info_icon_img" src="{{ url_for('static', filename="images/ram.png")}}"/></div>
+                    <div class="app_tile_device_info_name">Swap</div>
+                    <div class="app_tile_device_info_value" id="device_swap_usage">{{swap_usage}}</div>
+                </div>
             </div>
-            <div class="app_tile">
-                <div class="app_status_icon"></div>
-                <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/ram.png")}}"/></div>
-                <div class="app_title">RAM</div>
-                <div class="app_status"></div>
-                <div class="app_contents"><div class="device_status_info" id="device_ram_usage">{{ram_usage}}</div></div>
-            </div>
-            <div class="app_tile" id="temp_tile" {% if device_temp == '...' %}style="display: none;"{% endif %}>
-                <div class="app_status_icon"></div>
-                <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/temperature.png")}}"/></div>
-                <div class="app_title">Temperature</div>
-                <div class="app_status"></div>
-                <div class="app_contents"><div class="device_status_info" id="device_temp">{{device_temp}} &deg;C</div></div>
-            </div>
-            
-            <!--
-            <div class="app_tile">
-                <div class="app_status_icon"></div>
-                <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/ram.png")}}"/></div>
-                <div class="app_title">Swap</div>
-                <div class="app_status"></div>
-                <div class="app_contents"><div class="drive_usage">{{swap_usage}}</div></div>
-            </div>
-            -->
         </div>
 
         {% if product_key_skipped %}

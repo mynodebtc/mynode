@@ -544,6 +544,7 @@ def read_ui_settings():
     need_file_write = False
     if ui_settings == None:
         ui_settings = {}
+        ui_settings["background"] = "digital"
         need_file_write = True
 
     # Set reseller
@@ -775,6 +776,9 @@ def get_premium_plus_token():
         elif os.path.isfile("/mnt/hdd/mynode/settings/.premium_plus_token"):
             with open("/mnt/hdd/mynode/settings/.premium_plus_token", "r") as f:
                 token = f.read().strip()
+
+                # Re-save to SD card since it was missing
+                set_file_contents("/home/bitcoin/.mynode/.premium_plus_token", token)
     except:
         token = "error_2"
     return token
@@ -816,6 +820,15 @@ def get_premium_plus_last_sync():
 def save_premium_plus_token(token):
     set_file_contents("/home/bitcoin/.mynode/.premium_plus_token", token)
     set_file_contents("/mnt/hdd/mynode/settings/.premium_plus_token", token)
+
+def get_premium_plus_response_data():
+    data = []
+    try:
+        with open("/tmp/premium_plus_response.json", "r") as f:
+            data = json.load(f)
+    except Exception as e:
+        data = None
+    return data
 
 def recheck_premium_plus_token():
     reset_premium_plus_token_status()

@@ -27,9 +27,10 @@
                                     id="{{app.short_name}}">{{app.app_tile_button_text}}</a>
                             {% endif %}
                             {% if app.can_enable_disable %}
-                                <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('{{app.short_name}}')">
-                                    {% if app.is_enabled %}Disable{% else %}Enable{% endif %}
-                                </a>
+                                <!-- Only show enable on home page so only one button is displayed - more actions on manage apps page -->
+                                {% if not app.is_enabled %}
+                                    <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('{{app.short_name}}', '{{app.name}}', true)">Enable</a>
+                                {% endif %}
                             {% endif %}
                         {% endif %}
                         {% endif %}
@@ -43,12 +44,12 @@
 
     <!-- App Store Icon -->
     <div class="app_tile">
-        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/")}}apps.png"/></div>
+        <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/")}}marketplace2.png"/></div>
 
-        <div class="app_title">Applications</div>
+        <div class="app_title">Marketplace</div>
         <div class="app_status" id="marketplace_status">Manage Apps</div>
         <div class="app_contents">
-            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/apps">Manage</a>
+            <a class="ui-button ui-widget ui-corner-all mynode_button" href="/marketplace">Open</a>
         </div>
     </div>
 </div>
@@ -78,9 +79,9 @@
                                             <a class="ui-button ui-widget ui-corner-all mynode_button" href="{{app.app_tile_button_href}}" id="{{app.short_name}}">{{app.app_tile_button_text}}</a>
                                         {% endif %}
                                         {% if app.can_enable_disable %}
-                                            <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('{{app.short_name}}')">
-                                                {% if app.is_enabled %}Disable{% else %}Enable{% endif %}
-                                            </a>
+                                            {% if not app.is_enabled %}
+                                                <a class="ui-button ui-widget ui-corner-all mynode_button" onclick="toggleEnabled('{{app.short_name}}', '{{app.name}}', true)">Enable</a>
+                                            {% endif %}
                                         {% endif %}
                                     {% endif %}
                                     {% endif %}

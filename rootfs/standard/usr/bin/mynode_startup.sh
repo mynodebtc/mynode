@@ -782,6 +782,11 @@ systemctl restart nginx || true
 /usr/bin/mynode_update_latest_version_files.sh
 touch /tmp/need_application_refresh
 
+# Mark some internal app versions
+echo "v1.0" > /home/bitcoin/.mynode/tor_version
+echo "v1.0" > /home/bitcoin/.mynode/vpn_version
+echo "v1.0" > /home/bitcoin/.mynode/premium_plus_version
+
 # Weird hacks
 chmod +x /usr/bin/electrs || true # Once, a device didn't have the execute bit set for electrs
 timedatectl set-ntp True || true # Make sure NTP is enabled for Tor and Bitcoin

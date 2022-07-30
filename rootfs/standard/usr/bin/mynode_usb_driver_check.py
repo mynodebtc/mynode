@@ -129,14 +129,13 @@ def get_quirks_from_uas_devices():
         for line in lsusb_lines:
             try:
                 if "SATA 6Gb/s bridge" in line:
-                    m = re.search("usb-storage.quirks=(.+)", line)
-                    m = re.search("Bus ([0-9+]) Device ([0-9]+): ID (.+)", line)
+                    m = re.search("Bus ([0-9]+) Device ([0-9]+): ID (\S+)", line)
                     bus = m.group(1)
                     dev = m.group(2)
                     id = m.group(3)
                     quirks.append(id+":u")
             except Exception as e:
-                log_message("Unable to scan USB device: {}".format(line))
+                log_message("Unable to scan USB device: {} ({})".format(line, e))
     return quirks
 
 def get_required_usb_quirks():
@@ -145,6 +144,7 @@ def get_required_usb_quirks():
     # Add known devices
     required_quirks.append("174c:55aa:u") # ASMedia Technology Inc.
     required_quirks.append("152d:1561:u") # JMicron Technology Corp.
+    required_quirks.append("152d:0578:u") # JMicron Technology Corp.
 
     # Add any devices currently found as UAS
     required_quirks += get_quirks_from_uas_devices()

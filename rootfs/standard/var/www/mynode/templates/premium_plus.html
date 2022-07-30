@@ -26,11 +26,10 @@
         <script>
             $(document).ready(function() {
 
-                $( document ).tooltip();
-
                 token="{{access_token}}"
 
                 function set_token() {
+                    $('#loading_spinner_overlay').fadeIn();
                     $("#set_token_form").submit();
                     set_token_dialog.dialog( "close" );
                 }
@@ -155,8 +154,8 @@
 
     <body>
         {% include 'includes/logo_header.html' %}
-        <div class="mynode_back_div">
-            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        <div class="mynode_top_left_div">
+            <a href="/"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/home.png")}}"/></a>
         </div>
 
         {% include 'includes/message_display.html' %}
@@ -178,7 +177,7 @@
                                     <button id="change_token_button" class="ui-button ui-widget ui-corner-all settings_button_small">Change</button>
                                     <button id="clear_token_button" class="ui-button ui-widget ui-corner-all settings_button_small">Clear</button>
                                 {% else %}
-                                    <button id="set_token_button" class="ui-button ui-widget ui-corner-all settings_button_small">Set Token</button>
+                                    <button id="set_token_button" class="ui-button ui-widget ui-corner-all settings_button_small {% if product_key_skipped %}ui-state-disabled{% endif %}" {% if product_key_skipped %}disabled{% endif %}>Set Token</button>
                                 {% endif %}
                             </td>
                         </tr>
@@ -191,6 +190,30 @@
                             <th>Last Sync</th>
                             <td>{{last_sync}}</td>
                         </tr>
+                        {% if "subscription" in response_data %}
+                            {% if "active" in response_data.subscription %}
+                                <tr>
+                                    <td>Subscription</td>
+                                    <td>
+                                        {% if response_data.subscription.active %}
+                                            Active
+                                            {% if "days_remaining" in response_data.subscription and response_data.subscription.days_remaining|int < 45 %}
+                                                <br/>
+                                                <small>
+                                                    Expiring Soon! {{response_data.subscription.days_remaining}} days remaining <i class="fas fa-exclamation-triangle" style="color: orange;"></i>
+                                                    <br/>
+                                                    <a href="https://mynodebtc.com/order/premium_plus" target="_blank" style="margin-top: 10px;" class="ui-button ui-widget ui-corner-all mynode_button_small">Extend</a>
+                                                </small>
+                                            {% endif %}
+                                        {% else %}
+                                            Expired! <i class="fas fa-exclamation-triangle" style="color: red;"></i>
+                                            <br/>
+                                            <a href="https://mynodebtc.com/order/premium_plus" target="_blank" style="margin-top: 10px;" class="ui-button ui-widget ui-corner-all mynode_button_small">Renew</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endif %}
                         <tr>
                             <th>Actions</th>
                             <td><button id="sync_button" class="ui-button ui-widget ui-corner-all mynode_button_small">Force Sync</button></td>
@@ -200,6 +223,29 @@
                 </div>
             </div>
         </div>
+
+        {% if product_key_skipped or not has_access_token %}
+        <div class="text_block" style="width: 600px; margin-top: 15px;">
+            <p>Premium+ is a service that allows a number of additional and ever-growing features and support. They are
+               primarily related to monitoring and simple remote access to your device and information.</p>
+
+            {% if product_key_skipped %}
+                <p style="text-align: center; margin-top: 15px;">A myNode Premium Key is required to enable Premium+</p>
+            {% elif not has_access_token %}
+                <p>To get an Access Token, you need to link your device to an account on mynodebtc.com.</p>
+                <p>
+                    <ul>
+                        <li>Login or register an account on <a href="https://mynodebtc.com/login" target="_blank">mynodebtc.com</a></li>
+                        <li>Add your product key on the <a href="https://mynodebtc.com/account/product_keys" target="_blank">Product Keys</a> page</li>
+                        <li>Subscribe to <a href="https://mynodebtc.com/order/premium_plus" target="_blank">Premium+</a></li>
+                        <li>Visit the <a href="https://mynodebtc.com/account/devices" target="_blank">Your Devices</a> page to get your Access Token</li>
+                        <li>Enter the Access Token above</li>
+                        <li>Enjoy additional myNode features!</li>
+                    </ul>
+                </p>
+            {% endif %}
+        </div>
+        {% endif %}
         <br/>
 
         <!-- Premium+ Services -->
@@ -279,7 +325,7 @@
 
         <div id="set-token-dialog" title="Set Premium+ Access Token" style="display:none;">
             <form id="set_token_form" name="set_token_form" action="/premium-plus/set-token" method="POST">
-                <p>The Premium+ Access Token is the key that syncs your node data for backup and remote access.</p>
+                <p>The Access Token is the key that connects your node with Premium+.</p>
                 <b>Access Token:</b>
                 <br/>
                 <input type="text" name="token" id="token" value="" class="text ui-widget-content ui-corner-all" size="40" maxlength="64">

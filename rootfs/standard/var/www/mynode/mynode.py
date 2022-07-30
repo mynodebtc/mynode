@@ -13,7 +13,9 @@ from pyblock import mynode_pyblock
 from bos import mynode_bos
 from wardenterminal import mynode_wardenterminal
 from lndmanage import mynode_lndmanage
+from generic_app import mynode_generic_app
 from manage_apps import mynode_manage_apps
+from marketplace import mynode_marketplace
 from usb_extras import mynode_usb_extras
 from premium_plus import mynode_premium_plus
 from tor import mynode_tor
@@ -99,16 +101,14 @@ app.register_blueprint(mynode_bos)
 app.register_blueprint(mynode_wardenterminal)
 app.register_blueprint(mynode_lndmanage)
 app.register_blueprint(mynode_manage_apps)
+app.register_blueprint(mynode_marketplace)
+app.register_blueprint(mynode_generic_app)
 app.register_blueprint(mynode_tor)
 app.register_blueprint(mynode_premium_plus)
 app.register_blueprint(mynode_electrum_server)
 app.register_blueprint(mynode_vpn)
 app.register_blueprint(mynode_usb_extras)
 app.register_blueprint(mynode_settings)
-
-
-# Register blueprints for dynamic apps
-register_dynamic_app_flask_blueprints(app)
 
 
 ### Definitions
@@ -553,6 +553,8 @@ def index():
             "is_device_from_reseller": is_device_from_reseller(),
             "product_key_skipped": pk_skipped,
             "product_key_error": pk_error,
+            "premium_plus_has_access_token": has_premium_plus_token(),
+            "premium_plus_is_connected": get_premium_plus_is_connected(),
             "fsck_error": has_fsck_error(),
             "fsck_results": get_fsck_results(),
             "sd_rw_error": has_sd_rw_error(),
@@ -837,7 +839,7 @@ if __name__ == "__main__":
     start_threads()
 
     # Register blueprints for dynamic apps
-    #register_dynamic_app_flask_blueprints(app)
+    register_dynamic_app_flask_blueprints(app)
 
     try:
         app.run(host='0.0.0.0', port=80)

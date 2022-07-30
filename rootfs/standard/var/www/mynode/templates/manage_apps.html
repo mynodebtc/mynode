@@ -3,47 +3,9 @@
         <title>{{ title }}</title>
         {% include 'includes/head.html' %}
 
+        <script src="{{ url_for('static', filename='js/manage_apps.js')}}"></script>
+
         <script>
-            function restart(name, short_name) {
-                if ( confirm("Are you sure you want to restart "+name+"?\n\nRestarting services like Bitcoin or LND may have side effects. If so, restart the device.") ) {
-                    $('#loading_spinner_message').html("Restarting...");
-                    $('#loading_spinner_overlay').fadeIn();
-                    window.location.href='/apps/restart-app?app='+short_name;
-                }
-            }
-
-            function upgrade(name, short_name) {
-                if ( confirm("Are you sure you want to upgrade "+name+"? This will reboot your device.") ) {
-                    $('#loading_spinner_message').html("Upgrading...");
-                    $('#loading_spinner_overlay').fadeIn();
-                    window.location.href='/settings/reinstall-app?app='+short_name;
-                }
-            }
-
-            function reinstall(name, short_name) {
-                if ( confirm("Are you sure you want to re-install "+name+"? This will reboot your device.") ) {
-                    $('#loading_spinner_message').html("Re-installing...");
-                    $('#loading_spinner_overlay').fadeIn();
-                    window.location.href='/settings/reinstall-app?app='+short_name;
-                }
-            }
-
-            function install(name, short_name) {
-                if ( confirm("Are you sure you want to install "+name+"? This will reboot your device.") ) {
-                    $('#loading_spinner_message').html("Installing...");
-                    $('#loading_spinner_overlay').fadeIn();
-                    window.location.href='/settings/reinstall-app?app='+short_name;
-                }
-            }
-
-            function uninstall(name, short_name) {
-                if ( confirm("Are you sure you want to uninstall "+name+"? ") ) {
-                    $('#loading_spinner_message').html("Uninstalling...");
-                    $('#loading_spinner_overlay').fadeIn();
-                    window.location.href='/settings/uninstall-app?app='+short_name;
-                }
-            }
-
             $(document).ready(function() {
                 // Functions
                 function update_status_icon(status_icon_name, data) {
@@ -76,8 +38,8 @@
     </head>
     <body>
         {% include 'includes/logo_header.html' %}
-        <div class="mynode_back_div">
-            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        <div class="mynode_top_left_div">
+            <a href="/"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/home.png")}}"/></a>
         </div>
 
         <div class="main_header">Manage Applications</div>
@@ -104,11 +66,11 @@
                 <td>Installed Version</td>
                 <td>Latest Version</td>
                 <td><!-- Status Icon --></td>
-                <td colspan="4">Actions</td>
+                <td colspan="5">Actions</td>
             </thead>
             <tbody>
                 {% for app in apps %}
-                    {% if app.show_on_application_page %}
+                    {% if app.show_on_application_page and app.is_installed %}
                         {% if not product_key_skipped or product_key_skipped and not app.is_premium %}
                             <tr>
                                 <td><img class="app_logo_icon" style="width: 32px;" src="{{ url_for('static', filename="images/app_icons/")}}{{app.short_name}}.png"/></td>
@@ -131,50 +93,56 @@
                                 </td>
                                 <!-- Start action cells -->
                                 <td>
+                                    {% if app.can_enable_disable %}
+                                        {% if app.is_enabled %}
+                                            <button class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 80px;" onclick="toggleEnabled('{{app.short_name}}', '{{app.name}}', false)">Disable</button>
+                                        {% else %}
+                                            <button class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 80px;" onclick="toggleEnabled('{{app.short_name}}', '{{app.name}}', true)">Enable</button>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td>
                                     {% if app.is_installed and app.is_enabled %}
-                                        <button class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" onclick="restart('{{ app.name }}', '{{ app.short_name }}');">Restart</button>
+                                        <button class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 80px;" onclick="restart('{{ app.name }}', '{{ app.short_name }}');">Restart</button>
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if app.is_installed and app.current_version != app.latest_version %}
-                                        <button class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" onclick="upgrade('{{ app.name }}', '{{ app.short_name }}');">Upgrade</button>
+                                        <button class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 80px;" onclick="upgrade('{{ app.name }}', '{{ app.short_name }}');">Upgrade</button>
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if app.is_installed and app.can_reinstall %}
-                                    <button class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" onclick="reinstall('{{ app.name }}', '{{ app.short_name }}');">Reinstall</button>
+                                    <button class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 80px;" onclick="reinstall('{{ app.name }}', '{{ app.short_name }}');">Reinstall</button>
                                     {% elif not app.is_installed %}
-                                    <button class="ui-button ui-widget ui-corner-all mynode_button_small install_button" style="width: 100px;" onclick="install('{{ app.name }}', '{{ app.short_name }}');">Install</button>
+                                    <button class="ui-button ui-widget ui-corner-all mynode_button_small install_button" style="width: 80px;" onclick="install('{{ app.name }}', '{{ app.short_name }}');">Install</button>
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if app.is_installed and app.can_uninstall %}
-                                    <button class="ui-button ui-widget ui-corner-all mynode_button_small uninstall_button" style="width: 100px;" onclick="uninstall('{{ app.name }}', '{{ app.short_name }}');">Uninstall</button>
+                                    <button class="ui-button ui-widget ui-corner-all mynode_button_small uninstall_button" style="width: 80px;" onclick="uninstall('{{ app.name }}', '{{ app.short_name }}');">Uninstall</button>
                                     {% endif %}
                                 </td>
                             </tr>
-                        {% else%}
-                        <tr>
-                            <td><img class="app_logo_icon" style="width: 32px;" src="{{ url_for('static', filename="images/app_icons/")}}{{app.short_name}}.png"/></td>
-                            <td>{{ app.name }}</td>
-                            <td>&nbsp;</td>
-                            <td>&nbsp;</td>
-                            <td>&nbsp;</td>
-                            <!-- Start action cells -->
-                            <td colspan=4>premium feature</td>
-                        </tr>
                         {% endif %}
                     {% endif %}
                 {% endfor %}
             </tbody>
         </table>
 
+        <br/>
+        <div class="text_block" style="font-size: 12px; text-align: center;">
+            <p>*Only displaying installed applications</p>
+        </div>
+
         {% if not product_key_skipped %}
-        <br/><br/><br/>
+        <br/><br/>
         <div style="margin: auto; text-align: center;">
             <a href="/apps/customize-app-versions" class="ui-button ui-widget ui-corner-all">Customize Application Versions</a>
         </div>
         {% endif %}
+
+        <div id="confirm-dialog"></div>
 
         <div id="loading_spinner_overlay" class="loading_spinner_overlay" style="display:none;">
             <img id="loading_spinner" class="loading_image" src="{{ url_for('static', filename="images/loading.gif")}}"/>

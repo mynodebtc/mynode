@@ -6,11 +6,8 @@
 
     <body>
         {% include 'includes/logo_header.html' %}
-        <div class="mynode_back_div">
-            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
-            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/lnd"><span class="ui-icon ui-icon-transfer-e-w"></span>ln wallet&nbsp;</a>
-        </div>
-
+        <div class="mynode_top_left_div">
+            <a href="/lnd"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/back.png")}}"/></a>        </div>
         <div class="main_header">Create Lightning Wallet</div>
 
         <br/>
