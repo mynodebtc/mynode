@@ -21,7 +21,7 @@
 <script src="{{ url_for('static', filename='js/mynode.js')}}"></script>
 
 {% if ui_settings['background'] and ui_settings['background'] != "none" %}
-    {% if ui_settings['background'] == "digital" %}
+    {% if ui_settings['background'] == "digital" or ui_settings['background'] == "digital_mesh" %}
         <style>
         body {
             background-image: url("{{ url_for('static', filename='images/backgrounds/')}}{{ui_settings['background']}}.png");
@@ -32,7 +32,7 @@
         }
         </style>
     {% else %}
-        <-- Fixed Background -->
+        <!-- Fixed Background -->
         <style>
         body {
             background-image: url("{{ url_for('static', filename='images/backgrounds/')}}{{ui_settings['background']}}.png");
