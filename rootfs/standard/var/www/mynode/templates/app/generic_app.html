@@ -1,0 +1,186 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>myNode - {{app.name}}</title>
+        {% include 'includes/head.html' %}
+
+        <script src="{{ url_for('static', filename='js/manage_apps.js')}}"></script>
+
+        <style>
+            .hes-gallery {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+                grid-gap: 10px;
+                padding: 10px;
+                columns: 4;
+            }
+            .hes-gallery img {
+                width: 100%;
+                object-fit: cover;
+                transition: 0.3s;
+                cursor: pointer;
+            }
+            .hes-gallery img:hover {
+                transform: scale(1.04);
+                box-shadow: 2px 2px 6px #555;
+            }
+
+        </style>
+
+        <!-- Hes Gallery -->
+        <link href="{{ url_for('static', filename='css/hes-gallery.min.css')}}" rel="stylesheet">
+        <script src="{{ url_for('static', filename='js/hes-gallery.min.js')}}"></script>
+
+        <script>
+        function restart_app_via_api(name, short_name) {
+            if ( confirm("Are you sure you want to restart "+name+"?") ) {
+                $('#loading_spinner_message').html("Restarting...");
+                $('#loading_spinner_overlay').fadeIn();
+                $.getJSON('/api/restart_app?app='+short_name, function( data ) {
+                    alert(data)
+                    if (data != "OK") {
+                        alert("Error restarting app: "+data)
+                    }
+                });
+            }
+        }
+        $(document).ready(function() {
+            HesGallery.init({
+                disableScrolling: false,
+                wrapAround: true,
+                animations: true,
+                keyboardControl: true,
+                showImageCount: true,
+            });
+        });
+        </script>
+    </head>
+    <body>
+        {% include 'includes/logo_header.html' %}
+        <div class="mynode_top_left_div">
+            <a href="/"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/home.png")}}"/></a>
+        </div>
+
+        <div class="main_header">{{app.name}}</div>
+        <br/>
+
+        <div class="app_page_container">
+            <div class="app_page_block_header">&nbsp;</div>
+            <div class="app_page_block_contents">
+
+                <div class="app_page_block_contents_left">
+                    <img class="app_page_icon" src="{{ url_for('static', filename="images/app_icons/")}}{{app.short_name}}.png"/>
+                    {% if not app.hide_status_icon %}
+                    <div class="app_page_status_bar {{app_status_color}}"></div>
+                    {% endif %}
+                    <p style="font-size: 14px; text-align: center;">{{app_status}}</p>
+
+                    <br/>
+
+                    {% if not app.is_installed %}
+                        <!-- Install -->
+                        <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button install_button" onclick="install('{{ app.name }}', '{{ app.short_name }}');">Install</button>
+                    {% else %}
+
+                        <!-- Open -->
+                        {% if app.is_enabled and app.app_page_show_open_button %}
+                            {% if app.http_port != "" or app.https_port != "" %}
+                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="open_app_in_new_tab('{{app.http_port}}', '{{app.https_port}}', false, '{APP_TOR_ADDRESS}')">Open</button>
+
+                                <div class="divider button_divider"></div>
+                            {% endif %}
+                        {% endif %}
+
+                        <!-- Manage App: Restart, Reset Data, Etc... -->
+                        {% if app.is_enabled %}
+                            <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="restart_app_via_api('{{ app.name }}', '{{ app.short_name }}');">Restart</button>
+
+                            {% for btn in app.app_page_additional_buttons %}
+                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button"
+                                    {% if btn.href is defined and btn.href != "" %}
+                                        onclick="window.location='{{btn.href}}'"
+                                    {% elif btn.onclick is defined and btn.onclick != "" %}
+                                        onclick="{{btn.onclick|safe}}"
+                                    {% endif %}
+                                        >{{btn.title}}</button>
+                            {% endfor %}
+
+                            <div class="divider button_divider"></div>
+                        {% endif %}
+
+                        <!-- Enable / Disable -->
+                        {% if app.can_enable_disable %}
+                            {% if not app.is_enabled %}
+                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="toggleEnabled('{{app.short_name}}', '{{app.name}}', true)">Enable</button>
+                            {% else %}
+                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="toggleEnabled('{{app.short_name}}', '{{app.name}}', false)">Disable</button>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+
+                </div>
+
+                <div class="app_page_block_contents_right">
+                    <div class="app_page_block_contents_heading">
+                        <div class="info-page-block">Info</div>
+                    </div>
+                    <div class="app_page_block_contents_text">
+                        <table class="info_table" style="font-size: 12px; margin-left: 10px">
+                            <tr>
+                                <th>Installed Version</th>
+                                <td>
+                                    {% if app.is_installed %}
+                                        {{app.current_version}}
+                                    {% else %}
+                                        Not Installed
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% if app.author.name is defined %}
+                            <tr>
+                                <th>Author</th>
+                                <td>
+                                    {% if app.author.link is defined and app.author.link != "" %}
+                                        <a href="{{app.author.link}}" target="_blank">{{app.author.name}}</a>
+                                    {% else %}
+                                        {{app.author.name}}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% if app.website.name is defined and app.website.link is defined %}
+                            <tr>
+                                <th>Website</th>
+                                <td>
+                                    <a href="{{app.website.link}}" target="_blank">{{app.website.name}}</a>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </table>
+                    </div>
+
+                    {% if app.app_page_content is defined and app.app_page_content|length > 0 %}
+                        {% for section in app.app_page_content %}
+                            <div class="app_page_block_contents_heading">
+                                <div class="info-page-block">{{section.heading}}</div>
+                            </div>
+                            <div class="app_page_block_contents_text">
+                                {% for parapraph in section.content %}
+                                    <p>{{parapraph}}</p>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                </div>
+
+            </div>
+        </div>
+
+        <div id="loading_spinner_overlay" class="loading_spinner_overlay" style="display:none;">
+            <img id="loading_spinner" class="loading_image" src="{{ url_for('static', filename="images/loading.gif")}}"/>
+            <br/>
+            <span id="loading_spinner_message">Loading...</span>
+        </div>
+
+    </body>
+</html>

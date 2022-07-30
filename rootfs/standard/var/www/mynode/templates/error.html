@@ -10,13 +10,13 @@
 
     <body>
         {% include 'includes/logo_header.html' %}
-        <div class="mynode_back_div">
-            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        <div class="mynode_top_left_div">
+            <a href="/"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/home.png")}}"/></a>
             {% if show_bitcoin_back_button is defined and show_bitcoin_back_button is not none %}
-            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/bitcoin"><span class="ui-icon ui-icon-info"></span>bitcoin&nbsp;</a>
+            <a href="/bitcoin"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/back.png")}}"/></a>
             {% endif %}
             {% if show_lightning_back_button is defined and show_lightning_back_button is not none %}
-            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/lnd"><span class="ui-icon ui-icon-transfer-e-w"></span>lightning&nbsp;</a>
+            <a href="/lnd"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/back.png")}}"/></a>
             {% endif %}
         </div>
         

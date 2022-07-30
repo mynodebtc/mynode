@@ -42,6 +42,7 @@ a:active {
 .pair_wallet_text,
 .app_tile_ticker,
 .app_tile_lightning_details,
+.app_tile_device_info_container,
 .lightning_channel_container,
 .settings_block_subheader,
 .settings_block_subheader_status,
@@ -182,4 +183,44 @@ input:checked + .slider {
 }
 input:focus + .slider {
     box-shadow: 0 0 1px #2196F3;
+}
+
+
+.marketplace_category_header {
+    color: #ddd;
+    background-color: #121C21;
+    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.2), 0 4px 10px 0 rgba(0, 0, 0, 0.19);
+}
+.marketplace_category_container {
+    color: #ddd;
+}
+.marketplace_app_tile {
+    background-color: #121C21;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.marketplace_app_tile:hover {
+    box-shadow: 0 4px 8px 0 rgba(180, 117, 0, 0.2), 0 6px 20px 0 rgba(180, 117, 0, 0.19);
+}
+
+.marketplace_app_page_container {
+    color: #ddd;
+}
+.marketplace_app_page_block_contents_left {
+    background-color: #121C21;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.app_page_container {
+    color: #ddd;
+}
+.app_page_block_header {
+    background-color: orange;
+}
+.app_page_block_contents {
+    background: #121C21;
+}
+
+
+.mynode_nav_icon_NOT_USED:hover {
+    filter: brightness(125%);
 }

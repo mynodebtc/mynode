@@ -645,8 +645,8 @@
 
     <body>
         {% include 'includes/logo_header.html' %}
-        <div class="mynode_back_div">
-            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        <div class="mynode_top_left_div">
+            <a href="/"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/home.png")}}"/></a>
         </div>
 
         <div class="main_header">Settings</div>
@@ -802,6 +802,7 @@
             <form action="/settings/set-background" method="POST">
                 <select name="background" id="background">
                     <option value="none" {% if not ui_settings['background'] or ui_settings['background'] == "none" %}selected{% endif %}>None</option>
+                    <option value="digital" {% if ui_settings['background'] == "digital" %}selected{% endif %}>Digital</option>
                     <option value="laser_eyes" {% if ui_settings['background'] == "laser_eyes" %}selected{% endif %}>Laser Eyes</option>
                     <option value="moon" {% if ui_settings['background'] == "moon" %}selected{% endif %}>Moon</option>
                 </select>
@@ -1111,22 +1112,6 @@
             This will reset all of your Tor service settings and regenerate your Onion URLs.
             <br/>
             <button id="reset_tor" class="ui-button ui-widget ui-corner-all settings_button">Reset Tor</button>
-
-        </div>
-
-
-        <div class="settings_block">
-            <a id="services"></a>
-            <div class="settings_block_header">Services</div>
-            
-            <div class="settings_block_subheader">Netdata</div>
-            This will enable or disable Netdata device monitoring.
-            <br/>
-            {% if netdata_enabled %}
-                <a href="/settings/toggle-netdata" class="ui-button ui-widget ui-corner-all settings_button">Disable</a>
-            {% else %}
-                <a href="/settings/toggle-netdata" class="ui-button ui-widget ui-corner-all settings_button">Enable</a>
-            {% endif %}
 
         </div>
 

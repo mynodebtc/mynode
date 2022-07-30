@@ -1,0 +1,109 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        {% include 'includes/head.html' %}
+
+        <script src="{{ url_for('static', filename='js/manage_apps.js')}}"></script>
+
+        <script>
+            $(document).ready(function() {
+                $(".marketplace_app_tile").on("click", function() {
+                    shortname = $(this).data("shortname");
+                    if (shortname != undefined) {
+                        window.location = "/marketplace/" + shortname;
+                    }
+                });
+            });
+        </script>
+
+    </head>
+    <body>
+        {% include 'includes/logo_header.html' %}
+        <div class="mynode_top_left_div">
+            <a href="/"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/home.png")}}"/></a>
+        </div>
+
+        <div class="main_header">Marketplace</div>
+
+        {% include 'includes/message_display.html' %}
+
+        </br><br/>
+        <!-- <br/>{{ load_time }} ms -->
+
+        {% for category in categories %}
+            {% set category_count = namespace(value=0) %}
+            {% for app in apps %}
+                {% if app.show_on_application_page and app.category == category.name %}
+                    {% set category_count.value = category_count.value + 1 %}
+                {% endif %}
+            {% endfor %}
+
+            {% if category_count.value > 0 %}
+                <div class="marketplace_category_header">{{category.title}}</div>
+
+                <div class="marketplace_category_container">
+                    {% for app in apps %}
+                        {% if app.show_on_application_page and app.category == category.name %}
+                            <div class="marketplace_app_tile" data-shortname="{{app.short_name}}">
+                                <div class="marketplace_app_tile_left">
+                                    <img class="marketplace_app_tile_icon" src="{{ url_for('static', filename="images/app_icons/")}}{{app.short_name}}.png"/>
+                                </div>
+                                <div class="marketplace_app_tile_right">
+                                    <div class="marketplace_app_tile_name">{{app.name}}</div>
+                                    <div class="marketplace_app_tile_description">{{app.short_description}}</div>
+
+                                    {% if not product_key_skipped or product_key_skipped and not app.is_premium %}
+                                        <div class="marketplace_app_tile_version">Version {{app.latest_version}}</div>
+                                    {% else %}
+                                        <div class="marketplace_app_tile_version"><i>Premium Feature</i></div>
+                                    {% endif %}
+
+                                    <div class="marketplace_app_tile_top_right">
+                                        {% if app.is_manually_added %}
+                                            <img class="marketplace_app_tile_top_right_icon" title="Manually Added" src="{{ url_for('static', filename="images/")}}app_manually_added.png"/>
+                                        {% endif %}
+                                        {% if app.is_installed %}
+                                            <img class="marketplace_app_tile_top_right_icon" title="Installed" src="{{ url_for('static', filename="images/")}}app_installed.png"/>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <!-- Special Section for Comunity Apps -->
+        <div class="marketplace_category_header">Community Apps</div>
+
+        <div class="marketplace_category_container">
+            <div class="marketplace_app_tile" data-shortname="add_app">
+                <div class="marketplace_app_tile_left">
+                    <img class="marketplace_app_tile_icon" src="{{ url_for('static', filename="images/")}}add_app.png"/>
+                </div>
+                <div class="marketplace_app_tile_right">
+                    <div class="marketplace_app_tile_name">Add Application</div>
+                    <div class="marketplace_app_tile_description">Add Community App to Device</div>
+
+                    {% if product_key_skipped %}
+                        <div class="marketplace_app_tile_version"><i>Premium Feature</i></div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+
+
+        <div id="loading_spinner_overlay" class="loading_spinner_overlay" style="display:none;">
+            <img id="loading_spinner" class="loading_image" src="{{ url_for('static', filename="images/loading.gif")}}"/>
+            <br/>
+            <span id="loading_spinner_message">Loading...</span>
+        </div>
+
+        <br/><br/>
+
+        {% include 'includes/footer.html' %}
+     </body>
+</html>

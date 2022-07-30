@@ -1,15 +1,15 @@
 <!DOCTYPE html lang="en">
     <head>
-        <title>myNode - {{app.name}}</title>
+        <title>{{ title }}</title>
         {% include 'includes/head.html' %}
     </head>
     <body>
         {% include 'includes/logo_header.html' %}
-        <div class="mynode_back_div">
-            <a class="ui-button ui-widget ui-corner-all mynode_back" href="/"><span class="ui-icon ui-icon-home"></span>home&nbsp;</a>
+        <div class="mynode_top_left_div">
+            <a href="/"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/home.png")}}"/></a>
         </div>
 
-        <div class="main_header">{{app.name}}</div>
+        <div class="main_header">{{app.name}} (custom page - remove)</div>
         <br/>
 
          <div class="app_tile_row">
@@ -19,18 +19,14 @@
                     <table class="info_table">
                         <tr>
                             <th>Status</th>
-                            <td>{{whirlpool_status}}</td>
+                            <td>{{app_status}}</td>
                         </tr>
-                        {% if whirlpool_enabled and whirlpool_initialized %}
-                        <tr>
-                            <th>API Key for Whirlpool GUI</th>
-                            <td>{{whirlpool_api_key}}</td>
-                        </tr>
-                        {% endif %}
                         <tr>
                             <th>Actions</th>
                             <td>
-                                FILL IN BUTTONS?
+                                <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="#">Open</a>
+                                <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="#">Button A</a>
+                                <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="#">Button B</a>
                             </td>
                         </tr>
                     </table>
@@ -40,12 +36,11 @@
 
 
         <div class="instructions">
-            <div class="instructions-header">Instructions to setup APPLICATION / DESCRIPTION</div>
+            <div class="instructions-header">Instructions</div>
             <ol class="instructions-steps">
-                <li>AAAAAAAA</li>
-                <li>BBBBBBBBBBB</li>
-                <li>Enjoy!</li>
+                <li>Custom instructions?</li>
             </ol>
+
         </div>
     </body>
 </html>

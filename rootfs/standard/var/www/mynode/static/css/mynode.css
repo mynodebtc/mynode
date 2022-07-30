@@ -65,12 +65,6 @@ td, th {
     text-align: left;
 }
 
-.mynode_back_div {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-}
-
 .mynode_top_left_div {
     position: fixed;
     font-size: 14px;
@@ -83,6 +77,25 @@ td, th {
     font-size: 14px;
     top: 20px;
     right: 20px;
+}
+
+.mynode_nav_icon {
+    width: 32px;
+    height: 32px;
+    margin-left: 5px;
+}
+.mynode_nav_icon_no_hover {
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+.mynode_nav_icon:hover {
+    background-color: rgba(255, 166, 0, 0.15);
+    box-shadow: 0px 0px 5px 5px rgba(255, 166, 0, 0.15);
+}
+.mynode_nav_icon_NOT_USED:hover {
+    filter: brightness(75%);
+    background-color: rgba(255, 166, 0, 0.15);
+    box-shadow: 0px 0px 5px 5px rgba(255, 166, 0, 0.15);
 }
 
 .state_header {
@@ -281,6 +294,29 @@ td, th {
     padding: 10px;
     margin: 6px 10px 6px 10px;
     background: #f0f0f0;
+}
+.app_tile_device_info_container {
+    width: 470px; font-size: 12px;
+}
+.app_tile_device_info_block {
+    display: inline-block;
+    text-align: center;
+    width: 150px;
+    margin-bottom: 15px;
+}
+.app_tile_device_info_icon {
+    margin-bottom: 5px;
+}
+.app_tile_device_info_icon_img {
+    height: 40px;
+}
+.app_tile_device_info_name {
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+.app_tile_device_info_value {
+    font-size: 12px;
+    font-weight: bold;
 }
 .bitcoin_block_set {
     margin-left: auto;
@@ -641,6 +677,10 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     margin-left: auto;
     margin-right: auto;
 }
+.button_divider {
+    margin-top: 5px !important;
+    margin-bottom: 15px !important;
+}
 .settings_button {
     font-size: 14px;
     margin-top: 15px;
@@ -1000,4 +1040,201 @@ input:checked + .slider:before {
 }
 ::placeholder {
     color: #CCCCCC;
+}
+
+
+.marketplace_category_header {
+    color: #555555;
+    text-align: center;
+    font-size: 26px;
+    margin: auto;
+    padding: 5px;
+    margin-bottom: 20px;
+    width: 1030px;
+    background-color: #f2f2f2;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.2), 0 4px 10px 0 rgba(0, 0, 0, 0.19);
+}
+.marketplace_category_container {
+    width: 1020px;
+    display: flex;
+    margin: auto;
+    margin-bottom: 40px;
+    flex-wrap:wrap;
+    flex-direction: row;
+}
+.marketplace_app_tile {
+    width: 320px;
+    height: 80px;
+    margin: 10px;
+    display: inline-block;
+    position: relative;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.marketplace_app_tile:hover {
+    cursor: pointer;
+    box-shadow: 0 4px 8px 0 rgba(180, 117, 0, 0.2), 0 6px 20px 0 rgba(180, 117, 0, 0.19);
+}
+.marketplace_app_tile_left {
+    float: left;
+    width: 80px;
+    height: 80px;
+}
+.marketplace_app_tile_icon {
+    float: left;
+    width: 60px;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+.marketplace_app_tile_right {
+    float: right;
+    width: 230px;
+    height: 80px;
+    font-size: 11px;
+    padding-top: 10px;
+}
+.marketplace_app_tile_name {
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 4px;
+    font-weight: bold;
+    font-size: 14px;
+}
+.marketplace_app_tile_description {
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 10px;
+    font-size: 12px;
+}
+.marketplace_app_tile_version {
+    display: inline-block;
+    width: 100%;
+    font-size: 12px;
+}
+.marketplace_app_tile_top_right_icon {
+    width: 18px;
+}
+.marketplace_app_tile_top_right {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.marketplace_app_page_container {
+    margin: auto;
+    width: 1000px;
+}
+.marketplace_app_page_block_header {
+    width: 1000px;
+    height: 12px;
+    padding: 0px 20px 0px 20px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    
+}
+.marketplace_app_page_block_contents {
+    width: 1000px;
+    padding: 20px 20px 20px 20px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    overflow: auto;
+}
+.marketplace_app_page_block_contents_left {
+    width: 150px;
+    float: left;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.marketplace_app_page_block_contents_right {
+    width: 760px;
+    float: right;
+    margin-left: 30px;
+}
+.marketplace_app_page_icon {
+    margin: auto;
+    display: block;
+    width: 150px;
+}
+.marketplace_app_page_button {
+    margin: auto;
+    display: block;
+    width: 150px;
+    margin-bottom: 10px;
+    font-size: 14px !important;
+}
+.marketplace_app_page_block_contents_heading {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.marketplace_app_page_block_contents_text {
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+.app_page_container {
+    margin: auto;
+    width: 1000px;
+}
+.app_page_block_header {
+    width: 1000px;
+    height: 12px;
+    padding: 0px 20px 0px 20px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    background-color: orange;
+}
+.app_page_block_contents {
+    width: 1000px;
+    padding: 20px 20px 20px 20px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    background: #f0f0f0;
+    overflow: auto;
+}
+.app_page_block_contents_left {
+    width: 150px;
+    float: left;
+}
+.app_page_block_contents_right {
+    width: 820px;
+    float: right;
+    margin-left: 30px;
+}
+.app_page_icon {
+    margin: auto;
+    display: block;
+    width: 150px;
+}
+.app_page_status_bar {
+    margin: auto;
+    display: block;
+    width: 140px;
+    height: 14px;
+    border-radius: 7px;
+    margin-top: 10px;
+}
+.app_page_button {
+    margin: auto;
+    display: block;
+    width: 150px;
+    margin-bottom: 10px;
+    font-size: 14px !important;
+}
+.app_page_block_contents_heading {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.app_page_block_contents_text {
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+.grayscale_image {
+    filter: grayscale(100%);
 }

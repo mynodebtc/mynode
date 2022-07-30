@@ -99,6 +99,11 @@ def on_connect_success(connect_response_data):
         log_message("on_connect_success exception: {}".format(str(e)))
         return
 
+def clear_response_data():
+    os.system("rm -f /tmp/premium_plus_response.json")
+def save_response_data(data):
+    with open("/tmp/premium_plus_response.json", "w") as file:
+        json.dump(data, file, indent=4, sort_keys=True)
 
 # Update hourly
 def premium_plus_connect():
@@ -118,11 +123,13 @@ def premium_plus_connect():
     response = make_tor_request(PREMIUM_PLUS_CONNECT_URL, data)
     update_premium_plus_last_sync_time()
     if response == None:
+        clear_response_data()
         set_premium_plus_token_status("CONNECTION_ERROR")
         log_message("Premium+ Connect Error: Connection Failed")
         return False
 
     if response.status_code != 200:
+        clear_response_data()
         set_premium_plus_token_status("CONNECTION_ERROR")
         log_message("Premium+ Connect Error: Status Code {}".format(response.status_code))
         return False
@@ -132,6 +139,8 @@ def premium_plus_connect():
     except Exception as e:
         log_message("Premium+ Connect Error: Error Parsing JSON - {}".format(str(e)))
         return False
+
+    save_response_data(info)
 
     if "error" in info:
         set_premium_plus_token_status(info["error"])
@@ -165,7 +174,7 @@ if __name__ == "__main__":
 
             # Wait on token
             log_message("Looking for Premium+ Token...")
-            while not os.path.isfile("/home/bitcoin/.mynode/.premium_plus_token"):
+            while not has_premium_plus_token():
                 time.sleep(10)
             log_message("Token found!")
             premium_plus_connect()

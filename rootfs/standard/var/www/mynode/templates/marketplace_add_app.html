@@ -1,0 +1,115 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>myNode - Add Community Application</title>
+        {% include 'includes/head.html' %}
+
+        <script src="{{ url_for('static', filename='js/manage_apps.js')}}"></script>
+
+        <script>
+            $(document).ready(function() {
+
+                function check_submission_ready() {
+                    var file_chosen = ($("#app_tarball")[0].files.length > 0);
+                    var confirm_checkboxes = $('input[name=confirm]:checked');
+
+                    if (file_chosen && confirm_checkboxes.length == 4) {
+                        $("#add_app_submit").attr("disabled", false).removeClass("ui-state-disabled");
+                    } else {
+                        $("#add_app_submit").attr("disabled", true).addClass("ui-state-disabled");
+                    }
+                }
+
+                $('input[name=confirm]').on("change", function() {
+                    check_submission_ready();
+                });
+                $('input[type=file]').on("change", function() {
+                    check_submission_ready();
+                })
+
+                
+                // Disable button so submit cannot get hit twice
+                $('input[type=submit]').click(function() {
+                    $('#loading_spinner_message').html("Restarting...");
+                    $('#loading_spinner_overlay').fadeIn();
+
+                    $(this).attr('disabled', 'disabled');
+                    $(this).parents('form').submit();
+                });
+
+            });
+        </script>
+
+    </head>
+    <body>
+        {% include 'includes/logo_header.html' %}
+        <div class="mynode_top_left_div">
+            <a href="/marketplace"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/back.png")}}"/></a>
+        </div>
+
+        <div class="main_header">Add Community Application</div>
+
+        {% include 'includes/message_display.html' %}
+
+        <div class="marketplace_app_page_container">
+            <div class="marketplace_app_page_block_header">&nbsp;</div>
+            <div class="marketplace_app_page_block_contents">
+
+                <div class="marketplace_app_page_block_contents_left">
+                    <img class="marketplace_app_page_icon" src="{{ url_for('static', filename="images/")}}add_app.png"/>
+                    <p style="font-size: 14px; text-align: center;">Add Community App</p>
+                    
+                    {% if product_key_skipped %}
+                        <p style="font-size: 14px; text-align: center;"><i>Premium Feature</i></p>
+                    {% endif %}
+                </div>
+
+                <div class="marketplace_app_page_block_contents_right">
+                    {% if product_key_skipped %}
+                        <p>Adding new applications is a Premium feature.</p>
+                    {% else %}
+                        <form action="/marketplace/add_app" method="POST" enctype="multipart/form-data">
+                            <div class="marketplace_app_page_block_contents_heading">
+                                <div class="info-page-block">Select Application File</div>
+                            </div>
+                            <div class="marketplace_app_page_block_contents_text">
+                                <input type="file" id="app_tarball" name="app_tarball">
+                            </div>
+
+                            <div class="marketplace_app_page_block_contents_heading">
+                                <div class="info-page-block">Confirm Installation</div>
+                            </div>
+                            <div class="marketplace_app_page_block_contents_text">
+                                <input type="checkbox" id="confirm1" name="confirm" value="">
+                                <label for="confirm1"> I trust the source of this application as well as the developers.</label><br>
+
+                                <input type="checkbox" id="confirm2" name="confirm" value="">
+                                <label for="confirm2"> I understand myNode does not support community applications.</label><br>
+
+                                <input type="checkbox" id="confirm3" name="confirm" value="">
+                                <label for="confirm2"> I understand myNode is not responsible for community applications.</label><br>
+
+                                <input type="checkbox" id="confirm4" name="confirm" value="">
+                                <label for="confirm3"> I understand malicious applications could cause device instability, loss of privacy, and/or loss of funds.</label><br>
+
+                                </br>
+
+                                <input type="submit" id="add_app_submit" class="ui-button ui-widget ui-corner-all ui-state-disabled" value="Add Application" disabled>
+                            </div>
+                        </form>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+
+        <br/><br/>
+
+        <div id="loading_spinner_overlay" class="loading_spinner_overlay" style="display:none;">
+            <img id="loading_spinner" class="loading_image" src="{{ url_for('static', filename="images/loading.gif")}}"/>
+            <br/>
+            <span id="loading_spinner_message">Loading...</span>
+        </div>
+
+        {% include 'includes/footer.html' %}
+    </body>
+</html>

@@ -80,6 +80,10 @@ if ! skip_base_upgrades ; then
         sed -i '/^deb https:\/\/deb.torproject.org/d' /etc/apt/sources.list
         sed -i '/^deb-src https:\/\/deb.torproject.org/d' /etc/apt/sources.list
     fi
+    if [ "$DEBIAN_VERSION" = "buster" ]; then
+        grep -qxF "deb http://deb.debian.org/debian buster-backports main" /etc/apt/sources.list  || echo "deb http://deb.debian.org/debian buster-backports main" >> /etc/apt/sources.list
+    fi
+
     # Raspbian mirrors
     #if [ $IS_RASPI = 1 ]; then
     #    grep -qxF "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
@@ -127,6 +131,9 @@ if ! skip_base_upgrades ; then
     $TORIFY apt-get -y install torsocks python3-requests libsystemd-dev libjpeg-dev zlib1g-dev psmisc
     $TORIFY apt-get -y install hexyl libbz2-dev liblzma-dev netcat-openbsd hdparm iotop nut obfs4proxy
     $TORIFY apt-get -y install libpq-dev socat
+
+    # Install software from backports
+    $TORIFY apt-get -y -t buster-backports install wireguard
 
     # Install Openbox GUI
     if [ $IS_X86 = 1 ]; then
