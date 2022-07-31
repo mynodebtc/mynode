@@ -245,6 +245,30 @@ def api_toggle_setting():
     
     return jsonify(data)
 
+@mynode_api.route("/api/set_setting")
+def api_set_setting():
+    check_logged_in()
+
+    data = {}
+    data["status"] = "unknown"
+
+    if not request.args.get("setting"):
+        data["status"] = "no_setting_specified"
+        return jsonify(data)
+    if not request.args.get("value"):
+        data["status"] = "no_value_specified"
+        return jsonify(data)
+
+    setting = request.args.get("setting")
+    value = request.args.get("value")
+    if setting == "format_filesystem_type":
+        set_drive_filesystem_type(value)
+        data["status"] = "success"
+    else:
+        data["status"] = "unknown_setting"
+    
+    return jsonify(data)
+
 @mynode_api.route("/api/get_drive_benchmark")
 def api_get_drive_benchmark():
     check_logged_in()

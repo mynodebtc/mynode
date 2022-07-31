@@ -99,9 +99,14 @@ proc createMyNodeFsOnBlockDevice {blockDevice} {
         }
 
         puts "Formatting new partition ${blockPartition}"
-        runCommand mkfs.ext4 -F -L myNode /dev/${blockPartition}
+        if [file exists "/tmp/format_filesystem_btrfs"] {
+            runCommand mkfs.btrfs -f -L myNode /dev/${blockPartition}
+        } else {
+            runCommand mkfs.ext4 -F -L myNode /dev/${blockPartition}
+        }
 
-        runCommand mount /dev/${blockPartition} /mnt/hdd -o errors=continue
+        #runCommand mount /dev/${blockPartition} /mnt/hdd -o errors=continue
+        runCommand mount /dev/${blockPartition} /mnt/hdd
         runCommand date >/mnt/hdd/.mynode
         runCommand echo /dev/${blockPartition} > /tmp/.mynode_drive
     }] {

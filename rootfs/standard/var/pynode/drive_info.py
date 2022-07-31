@@ -16,7 +16,7 @@ def is_mynode_drive_mounted():
     mounted = True
     try:
         # Command fails and throws exception if not mounted
-        output = to_string(subprocess.check_output("grep -qs '/mnt/hdd ext4' /proc/mounts", shell=True))
+        output = to_string(subprocess.check_output("grep -qs '/mnt/hdd ' /proc/mounts", shell=True))
     except:
         mounted = False
     return mounted
@@ -125,6 +125,13 @@ def find_unmounted_drives():
         pass
     return drives
 
+#==================================
+# Drive Format Functions
+#==================================
+def set_drive_filesystem_type(filesystem):
+    run_linux_cmd("rm -f /tmp/format_filesystem_*")
+    touch("/tmp/format_filesystem_{}".format(filesystem))
+    run_linux_cmd("sync")
 
 #==================================
 # Mount / Unmount Parition Functions

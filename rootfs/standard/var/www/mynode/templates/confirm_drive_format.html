@@ -2,7 +2,7 @@
     <head>
         <title>{{ title }}</title>
         {% include 'includes/head.html' %}
-        <meta http-equiv="refresh" content="30">
+        <meta http-equiv="refresh" content="3600">
 
         <script>
             $(document).ready(function() {
@@ -13,6 +13,30 @@
                 $("#reboot-device").on("click", function() {
                     window.location.href="/settings/reboot-device-no-format"
                 });
+
+                show_advanced_options = false;
+                $("#show_advanced_options").on("click", function() {
+                    if (show_advanced_options) {
+                        $("#show_advanced_options").text("Show Advanced Options");
+                        $("#advanced_options").hide();
+                        show_advanced_options = false;
+                    } else {
+                        $("#show_advanced_options").text("Hide Advanced Options");
+                        $("#advanced_options").show();
+                        show_advanced_options = true;
+                    }
+                })
+
+                function set_format_filesystem_type(filesystem_type) {
+                    $.get("/api/set_setting?setting=format_filesystem_type&value="+filesystem_type);
+                }
+                $("#filesystem_type").selectmenu( {
+                    change: function( event, data ) {
+                        format_filesystem_type = data.item.value;
+                        set_format_filesystem_type(format_filesystem_type);
+                    }
+                });
+                set_format_filesystem_type("ext4");
             });
         </script>
 
@@ -27,9 +51,24 @@
             <p>A new drive has been detected! This drive will be formatted for use by myNode.</p>
             <p><i>Note: All existing data will be lost. If this is not OK, remove the drive now and click Reboot.</i></p>
             <br/>
-            <button id="format-confirm" value="Login" class="ui-button ui-widget ui-corner-all format_button">Format Drive</button>
+            <button id="format-confirm" class="ui-button ui-widget ui-corner-all format_button">Format Drive</button>
             <br/><br/>
-            <button id="reboot-device" value="Login" class="ui-button ui-widget ui-corner-all format_button">Reboot</button>
+            <button id="reboot-device" class="ui-button ui-widget ui-corner-all format_button">Reboot</button>
+
+            <br/><br/><br/><br/><br/>
+
+            <button id="show_advanced_options" class="ui-button ui-widget ui-corner-all mynode_button_small" style="font-size: 12px;">Show Advanced Options</button>
+
+            <div id="advanced_options" style="display: none; font-size: 14px;">
+                <br/><br/>
+                <b>Filesystem Type</b>
+                <br/><br/>
+                <select id="filesystem_type">
+                    <option value="ext4" selected="selected">ext4 (default)</option>
+                    <option value="btrfs">btfrs (beta)</option>
+                </select>
+
+            </div>
 
             <br/><br/>
         </div>
