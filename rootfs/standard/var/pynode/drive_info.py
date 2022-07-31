@@ -133,6 +133,21 @@ def set_drive_filesystem_type(filesystem):
     touch("/tmp/format_filesystem_{}".format(filesystem))
     run_linux_cmd("sync")
 
+def get_current_drive_filesystem_type():
+    filesystem_type = "error"
+    if not is_mynode_drive_mounted():
+        return "not_mounted"
+    try:
+        with open("/proc/mounts") as f:
+            lines = f.readlines()
+            for line in lines:
+                parts = line.split(" ")
+                if len(parts) >= 3 and parts[1] == "/mnt/hdd":
+                    return parts[2]
+    except Exception as e:
+        log_message("ERROR: Cannot determine drive filesystem type ({})".format(str(e)))
+    return filesystem_type
+
 #==================================
 # Mount / Unmount Parition Functions
 #==================================
