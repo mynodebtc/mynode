@@ -143,6 +143,16 @@ Once you are running myNode, you can easily update the software yourself!
     * This will stop the local HTTP server
 8. You are now running the latest version of myNode software!
 
+## Setup New Device (beta)
+To setup a new device that already has support added (Raspi4, RockPi 4, RockPro64, PC, ...), you can run two simple commands.
+
+```
+wget https://raw.githubusercontent.com/mynodebtc/mynode/master/setup/setup_device.sh -O mynode_setup.sh
+sudo bash ./mynode_setup.sh online
+```
+
+Once the script successfully completed, reboot and you will be running myNode!
+
 ## Convert new device to run myNode
 1. Run make command for your device. Ex:
     * `make setup_new_rock64`
