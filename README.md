@@ -144,7 +144,11 @@ Once you are running myNode, you can easily update the software yourself!
 8. You are now running the latest version of myNode software!
 
 ## Setup New Device (beta)
-To setup a new device that already has support added (Raspi4, RockPi 4, RockPro64, PC, ...), you can run two simple commands.
+To setup a new device on a supported platform (Raspi4, RockPi 4, RockPro64, PC, ...), you can run two simple commands.
+
+First, install a debian-based operating system.
+
+Second, login and run these two commands.
 
 ```
 wget https://raw.githubusercontent.com/mynodebtc/mynode/master/setup/setup_device.sh -O mynode_setup.sh
