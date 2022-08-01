@@ -9,7 +9,7 @@ set -x
 set -e
 
 if [ "$#" != "1" ]; then
-    echo "Usage: $0 <ip address>"
+    echo "Usage: $0 <ip address | online>"
     exit 1
 fi
 SERVER_IP=$1
@@ -113,7 +113,11 @@ elif [ $IS_ROCKPI4 = 1 ]; then
 elif [ $IS_X86 = 1 ]; then
     TARBALL="mynode_rootfs_debian.tar.gz"
 fi
-wget http://${SERVER_IP}:8000/${TARBALL} -O /tmp/rootfs.tar.gz
+if [ "$SERVER_IP" == "online" ]; then
+    wget https://mynodebtc.com/device/upgrade_images/${TARBALL} -O /tmp/rootfs.tar.gz
+else
+    wget http://${SERVER_IP}:8000/${TARBALL} -O /tmp/rootfs.tar.gz
+fi
 
 # Extract rootfs (so we can reference temporary files)
 tar -xvf /tmp/rootfs.tar.gz -C /tmp/upgrade/
@@ -133,14 +137,21 @@ source /tmp/upgrade/out/rootfs_*/usr/share/mynode/mynode_app_versions.sh
 mkdir -p /etc/torrc.d
 
 # Create any necessary users
+useradd -p $(openssl passwd -1 bolt) -m -s /bin/bash admin || true
 useradd -m -s /bin/bash bitcoin || true
 useradd -m -s /bin/bash joinmarket || true
 passwd -l root
+adduser admin sudo
 
 # Setup bitcoin user folders
 mkdir -p /home/bitcoin/.mynode/
 chown bitcoin:bitcoin /home/bitcoin
 chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
+
+# Update host info
+echo "myNode" > /etc/hostname
+sed -i 's/rock64/myNode/g' /etc/hosts
+sed -i 's/rockpi4-b/myNode/g' /etc/hosts
 
 # Update sources
 apt-get -y update --allow-releaseinfo-change
@@ -335,13 +346,23 @@ usermod -aG docker root
 npm install -g pug-cli browserify uglify-js babel-cli
 npm install -g npm@$NODE_NPM_VERSION
 
+# Install Log2Ram
+if [ $IS_RASPI = 1 ]; then
+    cd /tmp
+    rm -rf log2ram*
+    wget https://github.com/azlux/log2ram/archive/v1.2.2.tar.gz -O log2ram.tar.gz
+    tar -xvf log2ram.tar.gz
+    mv log2ram-* log2ram
+    cd log2ram
+    chmod +x install.sh
+    service log2ram stop
+    ./install.sh
+    cd ~
+fi
+
 # Remove existing MOTD login info
 rm -rf /etc/motd
 rm -rf /etc/update-motd.d/*
-
-# Install LNDManage
-# - skip, not default app
-
 
 #########################################################
 
@@ -1012,6 +1033,14 @@ rm -rf /etc/resolv.conf
 rm -rf /tmp/*
 rm -rf ~/setup_device.sh
 rm -rf /etc/motd # Remove simple motd for update-motd.d
+
+# Remove default debian stuff
+deluser mynode || true
+rm -rf /home/mynode || true
+
+# Remove default Pi stuff
+deluser pi || true
+rm -rf /home/pi || true
 
 # Regenerate MAC address for some Armbian devices
 if [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ] ; then
