@@ -102,8 +102,11 @@ def on_connect_success(connect_response_data):
 def clear_response_data():
     os.system("rm -f /tmp/premium_plus_response.json")
 def save_response_data(data):
-    with open("/tmp/premium_plus_response.json", "w") as file:
-        json.dump(data, file, indent=4, sort_keys=True)
+    try:
+        with open("/tmp/premium_plus_response.json", "w") as file:
+            json.dump(data, file, indent=4, sort_keys=True)
+    except Exception as e:
+        log_message("save_response_data exception: failed to save response - {}".format(str(e)))
 
 # Update hourly
 def premium_plus_connect():

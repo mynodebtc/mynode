@@ -4,6 +4,7 @@ import requests
 import time
 import subprocess
 import random
+import json
 import logging
 from systemd import journal
 from utilities import *
@@ -20,6 +21,15 @@ set_logger(log)
 latest_version_check_count = 0
 
 # Helper functions
+def clear_response_data():
+    os.system("rm -f /tmp/check_in_response.json")
+def save_response_data(data):
+    try:
+        with open("/tmp/check_in_response.json", "w") as file:
+            json.dump(data, file, indent=4, sort_keys=True)
+    except Exception as e:
+        log_message("save_response_data exception: failed to save response - {}".format(str(e)))
+
 def get_quicksync_enabled():
     enabled = 1
     if not is_mynode_drive_mounted():
@@ -47,10 +57,18 @@ def check_for_new_mynode_version():
     #  7 day(s): 99.2%           7 day(s): 99.6%           7 day(s): 99.8%           7 day(s): 99.9%
     if latest_version_check_count % 5 == 0 or random.randint(1, 100) <= 40:
         log_message("Version Check Count ({}) - Checking for new version!".format(latest_version_check_count))
-        os.system("/usr/bin/mynode_get_latest_version.sh")
+        os.system("/usr/bin/mynode_get_latest_version.sh &")
     else:
         log_message("Version Check Count ({}) - Skipping version check".format(latest_version_check_count))
     latest_version_check_count = latest_version_check_count + 1
+
+def on_check_in_error(msg):
+    clear_response_data()
+    log_message(msg)
+    data = {}
+    data["status"] = "ERROR"
+    data["message"] = msg
+    save_response_data(data)
 
 # Checkin every 24 hours
 def check_in():
@@ -65,6 +83,7 @@ def check_in():
         "product_key": product_key,
         "drive_size": get_mynode_drive_size(),
         "quicksync_enabled": get_quicksync_enabled(),
+        "api_version": 2,
     }
 
     # Check for new version (not every time to spread out upgrades)
@@ -87,27 +106,41 @@ def check_in():
                 r = requests.post(CHECKIN_URL, data=data, timeout=20)
             else:
                 r = session.post(CHECKIN_URL, data=data, timeout=20)
-            
-            if r.status_code == 200:
-                if r.text == "OK":
-                    log_message("Check In Success: {}".format(r.text))
 
-                    if product_key != "community_edition":
-                        unset_skipped_product_key()
-                    delete_product_key_error()
-                else:
-                    os.system("echo '{}' > /home/bitcoin/.mynode/.product_key_error".format(r.text))
-                    log_message("Check In Returned Error: {}".format(r.text))
+            if r == None:
+                on_check_in_error("Check In Failed: (retrying) None")
+            elif r.status_code != 200:
+                on_check_in_error("Check In Failed: (retrying) HTTP ERROR {}".format(r.status_code))
+            elif r.status_code == 200:
+                try:
+                    info = json.loads(r.text)
+                    save_response_data(info)
+                
+                    try:
+                        if info["status"] == "OK":
+                            # Check in was successful!
+                            if product_key != "community_edition":
+                                unset_skipped_product_key()
+                            delete_product_key_error()
 
-                os.system("rm -f /tmp/check_in_error")
-                check_in_success = True
+                            os.system("rm -f /tmp/check_in_error")
+                            check_in_success = True
+                            log_message("Check In Success: {}".format(r.text))
+                        else:
+                            # TODO: What to put in product_key_error now, how is it used?
+                            os.system("echo '{}' > /home/bitcoin/.mynode/.product_key_error".format("ERROR"))
+                            on_check_in_error("Check In Returned Error: {} - {}".format(info["status"], r.text))
+                    except Exception as e:
+                        on_check_in_error("Check In Failed: Error Parsing Response - {} - {}".format(str(e), r.text))
+                except Exception as e:
+                    on_check_in_error("Check In Failed: Error Parsing JSON - {}".format(str(e)))
             else:
-                log_message("Check In Failed. Retrying... Code {}".format(r.status_code))
+                on_check_in_error("Check In Failed: Unknown")
         except Exception as e:
-            log_message("Check In Failed. Retrying... Exception {}".format(e))
+            on_check_in_error("Check In Failed: (retrying) Exception {}".format(e))
 
         if not check_in_success:
-            # Check in failed, try again in 3 minutes
+            # Check in failed, try again later
             os.system("touch /tmp/check_in_error")
             time.sleep(120)
             fail_count = fail_count + 1
