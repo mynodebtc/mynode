@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, session, abort, Markup, request, redirect, url_for, flash
-from thread_functions import get_public_ip, check_in, find_public_ip
+from thread_functions import get_public_ip, find_public_ip
 from device_info import is_community_edition, read_ui_settings
 from user_management import check_logged_in
 from utilities import *
@@ -85,7 +85,7 @@ def page_download_ovpn():
     return download_file(directory="/home/pivpn/ovpns/", filename="mynode_vpn.ovpn")
 
 @mynode_vpn.route("/vpn-info/find-public-ip")
-def check_in_page():
+def find_public_ip_page():
     check_logged_in()
     find_public_ip()
     return redirect("/vpn-info")

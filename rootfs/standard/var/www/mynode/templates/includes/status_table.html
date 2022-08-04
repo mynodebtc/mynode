@@ -29,7 +29,7 @@
             {{data_drive_usage}}
             {% set data_drive_usage_num = data_drive_usage | replace("%", "") | int %}
             {% if data_drive_usage_num >= 90 %}
-            <i class="fas fa-exclamation-triangle" title="Drive is nearly full!"></i>
+            <i class="fas fa-exclamation" style="color: red; vertical-align: middle;" title="Drive is nearly full!"></i>
             {% endif %}
             <button id="show_data_drive_usage_details" class="ui-button ui-widget ui-corner-all settings_button_small" style="margin-left: 20px;">Show Details</button>
             <span id="data_drive_usage_details" style="display: none">
@@ -44,7 +44,7 @@
             {{os_drive_usage}}
             {% set os_drive_usage_num = os_drive_usage | replace("%", "") | int %}
             {% if os_drive_usage_num >= 90 %}
-            <i class="fas fa-exclamation-triangle" title="Drive is nearly full!"></i>
+            <i class="fas fa-exclamation" style="color: red; vertical-align: middle;" title="Drive is nearly full!"></i>
             {% endif %}
             <button id="show_os_drive_usage_details" class="ui-button ui-widget ui-corner-all settings_button_small" style="margin-left: 20px;">Show Details</button>
             <span id="os_drive_usage_details" style="display: none">

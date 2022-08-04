@@ -73,6 +73,44 @@
 </div>
 {% endif %}
 
+{% if not is_expiration_warning_dismissed and check_in_data %}
+    {% set showing_expiration_warning = False %}
+    {% if check_in_data.premium_plus is defined and check_in_data.premium_plus.active is defined and check_in_data.premium_plus.days_remaining is defined %}
+        {% if not showing_expiration_warning and check_in_data.premium_plus.days_remaining|int <= 45 and check_in_data.premium_plus.days_remaining|int >= -45 %}
+            {% set showing_expiration_warning = True %}
+            <div class="main_page_warning_block">
+                <p style="text-align: center;"><b>Warning!</b></p>
+                {% if check_in_data.premium_plus.active %}
+                    <p style="text-align: center;">Your Premium+ subscription will expire in {{check_in_data.premium_plus.days_remaining}} days! It can easily be extended via the button below.</p>
+                {% else %}
+                    <p style="text-align: center;">Your Premium+ subscription expired {{check_in_data.premium_plus.days_remaining|int|abs}} days ago! It can easily be extended via the button below.</p>
+                {% endif %}
+                <p style="text-align: center;">
+                    <a href="https://mynodebtc.com/order/premium_plus" target="_blank" style="margin: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Extend</a>
+                    <a href="/dismiss-expiration-warning" style="margin: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Dismiss</a>
+                </p>
+            </div>
+        {% endif %}
+    {% endif %}
+    {% if not showing_expiration_warning and check_in_data.support is defined and check_in_data.support.active is defined and check_in_data.support.days_remaining is defined %}
+        {% if check_in_data.support.days_remaining|int <= 45 and check_in_data.support.days_remaining|int >= -45 %}
+            {% set showing_expiration_warning = True %}
+            <div class="main_page_warning_block">
+                <p style="text-align: center;"><b>Warning!</b></p>
+                {% if check_in_data.support.active %}
+                    <p style="text-align: center;">Your support subscription will expire in {{check_in_data.support.days_remaining}} days! It can easily be extended via the button below.</p>
+                {% else %}
+                    <p style="text-align: center;">Your support subscription expired {{check_in_data.support.days_remaining|int|abs}} days ago! It can easily be extended via the button below.</p>
+                {% endif %}
+                <p style="text-align: center;">
+                    <a href="https://mynodebtc.com/order/premium_plus" target="_blank" style="margin: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Extend</a>
+                    <a href="/dismiss-expiration-warning" style="margin: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Dismiss</a>
+                </p>
+            </div>
+        {% endif %}
+    {% endif %}
+{% endif %}
+
 <!-- Make sure blocks are syncing, otherwise on startup block 0 may show halving -->
 {% if current_block > 100000 %}
     {% set blocks_until_halving = 210000 - (current_block % 210000) %}
