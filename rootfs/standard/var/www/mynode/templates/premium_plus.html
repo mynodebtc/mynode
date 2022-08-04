@@ -200,13 +200,13 @@
                                             {% if "days_remaining" in response_data.subscription and response_data.subscription.days_remaining|int < 45 %}
                                                 <br/>
                                                 <small>
-                                                    Expiring Soon! {{response_data.subscription.days_remaining}} days remaining <i class="fas fa-exclamation-triangle" style="color: orange;"></i>
+                                                    Expiring Soon! {{response_data.subscription.days_remaining}} days remaining. <i class="fas fa-exclamation" style="color: orange;"></i>
                                                     <br/>
                                                     <a href="https://mynodebtc.com/order/premium_plus" target="_blank" style="margin-top: 10px;" class="ui-button ui-widget ui-corner-all mynode_button_small">Extend</a>
                                                 </small>
                                             {% endif %}
                                         {% else %}
-                                            Expired! <i class="fas fa-exclamation-triangle" style="color: red;"></i>
+                                            Expired! <i class="fas fa-exclamation" style="color: red;"></i>
                                             <br/>
                                             <a href="https://mynodebtc.com/order/premium_plus" target="_blank" style="margin-top: 10px;" class="ui-button ui-widget ui-corner-all mynode_button_small">Renew</a>
                                         {% endif %}

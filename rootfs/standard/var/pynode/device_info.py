@@ -752,8 +752,48 @@ def delete_product_key_error():
 
 def recheck_product_key():
     delete_product_key_error()
+    restart_check_in()
+
+#==================================
+# Check In Functions
+#==================================
+def restart_check_in():
     os.system("systemctl restart check_in")
 
+def get_check_in_data():
+    data = []
+    try:
+        with open("/tmp/check_in_response.json", "r") as f:
+            data = json.load(f)
+    except Exception as e:
+        data =  None
+    return data
+
+def dismiss_expiration_warning():
+    touch("/tmp/dismiss_expiration_warning")
+
+def is_expiration_warning_dismissed():
+    return os.path.isfile("/tmp/dismiss_expiration_warning")
+
+def is_support_near_expiration():
+    data = get_check_in_data()
+    if data != None and "support" in data:
+        support = data["support"]
+        if "days_remaining" in support:
+            days_remaining = int(support["days_remaining"])
+            if days_remaining >= -60 and days_remaining <= 45:
+                return True
+    return False
+
+def is_premium_plus_near_expiration():
+    data = get_check_in_data()
+    if data != None and "premium_plus" in data:
+        premium_plus = data["premium_plus"]
+        if "days_remaining" in premium_plus:
+            days_remaining = int(premium_plus["days_remaining"])
+            if days_remaining >= -60 and days_remaining <= 45:
+                return True
+    return False
 
 #==================================
 # Premium+ Token Functions

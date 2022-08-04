@@ -139,8 +139,8 @@ def index():
     bitcoin_block_height = get_bitcoin_block_height()
     mynode_block_height = get_mynode_block_height()
     uptime_in_seconds = get_system_uptime_in_seconds()
-    pk_skipped = skipped_product_key()
-    pk_error = not is_valid_product_key()
+    product_key_skipped = skipped_product_key()
+    product_key_error = not is_valid_product_key()
 
     # Show uploader page if we are marked as an uploader
     if is_uploader():
@@ -551,8 +551,10 @@ def index():
             "is_testnet_enabled": is_testnet_enabled(),
             "is_installing_docker_images": is_installing_docker_images(),
             "is_device_from_reseller": is_device_from_reseller(),
-            "product_key_skipped": pk_skipped,
-            "product_key_error": pk_error,
+            "is_expiration_warning_dismissed": is_expiration_warning_dismissed(),
+            "check_in_data": get_check_in_data(),
+            "product_key_skipped": product_key_skipped,
+            "product_key_error": product_key_error,
             "premium_plus_has_access_token": has_premium_plus_token(),
             "premium_plus_is_connected": get_premium_plus_is_connected(),
             "fsck_error": has_fsck_error(),
@@ -662,6 +664,12 @@ def page_toggle_app():
 def page_clear_fsck_error():
     check_logged_in()
     clear_fsck_error()
+    return redirect("/")
+
+@app.route("/dismiss-expiration-warning")
+def page_dismiss_expiration_warning():
+    check_logged_in()
+    dismiss_expiration_warning()
     return redirect("/")
 
 @app.route("/login", methods=["GET","POST"])

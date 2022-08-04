@@ -36,8 +36,8 @@ def page_settings():
     device_arch = get_device_arch()
     device_ram = get_device_ram()
     product_key = get_product_key()
-    pk_skipped = skipped_product_key()
-    pk_error = not is_valid_product_key()
+    product_key_skipped = skipped_product_key()
+    product_key_error = not is_valid_product_key()
     uptime = get_system_uptime()
     date = get_system_date()
     local_ip = get_local_ip()
@@ -71,9 +71,10 @@ def page_settings():
         "device_arch": device_arch,
         "device_ram": device_ram,
         "swap_size": get_swap_size(),
+        "check_in_data": get_check_in_data(),
         "product_key": product_key,
-        "product_key_skipped": pk_skipped,
-        "product_key_error": pk_error,
+        "product_key_skipped": product_key_skipped,
+        "product_key_error": product_key_error,
         "changelog": changelog,
         "is_https_forced": is_https_forced(),
         "logout_time_days": logout_time_days,
@@ -134,8 +135,8 @@ def page_status():
     device_arch = get_device_arch()
     device_ram = get_device_ram()
     product_key = get_product_key()
-    pk_skipped = skipped_product_key()
-    pk_error = not is_valid_product_key()
+    product_key_skipped = skipped_product_key()
+    product_key_error = not is_valid_product_key()
     uptime = get_system_uptime()
     date = get_system_date()
     local_ip = get_local_ip()
@@ -193,9 +194,10 @@ def page_status():
         "device_type": device_type,
         "device_arch": device_arch,
         "device_ram": device_ram,
+        "check_in_data": get_check_in_data(),
         "product_key": product_key,
-        "product_key_skipped": pk_skipped,
-        "product_key_error": pk_error,
+        "product_key_skipped": product_key_skipped,
+        "product_key_error": product_key_error,
         "changelog": changelog,
         "lnd_wallet_exists": lnd_wallet_exists(),
         "lnd_ready": is_lnd_ready(),

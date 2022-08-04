@@ -174,11 +174,6 @@ def find_public_ip():
         public_ip = "Failed to find public IP. "
 
 
-# Updated: Check ins now happen in different process. This will just restart the service to force a new check in.
-def check_in():
-    os.system("systemctl restart check_in")
-
-
 def dmesg_log_clear():
     f = open("/tmp/dmesg", "w")
     f.write("")
