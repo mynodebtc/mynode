@@ -29,7 +29,7 @@ echo "  Login to device with username 'admin' and password 'bolt'"
 echo "  Run the following commands. Use bolt at password prompts."
 echo "    wget http://${LOCAL_IP}:8000/setup_device.sh -O setup_device.sh"
 echo "    chmod +x setup_device.sh"
-echo "    tmux new-session -s mynode sudo ./setup_device.sh ${LOCAL_IP}"
+echo "    sudo ./setup_device.sh ${LOCAL_IP}"
 echo ""
 echo "Press a key when complete..."
 read -n 1
