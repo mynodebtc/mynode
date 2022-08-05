@@ -416,6 +416,17 @@ def reset_blockchain_page():
     
     return redirect("/rebooting")
 
+@mynode_settings.route("/settings/reset-bitcoin-peers")
+def reset_bitcoin_peers_page():
+    check_logged_in()
+
+    check_and_mark_reboot_action("reset_bitcoin_peers")
+
+    t = Timer(1.0, reset_bitcoin_peers)
+    t.start()
+    
+    return redirect("/rebooting")
+
 @mynode_settings.route("/settings/restart-quicksync")
 def restart_quicksync_page():
     check_logged_in()

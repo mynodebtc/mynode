@@ -79,10 +79,11 @@ def factory_reset():
     reboot_device()
 
 def check_and_mark_reboot_action(tmp_marker):
-    if os.path.isfile("/tmp/{}".format(tmp_marker)):
+    tmp_marker_file = "/tmp/mark_reboot___{}".format(tmp_marker)
+    if os.path.isfile(tmp_marker_file):
         flash(u'Refresh prevented - action already triggered', category="error")
         raise RequestRedirect("/")
-    touch("/tmp/{}".format(tmp_marker))
+    touch(tmp_marker_file)
 
 def reload_throttled_data():
     global cached_data
@@ -1037,11 +1038,20 @@ def get_bitcoin_log_file():
 def reset_bitcoin_env_file():
     os.system("echo 'BTCARGS=' > "+BITCOIN_ENV_FILE)
 
+def delete_bitcoin_peer_database():
+    os.system("rm -rf /mnt/hdd/mynode/bitcoin/peers.dat")
+    os.system("rm -rf /mnt/hdd/mynode/bitcoin/testnet3/peers.dat")
+
 def delete_bitcoin_data():
     os.system("rm -rf /mnt/hdd/mynode/bitcoin")
     os.system("rm -rf /mnt/hdd/mynode/quicksync/.quicksync_complete")
     #os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpc_environment")
     #os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpcpw")
+
+def reset_bitcoin_peers():
+    stop_bitcoin()
+    delete_bitcoin_peer_database()
+    reboot_device()
 
 def reset_blockchain():
     stop_bitcoin()

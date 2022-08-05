@@ -120,6 +120,17 @@
                                       okFunction)
                 });
 
+                $("#reset-bitcoin-peers").on("click", function() {
+                    var okFunction = function() {
+                        window.location.href="/settings/reset-bitcoin-peers"
+                    }
+                    openConfirmDialog("confirm-dialog",
+                                      "Reset Bitcoin Peers",
+                                      "Resetting your Bitcoin peers will clear the peer database and reboot. " +
+                                      "Would you like to reset your peers?",
+                                      okFunction)
+                });
+
                 $("#restart-quicksync").on("click", function() {
                     var okFunction = function() {
                         window.location.href="/settings/restart-quicksync"
@@ -885,6 +896,13 @@
             <br/><br/>
             {% endif %}
             <a href="/bitcoin/config" class="ui-button ui-widget ui-corner-all settings_button">Edit Config</a>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Reset Peers</div>
+            If Bitcoin is having issues connecting, you can reset the peers database. This will reboot and allow Bitcoin to find a new set of peers.
+            <br/>
+            <button id="reset-bitcoin-peers" class="ui-button ui-widget ui-corner-all settings_button">Reset Peers</button>
 
             <div class="divider"></div>
 
