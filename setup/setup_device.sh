@@ -114,6 +114,7 @@ elif [ $IS_X86 = 1 ]; then
     TARBALL="mynode_rootfs_debian.tar.gz"
 fi
 if [ "$SERVER_IP" == "online" ]; then
+    TARBALL="${TARBALL/"mynode_rootfs_"/"mynode_release_latest_"}"
     wget https://mynodebtc.com/device/upgrade_images/${TARBALL} -O /tmp/rootfs.tar.gz
 else
     wget http://${SERVER_IP}:8000/${TARBALL} -O /tmp/rootfs.tar.gz
