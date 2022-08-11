@@ -79,6 +79,7 @@ def check_in():
         "serial": get_device_serial(),
         "device_type": get_device_type(),
         "device_arch": get_device_arch(),
+        "debian_version": get_debian_version(),
         "version": get_current_version(),
         "product_key": product_key,
         "drive_size": get_mynode_drive_size(),

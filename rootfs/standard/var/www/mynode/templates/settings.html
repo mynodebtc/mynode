@@ -366,6 +366,19 @@
                     );
                 });
 
+                showing_info_table_advanced_rows=0;
+                $("#info_table_show_advanced_info").on("click", function() {
+                    if (showing_info_table_advanced_rows) {
+                        $("#info_table_show_advanced_info").html("Show");
+                        $(".info_table_advanced_row").hide();
+                        showing_info_table_advanced_rows = 0;
+                    } else {
+                        $("#info_table_show_advanced_info").html("Hide");
+                        $(".info_table_advanced_row").show();
+                        showing_info_table_advanced_rows = 1;
+                    }
+                });
+
                 $("#glances").on("click", function() {
                     port="61208";
                     if (location.protocol == "https:") {
