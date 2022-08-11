@@ -6,6 +6,7 @@ from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from bitcoin_info import *
 from lightning_info import *
 from device_info import *
+from drive_info import *
 from utilities import *
 from enable_disable_functions import *
 from systemctl_info import *
@@ -74,13 +75,14 @@ def update_device_info():
 
             data_drive_usage_details = ""
             data_drive_usage_details += "<small>"
+            data_drive_usage_details += "<b>Disk Format</b>"
+            data_drive_usage_details += "<p>" + get_current_drive_filesystem_type() + "</p>"
             data_drive_usage_details += "<b>Data Storage</b><br/>"
             data_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /mnt/hdd/mynode/", ignore_failure=True) + "</pre><br/>"
             data_drive_usage_details += "</small>"
 
     except Exception as e:
         log_message("CAUGHT update_device_info EXCEPTION: " + str(e))
-        return
 
     device_info_call_count = device_info_call_count + 1
 
