@@ -3,11 +3,14 @@
 1. Setup Base OS
 
    Install latest Debian Net-install via CD
-
-   URL: [https://www.debian.org/CD/netinst/](https://www.debian.org/CD/netinst/)
-   CURRENT IMAGE (10.11)
-        BASIC: https://cdimage.debian.org/mirror/cdimage/archive/10.11.0/amd64/iso-cd/
-        ADDITIONAL FIRMWARE: https://cdimage.debian.org/mirror/cdimage/unofficial/non-free/cd-including-firmware/archive/10.11.0+nonfree/amd64/iso-cd/
+   
+   **LATEST TESTED IMAGE (10.11)** <br/>
+   Basic: https://cdimage.debian.org/mirror/cdimage/archive/10.11.0/amd64/iso-cd/ <br/>
+   Additional Firmware: https://cdimage.debian.org/mirror/cdimage/unofficial/non-free/cd-including-firmware/archive/10.11.0+nonfree/amd64/iso-cd/ <br/>
+   
+   **MOST RECENT DEBIAN IMAGES (not tested)** <br/>
+   Basic: [https://www.debian.org/CD/netinst/](https://www.debian.org/CD/netinst/) <br/>
+   
    If VM, set VM Settings:
      - Set Ethernet adapter to Bridged Mode
 
