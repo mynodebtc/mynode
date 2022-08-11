@@ -1,7 +1,7 @@
 <div class="settings_block_subheader">
     Info
 </div>
-<table border="0" class="info_table">
+<table border="0" class="info_table" id="info_table">
     <tr>
         <th>Serial Number</th>
         <td>{{serial_number}}</td>
@@ -112,6 +112,22 @@
         <td style="color: red;"><b>Error contacting mynodebtc.com via Tor!</b><br/>You may have issues checking for new versions or saving product keys.</td>
     </tr>
     {% endif %}
+
+    <!-- From here down are the "Details" (hidden unless show details is clicked)-->
+    <tr>
+        <th>Advanced Info</th>
+        <td>
+            <button id="info_table_show_advanced_info" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+        </td>
+    </tr>
+    <tr class="info_table_advanced_row" style="display: none;">
+        <th>Debian Version</th>
+        <td>{{debian_version}}</td>
+    </tr>
+    <tr class="info_table_advanced_row" style="display: none;">
+        <th>Architecture</th>
+        <td>{{device_arch}}</td>
+    </tr>
     
 </table>
 <div class="divider"></div>

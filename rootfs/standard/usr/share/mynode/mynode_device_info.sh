@@ -14,6 +14,7 @@ IS_32_BIT=0
 IS_64_BIT=0
 DEVICE_TYPE="unknown"
 MODEL=$(tr -d '\0' < /proc/device-tree/model) || MODEL="unknown"
+DEBIAN_VERSION=$(lsb_release -c -s) || DEBIAN_VERSION="unknown"
 uname -a | grep amd64 && IS_X86=1 && IS_64_BIT=1 || true
 if [[ $MODEL == *"Rock64"* ]]; then 
     IS_ARMBIAN=1

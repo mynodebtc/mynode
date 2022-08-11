@@ -31,9 +31,6 @@ def page_settings():
     latest_beta_version = get_latest_beta_version()
 
     changelog = get_device_changelog()
-    serial_number = get_device_serial()
-    device_type = get_device_type()
-    device_arch = get_device_arch()
     device_ram = get_device_ram()
     product_key = get_product_key()
     product_key_skipped = skipped_product_key()
@@ -66,9 +63,10 @@ def page_settings():
         "upgrade_error": did_upgrade_fail(),
         "upgrade_log": get_recent_upgrade_log(),
         "upgrade_logs": get_all_upgrade_logs(),
-        "serial_number": serial_number,
-        "device_type": device_type,
-        "device_arch": device_arch,
+        "serial_number": get_device_serial(),
+        "device_type": get_device_type(),
+        "device_arch": get_device_arch(),
+        "debian_version": get_debian_version(),
         "device_ram": device_ram,
         "swap_size": get_swap_size(),
         "check_in_data": get_check_in_data(),
@@ -130,9 +128,6 @@ def page_status():
     latest_beta_version = get_latest_beta_version()
 
     changelog = get_device_changelog()
-    serial_number = get_device_serial()
-    device_type = get_device_type()
-    device_arch = get_device_arch()
     device_ram = get_device_ram()
     product_key = get_product_key()
     product_key_skipped = skipped_product_key()
@@ -140,7 +135,6 @@ def page_status():
     uptime = get_system_uptime()
     date = get_system_date()
     local_ip = get_local_ip()
-
 
     # Get Startup Status
     #startup_status_log = get_journalctl_log("mynode")
@@ -190,9 +184,10 @@ def page_status():
         "has_checkin_error": has_checkin_error(),
         "upgrade_error": did_upgrade_fail(),
         "upgrade_logs": get_recent_upgrade_log(),
-        "serial_number": serial_number,
-        "device_type": device_type,
-        "device_arch": device_arch,
+        "serial_number": get_device_serial(),
+        "device_type": get_device_type(),
+        "device_arch": get_device_arch(),
+        "debian_version": get_debian_version(),
         "device_ram": device_ram,
         "check_in_data": get_check_in_data(),
         "product_key": product_key,

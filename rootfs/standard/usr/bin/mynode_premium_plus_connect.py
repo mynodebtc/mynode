@@ -31,6 +31,7 @@ def get_premium_plus_device_info():
     info["serial"] = get_device_serial()
     info["device_type"] = get_device_type()
     info["device_arch"] = get_device_arch()
+    info["debian_version"] = get_debian_version()
     info["drive_size"] = get_mynode_drive_size()
     info["data_drive_usage"] = get_data_drive_usage()
     info["os_drive_usage"] = get_os_drive_usage()

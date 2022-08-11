@@ -313,6 +313,15 @@ def get_device_arch():
     cached_data["device_arch"] = arch
     return arch
 
+def get_debian_version():
+    global cached_data
+    if "debian_version" in cached_data:
+        return cached_data["debian_version"]
+
+    debian_version = to_string(subprocess.check_output("lsb_release -c -s", shell=True).decode("utf-8").strip())
+    cached_data["debian_version"] = debian_version
+    return debian_version
+
 def get_device_ram():
     global cached_data
     if "ram" in cached_data:
