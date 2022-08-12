@@ -29,6 +29,7 @@ IS_64_BIT=0
 IS_UNKNOWN=0
 DEVICE_TYPE="unknown"
 MODEL=$(cat /proc/device-tree/model) || IS_UNKNOWN=1
+DEBIAN_VERSION=$(lsb_release -c -s) || DEBIAN_VERSION="unknown"
 uname -a | grep amd64 && IS_X86=1 && IS_64_BIT=1 && IS_UNKNOWN=0 || true
 if [[ $MODEL == *"Rock64"* ]]; then
     IS_ARMBIAN=1
@@ -193,31 +194,41 @@ apt-get -y update
 if [ $IS_X86 = 1 ]; then
     apt-mark hold grub*
 fi
-apt-mark hold redis-server
+#apt-mark hold redis-server
 
 # Upgrade packages
 apt-get -y upgrade
 
 # Install other tools (run section multiple times to make sure success)
 export DEBIAN_FRONTEND=noninteractive
-apt-get -y install apt-transport-https
+apt-get -y install apt-transport-https lsb-release
 apt-get -y install htop git curl bash-completion jq dphys-swapfile lsof libzmq3-dev
-apt-get -y install build-essential python-dev python-pip python3-dev python3-pip
-apt-get -y install transmission-cli fail2ban ufw tclsh bluez python-bluez redis-server
-#apt-get -y install mongodb-org
+apt-get -y install build-essential python3-dev python3-pip python3-grpcio
+apt-get -y install transmission-cli fail2ban ufw tclsh redis-server
 apt-get -y install clang hitch zlib1g-dev libffi-dev file toilet ncdu
 apt-get -y install toilet-fonts avahi-daemon figlet libsecp256k1-dev
 apt-get -y install inotify-tools libssl-dev tor tmux screen fonts-dejavu
-apt-get -y install python-grpcio python3-grpcio
 apt-get -y install pv sysstat network-manager rsync parted unzip pkg-config
 apt-get -y install libfreetype6-dev libpng-dev libatlas-base-dev libgmp-dev libltdl-dev
-apt-get -y install libffi-dev libssl-dev glances python3-bottle automake libtool libltdl7
+apt-get -y install libffi-dev libssl-dev python3-bottle automake libtool libltdl7
 apt -y -qq install apt-transport-https ca-certificates
 apt-get -y install openjdk-11-jre libevent-dev ncurses-dev
 apt-get -y install zlib1g-dev libudev-dev libusb-1.0-0-dev python3-venv gunicorn
 apt-get -y install sqlite3 libsqlite3-dev torsocks python3-requests libsystemd-dev
 apt-get -y install libjpeg-dev zlib1g-dev psmisc hexyl libbz2-dev liblzma-dev netcat-openbsd
-apt-get -y install hdparm iotop nut obfs4proxy libpq-dev socat btrfs-tools
+apt-get -y install hdparm iotop nut obfs4proxy libpq-dev socat btrfs-progs
+
+# Install packages dependent on Debian release
+if [ "$DEBIAN_VERSION" == "bullseye" ]; then
+    apt-get -y install wireguard
+elif [ "$DEBIAN_VERSION" == "buster" ]; then
+    $TORIFY apt-get -y -t buster-backports install wireguard
+else
+    echo "========================================="
+    echo "== UNKNOWN DEBIAN VERSION: $DEBIAN_VERSION"
+    echo "== SOME APPS MAY NOT WORK PROPERLY"
+    echo "========================================="
+fi
 
 # Install Openbox GUI
 if [ $IS_X86 = 1 ]; then
