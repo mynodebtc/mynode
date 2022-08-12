@@ -764,36 +764,6 @@ if [ "$CURRENT" != "$BTCRPCEXPLORER_VERSION" ]; then
 fi
 
 
-# Install LNBits
-# Find URL by going to https://github.com/lnbits/lnbits/releases and finding the exact commit for the mynode tag
-LNBITS_UPGRADE_URL=https://github.com/lnbits/lnbits/archive/$LNBITS_VERSION.tar.gz
-CURRENT=""
-if [ -f $LNBITS_VERSION_FILE ]; then
-    CURRENT=$(cat $LNBITS_VERSION_FILE)
-fi
-if [ "$CURRENT" != "$LNBITS_VERSION" ]; then
-    cd /opt/mynode
-    rm -rf lnbits
-    sudo -u bitcoin wget $LNBITS_UPGRADE_URL -O lnbits.tar.gz
-    sudo -u bitcoin tar -xvf lnbits.tar.gz
-    sudo -u bitcoin rm lnbits.tar.gz
-    sudo -u bitcoin mv lnbits-* lnbits
-    cd lnbits
-
-    # Copy over config file
-    cp $TMP_INSTALL_PATH/usr/share/mynode/lnbits.env /opt/mynode/lnbits/.env
-    chown bitcoin:bitcoin /opt/mynode/lnbits/.env
-
-    # Install lnbits
-    sudo -u bitcoin python3 -m venv lnbits_venv
-    sudo -u bitcoin ./lnbits_venv/bin/pip install -r requirements.txt
-    sudo -u bitcoin ./lnbits_venv/bin/quart assets
-    #sudo -u bitcoin ./lnbits_venv/bin/quart migrate # Can't migrate since we don't have HDD in setup
-
-    echo $LNBITS_VERSION > $LNBITS_VERSION_FILE
-fi
-
-
 # Upgrade Specter Desktop
 CURRENT=""
 if [ -f $SPECTER_VERSION_FILE ]; then
@@ -886,58 +856,14 @@ if [ ! -f /usr/bin/ngrok  ]; then
 fi
 
 
-# Upgrade CKbunker
-CKBUNKER_UPGRADE_URL=https://github.com/Coldcard/ckbunker/archive/$CKBUNKER_VERSION.tar.gz
-CURRENT=""
-if [ -f $CKBUNKER_VERSION_FILE ]; then
-    CURRENT=$(cat $CKBUNKER_VERSION_FILE)
-fi
-if [ "$CURRENT" != "$CKBUNKER_VERSION" ]; then
-    cd /opt/mynode
-    sudo -u bitcoin wget $CKBUNKER_UPGRADE_URL -O ckbunker.tar.gz
-    sudo -u bitcoin tar -xvf ckbunker.tar.gz
-    sudo -u bitcoin rm ckbunker.tar.gz
-    sudo -u bitcoin mv ckbunker-* ckbunker
-    cd ckbunker
-
-    # Make venv
-    if [ ! -d env ]; then
-        sudo -u bitcoin python3 -m venv env
-    fi
-    source env/bin/activate
-    pip3 install -r requirements.txt
-    pip3 install --editable .
-    deactivate
-
-    echo $CKBUNKER_VERSION > $CKBUNKER_VERSION_FILE
-fi
-
-
-# Upgrade Sphinx Relay
-SPHINXRELAY_UPGRADE_URL=https://github.com/stakwork/sphinx-relay/archive/$SPHINXRELAY_VERSION.tar.gz
-CURRENT=""
-if [ -f $SPHINXRELAY_VERSION_FILE ]; then
-    CURRENT=$(cat $SPHINXRELAY_VERSION_FILE)
-fi
-if [ "$CURRENT" != "$SPHINXRELAY_VERSION" ]; then
-    cd /opt/mynode
-    rm -rf sphinxrelay
-    sudo -u bitcoin wget $SPHINXRELAY_UPGRADE_URL -O sphinx-relay.tar.gz
-    sudo -u bitcoin tar -xvf sphinx-relay.tar.gz
-    sudo -u bitcoin rm sphinx-relay.tar.gz
-    sudo -u bitcoin mv sphinx-relay-* sphinxrelay
-    cd sphinxrelay
-
-    sudo -u bitcoin npm install
-
-    echo $SPHINXRELAY_VERSION > $SPHINXRELAY_VERSION_FILE
-fi
-
 # Mark docker images for install (on SD so install occurs after drive attach)
 touch /home/bitcoin/.mynode/install_mempool
 touch /home/bitcoin/.mynode/install_btcpayserver
 touch /home/bitcoin/.mynode/install_dojo
 
+# SKIPPING LNBITS - OPTIONAL ALL
+# SKIPPING CKBUNKER - OPTIONAL APP
+# SKIPPING SPHINX - OPTIONAL APP
 # SKIPPING BOS - OPTIONAL APP
 # SKIPPING PYBLOCK - OPTIONAL APP
 # SKIPPING WARDEN - OPTIONAL APP
