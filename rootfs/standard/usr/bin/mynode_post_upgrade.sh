@@ -114,26 +114,35 @@ if ! skip_base_upgrades ; then
     if [ $IS_X86 = 1 ]; then
         apt-mark hold grub*
     fi
-    apt-mark hold redis-server
+    #apt-mark hold redis-server
 
     # Upgrade packages
     $TORIFY apt-get -y upgrade
 
     # Install any new software
-    $TORIFY apt-get -y install apt-transport-https
+    $TORIFY apt-get -y install apt-transport-https lsb-release gnupg
     $TORIFY apt-get -y install fonts-dejavu
     $TORIFY apt-get -y install pv sysstat network-manager unzip pkg-config libfreetype6-dev libpng-dev
-    $TORIFY apt-get -y install libatlas-base-dev libffi-dev libssl-dev glances python3-bottle
+    $TORIFY apt-get -y install libatlas-base-dev libffi-dev libssl-dev python3-bottle
     $TORIFY apt-get -y -qq install apt-transport-https ca-certificates
     $TORIFY apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
     $TORIFY apt-get -y install openjdk-11-jre libevent-dev ncurses-dev
     $TORIFY apt-get -y install libudev-dev libusb-1.0-0-dev python3-venv gunicorn sqlite3 libsqlite3-dev
     $TORIFY apt-get -y install torsocks python3-requests libsystemd-dev libjpeg-dev zlib1g-dev psmisc
     $TORIFY apt-get -y install hexyl libbz2-dev liblzma-dev netcat-openbsd hdparm iotop nut obfs4proxy
-    $TORIFY apt-get -y install libpq-dev socat btrfs-tools
+    $TORIFY apt-get -y install libpq-dev socat btrfs-progs
 
-    # Install software from backports
-    $TORIFY apt-get -y -t buster-backports install wireguard
+    # Install software specific to debian version
+    if [ "$DEBIAN_VERSION" == "bullseye" ]; then
+        apt-get -y install wireguard
+    elif [ "$DEBIAN_VERSION" == "buster" ]; then
+        $TORIFY apt-get -y -t buster-backports install wireguard
+    else
+        echo "========================================="
+        echo "== UNKNOWN DEBIAN VERSION: $DEBIAN_VERSION"
+        echo "== SOME APPS MAY NOT WORK PROPERLY"
+        echo "========================================="
+    fi
 
     # Install Openbox GUI
     if [ $IS_X86 = 1 ]; then
