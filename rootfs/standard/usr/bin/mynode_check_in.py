@@ -101,9 +101,9 @@ def check_in():
     check_in_success = False
     while not check_in_success:
         try:
-            # Use tor for check in unless there have been tor 5 failures in a row
+            # Use tor for check in unless there have been several tor failures
             r = None
-            if (fail_count+1) % 5 == 0:
+            if (fail_count+1) % 4 == 0:
                 r = requests.post(CHECKIN_URL, data=data, timeout=20)
             else:
                 r = session.post(CHECKIN_URL, data=data, timeout=20)
