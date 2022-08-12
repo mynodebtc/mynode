@@ -331,8 +331,13 @@ if [ ! -f /tmp/installed_node ]; then
 fi
 
 # Install docker
-curl -sSL https://get.docker.com | sed 's/sleep 20/sleep 1/' | sudo sh || true
-apt-get install -y docker docker-ce containerd
+mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --batch --yes --dearmor -o /etc/apt/keyrings/docker.gpg
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+  $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+apt-get update --allow-releaseinfo-change
+apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 # Use systemd for managing docker
 rm -f /etc/init.d/docker
