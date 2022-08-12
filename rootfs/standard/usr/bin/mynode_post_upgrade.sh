@@ -277,14 +277,14 @@ if ! skip_base_upgrades ; then
     npm install -g npm@$NODE_NPM_VERSION
     
     # Install Docker
-    if [ ! -f /usr/bin/docker ]; then
-        rm -f /tmp/docker_install.sh
-        wget https://get.docker.com -O /tmp/docker_install.sh
-        sed -i 's/sleep 20/sleep 1/' /tmp/docker_install.sh
-        /bin/bash /tmp/docker_install.sh
-    fi
-    apt-get install -y docker docker-ce containerd
-
+    mkdir -p /etc/apt/keyrings
+    $TORIFY curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --batch --yes --dearmor -o /etc/apt/keyrings/docker.gpg
+    echo \
+        "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+        $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+    $TORIFY apt-get update --allow-releaseinfo-change
+    $TORIFY apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+    
     # Use systemd for managing Docker
     rm -f /etc/init.d/docker
     rm -f /etc/systemd/system/multi-user.target.wants/docker.service
