@@ -18,6 +18,11 @@ differences are:
  - Dojo is locked to v1.14.0
  - Mempool is locked to v2.3.1
 
+## Data Drive Format
+- Choosing btrfs as the data drive format is still beta and may have issues
+ - btrfs may be slower than ext4
+ - The swapfile will not work with btrfs
+
 ## Testnet Toggle
 - Testnet can be enabled via the settings page. This is a great way to test various Bitcoin and Lightning applications. However, not all apps support testnet yet or have not been integrated within myNode to work on testnet. The following apps
 have support or patial support.
