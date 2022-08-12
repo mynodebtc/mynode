@@ -254,16 +254,6 @@ usermod -a -G debian-tor bitcoin
 adduser admin bitcoin
 grep "joinmarket" /etc/sudoers || (echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo)
 
-# Install pip packages
-pip2 install setuptools
-pip2 install --upgrade setuptools
-pip2 install wheel
-pip2 install --upgrade wheel
-pip2 install speedtest-cli transmissionrpc flask python-bitcoinrpc redis prometheus_client requests
-pip2 install python-pam==1.8.4 python-bitcoinlib psutil
-pip2 install grpcio grpcio-tools googleapis-common-protos
-pip2 install tzupdate virtualenv pysocks redis qrcode image subprocess32
-
 
 # Install Rust (only needed on 32-bit RPi for building some python wheels)
 if [ ! -f $HOME/.cargo/env ]; then

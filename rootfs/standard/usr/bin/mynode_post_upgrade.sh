@@ -158,9 +158,6 @@ if ! skip_base_upgrades ; then
     echo "" > /etc/nginx/sites-available/default
     dpkg --configure -a
 
-    # Install any pip software (python2 should not longer be used)
-    #pip2 install tzupdate virtualenv pysocks redis qrcode image subprocess32 --no-cache-dir
-
 
     # Install Rust (only needed on 32-bit RPi for building some python wheels)
     if [ ! -f $HOME/.cargo/env ]; then
