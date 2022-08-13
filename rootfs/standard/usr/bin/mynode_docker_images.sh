@@ -55,7 +55,7 @@ while true; do
         touch /mnt/hdd/mynode/settings/install_netdata
         sync
     fi
-    if should_install_app "mempool" ; then
+    if should_install_app "netdata" ; then
         CURRENT=""
         if [ -f $NETDATA_VERSION_FILE ]; then
             CURRENT=$(cat $NETDATA_VERSION_FILE)
