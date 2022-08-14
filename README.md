@@ -220,7 +220,7 @@ It takes a lot of work to add new features and maintain myNode. In order to prov
 ## License
 The primary myNode License is a variation of CC BY-NC-ND 4.0 with some modifications in Section 9.
 
-This license applies to the myNode platform, but each application likely has its own license and code to integrate each application to myNode uses the LGPL v3.0. Code to add applications can be stored under `./rootfs/usr/share/mynode_apps/` and uses the License file at `./rootfs/usr/share/mynode_apps/LICENSE.md`.
+This license applies to the myNode platform, but each application likely has its own license and code to integrate each application to myNode uses the LGPL v3.0. Code to add applications can be stored under `./rootfs/standard/usr/share/mynode_apps/` and uses the License file at `./rootfs/standard/usr/share/mynode_apps/LICENSE.md`.
 
 ## Responsible Disclosure
 Found any critical bugs or vulnerabilities? Please send us an email at admin@mynodebtc.com. Thanks!
