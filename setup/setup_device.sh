@@ -160,17 +160,14 @@ apt-get -y update --allow-releaseinfo-change
 
 # Add sources
 apt-get -y install apt-transport-https curl gnupg
-DEBIAN_VERSION=$(lsb_release -c | awk '{ print $2 }')
 # Tor (arm32 support was dropped)
 if [ $IS_64_BIT = 1 ]; then
     grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
     grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
 fi
-# Raspbian mirrors
-# if [ $IS_RASPI = 1 ]; then
-#     grep -qxF "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
-#     grep -qxF "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
-# fi
+if [ "$DEBIAN_VERSION" = "buster" ]; then
+    grep -qxF "deb http://deb.debian.org/debian buster-backports main" /etc/apt/sources.list  || echo "deb http://deb.debian.org/debian buster-backports main" >> /etc/apt/sources.list
+fi
 
 # Import Keys
 curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
