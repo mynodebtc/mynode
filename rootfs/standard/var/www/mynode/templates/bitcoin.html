@@ -5,6 +5,16 @@
 
 
         <script>
+            function delete_wallet(wallet_name, wallet_name_encoded) {
+                if (confirm("Are you sure you want to delete the '"+wallet_name+"'?\n\n CAUTION: This cannot be undone and could cause lost funds.")) {
+                    window.location.href='/bitcoin/delete_wallet?wallet='+wallet_name_encoded;
+                }
+            }
+
+            function download_wallet(wallet_name_encoded) {
+                window.location.href = "/bitcoin/download_wallet?wallet="+wallet_name_encoded;
+            }
+            
             $(document).ready(function() {
 
                 $( document ).tooltip();
@@ -231,7 +241,7 @@
             <thead class="bitcoin_table_header">
                 <td>Wallet</td>
                 <td>Balance</td>
-                <td>Actions</td>
+                <td colspan="2">Actions</td>
             </thead>
             <tbody>
                 {% for wallet in wallets %}
@@ -244,8 +254,13 @@
                                 <span style="font-size: 12px;">{{ "%.8f"|format(wallet.unconfirmed_balance) }} pending</span>
                             {% endif %}
                         </td>
-                        <td>
-                            <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/bitcoin/download_wallet?wallet={{wallet.walletname|urlencode}}">download</a>
+                        <td style="width: 80px;">
+                            <button class="ui-button ui-widget ui-corner-all mynode_button" title="Download" style="width: 60px;" onclick="download_wallet('{{wallet.walletname|urlencode}}')"><i class="fas fa-arrow-down"></i></button>
+                        </td>
+                        <td style="width: 80px;">
+                            {% if wallet.can_delete %}
+                            <button class="ui-button ui-widget ui-corner-all mynode_button" title="Delete"   style="width: 60px;" onclick="delete_wallet('{{wallet.walletname}}', '{{wallet.walletname|urlencode}}')"><i class='fas fa-trash'></i></button>
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}

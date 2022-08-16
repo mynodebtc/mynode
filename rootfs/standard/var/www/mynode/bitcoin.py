@@ -116,6 +116,23 @@ def bitcoin_download_wallet():
 
     return download_file(directory="/tmp/download_wallets/", filename=wallet_name)
 
+@mynode_bitcoin.route("/bitcoin/delete_wallet", methods=["GET"])
+def bitcoin_delete_wallet():
+    check_logged_in()
+    wallet_name = request.args.get('wallet')
+    if wallet_name is None:
+        flash("Error finding wallet to delete!", category="error")
+        return redirect("/bitcoin")
+
+    run_bitcoincli_command("unloadwallet {}".format(wallet_name))
+    run_linux_cmd("rm -rf /mnt/hdd/mynode/bitcoin/{}".format(wallet_name))
+
+    # Update wallet info
+    update_bitcoin_other_info()
+
+    flash("Wallet Deleted", category="message")
+    return redirect("/bitcoin")
+
 @mynode_bitcoin.route("/bitcoin/bitcoin_whitepaper.pdf")
 def bitcoin_whitepaper_pdf():
     check_logged_in()
