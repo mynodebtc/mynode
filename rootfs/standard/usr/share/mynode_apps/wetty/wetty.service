@@ -1,0 +1,29 @@
+# wetty service
+# /etc/systemd/system/wetty.service
+
+[Unit]
+Description=wetty
+Wants=www.service docker_images.service
+After=www.service docker_images.service
+
+[Service]
+WorkingDirectory=/opt/mynode/wetty
+
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_wetty.sh ]; then /bin/bash /usr/bin/service_scripts/pre_wetty.sh; fi'
+ExecStart=FILL_IN_EXECSTART
+ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_wetty.sh ]; then /bin/bash /usr/bin/service_scripts/post_wetty.sh; fi'
+#ExecStop=TODO
+
+User=wetty
+Group=wetty
+Type=simple
+TimeoutSec=120
+Restart=always
+RestartSec=60
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=wetty
+
+[Install]
+WantedBy=multi-user.target
