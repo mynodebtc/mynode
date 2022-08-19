@@ -6,6 +6,11 @@
 for i in 'raspi4' 'rock64' 'rockpro64' 'rockpi4' 'debian'; do
 	echo Creating root file system for $i
 	mkdir -p out/rootfs_$i/
+
+    # Clear out data for old apps
+    rm -rf out/rootfs_$i/usr/share/mynode_apps
+
+    # Make rootfs
 	rsync -r -u rootfs/standard/* out/rootfs_$i/
 	rsync -r -u rootfs/$i/* out/rootfs_$i/
 	rsync -r -u CHANGELOG out/rootfs_$i/usr/share/mynode/changelog
