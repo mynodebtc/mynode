@@ -1,5 +1,6 @@
 {
     "name": "WeTTY",
+    "comment": "HIDDEN - CHANGE show_on_application_page show_on_homepage ",
     "short_name": "wetty",
     "author": {
         "name": "Cian Butler",
@@ -25,8 +26,8 @@
     "requires_docker_image_installation": false,
     "requires_electrs": false,
     "requires_lightning": false,
-    "show_on_application_page": true,
-    "show_on_homepage": true,
+    "show_on_application_page": false,
+    "show_on_homepage": false,
     "show_on_status_page": true,
     "hide_status_icon": false,
     "app_tile_name": "WeTTY",
