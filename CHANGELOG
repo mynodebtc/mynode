@@ -1,3 +1,15 @@
+=== v0.3.0 ===
+- Released: 08/19/22
+- New App Marketplace
+- New Premium+ Service
+- New Software Development Kit (SDK)
+- Upgrade LND to v0.15.0
+- Upgrade BTCPay Server to v1.6.9
+- Upgrade LiT to v0.7.0
+- Upgrade Pool to v0.5.7
+- Upgrade Loop to v0.20.1
+- Web Interface Updates
+
 === v0.2.57 ===
 - Released: 06/18/22
 - New logo!
