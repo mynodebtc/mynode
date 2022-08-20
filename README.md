@@ -4,13 +4,12 @@
 [![Community Chat](https://img.shields.io/badge/community%20chat-telegram-blue)](https://t.me/mynode_btc)
 
 [![Twitter](https://img.shields.io/twitter/follow/mynodebtc?style=social)](https://twitter.com/mynodebtc)
-[![Reddit](https://img.shields.io/reddit/subreddit-subscribers/mynode?label=Subscribe%20%2Fr%2Fmynodebtc&style=social)](https://reddit.com/r/mynodebtc)
 
 
-# myNode
-The easiest way to run Bitcoin and Lightning!
-
-myNode aims to be the easiest way to run a dedicated, easy to use, Bitcoin Node and Lightning Wallet! By combining the best open source software with our UI, management, and monitoring software, you can easily, safely, and securely use Bitcoin and Lightning.
+# Bitcoin, Lightning, and more!
+myNode aims to be the easiest way to run a dedicated, easy to use, Bitcoin Node and Lightning Wallet!
+                            
+We combine the best open source software with our interface, management, and support so you can easily, privately, and securely use Bitcoin and Lightning.
 
 Website: https://mynodebtc.com
 
@@ -19,11 +18,9 @@ Website: https://mynodebtc.com
 <img src="images/1.png" width="800">
 
 ## Overview
-myNode aims to be the easiest way to run a dedicated, easy to use, Bitcoin Node and Lightning Wallet! By combining the best open source software with our UI, management, and monitoring software, you can easily, safely, and securely use Bitcoin and Lightning.
+myNode is a platform that provides uptime, reliability, ease-of-use and a huge variety of applications! By integrating a number of Bitcoin-related open source projects, it provides access to the Bitcoin and Lightning along with a number of other features.
 
-myNode is a software that integrates a number of Bitcoin related open source projects and provides access to the Bitcoin and Lightning networks along with a number of other features! By using a dedicated device, like myNode 1, you get uptime, reliability, and ease-of-use that other software-only solutions cannot provide.
-
-By running a Bitcoin node and Lightning on your myNode device, you maintain all the security and advantages originally intended in the Bitcoin protocol. Information about your Bitcoin addresses and spending is verified by your local node and removes the need to trust online 3rd parties for getting information about your funds.
+By running Bitcoin and Lightning on your myNode device, you maintain all the security and privacy originally intended in the Bitcoin protocol. Your transactions are verified by your local node and it removes the need to trust online 3rd parties for spending or verifying funds.
 
 ## myNode Premium
 myNode offers premium support, simplified upgrades and more! If you are running myNode Community Edition and want one-click upgrades or you want to purchase a supported, high quality device, please visit mynodebtc.com.
@@ -72,14 +69,6 @@ Each myNode device comes with a number of wonderful features:
 - Dark Mode interface
 - Dedicated hardware keeps you constantly and securely connected!
 
-## Supported Devices
-We currently support images for the following devices:
- - Raspberry Pi 4
- - RockPro64
- - Rock Pi 4
- - PCs and Servers
- - Virtual Machine Support (VirtualBox, VMWare)
-
 ## Running myNode
 You can run myNode on your own device in just a few easy steps!
 
@@ -92,6 +81,14 @@ You can run myNode on your own device in just a few easy steps!
 4. Attach External Drive to Device
     * 1TB+ Required
 5. Visit http://mynode.local/ or http://ip_of_device/
+
+## Supported Devices
+We currently support images for the following devices:
+ - Raspberry Pi 4
+ - RockPro64
+ - Rock Pi 4
+ - PCs and Servers
+ - Virtual Machine Support (VirtualBox, VMWare)
 
 ## Upgrading your myNode
 Once you are running myNode, you can easily [update the software](https://mynodebtc.github.io/device/upgrading-device.html) yourself!
