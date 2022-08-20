@@ -76,12 +76,9 @@ Each myNode device comes with a number of wonderful features:
 We currently support images for the following devices:
  - Raspberry Pi 4
  - RockPro64
- - Virtual Machine Support (VirtualBox hosting Windows/OS X/Linux/Solaris, VMWare hosting Windows/OS X/Linux)
-
-## Deprecated Devices
-Due to limited RAM and CPU power, following devices are no longer recommended for use. Performance may be poor.
-- Raspberry Pi 3
-- Rock64
+ - Rock Pi 4
+ - PCs and Servers
+ - Virtual Machine Support (VirtualBox, VMWare)
 
 ## Running myNode
 You can run myNode on your own device in just a few easy steps!
@@ -92,59 +89,23 @@ You can run myNode on your own device in just a few easy steps!
     * Download [Etcher](https://www.balena.io/etcher/)
     * Flash Downloaded Image
 3. Insert SD Card, connect ethernet cable to router, and Boot your Device
-4. Attach External HD to Device
+4. Attach External Drive to Device
     * 1TB+ Required
 5. Visit http://mynode.local/ or http://ip_of_device/
 
-## Developing for myNode
-Once you are running myNode, you can easily modify and update the software yourself!
-
-1. Start by running myNode on your device via the instructions above in "Running myNode"
-2. Modify myNode files
-    * Clone this git repo on your PC or laptop - `git clone https://github.com/mynodebtc/mynode.git`
-    * Make your modifications
-3. Run `make rootfs`
-    * Or run `make rootfs_auto` in a new console tab
-    * This will automatically create artifacts as local files are modified
-4. Run 'make start_file_server'
-    * This will run a local HTTP server so your device can download files
-5. On your device, run `sudo mynode-local-upgrade [dev pc ip address]`
-    * This will download your locally generated artifact and install it on your device
-    * Your device will automatically reboot to ensure updates take effect
-6. Test your changes!
-7. Submit Pull Request to share your updates!
-
-### To update a subsystem without rebooting
-Add another argument to the local upgrade script:
-- To update files only, run `sudo mynode-local-upgrade [dev pc ip address] files`
-- To update files and restart web server, run `sudo mynode-local-upgrade [dev pc ip address] www`
-
-
 ## Upgrading your myNode
-Once you are running myNode, you can easily update the software yourself!
+Once you are running myNode, you can easily [update the software](https://mynodebtc.github.io/device/upgrading-device.html) yourself!
 
-1. Start by running myNode on your device via the instructions above in "Running myNode"
-2. Open 2 Terminal windows:
-    * 1 Terminal: Local PC or laptop
-    * 1 Terminal: ssh into your myNode device
-      * Command: `ssh admin@[myNode ip address]`
-      * Default credentials: admin/bolt
-3. Clone the latest release from the git repo on your PC or laptop
-    * Run `git clone https://github.com/mynodebtc/mynode.git`
-    * Run `cd mynode`
-    * Run `git checkout tags/latest_release`
-4. Run `make rootfs`
-5. Run `make start_file_server`
-    * This will run a local HTTP server so your device can download files
-6. On the other terminal which you used to ssh into your device, run `sudo mynode-local-upgrade [dev pc ip address]`
-    * This will download your locally generated artifact and install it on your device
-    * Your device will automatically reboot to ensure updates take effect
-7. Optional: Run `make stop_file_server`
-    * This will stop the local HTTP server
-8. You are now running the latest version of myNode software!
 
-## Setup New Device (beta)
-To setup a new device on a supported platform (Raspi4, RockPi 4, RockPro64, PC, ...), you can run two simple commands.
+## Developing for myNode
+See the [development guide](https://github.com/mynodebtc/mynode/blob/master/doc/development.md).
+
+## Adding new Applications to myNode
+To develop and add new applications to mynode, check out the [Software Development Kit (SDK)](https://github.com/mynodebtc/mynode_sdk).
+
+
+## Install on Existing System (beta)
+To setup a new device on a supported platform that is already running Linux (Raspi4, RockPi 4, RockPro64, PC, ...), you can run two simple commands.
 
 First, install a debian-based operating system.
 
@@ -156,18 +117,6 @@ sudo bash ./mynode_setup.sh online
 ```
 
 Once the script successfully completed, reboot and you will be running myNode!
-
-## Convert new device to run myNode
-1. Run make command for your device. Ex:
-    * `make setup_new_rock64`
-    * `make setup_new_rockpro64`
-    * `make setup_new_raspi3`
-    * `make setup_new_raspi4`
-    * `make setup_new_debian`
-    * `make setup_new_other`
-3. Follow Instructions
-2. Reboot Device
-4. Congratulations! You're running a new myNode device!
 
 ## Screenshots
 <img src="images/2.png" width="600">
