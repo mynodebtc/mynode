@@ -15,7 +15,7 @@ Website: https://mynodebtc.com
 
 
 ## User Interface
-<img src="images/1.png" width="800">
+<img src="images/1.png" width="600">
 
 ## Overview
 myNode is a platform that provides uptime, reliability, ease-of-use and a huge variety of applications! By integrating a number of Bitcoin-related open source projects, it provides access to Bitcoin and Lightning along with a number of other features.
@@ -35,7 +35,7 @@ https://mynodebtc.com/order_now
 ## Features
 Each myNode device comes with a number of wonderful features.
 
-<img src="images/app_icons.png" width="800">
+<img src="images/app_icons.png" width="600">
 <!--
 - Bitcoin Node
 - Lightning Node
@@ -86,7 +86,7 @@ You can run myNode on your own device in just a few easy steps!
 5. Visit http://mynode.local/ or http://ip_of_device/
 
 ## Supported Devices
-We currently support images for the following devices:
+We currently have images for the following devices available for download.
  - Raspberry Pi 4
  - RockPro64
  - Rock Pi 4
