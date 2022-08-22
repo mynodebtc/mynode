@@ -121,6 +121,10 @@ sudo bash ./mynode_setup.sh online
 Once the script successfully completed, reboot and you will be running myNode!
 
 ## Screenshots
+<img src="images/1.png" width="600">
+
+--------------------
+
 <img src="images/2.png" width="600">
 
 --------------------
