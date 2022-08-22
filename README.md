@@ -36,8 +36,7 @@ https://mynodebtc.com/order_now
 Each myNode device comes with a number of wonderful features.
 
 <img src="images/app_icons.png" width="800">
-
-<sub>
+<!--
 - Bitcoin Node
 - Lightning Node
 - Electrum Server
@@ -71,7 +70,7 @@ Each myNode device comes with a number of wonderful features.
 - Simple UI / Web Interface
 - Dark Mode interface
 - Dedicated hardware keeps you constantly and securely connected!
-</sub>
+-->
 
 ## Running myNode
 You can run myNode on your own device in just a few easy steps!
