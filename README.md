@@ -18,9 +18,9 @@ Website: https://mynodebtc.com
 <img src="images/1.png" width="800">
 
 ## Overview
-myNode is a platform that provides uptime, reliability, ease-of-use and a huge variety of applications! By integrating a number of Bitcoin-related open source projects, it provides access to the Bitcoin and Lightning along with a number of other features.
+myNode is a platform that provides uptime, reliability, ease-of-use and a huge variety of applications! By integrating a number of Bitcoin-related open source projects, it provides access to Bitcoin and Lightning along with a number of other features.
 
-By running Bitcoin and Lightning on your myNode device, you maintain all the security and privacy originally intended in the Bitcoin protocol. Your transactions are verified by your local node and it removes the need to trust online 3rd parties for spending or verifying funds.
+By running Bitcoin and Lightning on your myNode device, you maintain all the security and privacy originally intended in the Bitcoin protocol. Your transactions are verified by your local node, removing the need to trust online 3rd parties for spending or verifying funds.
 
 ## myNode Premium
 myNode offers premium support, simplified upgrades and more! If you are running myNode Community Edition and want one-click upgrades or you want to purchase a supported, high quality device, please visit mynodebtc.com.
@@ -33,8 +33,11 @@ https://mynodebtc.com/order_now
 <img src="images/device.png" width="300">
 
 ## Features
-Each myNode device comes with a number of wonderful features:
+Each myNode device comes with a number of wonderful features.
 
+<img src="images/app_icons.png" width="800">
+
+<sub>
 - Bitcoin Node
 - Lightning Node
 - Electrum Server
@@ -68,6 +71,7 @@ Each myNode device comes with a number of wonderful features:
 - Simple UI / Web Interface
 - Dark Mode interface
 - Dedicated hardware keeps you constantly and securely connected!
+</sub>
 
 ## Running myNode
 You can run myNode on your own device in just a few easy steps!
@@ -95,9 +99,11 @@ Once you are running myNode, you can easily [update the software](https://mynode
 
 
 ## Developing for myNode
+
+### Developing the myNode Platform
 See the [development guide](https://github.com/mynodebtc/mynode/blob/master/doc/development.md).
 
-## Adding new Applications to myNode
+### Adding new Applications to myNode
 To develop and add new applications to mynode, check out the [Software Development Kit (SDK)](https://github.com/mynodebtc/mynode_sdk).
 
 
