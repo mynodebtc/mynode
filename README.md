@@ -133,7 +133,7 @@ Once the script successfully completed, reboot and you will be running myNode!
 
 --------------------
 
-<img src="images/5.png" width="600">
+<img src="images/marketplace.png" width="600">
 
 --------------------
 
