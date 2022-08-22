@@ -15,7 +15,7 @@ Website: https://mynodebtc.com
 
 
 ## User Interface
-<img src="images/1.png" width="600">
+<img src="images/ui_dual_mode.png" width="600">
 
 ## Overview
 myNode is a platform that provides uptime, reliability, ease-of-use and a huge variety of applications! By integrating a number of Bitcoin-related open source projects, it provides access to Bitcoin and Lightning along with a number of other features.
