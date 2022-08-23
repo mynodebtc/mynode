@@ -1,6 +1,7 @@
 from bitcoin_info import *
 from lightning_info import *
 from electrum_info import *
+from dojo_info import *
 from device_info import *
 from drive_info import *
 from systemctl_info import *
@@ -380,12 +381,16 @@ def get_application_status_special(short_name):
         if not os.path.isfile("/mnt/hdd/mynode/whirlpool/whirlpool-cli-config.properties"):
             return "Waiting for initialization..."
     elif short_name == "dojo":
-        try:
-            dojo_initialized = to_string(subprocess.check_output("docker inspect --format={{.State.Running}} db", shell=True).strip())
-        except:
-            dojo_initialized = ""
-        if dojo_initialized != "true":
+        if not is_dojo_initialized():
+            return "Error Starting"
+        tracker_status, tracker_status_text = get_dojo_tracker_status()
+        dojo_status_code = get_service_status_code("dojo")
+        if dojo_status_code != 0:
             return "Error"
+        if tracker_status == TrackerStatus.SYNCING:
+            return "Syncing..."
+        elif tracker_status == TrackerStatus.ERROR:
+            return "Tracker Error"
     return ""
 
 def get_application_status(short_name):
