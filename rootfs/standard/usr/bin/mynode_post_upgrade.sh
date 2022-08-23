@@ -1115,21 +1115,21 @@ systemctl enable corsproxy_btcrpc
 systemctl enable usb_extras
 
 # Disable any old services
-systemctl disable bitcoind || true
-systemctl disable poold || true
-systemctl disable loopd || true
-systemctl disable btc_rpc_explorer || true
-systemctl disable mempoolspace || true
-systemctl disable hitch || true
-systemctl disable mongodb || true
-systemctl disable lnd_admin || true
-systemctl disable lnd_unlock || true
-systemctl disable dhcpcd || true
-rm /etc/systemd/system/bitcoind.service || true
-rm /etc/systemd/system/btc_rpc_explorer.service || true
-rm /etc/systemd/system/mempoolspace.service || true
-rm /etc/systemd/system/poold.service || true
-rm /etc/systemd/system/loopd.service || true
+systemctl disable bitcoind > /dev/null 2>&1 || true
+systemctl disable poold > /dev/null 2>&1 || true
+systemctl disable loopd > /dev/null 2>&1 || true
+systemctl disable btc_rpc_explorer > /dev/null 2>&1 || true
+systemctl disable mempoolspace > /dev/null 2>&1 || true
+systemctl disable hitch > /dev/null 2>&1 || true
+systemctl disable mongodb > /dev/null 2>&1 || true
+systemctl disable lnd_admin > /dev/null 2>&1 || true
+systemctl disable lnd_unlock > /dev/null 2>&1 || true
+systemctl disable dhcpcd > /dev/null 2>&1 || true
+rm -f /etc/systemd/system/bitcoind.service
+rm -f /etc/systemd/system/btc_rpc_explorer.service
+rm -f /etc/systemd/system/mempoolspace.service
+rm -f /etc/systemd/system/poold.service
+rm -f /etc/systemd/system/loopd.service
 
 # Reload service settings
 systemctl daemon-reload
