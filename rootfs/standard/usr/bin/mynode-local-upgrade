@@ -26,12 +26,18 @@ mkdir -p /var/log/nginx
 rm -f mynode_rootfs_${DEVICE_TYPE}.tar.gz
 wget http://${ip_address}:8000/mynode_rootfs_${DEVICE_TYPE}.tar.gz -O /tmp/mynode_rootfs_${DEVICE_TYPE}.tar.gz --progress=bar
 
-# Extract on top of mynode fs
+# Extract to temp location
 rm -rf /tmp/rootfs/
 mkdir -p /tmp/rootfs/
 echo -n "Extracting rootfs TAR for ${DEVICE_TYPE}... "
 tar -xf /tmp/mynode_rootfs_${DEVICE_TYPE}.tar.gz -C /tmp/rootfs/
 echo Done!
+
+# Clear files before installing/overwriting new ones
+rm -rf /var/www/mynode/static/images/screenshots
+for d in /usr/share/mynode_apps/*/screenshots ; do
+    rm -rf "$d"
+done
 
 # Install files
 rsync -r -K /tmp/rootfs/out/rootfs_${DEVICE_TYPE}/* /
