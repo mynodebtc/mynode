@@ -53,6 +53,12 @@ rm -f /usr/share/mynode/beta_version
 # Extract to temp location
 tar -xf /opt/mynode_release_latest.tar.gz -C /opt/upgrade/
 
+# Clear files before installing/overwriting new ones
+rm -rf /var/www/mynode/static/images/screenshots
+for d in /usr/share/mynode_apps/*/screenshots ; do
+    rm -rf "$d"
+done
+
 # Install files (migrate all to rsync?)
 VERSION=$(cat /opt/upgrade/out/rootfs_*/usr/share/mynode/version)
 if [ $IS_X86 = 1 ] || [ $IS_RASPI4_ARM64 = 1 ] || [ $IS_ROCKPI4 = 1 ]; then
