@@ -5,6 +5,7 @@ set -x
 shopt -s nullglob
 
 source /usr/share/mynode/mynode_config.sh
+source /usr/share/mynode/mynode_functions.sh
 source /usr/share/mynode/mynode_app_versions.sh
 
 # Verify FS is mounted as R/W
@@ -30,15 +31,20 @@ chmod +t /tmp
 # fi
 
 # Add some DNS servers to make domain lookup more likely
-needDns=0
-grep "Added at myNode startup" /etc/resolv.conf || needDns=1
-if [ $needDns = 1 ]; then
+if settings_file_exists "skip_backup_dns_servers" ; then
     echo '' >> /etc/resolv.conf
-    echo '# Added at myNode startup' >> /etc/resolv.conf
-    echo 'nameserver 1.1.1.1' >> /etc/resolv.conf
-    echo 'nameserver 208.67.222.222' >> /etc/resolv.conf
-    echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
-    echo 'nameserver 8.8.4.4' >> /etc/resolv.conf
+    sed -i "s/^.*append domain-name-servers/#append domain-name-servers/g" /etc/dhcp/dhclient.conf || true
+else
+    needDns=0
+    grep "Added at myNode startup" /etc/resolv.conf || needDns=1
+    if [ $needDns = 1 ]; then
+        echo '' >> /etc/resolv.conf
+        echo '# Added at myNode startup' >> /etc/resolv.conf
+        echo 'nameserver 1.1.1.1' >> /etc/resolv.conf
+        echo 'nameserver 208.67.222.222' >> /etc/resolv.conf
+        echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
+    fi
+    sed -i "s/^.*append domain-name-servers .*/append domain-name-servers 1.1.1.1, 208.67.222.222, 8.8.8.8;/g" /etc/dhcp/dhclient.conf || true
 fi
 
 # Disable autosuspend for USB drives
