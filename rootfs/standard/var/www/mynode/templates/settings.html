@@ -607,6 +607,20 @@
                     window.location.href='/settings/toggle_setting?name=local_traffic_allowed&reboot=1&enable='+val
                 });
 
+                $('#skip_backup_dns_servers_checkbox').change(function () {
+                    $("#skip_backup_dns_servers").show();
+                });
+                $("#skip_backup_dns_servers").on("click", function() {
+                    checked=$('#skip_backup_dns_servers_checkbox').is(":checked")
+                    val = "0"
+                    if (checked)
+                    {
+                        val = "1"
+                    }
+                    $('#loading_spinner_overlay').fadeIn();
+                    window.location.href='/settings/toggle_setting?name=skip_backup_dns_servers&reboot=1&enable='+val
+                });
+
                 $('#btcrpcexplorer_token_checkbox').change(function () {
                     $("#btcrpcexplorer_token").show();
                 });
@@ -1046,14 +1060,21 @@
 
         <div class="settings_block">
             <a id="firewall"></a>
-            <div class="settings_block_header">Firewall</div>
+            <div class="settings_block_header">Networking</div>
 
-            <div class="settings_block_subheader">Rules</div>
+            <div class="settings_block_subheader">Firewall Rules</div>
             Show the current firewall configuration.
             <br/>
             <button id="show_firewall_rules" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
             <div id="firewall_rules" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{firewall_rules}}</pre></div>
             
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Reset Firewall</div>
+            Resetting the firewall will disable and reenable the firewall and then reboot the device.
+            <br/>
+            <a href="/settings/reset-firewall" class="ui-button ui-widget ui-corner-all settings_button">Reset Firewall</a>
+
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Allow All Local Network Traffic</div>
@@ -1069,10 +1090,15 @@
 
             <div class="divider"></div>
 
-            <div class="settings_block_subheader">Reset</div>
-            Resetting the firewall will disable and reenable the firewall and then reboot the device.
-            <br/>
-            <a href="/settings/reset-firewall" class="ui-button ui-widget ui-corner-all settings_button">Reset Firewall</a>
+            <div class="settings_block_subheader">Skip Backup DNS Servers</div>
+            Some backup DNS servers are configured if your network does not give your device any. They are used as backup. If you do not want any backup DNS servers configured, enable this.
+            <br/><br/>
+            <label class="switch">
+                <input type="checkbox" id="skip_backup_dns_servers_checkbox" {% if skip_backup_dns_servers %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <br/><br/>
+            <button id="skip_backup_dns_servers" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
 
         </div>
 
