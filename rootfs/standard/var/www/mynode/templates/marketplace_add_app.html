@@ -57,46 +57,38 @@
                 <div class="marketplace_app_page_block_contents_left">
                     <img class="marketplace_app_page_icon" src="{{ url_for('static', filename="images/")}}add_app.png"/>
                     <p style="font-size: 14px; text-align: center;">Add Community App</p>
-                    
-                    {% if product_key_skipped %}
-                        <p style="font-size: 14px; text-align: center;"><i>Premium Feature</i></p>
-                    {% endif %}
                 </div>
 
                 <div class="marketplace_app_page_block_contents_right">
-                    {% if product_key_skipped %}
-                        <p>Adding new applications is a Premium feature.</p>
-                    {% else %}
-                        <form action="/marketplace/add_app" method="POST" enctype="multipart/form-data">
-                            <div class="marketplace_app_page_block_contents_heading">
-                                <div class="info-page-block">Select Application File</div>
-                            </div>
-                            <div class="marketplace_app_page_block_contents_text">
-                                <input type="file" id="app_tarball" name="app_tarball">
-                            </div>
+                    <form action="/marketplace/add_app" method="POST" enctype="multipart/form-data">
+                        <div class="marketplace_app_page_block_contents_heading">
+                            <div class="info-page-block">Select Application File</div>
+                        </div>
+                        <div class="marketplace_app_page_block_contents_text">
+                            <input type="file" id="app_tarball" name="app_tarball">
+                        </div>
 
-                            <div class="marketplace_app_page_block_contents_heading">
-                                <div class="info-page-block">Confirm Installation</div>
-                            </div>
-                            <div class="marketplace_app_page_block_contents_text">
-                                <input type="checkbox" id="confirm1" name="confirm" value="">
-                                <label for="confirm1"> I trust the source of this application as well as the developers.</label><br>
+                        <div class="marketplace_app_page_block_contents_heading">
+                            <div class="info-page-block">Confirm Installation</div>
+                        </div>
+                        <div class="marketplace_app_page_block_contents_text">
+                            <input type="checkbox" id="confirm1" name="confirm" value="">
+                            <label for="confirm1"> I trust the source of this application as well as the developers.</label><br>
 
-                                <input type="checkbox" id="confirm2" name="confirm" value="">
-                                <label for="confirm2"> I understand myNode does not support community applications.</label><br>
+                            <input type="checkbox" id="confirm2" name="confirm" value="">
+                            <label for="confirm2"> I understand myNode does not support community applications.</label><br>
 
-                                <input type="checkbox" id="confirm3" name="confirm" value="">
-                                <label for="confirm3"> I understand myNode is not responsible for community applications.</label><br>
+                            <input type="checkbox" id="confirm3" name="confirm" value="">
+                            <label for="confirm3"> I understand myNode is not responsible for community applications.</label><br>
 
-                                <input type="checkbox" id="confirm4" name="confirm" value="">
-                                <label for="confirm4"> I understand malicious applications could cause device instability, loss of privacy, and/or loss of funds.</label><br>
+                            <input type="checkbox" id="confirm4" name="confirm" value="">
+                            <label for="confirm4"> I understand malicious applications could cause device instability, loss of privacy, and/or loss of funds.</label><br>
 
-                                </br>
+                            </br>
 
-                                <input type="submit" id="add_app_submit" class="ui-button ui-widget ui-corner-all ui-state-disabled" value="Add Application" disabled>
-                            </div>
-                        </form>
-                    {% endif %}
+                            <input type="submit" id="add_app_submit" class="ui-button ui-widget ui-corner-all ui-state-disabled" value="Add Application" disabled>
+                        </div>
+                    </form>
                 </div>
 
             </div>
