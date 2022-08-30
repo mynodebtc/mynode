@@ -6,7 +6,7 @@ rootfs:
 	@./make_rootfs.sh
 
 .PHONY: rootfs_auto
-rootfs_auto:
+rootfs_auto: start_file_server
 	@./make_rootfs_auto.sh
 
 .PHONY: clean_rootfs
