@@ -1,0 +1,58 @@
+{
+    "name": "Tailscale",
+    "short_name": "tailscale",
+    "author": {
+        "name": "Tailscale",
+        "link": "https://tailscale.com/"
+    },
+    "website": {
+        "name": "GitHub",
+        "link": "https://github.com/tailscale/tailscale"
+    },
+    "category": "networking",
+    "short_description": "Simple VPN",
+    "description": [
+        "Tailscale is a VPN service that makes the devices and applications you own accessible anywhere in the world, securely and effortlessly. It enables encrypted point-to-point connections using the open source WireGuard protocol, which means only devices on your private network can communicate with each other."
+    ],
+    "latest_version": "v1.30.0",
+    "linux_user": "root",
+    "targz_download_url": "https://github.com/FILL_IN_GITHUB_USER/FILL_IN_GITHUB_PROJECT/archive/refs/tags/{VERSION}.tar.gz",
+    "skip_targz_download": true,
+    "install_env_vars": {},
+    "supports_app_page": true,
+    "supports_testnet": true,
+    "http_port": 8088,
+    "https_port": 8089,
+    "requires_bitcoin": false,
+    "requires_docker_image_installation": false,
+    "requires_electrs": false,
+    "requires_lightning": false,
+    "show_on_application_page": true,
+    "show_on_homepage": true,
+    "show_on_status_page": true,
+    "hide_status_icon": false,
+    "app_tile_name": "Tailscale",
+    "app_tile_running_status_text": "Running",
+    "app_tile_button_text": "Info",
+    "app_tile_button_href": "/app/tailscale/info",
+    "app_page_show_open_button": true,
+    "app_page_content": [
+        {
+            "heading": "Instructions",
+            "content": [
+                "Setting up Tailscale is simple! First, once Tailscale is enabled it will run a web interface that allows you to login to your Tailscale account.",
+                "After logging in, Tailscale will start running on your device and if you re-open the Tailscale web app, you will see a an IP address. This IP address can be used on any device you have running Tailscale to access the myNode interface!",
+                "Enjoy!"
+            ]
+        }
+    ],
+    "can_uninstall": true,
+    "can_reinstall": true,
+    "can_enable_disable": true,
+    "is_beta": false,
+    "is_premium": true,
+    "homepage_section": "remote_services",
+    "homepage_order": 4,
+    "app_type": "custom",
+    "sdk_version": 1
+}

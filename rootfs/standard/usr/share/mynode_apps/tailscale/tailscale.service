@@ -1,0 +1,29 @@
+# tailscale service
+# /etc/systemd/system/tailscale.service
+
+[Unit]
+Description=tailscale
+Wants=www.service
+After=www.service
+
+[Service]
+WorkingDirectory=/opt/mynode/tailscale
+
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_tailscale.sh ]; then /bin/bash /usr/bin/service_scripts/pre_tailscale.sh; fi'
+ExecStart=/usr/bin/tailscale web --listen 0.0.0.0:8088
+ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_tailscale.sh ]; then /bin/bash /usr/bin/service_scripts/post_tailscale.sh; fi'
+ExecStop=/bin/bash -c '/usr/bin/tailscale down || true'
+
+User=root
+Group=root
+Type=simple
+TimeoutSec=120
+Restart=always
+RestartSec=60
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=tailscale
+
+[Install]
+WantedBy=multi-user.target
