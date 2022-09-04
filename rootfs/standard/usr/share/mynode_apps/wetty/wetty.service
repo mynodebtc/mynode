@@ -3,15 +3,15 @@
 
 [Unit]
 Description=wetty
-Wants=www.service docker_images.service
-After=www.service docker_images.service
+Wants=www.service
+After=www.service
 
 [Service]
 WorkingDirectory=/opt/mynode/wetty
 
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_wetty.sh ]; then /bin/bash /usr/bin/service_scripts/pre_wetty.sh; fi'
-ExecStart=FILL_IN_EXECSTART
+ExecStart=/usr/bin/yarn run start -p 2224 --host 0.0.0.0 -b /
 ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_wetty.sh ]; then /bin/bash /usr/bin/service_scripts/post_wetty.sh; fi'
 #ExecStop=TODO
 
