@@ -31,18 +31,6 @@
         <script src="{{ url_for('static', filename='js/hes-gallery.min.js')}}"></script>
 
         <script>
-        function restart_app_via_api(name, short_name) {
-            if ( confirm("Are you sure you want to restart "+name+"?") ) {
-                $('#loading_spinner_message').html("Restarting...");
-                $('#loading_spinner_overlay').fadeIn();
-                $.getJSON('/api/restart_app?app='+short_name, function( data ) {
-                    alert(data)
-                    if (data != "OK") {
-                        alert("Error restarting app: "+data)
-                    }
-                });
-            }
-        }
         $(document).ready(function() {
             HesGallery.init({
                 disableScrolling: false,
@@ -175,6 +163,8 @@
 
             </div>
         </div>
+
+        <div id="confirm-dialog"></div>
 
         <div id="loading_spinner_overlay" class="loading_spinner_overlay" style="display:none;">
             <img id="loading_spinner" class="loading_image" src="{{ url_for('static', filename="images/loading.gif")}}"/>

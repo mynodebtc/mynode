@@ -13,6 +13,21 @@ function restart(name, short_name) {
     }
 }
 
+function restart_app_via_api(name, short_name) {
+    if ( confirm("Are you sure you want to restart "+name+"?") ) {
+        $('#loading_spinner_message').html("Restarting...");
+        $('#loading_spinner_overlay').fadeIn();
+        $.get('/api/restart_app?app='+short_name)
+            .done(function( data ) {
+                if (data != "OK") {
+                    alert("Error restarting app: "+data)
+                }
+                $('#loading_spinner_overlay').fadeOut();
+            }
+        );
+    }
+}
+
 // ==========================================
 // Manage app installations
 // ==========================================
