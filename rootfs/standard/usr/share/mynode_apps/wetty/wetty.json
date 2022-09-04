@@ -1,6 +1,5 @@
 {
     "name": "WeTTY",
-    "comment": "HIDDEN - CHANGE show_on_application_page show_on_homepage ",
     "short_name": "wetty",
     "author": {
         "name": "Cian Butler",
@@ -13,9 +12,10 @@
     "category": "device_management",
     "short_description": "Linux Terminal",
     "description": [
-        "Terminal over HTTP and https. WeTTY is an alternative to ajaxterm and anyterm but much better than them because WeTTY uses xterm.js which is a full fledged implementation of terminal emulation written entirely in JavaScript. WeTTY uses websockets rather than Ajax and hence better response time."
+        "Terminal over HTTP and HTTPS. WeTTY is an alternative to ajaxterm and anyterm but much better than them because WeTTY uses xterm.js which is a full fledged implementation of terminal emulation written entirely in JavaScript. WeTTY uses websockets rather than Ajax and hence better response time."
     ],
-    "latest_version": "v2.3.0",
+    "linux_user": "wetty",
+    "latest_version": "v2.4.2",
     "targz_download_url": "https://github.com/butlerx/wetty/archive/refs/tags/{VERSION}.tar.gz",
     "install_env_vars": {}, 
     "supports_app_page": true,
@@ -26,8 +26,8 @@
     "requires_docker_image_installation": false,
     "requires_electrs": false,
     "requires_lightning": false,
-    "show_on_application_page": false,
-    "show_on_homepage": false,
+    "show_on_application_page": true,
+    "show_on_homepage": true,
     "show_on_status_page": true,
     "hide_status_icon": false,
     "app_tile_name": "WeTTY",
@@ -39,10 +39,8 @@
         {
             "heading": "Instructions",
             "content": [
-                "Add general usage instructions here. You can open the app with the Open button on the left (if web based).",
-                "For more custom content, update the template and python files under the 'www' folder.",
-                "Paragraph 3",
-                "Paragraph 4",
+                "WeTTY is a web-based terminal application for your node. To use, simple click Open on the left and login!",
+                "The typical login credentials are 'admin' and your myNode password. Once successfully logged in, you will be presented with a Linux terminal and will be able to enter terminal commands.",
                 "Enjoy!"
             ]
         }
@@ -52,6 +50,7 @@
     "can_enable_disable": true,
     "is_beta": false,
     "is_premium": false,
+    "homepage_section": "apps",
     "homepage_order": 92,
     "app_type": "custom",
     "sdk_version": 1

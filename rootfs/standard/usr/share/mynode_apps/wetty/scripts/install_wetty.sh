@@ -12,6 +12,8 @@ echo "==================== INSTALLING APP ===================="
 # has already been downloaded and extracted. Any additional env variables specified
 # in the JSON file are also present.
 
-# TODO: Perform installation steps here
+yarn
+yarn build
+# yarn global add wetty@$VERSION
 
 echo "================== DONE INSTALLING APP ================="
