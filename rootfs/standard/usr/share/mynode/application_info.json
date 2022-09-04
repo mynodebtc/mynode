@@ -513,6 +513,8 @@
         "can_reinstall": false,
         "journalctl_log_name": "premium_plus_connect",
         "homepage_section": "remote_services",
+        "homepage_order": 1,
+        "supports_testnet": true,
         "is_premium": false
     },
     {
@@ -535,6 +537,7 @@
         "can_reinstall": false,
         "journalctl_log_name": "tor@default",
         "homepage_section": "remote_services",
+        "homepage_order": 2,
         "supports_testnet": true,
         "is_premium": true
     },
@@ -551,6 +554,7 @@
         "show_on_application_page": true,
         "can_reinstall": false,
         "homepage_section": "remote_services",
+        "homepage_order": 3,
         "supports_testnet": true,
         "is_premium": true
     },
