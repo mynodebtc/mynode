@@ -39,7 +39,7 @@
         {
             "heading": "Instructions",
             "content": [
-                "WeTTY is a web-based terminal application for your node. To use, simple click Open on the left and login!",
+                "WeTTY is a web-based terminal application for your node. To use, simply click Open on the left and login!",
                 "The typical login credentials are 'admin' and your myNode password. Once successfully logged in, you will be presented with a Linux terminal and will be able to enter terminal commands.",
                 "Enjoy!"
             ]
