@@ -77,11 +77,6 @@ CORSPROXY_VERSION=$(get_app_version "$CORSPROXY_VERSION" "corsproxy")
 CORSPROXY_VERSION_FILE=/home/bitcoin/.mynode/corsproxy_version
 CORSPROXY_LATEST_VERSION_FILE=/home/bitcoin/.mynode/corsproxy_version_latest
 
-JOINMARKET_VERSION="v0.8.2"
-JOINMARKET_VERSION=$(get_app_version "$JOINMARKET_VERSION" "joinmarket")
-JOINMARKET_VERSION_FILE=/home/bitcoin/.mynode/joinmarket_version
-JOINMARKET_LATEST_VERSION_FILE=/home/bitcoin/.mynode/joinmarket_version_latest
-
 JOININBOX_VERSION="v0.7.2"
 JOININBOX_VERSION=$(get_app_version "$JOININBOX_VERSION" "joininbox")
 JOININBOX_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version
@@ -132,7 +127,7 @@ LNBITS_VERSION=$(get_app_version "$LNBITS_VERSION" "lnbits")
 LNBITS_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version
 LNBITS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version_latest
 
-SPECTER_VERSION="1.10.2"
+SPECTER_VERSION="1.12.0"
 SPECTER_VERSION=$(get_app_version "$SPECTER_VERSION" "specter")
 SPECTER_VERSION_FILE=/home/bitcoin/.mynode/specter_version
 SPECTER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/specter_version_latest
