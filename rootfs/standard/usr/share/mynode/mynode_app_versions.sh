@@ -82,7 +82,7 @@ JOINMARKET_VERSION=$(get_app_version "$JOINMARKET_VERSION" "joinmarket")
 JOINMARKET_VERSION_FILE=/home/bitcoin/.mynode/joinmarket_version
 JOINMARKET_LATEST_VERSION_FILE=/home/bitcoin/.mynode/joinmarket_version_latest
 
-JOININBOX_VERSION="v0.6.8"
+JOININBOX_VERSION="v0.7.2"
 JOININBOX_VERSION=$(get_app_version "$JOININBOX_VERSION" "joininbox")
 JOININBOX_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version
 JOININBOX_LATEST_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version_latest
