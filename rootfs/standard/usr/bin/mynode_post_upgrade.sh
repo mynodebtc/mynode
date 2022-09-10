@@ -100,7 +100,8 @@ if ! skip_base_upgrades ; then
     gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys E777299FC265DD04793070EB944D35F9AC3DB76A # Bitcoin - Michael Ford (fanquake)
     curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
     curl https://samouraiwallet.com/pgp.txt | gpg --import # two keys from Samourai team
-    gpg  --keyserver hkp://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E #loopd
+    gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E #loopd
+    gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 26984CB69EB8C4A26196F7A4D7D916376026F177 # Lightning Terminal
     $TORIFY curl https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import  # tor
     gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | apt-key add -                                       # tor
     gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 648ACFD622F3D138     # Debian Backports
@@ -627,45 +628,6 @@ if [ "$CURRENT" != "$SECP256K1_VERSION" ]; then
     echo $SECP256K1_VERSION > $SECP256K1_VERSION_FILE
 fi
 
-# Upgrade JoinMarket (legacy)
-if should_install_app "joinmarket" ; then
-    echo "Upgrading JoinMarket..." # Old
-    if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
-        JOINMARKET_UPGRADE_URL=https://github.com/JoinMarket-Org/joinmarket-clientserver/archive/$JOINMARKET_VERSION.tar.gz
-        CURRENT=""
-        if [ -f $JOINMARKET_VERSION_FILE ]; then
-            CURRENT=$(cat $JOINMARKET_VERSION_FILE)
-        fi
-        if [ "$CURRENT" != "$JOINMARKET_VERSION" ]; then
-            # Download and build JoinMarket
-            cd /opt/mynode
-
-            # Backup old version in case config / wallet was stored within folder
-            if [ ! -d /opt/mynode/jm_backup ] && [ -d /opt/mynode/joinmarket-clientserver ]; then
-                cp -R /opt/mynode/joinmarket-clientserver /opt/mynode/jm_backup
-                chown -R bitcoin:bitcoin /opt/mynode/jm_backup
-            fi
-
-            rm -rf joinmarket-clientserver
-
-            sudo -u bitcoin wget $JOINMARKET_UPGRADE_URL -O joinmarket.tar.gz
-            sudo -u bitcoin tar -xvf joinmarket.tar.gz
-            sudo -u bitcoin rm joinmarket.tar.gz
-            mv joinmarket-clientserver-* joinmarket-clientserver
-
-            cd joinmarket-clientserver
-
-            # Apply Patch to fix cryptography dependency
-            #sed -i "s/'txtorcon', 'pyopenssl'/'txtorcon', 'cryptography==3.3.2', 'pyopenssl'/g" jmdaemon/setup.py || true
-
-            # Install
-            yes | ./install.sh --without-qt
-
-            echo $JOINMARKET_VERSION > $JOINMARKET_VERSION_FILE
-        fi
-    fi
-fi
-
 # Upgrade JoininBox
 echo "Upgrading JoinInBox..."
 if should_install_app "joininbox" ; then
@@ -698,7 +660,7 @@ if should_install_app "joininbox" ; then
             fi
 
             # Install
-            sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket.sh install" || true
+            sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket.sh --install install" || true
 
             echo $JOININBOX_VERSION > $JOININBOX_VERSION_FILE
         fi
@@ -751,6 +713,7 @@ if should_install_app "rtl" ; then
             sudo -u bitcoin mv RTL-* RTL
             cd RTL
             sudo -u bitcoin NG_CLI_ANALYTICS=false npm install --only=production --legacy-peer-deps
+            sudo -u bitcoin npm install request --save
 
             echo $RTL_VERSION > $RTL_VERSION_FILE
         else
