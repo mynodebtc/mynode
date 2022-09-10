@@ -157,7 +157,7 @@ CKBUNKER_VERSION=$(get_app_version "$CKBUNKER_VERSION" "ckbunker")
 CKBUNKER_VERSION_FILE=/home/bitcoin/.mynode/ckbunker_version
 CKBUNKER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/ckbunker_version_latest
 
-BOS_VERSION="12.13.2"
+BOS_VERSION="12.29.0"
 BOS_VERSION=$(get_app_version "$BOS_VERSION" "bos")
 BOS_VERSION_FILE=/home/bitcoin/.mynode/bos_version
 BOS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bos_version_latest
