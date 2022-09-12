@@ -16,8 +16,9 @@
     ],
     "latest_version": "v1.30.0",
     "linux_user": "root",
-    "targz_download_url": "https://github.com/FILL_IN_GITHUB_USER/FILL_IN_GITHUB_PROJECT/archive/refs/tags/{VERSION}.tar.gz",
-    "skip_targz_download": true,
+    "download_skip": true,
+    "download_type": "source",
+    "download_source_url": "https://github.com/FILL_IN_GITHUB_USER/FILL_IN_GITHUB_PROJECT/archive/refs/tags/{VERSION}.tar.gz",
     "install_env_vars": {},
     "supports_app_page": true,
     "supports_testnet": true,
@@ -54,5 +55,5 @@
     "homepage_section": "remote_services",
     "homepage_order": 4,
     "app_type": "custom",
-    "sdk_version": 1
+    "sdk_version": 2
 }

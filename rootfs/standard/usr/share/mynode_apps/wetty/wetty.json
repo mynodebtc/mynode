@@ -16,7 +16,8 @@
     ],
     "linux_user": "wetty",
     "latest_version": "v2.4.2",
-    "targz_download_url": "https://github.com/butlerx/wetty/archive/refs/tags/{VERSION}.tar.gz",
+    "download_type": "source",
+    "download_source_url": "https://github.com/butlerx/wetty/archive/refs/tags/{VERSION}.tar.gz",
     "install_env_vars": {}, 
     "supports_app_page": true,
     "supports_testnet": true,
@@ -53,5 +54,5 @@
     "homepage_section": "apps",
     "homepage_order": 92,
     "app_type": "custom",
-    "sdk_version": 1
+    "sdk_version": 2
 }

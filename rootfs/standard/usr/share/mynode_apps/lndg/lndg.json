@@ -10,7 +10,7 @@
     ],
     "latest_version": "v1.3.1",
     "linux_user": "lndg",
-    "targz_download_url": "https://github.com/cryptosharks131/lndg/archive/refs/tags/{VERSION}.tar.gz",
+    "download_source_url": "https://github.com/cryptosharks131/lndg/archive/refs/tags/{VERSION}.tar.gz",
     "install_env_vars": {"var1":"val2", "var2": "val2"},
     "http_port": "8889",
     "https_port": "8890",
