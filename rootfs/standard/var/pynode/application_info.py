@@ -160,8 +160,11 @@ def initialize_application_defaults(app):
     if not "screenshots" in app: app["screenshots"] = get_app_screenshots( app["short_name"] )
     if not "app_tile_name" in app: app["app_tile_name"] = app["name"]
     if not "linux_user" in app: app["linux_user"] = "bitcoin"
-    if not "skip_targz_download" in app: app["skip_targz_download"] = False
-    if not "targz_download_url" in app: app["targz_download_url"] = "not_specified"
+    if not "supported_archs" in app: app["supported_archs"] = None 
+    if not "download_skip" in app: app["download_skip"] = False
+    if not "download_type" in app: app["download_type"] = "source"      # source or binary
+    if not "download_source_url" in app: app["download_source_url"] = "not_specified"
+    if not "download_binary_url" in app: app["download_binary_url"] = {}    # Expected to be dictionary of "arch" : "url"
     app["install_folder"] = "/opt/mynode/{}".format(app["short_name"])
     app["storage_folder"] = "/mnt/hdd/mynode/{}".format(app["short_name"])
     if not "install_env_vars" in app: app["install_env_vars"] = []
@@ -206,7 +209,9 @@ def initialize_application_defaults(app):
     if not "app_page_content" in app: app["app_page_content"] = []
 
     # Update fields that may use variables that need replacing, like {VERSION}, {SHORT_NAME}, etc...
-    app["targz_download_url"] = replace_app_info_variables(app, app["targz_download_url"])
+    app["download_source_url"] = replace_app_info_variables(app, app["download_source_url"])
+    for arch in app["download_binary_url"]:
+        app["download_binary_url"][arch] = replace_app_info_variables(app, app["download_binary_url"][arch])
     app["app_tile_button_onclick"] = replace_app_info_variables(app, app["app_tile_button_onclick"])
     for btn in app["app_page_additional_buttons"]:
         if "onclick" in btn:
@@ -613,11 +618,29 @@ def install_application_tarball(app_data):
     run_linux_cmd("chmod -R 777 /tmp/mynode_dynamic_app_extract")
 
     # Download and extract
-    if not app_data["skip_targz_download"]:
-        if "targz_download_url" not in app_data:
-            log_message("  APP MISSING TARGZ DOWNLOAD URL")
-            raise ValueError("APP MISSING TARGZ DOWNLOAD URL")
-        run_linux_cmd("wget -O /tmp/mynode_dynamic_app_download/app.tar.gz {}".format(app_data["targz_download_url"]))
+    if not app_data["download_skip"]:
+        download_url = "not_specified"
+        if app_data["download_type"] == "source" and "download_source_url" == None:
+            log_message("  APP MISSING SOURCE DOWNLOAD URL")
+            raise ValueError("APP MISSING SOURCE DOWNLOAD URL")
+        if app_data["download_type"] == "binary" and "download_binary_url" == None:
+            log_message("  APP MISSING BINARY DOWNLOAD URL")
+            raise ValueError("APP MISSING BINARY DOWNLOAD URL")
+
+        if app_data["download_type"] == "source":
+            download_url = app_data["download_source_url"]
+        elif app_data["download_type"] == "binary":
+            found = False
+            for arch in app_data["download_binary_url"]:
+                if arch == get_device_arch():
+                    download_url = app_data["download_binary_url"][arch]
+            if not found:
+                log_message("  CANNOT FIND BINARY URL FOR APP: {} CURRENT ARCH: {}".format(app_data["short_name"], get_device_arch()))
+        else:
+            log_message("  UNKNOWN download_type {}".format(app_data["download_type"]))
+            raise ValueError("  UNKNOWN download_type {}".format(app_data["download_type"]))
+        run_linux_cmd("wget -O /tmp/mynode_dynamic_app_download/app.tar.gz {}".format(download_url))
+
         time.sleep(1)
         run_linux_cmd("sync")
         run_linux_cmd("sudo -u {} tar -xvf /tmp/mynode_dynamic_app_download/app.tar.gz -C /tmp/mynode_dynamic_app_extract/".format(app_data["linux_user"]))
