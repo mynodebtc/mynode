@@ -623,7 +623,7 @@ def page_product_key():
 
             save_product_key(product_key)
 
-            t = Timer(10.0, check_in)
+            t = Timer(1.0, restart_check_in)
             t.start()
 
             return redirect("/")
