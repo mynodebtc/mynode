@@ -756,6 +756,8 @@ def save_product_key(product_key):
     pk = product_key.replace("-","")
     os.system("echo '{}' > /home/bitcoin/.mynode/.product_key".format(pk))
     os.system("echo '{}' > /mnt/hdd/mynode/settings/.product_key".format(pk))
+def mark_product_key_error():
+    os.system("echo '{}' > /home/bitcoin/.mynode/.product_key_error".format("ERROR"))
 def delete_product_key_error():
     os.system("rm -rf /home/bitcoin/.mynode/.product_key_error")
     os.system("rm -rf /mnt/hdd/mynode/settings/.product_key_error")
