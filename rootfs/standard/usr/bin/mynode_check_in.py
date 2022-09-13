@@ -6,6 +6,7 @@ import subprocess
 import random
 import json
 import logging
+import argparse
 from systemd import journal
 from utilities import *
 from drive_info import *
@@ -71,7 +72,7 @@ def on_check_in_error(msg):
     save_response_data(data)
 
 # Checkin every 24 hours
-def check_in():
+def check_in(check_for_updates):
 
     # Check in
     product_key = get_product_key()
@@ -88,7 +89,8 @@ def check_in():
     }
 
     # Check for new version (not every time to spread out upgrades)
-    check_for_new_mynode_version()
+    if check_for_updates:
+        check_for_new_mynode_version()
 
     # Setup tor proxy
     session = requests.session()
@@ -128,8 +130,7 @@ def check_in():
                             check_in_success = True
                             log_message("Check In Success: {}".format(r.text))
                         else:
-                            # TODO: What to put in product_key_error now, how is it used?
-                            os.system("echo '{}' > /home/bitcoin/.mynode/.product_key_error".format("ERROR"))
+                            mark_product_key_error()
                             on_check_in_error("Check In Returned Error: {} - {}".format(info["status"], r.text))
                     except Exception as e:
                         on_check_in_error("Check In Failed: Error Parsing Response - {} - {}".format(str(e), r.text))
@@ -148,10 +149,26 @@ def check_in():
 
     return True
 
-# Run check in every 24 hours
 if __name__ == "__main__":
-    delay = 180
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--delay", type=int, default=0,
+                        help="Time in seconds to delay before opening connection")
+    parser.add_argument("-i", "--interval", type=int, default=0,
+                        help="Time in hours to delay before opening connection")
+    parser.add_argument("-u", "--check-for-updates", action='store_true',
+                        help="Time in hours to delay before opening connection")
+    args = parser.parse_args()
+
+    delay = args.delay
+    interval = 60*60*args.interval
     while True:
-        time.sleep(delay)   # Delay before first checkin so drive is likely mounted
-        check_in()
-        time.sleep(60*60*24 - delay)
+        print("Sleeping {} seconds...".format(delay))
+        time.sleep(delay)
+
+        check_in(args.check_for_updates)
+
+        if args.interval == 0:
+            break
+        else:
+            print("Sleeping {} seconds...".format(interval - delay))
+            time.sleep(interval - delay)
