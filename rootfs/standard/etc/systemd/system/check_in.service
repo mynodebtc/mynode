@@ -9,7 +9,7 @@ After=network-online.target
 [Service]
 Type=simple
 KillMode=control-group
-ExecStart=/usr/local/bin/python3 /usr/bin/mynode_check_in.py -d 180 -i 24
+ExecStart=/usr/local/bin/python3 /usr/bin/mynode_check_in.py -d 180 -i 24 --check-for-updates
 User=root
 Group=root
 StandardOutput=syslog
