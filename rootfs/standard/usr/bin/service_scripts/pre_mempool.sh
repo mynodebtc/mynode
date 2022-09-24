@@ -16,5 +16,5 @@ sed -i "s/BITCOIN_RPC_PASS=.*/BITCOIN_RPC_PASS=$BTCRPCPW/g" /mnt/hdd/mynode/memp
 if [ $IS_RASPI -eq 1 ] && [ $IS_RASPI4_ARM64 -eq 0 ]; then
     sed -i "s|MARIA_DB_IMAGE=.*|MARIA_DB_IMAGE=hypriot/rpi-mysql:latest|g" /mnt/hdd/mynode/mempool/.env
 else
-    sed -i "s|MARIA_DB_IMAGE=.*|MARIA_DB_IMAGE=mariadb:10.5.8|g" /mnt/hdd/mynode/mempool/.env
+    sed -i "s|MARIA_DB_IMAGE=.*|MARIA_DB_IMAGE=mariadb:10.9.3|g" /mnt/hdd/mynode/mempool/.env
 fi
