@@ -102,7 +102,7 @@ if ! skip_base_upgrades ; then
     curl https://samouraiwallet.com/pgp.txt | gpg --import # two keys from Samourai team
     gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E #loopd
     gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 26984CB69EB8C4A26196F7A4D7D916376026F177 # Lightning Terminal
-    $TORIFY curl https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import  # tor
+    $TORIFY curl https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import || true  # tor
     gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | apt-key add -                                       # tor
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 648ACFD622F3D138   # Debian Backports
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E98404D386FA1D9   # Debian Backports
@@ -1005,6 +1005,11 @@ if should_install_app "bos" ; then
         echo $BOS_VERSION > $BOS_VERSION_FILE
     fi
 fi
+
+# Make sure "Remote Access" apps are marked installed
+touch /home/bitcoin/.mynode/install_tor
+touch /home/bitcoin/.mynode/install_premium_plus
+touch /home/bitcoin/.mynode/install_vpn
 
 # Init dynamic apps, so any new applications are picked up before reboot
 mynode-manage-apps init || true

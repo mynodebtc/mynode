@@ -179,6 +179,7 @@ gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys E777299FC265DD04793070EB9
 curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
 curl https://samouraiwallet.com/pgp.txt | gpg --import # two keys from Samourai team
 gpg  --keyserver hkp://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E #loopd
+gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 26984CB69EB8C4A26196F7A4D7D916376026F177 # Lightning Terminal
 curl https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import  # tor
 gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | apt-key add -                                       # tor
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 648ACFD622F3D138     # Debian Backports
@@ -745,6 +746,7 @@ if [ "$CURRENT" != "$RTL_VERSION" ]; then
     sudo -u bitcoin mv RTL-* RTL
     cd RTL
     sudo -u bitcoin NG_CLI_ANALYTICS=false npm install --only=production --legacy-peer-deps
+    sudo -u bitcoin npm install request --save
 
     echo $RTL_VERSION > $RTL_VERSION_FILE
 fi
@@ -861,6 +863,10 @@ if [ ! -f /usr/bin/ngrok  ]; then
     cp ngrok /usr/bin/
 fi
 
+# Make sure "Remote Access" apps are marked installed
+touch /home/bitcoin/.mynode/install_tor
+touch /home/bitcoin/.mynode/install_premium_plus
+touch /home/bitcoin/.mynode/install_vpn
 
 # Mark docker images for install (on SD so install occurs after drive attach)
 touch /home/bitcoin/.mynode/install_mempool
