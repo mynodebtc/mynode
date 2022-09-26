@@ -1,0 +1,31 @@
+# itchysats service
+# /etc/systemd/system/itchysats.service
+
+[Unit]
+Description=itchysats
+Wants=www.service docker_images.service
+After=www.service docker_images.service
+
+[Service]
+WorkingDirectory=/opt/mynode/itchysats
+
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/usr/bin/wait_on_bitcoin.sh
+ExecStartPre=/usr/bin/wait_on_electrs.sh
+ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_itchysats.sh ]; then /bin/bash /usr/bin/service_scripts/pre_itchysats.sh; fi'
+EnvironmentFile=/mnt/hdd/mynode/itchysats/env
+ExecStart=/usr/bin/itchysats --http-address=${HTTP_ADDRESS} --data-dir=${DATA_DIR} ${NETWORK} --electrum ${ELECTRUM_RPC_ADDRESS}
+ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_itchysats.sh ]; then /bin/bash /usr/bin/service_scripts/post_itchysats.sh; fi'
+
+User=root
+Group=root
+Type=simple
+TimeoutSec=120
+Restart=always
+RestartSec=60
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=itchysats
+
+[Install]
+WantedBy=multi-user.target
