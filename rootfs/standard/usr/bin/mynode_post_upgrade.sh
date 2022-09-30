@@ -102,8 +102,7 @@ if ! skip_base_upgrades ; then
     curl https://samouraiwallet.com/pgp.txt | gpg --import # two keys from Samourai team
     gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E #loopd
     gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 26984CB69EB8C4A26196F7A4D7D916376026F177 # Lightning Terminal
-    $TORIFY curl https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import || true  # tor
-    gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | apt-key add -                                       # tor
+    $TORIFY wget -q https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc -O- | apt-key add - # Tor
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 648ACFD622F3D138   # Debian Backports
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E98404D386FA1D9   # Debian Backports
     set -e
@@ -214,7 +213,6 @@ if ! skip_base_upgrades ; then
 
         # Mark apps using python as needing re-install
         rm -f /home/bitcoin/.mynode/specter_version
-        rm -f /home/bitcoin/.mynode/lnbits_version
         rm -f /home/bitcoin/.mynode/pyblock_version
         rm -f /home/bitcoin/.mynode/ckbunker_version
         rm -f /home/bitcoin/.mynode/joininbox_version_latest
@@ -740,38 +738,6 @@ if should_install_app "btcrpcexplorer" ; then
         sudo -u bitcoin npm install --only=production
 
         echo $BTCRPCEXPLORER_VERSION > $BTCRPCEXPLORER_VERSION_FILE
-    fi
-fi
-
-
-# Upgrade LNBits
-if should_install_app "lnbits" ; then
-    # Find URL by going to https://github.com/lnbits/lnbits/releases and finding the exact commit for the mynode tag
-    LNBITS_UPGRADE_URL=https://github.com/lnbits/lnbits/archive/$LNBITS_VERSION.tar.gz
-    CURRENT=""
-    if [ -f $LNBITS_VERSION_FILE ]; then
-        CURRENT=$(cat $LNBITS_VERSION_FILE)
-    fi
-    if [ "$CURRENT" != "$LNBITS_VERSION" ]; then
-        cd /opt/mynode
-        rm -rf lnbits
-        sudo -u bitcoin wget $LNBITS_UPGRADE_URL -O lnbits.tar.gz
-        sudo -u bitcoin tar -xvf lnbits.tar.gz
-        sudo -u bitcoin rm lnbits.tar.gz
-        sudo -u bitcoin mv lnbits-* lnbits
-        cd lnbits
-
-        # Copy over config file
-        cp /usr/share/mynode/lnbits.env /opt/mynode/lnbits/.env
-        chown bitcoin:bitcoin /opt/mynode/lnbits/.env
-
-        # Install lnbits
-        sudo -u bitcoin python3 -m venv lnbits_venv
-        sudo -u bitcoin ./lnbits_venv/bin/pip install -r requirements.txt
-        sudo -u bitcoin ./lnbits_venv/bin/quart assets
-        sudo -u bitcoin ./lnbits_venv/bin/quart migrate
-
-        echo $LNBITS_VERSION > $LNBITS_VERSION_FILE
     fi
 fi
 

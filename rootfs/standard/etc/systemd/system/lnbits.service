@@ -11,13 +11,10 @@ ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/is_mainnet.sh
 ExecStartPre=/usr/bin/wait_on_lnd.sh
 ExecStartPre=/usr/bin/service_scripts/pre_lnbits.sh
-#ExecStartPre=/bin/sh -c 'cd /opt/mynode/lnbits && /usr/local/bin/pipenv run flask migrate'
-
-ExecStartPre=/bin/sh -c 'cd /opt/mynode/lnbits && ./lnbits_venv/bin/quart migrate'
-#Environment=FLASK_ENV=development
 WorkingDirectory=/opt/mynode/lnbits
 
-ExecStart=/bin/sh -c 'cd /opt/mynode/lnbits && ./lnbits_venv/bin/hypercorn -k trio --bind 0.0.0.0:5000 "lnbits.app:create_app()"'
+ExecStart=/usr/bin/docker run --rm --name lnbits-legend -p 5000:5000 --volume /opt/mynode/lnbits/.env:/app/.env --volume /mnt/hdd/mynode/lnbits/:/app/data --volume /mnt/hdd/mynode/lnd/tls.cert:/app/tls.cert lnbits-legend
+ExecStop=/usr/bin/docker stop -t 2 lnbits-legend
 
 User=bitcoin
 Group=bitcoin
