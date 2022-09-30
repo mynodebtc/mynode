@@ -63,6 +63,9 @@ if [ "$#" -ge 2 ]; then
     elif [ "$2" = "mempool" ]; then
         echo "Restarting mempool service..."
         systemctl restart mempool &
+    elif [ "$2" = "docker_images" ]; then
+        echo "Restarting docker_images..."
+        systemctl restart docker_images &
     elif [ "$2" = "files" ]; then
         echo "Only updating files... Done."
     elif [ "$2" = "reboot" ]; then
