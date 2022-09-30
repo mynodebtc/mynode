@@ -122,7 +122,7 @@ BTCRPCEXPLORER_VERSION=$(get_app_version "$BTCRPCEXPLORER_VERSION" "btcrpcexplor
 BTCRPCEXPLORER_VERSION_FILE=/home/bitcoin/.mynode/btcrpcexplorer_version
 BTCRPCEXPLORER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/btcrpcexplorer_version_latest
 
-LNBITS_VERSION=bcecf6d43111199302d9f7152ecb7e7a4735662a         # Github hash to download
+LNBITS_VERSION=0.9.4         # Github hash to download
 LNBITS_VERSION=$(get_app_version "$LNBITS_VERSION" "lnbits")
 LNBITS_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version
 LNBITS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version_latest

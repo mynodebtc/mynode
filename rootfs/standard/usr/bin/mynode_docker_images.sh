@@ -183,6 +183,36 @@ while true; do
     touch /tmp/need_application_refresh
 
 
+    # Upgrade LNBits
+    if should_install_app "lnbits" ; then
+        LNBITS_UPGRADE_URL=https://github.com/lnbits/lnbits/archive/$LNBITS_VERSION.tar.gz
+        CURRENT=""
+        if [ -f $LNBITS_VERSION_FILE ]; then
+            CURRENT=$(cat $LNBITS_VERSION_FILE)
+        fi
+        if [ "$CURRENT" != "$LNBITS_VERSION" ]; then
+            docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'lnbits') || true
+
+            cd /opt/mynode
+            rm -rf lnbits
+            sudo -u bitcoin wget $LNBITS_UPGRADE_URL -O lnbits.tar.gz
+            sudo -u bitcoin tar -xvf lnbits.tar.gz
+            sudo -u bitcoin rm lnbits.tar.gz
+            sudo -u bitcoin mv lnbits-* lnbits
+            cd lnbits
+
+            # Copy over config file
+            cp /usr/share/mynode/lnbits.env /opt/mynode/lnbits/.env
+            chown bitcoin:bitcoin /opt/mynode/lnbits/.env
+
+            # Build lnbits docker container
+            docker build -t lnbits-legend .
+
+            echo $LNBITS_VERSION > $LNBITS_VERSION_FILE
+        fi
+    fi
+
+
     # Install Dojo
     DOJO_UPGRADE_URL=https://code.samourai.io/dojo/samourai-dojo/-/archive/$DOJO_VERSION/samourai-dojo-$DOJO_VERSION.tar.gz
     DOJO_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/dojo_url
