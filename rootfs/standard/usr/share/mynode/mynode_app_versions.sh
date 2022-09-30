@@ -109,7 +109,7 @@ RTL_VERSION=$(get_app_version "$RTL_VERSION" "rtl")
 RTL_VERSION_FILE=/home/bitcoin/.mynode/rtl_version
 RTL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/rtl_version_latest
 
-BTCPAYSERVER_VERSION="1.6.10"
+BTCPAYSERVER_VERSION="1.6.11"
 if [ "$IS_32_BIT" = "1" ]; then
     BTCPAYSERVER_VERSION="1.3.6"
 fi
