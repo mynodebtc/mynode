@@ -280,9 +280,9 @@ def format_sat_amount(amount):
 #==================================
 # Flask Functions
 #==================================
-def download_file(directory, filename, downloaded_file_name=None, as_attachment=True):
+def download_file(directory, filename, as_attachment=True):
     if isPython3():
-        return send_from_directory(directory=directory, path=filename, filename=None, as_attachment=as_attachment)
+        return send_from_directory(directory=directory, path=filename, as_attachment=as_attachment)
     else:
         return send_from_directory(directory=directory, filename=filename, as_attachment=as_attachment)
 
