@@ -1,11 +1,7 @@
 #!/bin/bash
 
-source /usr/share/mynode/mynode_config.sh
-
 set -x
 
-# Copy TLS cert
-cp -f /mnt/hdd/mynode/lnd/tls.cert /opt/mynode/lnbits/
 
 # Generate hex macaroons
 macaroonAdminHex=$(xxd -ps -u -c 1000 /mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon)
