@@ -34,7 +34,11 @@ def disable_actions(short_name):
         os.system("systemctl stop openvpn --no-pager")
         os.system("systemctl disable openvpn --no-pager")
 
-# Function to restart service
+# Function to start/stop/restart service
+def start_service(short_name):
+    os.system("systemctl start {} --no-pager".format(short_name))
+def stop_service(short_name):
+    os.system("systemctl stop {} --no-pager".format(short_name))
 def restart_service(short_name):
     os.system("systemctl restart {} --no-pager".format(short_name))
 

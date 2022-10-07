@@ -738,6 +738,15 @@ def page_reset_tor():
 
     return redirect("/rebooting")
 
+@mynode_settings.route("/settings/reset-tor-connections")
+def page_reset_tor_connections():
+    check_logged_in()
+
+    reset_tor_connections()
+
+    flash("Tor connections reset", category="message")
+    return redirect("/settings")
+
 @mynode_settings.route("/settings/btcrpcexplorer_token")
 def page_btcrpcexplorer_token():
     check_logged_in()
