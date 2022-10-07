@@ -1202,6 +1202,11 @@ def reset_tor():
     os.system("rm -rf /mnt/hdd/mynode/lnd/v2_onion_private_key")
     os.system("rm -rf /mnt/hdd/mynode/lnd/v3_onion_private_key")
 
+def reset_tor_connections():
+    stop_service("tor@default")
+    os.system("rm -rf /var/lib/tor/*")
+    start_service("tor@default")
+
 def get_onion_url_ssh():
     if is_community_edition(): return "not_available"
     try:

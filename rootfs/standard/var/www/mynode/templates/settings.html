@@ -107,6 +107,17 @@
                 });
 
 
+                $("#reset_tor_connections").on("click", function() {
+                    var okFunction = function() {
+                        window.location.href="/settings/reset-tor-connections"
+                    }
+                    openConfirmDialog("confirm-dialog",
+                                      "Reset Tor Connections",
+                                      "Resetting the Lightning watchtower will erase watchtower settings and restart LND. "+
+                                      "Would you still like to reset Lightning watchtower?",
+                                      okFunction)
+                });
+
 
                 $("#reset-blockchain").on("click", function() {
                     var okFunction = function() {
@@ -1062,6 +1073,67 @@
             <a id="firewall"></a>
             <div class="settings_block_header">Networking</div>
 
+            <div class="settings_block_subheader">Bitcoin and Lightning Networks</div>
+            You can use various networks for Bitcoin and Lightning. Tor and I2P increase privacy, however, they can slow down block download, 
+            and Lightning may have less consistent connections. If you have customized your Bitcoin or LND config, this setting has no effect.
+            <br/><br/>
+            Saving will trigger a reboot.
+            <br/><br/>
+
+            <table border="0">
+                <tr>
+                    <td></td>
+                    <td><b>Clearnet</b></td>
+                    <td><b>Tor</b></td>
+                    <td><b>I2P</b></td>
+                </tr>
+                <tr>
+                    <td><b>Bitcoin</b></td>
+                    <td>
+                        <label class="switch">
+                            <input type="checkbox" id="btc_ipv4_checkbox" {% if is_btc_ipv4_enabled %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </td>
+                    <td>
+                        <label class="switch">
+                            <input type="checkbox" id="btc_tor_checkbox" {% if is_btc_tor_enabled %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </td>
+                    <td>
+                        <label class="switch">
+                            <input type="checkbox" id="btc_i2p_checkbox" {% if is_btc_i2p_enabled %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>Lightning</b></td>
+                    <td>
+                        <label class="switch">
+                            <input type="checkbox" id="lnd_ipv4_checkbox" {% if is_lnd_ipv4_enabled %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </td>
+                    <td>
+                        <label class="switch">
+                            <input type="checkbox" id="lnd_tor_checkbox" {% if is_lnd_tor_enabled %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </td>
+                    <td>
+                        N/A
+                    </td>
+                </tr>
+            </table>
+            
+            <br/><br/>
+            <button id="btc_lnd_networks_save" class="ui-button ui-widget ui-corner-all">Save</button>
+
+
+            <div class="divider"></div>
+
             <div class="settings_block_subheader">Firewall Rules</div>
             Show the current firewall configuration.
             <br/>
@@ -1107,18 +1179,10 @@
             <a id="tor"></a>
             <div class="settings_block_header">Tor</div>
 
-            <div class="settings_block_subheader">Use Tor for Bitcoin and Lightning</div>
-            You can use Tor for Bitcoin and Lightning to increase privacy. However, it can slow down block download, 
-            especially during IBD. If you have customized your Bitcoin or LND config, this setting has no effect.
-            <br/><br/>
-            Saving will trigger a reboot.
-            <br/><br/>
-            <label class="switch">
-                <input type="checkbox" id="btc_lnd_tor_checkbox" {% if is_btc_lnd_tor_enabled %}checked{% endif %}>
-                <span class="slider round"></span>
-            </label>
-            <br/><br/>
-            <button id="btc_lnd_tor" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+            <div class="settings_block_subheader">Reset Tor Connections</div>
+            If your Tor performance is poor, you can reset your tor connections. Tor will be restarted with new connections.
+            <br/>
+            <button id="reset_tor_connections" class="ui-button ui-widget ui-corner-all settings_button">Reset Tor Connections</button>
 
             <div class="divider"></div>
 
@@ -1166,7 +1230,7 @@
             <div class="divider"></div>
             {% endif %}
             
-            <div class="settings_block_subheader">Reset Tor</div>
+            <div class="settings_block_subheader">Reset Tor Data</div>
             This will reset all of your Tor service settings and regenerate your Onion URLs.
             <br/>
             <button id="reset_tor" class="ui-button ui-widget ui-corner-all settings_button">Reset Tor</button>
