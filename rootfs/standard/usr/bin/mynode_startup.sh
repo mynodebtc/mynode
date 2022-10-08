@@ -17,18 +17,8 @@ fi
 # Set sticky bit on /tmp
 chmod +t /tmp
 
-# Make sure resolv.conf is a symlink to so resolvconf works
-# if [ ! -h /etc/resolv.conf ]; then
-#     rm -f /etc/resolv.conf
-#     mkdir -p /etc/resolvconf/run/
-#     touch /etc/resolvconf/run/resolv.conf
-#     ln -s /etc/resolvconf/run/resolv.conf /etc/resolv.conf
-
-#     sync
-#     reboot
-#     sleep 10s
-#     exit 1
-# fi
+# Save dmidecode info
+dmidecode | grep UUID | cut -d ' ' -f 2 > /tmp/dmidecode_serial
 
 # Add some DNS servers to make domain lookup more likely
 if settings_file_exists "skip_backup_dns_servers" ; then
