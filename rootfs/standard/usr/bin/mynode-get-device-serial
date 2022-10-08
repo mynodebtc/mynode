@@ -21,7 +21,8 @@ else
     SERIAL_NUM=$(cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2)
     if [[ "$SERIAL_NUM" == "" ]]; then
         # Caution - dmidecode seem to cause issues on some platforms (used on VM)
-        SERIAL_NUM=$(sudo dmidecode | grep UUID | cut -d ' ' -f 2)
+        #SERIAL_NUM=$(sudo dmidecode | grep UUID | cut -d ' ' -f 2)
+        SERIAL_NUM=$(cat /tmp/dmidecode_serial)
         if [[ "$SERIAL_NUM" == "03000200-0400-0500-0006-000700080009" ]]; then
              # Some mini PCs return this hard coded value
             SERIAL_NUM=$BACKUP_SERIAL
