@@ -103,7 +103,8 @@ def page_tor():
     templateData = {
         "title": "myNode Tor Services",
         "version": get_tor_version(),
-        "is_btc_lnd_tor_enabled": settings_file_exists("btc_lnd_tor_enabled"),
+        "is_btc_tor_enabled": settings_file_exists("btc_tor_enabled"),
+        "is_lnd_tor_enabled": settings_file_exists("lnd_tor_enabled"),
         "v3_services": v3_services,
         "fully_noded_link": fully_noded_link,
         "ui_settings": read_ui_settings()

@@ -128,7 +128,7 @@ def update_bitcoin_other_info():
                 for p in peerdata:
                     peer = p
 
-                    peer["pingtime"] = int(p["pingtime"] * 1000) if ("pingtime" in p) else "N/A"
+                    peer["pingtime"] = int(p["pingtime"]) if ("pingtime" in p) else "N/A"
                     peer["tx"] = "{:.2f}".format(float(p["bytessent"]) / 1000 / 1000) if ("bytessent" in p) else "N/A"
                     peer["rx"] = "{:.2f}".format(float(p["bytesrecv"]) / 1000 / 1000) if ("bytesrecv" in p) else "N/A"
                     peer["minping"] = str(p["minping"]) if ("minping" in p) else "N/A"

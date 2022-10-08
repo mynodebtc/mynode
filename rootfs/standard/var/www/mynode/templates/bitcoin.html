@@ -230,7 +230,11 @@
         <div class="app_tile_row">
             <div class="info_tile">
                 <div class="info_tile_header">Local Bitcoin Address / Port</div>
-                <div class="info_tile_contents">{{local_address}}</div>
+                <div class="info_tile_contents" style="font-size: 12px">
+                    {% for addr in addresses %}
+                        <p>{{addr}}</p>
+                    {% endfor %}
+                </div>
             </div>
         </div>
 

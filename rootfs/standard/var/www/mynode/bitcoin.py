@@ -55,12 +55,15 @@ def bitcoin_status_page():
         # Peers
         peers = peerdata
 
-        # Local address
-        local_address = "..."
+        # Bitcoin address
+        addresses = ["..."]
         if networkdata != None:
-            local_address = "not none"
+            addresses = ["no local addresses"]
             if ("localaddresses" in networkdata) and (len(networkdata["localaddresses"]) > 0):
-                local_address = "{}:{}".format(networkdata["localaddresses"][0]["address"], networkdata["localaddresses"][0]["port"])
+                addresses = []
+                for addr in networkdata["localaddresses"]:
+                    addresses.append("{}:{}".format(addr["address"], addr["port"]))
+
 
     except Exception as e:
         templateData = {
@@ -76,7 +79,7 @@ def bitcoin_status_page():
         "title": "myNode Bitcoin Status",
         "blocks": blocks,
         "peers": peers,
-        "local_address": local_address,
+        "addresses": addresses,
         "difficulty": get_bitcoin_difficulty(),
         "block_num": info["blocks"],
         "header_num": info["headers"],

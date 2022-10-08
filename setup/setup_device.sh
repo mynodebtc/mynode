@@ -168,6 +168,8 @@ fi
 if [ "$DEBIAN_VERSION" = "buster" ]; then
     grep -qxF "deb http://deb.debian.org/debian buster-backports main" /etc/apt/sources.list  || echo "deb http://deb.debian.org/debian buster-backports main" >> /etc/apt/sources.list
 fi
+# Add I2P Repo
+/bin/bash $TMP_INSTALL_PATH/usr/share/mynode/scripts/add_i2p_repo.sh
 
 # Import Keys
 curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
@@ -215,7 +217,7 @@ apt-get -y install openjdk-11-jre libevent-dev ncurses-dev
 apt-get -y install zlib1g-dev libudev-dev libusb-1.0-0-dev python3-venv gunicorn
 apt-get -y install sqlite3 libsqlite3-dev torsocks python3-requests libsystemd-dev
 apt-get -y install libjpeg-dev zlib1g-dev psmisc hexyl libbz2-dev liblzma-dev netcat-openbsd
-apt-get -y install hdparm iotop nut obfs4proxy libpq-dev socat btrfs-progs
+apt-get -y install hdparm iotop nut obfs4proxy libpq-dev socat btrfs-progs i2pd
 
 # Install packages dependent on Debian release
 if [ "$DEBIAN_VERSION" == "bullseye" ]; then
@@ -944,6 +946,7 @@ systemctl enable redis-server
 systemctl enable tls_proxy
 systemctl enable rtl
 systemctl enable tor
+systemctl enable i2pd
 systemctl enable invalid_block_check
 systemctl enable usb_driver_check
 systemctl enable docker_images

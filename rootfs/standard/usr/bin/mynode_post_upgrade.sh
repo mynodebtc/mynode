@@ -83,6 +83,8 @@ if ! skip_base_upgrades ; then
     if [ "$DEBIAN_VERSION" = "buster" ]; then
         grep -qxF "deb http://deb.debian.org/debian buster-backports main" /etc/apt/sources.list  || echo "deb http://deb.debian.org/debian buster-backports main" >> /etc/apt/sources.list
     fi
+    # Add I2P Repo
+    /bin/bash /usr/share/mynode/scripts/add_i2p_repo.sh
 
     # Raspbian mirrors
     #if [ $IS_RASPI = 1 ]; then
@@ -132,7 +134,7 @@ if ! skip_base_upgrades ; then
     $TORIFY apt-get -y install libudev-dev libusb-1.0-0-dev python3-venv gunicorn sqlite3 libsqlite3-dev
     $TORIFY apt-get -y install torsocks python3-requests libsystemd-dev libjpeg-dev zlib1g-dev psmisc
     $TORIFY apt-get -y install hexyl libbz2-dev liblzma-dev netcat-openbsd hdparm iotop nut obfs4proxy
-    $TORIFY apt-get -y install libpq-dev socat btrfs-progs
+    $TORIFY apt-get -y install libpq-dev socat btrfs-progs i2pd
 
     # Install software specific to debian version
     if [ "$DEBIAN_VERSION" == "bullseye" ]; then
@@ -1042,6 +1044,7 @@ systemctl enable docker_images
 systemctl enable glances
 systemctl enable webssh2
 systemctl enable tor
+systemctl enable i2pd
 systemctl enable loop
 systemctl enable pool
 systemctl enable rotate_logs

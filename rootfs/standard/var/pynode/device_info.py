@@ -69,6 +69,9 @@ def factory_reset():
 
     # Delete settings files on SD card
     os.system("rm -f /home/bitcoin/.mynode/.btc_lnd_tor_enabled_defaulted")
+    os.system("rm -f /home/bitcoin/.mynode/btc_lnd_tor_enabled_defaulted")
+    os.system("rm -f /home/bitcoin/.mynode/btc_network_settings_defaulted")
+    os.system("rm -f /home/bitcoin/.mynode/lnd_network_settings_defaulted")
     os.system("rm -f /home/bitcoin/.mynode/.product_key")
     os.system("rm -f /home/bitcoin/.mynode/ui.json")
 
