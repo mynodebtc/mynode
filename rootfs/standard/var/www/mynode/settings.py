@@ -95,7 +95,11 @@ def page_settings():
         "download_rate": download_rate,
         "upload_rate": upload_rate,
         "btcrpcexplorer_token_enabled": is_btcrpcexplorer_token_enabled(),
-        "is_btc_lnd_tor_enabled": settings_file_exists("btc_lnd_tor_enabled"),
+        "is_btc_ipv4_enabled": settings_file_exists("btc_ipv4_enabled"),
+        "is_btc_tor_enabled": settings_file_exists("btc_tor_enabled"),
+        "is_btc_i2p_enabled": settings_file_exists("btc_i2p_enabled"),
+        "is_lnd_ipv4_enabled": settings_file_exists("lnd_ipv4_enabled"),
+        "is_lnd_tor_enabled": settings_file_exists("lnd_tor_enabled"),
         "is_tor_repo_enabled": not settings_file_exists("tor_repo_disabled"),
         "is_aptget_tor_enabled": settings_file_exists("torify_apt_get"),
         "is_streamisolation_tor_enabled": not settings_file_exists("streamisolation_tor_disabled"),
@@ -717,6 +721,26 @@ def page_lnd_reset_lnd_watchtower():
 
     flash("Restarting lnd...", category="message")
     return redirect("/settings")
+
+@mynode_settings.route("/settings/save-network-settings", methods=['POST'])
+def page_save_network_settings():
+    check_logged_in()
+
+    check_and_mark_reboot_action("save_network_settings")
+
+    network_settings = ["btc_ipv4", "btc_tor", "btc_i2p", "lnd_ipv4", "lnd_tor"]
+    for s in network_settings:
+        delete_settings_file(s + "_enabled")
+
+    for s in network_settings:
+        if request.form.get(s + "_checkbox"):
+            create_settings_file(s + "_enabled")
+
+    # Trigger reboot
+    t = Timer(1.0, reboot_device)
+    t.start()
+
+    return redirect("/rebooting")
 
 @mynode_settings.route("/settings/reset-tor", methods=['POST'])
 def page_reset_tor():

@@ -2,14 +2,33 @@
 
 TOTAL_RAM_GB=$(free --giga | grep Mem | awk '{print $2}')
 
-# Setup default settings
-if [ ! -f /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled_defaulted ] && [ ! -f /home/bitcoin/.mynode/.btc_lnd_tor_enabled_defaulted ]; then
-    touch /home/bitcoin/.mynode/.btc_lnd_tor_enabled_defaulted
-    touch /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled_defaulted
-    touch /home/bitcoin/.mynode/btc_lnd_tor_enabled
-    touch /mnt/hdd/mynode/settings/btc_lnd_tor_enabled
+# Setup default settings (new - 2022)
+if [ ! -f /mnt/hdd/mynode/settings/btc_network_settings_defaulted ] && [ ! -f /home/bitcoin/.mynode/btc_network_settings_defaulted ]; then
+
+    # based on old settings, set ipv4 or tor
+    if [ -f /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled_defaulted ] || [ -f /home/bitcoin/.mynode/.btc_lnd_tor_enabled_defaulted ]; then
+        if [ -f /home/bitcoin/.mynode/btc_lnd_tor_enabled ] || [ -f /mnt/hdd/mynode/settings/btc_lnd_tor_enabled ]; then
+            # Old settings indicate tor
+            touch /home/bitcoin/.mynode/btc_tor_enabled
+            touch /mnt/hdd/mynode/settings/btc_tor_enabled
+        else
+            # Old settings indicate ipv4
+            touch /home/bitcoin/.mynode/btc_ipv4_enabled
+            touch /mnt/hdd/mynode/settings/btc_ipv4_enabled
+        fi
+    else
+        # Set new defaults
+        touch /home/bitcoin/.mynode/btc_tor_enabled
+        touch /mnt/hdd/mynode/settings/btc_tor_enabled
+        touch /home/bitcoin/.mynode/btc_i2p_enabled
+        touch /mnt/hdd/mynode/settings/btc_i2p_enabled
+    fi
+
+    touch /mnt/hdd/mynode/settings/btc_network_settings_defaulted
+    touch /home/bitcoin/.mynode/btc_network_settings_defaulted
     sync
 fi
+
 
 # Generate BTC Config
 if [ -f /mnt/hdd/mynode/settings/bitcoin_custom.conf ]; then
@@ -57,11 +76,17 @@ else
         sed -i "s/maxmempool=.*/maxmempool=50/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
     fi
 
-    # Append Tor/IP section (check new file or old file, should be migrated to new)
-    if [ -f /mnt/hdd/mynode/settings/btc_lnd_tor_enabled ] || [ -f /home/bitcoin/.mynode/btc_lnd_tor_enabled ]; then
-        cat /usr/share/mynode/bitcoin_tor.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
-    else
+    # Append network sections (IPv4 / Tor / I2P)
+    if [ -f /mnt/hdd/mynode/settings/btc_ipv4_enabled ] || [ -f /home/bitcoin/.mynode/btc_ipv4_enabled ]; then
         cat /usr/share/mynode/bitcoin_ipv4.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    else
+        cat /usr/share/mynode/bitcoin_no_ipv4.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    fi
+    if [ -f /mnt/hdd/mynode/settings/btc_tor_enabled ] || [ -f /home/bitcoin/.mynode/btc_tor_enabled ]; then
+        cat /usr/share/mynode/bitcoin_tor.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    fi
+    if [ -f /mnt/hdd/mynode/settings/btc_i2p_enabled ] || [ -f /home/bitcoin/.mynode/btc_i2p_enabled ]; then
+        cat /usr/share/mynode/bitcoin_i2p.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
     fi
 
     # Append Mainnet/Testnet section

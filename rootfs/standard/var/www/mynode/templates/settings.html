@@ -505,20 +505,6 @@
                     window.location.href='/settings/modify-swap?size='+swap_choice
                 });
 
-                $('#btc_lnd_tor_checkbox').change(function () {
-                    $("#btc_lnd_tor").show();
-                });
-                $("#btc_lnd_tor").on("click", function() {
-                    checked=$('#btc_lnd_tor_checkbox').is(":checked")
-                    val = "0"
-                    if (checked)
-                    {
-                        val = "1"
-                    }
-                    $('#loading_spinner_overlay').fadeIn();
-                    window.location.href='/settings/toggle_setting?name=btc_lnd_tor_enabled&reboot=1&enable='+val
-                });
-
                 $('#streamisolation_tor_checkbox').change(function () {
                     $("#streamisolation_tor").show();
                 });
@@ -907,16 +893,73 @@
             <button id="reboot-device" class="ui-button ui-widget ui-corner-all settings_button">Reboot Device</button>
             <button id="shutdown-device" class="ui-button ui-widget ui-corner-all settings_button">Shutdown Device</button>
             
-            <div class="divider"></div>
+        </div>
 
-            <div class="settings_block_subheader">Download Debug Logs</div>
-            This will download all recent logs from your myNode. This can be helpful for debugging issues.
-            <br/>
-            It may take about one minute to gather and download the logs.
-            <br/>
-            Do not share these logs in a public place. They may contain sensitive information.
-            <br/>
-            <a href="/settings/mynode_logs.tar.gz" class="ui-button ui-widget ui-corner-all settings_button">Download Logs</a>
+
+        <div class="settings_block">
+            <a id="firewall"></a>
+            <div class="settings_block_header">Networking</div>
+
+            <div class="settings_block_subheader">Bitcoin and Lightning Networks</div>
+            You can use various networks for Bitcoin and Lightning. Tor and I2P increase privacy, however, they can slow down block download 
+            and cause less consistent connections.
+            <br/><br/>
+            Saving will trigger a reboot.
+            <br/><br/>
+
+            <form action="/settings/save-network-settings" method="POST">
+                <table border="0" style="font-size: 14px;">
+                    <tr>
+                        <td width="100px"></td>
+                        <td width="80px"><b>Clearnet</b></td>
+                        <td width="80px"><b>Tor</b></td>
+                        <td width="80px"><b>I2P</b></td>
+                    </tr>
+                    <tr>
+                        <td><b>Bitcoin</b></td>
+                        <td>
+                            <label class="switch">
+                                <input type="checkbox" name="btc_ipv4_checkbox" {% if is_btc_ipv4_enabled %}checked{% endif %}>
+                                <span class="slider round"></span>
+                            </label>
+                        </td>
+                        <td>
+                            <label class="switch">
+                                <input type="checkbox" name="btc_tor_checkbox" {% if is_btc_tor_enabled %}checked{% endif %}>
+                                <span class="slider round"></span>
+                            </label>
+                        </td>
+                        <td>
+                            <label class="switch">
+                                <input type="checkbox" name="btc_i2p_checkbox" {% if is_btc_i2p_enabled %}checked{% endif %}>
+                                <span class="slider round"></span>
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><b>Lightning</b></td>
+                        <td>
+                            <label class="switch">
+                                <input type="checkbox" name="lnd_ipv4_checkbox" {% if is_lnd_ipv4_enabled %}checked{% endif %}>
+                                <span class="slider round"></span>
+                            </label>
+                        </td>
+                        <td>
+                            <label class="switch">
+                                <input type="checkbox" name="lnd_tor_checkbox" {% if is_lnd_tor_enabled %}checked{% endif %}>
+                                <span class="slider round"></span>
+                            </label>
+                        </td>
+                        <td>
+                            N/A
+                        </td>
+                    </tr>
+                </table>
+                
+                <br/>
+                <input type="submit" id="btc_lnd_networks_save" class="ui-button ui-widget ui-corner-all" value="Save"/>
+            </form>
+
         </div>
 
 
@@ -1071,68 +1114,7 @@
 
         <div class="settings_block">
             <a id="firewall"></a>
-            <div class="settings_block_header">Networking</div>
-
-            <div class="settings_block_subheader">Bitcoin and Lightning Networks</div>
-            You can use various networks for Bitcoin and Lightning. Tor and I2P increase privacy, however, they can slow down block download, 
-            and Lightning may have less consistent connections. If you have customized your Bitcoin or LND config, this setting has no effect.
-            <br/><br/>
-            Saving will trigger a reboot.
-            <br/><br/>
-
-            <table border="0">
-                <tr>
-                    <td></td>
-                    <td><b>Clearnet</b></td>
-                    <td><b>Tor</b></td>
-                    <td><b>I2P</b></td>
-                </tr>
-                <tr>
-                    <td><b>Bitcoin</b></td>
-                    <td>
-                        <label class="switch">
-                            <input type="checkbox" id="btc_ipv4_checkbox" {% if is_btc_ipv4_enabled %}checked{% endif %}>
-                            <span class="slider round"></span>
-                        </label>
-                    </td>
-                    <td>
-                        <label class="switch">
-                            <input type="checkbox" id="btc_tor_checkbox" {% if is_btc_tor_enabled %}checked{% endif %}>
-                            <span class="slider round"></span>
-                        </label>
-                    </td>
-                    <td>
-                        <label class="switch">
-                            <input type="checkbox" id="btc_i2p_checkbox" {% if is_btc_i2p_enabled %}checked{% endif %}>
-                            <span class="slider round"></span>
-                        </label>
-                    </td>
-                </tr>
-                <tr>
-                    <td><b>Lightning</b></td>
-                    <td>
-                        <label class="switch">
-                            <input type="checkbox" id="lnd_ipv4_checkbox" {% if is_lnd_ipv4_enabled %}checked{% endif %}>
-                            <span class="slider round"></span>
-                        </label>
-                    </td>
-                    <td>
-                        <label class="switch">
-                            <input type="checkbox" id="lnd_tor_checkbox" {% if is_lnd_tor_enabled %}checked{% endif %}>
-                            <span class="slider round"></span>
-                        </label>
-                    </td>
-                    <td>
-                        N/A
-                    </td>
-                </tr>
-            </table>
-            
-            <br/><br/>
-            <button id="btc_lnd_networks_save" class="ui-button ui-widget ui-corner-all">Save</button>
-
-
-            <div class="divider"></div>
+            <div class="settings_block_header">Firewall</div>
 
             <div class="settings_block_subheader">Firewall Rules</div>
             Show the current firewall configuration.
@@ -1214,7 +1196,7 @@
 
             <div class="divider"></div>
 
-            {% if is_btc_lnd_tor_enabled %}
+            {% if is_lnd_tor_enabled %}
             <div class="settings_block_subheader">Use Tor Stream Isolation for LND</div>
             When using tor, enable stream isolation for LND. This increases privacy, but it can take significant resources with large numbers of lightning channels.
             <br/><br/>
@@ -1318,6 +1300,17 @@
         <div class="settings_block">
             <a id="advanced"></a>
             <div class="settings_block_header">Advanced</div>
+
+            <div class="settings_block_subheader">Download Debug Logs</div>
+            This will download all recent logs from your myNode. This can be helpful for debugging issues.
+            <br/>
+            It may take about one minute to gather and download the logs.
+            <br/>
+            Do not share these logs in a public place. They may contain sensitive information.
+            <br/>
+            <a href="/settings/mynode_logs.tar.gz" class="ui-button ui-widget ui-corner-all settings_button">Download Logs</a>
+
+            <div class="divider"></div>
 
             <div class="settings_block_subheader">Toggle Testnet</div>
             Testnet can be enabled for Bitcoin and Lightning, which can be used to test various features, but may cause other applications to 
