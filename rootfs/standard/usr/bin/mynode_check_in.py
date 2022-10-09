@@ -74,20 +74,6 @@ def on_check_in_error(msg):
 # Checkin every 24 hours
 def check_in(check_for_updates):
 
-    # Check in
-    product_key = get_product_key()
-    data = {
-        "serial": get_device_serial(),
-        "device_type": get_device_type(),
-        "device_arch": get_device_arch(),
-        "debian_version": get_debian_version(),
-        "version": get_current_version(),
-        "product_key": product_key,
-        "drive_size": get_mynode_drive_size(),
-        "quicksync_enabled": get_quicksync_enabled(),
-        "api_version": 2,
-    }
-
     # Check for new version (not every time to spread out upgrades)
     if check_for_updates:
         check_for_new_mynode_version()
@@ -103,6 +89,20 @@ def check_in(check_for_updates):
     check_in_success = False
     while not check_in_success:
         try:
+            # Gather check in data
+            product_key = get_product_key()
+            data = {
+                "serial": get_device_serial(),
+                "device_type": get_device_type(),
+                "device_arch": get_device_arch(),
+                "debian_version": get_debian_version(),
+                "version": get_current_version(),
+                "product_key": product_key,
+                "drive_size": get_mynode_drive_size(),
+                "quicksync_enabled": get_quicksync_enabled(),
+                "api_version": 2,
+            }
+            
             # Use tor for check in unless there have been several tor failures
             r = None
             if (fail_count+1) % 4 == 0:
