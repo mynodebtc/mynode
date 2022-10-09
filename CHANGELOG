@@ -1,3 +1,17 @@
+=== v0.3.02 ===
+- Released: 10/08/22
+- Add I2P Netowork Option
+- Upgrade LNBits to v0.9.4
+- Upgrade Specter to v1.13.0
+- Upgrade BTCPay Server to v1.6.11
+- Upgrade Thunderhub to v0.13.16
+- Upgrade Lightning Terminal to v0.8.0
+- Upgrade Pool to v0.5.8
+- Upgrade BoS to v13.0.2
+- Upgrade JoininBox to v0.7.3
+- Add network selection during setup
+- Minor bug fixes
+
 === v0.3.01 ===
 - Released: 09/14/22
 - Add Tailscale VPN App
