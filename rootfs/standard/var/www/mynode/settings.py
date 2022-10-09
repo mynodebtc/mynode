@@ -742,6 +742,31 @@ def page_save_network_settings():
 
     return redirect("/rebooting")
 
+@mynode_settings.route("/settings/choose-network")
+def page_choose_network():
+    check_logged_in()
+
+    # This page handles the "choose network" page choice during initial setup
+    if not settings_file_exists("btc_network_settings_defaulted"):
+        if request.args.get("network") and request.args.get("network") == "clearnet":
+            create_settings_file("btc_ipv4_enabled")
+            create_settings_file("lnd_ipv4_enabled")
+            create_settings_file("btc_network_settings_defaulted")
+            # Give startup script time to change status so redirect doesn't show network choice again
+            time.sleep(1)
+        elif request.args.get("network") and request.args.get("network") == "tor":
+            create_settings_file("btc_tor_enabled")
+            create_settings_file("lnd_tor_enabled")
+            create_settings_file("btc_network_settings_defaulted")
+            # Give startup script time to change status so redirect doesn't show network choice again
+            time.sleep(1)
+        else:
+            flash("Error: Unknown network choice.", category="error")
+    else:
+        flash("Error: Network detaults already setup. Use settings page to change networks.", category="error")
+
+    return redirect("/")
+
 @mynode_settings.route("/settings/reset-tor", methods=['POST'])
 def page_reset_tor():
     check_logged_in()

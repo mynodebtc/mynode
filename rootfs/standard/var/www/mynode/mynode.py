@@ -241,6 +241,12 @@ def index():
             "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
+    elif status == STATE_CHOOSE_NETWORK:
+        templateData = {
+            "title": "myNode Choose Network",
+            "ui_settings": read_ui_settings()
+        }
+        return render_template('choose_network.html', **templateData)
     elif status == STATE_DOCKER_RESET:
         templateData = {
             "title": "myNode",

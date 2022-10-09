@@ -301,34 +301,6 @@ done
 
 # Default QuickSync
 if [ ! -f /mnt/hdd/mynode/settings/.setquicksyncdefault ]; then
-    # # Default x86 to no QuickSync
-    # if [ $IS_X86 = 1 ]; then
-    #     touch /mnt/hdd/mynode/settings/quicksync_disabled
-    # fi
-    # # Default RockPro64 to no QuickSync
-    # if [ $IS_ROCKPRO64 = 1 ]; then
-    #     touch /mnt/hdd/mynode/settings/quicksync_disabled
-    # fi
-    # # Default SSD to no QuickSync
-    # DRIVE=$(cat /tmp/.mynode_drive)
-    # HDD=$(lsblk $DRIVE -o ROTA | tail -n 1 | tr -d '[:space:]')
-    # if [ "$HDD" = "0" ]; then
-    #     touch /mnt/hdd/mynode/settings/quicksync_disabled
-    # fi
-    # # If there is a USB->SATA adapter, assume we have an SSD and default to no QS
-    # set +e
-    # lsusb | grep "SATA 6Gb/s bridge"
-    # RC=$?
-    # set -e
-    # if [ "$RC" = "0" ]; then
-    #     touch /mnt/hdd/mynode/settings/quicksync_disabled
-    # fi
-    # # Default small drives to no QuickSync
-    # DRIVE_SIZE=$(df /mnt/hdd | grep /dev | awk '{print $2}')
-    # if (( ${DRIVE_SIZE} <= 900000000 )); then
-    #     touch /mnt/hdd/mynode/settings/quicksync_disabled
-    # fi
-
     # QuickSync defaults to disabled, needs to be manually enabled if wanted
     touch /mnt/hdd/mynode/settings/quicksync_disabled
     
@@ -339,6 +311,17 @@ fi
 # Migrate from version file to version+install combo
 /usr/bin/mynode_migrate_version_files.sh
 
+# Choose Network Prompt if no defaults are set (should happen only on first setup)
+if [ ! -f /mnt/hdd/mynode/settings/btc_network_settings_defaulted ] && 
+   [ ! -f /home/bitcoin/.mynode/btc_network_settings_defaulted ] &&
+   [ ! -f /mnt/hdd/mynode/settings/.btc_lnd_tor_enabled_defaulted ] && 
+   [ ! -f /home/bitcoin/.mynode/.btc_lnd_tor_enabled_defaulted ]; then
+    echo "choose_network" > $MYNODE_STATUS_FILE
+    while [ ! -f /mnt/hdd/mynode/settings/btc_network_settings_defaulted ]; do
+        sleep .25s
+    done
+fi
+echo "drive_mounted" > $MYNODE_STATUS_FILE
 
 # BTC Config
 source /usr/bin/mynode_gen_bitcoin_config.sh
