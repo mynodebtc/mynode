@@ -1,0 +1,79 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        {% include 'includes/head.html' %}
+        <meta http-equiv="refresh" content="3600">
+
+        <script>
+            $(document).ready(function() {
+
+                
+            });
+        </script>
+
+        <style>
+            td, th {
+                border-top: none !important;
+            }
+        </style>
+
+     </head>
+
+    <body>
+        {% include 'includes/logo_header.html' %}
+
+        {% include 'includes/message_display.html' %}
+        
+        <div class="state_header">Choose Network</div>
+
+        <div class="format_div" style="width: 500px;">
+
+            <table style="margin: auto; width: 500px; text-align: center;">
+                <tr>
+                    <td><img style="width: 160px; margin: auto;" src="{{ url_for('static', filename="images/network_clearnet.png")}}"/></td>
+                    <td></td>
+                    <td><img style="width: 160px; margin: auto;" src="{{ url_for('static', filename="images/network_tor.png")}}"/></td>
+                </tr>
+                <tr>
+                    <tr style="font-size: 20px;">
+                        <td><b>Clearnet</b></td>
+                        <td></td>
+                        <td><b>Tor</b></td>
+                    </tr>
+                </tr>
+                <tr>
+                    <td>
+                        <br/>
+                        <p>Fast Blockchain Sync</p>
+                        <p>&nbsp;</p>
+                        <p>IP address visible to peers</p>
+                        <p>Uses IPv4</p>
+                        <br/>
+                    </td>
+                    <td></td>
+                    <td>
+                        <br/>
+                        <p>Slower Blockchain Sync</p>
+                        <p>Improved Privacy</p>
+                        <p>IP address hidden from peers</p>
+                        <p>Uses Tor</p>
+                        <br/>
+                    </td>
+                </tr>
+                <tr>
+                    <td><a href="/settings/choose-network?network=clearnet" style="width: 80%;" class="ui-button ui-widget ui-corner-all">Choose Clearnet</a></td>
+                    <td></td>
+                    <td><a href="/settings/choose-network?network=tor" style="width: 80%;" class="ui-button ui-widget ui-corner-all">Choose Tor</a></td>
+                </tr>
+            </table>
+
+            <br/>
+
+            <p><small><i>Note: This can be changed later on the settings page.</i></small></p>
+
+        </div>
+
+        <div style="height: 40px;">&nbsp;</div>
+        {% include 'includes/footer.html' %}
+     </body>
+</html>
