@@ -1,4 +1,9 @@
 === v0.3.02 ===
+- Released: 10/09/22
+- Upgrade LND to v0.15.2
+- Resolves issue syncing LND to blockchain tip
+
+=== v0.3.02 ===
 - Released: 10/08/22
 - Add I2P Netowork Option
 - Upgrade LNBits to v0.9.4
