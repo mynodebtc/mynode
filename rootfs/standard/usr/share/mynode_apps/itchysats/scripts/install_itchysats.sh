@@ -12,7 +12,6 @@ echo "==================== INSTALLING APP ===================="
 # has already been downloaded and extracted. Any additional env variables specified
 # in the JSON file are also present.
 
-apt-get -y install cmake
 mynode-install-extra rust
 
 yarn --cwd=./taker-frontend install
