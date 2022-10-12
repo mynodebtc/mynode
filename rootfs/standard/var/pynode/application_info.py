@@ -167,7 +167,7 @@ def initialize_application_defaults(app):
     if not "download_binary_url" in app: app["download_binary_url"] = {}    # Expected to be dictionary of "arch" : "url"
     app["install_folder"] = "/opt/mynode/{}".format(app["short_name"])
     app["storage_folder"] = "/mnt/hdd/mynode/{}".format(app["short_name"])
-    if not "install_env_vars" in app: app["install_env_vars"] = []
+    if not "install_env_vars" in app: app["install_env_vars"] = {}
     if not "http_port" in app: app["http_port"] = None
     if not "https_port" in app: app["https_port"] = None
     if not "extra_ports" in app: app["extra_ports"] = []
@@ -216,6 +216,8 @@ def initialize_application_defaults(app):
     for btn in app["app_page_additional_buttons"]:
         if "onclick" in btn:
             btn["onclick"] = replace_app_info_variables(app, btn["onclick"])
+    for key in app["install_env_vars"]:
+        app["install_env_vars"][key] = replace_app_info_variables(app, app["install_env_vars"][key])
 
     return app
 
@@ -846,7 +848,7 @@ def upgrade_dynamic_apps(short_name="all"):
                             if app_data["install_env_vars"]:
                                 for key in app_data["install_env_vars"]:
                                     my_env[key] = app_data["install_env_vars"][key]
-                            subprocess.check_output("cd {}; sudo -u {} /bin/bash /usr/bin/service_scripts/install_{}.sh 1>&2".format(app_data["install_folder"], app_data["linux_user"], app_name), shell=True, env=my_env)
+                            subprocess.check_output("cd {}; sudo -u {} --preserve-env /bin/bash /usr/bin/service_scripts/install_{}.sh 1>&2".format(app_data["install_folder"], app_data["linux_user"], app_name), shell=True, env=my_env)
 
                             # Mark update latest version if success
                             log_message("  Upgrade success!")
