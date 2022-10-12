@@ -95,9 +95,9 @@
                                 <td>
                                     {% if app.can_enable_disable %}
                                         {% if app.is_enabled %}
-                                            <button class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 80px;" onclick="toggleEnabled('{{app.short_name}}', '{{app.name}}', false)">Disable</button>
+                                            <button class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 80px;" onclick="toggleEnabled('{{app.short_name}}', '{{app.name}}', false, '/apps')">Disable</button>
                                         {% else %}
-                                            <button class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 80px;" onclick="toggleEnabled('{{app.short_name}}', '{{app.name}}', true)">Enable</button>
+                                            <button class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 80px;" onclick="toggleEnabled('{{app.short_name}}', '{{app.name}}', true, '/apps')">Enable</button>
                                         {% endif %}
                                     {% endif %}
                                 </td>

@@ -648,23 +648,27 @@ def page_ignore_warning():
 def page_toggle_app():
     check_logged_in()
 
+    return_page = "/"
+    if request.args.get("return_page"):
+        return_page = request.args.get("return_page")
+
     # Check application specified
     if not request.args.get("app"):
         flash("No application specified", category="error")
-        return redirect("/")
+        return redirect(return_page)
     
     # Check application name is valid
     app_short_name = request.args.get("app")
     if not is_application_valid(app_short_name):
         flash("Application is invalid", category="error")
-        return redirect("/")
+        return redirect(return_page)
 
     # Toggle enabled/disabled
     if is_service_enabled(app_short_name):
         disable_service(app_short_name)
     else:
         enable_service(app_short_name)
-    return redirect("/")
+    return redirect(return_page)
 
 @app.route("/clear-fsck-error")
 def page_clear_fsck_error():
