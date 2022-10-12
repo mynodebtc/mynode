@@ -95,9 +95,14 @@ function get_custom_enable_message(short_name) {
     return message;
 }
 
-function toggleEnabled(short_name, full_name, enable) {
+function toggleEnabled(short_name, full_name, enable, return_page="") {
     //enabled = application_data[short_name]["is_enabled"];
     //full_name = application_data[short_name]["name"];
+
+    r = ""
+    if (return_page != "") {
+        r = "&return_page="+return_page
+    }
     
     if ( !enable ) {
         // Disabling
@@ -107,7 +112,7 @@ function toggleEnabled(short_name, full_name, enable) {
                            function(){
                                 $( this ).dialog( "close" );
                                 $('#loading_spinner_overlay').fadeIn();
-                                window.location.href="/toggle-enabled?app="+short_name
+                                window.location.href="/toggle-enabled?app="+short_name+r
                            });
     } else {
         custom_message = "";
@@ -119,7 +124,7 @@ function toggleEnabled(short_name, full_name, enable) {
                            function(){
                                 $( this ).dialog( "close" );
                                 $('#loading_spinner_overlay').fadeIn();
-                                window.location.href="/toggle-enabled?app="+short_name
+                                window.location.href="/toggle-enabled?app="+short_name+r
                            });
     }
 }
