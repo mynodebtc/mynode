@@ -235,6 +235,7 @@ mkdir -p /mnt/hdd/mynode/specter
 mkdir -p /mnt/hdd/mynode/ckbunker
 mkdir -p /mnt/hdd/mynode/sphinxrelay
 mkdir -p /mnt/hdd/mynode/joinmarket
+mkdir -p /mnt/hdd/mynode/jam
 mkdir -p /mnt/hdd/mynode/mempool
 mkdir -p /mnt/hdd/mynode/tor_backup
 mkdir -p /tmp/flask_uploads

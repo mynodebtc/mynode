@@ -46,7 +46,9 @@ while true; do
     echo $CURRENT_ARCH > $DEVICE_ARCHITECTURE_FILE
 
     # Pull images that don't need to be built
-    # ???
+    
+    # Pull JAM UI
+    docker pull ghcr.io/joinmarket-webui/jam-ui-only:v0.1.1-clientserver-v0.9.8
 
     # Upgrade Netdata
     echo "Checking for new netdata..."
@@ -289,6 +291,9 @@ while true; do
             fi
         fi
     fi
+
+    # Install JAM
+
     touch /tmp/need_application_refresh
 
     rm -f /tmp/installing_docker_images

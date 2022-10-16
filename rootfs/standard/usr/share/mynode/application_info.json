@@ -576,5 +576,11 @@
         "short_name": "ufw",
         "show_on_application_page": false,
         "journalctl_log_name": "ufw"
+    },
+    {
+        "name": "JAM",
+        "short_name": "jam",
+        "show_on_homepage": true,
+        "requires_docker_image_installation": true
     }
   ]
