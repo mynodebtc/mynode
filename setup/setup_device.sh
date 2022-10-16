@@ -701,6 +701,10 @@ if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
 
         # Install
         sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket.sh install" || true
+        sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket-api.sh on" || true
+            
+        # Enable obwatcher service
+        systemctl enable ob-watcher
 
         echo $JOININBOX_VERSION > $JOININBOX_VERSION_FILE
     fi

@@ -848,7 +848,8 @@ def upgrade_dynamic_apps(short_name="all"):
                             if app_data["install_env_vars"]:
                                 for key in app_data["install_env_vars"]:
                                     my_env[key] = app_data["install_env_vars"][key]
-                            subprocess.check_output("cd {}; sudo -u {} --preserve-env /bin/bash /usr/bin/service_scripts/install_{}.sh 1>&2".format(app_data["install_folder"], app_data["linux_user"], app_name), shell=True, env=my_env)
+                            # Home dir needs to be set to user so it doesn't inhert root home (causes docker issues)
+                            subprocess.check_output("cd {}; sudo -u {} --preserve-env HOME=/home/{} /bin/bash /usr/bin/service_scripts/install_{}.sh 1>&2".format(app_data["install_folder"], app_data["linux_user"], app_data["linux_user"], app_name), shell=True, env=my_env)
 
                             # Mark update latest version if success
                             log_message("  Upgrade success!")
