@@ -1,0 +1,125 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        {% include 'includes/head.html' %}
+    </head>
+    <body>
+        {% include 'includes/logo_header.html' %}
+        <div class="mynode_top_left_div">
+            <a href="/"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/home.png")}}"/></a>
+        </div>
+
+        {% include 'includes/message_display.html' %}
+
+        <div class="main_header">JoinMarket</div>
+        <br/>
+
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Status</div>
+                <div class="info_tile_contents">Ready</div>
+            </div>
+
+            <div class="info_tile">
+                <div class="info_tile_header">Actions</div>
+                <div class="info_tile_contents">
+                    <!-- TODO: Disable button if JAM not enabled-->
+                    <button
+                        class="ui-button ui-widget ui-corner-all mynode_button_small"
+                        onclick="open_app_in_new_tab('{{jam_http_port}}', '{{jam_https_port}}', false, '{{jam_tor_address}}')"
+                        {% if not is_jam_installed or not is_jam_enabled %}
+                        disabled="disabled" title="JAM must be installed and running"
+                        {% endif %}
+                        >Open JAM</button>
+                    <button class="ui-button ui-widget ui-corner-all mynode_button_small" onclick="open_app_in_new_tab('{{ob_http_port}}', '{{ob_https_port}}', false, '{{ob_tor_address}}')">Open Orderbook</button>
+                </div>
+            </div>
+        </div>
+
+
+        {% if wallets is not none and wallets|length > 0 %}
+        <br/>
+        <div class="main_header">Wallets</div>
+        <table class="bitcoin_table">
+            <thead class="bitcoin_table_header">
+                <td>Wallet</td>
+                <td>Actions</td>
+            </thead>
+            <tbody>
+                {% for wallet in wallets %}
+                    <tr>
+                        <td>{{ wallet.name }}</td>
+                        <td>
+                            <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/joinmarket/download_wallet?wallet={{wallet.name|urlencode}}">download</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p style="font-size: 12px; color: gray; text-align: center;">
+            *These wallets are not your main lightning wallet. These have been created manually or via other applications.<br/>
+            **Wallet files may contain private keys and sensitive data. Be very cautious when downloading copies.<br/>
+            ***Wallet files may be encrypted and require a password to use.
+        </p>
+        <br/>
+        {% endif %}
+
+        <div class="instructions">
+            <div class="instructions-header">Instructions to use JoininBox</div>
+            <ol class="instructions-steps">
+                <li>JoinMarket is a mixing wallet for Bitcoin that can be used with a web interface via JAM.</li>
+                <li>To get started, you just need to install and enable JAM via the myNode Marketplace.</li>
+                <li>Once installed, click the Open JAM link above or the link on the JAM application page.</li>
+                <li>Enjoy mixing your coins!</li>
+            </ol>
+        </div>
+
+
+        <div class="instructions">
+            <div class="instructions-header">Instructions to use JAM</div>
+            <ol class="instructions-steps">
+                <li>JoinMarket is a mixing wallet for Bitcoin that can be used with a terminal interface via JoininBox.</li>
+                <li>To get started, you need access to the Linux terminal of your myNode device.</li>
+                <ul>
+                    <li>This may be advanced for some. Please be careful, myNode is not responsible for lost funds.</li>
+                    <li>A guide to access the Linux terminal is available on mynodebtc.com - <a href="https://mynodebtc.github.io/advanced/linux-terminal.html" target="_blank">guide</a></li>
+                </ul>
+                <li>Once you have terminal access, run the following command:</li>
+                <ul>
+                    <li><pre>sudo mynode-joininbox</pre></li>
+                </ul>
+                <li>Enter your myNode password when prompted.</li>
+                <li>The first time running JoininBox, it may install additional software.</li>
+                <li>Remember to back up your seed phrases.</li>
+                <li>Enjoy mixing your coins!</li>
+            </ol>
+        </div>
+
+        <div class="instructions">
+            <div class="instructions-header">Instructions to use JoinMarket Python Scripts</div>
+            <ol class="instructions-steps">
+                <li>JoinMarket is a mixing wallet for Bitcoin that can be used with a terminal interface using Python scripts.</li>
+                <li>To get started, you need access to the Linux terminal of your myNode device.</li>
+                <ul>
+                    <li>This may be advanced for some. Please be careful, myNode is not responsible for lost funds.</li>
+                    <li>A guide to access the Linux terminal is available on mynodebtc.com - <a href="https://mynodebtc.github.io/advanced/linux-terminal.html" target="_blank">guide</a></li>
+                </ul>
+                <li>Once you have terminal access, run the following command:</li>
+                <ul>
+                    <li><pre>sudo mynode-joinmarket</pre></li>
+                </ul>
+                <li>Enter your myNode password when prompted.</li>
+                <li>This will change your prompt and you will be running as the joinmarket user with access to the JoinMarket python scripts.</li>
+                <li>Remember to back up your seed phrases.</li>
+                <li>Enjoy mixing your coins!</li>
+            </ol>
+
+            <br/>
+
+            <div class="instructions-header">Tips and Notes</div>
+            <ul style="font-size: 12px;">
+                <li>More information on JoinMarket usage can be found on their <a href="https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/master/docs/USAGE.md" target="_blank">Github</a>.</li>
+            </ul>
+        </div>
+    </body>
+</html>

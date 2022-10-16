@@ -6,7 +6,7 @@ from api import mynode_api
 from bitcoin import mynode_bitcoin
 from whirlpool import mynode_whirlpool
 from dojo import mynode_dojo
-from joininbox import mynode_joininbox
+from joinmarket import mynode_joinmarket
 from caravan import mynode_caravan
 from sphinxrelay import mynode_sphinxrelay
 from pyblock import mynode_pyblock
@@ -93,7 +93,7 @@ app.register_blueprint(mynode_lnd)
 app.register_blueprint(mynode_api)
 app.register_blueprint(mynode_whirlpool)
 app.register_blueprint(mynode_dojo)
-app.register_blueprint(mynode_joininbox)
+app.register_blueprint(mynode_joinmarket)
 app.register_blueprint(mynode_caravan)
 app.register_blueprint(mynode_sphinxrelay)
 app.register_blueprint(mynode_pyblock)

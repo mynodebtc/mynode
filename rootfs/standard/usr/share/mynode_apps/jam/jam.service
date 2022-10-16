@@ -1,0 +1,42 @@
+# jam service
+# /etc/systemd/system/jam.service
+
+[Unit]
+Description=jam
+Wants=www.service docker_images.service
+After=www.service docker_images.service
+
+[Service]
+WorkingDirectory=/opt/mynode/jam
+
+EnvironmentFile=/mnt/hdd/mynode/settings/.btcrpc_environment
+
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_jam.sh ]; then /bin/bash /usr/bin/service_scripts/pre_jam.sh; fi'
+ExecStart=/usr/bin/docker run --rm \
+        --name jam \
+        --env JAM_JMWALLETD_HOST="host.docker.internal" \
+        --env JAM_JMWALLETD_API_PORT="28183" \
+        --env JAM_JMWALLETD_WEBSOCKET_PORT="27183" \
+        --env JAM_JMOBWATCH_PORT="62601" \
+        --env APP_USER="admin" \
+        --env APP_PASSWORD="bolt" \
+        --publish "5020:80" \
+        --add-host=host.docker.internal:host-gateway \
+        --volume /mnt/hdd/mynode/jam/data:/root/.joinmarket \
+        jam:latest
+ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_jam.sh ]; then /bin/bash /usr/bin/service_scripts/post_jam.sh; fi'
+ExecStop=/usr/bin/docker stop -t 2 jam
+
+User=bitcoin
+Group=bitcoin
+Type=simple
+TimeoutSec=120
+Restart=always
+RestartSec=60
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=jam
+
+[Install]
+WantedBy=multi-user.target

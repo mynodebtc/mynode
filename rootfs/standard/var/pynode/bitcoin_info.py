@@ -169,7 +169,7 @@ def update_bitcoin_other_info():
                 wallet_rpc_connection = AuthServiceProxy("http://%s:%s@127.0.0.1:8332/wallet/%s"%(rpc_user, rpc_pass, wallet_name), timeout=60)
                 wallet_info = wallet_rpc_connection.getwalletinfo()
                 wallet_info["can_delete"] = True
-                if wallet_name == "wallet.dat" or wallet_name == "joinmarket_wallet.dat":
+                if wallet_name == "wallet.dat":
                     wallet_info["can_delete"] = False
                 wallet_data.append(wallet_info)
             bitcoin_wallets = wallet_data
@@ -313,7 +313,7 @@ def create_default_wallets():
                     break
             if not found:
                 log_message("Creating new default wallet {}".format(new_wallet))
-                run_bitcoincli_command("createwallet {}".format(new_wallet))
+                run_bitcoincli_command("-named createwallet wallet_name={} descriptors=false".format(new_wallet))
                 run_bitcoincli_command("loadwallet {}".format(new_wallet))
 
 
