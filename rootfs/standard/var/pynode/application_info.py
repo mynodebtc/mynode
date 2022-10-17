@@ -362,6 +362,8 @@ def get_application_log(short_name):
             return get_journalctl_log("usb_extras")
         elif short_name == "www":
             return get_journalctl_log("www")
+        elif short_name == "i2pd":
+            return get_file_log("/var/log/i2pd/i2pd.log")
         elif short_name == "linux":
             return run_linux_cmd("dmesg | tac | head -n 200")
         else:
@@ -398,6 +400,10 @@ def get_application_status_special(short_name):
             return "Syncing..."
         elif tracker_status == TrackerStatus.ERROR:
             return "Tracker Error"
+    elif short_name == "jam":
+        if not is_installed("joininbox"):
+            return "Requires JoinMarket"
+
     return ""
 
 def get_application_status(short_name):
@@ -452,6 +458,9 @@ def get_application_status_color_special(short_name):
                 return "red"
         else:
             return "gray"
+    elif short_name == "jam":
+        if not is_installed("joininbox"):
+            return "yellow"
     return ""
 
 def get_application_status_color(short_name):
