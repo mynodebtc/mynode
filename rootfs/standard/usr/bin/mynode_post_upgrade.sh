@@ -45,6 +45,7 @@ if ! skip_base_upgrades ; then
 
     # User updates and settings
     adduser admin bitcoin
+    adduser joinmarket bitcoin
     grep "joinmarket" /etc/sudoers || (echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo)
     passwd -l root
 
