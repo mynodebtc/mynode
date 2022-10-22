@@ -241,7 +241,7 @@
             "While being specifically designed with a mobile first mindset and is available fully implemented within Samourai Wallet, we have made efforts to bring Whirlpool technology to all platforms. Whirlpool is built in to Samourai Wallet and available as a stand alone desktop app available on all platforms."
         ],
         "category": "bitcoin_app",
-        "short_description": "Mixing Tool",
+        "short_description": "Mixing Utility",
         "app_tile_button_text": "Info",
         "app_tile_button_href": "/whirlpool",
         "app_tile_running_status_text": "Running",
@@ -250,22 +250,22 @@
         "homepage_order": 23
     },
     {
-        "name": "JoininBox",
+        "comment": "Keep shortname as joininbox so upgrades work",
+        "name": "JoinMarket",
         "short_name": "joininbox",
-        "author": {"name": "openoms", "link":""},
-        "website": {"name": "GitHub", "link": "https://github.com/openoms/joininbox"},
+        "author": {"name": "AdamISZ", "link":"https://github.com/AdamISZ"},
+        "website": {"name": "GitHub", "link": "https://github.com/JoinMarket-Org/joinmarket-clientserver"},
         "description": [
-            "A minimalistic, security focused linux environment for JoinMarket with a terminal based graphical menu.",
             "JoinMarket is software to create a special kind of bitcoin transaction called a CoinJoin transaction. Its aim is to improve the confidentiality and privacy of bitcoin transactions.",
             "A CoinJoin transaction requires other people to take part. The right resources (coins) have to be in the right place, at the right time, in the right quantity. This isn't a software or tech problem, it's an economic problem. JoinMarket works by creating a new kind of market that would allocate these resources in the best way.",
             "One group of participants (called market makers) will always be available to take part in CoinJoins at any time. Other participants (called market takers) can create a CoinJoin at any time. The takers pay a fee which incentivizes the makers. A form of smart contract is created, meaning the private keys will never be broadcasted outside of your computer, resulting in virtually zero risk of loss (aside from malware or bugs). As a result of free-market forces the fees will eventually be next to nothing.",
             "Widespread use of JoinMarket improves bitcoin's fungibility and privacy. This implementation of JoinMarket also implements PayJoin."
         ],
         "category": "bitcoin_app",
-        "short_description": "JoinMarket Mixing",
+        "short_description": "Mixing Utility",
         "hide_status_icon": true,
         "app_tile_button_text": "Info",
-        "app_tile_button_href": "/joininbox",
+        "app_tile_button_href": "/joinmarket",
         "can_uninstall": true,
         "show_on_homepage": true,
         "homepage_order": 24,
