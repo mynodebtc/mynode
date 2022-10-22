@@ -337,6 +337,15 @@
             <div id="www_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{www_status_log}}</pre></div>
             <div class="divider"></div>
 
+            <div class="settings_block_subheader">I2PD Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ i2pd_status_color }}"></div>
+                {{ i2pd_status }}
+            </div>
+            <button id="show_i2pd_log" onclick="showLog('i2pd')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="i2pd_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{i2pd_status_log}}</pre></div>
+            <div class="divider"></div>
+
             <div class="settings_block_subheader">Firewall Status</div>
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ ufw_status_color }}"></div>
