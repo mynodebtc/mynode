@@ -253,6 +253,7 @@ useradd -m -s /bin/bash joinmarket || true
 
 # User updates and settings
 adduser admin bitcoin
+adduser joinmarket bitcoin
 grep "joinmarket" /etc/sudoers || (echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo)
 
 # Regen SSH keys (check if force regen or keys are missing / empty)

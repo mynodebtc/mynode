@@ -265,6 +265,7 @@ usermod -a -G debian-tor bitcoin
 
 # Make admin a member of bitcoin
 adduser admin bitcoin
+adduser joinmarket bitcoin
 grep "joinmarket" /etc/sudoers || (echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo)
 
 
