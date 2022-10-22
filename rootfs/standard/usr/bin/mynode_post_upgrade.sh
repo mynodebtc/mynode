@@ -45,6 +45,7 @@ if ! skip_base_upgrades ; then
 
     # User updates and settings
     adduser admin bitcoin
+    adduser joinmarket bitcoin
     grep "joinmarket" /etc/sudoers || (echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo)
     passwd -l root
 
@@ -663,6 +664,10 @@ if should_install_app "joininbox" ; then
 
             # Install
             sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket.sh --install install" || true
+            sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket-api.sh on" || true            
+            
+            # Enable obwatcher service
+            systemctl enable ob-watcher
 
             echo $JOININBOX_VERSION > $JOININBOX_VERSION_FILE
         fi

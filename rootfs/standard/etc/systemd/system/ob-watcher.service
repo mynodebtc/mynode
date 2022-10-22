@@ -1,0 +1,25 @@
+
+[Unit]
+Description=ob-watcher
+
+[Service]
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/usr/bin/wait_on_bitcoin.sh
+
+WorkingDirectory=/home/joinmarket/joinmarket-clientserver/scripts/obwatch
+ExecStart=/bin/sh -c '. /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate && python ob-watcher.py --host=0.0.0.0'
+User=joinmarket
+Group=joinmarket
+Type=simple
+TimeoutSec=300
+Restart=always
+RestartSec=60
+
+# Hardening measures
+PrivateTmp=true
+ProtectSystem=full
+NoNewPrivileges=true
+PrivateDevices=true
+
+[Install]
+WantedBy=multi-user.target

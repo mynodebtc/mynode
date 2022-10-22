@@ -362,6 +362,8 @@ def get_application_log(short_name):
             return get_journalctl_log("usb_extras")
         elif short_name == "www":
             return get_journalctl_log("www")
+        elif short_name == "i2pd":
+            return get_file_log("/var/log/i2pd/i2pd.log")
         elif short_name == "linux":
             return run_linux_cmd("dmesg | tac | head -n 200")
         else:
@@ -398,6 +400,10 @@ def get_application_status_special(short_name):
             return "Syncing..."
         elif tracker_status == TrackerStatus.ERROR:
             return "Tracker Error"
+    elif short_name == "jam":
+        if not is_installed("joininbox"):
+            return "Requires JoinMarket"
+
     return ""
 
 def get_application_status(short_name):
@@ -452,6 +458,9 @@ def get_application_status_color_special(short_name):
                 return "red"
         else:
             return "gray"
+    elif short_name == "jam":
+        if not is_installed("joininbox"):
+            return "yellow"
     return ""
 
 def get_application_status_color(short_name):
@@ -848,7 +857,8 @@ def upgrade_dynamic_apps(short_name="all"):
                             if app_data["install_env_vars"]:
                                 for key in app_data["install_env_vars"]:
                                     my_env[key] = app_data["install_env_vars"][key]
-                            subprocess.check_output("cd {}; sudo -u {} --preserve-env /bin/bash /usr/bin/service_scripts/install_{}.sh 1>&2".format(app_data["install_folder"], app_data["linux_user"], app_name), shell=True, env=my_env)
+                            # Home dir needs to be set to user so it doesn't inhert root home (causes docker issues)
+                            subprocess.check_output("cd {}; sudo -u {} --preserve-env HOME=/home/{} /bin/bash /usr/bin/service_scripts/install_{}.sh 1>&2".format(app_data["install_folder"], app_data["linux_user"], app_data["linux_user"], app_name), shell=True, env=my_env)
 
                             # Mark update latest version if success
                             log_message("  Upgrade success!")

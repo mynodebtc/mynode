@@ -301,6 +301,14 @@ HiddenServiceDir /var/lib/tor/mynode_sphinx/
 HiddenServiceVersion 3
 HiddenServicePort 53001 127.0.0.1:53001
 
+# Hidden Service for Joinmarket Orderbook
+HiddenServiceDir /var/lib/tor/mynode_obwatcher/ 
+HiddenServiceVersion 3
+HiddenServicePort 80 127.0.0.1:62601
+HiddenServicePort 443 127.0.0.1:62602
+HiddenServicePort 62601 127.0.0.1:62601
+HiddenServicePort 62602 127.0.0.1:62602
+
 
 # Include tor settings for other apps
 %include /etc/torrc.d
