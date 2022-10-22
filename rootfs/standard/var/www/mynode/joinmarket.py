@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect, request, flash
 from user_management import check_logged_in
-from device_info import read_ui_settings
+from device_info import read_ui_settings, get_onion_url_for_service
+from application_info import *
 from systemctl_info import *
 from utilities import *
 import os
@@ -8,7 +9,7 @@ import time
 import subprocess
 import os
 
-mynode_joininbox = Blueprint('mynode_joininbox',__name__)
+mynode_joinmarket = Blueprint('mynode_joinmarket',__name__)
 
 def get_jm_wallets():
     wallets = []
@@ -17,7 +18,7 @@ def get_jm_wallets():
         if os.path.isdir(wallet_folder):
             for f in os.listdir(wallet_folder):
                 wallet_path = wallet_folder + f
-                if os.path.isfile( wallet_path ):
+                if os.path.isfile( wallet_path ) and not f.startswith("."):
                     wallet = {}
                     wallet["name"] = f
                     wallets.append(wallet)
@@ -26,32 +27,40 @@ def get_jm_wallets():
     return wallets
 
 ### Page functions
-@mynode_joininbox.route("/joininbox")
+@mynode_joinmarket.route("/joinmarket")
 def joininbox_page():
     check_logged_in()
 
     # Load page
     templateData = {
-        "title": "myNode JoininBox / JoinMarket",
+        "title": "myNode JoinMarket",
+        "is_jam_installed": is_installed("jam"),
+        "is_jam_enabled": is_service_enabled("jam"),
+        "jam_http_port": 5020,
+        "jam_https_port": 5021,
+        "jam_tor_address": get_onion_url_for_service("jam"),
+        "ob_http_port": 62601,
+        "ob_https_port": 62602,
+        "ob_tor_address": get_onion_url_for_service("obwatcher"),
         "wallets": get_jm_wallets(),
         "ui_settings": read_ui_settings(),
     }
-    return render_template('joininbox.html', **templateData)
+    return render_template('joinmarket.html', **templateData)
 
 
-@mynode_joininbox.route("/joininbox/download_wallet", methods=["GET"])
-def joininbox_download_wallet():
+@mynode_joinmarket.route("/joinmarket/download_wallet", methods=["GET"])
+def joinmarket_download_wallet():
     check_logged_in()
     wallet_folder = "/mnt/hdd/mynode/joinmarket/wallets/"
     wallet_name = request.args.get('wallet')
     if wallet_name is None:
         flash("Error finding wallet name!", category="error")
-        return redirect("/joininbox")
+        return redirect("/joinmarket")
 
     full_file_path = wallet_folder + wallet_name
     if not os.path.isfile( full_file_path ):
         time.sleep(3)
         flash("Error finding wallet to download!", category="error")
-        return redirect("/joininbox")
+        return redirect("/joinmarket")
 
     return download_file(directory=wallet_folder, filename=wallet_name)

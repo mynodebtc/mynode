@@ -1,0 +1,69 @@
+{
+    "name": "Jam",
+    "short_name": "jam",
+    "author": {
+        "name": "",
+        "link": ""
+    },
+    "website": {
+        "name": "Jam",
+        "link": "https://jamapp.org/"
+    },
+    "category": "bitcoin_app",
+    "short_description": "Joinmarket UI",
+    "description": [
+        "Jam is a graphical user interface for JoinMarket, and while obviously related, is a separate project developed by a separate set of people.",
+        "Jam is a free and open-source project that aims to improve the financial privacy of yourself and others, without relying on a trusted third party. It was started in 2021 by various volunteers and is still developed and maintained on a volunteer basis. As mentioned above, Jam is a front-end for JoinMarket, a privacy-focused bitcoin software that uses a peer-to-peer marketplace to facilitate collaborative transactions.",
+        "The goal of Jam is to provide an interface that makes JoinMarket easier to use, and thus more easily accessible for more people.",
+        "JoinMarket is a special kind of software that is aimed at improving the privacy and fungibility of bitcoin transactions. The main way to improve privacy and fungibility on-chain is via collaborative transactions.",
+        "A collaborative transaction requires the coordination of multiple parties. The right resources (UTXOs) have to be available in the right quantity at the right time.",
+        "Consequently, the problem that needs to be solved is not a technological problem, but an economic problem. JoinMarket solves this problem not by central coordination, but by creating a market that allows participants to allocate these resources in the best way, according to their individual needs."
+    ],
+    "latest_version": "v0.1.1",
+    "supported_archs": null,
+    "download_skip": true,
+    "download_type": "source",
+    "download_source_url": "not_required",
+    "download_binary_url": {
+        "aarch64": "download_url",
+        "x86_64": "download_url"
+    },
+    "install_env_vars": {"DOCKER_IMAGE_NAME": "jam-ui-only:{VERSION}-clientserver-v0.9.8"},
+    "supports_app_page": true,
+    "supports_testnet": false,
+    "http_port": 5020,
+    "https_port": 5021,
+    "requires_bitcoin": true,
+    "requires_docker_image_installation": true,
+    "requires_electrs": false,
+    "requires_lightning": false,
+    "show_on_application_page": true,
+    "show_on_homepage": true,
+    "show_on_status_page": true,
+    "hide_status_icon": false,
+    "app_tile_name": "Jam",
+    "app_tile_running_status_text": "Running",
+    "app_tile_button_text": "Info",
+    "app_tile_button_href": "/app/jam/info",
+    "app_page_show_open_button": true,
+    "app_page_content": [
+        {
+            "heading": "Instructions",
+            "content": [
+                "JoinMarket is a mixing wallet for Bitcoin that can be used with a web interface via Jam.",
+                "First, for the application to run properly, JoinMarket also needs be installed via the myNode Marketplace.",
+                "To get started, you just need enable Jam and click the open button on the left. Then, follow the instructions within the app!",
+                "Enjoy mixing your coins!"
+            ]
+        }
+    ],
+    "can_uninstall": true,
+    "can_reinstall": true,
+    "can_enable_disable": true,
+    "is_beta": true,
+    "is_premium": true,
+    "homepage_section": "apps",
+    "homepage_order": 91,
+    "app_type": "custom",
+    "sdk_version": 2
+}
