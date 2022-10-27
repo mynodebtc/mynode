@@ -55,6 +55,8 @@ def main():
         app_names = args.app
         if not isinstance(app_names, list):
             app_names = [app_names]
+            # Since single app was named, mark as installed
+            mark_app_installed(app_name)
         for app_name in app_names:
             if args.command == "reinstall":
                 clear_installed_version(app_name)
