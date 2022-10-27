@@ -698,49 +698,7 @@ fi
 #     fi
 #   fi
 # done
-STARTUP_MODIFIED=0
-if [ -f $ELECTRS_ENABLED_FILE ]; then
-    if systemctl status electrs | grep "disabled;"; then
-        systemctl enable electrs
-        STARTUP_MODIFIED=1
-    fi
-fi
-if [ -f $LNDHUB_ENABLED_FILE ]; then
-    if systemctl status lndhub | grep "disabled;"; then
-        systemctl enable lndhub
-        STARTUP_MODIFIED=1
-    fi
-fi
-if [ -f $BTCRPCEXPLORER_ENABLED_FILE ]; then
-    if systemctl status btcrpcexplorer | grep "disabled;"; then
-        systemctl enable btcrpcexplorer
-        STARTUP_MODIFIED=1
-    fi
-fi
-if [ -f $MEMPOOL_ENABLED_FILE ]; then
-    if systemctl status mempool | grep "disabled;"; then
-        systemctl enable mempool
-        STARTUP_MODIFIED=1
-    fi
-fi
-if [ -f $BTCPAYSERVER_ENABLED_FILE ]; then
-    if systemctl status btcpayserver | grep "disabled;"; then
-        systemctl enable btcpayserver
-        STARTUP_MODIFIED=1
-    fi
-fi
-if [ -f $VPN_ENABLED_FILE ]; then
-    if systemctl status vpn | grep "disabled;"; then
-        systemctl enable vpn
-        systemctl enable openvpn || true
-        STARTUP_MODIFIED=1
-    fi
-fi
-if [ $STARTUP_MODIFIED -eq 1 ]; then
-    sync
-    reboot
-    exit 0
-fi
+
 
 # Generate certificates
 echo "Generating certificates..."

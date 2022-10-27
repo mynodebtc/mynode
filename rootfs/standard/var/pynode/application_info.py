@@ -81,6 +81,20 @@ def is_installed(short_name):
         return True
     return False
 
+def mark_app_installed(short_name):
+    install_marker_1 = "/home/bitcoin/.mynode/install_"+short_name
+    install_marker_2 = "/mnt/hdd/mynode/settings/install_"+short_name
+    latest_version_1 = "/home/bitcoin/.mynode/"+short_name+"_version_latest"
+    latest_version_2 = "/mnt/hdd/mynode/settings/"+short_name+"_version_latest"
+    # Check the latest version location
+    if os.path.isfile(latest_version_1):
+        touch(install_marker_1)
+    elif os.path.isfile(latest_version_2):
+        touch(install_marker_2)
+    else:
+        # App maybe dyanmic app (no version latest file) so mark sd card
+        touch(install_marker_1)
+
 def get_app_current_version_from_file(short_name):
     version = "unknown"
     filename1 = "/home/bitcoin/.mynode/"+short_name+"_version"
@@ -581,6 +595,10 @@ def create_application_user(app_data):
     # Ensure user belongs to bitcoin group
     add_user_to_group(username, "bitcoin")
 
+    # If docker app, add them to docker
+    #if app_data["requires_docker_image_installation"]:
+    #    add_user_to_group(username, "docker")
+
 def create_application_folders(app_data):
     log_message("  Running create_application_folders...")
     app_folder = app_data["install_folder"]
@@ -658,7 +676,7 @@ def install_application_tarball(app_data):
         run_linux_cmd("mv /tmp/mynode_dynamic_app_extract/* /tmp/mynode_dynamic_app_extract/app")
 
         # Move tarball contents to app folder
-        run_linux_cmd("rsync -var --delete-after /tmp/mynode_dynamic_app_extract/app/* {}/".format(app_data["install_folder"]))
+        run_linux_cmd("rsync -var --delete-after /tmp/mynode_dynamic_app_extract/app/ {}/".format(app_data["install_folder"]))
 
     # Move additional app data to app installation folder
     app_data_source = get_dynamic_app_dir() + "/" + app_data["short_name"] + "/app_data"

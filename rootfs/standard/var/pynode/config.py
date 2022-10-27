@@ -1,12 +1,5 @@
 CONFIG = {}
 
-# Enabled Features
-CONFIG["rtl_enabled"] = True
-CONFIG["electrs_enabled"] = True
-CONFIG["explorer_enabled"] = True
-CONFIG["btcrpcexplorer_enabled"] = True
-CONFIG["lndhub_enabled"] = True
-
 # myNode variables
 CHECKIN_URL = "https://www.mynodebtc.com/device_api/check_in.php"
 
@@ -21,10 +14,4 @@ LND_DATA_FOLDER = "/mnt/hdd/mynode/lnd/data/"
 DOJO_INSTALL_FILE =  "/mnt/hdd/mynode/settings/mynode_dojo_install"
 
 # Other Variables
-ELECTRS_ENABLED_FILE =  "/mnt/hdd/mynode/.mynode_electrs_enabled"
-LNDHUB_ENABLED_FILE =   "/mnt/hdd/mynode/.mynode_lndhub_enabled"
-BTCRPCEXPLORER_ENABLED_FILE = "/mnt/hdd/mynode/.mynode_btcrpceplorer_enabled"
-VPN_ENABLED_FILE = "/mnt/hdd/mynode/.mynode_vpn_enabled"
-NETDATA_ENABLED_FILE = "/mnt/hdd/mynode/.mynode_netdata_enabled"
-MEMPOOL_ENABLED_FILE = "/mnt/hdd/mynode/.mynode_mempoolspace_enabled"
-BTCPAYSERVER_ENABLED_FILE = "/mnt/hdd/mynode/.mynode_btcpayserver_enabled"
+# ...

@@ -23,8 +23,11 @@ rm -f /mnt/hdd/mynode/settings/${APP}_version || true
 # Make sure app is marked for install
 if [ -f /home/bitcoin/.mynode/${APP}_version_latest ]; then
     touch /home/bitcoin/.mynode/install_${APP} || true
-else
+elif [ -f /mnt/hdd/mynode/settings/${APP}_version_latest ]; then
     touch /mnt/hdd/mynode/settings/install_${APP} || true
+else
+    # App is probably dynamic app (no version_latest file) so go ahead and mark sd card
+    touch /home/bitcoin/.mynode/install_${APP} || true
 fi
 
 # Custom re-install steps
