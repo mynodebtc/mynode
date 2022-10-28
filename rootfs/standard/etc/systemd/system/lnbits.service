@@ -20,6 +20,7 @@ ExecStart=/usr/bin/docker run --rm \
                               --volume /mnt/hdd/mynode/lnbits/:/app/data \
                               --volume /mnt/hdd/mynode/lnd/tls.cert:/app/tls.cert \
                               --volume /mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon:/app/admin.macaroon \
+                              --add-host=host.docker.internal:host-gateway \
                               lnbits-legend
 ExecStop=/usr/bin/docker stop -t 2 lnbits-legend
 
