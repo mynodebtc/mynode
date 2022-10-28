@@ -190,7 +190,7 @@
                             <th>Last Sync</th>
                             <td>{{last_sync}}</td>
                         </tr>
-                        {% if "subscription" in response_data %}
+                        {% if response_data is not none and "subscription" in response_data %}
                             {% if "active" in response_data.subscription %}
                                 <tr>
                                     <td>Subscription</td>
