@@ -27,6 +27,8 @@ def main():
 
     parser_openports = subparsers.add_parser('openports', help='Open app ports in firewall')
 
+    parser_list = subparsers.add_parser('list', help='List dynamic apps')
+
     parser_install = subparsers.add_parser('install', help='Install Dynamic Application')
     parser_install.add_argument('app', help='App to install', default="all", nargs='*')
 
@@ -47,6 +49,8 @@ def main():
         init_dynamic_apps()
     elif args.command == "openports":
         open_application_ports()
+    elif args.command == "list":
+        list_dynamic_apps()
     elif args.command == "install" or \
          args.command == "upgrade" or \
          args.command == "reinstall":
@@ -55,12 +59,12 @@ def main():
         app_names = args.app
         if not isinstance(app_names, list):
             app_names = [app_names]
-            # Since single app was named, mark as installed
-            mark_app_installed(app_name)
         for app_name in app_names:
             if args.command == "reinstall":
                 clear_installed_version(app_name)
-            upgrade_dynamic_apps()
+            if app_name != "all" and is_application_valid(app_name):
+                mark_app_installed(app_name)
+            upgrade_dynamic_apps(app_name)
     elif args.command == "upgrade":
         # If no app name, upgrade all
         app_names = args.app
