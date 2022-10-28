@@ -888,6 +888,12 @@ def upgrade_dynamic_apps(short_name="all"):
             except Exception as e:
                 log_message("  ERROR: Error checking app {} for upgrade ({})".format(app_name, str(e)))
 
+def list_dynamic_apps():
+    app_names = get_dynamic_app_names()
+    print("Dynamic Apps")
+    for app_name in app_names:
+        print("  {}".format(app_name))
+
 
 # Typically, the mynode_uninstall_app.sh runs first and calls mynode-manage-apps uninstall to run this
 #   Prior to running, service should have been stopped and disabled
