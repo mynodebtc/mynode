@@ -393,9 +393,11 @@ if [ "$CURRENT" != "$LND_VERSION" ]; then
 
     wget $LND_UPGRADE_URL
     wget $LND_UPGRADE_MANIFEST_URL -O manifest.txt
-    wget $LND_UPGRADE_MANIFEST_SIG_URL -O manifest.txt.sig
+    wget $LND_UPGRADE_MANIFEST_ROASBEEF_SIG_URL -O manifest_roasbeef.txt.sig || true
+    wget $LND_UPGRADE_MANIFEST_GUGGERO_SIG_URL -O manifest_guggero.txt.sig || true
 
-    gpg --verify manifest.txt.sig manifest.txt
+    gpg --verify manifest_roasbeef.txt.sig manifest.txt || \
+    gpg --verify manifest_guggero.txt.sig manifest.txt
     if [ $? == 0 ]; then
         # Install LND
         tar -xzf lnd-*.tar.gz
