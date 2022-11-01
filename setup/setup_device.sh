@@ -949,7 +949,6 @@ systemctl enable redis-server
 #systemctl enable electrs # DISABLED BY DEFAULT
 #systemctl enable lndhub # DISABLED BY DEFAULT
 #systemctl enable btcrpcexplorer # DISABLED BY DEFAULT
-systemctl enable tls_proxy
 systemctl enable rtl
 systemctl enable tor
 systemctl enable i2pd
