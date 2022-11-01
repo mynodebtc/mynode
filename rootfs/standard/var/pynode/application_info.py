@@ -62,6 +62,9 @@ def uninstall_app(app):
     os.system("sync")
 
 def remove_app(app):
+    # Remove install markers
+    clear_app_installed(app)
+
     # Make sure app is disabled
     disable_service(app)
 
@@ -94,6 +97,12 @@ def mark_app_installed(short_name):
     else:
         # App maybe dyanmic app (no version latest file) so mark sd card
         touch(install_marker_1)
+
+def clear_app_installed(short_name):
+    install_marker_1 = "/home/bitcoin/.mynode/install_"+short_name
+    install_marker_2 = "/mnt/hdd/mynode/settings/install_"+short_name
+    delete_file(install_marker_1)
+    delete_file(install_marker_2)
 
 def get_app_current_version_from_file(short_name):
     version = "unknown"
@@ -908,7 +917,7 @@ def uninstall_dynamic_app(short_name):
         exit(1)
 
     # Run app-specific uninstall script
-    uninstall_script = "/bin/bash /usr/bin/service_scripts/install_{}.sh".format(short_name)
+    uninstall_script = "/usr/bin/service_scripts/uninstall_{}.sh".format(short_name)
     if os.path.isfile(uninstall_script):
         try:
             my_env = os.environ.copy()
@@ -922,6 +931,9 @@ def uninstall_dynamic_app(short_name):
         except Exception as e:
             print("  Exception: {}".format(str(e)))
     
+    # Delete install marker files
+    clear_app_installed(short_name)
+
     # Disable service 
     disable_service(short_name)
 
