@@ -167,10 +167,10 @@ PYBLOCK_VERSION=$(get_app_version "$PYBLOCK_VERSION" "pyblock")
 PYBLOCK_VERSION_FILE=/home/bitcoin/.mynode/pyblock_version
 PYBLOCK_LATEST_VERSION_FILE=/home/bitcoin/.mynode/pyblock_version_latest
 
-WARDEN_VERSION="0.91"
-WARDEN_VERSION=$(get_app_version "$WARDEN_VERSION" "warden")
-WARDEN_VERSION_FILE=/home/bitcoin/.mynode/warden_version
-WARDEN_LATEST_VERSION_FILE=/home/bitcoin/.mynode/warden_version_latest
+WARDENTERMINAL_VERSION="869bb48453e9444691c27d2c8908abf2694094ea"
+WARDENTERMINAL_VERSION=$(get_app_version "$WARDENTERMINAL_VERSION" "wardenterminal")
+WARDENTERMINAL_VERSION_FILE=/home/bitcoin/.mynode/wardenterminal_version
+WARDENTERMINAL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/wardenterminal_version_latest
 
 NETDATA_VERSION="v1.32.1"
 NETDATA_VERSION=$(get_app_version "$NETDATA_VERSION" "netdata")
