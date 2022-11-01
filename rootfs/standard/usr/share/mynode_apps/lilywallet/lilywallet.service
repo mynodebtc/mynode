@@ -1,0 +1,29 @@
+# lilywallet service
+# /etc/systemd/system/lilywallet.service
+
+[Unit]
+Description=lilywallet
+Wants=www.service docker_images.service
+After=www.service docker_images.service
+
+[Service]
+WorkingDirectory=/opt/mynode/lilywallet
+
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_lilywallet.sh ]; then /bin/bash /usr/bin/service_scripts/pre_lilywallet.sh; fi'
+ExecStart=/usr/local/bin/docker-compose up
+ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_lilywallet.sh ]; then /bin/bash /usr/bin/service_scripts/post_lilywallet.sh; fi'
+ExecStop=/usr/local/bin/docker-compose down
+
+User=lilywallet
+Group=lilywallet
+Type=simple
+TimeoutSec=120
+Restart=always
+RestartSec=60
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=lilywallet
+
+[Install]
+WantedBy=multi-user.target
