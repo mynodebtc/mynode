@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  lily-wallet:
+    restart: on-failure
+    volumes:
+      - /mnt/hdd/mynode/lilywallet:/appdata
+      - /mnt/hdd/mynode/lnd/:/lnd:ro
+      - /dev/bus:/dev/bus:ro
+      - /run/udev:/run/udev:ro
+    build:
+      dockerfile: ./Dockerfile
+      context: ./
+    environment:
+      - EXPRESS_PORT=8080
+      - ELECTRUM_IP=host.docker.internal
+      - ELECTRUM_PORT=50001
+      - APP_DATA_DIR=/appdata
+      - LND_IP=host.docker.internal
+      - LND_GRPC_PORT=10009
+      - LND_WALLET_NAME='LND_WALLET_NAME'
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    devices:
+      - /dev/bus/usb
+    ports:
+      - '5030:8080'
+    device_cgroup_rules:
+      - 'c 189:* rmw'

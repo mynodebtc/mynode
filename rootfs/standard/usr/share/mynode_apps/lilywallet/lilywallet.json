@@ -1,0 +1,66 @@
+{
+    "name": "Lily Wallet",
+    "short_name": "lilywallet",
+    "author": {
+        "name": "Lily Technologies",
+        "link": "https://github.com/Lily-Technologies"
+    },
+    "website": {
+        "name": "Lily Wallet",
+        "link": "https://lily-wallet.com/"
+    },
+    "category": "bitcoin_app",
+    "short_description": "Multisig Tool",
+    "description": [
+        "Secure bitcoin wallet designed for everyone on their journey towards financial freedom."
+    ],
+    "latest_version": "v1.1.0",
+    "linux_user": "bitcoin",
+    "supported_archs": null,
+    "download_skip": false,
+    "download_type": "source",
+    "download_source_url": "https://github.com/Lily-Technologies/lily-wallet/archive/6bd2ce729b8f48bc4d4ce171532f5fafd8b577b5.tar.gz",
+    "download_binary_url": {
+        "aarch64": "download_url",
+        "x86_64": "download_url"
+    },
+    "install_env_vars": {},
+    "supports_app_page": true,
+    "supports_testnet": false,
+    "http_port": 5030,
+    "https_port": 5031,
+    "requires_bitcoin": true,
+    "requires_docker_image_installation": true,
+    "requires_electrs": true,
+    "requires_lightning": false,
+    "show_on_application_page": false,
+    "show_on_homepage": false,
+    "show_on_status_page": false,
+    "hide_status_icon": false,
+    "app_tile_name": "Lily Wallet",
+    "app_tile_running_status_text": "Running",
+    "app_tile_button_text": "Info",
+    "app_tile_button_href": "/app/lilywallet/info",
+    "app_page_show_open_button": true,
+    "app_page_content": [
+        {
+            "heading": "Instructions",
+            "content": [
+                "Add general usage instructions here. You can open the app with the Open button on the left (if web based).",
+                "For more custom content, update the template and python files under the 'www' folder.",
+                "Paragraph 3",
+                "Paragraph 4",
+                "Enjoy!"
+            ]
+        }
+    ],
+    "can_uninstall": true,
+    "can_reinstall": true,
+    "can_enable_disable": true,
+    "is_beta": false,
+    "is_premium": false,
+    "homepage_section": "apps",
+    "homepage_order": 91,
+    "app_type": "custom",
+    "sdk_version": 2
+}
