@@ -939,21 +939,21 @@ fi
 
 
 # Upgrade WARden
-if should_install_app "warden" ; then
-    WARDEN_UPGRADE_URL=https://github.com/pxsocs/warden/archive/refs/tags/$WARDEN_VERSION.tar.gz
+if should_install_app "wardenterminal" ; then
+    WARDENTERMINAL_UPGRADE_URL=https://github.com/pxsocs/warden_terminal/archive/$WARDENTERMINAL_VERSION.tar.gz
     CURRENT=""
-    if [ -f $WARDEN_VERSION_FILE ]; then
-        CURRENT=$(cat $WARDEN_VERSION_FILE)
+    if [ -f $WARDENTERMINAL_VERSION_FILE ]; then
+        CURRENT=$(cat $WARDENTERMINAL_VERSION_FILE)
     fi
-    if [ "$CURRENT" != "$WARDEN_VERSION" ]; then
+    if [ "$CURRENT" != "$WARDENTERMINAL_VERSION" ]; then
         cd /opt/mynode
-        rm -rf warden
+        rm -rf wardenterminal
 
-        sudo -u bitcoin wget $WARDEN_UPGRADE_URL -O warden.tar.gz
-        sudo -u bitcoin tar -xvf warden.tar.gz
-        sudo -u bitcoin rm warden.tar.gz
-        sudo -u bitcoin mv warden-* warden
-        cd warden
+        sudo -u bitcoin wget $WARDENTERMINAL_UPGRADE_URL -O wardenterminal.tar.gz
+        sudo -u bitcoin tar -xvf wardenterminal.tar.gz
+        sudo -u bitcoin rm wardenterminal.tar.gz
+        sudo -u bitcoin mv warden_terminal-* wardenterminal
+        cd wardenterminal
 
         # Make venv
         if [ ! -d env ]; then
@@ -963,7 +963,7 @@ if should_install_app "warden" ; then
         pip3 install -r requirements.txt
         deactivate
 
-        echo $WARDEN_VERSION > $WARDEN_VERSION_FILE
+        echo $WARDENTERMINAL_VERSION > $WARDENTERMINAL_VERSION_FILE
     fi
 fi
 
