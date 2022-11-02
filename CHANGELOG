@@ -1,4 +1,14 @@
 === v0.3.03 ===
+- Released: 11/01/22
+- Add Jam (v0.1.1)
+- Upgrade LND to v0.15.4
+- Upgrade LiT to v0.8.3
+- Upgrade Electrs to v0.9.9
+- Upgrade BoS to v13.1.4
+- Fix Warden Terminal installation issue
+- Improve LNBits connection consistency to LND
+
+=== v0.3.03 ===
 - Released: 10/09/22
 - Upgrade LND to v0.15.2
 - Resolves issue syncing LND to blockchain tip
