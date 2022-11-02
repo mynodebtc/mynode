@@ -11,6 +11,7 @@ import os
 
 electrum_server_current_block = None
 electrs_active = False
+electrs_version = None
 
 def get_electrum_server_current_block():
     global electrum_server_current_block
@@ -37,6 +38,12 @@ def update_electrs_info():
                 electrs_active = True
     except:
         pass
+
+def get_electrs_version():
+    global electrs_version
+    if electrs_version == None:
+        electrs_version = to_string(subprocess.check_output("electrs --version", shell=True))
+    return "{}".format(electrs_version)
 
 def is_electrs_active():
     global electrs_active

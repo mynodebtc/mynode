@@ -51,6 +51,7 @@ def electrum_server_page():
         "server_ip": server_ip,
         "server_standard_port": server_standard_port,
         "server_secure_port": server_secure_port,
+        "electrs_version": get_electrs_version(),
         "electrs_command": electrs_command,
         "electrs_onion_hostname": electrs_onion_hostname,
         "electrs_onion_command": electrs_onion_command,
