@@ -814,6 +814,15 @@ def init_dynamic_app(app_info):
     #log_message("  TODO: Build dockerfile???")
     #log_message("  TODO: Install dockerfile???")
 
+    # Move update app_data files of dynamic apps that have been installed
+    app_data_source = app_dir + "/app_data"
+    app_data_dest = app_info["install_folder"] + "/app_data"
+    if os.path.isdir(app_data_dest):
+        run_linux_cmd("rm -rf {}".format(app_data_dest))
+        if os.path.isdir(app_data_source):
+            run_linux_cmd("cp -r -f {} {}".format(app_data_source, app_data_dest))
+            run_linux_cmd("chown -R {}:{} {}".format(app_info["linux_user"],app_info["linux_user"],app_data_dest))
+
     # Setup tor hidden service
     create_application_tor_service(app_info)
 
@@ -836,6 +845,7 @@ def init_dynamic_apps(short_name="all"):
                 app_json_path = app_dir + "/{}.json".format(app_name)
                 with open(app_json_path, 'r') as fp:
                     app_info = json.load(fp)
+                    app_info = initialize_application_defaults(app_info)
                     init_dynamic_app(app_info)
 
             except Exception as e:
