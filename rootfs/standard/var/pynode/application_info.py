@@ -859,8 +859,13 @@ def upgrade_dynamic_apps(short_name="all"):
     for app_name in app_names:
         if short_name == "all" or short_name == app_name:
             try:
+                # Get app and make sure app info is updated (otherwise installed marker may be wrong)
                 app_data = get_application( app_name )
+                app_data = initialize_application_defaults(app_data)
+
                 if app_data["is_installed"]:
+                    #log_message("{} vs {}".format(app_data["current_version"], app_data["latest_version"]))
+
                     if app_data["current_version"] != app_data["latest_version"]:
                         log_message("  Upgrading {} ({} vs {})...".format(app_name, app_data["current_version"], app_data["latest_version"]))
                         try:
