@@ -15,8 +15,8 @@ ExecStart=/usr/local/bin/docker-compose up
 ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_lilywallet.sh ]; then /bin/bash /usr/bin/service_scripts/post_lilywallet.sh; fi'
 ExecStop=/usr/local/bin/docker-compose down
 
-User=lilywallet
-Group=lilywallet
+User=bitcoin
+Group=bitcoin
 Type=simple
 TimeoutSec=120
 Restart=always

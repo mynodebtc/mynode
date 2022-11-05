@@ -11,7 +11,9 @@ echo "==================== INSTALLING APP ===================="
 # Copy over custom compose file for mynode
 cp -f app_data/docker-compose.yml docker-compose.yml
 
+sed -i "s/RUN yarn/RUN yarn --network-timeout 120000/g" Dockerfile
+
 # Build images
-docker-compose build
+docker-compose build --no-cache
 
 echo "================== DONE INSTALLING APP ================="
