@@ -80,6 +80,7 @@ if [ -f /var/lib/tor/mynode_lnd/hostname ]; then
     echo "[Application Options]" >> /mnt/hdd/mynode/lnd/lnd.conf
     ONION_URL=$(cat /var/lib/tor/mynode_lnd/hostname)
     echo "tlsextradomain=$ONION_URL" >> /mnt/hdd/mynode/lnd/lnd.conf
+    echo "tlsextradomain=host.docker.internal" >> /mnt/hdd/mynode/lnd/lnd.conf
     echo "" >> /mnt/hdd/mynode/lnd/lnd.conf
 fi
 
