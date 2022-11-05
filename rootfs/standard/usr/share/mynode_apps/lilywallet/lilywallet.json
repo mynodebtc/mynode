@@ -19,7 +19,7 @@
     "supported_archs": null,
     "download_skip": false,
     "download_type": "source",
-    "download_source_url": "https://github.com/Lily-Technologies/lily-wallet/archive/6bd2ce729b8f48bc4d4ce171532f5fafd8b577b5.tar.gz",
+    "download_source_url": "https://github.com/Lily-Technologies/lily-wallet/archive/1c796f4622fd0326a9b4572d9929c7dd64e2cdc9.tar.gz",
     "download_binary_url": {
         "aarch64": "download_url",
         "x86_64": "download_url"
@@ -33,9 +33,9 @@
     "requires_docker_image_installation": true,
     "requires_electrs": true,
     "requires_lightning": false,
-    "show_on_application_page": false,
-    "show_on_homepage": false,
-    "show_on_status_page": false,
+    "show_on_application_page": true,
+    "show_on_homepage": true,
+    "show_on_status_page": true,
     "hide_status_icon": false,
     "app_tile_name": "Lily Wallet",
     "app_tile_running_status_text": "Running",
@@ -46,10 +46,8 @@
         {
             "heading": "Instructions",
             "content": [
-                "Add general usage instructions here. You can open the app with the Open button on the left (if web based).",
-                "For more custom content, update the template and python files under the 'www' folder.",
-                "Paragraph 3",
-                "Paragraph 4",
+                "Open Lilywallet by clicking the button on the left. Once open, setup a fresh password for the Lilywallet application. You will need this password each time you login.",
+                "On initial setup, your local Lightning wallet will already be listed. You can add additional hardware wallets and create multisig wallets as well.",
                 "Enjoy!"
             ]
         }

@@ -16,9 +16,9 @@ services:
       - ELECTRUM_IP=host.docker.internal
       - ELECTRUM_PORT=50001
       - APP_DATA_DIR=/appdata
-      - LND_IP=host.docker.internal
+      - LND_IP=172.17.0.1
       - LND_GRPC_PORT=10009
-      - LND_WALLET_NAME='LND_WALLET_NAME'
+      - LND_WALLET_NAME=My LND Wallet
     extra_hosts:
       - host.docker.internal:host-gateway
     devices:
