@@ -31,6 +31,7 @@ apps = [{"name": "bitcoin/bitcoin",                         "current_version_var
         #{"name": "JoinMarket-Org/joinmarket-clientserver",  "current_version_variable": "JOINMARKET_VERSION"}, # Old, now use within joininbox
         {"name": "curly60e/pyblock",                        "current_version_variable": "PYBLOCK_VERSION"},
         {"name": "cryptosharks131/lndg",                    "dynamic_app_name":         "lndg"},
+        {"name": "Lily-Technologies/lily-wallet",           "dynamic_app_name":         "lilywallet"},
 ]
 
 # Apps that don't work or are not on GitHub

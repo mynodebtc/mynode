@@ -250,7 +250,7 @@
         "homepage_order": 23
     },
     {
-        "comment": "Keep shortname as joininbox so upgrades work",
+        "comment": "===== Keep shortname as joininbox so upgrades work =====",
         "name": "JoinMarket",
         "short_name": "joininbox",
         "author": {"name": "AdamISZ", "link":"https://github.com/AdamISZ"},
