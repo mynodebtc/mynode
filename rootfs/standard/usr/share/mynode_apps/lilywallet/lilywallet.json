@@ -56,7 +56,7 @@
     "can_reinstall": true,
     "can_enable_disable": true,
     "is_beta": false,
-    "is_premium": false,
+    "is_premium": true,
     "homepage_section": "apps",
     "homepage_order": 91,
     "app_type": "custom",
