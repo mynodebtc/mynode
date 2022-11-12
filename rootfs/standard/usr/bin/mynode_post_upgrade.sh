@@ -679,7 +679,6 @@ fi
 # Install Whirlpool
 if should_install_app "whirlpool" ; then
     WHIRLPOOL_UPGRADE_URL=https://code.samourai.io/whirlpool/whirlpool-client-cli/uploads/$WHIRLPOOL_UPLOAD_FILE_ID/whirlpool-client-cli-$WHIRLPOOL_VERSION-run.jar
-    WHIRLPOOL_SIG_URL=https://code.samourai.io/whirlpool/whirlpool-client-cli/uploads/$WHIRLPOOL_UPLOAD_SIG_ID/whirlpool-client-cli-$WHIRLPOOL_VERSION-run.jar.sig.asc
     CURRENT=""
     if [ -f $WHIRLPOOL_VERSION_FILE ]; then
         CURRENT=$(cat $WHIRLPOOL_VERSION_FILE)
@@ -690,7 +689,6 @@ if should_install_app "whirlpool" ; then
         sudo rm -rf *.jar
         sudo -u bitcoin wget -O whirlpool.jar $WHIRLPOOL_UPGRADE_URL
 
-        #wget -O whirlpool.asc $WHIRLPOOL_SIG_URL
         cp -f /usr/share/whirlpool/whirlpool.asc whirlpool.asc
         gpg --verify whirlpool.asc
 
