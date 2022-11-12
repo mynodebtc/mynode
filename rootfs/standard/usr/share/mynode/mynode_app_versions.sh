@@ -158,7 +158,7 @@ BOS_VERSION=$(get_app_version "$BOS_VERSION" "bos")
 BOS_VERSION_FILE=/home/bitcoin/.mynode/bos_version
 BOS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bos_version_latest
 
-SPHINXRELAY_VERSION="v2.2.9"
+SPHINXRELAY_VERSION="v2.2.12"
 SPHINXRELAY_VERSION=$(get_app_version "$SPHINXRELAY_VERSION" "sphinxrelay")
 SPHINXRELAY_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version
 SPHINXRELAY_LATEST_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version_latest
