@@ -89,6 +89,16 @@ def check_in(check_for_updates):
     check_in_success = False
     while not check_in_success:
         try:
+            repeat_delay = 2*60
+            if fail_count <= 5:
+                repeat_delay = 2*60
+            elif fail_count <= 10:
+                repeat_delay = 5*60
+            elif fail_count <= 20:
+                repeat_delay = 60*60
+            else:
+                repeat_delay = 6*60*60
+
             # Gather check in data
             product_key = get_product_key()
             data = {
@@ -140,12 +150,12 @@ def check_in(check_for_updates):
                 on_check_in_error("Check In Failed: Unknown")
         except Exception as e:
             on_check_in_error("Check In Failed: (retrying) Exception {}".format(e))
-
-        if not check_in_success:
-            # Check in failed, try again later
-            os.system("touch /tmp/check_in_error")
-            time.sleep(120)
-            fail_count = fail_count + 1
+        finally:
+            if not check_in_success:
+                # Check in failed, try again later
+                os.system("touch /tmp/check_in_error")
+                time.sleep(repeat_delay)
+                fail_count = fail_count + 1
 
     return True
 
