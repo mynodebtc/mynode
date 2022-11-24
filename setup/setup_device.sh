@@ -703,11 +703,10 @@ if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
         fi
 
         # Install
-        sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket.sh install" || true
+        sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket.sh --install install" || true
         sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket-api.sh on" || true
             
-        # Enable obwatcher service
-        systemctl enable ob-watcher
+        # Enable obwatcher at the end of setup_device.sh
 
         echo $JOININBOX_VERSION > $JOININBOX_VERSION_FILE
     fi
@@ -961,6 +960,7 @@ systemctl enable webssh2
 systemctl enable rotate_logs
 systemctl enable corsproxy_btcrpc
 systemctl enable usb_extras
+systemctl enable ob-watcher
 
 
 # Disable services
@@ -996,6 +996,12 @@ if [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ] ; then
     get_random_mac
     nmcli connection modify $UUID ethernet.cloned-mac-address $MACADDR
     nmcli connection modify $UUID -ethernet.mac-address ""
+fi
+
+# Add fsck force to startup for x86
+if [ $IS_X86 = 1 ]; then
+    sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=.*/GRUB_CMDLINE_LINUX_DEFAULT=\"quiet fsck.mode=force fsck.repair=yes\"/g" 
+    update-grub
 fi
 
 # Add generic boot option if UEFI
