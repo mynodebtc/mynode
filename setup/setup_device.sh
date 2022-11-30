@@ -1000,7 +1000,7 @@ fi
 
 # Add fsck force to startup for x86
 if [ $IS_X86 = 1 ]; then
-    sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=.*/GRUB_CMDLINE_LINUX_DEFAULT=\"quiet fsck.mode=force fsck.repair=yes\"/g" 
+    sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=.*/GRUB_CMDLINE_LINUX_DEFAULT=\"quiet fsck.mode=force fsck.repair=yes\"/g" /etc/default/grub
     update-grub
 fi
 
