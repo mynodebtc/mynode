@@ -106,10 +106,11 @@ See the [development guide](https://github.com/mynodebtc/mynode/blob/master/doc/
 To develop and add new applications to mynode, check out the [Software Development Kit (SDK)](https://github.com/mynodebtc/mynode_sdk).
 
 
-## Install on Existing System (beta)
-To setup a new device on a supported platform that is already running Linux (Raspi4, RockPi 4, RockPro64, PC, ...), you can run two simple commands.
+## Install on Existing System (Beta)
+To setup a new device on a supported platform that is already running Linux (Raspi4, RockPi 4, RockPro64, PC, Mac, ...), you can run two simple commands.
 
 First, install a debian-based operating system.
+For macOS make sure to update to version 12.3 or later, then just pull up a Terminal and paste in this command: curl https://alx.sh | sh 
 
 Second, login and run these two commands.
 
