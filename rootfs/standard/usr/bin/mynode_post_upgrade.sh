@@ -161,9 +161,13 @@ if ! skip_base_upgrades ; then
         $TORIFY apt-get -y install cloud-init
     fi
 
-    # Make sure some software is removed
+    # Use timesyncd for NTP
     apt-get -y purge ntp # (conflicts with systemd-timedatectl)
     apt-get -y purge chrony # (conflicts with systemd-timedatectl)
+    if [ $IS_ARMBIAN = 1 ] ; then
+        $TORIFY apt-get -y install systemd-timesyncd
+        timedatectl set-ntp true
+    fi
 
 
     # Install nginx
