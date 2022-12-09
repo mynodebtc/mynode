@@ -241,6 +241,10 @@ fi
 if [ $IS_X86 = 1 ]; then
     apt-get -y install cloud-init
 fi
+if [ $IS_ARMBIAN = 1 ] ; then
+    apt-get -y install systemd-timesyncd
+    timedatectl set-ntp true
+fi
 
 # Make sure some software is removed
 apt-get -y purge ntp # (conflicts with systemd-timedatectl)
