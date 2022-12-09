@@ -394,6 +394,7 @@
         "show_on_homepage": true,
         "homepage_order": 35,
         "requires_lightning": true,
+        "requires_docker_image_installation": true,
         "is_premium": true
     },
     {
