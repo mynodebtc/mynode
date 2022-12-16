@@ -14,12 +14,12 @@
     "description": [
         "Secure bitcoin wallet designed for everyone on their journey towards financial freedom."
     ],
-    "latest_version": "v1.1.0",
+    "latest_version": "v1.3.0",
     "linux_user": "bitcoin",
     "supported_archs": null,
     "download_skip": false,
     "download_type": "source",
-    "download_source_url": "https://github.com/Lily-Technologies/lily-wallet/archive/1c796f4622fd0326a9b4572d9929c7dd64e2cdc9.tar.gz",
+    "download_source_url": "https://github.com/Lily-Technologies/lily-wallet/archive/refs/tags/lily-wallet-{VERSION}.tar.gz",
     "download_binary_url": {
         "aarch64": "download_url",
         "x86_64": "download_url"
