@@ -133,7 +133,7 @@ SPECTER_VERSION=$(get_app_version "$SPECTER_VERSION" "specter")
 SPECTER_VERSION_FILE=/home/bitcoin/.mynode/specter_version
 SPECTER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/specter_version_latest
 
-THUNDERHUB_VERSION="v0.13.16"
+THUNDERHUB_VERSION="v0.13.18"
 THUNDERHUB_VERSION=$(get_app_version "$THUNDERHUB_VERSION" "thunderhub")
 THUNDERHUB_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version
 THUNDERHUB_LATEST_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version_latest
