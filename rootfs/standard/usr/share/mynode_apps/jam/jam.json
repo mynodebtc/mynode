@@ -19,7 +19,7 @@
         "A collaborative transaction requires the coordination of multiple parties. The right resources (UTXOs) have to be available in the right quantity at the right time.",
         "Consequently, the problem that needs to be solved is not a technological problem, but an economic problem. JoinMarket solves this problem not by central coordination, but by creating a market that allows participants to allocate these resources in the best way, according to their individual needs."
     ],
-    "latest_version": "v0.1.3",
+    "latest_version": "v0.1.4",
     "supported_archs": null,
     "download_skip": true,
     "download_type": "source",
