@@ -67,7 +67,7 @@ LNDHUB_VERSION=$(get_app_version "$LNDHUB_VERSION" "lndhub")
 LNDHUB_VERSION_FILE=/home/bitcoin/.mynode/lndhub_version
 LNDHUB_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lndhub_version_latest
 
-CARAVAN_VERSION="v0.3.13"
+CARAVAN_VERSION="v0.3.14"
 CARAVAN_VERSION=$(get_app_version "$CARAVAN_VERSION" "caravan")
 CARAVAN_SETTINGS_UPDATE_FILE=/home/bitcoin/.mynode/caravan_settings_1
 CARAVAN_VERSION_FILE=/home/bitcoin/.mynode/caravan_version
