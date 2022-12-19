@@ -1,3 +1,20 @@
+=== v0.3.06 ===
+- Released: 12/18/22
+- Upgrade Bitcoin to v24.0.1
+- Upgrade LND to v0.15.5
+- Upgrade RTL to v0.13.2
+- Upgrade Thunderhub to v0.13.18
+- Upgrade LNDg to v1.4.0
+- Upgrade Lily Wallet to v1.3.0
+- Upgrade Caravan to v0.3.14
+- Upgrade Jam to v0.1.4
+- Upgrade Specter to v1.14.1
+- Upgrade Pool vo v0.6.1
+- Upgrade Lit to v0.8.5
+- Upgrade BoS to v13.10.6
+- Enable NTP on Armbian platforms
+- Minor Bug Fixes
+
 === v0.3.05 ===
 - Released: 11/11/22
 - Add Lilywallet
