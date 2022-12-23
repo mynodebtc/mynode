@@ -1,3 +1,9 @@
+=== v0.3.07 ===
+- Released: 12/22/22
+- Apply workaround for Bitcoin wallet migration issue
+- Improve port binding logic for Bitcoin when clearnet is enabled
+- Upgrade LNBits to v0.9.5.2
+
 === v0.3.06 ===
 - Released: 12/18/22
 - Upgrade Bitcoin to v24.0.1
