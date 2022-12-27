@@ -10,7 +10,7 @@ After=bitcoin.service
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_bitcoin.sh
 WorkingDirectory=/opt/mynode/ckbunker
-ExecStart=/bin/bash -c  'source env/bin/activate && ck-bunker run -c /mnt/hdd/mynode/ckbunker/settings.yaml'
+ExecStart=/bin/bash -c  'source env/bin/activate && ckbunker run -c /mnt/hdd/mynode/ckbunker/settings.yaml'
 
 User=bitcoin
 Group=bitcoin
