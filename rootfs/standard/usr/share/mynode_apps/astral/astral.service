@@ -1,0 +1,29 @@
+# astral service
+# /etc/systemd/system/astral.service
+
+[Unit]
+Description=astral
+Wants=www.service docker_images.service
+After=www.service docker_images.service
+
+[Service]
+WorkingDirectory=/opt/mynode/astral/dist/pwa
+
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_astral.sh ]; then /bin/bash /usr/bin/service_scripts/pre_astral.sh; fi'
+ExecStart=/usr/bin/quasar serve -p 5040
+ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_astral.sh ]; then /bin/bash /usr/bin/service_scripts/post_astral.sh; fi'
+#ExecStop=FILL_IN_EXECSTOP_AND_UNCOMMENT_IF_NEEDED
+
+User=bitcoin
+Group=bitcoin
+Type=simple
+TimeoutSec=120
+Restart=always
+RestartSec=60
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=astral
+
+[Install]
+WantedBy=multi-user.target

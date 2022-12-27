@@ -1,0 +1,63 @@
+{
+    "name": "Astral",
+    "short_name": "astral",
+    "author": {
+        "name": "monlovesmango",
+        "link": ""
+    },
+    "website": {
+        "name": "GitHub",
+        "link": "https://github.com/monlovesmango/astral"
+    },
+    "category": "communication",
+    "short_description": "Nostr Web Client",
+    "description": [
+        "Astral is a web client for interacting with Nostr, a protocol that attempts to make decentralized social media a reality. astral began as a fork of Branle."
+    ],
+    "latest_version": "c5c36626c29e32bb91e951fac867333562a31296",
+    "supported_archs": null,
+    "download_skip": false,
+    "download_type": "source",
+    "download_source_url": "https://github.com/monlovesmango/astral/archive/c5c36626c29e32bb91e951fac867333562a31296.tar.gz",
+    "download_binary_url": {
+        "aarch64": "download_url",
+        "x86_64": "download_url"
+    },
+    "install_env_vars": {},
+    "supports_app_page": true,
+    "supports_testnet": false,
+    "http_port": 5040,
+    "https_port": 5041,
+    "requires_bitcoin": false,
+    "requires_docker_image_installation": false,
+    "requires_electrs": false,
+    "requires_lightning": false,
+    "show_on_application_page": true,
+    "show_on_homepage": true,
+    "show_on_status_page": true,
+    "hide_status_icon": false,
+    "app_tile_name": "Astral",
+    "app_tile_running_status_text": "Running",
+    "app_tile_button_text": "Info",
+    "app_tile_button_href": "/app/astral/info",
+    "app_page_show_open_button": true,
+    "app_page_content": [
+        {
+            "heading": "Instructions",
+            "content": [
+                "Open the applicationa and login with an existing private key or create a new one. Once logged in, you can interact via the Nostr protocol.",
+                "NOTE: This key is not related to your lightning wallet.",
+                "Enjoy!"
+            ]
+        }
+    ],
+    "can_uninstall": true,
+    "can_reinstall": true,
+    "can_enable_disable": true,
+    "is_beta": true,
+    "is_premium": false,
+    "homepage_section": "apps",
+    "homepage_order": 91,
+    "app_type": "custom",
+    "sdk_version": 2
+}
