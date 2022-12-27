@@ -285,7 +285,7 @@ if ! skip_base_upgrades ; then
 
     # Update NPM (Node Package Manager)
     npm install -g npm@$NODE_NPM_VERSION
-    npm install -g yarn
+    npm install -g yarn @quasar/cli
     
     # Install Docker
     mkdir -p /etc/apt/keyrings
@@ -854,7 +854,6 @@ fi
 
 # Upgrade CKbunker
 if should_install_app "ckbunker" ; then
-    CKBUNKER_UPGRADE_URL=https://github.com/Coldcard/ckbunker/archive/$CKBUNKER_VERSION.tar.gz
     CURRENT=""
     if [ -f $CKBUNKER_VERSION_FILE ]; then
         CURRENT=$(cat $CKBUNKER_VERSION_FILE)
