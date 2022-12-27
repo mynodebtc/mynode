@@ -370,7 +370,7 @@
         "author": {"name": "Sphinx Chat", "link": "https://sphinx.chat/"},
         "website": {"name": "GitHub", "link": "https://github.com/stakwork/sphinx-relay"},
         "description": "Relay is a Node.js wrapper around LND, handling connectivity and storage for Sphinx. Communication between Relay nodes takes place entirely on the Lightning Network, so it is decentralized, untraceable, and encrypted. Message content is also end-to-end encrypted using client public keys, on the Sphinx app itself.",
-        "category": "lightning_app",
+        "category": "communication",
         "app_tile_button_text": "Info",
         "app_tile_button_href": "/sphinxrelay",
         "app_tile_running_status_text": "Running",
