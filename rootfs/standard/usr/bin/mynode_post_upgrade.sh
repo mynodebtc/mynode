@@ -179,6 +179,35 @@ if ! skip_base_upgrades ; then
     dpkg --configure -a
 
 
+    # Install Go
+    GO_ARCH="unknown"
+    if [ "$DEVICE_ARCH" == "armv7l" ]; then
+        GO_ARCH="armv6l"
+    elif [ "$DEVICE_ARCH" == "aarch64" ]; then
+        GO_ARCH="arm64"
+    elif [ "$DEVICE_ARCH" == "x86_64" ]; then
+        GO_ARCH="amd64"
+    fi
+    GO_UPGRADE_URL=https://go.dev/dl/go$GO_VERSION.linux-$GO_ARCH.tar.gz
+    CURRENT=""
+    if [ -f $GO_VERSION_FILE ]; then
+        CURRENT=$(cat $GO_VERSION_FILE)
+    fi
+    if [ "$CURRENT" != "$GO_VERSION" ]; then
+        rm -rf /opt/download
+        mkdir -p /opt/download
+        cd /opt/download
+
+        wget $GO_UPGRADE_URL -O go.tar.gz
+        rm -rf /usr/local/go && tar -C /usr/local -xzf go.tar.gz
+
+        # Mark current version
+        echo $GO_VERSION > $GO_VERSION_FILE
+    fi
+    echo "export GOBIN=/usr/local/go/bin; PATH=\$PATH:/usr/local/go/bin" > /etc/profile.d/go.sh
+    grep -qxF '. /etc/profile.d/go.sh' /root/.bashrc || echo '. /etc/profile.d/go.sh' >> /root/.bashrc
+
+
     # Install Rust (only needed on 32-bit RPi for building some python wheels)
     if [ ! -f $HOME/.cargo/env ]; then
         wget https://sh.rustup.rs -O /tmp/setup_rust.sh
