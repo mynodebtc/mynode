@@ -194,6 +194,9 @@ NODE_NPM_VERSION="^8.1.0"
 
 RUST_VERSION="1.56.1"
 
+GO_VERSION="1.19.4"
+GO_VERSION_FILE=/home/bitcoin/.mynode/go_version
+
 # Check for override files
 if [ -f /usr/share/mynode/mynode_app_versions_custom.sh ]; then
     source /usr/share/mynode/mynode_app_versions_custom.sh
