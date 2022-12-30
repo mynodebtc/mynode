@@ -763,8 +763,9 @@ def init_dynamic_app(app_info):
     app_name = app_info["short_name"]
     app_dir = DYNAMIC_APPLICATIONS_FOLDER + "/" + app_name
     log_message(" Loading " + app_name + "...")
-    # Install Service File
-    os.system("cp -f {} {}".format(app_dir+"/"+app_name+".service", "/etc/systemd/system/"+app_name+".service"))
+    # Install Service File (if exists)
+    if (os.path.isfile(app_dir+"/"+app_name+".service")):
+        os.system("cp -f {} {}".format(app_dir+"/"+app_name+".service", "/etc/systemd/system/"+app_name+".service"))
     # Install App Icon
     os.system("cp -f {} {}".format(app_dir+"/"+app_name+".png", "/var/www/mynode/static/images/app_icons/"+app_name+".png"))
     # Install Screenshots
