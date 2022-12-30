@@ -28,7 +28,7 @@ myNode offers premium support, simplified upgrades and more! If you are running 
 Upgrade now or purchase a device at:<br/>
 https://mynodebtc.com/order_now
 
-<b>myNode One Device</b>
+<b>Devices - Model One and Model Two</b>
 <br/>
 <img src="images/devices.png" width="600">
 
