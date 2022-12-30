@@ -1,0 +1,64 @@
+{
+    "name": "Noscl",
+    "short_name": "noscl",
+    "author": {
+        "name": "fiajaf",
+        "link": "https://github.com/fiatjaf"
+    },
+    "website": {
+        "name": "GitHub",
+        "link": "https://github.com/fiatjaf/noscl"
+    },
+    "category": "communication",
+    "short_description": "Nostr CLI",
+    "description": [
+        "Command line client for Nostr."
+    ],
+    "latest_version": "v0.6.0",
+    "linux_user": "root",
+    "supported_archs": null,
+    "download_skip": true,
+    "download_type": "source",
+    "download_source_url": "download_url",
+    "download_binary_url": {
+        "aarch64": "download_url",
+        "x86_64": "download_url"
+    },
+    "install_env_vars": {},
+    "supports_app_page": true,
+    "supports_testnet": false,
+    "http_port": null,
+    "https_port": null,
+    "requires_bitcoin": false,
+    "requires_docker_image_installation": false,
+    "requires_electrs": false,
+    "requires_lightning": false,
+    "show_on_application_page": true,
+    "show_on_homepage": true,
+    "show_on_status_page": true,
+    "hide_status_icon": true,
+    "app_tile_name": "Noscl",
+    "app_tile_running_status_text": "Running",
+    "app_tile_button_text": "Info",
+    "app_tile_button_href": "/app/noscl/info",
+    "app_page_show_open_button": false,
+    "app_page_content": [
+        {
+            "heading": "Description", 
+            "content": [
+                "Command line client for Nostr.",
+                "Access the utility by running 'noscl' commands on the linux terminal. For more information, visit the project's GitHub page.",
+                "Enjoy!"
+            ]
+        }
+    ],
+    "can_uninstall": true,
+    "can_reinstall": true,
+    "can_enable_disable": false,
+    "is_beta": false,
+    "is_premium": true,
+    "homepage_section": "apps",
+    "homepage_order": 91,
+    "app_type": "custom",
+    "sdk_version": 2
+}
