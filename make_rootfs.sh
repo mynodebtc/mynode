@@ -4,7 +4,7 @@
 
 # Make each device
 for i in 'raspi4' 'debian' 'rockpro64' 'rock64' 'rockpi4' ; do
-	echo Creating root file system for $i
+	echo "Creating root file system for $i"
 	mkdir -p out/rootfs_$i/
 
     # Clear out data for old apps
