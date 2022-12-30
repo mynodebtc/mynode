@@ -109,6 +109,15 @@ else
     if [ -f /home/bitcoin/.mynode/keep_bitcoin_debug_log ] || [ -f /mnt/hdd/mynode/settings/keep_bitcoin_debug_log ]; then
         sed -i "s/shrinkdebugfile=.*/shrinkdebugfile=0/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
     fi
+
+    # Append "extra" config
+    if [ -f /mnt/hdd/mynode/settings/bitcoin_extra_config.conf ]; then
+        echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        echo "# Extra BTC Config" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        cat /mnt/hdd/mynode/settings/bitcoin_extra_config.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    fi
 fi
 
 PW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)

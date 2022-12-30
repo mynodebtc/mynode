@@ -72,6 +72,16 @@ else
         sed -i "s/bitcoin.testnet=.*/bitcoin.testnet=1/g" /mnt/hdd/mynode/lnd/lnd.conf
         cat /usr/share/mynode/lnd_testnet.conf >> /mnt/hdd/mynode/lnd/lnd.conf
     fi
+
+    # Append "extra" config
+    if [ -f /mnt/hdd/mynode/settings/lnd_extra_config.conf ]; then
+        echo "" >> /mnt/hdd/mynode/lnd/lnd.conf
+        echo "# Extra LND Config" >> /mnt/hdd/mynode/lnd/lnd.conf
+        echo "[Application Options]" >> /mnt/hdd/mynode/lnd/lnd.conf
+        echo "" >> /mnt/hdd/mynode/lnd/lnd.conf
+        cat /mnt/hdd/mynode/settings/lnd_extra_config.conf >> /mnt/hdd/mynode/lnd/lnd.conf
+        echo "" >> /mnt/hdd/mynode/lnd/lnd.conf
+    fi
 fi
 
 # Append tor domain
@@ -84,6 +94,7 @@ if [ -f /var/lib/tor/mynode_lnd/hostname ]; then
     echo "" >> /mnt/hdd/mynode/lnd/lnd.conf
 fi
 
+# Set Alias
 ALIAS=$(cat /mnt/hdd/mynode/settings/.lndalias)
 sed -i "s/alias=.*/alias=$ALIAS/g" /mnt/hdd/mynode/lnd/lnd.conf
 chown bitcoin:bitcoin /mnt/hdd/mynode/lnd/lnd.conf
