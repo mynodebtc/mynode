@@ -496,6 +496,8 @@ fi
 if [ ! -f /mnt/hdd/mynode/joinmarket/joinmarket.cfg ]; then
     cp /usr/share/mynode/joinmarket.cfg /mnt/hdd/mynode/joinmarket/joinmarket.cfg
 fi
+sed -i "s/#max_cj_fee_abs = x/max_cj_fee_abs = 2000/g" /mnt/hdd/mynode/joinmarket/joinmarket.cfg
+sed -i "s/#max_cj_fee_rel = x/max_cj_fee_rel = 0.001/g" /mnt/hdd/mynode/joinmarket/joinmarket.cfg
 chown -R joinmarket:joinmarket /mnt/hdd/mynode/joinmarket
 
 # Setup Mempool
