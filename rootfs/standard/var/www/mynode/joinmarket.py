@@ -26,16 +26,46 @@ def get_jm_wallets():
         wallets.append({"name": str(e)})
     return wallets
 
+def get_joinmarket_version():
+    version = "not_found"
+    package_info_file = "/home/joinmarket/joinmarket-clientserver/jmclient/joinmarketclient.egg-info/PKG-INFO"
+    try:
+        if os.path.isfile(package_info_file):
+            with open(package_info_file, 'r') as f:
+                lines = f.readlines()
+                for l in lines:
+                    if "Version: " in l:
+                        version = "v" + l.replace("Version: ", "")
+        else:
+            return "missing_file"
+    except:
+        version = "exception_error"
+    return version
+
 ### Page functions
 @mynode_joinmarket.route("/joinmarket")
 def joininbox_page():
     check_logged_in()
+
+    # Note: the main joinmarket app is actually joininbox
+    joinmarket_version = "unknown"
+    joininbox_version = "unknown"
+    jam_version = "unknown"
+    try:
+        joinmarket_version = get_joinmarket_version()
+        joininbox_version = get_application("joininbox")["current_version"]
+        jam_version = get_application("jam")["current_version"]
+    except:
+        pass
 
     # Load page
     templateData = {
         "title": "myNode JoinMarket",
         "is_jam_installed": is_installed("jam"),
         "is_jam_enabled": is_service_enabled("jam"),
+        "joinmarket_version": joinmarket_version,
+        "joininbox_version": joininbox_version,
+        "jam_version": jam_version,
         "jam_http_port": 5020,
         "jam_https_port": 5021,
         "jam_tor_address": get_onion_url_for_service("jam"),
