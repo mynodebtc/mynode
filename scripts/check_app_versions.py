@@ -32,6 +32,10 @@ apps = [{"name": "bitcoin/bitcoin",                         "current_version_var
         {"name": "curly60e/pyblock",                        "current_version_variable": "PYBLOCK_VERSION"},
         {"name": "cryptosharks131/lndg",                    "dynamic_app_name":         "lndg"},
         {"name": "Lily-Technologies/lily-wallet",           "dynamic_app_name":         "lilywallet"},
+        {"name": "edouardparis/lntop",                      "dynamic_app_name":         "lntop"},
+        {"name": "monlovesmango/astral",                    "dynamic_app_name":         "astral"},
+        {"name": "fiatjaf/noscl",                           "dynamic_app_name":         "noscl"},
+        {"name": "scsibug/nostr-rs-relay",                  "dynamic_app_name":         "nostrrsrelay"},
 ]
 
 # Apps that don't work or are not on GitHub
