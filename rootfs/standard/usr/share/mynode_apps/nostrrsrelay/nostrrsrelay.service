@@ -1,0 +1,36 @@
+# nostrrsrelay service
+# /etc/systemd/system/nostrrsrelay.service
+
+[Unit]
+Description=nostrrsrelay
+Wants=www.service docker_images.service
+After=www.service docker_images.service
+
+[Service]
+WorkingDirectory=/opt/mynode/nostrrsrelay
+
+EnvironmentFile=-/mnt/hdd/mynode/nostrrsrelay/env
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_nostrrsrelay.sh ]; then /bin/bash /usr/bin/service_scripts/pre_nostrrsrelay.sh; fi'
+ExecStart=/usr/bin/docker run --rm \
+  --name nostrrsrelay \
+  --publish 5050:8080 \
+  --user ${UID}:${GID} \
+  --mount src=/mnt/hdd/mynode/nostrrsrelay/config.toml,target=/usr/src/app/config.toml,type=bind \
+  --mount src=/mnt/hdd/mynode/nostrrsrelay/data,target=/usr/src/app/db,type=bind \
+  nostrrsrelay
+ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_nostrrsrelay.sh ]; then /bin/bash /usr/bin/service_scripts/post_nostrrsrelay.sh; fi'
+ExecStop=/usr/bin/docker stop -t 2 nostrrsrelay
+
+User=nostrrsrelay
+Group=nostrrsrelay
+Type=simple
+TimeoutSec=120
+Restart=always
+RestartSec=60
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=nostrrsrelay
+
+[Install]
+WantedBy=multi-user.target
