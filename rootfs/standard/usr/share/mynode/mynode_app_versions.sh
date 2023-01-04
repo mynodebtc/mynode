@@ -105,7 +105,7 @@ fi
 DOJO_VERSION_FILE=/mnt/hdd/mynode/settings/dojo_version
 DOJO_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/dojo_version_latest
 
-RTL_VERSION="v0.13.2"
+RTL_VERSION="v0.13.4"
 RTL_VERSION=$(get_app_version "$RTL_VERSION" "rtl")
 RTL_VERSION_FILE=/home/bitcoin/.mynode/rtl_version
 RTL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/rtl_version_latest

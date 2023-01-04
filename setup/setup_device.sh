@@ -785,7 +785,6 @@ if [ "$CURRENT" != "$RTL_VERSION" ]; then
     sudo -u bitcoin mv RTL-* RTL
     cd RTL
     sudo -u bitcoin NG_CLI_ANALYTICS=false npm install --only=production --legacy-peer-deps
-    sudo -u bitcoin npm install request --save
 
     echo $RTL_VERSION > $RTL_VERSION_FILE
 fi
