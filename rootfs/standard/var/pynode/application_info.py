@@ -596,7 +596,7 @@ def clear_custom_app_version(short_name):
 ## Single Application Actions
 ######################################################################################
 def create_application_user(app_data):
-    log_message("  Running create_application_user...")
+    #log_message("  Running create_application_user...")
     username = app_data["linux_user"]
     if not linux_user_exists(username):
         linux_create_user(username)
@@ -605,8 +605,8 @@ def create_application_user(app_data):
     add_user_to_group(username, "bitcoin")
 
     # If docker app, add them to docker
-    #if app_data["requires_docker_image_installation"]:
-    #    add_user_to_group(username, "docker")
+    if app_data["requires_docker_image_installation"]:
+        add_user_to_group(username, "docker")
 
 def create_application_folders(app_data):
     log_message("  Running create_application_folders...")
@@ -769,6 +769,8 @@ def init_dynamic_app(app_info):
     app_name = app_info["short_name"]
     app_dir = DYNAMIC_APPLICATIONS_FOLDER + "/" + app_name
     log_message(" Loading " + app_name + "...")
+    # Create user if necessary
+    create_application_user(app_info)
     # Install Service File (if exists)
     if (os.path.isfile(app_dir+"/"+app_name+".service")):
         os.system("cp -f {} {}".format(app_dir+"/"+app_name+".service", "/etc/systemd/system/"+app_name+".service"))

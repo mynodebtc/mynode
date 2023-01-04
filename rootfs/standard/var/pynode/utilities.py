@@ -8,6 +8,7 @@ import codecs
 import urllib
 import requests
 import pwd
+import grp
 
 mynode_logger = None
 
@@ -372,5 +373,16 @@ def linux_create_user(username, make_home_folder=False):
     cmd = "useradd {} -s /bin/bash {} || true".format(dash_m, username)
     run_linux_cmd(cmd, print_command=True)
 
+def user_is_in_group(username, group):
+    try:
+        group_info = grp.getgrnam(group)
+        for grpusr in group_info.gr_mem:
+            if username == grpusr:
+                return True
+    except:
+        return False
+    return False
+
 def add_user_to_group(username, group):
-    run_linux_cmd("adduser {} {}".format(username, group), print_command=True)
+    if not user_is_in_group(username, group):
+        run_linux_cmd("adduser {} {}".format(username, group), print_command=True)
