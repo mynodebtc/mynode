@@ -1,3 +1,16 @@
+=== v0.3.08 ===
+- Released: 01/04/23
+- Add Astral nostr client
+- Add nostr-rs-relay v0.7.15
+- Add noscl nostr client v0.6.0
+- Upgrade LNBits to v0.9.5.3
+- Upgrade RTL to v0.13.4
+- Improve default joinmarket settings
+- Add Go Compiler
+- Fix CKBunker installation errors
+- Add Marketplace category for Communication
+- Improve Clearnet toggle for LND
+
 === v0.3.07 ===
 - Released: 12/22/22
 - Apply workaround for Bitcoin wallet migration issue
