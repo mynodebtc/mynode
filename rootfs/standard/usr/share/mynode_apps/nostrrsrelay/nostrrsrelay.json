@@ -30,7 +30,7 @@
     "supports_testnet": false,
     "http_port": null,
     "https_port": null,
-    "extra_ports": [5050],
+    "extra_ports": [5050, 5051],
     "requires_bitcoin": false,
     "requires_docker_image_installation": true,
     "requires_electrs": false,
@@ -49,6 +49,8 @@
             "heading": "Instructions",
             "content": [
                 "Once the nostr relay is running, you can use nostr clients to connect to it using the local IP address of the device or via the tor service.",
+                "The relay will be run on port 5050 and 5051 (secure). The relay is not otherwise publicly exposed.",
+                "For example, you can add the relay to noscl via the command: noscl relay add wss://localhost:5051",
                 "Enjoy!"
             ]
         }
