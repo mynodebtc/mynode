@@ -15,7 +15,24 @@
         <div class="main_header">Bitcoin Config</div>
 
         <div class="text_block">
-            You can edit the Bitcoin config. However, using your own config will prevent any future automatic updates and may have adverse effects. Many other settings will have no effect.
+            <h3>Additional Bitcoin Config</h3>
+            You can add extra config to the bottom of the automatically generated Bitcoin config here. Invalid config may have adverse effects and it may confict with other settings and cause issues.
+            <br/><br/>
+            Saving will reboot your device.
+            <br/>
+        </div>
+
+        <div class="centered_text_div">
+            <form action="/bitcoin/config" method="POST">
+                <textarea class="config_textarea_short" name="extra_bitcoin_config" id="extra_bitcoin_config">{{ extra_bitcoin_config }}</textarea>
+                <br/><br/>
+                <input class="ui-button ui-widget ui-corner-all" type="submit" value="Save"/>
+            </form>
+        </div>
+
+        <div class="text_block">
+            <h3>Override Bitcoin Config</h3>
+            You can fully override the entire the Bitcoin config. However, using your own config will prevent any future automatic updates and may have adverse effects. Many other settings will have no effect.
             <br/><br/>
             Saving will reboot your device.
             <br/>

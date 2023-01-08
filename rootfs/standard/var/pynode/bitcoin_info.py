@@ -331,6 +331,24 @@ def get_bitcoin_config():
     except:
         return "ERROR"
 
+def get_bitcoin_extra_config():
+    try:
+        if not os.path.isfile("/mnt/hdd/mynode/settings/bitcoin_extra_config.conf"):
+            return ""
+        with open("/mnt/hdd/mynode/settings/bitcoin_extra_config.conf") as f:
+            return f.read()
+    except:
+        return "ERROR"
+
+def set_bitcoin_extra_config(config):
+    try:
+        with open("/mnt/hdd/mynode/settings/bitcoin_extra_config.conf", "w") as f:
+            f.write(config)
+        os.system("sync")
+        return True
+    except:
+        return False
+
 def get_bitcoin_custom_config():
     try:
         with open("/mnt/hdd/mynode/settings/bitcoin_custom.conf") as f:

@@ -477,7 +477,11 @@ def lnd_config_page():
     # Handle form
     if request.method == 'POST':
         custom_config = request.form.get('custom_config')
-        set_lnd_custom_config(custom_config)
+        extra_lnd_config = request.form.get('extra_lnd_config')
+        if extra_lnd_config != None:
+            set_lnd_extra_config(extra_lnd_config)
+        if custom_config != None:
+            set_lnd_custom_config(custom_config)
         
         # Trigger reboot
         t = Timer(1.0, reboot_device)
@@ -500,6 +504,7 @@ def lnd_config_page():
         "title": "myNode LND Config",
         "using_lnd_custom_config": using_lnd_custom_config(),
         "lnd_config": lnd_config,
+        "extra_lnd_config": get_lnd_extra_config(),
         "ui_settings": read_ui_settings()
     }
     return render_template('lnd_config.html', **templateData)
