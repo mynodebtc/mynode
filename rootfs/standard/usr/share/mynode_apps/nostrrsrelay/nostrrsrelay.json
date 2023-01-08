@@ -53,6 +53,15 @@
                 "For example, you can add the relay to noscl via the command: noscl relay add wss://localhost:5051",
                 "Enjoy!"
             ]
+        },
+        {
+            "heading": "Relay Addresses",
+            "content": [
+                "wss://{LOCAL_IP_ADDRESS}:5051",
+                "wss://{APP_TOR_ADDRESS}:5051",
+                "ws://{LOCAL_IP_ADDRESS}:5050",
+                "ws://{APP_TOR_ADDRESS}:5050"
+            ]
         }
     ],
     "can_uninstall": true,

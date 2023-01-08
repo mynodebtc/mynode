@@ -169,6 +169,7 @@ def replace_app_info_variables(app_data, text):
     if app_data["https_port"] != None:
         text = text.replace("{HTTPS_PORT}", str(app_data["https_port"]))
     text = text.replace("{APP_TOR_ADDRESS}", get_onion_url_for_service(app_data["short_name"]))
+    text = text.replace("{LOCAL_IP_ADDRESS}", get_local_ip())
     return text
 
 def initialize_application_defaults(app):
@@ -241,6 +242,10 @@ def initialize_application_defaults(app):
             btn["onclick"] = replace_app_info_variables(app, btn["onclick"])
     for key in app["install_env_vars"]:
         app["install_env_vars"][key] = replace_app_info_variables(app, app["install_env_vars"][key])
+    for i,section in enumerate(app["app_page_content"]):
+        for j,line in enumerate(section["content"]):
+            section["content"][j] = replace_app_info_variables(app, line)
+        app["app_page_content"][i] = section
 
     return app
 
