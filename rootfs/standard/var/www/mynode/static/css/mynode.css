@@ -933,6 +933,13 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     font-family: "Courier New", Courier, monospace;
 }
 
+.config_textarea_short {
+    width: 800px;
+    height: 120px;
+    font-size: 14px;
+    font-family: "Courier New", Courier, monospace;
+}
+
 .loading_image {
     width: 128px;
 }

@@ -167,7 +167,11 @@ def bitcoin_config_page():
     # Handle form
     if request.method == 'POST':
         custom_config = request.form.get('custom_config')
-        set_bitcoin_custom_config(custom_config)
+        extra_bitcoin_config = request.form.get('extra_bitcoin_config')
+        if extra_bitcoin_config != None:
+            set_bitcoin_extra_config(extra_bitcoin_config)
+        if custom_config != None:
+            set_bitcoin_custom_config(custom_config)
         
         # Trigger reboot
         t = Timer(1.0, reboot_device)
@@ -189,6 +193,7 @@ def bitcoin_config_page():
     templateData = {
         "title": "myNode Bitcoin Config",
         "using_bitcoin_custom_config": using_bitcoin_custom_config(),
+        "extra_bitcoin_config": get_bitcoin_extra_config(),
         "bitcoin_config": bitcoin_config,
         "ui_settings": read_ui_settings()
     }

@@ -15,7 +15,24 @@
         <div class="main_header">LND Custom Config</div>
 
         <div class="text_block">
-            You can edit the LND config. However, using your own config will prevent any future automatic updates and may have adverse effects. Many other settings will have no effect.
+            <h3>Additional LND Config</h3>
+            You can add extra config to the bottom of the automatically generated LND config here. Invalid config may have adverse effects and it may confict with other settings and cause issues.
+            <br/><br/>
+            Saving will reboot your device.
+            <br/>
+        </div>
+
+        <div class="centered_text_div">
+            <form action="/lnd/config" method="POST">
+                <textarea class="config_textarea_short" name="extra_lnd_config" id="extra_lnd_config">{{ extra_lnd_config }}</textarea>
+                <br/><br/>
+                <input class="ui-button ui-widget ui-corner-all" type="submit" value="Save"/>
+            </form>
+        </div>
+
+        <div class="text_block">
+            <h3>Override LND Config</h3>
+            You can override the entire LND config. However, using your own config will prevent any future automatic updates and may have adverse effects. Many other settings will have no effect.
             <br/><br/>
             Saving will reboot your device.
             <br/>
