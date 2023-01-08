@@ -436,6 +436,7 @@ THUNDERHUB_CONFIG_UPDATE_NUM=1
 if [ ! -f /mnt/hdd/mynode/thunderhub/update_settings_$THUNDERHUB_CONFIG_UPDATE_NUM ]; then
     cp -f /usr/share/mynode/thunderhub.env /mnt/hdd/mynode/thunderhub/.env.local
     cp -f /usr/share/mynode/thub_config.yaml /mnt/hdd/mynode/thunderhub/thub_config.yaml
+    touch /mnt/hdd/mynode/thunderhub/update_settings_$THUNDERHUB_CONFIG_UPDATE_NUM
 fi
 if [ -f /mnt/hdd/mynode/thunderhub/thub_config.yaml ]; then
     if [ -f /home/bitcoin/.mynode/.hashedpw_bcrypt ]; then
