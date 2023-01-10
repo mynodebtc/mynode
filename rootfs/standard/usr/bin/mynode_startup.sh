@@ -73,15 +73,7 @@ if [ ! -f /var/lib/mynode/.expanded_rootfs ]; then
                 # NVMe
                 X86_PARTITION_NUMBER=$(cat /proc/partitions | grep -c "${X86_DEVICE}p[0-9]")
                 ;;            
-        esac
-
-        if [ $X86_DEVICE = "sda" ]; then
-            # SATA
-            
-        else
-            # NVMe
-            
-        fi        
+        esac    
         X86_FDISK_TYPE=$(fdisk -l "$X86_DEVICE_PATH" | grep "Disklabel")
         echo "Root Partition:   $X86_ROOT_PARTITION"
         echo "Root Device:      $X86_DEVICE"
