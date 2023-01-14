@@ -64,7 +64,16 @@ if [ ! -f /var/lib/mynode/.expanded_rootfs ]; then
         X86_ROOT_PARTITION="$(mount | grep ' / ' | cut -d ' ' -f1)"
         X86_DEVICE="$(lsblk -no pkname $X86_ROOT_PARTITION)"
         X86_DEVICE_PATH="/dev/$X86_DEVICE"
-        X86_PARTITION_NUMBER=$(cat /proc/partitions | grep -c "${X86_DEVICE}[0-9]")
+        case "$X86_DEVICE" in
+            sd* | hd* | vd*)
+                # SATA
+                X86_PARTITION_NUMBER=$(cat /proc/partitions | grep -c "${X86_DEVICE}[0-9]")
+                ;;
+            nvme*)
+                # NVMe
+                X86_PARTITION_NUMBER=$(cat /proc/partitions | grep -c "${X86_DEVICE}p[0-9]")
+                ;;            
+        esac    
         X86_FDISK_TYPE=$(fdisk -l "$X86_DEVICE_PATH" | grep "Disklabel")
         echo "Root Partition:   $X86_ROOT_PARTITION"
         echo "Root Device:      $X86_DEVICE"
