@@ -1,0 +1,40 @@
+# lndboss service
+# /etc/systemd/system/lndboss.service
+
+[Unit]
+Description=lndboss
+Wants=www.service docker_images.service
+After=www.service docker_images.service
+
+[Service]
+WorkingDirectory=/opt/mynode/lndboss
+
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=+/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_lndboss.sh ]; then /bin/bash /usr/bin/service_scripts/pre_lndboss.sh; fi'
+ExecStart=/usr/bin/docker run --rm \
+  --name lndboss \
+  --publish 8055:8055 \
+  --env BOS_DATA_PATH="/root/.bosgui" \
+  --env LNDBOSS_DIRECTORY="/root/.bosgui" \
+  --env NODE_ENV="production" \
+  --env PORT="8055" \
+  --env BOS_DEFAULT_LND_SOCKET="host.docker.internal:10009" \
+  --volume /mnt/hdd/mynode/lndboss/:/root/.bosgui \
+  --volume /mnt/hdd/mynode/lnd/:/root/.lnd \
+  --add-host=host.docker.internal:host-gateway \
+  lndboss
+ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_lndboss.sh ]; then /bin/bash /usr/bin/service_scripts/post_lndboss.sh; fi'
+ExecStop=/usr/bin/docker stop -t 2 lndboss
+
+User=bitcoin
+Group=bitcoin
+Type=simple
+TimeoutSec=120
+Restart=always
+RestartSec=60
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=lndboss
+
+[Install]
+WantedBy=multi-user.target
