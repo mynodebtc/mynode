@@ -388,6 +388,8 @@ def get_application_log(short_name):
             return get_journalctl_log("docker_images")
         elif short_name == "usb_extras":
             return get_journalctl_log("usb_extras")
+        elif short_name == "joinmarket-api":
+            return get_journalctl_log("joinmarket-api")
         elif short_name == "www":
             return get_journalctl_log("www")
         elif short_name == "i2pd":
