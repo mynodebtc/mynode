@@ -230,6 +230,16 @@
                 {% endif %}
             {% endfor %}
 
+            {% if joininbox_installed %}
+            <div class="settings_block_subheader">Joinmarket API Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ joinmarket_api_status_color }}"></div>
+                {{ joinmarket_api_status }}
+            </div>
+            <button id="show_joinmarket-api_log" onclick="showLog('joinmarket-api')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="joinmarket-api_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{joinmarket_api_status_log}}</pre></div>
+            <div class="divider"></div>
+            {% endif %}
 
             <div class="settings_block_subheader">Whirlpool Status</div>
             <div class="settings_block_subheader_status">
