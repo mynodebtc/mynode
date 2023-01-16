@@ -346,6 +346,11 @@ else
     echo "Python up to date"
 fi
 
+# Add to python path
+[ -d /usr/local/lib/python2.7/dist-packages ] && echo "/var/pynode" > /usr/local/lib/python2.7/dist-packages/pynode.pth
+[ -d /usr/local/lib/python3.7/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.7/site-packages/pynode.pth
+[ -d /usr/local/lib/python3.8/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.8/site-packages/pynode.pth
+
 
 # Install Python3 specific tools
 pip3 install --upgrade pip wheel setuptools
