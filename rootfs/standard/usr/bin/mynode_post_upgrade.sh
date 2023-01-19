@@ -956,6 +956,7 @@ if should_install_app "pyblock" ; then
             sudo -u bitcoin python3 -m venv env
         fi
         source env/bin/activate
+        pip3 install requests
         pip3 install -r requirements.txt
         deactivate
 
