@@ -1,3 +1,18 @@
+=== v0.3.09 ===
+- Released: 01/19/23
+- Add LndBoss v2.16.0
+- Add ability to append custom Bitcoin config
+- Add ability to append custom LND config
+- Upgrade Loop to v0.21.0
+- Upgrade LNDg to v1.5.0
+- Upgrade Astral
+- Improve NVMe support
+- Fix electrs binary on rockpi 4
+- Fix Thunderhub config from being overwritten
+- Fix electrum from hanging on large addresses
+- Add better nostr app descriptions
+- Add status log for Joinmarket API
+
 === v0.3.08 ===
 - Released: 01/04/23
 - Add Astral nostr client
