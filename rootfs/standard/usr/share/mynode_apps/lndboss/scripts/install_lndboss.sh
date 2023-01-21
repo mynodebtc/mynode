@@ -14,15 +14,20 @@ echo "==================== INSTALLING APP ===================="
 
 # Remove old containers
 docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'lndboss') || true
+docker rmi lndboss || true
+
+# Pull latest image and tag latest
+docker pull niteshbalusu/lndboss:v2.16.0
+docker tag niteshbalusu/lndboss:v2.16.0 lndboss
 
 # Build docker container
-if [ "$DEVICE_ARCH" = "x86_64" ]; then
-    docker build -t lndboss .
-elif [ "$DEVICE_ARCH" = "aarch64" ]; then
-    docker build . -t lndboss -f arm64.Dockerfile
-else
-    echo "THIS ARCHITECTURE IS NOT SUPPORTED FOR LndBoss"
-    exit 1
-fi
+#if [ "$DEVICE_ARCH" = "x86_64" ]; then
+#    docker build -t lndboss .
+#elif [ "$DEVICE_ARCH" = "aarch64" ]; then
+#    docker build . -t lndboss -f arm64.Dockerfile
+#else
+#    echo "THIS ARCHITECTURE IS NOT SUPPORTED FOR LndBoss"
+#    exit 1
+#fi
 
 echo "================== DONE INSTALLING APP ================="
