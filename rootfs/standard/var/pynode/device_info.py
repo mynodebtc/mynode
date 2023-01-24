@@ -891,7 +891,7 @@ def recheck_premium_plus_token():
     os.system("systemctl restart premium_plus_connect")
 
 def get_premium_plus_setting_names():
-    return ["sync_status","sync_bitcoin_and_lightning","backup_scb","watchtower"]
+    return ["sync_status","sync_bitcoin_and_lightning","backup_scb","watchtower", "proxy"]
 def get_premium_plus_settings():
     names = get_premium_plus_setting_names()
     settings = {}
@@ -1079,6 +1079,9 @@ def reset_blockchain():
 #==================================
 def delete_lnd_data():
     os.system("rm -rf "+LND_DATA_FOLDER)
+    os.system("rm -rf /mnt/hdd/mynode/pool/*")
+    os.system("rm -rf /mnt/hdd/mynode/loop/*")
+    os.system("rm -rf /mnt/hdd/mynode/lit/*")
     os.system("rm -rf /tmp/lnd_deposit_address")
     os.system("rm -rf /home/bitcoin/.lnd-admin/credentials.json")
     os.system("rm -rf /mnt/hdd/mynode/settings/.lndpw")
