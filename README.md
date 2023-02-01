@@ -109,7 +109,7 @@ To develop and add new applications to mynode, check out the [Software Developme
 ## Install on Existing System (beta)
 To setup a new device on a supported platform that is already running Linux (Raspi4, RockPi 4, RockPro64, PC, ...), you can run two simple commands.
 
-First, install a debian-based operating system.
+First, install Debian - last tested with the Debian 10.11 (Buster) images.
 
 Second, login and run these two commands.
 
