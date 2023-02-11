@@ -203,7 +203,6 @@
             {% for app in apps %}
                 {% if app.show_on_status_page %}
                     {% set display = 1 %}
-
                     {% if app.requires_bitcoin and not is_bitcoin_synced %}
                         {% set display = 0 %}
                     {% endif %}
