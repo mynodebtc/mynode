@@ -1,0 +1,75 @@
+#!/bin/bash
+# Note: This app should be run with sudo
+
+set -e
+
+source /usr/share/mynode/mynode_config.sh
+source /usr/share/mynode/mynode_app_versions.sh
+
+# Make sure we have an app argument
+if [ "$#" -lt 1 ]; then
+    echo "Usage: mynode-install-custom-bitcoin <app_name>"
+    exit 1
+fi
+APP="$1"
+
+# Stop services so we have plenty of RAM
+/usr/bin/mynode_stop_critical_services.sh
+
+# Custom re-install steps
+if [ "$APP" = "ordisrespector" ]; then
+    apt-get install -y build-essential libtool autotools-dev automake pkg-config bsdmainutils python3
+    apt-get install -y libevent-dev libboost-dev libsqlite3-dev libminiupnpc-dev libnatpmp-dev libzmq3-dev
+
+    mkdir -p /mnt/hdd/mynode/download
+    cd /mnt/hdd/mynode/download
+    rm -rf bitcoin-*.tar.gz
+    rm -rf bitcoin
+
+    URL="https://github.com/bitcoin/bitcoin/archive/refs/tags/v24.0.1.tar.gz"
+    if [ "$#" -eq 2 ]; then
+        URL="$2"
+    fi
+    wget $URL -O bitcoin.tar.gz
+    tar -xvf bitcoin.tar.gz
+    mv bitcoin-* bitcoin
+
+    cd bitcoin
+
+    # Bubild berkeley db 4.8
+    ./contrib/install_db4.sh `pwd`
+    export BDB_PREFIX="$PWD/db4"
+
+    ./autogen.sh
+    ./configure \
+        BDB_LIBS="-L${BDB_PREFIX}/lib -ldb_cxx-4.8" BDB_CFLAGS="-I${BDB_PREFIX}/include" \
+        CXXFLAGS="--param ggc-min-expand=1 --param ggc-min-heapsize=32768" \
+        --disable-bench \
+        --disable-gui-tests \
+        --disable-maintainer-mode \
+        --disable-man \
+        --disable-tests \
+        --with-daemon=yes \
+        --with-gui=no \
+        --with-qrencode=no \
+        --with-utils=yes
+
+    patch -p1 < /usr/share/mynode/patches/ordisrespector.patch
+
+    make -j $(nproc)
+    sudo install -g root -o root src/bitcoind /usr/local/bin/bitcoind
+
+    echo "24.0.1-ordisrespector" > /home/bitcoin/.mynode/bitcoin_version
+    echo "24.0.1-ordisrespector" > /home/bitcoin/.mynode/bitcoin_version_latest_custom
+    echo "24.0.1-ordisrespector" > /mnt/hdd/mynode/settings/bitcoin_version_latest_custom
+
+    cd ~
+else
+    echo "Dont know what to do for app: $APP"
+    exit
+fi
+
+sync
+echo "Install Complete!"
+echo "Rebooting..."
+reboot

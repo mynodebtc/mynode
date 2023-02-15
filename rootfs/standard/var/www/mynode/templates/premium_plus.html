@@ -134,6 +134,22 @@
                     }
                 });
 
+                $('#proxy_checkbox').change(function () {
+                    $("#proxy_save").show();
+                });
+                $("#proxy_save").on("click", function() {
+                    $('#loading_spinner_overlay').fadeIn();
+                    enabled=$('#proxy_checkbox').is(":checked");
+                    if (enabled)
+                    {
+                        window.location.href='/premium-plus/toggle-setting?name=proxy&enabled=1';
+                    }
+                    else
+                    {
+                        window.location.href='/premium-plus/toggle-setting?name=proxy&enabled=0';
+                    }
+                });
+
                 //$( document ).tooltip();
 
                 $( document ).tooltip({
@@ -309,12 +325,17 @@
                         </tr>
                         <!--
                         <tr>
-                            <th class="connected-style">Proxy</th>
+                            <th class="connected-style">Public Apps</th>
                             <td class="connected-style">
-                                Coming soon!
+                                <label class="switch">
+                                    <input type="checkbox" id="proxy_checkbox" {% if premium_plus_settings['proxy'] %}checked{% endif %} {% if not is_connected %}disabled{% endif %}>
+                                    <span class="slider round"></span>
+                                </label>
+                                <button id="proxy_save" style="display: none; margin-left: 10px; float: right;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+
                             </td>
                             <td>
-                                &nbsp;
+                                <img style="width: 16px; margin-left: 10px;" src="{{ url_for('static', filename="images/tooltip_icon.png")}}" title="Public Apps" msg="Enabling Public Apps allows others to access apps that are meant to be shared via mynodebtc.com! Get your own URL, like satoshisbtcpay.access.mynodebtc.com, to let others access your BTC Pay instance with just a few clicks! After enabling, additional settings are available via your account on mynodebtc.com.">
                             </td>
                         </tr>
                         -->

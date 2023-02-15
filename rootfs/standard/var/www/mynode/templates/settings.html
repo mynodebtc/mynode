@@ -478,12 +478,32 @@
                         }
                     }
                 });
-                
                 $("#reinstall_button").button({
                     disabled: true
                 });
                 $("#reinstall_button").on("click", function() {
                     window.location.href='/settings/reinstall-app?app='+reinstall_app_choice
+                });
+
+                var custom_bitcoin_choice="";
+                $("#custom_bitcoin_select").selectmenu( {
+                    change: function( event, data ) {
+                        custom_bitcoin_choice = data.item.value;
+                        if (data.item.value == "none")
+                        {
+                            $("#custom_bitcoin_install_button").button("disable");
+                        }
+                        else
+                        {
+                            $("#custom_bitcoin_install_button").button("enable");
+                        }
+                    }
+                });
+                $("#custom_bitcoin_install_button").button({
+                    disabled: true
+                });
+                $("#custom_bitcoin_install_button").on("click", function() {
+                    window.location.href='/settings/install-custom-bitcoin?version='+custom_bitcoin_choice
                 });
 
                 $("#logout_days").selectmenu({width: 70});
@@ -1000,6 +1020,19 @@
             <br/>
             <button id="reindex-blockchain" class="ui-button ui-widget ui-corner-all settings_button">Reindex Blockchain</button>
 
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Custom Bitcoin Version</div>
+            Some users may want to use a specific fork or patched version of Bitcoin. You can choose some options from the list below.
+            Installing a new version may take up to 2 hours and will reboot the device. To undo a change, visit the Customize App
+            Versions page and reset the Bitcoin version.
+            <br/><br/>
+
+            <select name="custom_bitcoin_select" id="custom_bitcoin_select">
+                <option value="none" selected="selected">Choose...</option>
+                <option value="ordisrespector">Ordisrespector (v24.0.1)</option>
+            </select>
+            <button id="custom_bitcoin_install_button">Install</button>
         </div>
 
 
