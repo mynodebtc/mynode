@@ -13,6 +13,7 @@ from price_info import *
 from utilities import *
 from drive_info import *
 from application_info import *
+from device_info import *
 import pam
 import time
 import os
@@ -949,6 +950,32 @@ def remove_app_page():
 
     flash("Application Removed", category="message")
     return redirect("/marketplace")
+
+@mynode_settings.route("/settings/install-custom-bitcoin")
+def install_custom_bitcoin_page():
+    check_logged_in()
+
+    check_and_mark_reboot_action("custom_bitcoin_version")
+
+    # Check version specified
+    version = request.args.get("version")
+    if not version:
+        flash("No version specified", category="error")
+        return redirect("/settings")
+    
+    # Re-install app
+    t = Timer(1.0, install_custom_bitcoin_version, [version])
+    t.start()
+
+    # Display wait page
+    templateData = {
+        "title": "myNode Install",
+        "header_text": "Installing",
+        "subheader_text": "This may take a while...",
+        "show_upgrade_log": True,
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('reboot.html', **templateData)
 
 @mynode_settings.route("/settings/toggle-uploader")
 def toggle_uploader_page():

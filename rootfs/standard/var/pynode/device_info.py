@@ -1073,6 +1073,22 @@ def reset_blockchain():
     delete_bitcoin_data()
     reboot_device()
 
+def install_custom_bitcoin_version(version):
+    mark_upgrade_started()
+    touch("/tmp/skip_base_upgrades")
+
+    # Install custom version
+    os.system("mkdir -p /home/admin/upgrade_logs")
+    file1 = "/home/admin/upgrade_logs/install_custom_bitcoin.txt"
+    file2 = "/home/admin/upgrade_logs/upgrade_log_latest.txt"
+    cmd = "/usr/bin/mynode-install-custom-bitcoin {} 2>&1 | tee {} {}".format(version,file1, file2)
+    subprocess.call(cmd, shell=True)
+    
+    # Sync and Reboot
+    os.system("sync")
+    time.sleep(1)
+    reboot_device()
+
 
 #==================================
 # LND Functions
