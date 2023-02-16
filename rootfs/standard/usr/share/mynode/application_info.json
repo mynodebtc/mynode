@@ -417,7 +417,7 @@
     {
         "name": "PyBlock",
         "short_name": "pyblock",
-        "short_description": "Management",
+        "short_description": "Dashboard",
         "author": {"name": "curly60e", "link": ""},
         "website": {"name": "GitHub", "link": "https://github.com/curly60e/pyblock"},
         "description": "PyBlock is a Bitcoin Dashboard with a Cypherpunk aesthetic.",
