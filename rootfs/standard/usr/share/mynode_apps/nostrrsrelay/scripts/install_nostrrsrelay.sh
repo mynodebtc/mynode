@@ -22,6 +22,7 @@ fi
 docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'nostrrsrelay') || true
 
 # Build docker container
-docker build -t nostrrsrelay .
+# The HOME=. is a hack to use the current folder since nostrrsrelay user doesn't have a home holder which causes failure
+HOME=. docker build -t nostrrsrelay .
 
 echo "================== DONE INSTALLING APP ================="
