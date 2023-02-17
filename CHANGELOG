@@ -1,3 +1,17 @@
+=== v0.3.10 ===
+- Released: 02/16/23
+- Add ability to swap versions of Bitcoin
+- Add ability to run Bitcoin Ordisrespector
+- Upgrade lnbits to v0.9.7
+- Upgrade Astral (nostr client)
+- Upgrade JAM to v0.1.5
+- Upgrade LNDg to v1.5.1
+- Upgrade JoininBox to v0.7.6
+- Upgrade BTCPay Server to v1.7.11
+- Upgrade Nostr RS Relay to v0.8.5
+- Add VPN log to status page
+- Improve LN Wallet delete / remake process
+
 === v0.3.09 ===
 - Released: 01/19/23
 - Add LndBoss v2.16.0
