@@ -78,6 +78,12 @@ elif [ "$APP" = "dojo" ]; then
     rm -rf /mnt/hdd/mynode/dojo
 elif [ "$APP" = "lndmanage" ]; then
     pip3 uninstall -y lndmanage
+elif [ "$APP" = "mempool" ]; then
+    cd /mnt/hdd/mynode/mempool
+    docker-compose rm
+    rm -rf data
+    rm -rf mysql/data
+    cd ~
 else
     echo "No custom re-install steps"
 fi

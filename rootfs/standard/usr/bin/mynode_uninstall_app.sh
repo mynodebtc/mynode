@@ -62,6 +62,12 @@ elif [ "$APP" = "lndhub" ]; then
     rm -rf /opt/mynode/LndHub
 elif [ "$APP" = "lndmanage" ]; then
     pip3 uninstall -y lndmanage
+elif [ "$APP" = "mempool" ]; then
+    cd /mnt/hdd/mynode/mempool
+    docker-compose rm
+    rm -rf data
+    rm -rf mysql/data
+    cd ~
 elif [ "$APP" = "rtl" ]; then
     rm -rf /opt/mynode/RTL
 else
