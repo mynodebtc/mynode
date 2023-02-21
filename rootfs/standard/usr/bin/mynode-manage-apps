@@ -29,6 +29,9 @@ def main():
 
     parser_list = subparsers.add_parser('list', help='List dynamic apps')
 
+    parser_stop = subparsers.add_parser('stop', help='Stop dynamic apps')
+    parser_stop.add_argument('app', help='App to stop', default="all", nargs='*')
+
     parser_install = subparsers.add_parser('install', help='Install Dynamic Application')
     parser_install.add_argument('app', help='App to install', default="all", nargs='*')
 
@@ -51,6 +54,11 @@ def main():
         open_application_ports()
     elif args.command == "list":
         list_dynamic_apps()
+    elif args.command == "stop":
+        app_names = args.app
+        if not isinstance(app_names, list):
+            app_names = [app_names]
+        stop_dynamic_apps(app_names)
     elif args.command == "install" or \
          args.command == "upgrade" or \
          args.command == "reinstall":
