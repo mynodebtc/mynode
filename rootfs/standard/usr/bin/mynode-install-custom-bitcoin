@@ -64,6 +64,14 @@ if [ "$APP" = "ordisrespector" ]; then
     echo "24.0.1-ordisrespector" > /mnt/hdd/mynode/settings/bitcoin_version_latest_custom
 
     cd ~
+elif [ "$APP" = "default" ]; then
+    # Clear custom info and re-install bitcoin
+    echo "unknown" > /home/bitcoin/.mynode/bitcoin_version
+    rm -f /home/bitcoin/.mynode/bitcoin_version_latest_custom
+    rm -f /mnt/hdd/mynode/settings/bitcoin_version_latest_custom
+    sync
+
+    /usr/bin/mynode_reinstall_app.sh bitcoin
 else
     echo "Dont know what to do for app: $APP"
     exit
