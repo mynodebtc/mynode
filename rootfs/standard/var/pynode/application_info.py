@@ -934,6 +934,15 @@ def list_dynamic_apps():
     for app_name in app_names:
         print("  {}".format(app_name))
 
+def stop_dynamic_apps(app_names):
+    dynamic_app_names = get_dynamic_app_names()
+    for app_name in app_names:
+        for dynamic_app_name in dynamic_app_names:
+            if app_name == "all" or app_name == dynamic_app_name:
+                app_data = get_application( dynamic_app_name )
+                if app_data["can_enable_disable"]:
+                    stop_service(dynamic_app_name)
+
 
 # Typically, the mynode_uninstall_app.sh runs first and calls mynode-manage-apps uninstall to run this
 #   Prior to running, service should have been stopped and disabled
