@@ -413,12 +413,6 @@ fi
 # BTCPay Server Setup
 # Now in mynode_docker_images.sh (any new setup should go into pre_btcpayserver.sh)
 
-# LNBits Config
-if [ -d /opt/mynode/lnbits ]; then
-    cp /usr/share/mynode/lnbits.env /opt/mynode/lnbits/.env
-    chown bitcoin:bitcoin /opt/mynode/lnbits/.env
-fi
-
 # Setup Specter
 if [ -d /home/bitcoin/.specter ] && [ ! -L /home/bitcoin/.specter ] ; then
     # Migrate to HDD

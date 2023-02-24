@@ -202,11 +202,10 @@ while true; do
             cd lnbits
 
             # Copy over config file
-            cp /usr/share/mynode/lnbits.env /opt/mynode/lnbits/.env
-            chown bitcoin:bitcoin /opt/mynode/lnbits/.env
+            # Handled in pre_lnbits.sh
 
             # Build lnbits docker container
-            docker build -t lnbits-legend .
+            docker build --no-cache -t lnbits-legend .
 
             echo $LNBITS_VERSION > $LNBITS_VERSION_FILE
         fi
