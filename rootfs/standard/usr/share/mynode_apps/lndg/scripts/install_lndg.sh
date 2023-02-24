@@ -8,6 +8,10 @@ set -e
 
 echo "==================== INSTALLING APP ===================="
 
+# Setup data folder symlink
+mkdir -p /mnt/hdd/mynode/lndg/data
+ln -s /mnt/hdd/mynode/lndg/data /opt/mynode/lndg/data
+
 # Update grpcio for last working arm32 version on Buster
 if [ "$IS_RASPI4" = 1 ] && [ "$IS_32_BIT" = 1 ]; then
     sed -i "s|grpcio|grpcio==$PYTHON_ARM32_GRPCIO_VERSION|g" requirements.txt
