@@ -133,11 +133,16 @@ def page_lnd():
         else:
             status = get_lnd_status()
         if "uris" in data and len(data['uris']) > 0:
-            uri = data['uris'][0]
-            ip = uri.split("@")[1]
+            uri = ""
+            first_uri = True
+            for u in data['uris']:
+                if first_uri:
+                    first_uri = False
+                else:
+                    uri += "<br/>"
+                uri += u
         else:
             uri = "..."
-            ip = "..."
 
         peers = get_lightning_peers()
         channels = get_lightning_channels()
@@ -195,8 +200,7 @@ def page_lnd():
         "num_pending_channels": num_pending_channels,
         "num_inactive_channels": num_inactive_channels,
         "pubkey": pubkey,
-        "uri": uri,
-        "ip": ip,
+        "uri": Markup(uri),
         "channel_db_size": lnd_get_channel_db_size(),
         "lit_password": get_lnd_lit_password(),
         "lnd_deposit_address": lnd_deposit_address,
