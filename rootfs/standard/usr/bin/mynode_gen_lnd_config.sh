@@ -48,21 +48,33 @@ else
         cat /usr/share/mynode/lnd_watchtower_client.conf >> /mnt/hdd/mynode/lnd/lnd.conf
     fi
 
-    # Append Network Config (IPv4 / Tor)
+    IPV4_ENABLED=0
     if [ -f /mnt/hdd/mynode/settings/lnd_ipv4_enabled ] || [ -f /home/bitcoin/.mynode/lnd_ipv4_enabled ]; then
+        IPV4_ENABLED=1
+    fi
+    TOR_ENABLED=0
+    if [ -f /mnt/hdd/mynode/settings/lnd_tor_enabled ] || [ -f /home/bitcoin/.mynode/lnd_tor_enabled ]; then
+        TOR_ENABLED=1
+    fi
+
+    # Append Network Config (IPv4 / Tor)
+    if [ $IPV4_ENABLED = 1 ]; then
         cat /usr/share/mynode/lnd_ipv4.conf >> /mnt/hdd/mynode/lnd/lnd.conf
     else
         cat /usr/share/mynode/lnd_no_ipv4.conf >> /mnt/hdd/mynode/lnd/lnd.conf
     fi
-    if [ -f /mnt/hdd/mynode/settings/lnd_tor_enabled ] || [ -f /home/bitcoin/.mynode/lnd_tor_enabled ]; then
+    if [ $TOR_ENABLED = 1 ]; then
         cat /usr/share/mynode/lnd_tor.conf >> /mnt/hdd/mynode/lnd/lnd.conf
     else
         cat /usr/share/mynode/lnd_no_tor.conf >> /mnt/hdd/mynode/lnd/lnd.conf
     fi
 
 
-    # Upadte LND Tor stream isolation (true is default)
+    # Update LND Tor stream isolation (true is default) (also disabled if hybrid mode)
     if [ -f /mnt/hdd/mynode/settings/streamisolation_tor_disabled ]; then
+        sed -i "s/tor.streamisolation=.*/tor.streamisolation=false/g" /mnt/hdd/mynode/lnd/lnd.conf || true
+    fi
+    if [ $IPV4_ENABLED = 1 ] && [ $TOR_ENABLED = 1 ]; then
         sed -i "s/tor.streamisolation=.*/tor.streamisolation=false/g" /mnt/hdd/mynode/lnd/lnd.conf || true
     fi
 
