@@ -1,3 +1,12 @@
+=== v0.3.11 ===
+- Released: 03/01/23
+- Improve hybrid-mode LND config
+- Increase electrs address limits
+- Add option to reset custom Bitcoin version
+- Add CLI command to stop dynamic apps
+- Improved mempool re-install
+- Add pass and apparmor packages to help docker issues
+
 === v0.3.10 ===
 - Released: 02/16/23
 - Add ability to swap versions of Bitcoin
