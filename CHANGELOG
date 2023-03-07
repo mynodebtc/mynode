@@ -1,3 +1,7 @@
+=== v0.3.12 ===
+- Released: 03/06/23
+- Fix apparmor profile issue preventing tor from starting on some platforms
+
 === v0.3.11 ===
 - Released: 03/01/23
 - Improve hybrid-mode LND config
