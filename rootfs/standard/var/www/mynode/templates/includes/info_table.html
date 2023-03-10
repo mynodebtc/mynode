@@ -95,10 +95,10 @@
     </tr>
     {% endif %}
     {% endif %}
-    {% if oom_error %}
+    {% if oom_error or 1 %}
     <tr>
         <th>Memory</th>
-        <td style="color: black; font-size: 12px;">
+        <td style="font-size: 12px;">
             <!--<span class="ui-icon ui-icon-alert"></span> <b>Low Memory</b> <span class="ui-icon ui-icon-alert"></span><br/>-->
             <b>Low Memory</b><br/>
             Your device was running low on memory and a process has been restarted. You may want to disable some applications.<br/>
