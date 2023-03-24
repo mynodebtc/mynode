@@ -48,16 +48,16 @@ echo "Syncing filesystem..."
 sleep 1
 sync
 
-# Init Dynamic Apps
-mynode-manage-apps init || true
-
 # Reload systemd files
 systemctl daemon-reload
 
 # Restart or reboot
 if [ "$#" -ge 2 ]; then
     # Restart service
-    if [ "$2" = "www" ]; then
+    if   [ "$2" = "apps" ]; then
+        mynode-manage-apps init || true
+    elif [ "$2" = "www" ]; then
+        mynode-manage-apps init || true
         echo "Restarting www service..."
         systemctl restart www
     elif [ "$2" = "mempool" ]; then
@@ -77,6 +77,9 @@ if [ "$#" -ge 2 ]; then
         reboot
     fi
 else
+    # Init Dynamic Apps
+    mynode-manage-apps init || true
+
     # Default, full upgrade
     echo "Full upgrade, running post upgrade script and rebooting device..."
     /bin/bash /usr/bin/mynode_post_upgrade.sh
