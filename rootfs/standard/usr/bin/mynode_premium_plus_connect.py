@@ -13,6 +13,7 @@ from drive_info import *
 from application_info import *
 from bitcoin_info import *
 from lightning_info import *
+from public_apps import *
 
 
 PREMIUM_PLUS_CONNECT_URL = "https://www.mynodebtc.com/device_api/premium_plus_connect.php"
@@ -22,7 +23,9 @@ log.addHandler(journal.JournaldLogHandler())
 log.setLevel(logging.INFO)
 set_logger(log)
 
-# Helper functions
+##############################################################
+## Get info for uploading
+##############################################################
 def get_premium_plus_device_info():
     info = {}
     settings = get_premium_plus_settings()
@@ -65,41 +68,68 @@ def get_premium_plus_lightning_info():
         info = get_lightning_json_cache()
     return info
 
-
-def on_connect_success(connect_response_data):
-    settings = get_premium_plus_settings()
-    
+##############################################################
+## Successful connection handlers for various features
+##############################################################
+def connect_success_handler_watchtower(connect_response_data):
+    log_message("Running connect_success_handler_watchtower...")
     try:
-        # Check for lnd watchtower, setup this device to use Premium+ Watchtower
-        try:
-            if "watchtower_uri" in connect_response_data:
-                w = connect_response_data["watchtower_uri"]
-                parts = w.split("@")
-                pubkey = parts[0]
-                output = run_lncli_command("lncli wtclient towers")
-                info = json.loads(output)
-                towers = info["towers"]
-                
-                found_watchtower = False
-                for t in towers:
-                    #log_message("EXISTING TOWER: {} active={}".format(t["pubkey"], t["active_session_candidate"]))
-                    if t["pubkey"] == pubkey and t["active_session_candidate"] == True:
-                        if settings["watchtower"]:
-                            log_message("Found Premium+ Tower")
-                        else:
-                            log_message("Removing Premium+ Tower {}".format(pubkey))
-                            run_lncli_command("lncli wtclient remove {}".format(pubkey))
-                        found_watchtower = True
-                if not found_watchtower:
-                    log_message("Adding Premium+ Tower {}".format(w))
-                    run_lncli_command("lncli wtclient add {}".format(w))
+        settings = get_premium_plus_settings()
+        if "watchtower_uri" in connect_response_data:
+            w = connect_response_data["watchtower_uri"]
+            parts = w.split("@")
+            pubkey = parts[0]
+            output = run_lncli_command("lncli wtclient towers")
+            info = json.loads(output)
+            towers = info["towers"]
+            
+            found_watchtower = False
+            for t in towers:
+                #log_message("EXISTING TOWER: {} active={}".format(t["pubkey"], t["active_session_candidate"]))
+                if t["pubkey"] == pubkey and t["active_session_candidate"] == True:
+                    if settings["watchtower"]:
+                        log_message("Found Premium+ Tower")
+                    else:
+                        log_message("Removing Premium+ Tower {}".format(pubkey))
+                        run_lncli_command("lncli wtclient remove {}".format(pubkey))
+                    found_watchtower = True
+            if not found_watchtower:
+                log_message("Adding Premium+ Tower {}".format(w))
+                run_lncli_command("lncli wtclient add {}".format(w))
+    except Exception as e:
+        log_message("connect_success_handler_watchtower exception: {}".format(str(e)))
 
+def connect_success_handler_public_apps(connect_response_data):
+    log_message("Running connect_success_handler_public_apps...")
+    try:
+        settings = get_premium_plus_settings()
+        if settings["public_apps"]:
+            if "public_apps" in connect_response_data:
+                enable_public_apps(connect_response_data["public_apps"])
+            else:
+                disable_public_apps()
+        else:
+            disable_public_apps()
+    except Exception as e:
+        log_message("connect_success_handler_public_apps exception: {}".format(str(e)))
+
+##############################################################
+## Handle successful connection
+##############################################################
+def on_connect_success(connect_response_data):
+    try:
+        try:
+            connect_success_handler_watchtower(connect_response_data)
+            connect_success_handler_public_apps(connect_response_data)
         except Exception as e:
             log_message("on_connect_success exception: {}".format(str(e)))
     except Exception as e:
         log_message("on_connect_success exception: {}".format(str(e)))
         return
 
+##############################################################
+## Save and manage response data
+##############################################################
 def clear_response_data():
     os.system("rm -f /tmp/premium_plus_response.json")
 def save_response_data(data):
@@ -109,7 +139,9 @@ def save_response_data(data):
     except Exception as e:
         log_message("save_response_data exception: failed to save response - {}".format(str(e)))
 
-# Update hourly
+##############################################################
+## Main Premium+ Connection
+##############################################################
 def premium_plus_connect():
 
     # Check in
@@ -165,7 +197,7 @@ def premium_plus_connect():
 
 # Run premium plus update consistently
 if __name__ == "__main__":
-    update_in_min = 15 # Update every 15 minutes
+    update_in_min = 15
     update_ms = update_in_min * 60 * 1000 
 
     while True:
@@ -185,7 +217,7 @@ if __name__ == "__main__":
 
             # Watch for updates
             log_message("")
-            log_message("Watching for file changes or 1hr...")
+            log_message("Watching for file changes or "+str(update_in_min)+" min...")
             inotify = INotify()
             watch_flags = flags.CREATE | flags.DELETE | flags.MODIFY | flags.DELETE_SELF
             wd = inotify.add_watch('/home/bitcoin/.mynode/', watch_flags)

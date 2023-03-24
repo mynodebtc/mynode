@@ -998,6 +998,7 @@ systemctl enable rotate_logs
 systemctl enable corsproxy_btcrpc
 systemctl enable usb_extras
 systemctl enable ob-watcher
+systemctl enable rathole
 
 
 # Disable services

@@ -184,6 +184,11 @@ WEBSSH2_VERSION=$(get_app_version "$WEBSSH2_VERSION" "webssh2")
 WEBSSH2_VERSION_FILE=/mnt/hdd/mynode/settings/webssh2_version
 WEBSSH2_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/webssh2_version_latest
 
+RATHOLE_VERSION="v0.4.7"
+RATHOLE_VERSION=$(get_app_version "$RATHOLE_VERSION" "rathole")
+RATHOLE_VERSION_FILE=/home/bitcoin/.mynode/rathole_version
+RATHOLE_LATEST_VERSION_FILE=/home/bitcoin/.mynode/rathole_version_latest
+
 # Dependency versions
 PYTHON_VERSION="3.8.9"
 
