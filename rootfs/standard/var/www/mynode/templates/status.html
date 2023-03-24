@@ -337,6 +337,28 @@
             <div class="divider"></div>
             {% endif %}
 
+            {% if is_premium_plus_token_set %}
+            <div class="settings_block_subheader">Premium+ Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ premium_plus_connect_status_color }}"></div>
+                {{ premium_plus_connect_status }}
+            </div>
+            <button id="show_premium_plus_connect_log" onclick="showLog('premium_plus_connect')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="premium_plus_connect_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{premium_plus_connect_status_log}}</pre></div>
+            <div class="divider"></div>
+            {% endif %}
+
+            {% if is_bitcoin_synced and is_premium_plus_active %}
+            <div class="settings_block_subheader">Public Apps Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ rathole_status_color }}"></div>
+                {{ rathole_status }}
+            </div>
+            <button id="show_rathole_log" onclick="showLog('rathole')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="rathole_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{rathole_status_log}}</pre></div>
+            <div class="divider"></div>
+            {% endif %}
+
             <div class="settings_block_subheader">Web Server Status</div>
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ www_status_color }}"></div>
