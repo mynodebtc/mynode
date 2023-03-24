@@ -1,0 +1,26 @@
+# rathole proxy service
+# /etc/systemd/system/rathole.service
+
+[Unit]
+Description=rathole
+Wants=mynode.service
+After=mynode.service
+
+[Service]
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/usr/bin/service_scripts/pre_rathole.sh
+ExecStart=/usr/local/bin/rathole /opt/mynode/rathole/client.toml
+
+User=root
+Group=root
+Type=simple
+KillMode=control-group
+TimeoutSec=30
+Restart=on-failure
+RestartSec=120
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=ratthole
+
+[Install]
+WantedBy=multi-user.target

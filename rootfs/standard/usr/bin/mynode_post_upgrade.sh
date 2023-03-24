@@ -1013,6 +1013,30 @@ if should_install_app "bos" ; then
     fi
 fi
 
+# Install Rathole proxy
+RATHOLEARCH="armv7-unknown-linux-musleabihf"
+if [ $IS_X86 = 1 ]; then
+    RATHOLEARCH="x86_64-unknown-linux-musl"
+elif [ "$DEVICE_ARCH" == "aarch64" ]; then
+    RATHOLEARCH="aarch64-unknown-linux-musl"
+fi
+RATHOLE_UPGRADE_URL=https://github.com/rapiz1/rathole/releases/download/$RATHOLE_VERSION/rathole-$RATHOLEARCH.zip
+CURRENT=""
+if [ -f $RATHOLE_VERSION_FILE ]; then
+    CURRENT=$(cat $RATHOLE_VERSION_FILE)
+fi
+if [ "$CURRENT" != "$RATHOLE_VERSION" ]; then
+    rm -rf /opt/download
+    mkdir -p /opt/download
+    cd /opt/download
+    wget $RATHOLE_UPGRADE_URL -O rathole.zip
+    unzip rathole.zip
+    rm rathole.zip
+    install -o root -g root -t /usr/local/bin rathole
+
+    echo $RATHOLE_VERSION > $RATHOLE_VERSION_FILE
+fi
+
 # Make sure "Remote Access" apps are marked installed
 touch /home/bitcoin/.mynode/install_tor
 touch /home/bitcoin/.mynode/install_premium_plus
@@ -1089,6 +1113,7 @@ systemctl enable pool
 systemctl enable rotate_logs
 systemctl enable corsproxy_btcrpc
 systemctl enable usb_extras
+systemctl enable rathole
 
 # Disable any old services
 systemctl disable bitcoind > /dev/null 2>&1 || true

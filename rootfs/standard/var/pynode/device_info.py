@@ -854,6 +854,8 @@ def get_premium_plus_token_status():
     except:
         status = "STATUS_ERROR_2"
     return status
+def is_premium_plus_active():
+    return get_premium_plus_is_connected()
 def get_premium_plus_is_connected():
     status = get_premium_plus_token_status()
     if status == "OK":
@@ -891,7 +893,7 @@ def recheck_premium_plus_token():
     os.system("systemctl restart premium_plus_connect")
 
 def get_premium_plus_setting_names():
-    return ["sync_status","sync_bitcoin_and_lightning","backup_scb","watchtower", "proxy"]
+    return ["sync_status","sync_bitcoin_and_lightning","backup_scb","watchtower", "public_apps"]
 def get_premium_plus_settings():
     names = get_premium_plus_setting_names()
     settings = {}

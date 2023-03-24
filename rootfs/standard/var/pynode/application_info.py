@@ -392,6 +392,10 @@ def get_application_log(short_name):
             return get_journalctl_log("joinmarket-api")
         elif short_name == "www":
             return get_journalctl_log("www")
+        elif short_name == "rathole":
+            return get_journalctl_log("rathole")
+        elif short_name == "premium_plus_connect":
+            return get_journalctl_log("premium_plus_connect")
         elif short_name == "i2pd":
             return get_file_log("/var/log/i2pd/i2pd.log")
         elif short_name == "linux":
