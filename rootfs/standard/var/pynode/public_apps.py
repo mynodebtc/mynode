@@ -62,10 +62,11 @@ def restart_rathole():
     os.system("systemctl restart rathole")
 
 def get_port_for_app(app_name):
+    # Returns port for app - must be the port being served with the public app tls cert
     app_ports = {}
-    app_ports["lnbits"] = "5001"
-    app_ports["btcpayserver"] = "49393"
-    app_ports["lndhub"] = "3001"
+    app_ports["lnbits"] =       "6001"
+    app_ports["btcpayserver"] = "6002"
+    app_ports["lndhub"] =       "6003"
     if app_name in app_ports:
         return app_ports[app_name]
     return ""
