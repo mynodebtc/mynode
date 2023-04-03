@@ -21,7 +21,7 @@ BTC_VERSION=$(get_app_version "$BTC_VERSION" "bitcoin")
 BTC_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version
 BTC_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version_latest
 
-LND_VERSION="v0.15.5-beta"
+LND_VERSION="v0.16.0-beta"
 LND_VERSION=$(get_app_version "$LND_VERSION" "lnd")
 LND_VERSION_FILE=/home/bitcoin/.mynode/lnd_version
 LND_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnd_version_latest
