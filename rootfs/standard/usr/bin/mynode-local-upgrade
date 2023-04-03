@@ -68,6 +68,8 @@ if [ "$#" -ge 2 ]; then
         systemctl restart docker_images &
     elif [ "$2" = "files" ]; then
         echo "Only updating files... Done."
+    elif [ "$2" = "nginx" ]; then
+        echo "Restarting nginx service..."
     elif [ "$2" = "reboot" ]; then
         echo "Rebooting..."
     else
