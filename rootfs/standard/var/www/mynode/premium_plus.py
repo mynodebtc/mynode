@@ -63,7 +63,7 @@ def premium_plus_clear_token_page():
 
     restart_service("premium_plus_connect")
 
-    time.sleep(5)
+    time.sleep(6)
     flash("Token Cleared", category="message")
     return redirect("/premium-plus")
 
@@ -79,7 +79,7 @@ def premium_plus_set_token_page():
     restart_service("premium_plus_connect")
     restart_service("lnd_backup")
 
-    time.sleep(5)
+    time.sleep(6)
     flash("Token Set", category="message")
     return redirect("/premium-plus")
 
