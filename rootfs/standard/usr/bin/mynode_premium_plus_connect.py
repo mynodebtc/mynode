@@ -174,6 +174,7 @@ def premium_plus_connect():
         info = json.loads(response.text)
     except Exception as e:
         log_message("Premium+ Connect Error: Error Parsing JSON - {}".format(str(e)))
+        log_message(response.text)
         return False
 
     save_response_data(info)
