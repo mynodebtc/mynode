@@ -26,8 +26,6 @@
         <script>
             $(document).ready(function() {
 
-                token="{{access_token}}"
-
                 function set_token() {
                     $('#loading_spinner_overlay').fadeIn();
                     $("#set_token_form").submit();
@@ -47,7 +45,7 @@
                         }
                     },
                     open: function() {
-                        $("#token").val(token)
+                        $("#token").val("")
                     }
                 });
 
@@ -189,7 +187,8 @@
                             <th>Access Token</th>
                             <td>
                                 {% if has_access_token %}
-                                    {{access_token}} 
+                                    <!-- Used to show token, now show starts for security -->
+                                    ************************
                                     <button id="change_token_button" class="ui-button ui-widget ui-corner-all settings_button_small">Change</button>
                                     <button id="clear_token_button" class="ui-button ui-widget ui-corner-all settings_button_small">Clear</button>
                                 {% else %}
@@ -334,7 +333,7 @@
 
                             </td>
                             <td>
-                                <img style="width: 16px; margin-left: 10px;" src="{{ url_for('static', filename="images/tooltip_icon.png")}}" title="Public Apps" msg="Enabling Public Apps allows others to access apps that are meant to be shared via mynodebtc.com! Get your own URL, like satoshisbtcpay.access.mynodebtc.com, to let others access your BTC Pay instance with just a few clicks! After enabling, additional settings are available via your account on mynodebtc.com.">
+                                <img style="width: 16px; margin-left: 10px;" src="{{ url_for('static', filename="images/tooltip_icon.png")}}" title="Public Apps" msg="Enabling Public Apps allows others to access apps that are meant to be shared via mynodebtc.com! Get your own URL, like satoshisbtcpay.public.mynodebtc.com, to let others access your BTC Pay instance with just a few clicks! After enabling, additional settings are available via your account on mynodebtc.com.">
                             </td>
                         </tr>
                     </table>
