@@ -138,7 +138,7 @@ THUNDERHUB_VERSION=$(get_app_version "$THUNDERHUB_VERSION" "thunderhub")
 THUNDERHUB_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version
 THUNDERHUB_LATEST_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version_latest
 
-LNDMANAGE_VERSION="0.15.0"
+LNDMANAGE_VERSION="0.14.2"  # Note: newer versions won't be on pypi
 LNDMANAGE_VERSION=$(get_app_version "$LNDMANAGE_VERSION" "lndmanage")
 LNDMANAGE_VERSION_FILE=/home/bitcoin/.mynode/lndmanage_version
 LNDMANAGE_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lndmanage_version_latest
