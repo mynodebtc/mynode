@@ -239,7 +239,7 @@ fi
 
 # Install device specific packages
 if [ $IS_X86 = 1 ]; then
-    apt-get -y install cloud-init
+    apt-get -y install cloud-init intel-microcode
 fi
 if [ $IS_ARMBIAN = 1 ] ; then
     apt-get -y install systemd-timesyncd
