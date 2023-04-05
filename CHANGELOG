@@ -1,3 +1,16 @@
+=== v0.3.13 ===
+- Released: 04/04/23
+- Upgrade LNBits to v0.10.0
+- Upgrade Mempool to v2.5.0
+- Upgrade Loop to v0.22.0
+- Upgrade Pool to v0.6.2
+- Upgrade Lightning Terminal to v0.9.0
+- Upgrade LNDg to v1.6.0
+- Upgrade BoS to v13.31.5
+- Upgrade LNDManage to v0.14.2
+- Hide Premium+ Access Token
+- Improve logging
+
 === v0.3.12 ===
 - Released: 03/06/23
 - Fix apparmor profile issue preventing tor from starting on some platforms
