@@ -1,3 +1,7 @@
+=== v0.3.14 ===
+- Released: 04/05/23
+- Fix: Update config so Lightning Terminal launches properly
+
 === v0.3.13 ===
 - Released: 04/04/23
 - Upgrade LNBits to v0.10.0
