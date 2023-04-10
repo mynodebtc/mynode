@@ -158,7 +158,8 @@ if ! skip_base_upgrades ; then
 
     # Install device specific packages
     if [ $IS_X86 = 1 ]; then
-        $TORIFY apt-get -y install cloud-init intel-microcode
+        $TORIFY apt-get -y install cloud-init
+        $TORIFY apt-get -y install intel-microcode || true
     fi
 
     # Use timesyncd for NTP
