@@ -70,7 +70,8 @@ elif [ "$APP" = "dojo" ]; then
     cd /mnt/hdd/mynode/dojo/docker/my-dojo/
 
     # Stop and uninstall
-    yes | ./dojo.sh uninstall
+    ./dojo.sh uninstall --auto
+    ./dojo.sh clean
 
     # Reset config files
     cd ~
