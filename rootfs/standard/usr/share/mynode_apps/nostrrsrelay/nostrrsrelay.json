@@ -15,7 +15,7 @@
         "This is a nostr relay, written in Rust. It currently supports the entire relay protocol, and persists data with SQLite.",
         "This application is intended for advanced users and running a relay is not required to use nostr clients."
     ],
-    "latest_version": "0.8.5",
+    "latest_version": "0.8.8",
     "linux_user": "nostrrsrelay",
     "supported_archs": null,
     "download_skip": false,
