@@ -627,6 +627,8 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     font-size: 24px;
     padding: 15px;
     margin-bottom: 15px;
+    text-transform: uppercase;
+    font-weight: 500;
 }
 .settings_block_subheader {
     color: #f19c00;
