@@ -1,3 +1,11 @@
+=== v0.3.15 ===
+- Released: 04/17/23
+- Upgrade Dojo to v1.19.2
+- Upgrade BTCPay Server to v1.8.4
+- Upgrade LNDg to v1.6.3
+- Upgrade Nostr RS Relay to v0.8.8
+- Fix upgrade issue on VM images
+
 === v0.3.14 ===
 - Released: 04/05/23
 - Fix: Update config so Lightning Terminal launches properly
