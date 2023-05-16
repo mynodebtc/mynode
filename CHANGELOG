@@ -1,3 +1,9 @@
+=== v0.3.17 ===
+- Released: 05/15/23
+- Upgrade Lightning Terminal to v0.9.2
+- Upgrade LNDg to v1.6.4
+- Upgrade LNBits to v0.10.6
+
 === v0.3.16 ===
 - Released: 04/30/23
 - Upgrade LND to v0.16.2
