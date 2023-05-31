@@ -778,13 +778,15 @@ def set_response_headers(response):
     #response.headers['Expires'] = '0'
     return response
 
-@app.before_first_request
-def before_first_request():
-    app.logger.info("BEFORE_FIRST_REQUEST START")
-
-    # Need to do anything here?
-
-    app.logger.info("BEFORE_FIRST_REQUEST END")
+# DEPRECATED IN FLASK 2.3 - IF EVER NEEDED, LOOK HERE
+# https://stackoverflow.com/questions/73570041/flask-deprecated-before-first-request-how-to-update
+#@app.before_first_request
+#def before_first_request():
+#    app.logger.info("BEFORE_FIRST_REQUEST START")
+#
+#    # Need to do anything here?
+#
+#    app.logger.info("BEFORE_FIRST_REQUEST END")
     
 
 def start_threads():
