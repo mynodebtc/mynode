@@ -5,7 +5,7 @@ bcrypt
 pysocks
 redis
 systemd
-flask>=2.2.2
+flask>=2.2.2,<2.4.0
 pam
 python-bitcoinrpc
 prometheus_client
