@@ -806,7 +806,7 @@ def start_threads():
     lnd_thread = BackgroundThread(update_lnd_info_thread, 60)
     lnd_thread.start()
     threads.append(lnd_thread)
-    price_thread = BackgroundThread(update_price_info_thread, 30)
+    price_thread = BackgroundThread(update_price_info_thread, 60)
     price_thread.start()
     threads.append(price_thread)
     drive_thread = BackgroundThread(update_device_info, 60)

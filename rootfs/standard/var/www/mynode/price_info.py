@@ -40,7 +40,7 @@ def update_price_info():
     if get_ui_setting("price_ticker"):
         price = "N/A"
         try:
-            price_json_string = to_string(subprocess.check_output("torify curl --silent https://api.coindesk.com/v1/bpi/currentprice.json", shell=True))
+            price_json_string = to_string(subprocess.check_output("torify curl --max-time 15 --silent https://api.coindesk.com/v1/bpi/currentprice.json", shell=True))
             data = json.loads(price_json_string)
             price = data["bpi"]["USD"]["rate_float"]
 
