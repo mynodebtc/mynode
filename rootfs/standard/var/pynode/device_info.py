@@ -1161,6 +1161,13 @@ def reset_rtl_config():
     os.system("systemctl restart rtl")
 
 #==================================
+# Thunderhub Functions
+#==================================
+def reset_thunderhub_config():
+    os.system("rm -rf /mnt/hdd/mynode/thunderhub/thub_config.yaml")
+    os.system("systemctl restart thunderhub")
+
+#==================================
 # Sphinx Relay Server Functions
 #==================================
 def stop_sphinxrelay():

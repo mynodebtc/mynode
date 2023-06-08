@@ -9,6 +9,7 @@ After=lnd.service
 [Service]
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_lnd.sh
+ExecStartPre=+/usr/bin/service_scripts/pre_thunderhub.sh
 Environment=PORT=3030
 WorkingDirectory=/opt/mynode/thunderhub
 ExecStart=/usr/bin/npm run start

@@ -564,6 +564,16 @@ def reset_rtl_config_page():
     flash("RTL Configuration Reset", category="message")
     return redirect("/settings")
 
+@mynode_settings.route("/settings/reset-thunderhub-config")
+def reset_thunderhub_config_page():
+    check_logged_in()
+
+    t = Timer(1.0, reset_thunderhub_config)
+    t.start()
+
+    flash("Thunderhub Configuration Reset", category="message")
+    return redirect("/settings")
+
 @mynode_settings.route("/settings/reset-specter-config")
 def reset_specter_config_page():
     check_logged_in()
