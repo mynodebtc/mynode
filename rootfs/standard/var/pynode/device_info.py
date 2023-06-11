@@ -1115,6 +1115,10 @@ def delete_lnd_watchtower_server_data():
     os.system("rm -rf /mnt/hdd/mynode/lnd/data/watchtower")
     return True
 
+def delete_lnd_macaroons():
+    os.system("find /mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/ -name '*.macaroon' -delete")
+    os.system("find /mnt/hdd/mynode/lnd/data/chain/bitcoin/testnet/ -name '*.macaroon' -delete")
+    return True
 
 #==================================
 # Mainnet / Testnet Functions

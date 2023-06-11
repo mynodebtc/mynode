@@ -730,6 +730,18 @@ def page_lnd_delete_wallet():
 
     return redirect("/rebooting")
 
+@mynode_settings.route("/settings/reset-macaroons")
+def page_lnd_reset_macaroons():
+    check_logged_in()
+    
+    delete_lnd_macaroons()
+    
+    # Trigger reboot
+    t = Timer(1.0, reboot_device)
+    t.start()
+
+    return redirect("/rebooting")
+
 @mynode_settings.route("/settings/reset-lnd-watchtower")
 def page_lnd_reset_lnd_watchtower():
     check_logged_in()

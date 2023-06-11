@@ -58,6 +58,17 @@
                     delete_lnd_wallet_dialog.dialog( "open" );
                 });
 
+                $("#reset_macaroons").on("click", function() {
+                    var okFunction = function() {
+                        window.location.href="/settings/reset-macaroons"
+                    }
+                    openConfirmDialog("confirm-dialog",
+                                      "Reset Lightning Macaroons",
+                                      "Resetting your LND Macaroons will delete them and reboot your device. You will need to re-pair any connected wallets. "+
+                                      "Would you still like to reset your macaroons?",
+                                      okFunction)
+                });
+
                 $("#reset_lnd_watchtower_client").on("click", function() {
                     var okFunction = function() {
                         window.location.href="/settings/reset-lnd-watchtower?type=client"
@@ -1057,6 +1068,13 @@
             <br/><br/>
             {% endif %}
             <a href="/lnd/config" class="ui-button ui-widget ui-corner-all settings_button">Edit Config</a>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Reset Macaroons</div>
+            Advanced: This will delete your LND macaroons and any paired wallets will no longer work. It will delete both mainnet and testnet macaroons if you have them.
+            <br/>
+            <button id="reset_macaroons" class="ui-button ui-widget ui-corner-all settings_button">Reset Macaroons</button>
 
             <div class="divider"></div>
 
