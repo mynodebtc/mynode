@@ -36,7 +36,7 @@ LOOP_LATEST_VERSION_FILE=/home/bitcoin/.mynode/loop_version_latest
 LOOP_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt
 LOOP_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt.sig
 
-POOL_VERSION="v0.6.3-beta"
+POOL_VERSION="v0.6.4-beta"
 POOL_VERSION=$(get_app_version "$POOL_VERSION" "pool")
 POOL_VERSION_FILE=/home/bitcoin/.mynode/pool_version
 POOL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/pool_version_latest
