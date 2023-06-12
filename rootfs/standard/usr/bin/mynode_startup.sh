@@ -380,32 +380,7 @@ fi
 
 
 # Setup electrs
-cp -f /usr/share/mynode/electrs.toml /mnt/hdd/mynode/electrs/electrs.toml
-# Update for testnet
-if [ -f /mnt/hdd/mynode/settings/.testnet_enabled ]; then
-    sed -i "s/bitcoin/testnet/g" /mnt/hdd/mynode/electrs/electrs.toml || true
-else
-    sed -i "s/testnet/bitcoin/g" /mnt/hdd/mynode/electrs/electrs.toml || true
-fi
-# Remove old electrs data (pre-v9)
-rm -rf /mnt/hdd/mynode/electrs/mainnet
-# Use correct binary on RP4 (32 bit/64bit)
-if [ $IS_RASPI4 -eq 1 ]; then
-    ELECTRS_DST=/usr/bin/electrs
-    ELECTRS_SRC=/usr/bin/electrs_arm32
-    if [ $IS_RASPI4_ARM64 -eq 1 ]; then
-        ELECTRS_SRC=/usr/bin/electrs_arm64
-    fi
-    if [ ! -f $ELECTRS_DST ]; then
-        cp -f $ELECTRS_SRC $ELECTRS_DST
-    else
-        MD5_1=$(md5sum $ELECTRS_DST | cut -d' ' -f 1)
-        MD5_2=$(md5sum $ELECTRS_SRC | cut -d' ' -f 1)
-        if [ "${MD5_1}" != "{$MD5_2}" ]; then
-            cp -f $ELECTRS_SRC $ELECTRS_DST
-        fi
-    fi
-fi
+# Moved to pre_electrs.sh
 
 # RTL config
 # Moved to pre_rtl.sh
