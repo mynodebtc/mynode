@@ -1,3 +1,17 @@
+=== v0.3.18 ===
+- Released: 06/12/23
+- Upgrade Bitcoin to v25.0
+- Upgrade LND to v0.16.3
+- Upgrade RTL to v0.14.0
+- Upgrade LiT to v0.10.1
+- Upgrade Loop to v0.24.1
+- Upgrade Pool to v0.6.4
+- Add button to reset LND macaroons
+- Add button to reset thunderhub config
+- Add settings file to control electrs index_limit
+- Enable mempoolfullrbf in default Bitcoin config
+- Bugfix: Resolve Flask deprecation issue
+
 === v0.3.17 ===
 - Released: 05/15/23
 - Upgrade Lightning Terminal to v0.9.2
