@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LOCAL_IP=$(python ./scripts/get_local_ip.py)
+LOCAL_IP=$(python3 ./scripts/get_local_ip.py)
 
 echo ""
 echo "Finished updating rootfs and other files!"
