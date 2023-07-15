@@ -1,3 +1,10 @@
+=== v0.3.19 ===
+- Released: 07/14/23
+- Upgrade LND to v0.16.4
+- Upgrade Loop to v0.25.2
+- Upgrade LNDg to v1.7.1
+- Upgrade BTCPay to v1.10.3
+
 === v0.3.18 ===
 - Released: 06/12/23
 - Upgrade Bitcoin to v25.0
