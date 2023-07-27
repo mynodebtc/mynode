@@ -527,6 +527,8 @@ def init_ui_setting_defaults(ui_settings):
         ui_settings["darkmode"] = False
     if "price_ticker" not in ui_settings:
         ui_settings["price_ticker"] = False
+    if "pinned_bitcoin_details" not in ui_settings:
+        ui_settings["pinned_bitcoin_details"] = False
     if "pinned_lightning_details" not in ui_settings:
         ui_settings["pinned_lightning_details"] = False
     if "background" not in ui_settings:

@@ -237,7 +237,10 @@ def api_toggle_setting():
         return jsonify(data)
 
     setting = request.args.get("setting")
-    if setting == "pinned_lightning_details":
+    if setting == "pinned_bitcoin_details":
+        toggle_ui_setting("pinned_bitcoin_details")
+        data["status"] = "success"
+    elif setting == "pinned_lightning_details":
         toggle_ui_setting("pinned_lightning_details")
         data["status"] = "success"
     else:

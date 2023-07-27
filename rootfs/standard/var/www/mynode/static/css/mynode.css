@@ -366,7 +366,7 @@ td, th {
 .lightning_channel_container {
     width: 1000px;
 }
-.lightning_pin_details_icon {
+.pin_details_icon {
     width: 26px;
     position: absolute;
     top: 5px;

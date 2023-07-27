@@ -39,7 +39,7 @@
                 </tr>
             </table>
             <br/>
-            <img class="" id="show_bitcoin_blocks" style="margin: auto; width: 60px; cursor: pointer;" onclick="toggleBlocks();" src="{{ url_for('static', filename="images/expand_down.png")}}"/>
+            <img class="" id="show_bitcoin_details" style="margin: auto; width: 60px; cursor: pointer;" onclick="toggleBitcoinDetails();" src="{{ url_for('static', filename="images/")}}{% if ui_settings['pinned_lightning_details'] %}expand_up.png{% else %}expand_down.png{% endif %}"/>
         </div>
     </div>
     <div class="app_tile_wide">
@@ -109,8 +109,15 @@
 </div>
 
 <!-- Show Bitcoin Blocks -->
-<div class="app_tile_row" id="bitcoin_blocks" style="display: none;">
+<div class="app_tile_row" id="bitcoin_details" style="display: none;">
     <div class="app_tile_bitcoin_recent_blocks" >
+
+        {% if ui_settings['pinned_bitcoin_details'] %}
+            <img class="pin_details_icon" id="pin_bitcoin_details_icon" onclick="togglePinnedBitcoinDetails();" src="{{ url_for('static', filename="images/unpin.png")}}" title="Toggle Pinning Bitcoin Details"/>
+        {% else %}
+            <img class="pin_details_icon" id="pin_bitcoin_details_icon" onclick="togglePinnedBitcoinDetails();" src="{{ url_for('static', filename="images/pin.png")}}" title="Toggle Pinning Bitcoin Details"/>
+        {% endif %}
+
         <div class="bitcoin_block_set"></div>
             <div class="bitcoin_block">
                 <div class="bitcoin_block_orange_square">
@@ -180,9 +187,9 @@
         <p style="font-size: 16px; font-weight: bold;">Wallet</p>
 
         {% if ui_settings['pinned_lightning_details'] %}
-            <img class="lightning_pin_details_icon" id="pin_lightning_details_icon" onclick="togglePinnedLightningDetails();" src="{{ url_for('static', filename="images/unpin.png")}}" title="Toggle Pinning Lightning Details"/>
+            <img class="pin_details_icon" id="pin_lightning_details_icon" onclick="togglePinnedLightningDetails();" src="{{ url_for('static', filename="images/unpin.png")}}" title="Toggle Pinning Lightning Details"/>
         {% else %}
-            <img class="lightning_pin_details_icon" id="pin_lightning_details_icon" onclick="togglePinnedLightningDetails();" src="{{ url_for('static', filename="images/pin.png")}}" title="Toggle Pinning Lightning Details"/>
+            <img class="pin_details_icon" id="pin_lightning_details_icon" onclick="togglePinnedLightningDetails();" src="{{ url_for('static', filename="images/pin.png")}}" title="Toggle Pinning Lightning Details"/>
         {% endif %}
 
         <div style="display: flex; margin: auto;">
