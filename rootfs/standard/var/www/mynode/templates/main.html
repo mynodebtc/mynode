@@ -144,16 +144,28 @@
                 }
             }
 
-            var showing_blocks = false;
-            function toggleBlocks() {
-                if (showing_blocks) {
-                    $("#bitcoin_blocks").slideUp(400);
-                    $('#show_bitcoin_blocks').attr('src', location.protocol+'//'+location.hostname+'/static/images/expand_down.png');
+            var pinned_bitcoin_details = {% if ui_settings['pinned_bitcoin_details'] %}true{% else %}false{% endif %};
+            function togglePinnedBitcoinDetails() {
+                if (pinned_bitcoin_details) {
+                    $('#pin_bitcoin_details_icon').attr('src', location.protocol+'//'+location.hostname+'/static/images/pin.png');
+                    $.get("/api/toggle_setting?setting=pinned_bitcoin_details");
                 } else {
-                    $("#bitcoin_blocks").slideDown(400);
-                    $('#show_bitcoin_blocks').attr('src', location.protocol+'//'+location.hostname+'/static/images/expand_up.png');
+                    $('#pin_bitcoin_details_icon').attr('src', location.protocol+'//'+location.hostname+'/static/images/unpin.png');
+                    $.get("/api/toggle_setting?setting=pinned_bitcoin_details");
                 }
-                showing_blocks = !showing_blocks;
+                pinned_bitcoin_details = !pinned_bitcoin_details;
+            }
+
+            var showing_bitcoin_details = false;
+            function toggleBitcoinDetails() {
+                if (showing_bitcoin_details) {
+                    $("#bitcoin_details").slideUp(400);
+                    $('#show_bitcoin_details').attr('src', location.protocol+'//'+location.hostname+'/static/images/expand_down.png');
+                } else {
+                    $("#bitcoin_details").slideDown(400);
+                    $('#show_bitcoin_details').attr('src', location.protocol+'//'+location.hostname+'/static/images/expand_up.png');
+                }
+                showing_bitcoin_details = !showing_bitcoin_details;
             }
 
             var pinned_lightning_details = {% if ui_settings['pinned_lightning_details'] %}true{% else %}false{% endif %};
@@ -593,9 +605,12 @@
                 setTimeout(update_ticker, 1500);
                 update_ticker();
 
-                // If pinned lightning, auto open lightning details
+                // If pinned bitcoin or lightning info, auto open details
                 {% if lnd_wallet_exists and lnd_ready and ui_settings['pinned_lightning_details'] %}
                 setTimeout(toggleLightningDetails, 1500);
+                {% endif %}
+                {% if ui_settings['pinned_bitcoin_details'] %}
+                setTimeout(toggleBitcoinDetails, 1500);
                 {% endif %}
             });
         </script>
