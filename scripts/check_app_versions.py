@@ -9,6 +9,7 @@ apps = [{"name": "bitcoin/bitcoin",                         "current_version_var
         {"name": "lightninglabs/loop",                      "current_version_variable": "LOOP_VERSION"},
         {"name": "lightninglabs/pool",                      "current_version_variable": "POOL_VERSION"},
         {"name": "lightninglabs/lightning-terminal",        "current_version_variable": "LIT_VERSION"},
+        {"name": "lightninglabs/chantools",                 "current_version_variable": "CHANTOOLS_VERSION"},
         {"name": "romanz/electrs",                          "current_version_variable": "ELECTRS_VERSION"},
         {"name": "mempool/mempool",                         "current_version_variable": "MEMPOOL_VERSION"},
         {"name": "Ride-The-Lightning/RTL",                  "current_version_variable": "RTL_VERSION"},
