@@ -50,6 +50,13 @@ LIT_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lit_version_latest
 LIT_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-$LIT_VERSION.txt
 LIT_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-$LIT_VERSION.sig
 
+CHANTOOLS_VERSION="v0.11.3"
+CHANTOOLS_VERSION=$(get_app_version "$CHANTOOLS_VERSION" "chantools")
+CHANTOOLS_VERSION_FILE=/home/bitcoin/.mynode/chantools_version
+CHANTOOLS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/chantools_version_latest
+CHANTOOLS_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/chantools/releases/download/$CHANTOOLS_VERSION/manifest-$CHANTOOLS_VERSION.txt
+CHANTOOLS_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/chantools/releases/download/$CHANTOOLS_VERSION/manifest-$CHANTOOLS_VERSION.sig
+
 ELECTRS_VERSION="v0.9.9"
 ELECTRS_VERSION_FILE=/home/bitcoin/.mynode/electrs_version
 ELECTRS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/electrs_version_latest

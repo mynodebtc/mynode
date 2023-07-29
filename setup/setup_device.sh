@@ -630,6 +630,45 @@ if [ "$CURRENT" != "$LIT_VERSION" ]; then
 fi
 cd ~
 
+# Upgrade Lightning Chantools
+echo "Upgrading chantools..."
+CHANTOOLS_ARCH="chantools-linux-armv7"
+if [ $IS_X86 = 1 ]; then
+    CHANTOOLS_ARCH="chantools-linux-amd64"
+fi
+if [ $IS_RASPI4_ARM64 = 1 ]; then
+    CHANTOOLS_ARCH="chantools-linux-arm64"
+fi
+CHANTOOLS_UPGRADE_URL=https://github.com/lightninglabs/chantools/releases/download/$CHANTOOLS_VERSION/$CHANTOOLS_ARCH-$CHANTOOLS_VERSION.tar.gz
+CURRENT=""
+if [ -f $CHANTOOLS_VERSION_FILE ]; then
+    CURRENT=$(cat $CHANTOOLS_VERSION_FILE)
+fi
+if [ "$CURRENT" != "$CHANTOOLS_VERSION" ]; then
+    # Download and install lit
+    rm -rf /opt/download
+    mkdir -p /opt/download
+    cd /opt/download
+
+    wget $CHANTOOLS_UPGRADE_URL
+    wget $CHANTOOLS_UPGRADE_MANIFEST_URL -O manifest.txt
+    wget $CHANTOOLS_UPGRADE_MANIFEST_SIG_URL  -O manifest.txt.sig
+
+    gpg --verify manifest.txt.sig manifest.txt
+    if [ $? == 0 ]; then
+        # Install lit
+        tar -xzf chantools-*.tar.gz
+        mv $CHANTOOLS_ARCH-$CHANTOOLS_VERSION chantools
+        install -m 0755 -o root -g root -t /usr/local/bin chantools/chantools
+
+        # Mark current version
+        echo $CHANTOOLS_VERSION > $CHANTOOLS_VERSION_FILE
+    else
+        echo "ERROR UPGRADING CHANTOOLS - GPG FAILED"
+    fi
+fi
+cd ~
+
 
 # Setup "install" location for some apps
 mkdir -p /opt/mynode

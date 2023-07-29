@@ -64,6 +64,19 @@
         "show_on_status_page": true
     },
     {
+        "name": "Channel Tools",
+        "short_name": "chantools",
+        "author": {"name": "Lightning Labs", "link":"https://lightning.engineering/"},
+        "website": {"name": "GitHub", "link": "https://github.com/lightninglabs/chantools"},
+        "description": "This tool provides helper functions that can be used to rescue funds locked in lnd channels in case lnd itself cannot run properly anymore.",
+        "category": "lightning_app",
+        "short_description": "Lightning Diagnostic Tool",
+        "requires_lightning": true,
+        "hide_status_icon": true,
+        "can_enable_disable": false,
+        "show_on_status_page": true
+    },
+    {
         "name": "Ride the Lightning",
         "short_name": "rtl",
         "app_tile_name": "RTL",
