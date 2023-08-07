@@ -1139,6 +1139,7 @@ systemctl enable docker
 systemctl enable bitcoin
 systemctl enable seed_bitcoin_peers
 systemctl enable lnd
+systemctl enable lndconnect
 systemctl enable lit
 systemctl enable firewall
 systemctl enable invalid_block_check
