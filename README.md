@@ -114,7 +114,7 @@ First, install Debian - last tested with the Debian 10.11 (Buster) images.
 Second, login and run these two commands.
 
 ```
-wget https://raw.githubusercontent.com/mynodebtc/mynode/master/setup/setup_device.sh -O mynode_setup.sh
+wget https://raw.githubusercontent.com/mynodebtc/mynode/latest_release/setup/setup_device.sh -O mynode_setup.sh
 sudo bash ./mynode_setup.sh online
 ```
 
