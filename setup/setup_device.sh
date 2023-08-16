@@ -180,7 +180,8 @@ gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C268459
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys E777299FC265DD04793070EB944D35F9AC3DB76A # Bitcoin - Michael Ford (fanquake)
 curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
 curl https://samouraiwallet.com/pgp.txt | gpg --import # two keys from Samourai team
-gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E #loopd
+gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E # Loop (abosworth)
+gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 9FC6B0BFD597A94DBF09708280E5375C094198D8 # Loop (bhandras)
 gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 26984CB69EB8C4A26196F7A4D7D916376026F177 # Lightning Terminal
 gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 187F6ADD93AE3B0CF335AA6AB984570980684DCC # Lightning Terminal
 wget -q https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc -O- | apt-key add - # Tor
