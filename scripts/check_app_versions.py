@@ -1,42 +1,47 @@
 #!/usr/bin/python3
 import requests
 from tabulate import tabulate
+import argparse
 import json
 import re
 
-apps = [{"name": "bitcoin/bitcoin",                         "current_version_variable": "BTC_VERSION"},
-        {"name": "lightningnetwork/lnd",                    "current_version_variable": "LND_VERSION"},
-        {"name": "lightninglabs/loop",                      "current_version_variable": "LOOP_VERSION"},
-        {"name": "lightninglabs/pool",                      "current_version_variable": "POOL_VERSION"},
-        {"name": "lightninglabs/lightning-terminal",        "current_version_variable": "LIT_VERSION"},
-        {"name": "lightninglabs/chantools",                 "current_version_variable": "CHANTOOLS_VERSION"},
-        {"name": "romanz/electrs",                          "current_version_variable": "ELECTRS_VERSION"},
-        {"name": "mempool/mempool",                         "current_version_variable": "MEMPOOL_VERSION"},
-        {"name": "Ride-The-Lightning/RTL",                  "current_version_variable": "RTL_VERSION"},
-        {"name": "janoside/btc-rpc-explorer",               "current_version_variable": "BTCRPCEXPLORER_VERSION"},
-        {"name": "BlueWallet/LndHub",                       "current_version_variable": "LNDHUB_VERSION"},
-        {"name": "btcpayserver/btcpayserver",               "current_version_variable": "BTCPAYSERVER_VERSION"},
-        {"name": "openoms/joininbox",                       "current_version_variable": "JOININBOX_VERSION"},
-        {"name": "joinmarket-webui/jam",                    "dynamic_app_name":         "jam"},
-        {"name": "unchained-capital/caravan",               "current_version_variable": "CARAVAN_VERSION"},
-        {"name": "cryptoadvance/specter-desktop",           "current_version_variable": "SPECTER_VERSION"},
-        {"name": "Coldcard/ckbunker",                       "current_version_variable": "CKBUNKER_VERSION"},
-        {"name": "alexbosworth/balanceofsatoshis",          "current_version_variable": "BOS_VERSION"},
-        {"name": "bitromortac/lndmanage",                   "current_version_variable": "LNDMANAGE_VERSION"},
-        {"name": "lnbits/lnbits",                           "current_version_variable": "LNBITS_VERSION"},
-        {"name": "pxsocs/warden_terminal",                  "current_version":          "64e5db1"},
-        {"name": "apotdevin/thunderhub",                    "current_version_variable": "THUNDERHUB_VERSION"},
-        {"name": "stakwork/sphinx-relay",                   "current_version_variable": "SPHINXRELAY_VERSION"},
-        {"name": "whirlpool/whirlpool-client-cli",          "current_version_variable": "WHIRLPOOL_VERSION"},
-        {"name": "dojo/samourai-dojo",                      "current_version_variable": "DOJO_VERSION"},
-        #{"name": "JoinMarket-Org/joinmarket-clientserver",  "current_version_variable": "JOINMARKET_VERSION"}, # Old, now use within joininbox
-        {"name": "curly60e/pyblock",                        "current_version_variable": "PYBLOCK_VERSION"},
-        {"name": "cryptosharks131/lndg",                    "dynamic_app_name":         "lndg"},
-        {"name": "Lily-Technologies/lily-wallet",           "dynamic_app_name":         "lilywallet"},
-        {"name": "edouardparis/lntop",                      "dynamic_app_name":         "lntop"},
-        {"name": "monlovesmango/astral",                    "dynamic_app_name":         "astral"},
-        {"name": "fiatjaf/noscl",                           "dynamic_app_name":         "noscl"},
-        {"name": "scsibug/nostr-rs-relay",                  "dynamic_app_name":         "nostrrsrelay"},
+priority_apps = [\
+    {"name": "bitcoin/bitcoin",                         "current_version_variable": "BTC_VERSION"},
+    {"name": "lightningnetwork/lnd",                    "current_version_variable": "LND_VERSION"},
+    {"name": "lightninglabs/loop",                      "current_version_variable": "LOOP_VERSION"},
+    {"name": "lightninglabs/pool",                      "current_version_variable": "POOL_VERSION"},
+    {"name": "lightninglabs/lightning-terminal",        "current_version_variable": "LIT_VERSION"},
+    {"name": "mempool/mempool",                         "current_version_variable": "MEMPOOL_VERSION"},
+    {"name": "Ride-The-Lightning/RTL",                  "current_version_variable": "RTL_VERSION"},
+    {"name": "janoside/btc-rpc-explorer",               "current_version_variable": "BTCRPCEXPLORER_VERSION"},
+    {"name": "btcpayserver/btcpayserver",               "current_version_variable": "BTCPAYSERVER_VERSION"},
+    {"name": "lnbits/lnbits",                           "current_version_variable": "LNBITS_VERSION"},
+    {"name": "apotdevin/thunderhub",                    "current_version_variable": "THUNDERHUB_VERSION"},
+    {"name": "openoms/joininbox",                       "current_version_variable": "JOININBOX_VERSION"},
+    {"name": "joinmarket-webui/jam",                    "dynamic_app_name":         "jam"},
+    {"name": "dojo/samourai-dojo",                      "current_version_variable": "DOJO_VERSION"},
+]
+other_apps = [\
+    {"name": "lightninglabs/chantools",                 "current_version_variable": "CHANTOOLS_VERSION"},
+    {"name": "romanz/electrs",                          "current_version_variable": "ELECTRS_VERSION"},
+    {"name": "BlueWallet/LndHub",                       "current_version_variable": "LNDHUB_VERSION"},
+    {"name": "unchained-capital/caravan",               "current_version_variable": "CARAVAN_VERSION"},
+    {"name": "cryptoadvance/specter-desktop",           "current_version_variable": "SPECTER_VERSION"},
+    {"name": "Coldcard/ckbunker",                       "current_version_variable": "CKBUNKER_VERSION"},
+    {"name": "alexbosworth/balanceofsatoshis",          "current_version_variable": "BOS_VERSION"},
+    {"name": "bitromortac/lndmanage",                   "current_version_variable": "LNDMANAGE_VERSION"},
+    {"name": "pxsocs/warden_terminal",                  "current_version":          "64e5db1"},
+    {"name": "stakwork/sphinx-relay",                   "current_version_variable": "SPHINXRELAY_VERSION"},
+    {"name": "whirlpool/whirlpool-client-cli",          "current_version_variable": "WHIRLPOOL_VERSION"},
+    {"name": "dojo/samourai-dojo",                      "current_version_variable": "DOJO_VERSION"},
+    #{"name": "JoinMarket-Org/joinmarket-clientserver",  "current_version_variable": "JOINMARKET_VERSION"}, # Old, now use within joininbox
+    {"name": "curly60e/pyblock",                        "current_version_variable": "PYBLOCK_VERSION"},
+    {"name": "cryptosharks131/lndg",                    "dynamic_app_name":         "lndg"},
+    {"name": "Lily-Technologies/lily-wallet",           "dynamic_app_name":         "lilywallet"},
+    {"name": "edouardparis/lntop",                      "dynamic_app_name":         "lntop"},
+    {"name": "monlovesmango/astral",                    "dynamic_app_name":         "astral"},
+    {"name": "fiatjaf/noscl",                           "dynamic_app_name":         "noscl"},
+    {"name": "scsibug/nostr-rs-relay",                  "dynamic_app_name":         "nostrrsrelay"},
 ]
 
 # Apps that don't work or are not on GitHub
@@ -123,7 +128,7 @@ def get_app_version_data(app_name, current_version):
 
     return row
 
-def check_app_versions():
+def get_app_version_data_list(apps):
     data=[]
     for app in apps:
         # Lookup current version from mynode_app_version.sh file
@@ -138,9 +143,23 @@ def check_app_versions():
         # Get data from github
         row = get_app_version_data(app["name"], current_version)
         data.append(row)
+    return data
 
-    table = tabulate(data, headers=['App', 'myNode Version', 'Latest Version', 'Needs Update'], tablefmt='pretty')
+def check_app_versions(include_all_apps):
+    data = get_app_version_data_list(priority_apps)
+    table = tabulate(data, headers=['Priority App', 'myNode Version', 'Latest Version', 'Needs Update'], tablefmt='pretty')
     print(table)
 
+    if include_all_apps:
+        data = get_app_version_data_list(other_apps)
+        table = tabulate(data, headers=['App', 'myNode Version', 'Latest Version', 'Needs Update'], tablefmt='pretty')
+        print(table)
+    else:
+        print("\n\n***Skipping optional apps. Include with '-a'.***\n")
+
 if __name__ == "__main__":
-    check_app_versions()
+    parser = argparse.ArgumentParser(prog='check_app_versions.py', description="This script checks for new versions of MyNode applications")
+    parser.add_argument('-a', '--allapps', action='store_true')
+    args = parser.parse_args()
+
+    check_app_versions(include_all_apps=args.allapps)
