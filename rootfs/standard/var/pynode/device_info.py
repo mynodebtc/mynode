@@ -616,8 +616,8 @@ def is_https_forced():
 
 # Regen cert
 def regen_https_cert():
-    os.system("rm -rf /home/bitcoin/.mynode/https")
-    os.system("rm -rf /mnt/hdd/mynode/settings/https")
+    os.system("rm -rf /home/bitcoin/.mynode/https/myNode.local*")
+    os.system("rm -rf /mnt/hdd/mynode/settings/https/myNode.local*")
     os.system("/usr/bin/mynode_gen_cert.sh https 825")
     os.system("sync")
     os.system("systemctl restart nginx")
