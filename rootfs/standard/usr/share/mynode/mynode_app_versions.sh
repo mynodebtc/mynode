@@ -75,7 +75,7 @@ LNDHUB_VERSION=$(get_app_version "$LNDHUB_VERSION" "lndhub")
 LNDHUB_VERSION_FILE=/home/bitcoin/.mynode/lndhub_version
 LNDHUB_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lndhub_version_latest
 
-CARAVAN_VERSION="v0.3.14"
+CARAVAN_VERSION="v0.6.2"
 CARAVAN_VERSION=$(get_app_version "$CARAVAN_VERSION" "caravan")
 CARAVAN_SETTINGS_UPDATE_FILE=/home/bitcoin/.mynode/caravan_settings_1
 CARAVAN_VERSION_FILE=/home/bitcoin/.mynode/caravan_version
@@ -204,7 +204,7 @@ PYTHON_VERSION="3.8.9"
 
 PYTHON_ARM32_GRPCIO_VERSION="1.40.0"
 
-NODE_JS_VERSION="14.x"
+NODE_JS_VERSION="18.x"
 NODE_NPM_VERSION="^8.1.0"
 
 RUST_VERSION="1.56.1"
