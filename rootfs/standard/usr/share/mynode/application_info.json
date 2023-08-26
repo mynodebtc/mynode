@@ -587,6 +587,14 @@
         "can_reinstall": true
     },
     {
+        "name": "NodeJS",
+        "short_name": "nodejs",
+        "show_on_application_page": false,
+        "show_on_homepage": false,
+        "show_on_status_page": false,
+        "can_reinstall": true
+    },
+    {
         "name": "Firewall",
         "short_name": "ufw",
         "show_on_application_page": false,

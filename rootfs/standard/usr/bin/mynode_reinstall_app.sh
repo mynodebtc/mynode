@@ -53,6 +53,8 @@ elif [ "$APP" = "docker" ]; then
 elif [ "$APP" = "tor" ]; then
     apt-get remove -y tor
     apt-get install -y tor
+elif [ "$APP" = "nodejs" ]; then
+    apt-get install -y --reinstall nodejs
 elif [ "$APP" = "ufw" ]; then
     apt-get purge -y ufw
     apt-get install -y ufw
