@@ -229,6 +229,7 @@ HiddenServicePort 3003 127.0.0.1:3003
 HiddenServicePort 3010 127.0.0.1:3010
 HiddenServicePort 3011 127.0.0.1:3011
 HiddenServicePort 3020 127.0.0.1:3020
+HiddenServicePort 3021 127.0.0.1:3021
 HiddenServicePort 3030 127.0.0.1:3030
 HiddenServicePort 3031 127.0.0.1:3031
 HiddenServicePort 4080 127.0.0.1:4080

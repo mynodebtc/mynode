@@ -75,7 +75,7 @@ def page_tor():
     v3_services.append(create_v3_service("LND Hub", lndhub_onion_url, "80 / 443", True, ""))
     v3_services.append(create_v3_service("BTC RPC Explorer", general_onion_url, "3002 / 3003", False, ""))
     v3_services.append(create_v3_service("Ride the Lightning", general_onion_url, "3010 / 3011", True, ""))
-    v3_services.append(create_v3_service("Caravan", general_onion_url, "3020", True, ""))
+    v3_services.append(create_v3_service("Caravan", general_onion_url, "3020 / 3021", True, ""))
     v3_services.append(create_v3_service("Thunderhub", general_onion_url, "3030 / 3031", True, ""))
     v3_services.append(create_v3_service("Mempool", general_onion_url, "4080 / 4081", True, ""))
     v3_services.append(create_v3_service("LNbits", lnbits_onion_url, "80 / 443", True, ""))
