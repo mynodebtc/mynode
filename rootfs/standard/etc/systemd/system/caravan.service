@@ -9,9 +9,9 @@ After=bitcoin.service
 [Service]
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_bitcoin.sh
-Environment="PORT=3020 NODE_ENV=production"
 WorkingDirectory=/opt/mynode/caravan
-ExecStart=/usr/bin/npm start
+#ExecStart=/usr/bin/npm start --port 3020 --base=/ --host
+ExecStart=/usr/bin/sleep 365d
 
 StandardInput=tty-force
 TTYVHangup=yes

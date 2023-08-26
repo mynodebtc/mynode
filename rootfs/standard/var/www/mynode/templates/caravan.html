@@ -7,7 +7,7 @@
             $(document).ready(function() {
 
                 $("#caravan").on("click", function() {
-                    url = 'https://'+location.hostname+':3020'
+                    url = 'https://'+location.hostname+':3021'
                     window.open(url,'_blank');
                 })
 
@@ -47,10 +47,7 @@
             
             <ol class="instructions-steps">
                 <li>Change the Public/Private option to Private</li>
-                <li>Change the URL to your node's IP address: <a href="https://{{local_ip}}:8335" target="_blank">https://{{local_ip}}:8335</a></li>
-                    <ul>
-                        <li>You may need to visit the URL in your browser and accept the HTTPS certificate</li>
-                    </ul>
+                <li>Change the URL to your node's IP address: http://{{local_ip}}:8336</li>
                 <li>Change the Username to "mynode"</li>
                 <li>Change the Password to the RPC Password from the <a href="/bitcoin">Bitcoin page</a></li>
                 <li>Click "Test Connection"</li>

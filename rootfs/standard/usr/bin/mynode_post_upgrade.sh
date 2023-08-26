@@ -316,7 +316,7 @@ if ! skip_base_upgrades ; then
     fi
 
     # Update NPM (Node Package Manager)
-    npm install -g npm@$NODE_NPM_VERSION
+    #npm install -g npm@$NODE_NPM_VERSION
     npm install -g yarn @quasar/cli
     
     # Install Docker
@@ -633,7 +633,7 @@ fi
 
 # Install Caravan
 if should_install_app "caravan" ; then
-    CARAVAN_UPGRADE_URL=https://github.com/unchained-capital/caravan/archive/$CARAVAN_VERSION.tar.gz
+    CARAVAN_UPGRADE_URL=https://github.com/unchained-capital/caravan/archive/caravan-$CARAVAN_VERSION.tar.gz
     CURRENT=""
     if [ -f $CARAVAN_VERSION_FILE ]; then
         CURRENT=$(cat $CARAVAN_VERSION_FILE)
@@ -650,7 +650,12 @@ if should_install_app "caravan" ; then
         chown -R bitcoin:bitcoin caravan
 
         cd caravan
-        sudo -u bitcoin npm install --only=production
+
+        # Change path to / from /caravan
+        sed -i 's|/caravan/#|/#|' vite.config.js
+
+        sudo -u bitcoin npm install
+        sudo -u bitcoin npm run build
         echo $CARAVAN_VERSION > $CARAVAN_VERSION_FILE
         touch $CARAVAN_SETTINGS_UPDATE_FILE
     fi
