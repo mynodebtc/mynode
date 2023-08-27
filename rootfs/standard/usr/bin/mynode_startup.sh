@@ -256,14 +256,8 @@ rm -rf $MYNODE_DIR/.mynode_bitcoin_synced
 cp -f /home/bitcoin/.mynode/.product_key* /mnt/hdd/mynode/settings/ || true
 cp -f /mnt/hdd/mynode/settings/.product_key* home/bitcoin/.mynode/ || true
 
-# Make any users we need to
-useradd -m -s /bin/bash pivpn || true
-useradd -m -s /bin/bash joinmarket || true
-
-# User updates and settings
-adduser admin bitcoin
-adduser joinmarket bitcoin
-grep "joinmarket" /etc/sudoers || (echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo)
+# Initialize Users
+/usr/bin/mynode_initialize_users.sh
 
 # Regen SSH keys (check if force regen or keys are missing / empty)
 while [ ! -f /home/bitcoin/.mynode/.gensshkeys ] || 

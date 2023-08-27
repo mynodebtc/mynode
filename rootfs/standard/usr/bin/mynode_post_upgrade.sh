@@ -36,18 +36,8 @@ if ! skip_base_upgrades ; then
     # Update SD card
     mkdir -p /etc/torrc.d
 
-    # Create any necessary users
-    useradd -m -s /bin/bash joinmarket || true
-
-    # Setup bitcoin user folders
-    mkdir -p /home/bitcoin/.mynode/
-    chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
-
-    # User updates and settings
-    adduser admin bitcoin
-    adduser joinmarket bitcoin
-    grep "joinmarket" /etc/sudoers || (echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo)
-    passwd -l root
+    # Initialize Users
+    /usr/bin/mynode_initialize_users.sh
 
     # Migrate from version file to version+install combo
     /usr/bin/mynode_migrate_version_files.sh
