@@ -138,12 +138,11 @@ source /tmp/upgrade/out/rootfs_*/usr/share/mynode/mynode_app_versions.sh
 # Update SD card
 mkdir -p /etc/torrc.d
 
-# Create any necessary users
+# Set admin password to bolt
 useradd -p $(openssl passwd -1 bolt) -m -s /bin/bash admin || true
-useradd -m -s /bin/bash bitcoin || true
-useradd -m -s /bin/bash joinmarket || true
-passwd -l root
-adduser admin sudo
+
+# Initialize Users
+/bin/bash $TMP_INSTALL_PATH/usr/bin/mynode_initialize_users.sh
 
 # Setup bitcoin user folders
 mkdir -p /home/bitcoin/.mynode/
