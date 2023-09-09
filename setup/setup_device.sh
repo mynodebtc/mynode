@@ -676,28 +676,7 @@ chown -R bitcoin:bitcoin /opt/mynode
 
 
 # Install LND Hub
-LNDHUB_UPGRADE_URL=https://github.com/BlueWallet/LndHub/archive/$LNDHUB_VERSION.tar.gz
-CURRENT=""
-if [ -f $LNDHUB_VERSION_FILE ]; then
-    CURRENT=$(cat $LNDHUB_VERSION_FILE)
-fi
-if [ "$CURRENT" != "$LNDHUB_VERSION" ]; then
-    cd /opt/mynode
-    rm -rf LndHub
-
-    wget $LNDHUB_UPGRADE_URL
-    tar -xzf ${LNDHUB_VERSION}.tar.gz
-    rm -f ${LNDHUB_VERSION}.tar.gz
-    mv LndHub-* LndHub
-    chown -R bitcoin:bitcoin LndHub
-
-    cd LndHub
-    sudo -u bitcoin npm install --only=production
-    sudo -u bitcoin ln -s /home/bitcoin/.lnd/tls.cert tls.cert
-    sudo -u bitcoin ln -s /home/bitcoin/.lnd/data/chain/bitcoin/mainnet/admin.macaroon admin.macaroon
-    echo $LNDHUB_VERSION > $LNDHUB_VERSION_FILE
-fi
-cd ~
+# Skip - no longer default app
 
 # Install Caravan
 # Skip - no longer default app
@@ -955,7 +934,6 @@ touch /home/bitcoin/.mynode/install_vpn
 # Mark docker images for install (on SD so install occurs after drive attach)
 touch /home/bitcoin/.mynode/install_mempool
 touch /home/bitcoin/.mynode/install_btcpayserver
-touch /home/bitcoin/.mynode/install_dojo
 
 # SKIPPING LNBITS - OPTIONAL ALL
 # SKIPPING CKBUNKER - OPTIONAL APP
