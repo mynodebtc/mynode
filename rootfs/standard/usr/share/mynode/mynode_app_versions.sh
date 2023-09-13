@@ -102,7 +102,7 @@ WHIRLPOOL_UPLOAD_FILE_ID="63621e145967f536a562851853bd0990"
 WHIRLPOOL_VERSION_FILE=/home/bitcoin/.mynode/whirlpool_version
 WHIRLPOOL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/whirlpool_version_latest
 
-DOJO_VERSION="v1.19.2"
+DOJO_VERSION="v1.20.0"
 DOJO_VERSION=$(get_app_version "$DOJO_VERSION" "dojo")
 # Find at https://code.samourai.io/dojo/samourai-dojo/-/releases in fingerprints
 DOJO_TAR_HASH="747b2e8ff4c747a221c2de75ffcf28c54ebaa198f258fc372513142189b02360"
