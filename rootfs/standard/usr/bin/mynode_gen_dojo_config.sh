@@ -85,35 +85,58 @@ sed -i 's|INDEXER_IP=.*|INDEXER_IP=172.28.0.1|' /mnt/hdd/mynode/dojo/docker/my-d
 sed -i 's|NODE_ACTIVE_INDEXER=.*|NODE_ACTIVE_INDEXER=local_indexer|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-node.conf.tpl
 
 
-# check if configuration files have been previously created and skip if yes
-if [ -f /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-node.conf ]; then
-  echo "File present - skip docker-node.conf"
+# Update docker-node.conf - can be updated each install / upgrade
+if [ -f /mnt/hdd/mynode/dojo/docker/my-dojo/conf/pw_node_api_key ]; then
+    NODE_API_KEY=$(cat /mnt/hdd/mynode/dojo/docker/my-dojo/conf/pw_node_api_key)
 else
-  # Modify node.conf to enter random generated passwords
-  NODE_API_KEY=$(< /dev/urandom tr -dc 'a-zA-Z0-9' | head -c${1:-64})
-  sed -i 's|NODE_API_KEY=.*|NODE_API_KEY='$NODE_API_KEY'|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-node.conf.tpl
-
-  NODE_ADMIN_KEY=$(< /dev/urandom tr -dc 'a-zA-Z0-9' | head -c${1:-48})
-  sed -i 's|NODE_ADMIN_KEY=.*|NODE_ADMIN_KEY='$NODE_ADMIN_KEY'|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-node.conf.tpl
-
-  NODE_JWT_SECRET=$(< /dev/urandom tr -dc 'a-zA-Z0-9' | head -c${1:-48})
-  sed -i 's|NODE_JWT_SECRET=.*|NODE_JWT_SECRET='$NODE_JWT_SECRET'|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-node.conf.tpl
+    NODE_API_KEY=$(< /dev/urandom tr -dc 'a-zA-Z0-9' | head -c${1:-64})
+    echo $NODE_API_KEY > /mnt/hdd/mynode/dojo/docker/my-dojo/conf/pw_node_api_key
 fi
+sed -i 's|NODE_API_KEY=.*|NODE_API_KEY='$NODE_API_KEY'|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-node.conf.tpl || true
+sed -i 's|NODE_API_KEY=.*|NODE_API_KEY='$NODE_API_KEY'|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-node.conf || true
 
-# check if configuration files have been previously created and skip if yes
-if [ -f /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-mysql.conf ]; then
-  echo "File present - skip docker-mysql.conf"
+if [ -f /mnt/hdd/mynode/dojo/docker/my-dojo/conf/pw_node_admin_key ]; then
+    NODE_ADMIN_KEY=$(cat /mnt/hdd/mynode/dojo/docker/my-dojo/conf/pw_node_admin_key)
 else
-  # Modify mysql.conf to enter random generated passwords
-  MYSQL_ROOT_PASSWORD=$(< /dev/urandom tr -dc 'a-zA-Z0-9' | head -c${1:-64})
-  sed -i 's|MYSQL_ROOT_PASSWORD=.*|MYSQL_ROOT_PASSWORD='$MYSQL_ROOT_PASSWORD'|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-mysql.conf.tpl
-
-  MYSQL_USER=mynode
-  sed -i 's|MYSQL_USER=.*|MYSQL_USER='$MYSQL_USER'|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-mysql.conf.tpl
-
-  MYSQL_PASSWORD=$(< /dev/urandom tr -dc 'a-zA-Z0-9' | head -c${1:-64})
-  sed -i 's|MYSQL_PASSWORD=.*|MYSQL_PASSWORD='$MYSQL_PASSWORD'|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-mysql.conf.tpl
+    NODE_ADMIN_KEY=$(< /dev/urandom tr -dc 'a-zA-Z0-9' | head -c${1:-48})
+    echo $NODE_ADMIN_KEY > /mnt/hdd/mynode/dojo/docker/my-dojo/conf/pw_node_admin_key
 fi
+sed -i 's|NODE_ADMIN_KEY=.*|NODE_ADMIN_KEY='$NODE_ADMIN_KEY'|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-node.conf.tpl || true
+sed -i 's|NODE_ADMIN_KEY=.*|NODE_ADMIN_KEY='$NODE_ADMIN_KEY'|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-node.conf || true
+
+if [ -f /mnt/hdd/mynode/dojo/docker/my-dojo/conf/pw_jwt_secret ]; then
+    NODE_JWT_SECRET=$(cat /mnt/hdd/mynode/dojo/docker/my-dojo/conf/pw_jwt_secret)
+else
+    NODE_JWT_SECRET=$(< /dev/urandom tr -dc 'a-zA-Z0-9' | head -c${1:-48})
+    echo $NODE_JWT_SECRET > /mnt/hdd/mynode/dojo/docker/my-dojo/conf/pw_jwt_secret
+fi
+sed -i 's|NODE_JWT_SECRET=.*|NODE_JWT_SECRET='$NODE_JWT_SECRET'|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-node.conf.tpl || true
+sed -i 's|NODE_JWT_SECRET=.*|NODE_JWT_SECRET='$NODE_JWT_SECRET'|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-node.conf || true
+
+
+# Update docker-mysql.conf - can be updated each install / upgrade
+if [ -f /mnt/hdd/mynode/dojo/docker/my-dojo/conf/pw_mysql_root_password ]; then
+    MYSQL_ROOT_PASSWORD=$(cat /mnt/hdd/mynode/dojo/docker/my-dojo/conf/pw_mysql_root_password)
+else
+    MYSQL_ROOT_PASSWORD=$(< /dev/urandom tr -dc 'a-zA-Z0-9' | head -c${1:-48})
+    echo $MYSQL_ROOT_PASSWORD > /mnt/hdd/mynode/dojo/docker/my-dojo/conf/pw_mysql_root_password
+fi
+sed -i 's|MYSQL_ROOT_PASSWORD=.*|MYSQL_ROOT_PASSWORD='$MYSQL_ROOT_PASSWORD'|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-mysql.conf.tpl || true
+sed -i 's|MYSQL_ROOT_PASSWORD=.*|MYSQL_ROOT_PASSWORD='$MYSQL_ROOT_PASSWORD'|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-mysql.conf || true
+
+MYSQL_USER=mynode
+sed -i 's|MYSQL_USER=.*|MYSQL_USER='$MYSQL_USER'|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-mysql.conf.tpl || true
+sed -i 's|MYSQL_USER=.*|MYSQL_USER='$MYSQL_USER'|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-mysql.conf || true
+
+if [ -f /mnt/hdd/mynode/dojo/docker/my-dojo/conf/pw_mysql_password ]; then
+    MYSQL_PASSWORD=$(cat /mnt/hdd/mynode/dojo/docker/my-dojo/conf/pw_mysql_password)
+else
+    MYSQL_PASSWORD=$(< /dev/urandom tr -dc 'a-zA-Z0-9' | head -c${1:-48})
+    echo $MYSQL_PASSWORD > /mnt/hdd/mynode/dojo/docker/my-dojo/conf/pw_mysql_password
+fi
+sed -i 's|MYSQL_PASSWORD=.*|MYSQL_PASSWORD='$MYSQL_PASSWORD'|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-mysql.conf.tpl || true
+sed -i 's|MYSQL_PASSWORD=.*|MYSQL_PASSWORD='$MYSQL_PASSWORD'|' /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-mysql.conf || true
+
 
 # Modify for Raspbian devices
 if [ $IS_RASPI -eq 1 ] && [ $IS_RASPI4_ARM64 -eq 0 ]; then
