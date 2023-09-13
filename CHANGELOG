@@ -1,3 +1,21 @@
+=== v0.3.20 ===
+- Released: 09/12/23
+- Upgrade Thunderhub to v0.13.23
+- Upgrade BTC RPC Explorer to v3.4.0
+- Upgrade Dojo to v1.20.0
+- Upgrade LNBits to v0.10.9
+- Upgrade Lightning Terminal to v0.10.4
+- Upgrade Loop to v0.26.2
+- Upgrade BTCPay Server to v1.11.2
+- Upgrade Joininbox to v0.8.0
+- Upgrade Caravan to v0.6.2
+- Upgrade NodeJS to v18.x
+- Update Favicon
+- Update Joinmarket and Caravan icons
+- Add Channel Tools for debugging
+- Add pin for homepage Bitcoin details
+- Various bug fixes
+
 === v0.3.19 ===
 - Released: 07/14/23
 - Upgrade LND to v0.16.4
