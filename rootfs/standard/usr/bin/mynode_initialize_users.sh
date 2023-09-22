@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Create any necessary users
+useradd -m -s /bin/bash bitcoin || true
 useradd -m -s /bin/bash pivpn || true
 useradd -m -s /bin/bash joinmarket || true
 useradd -m -s /bin/bash mempool || true
