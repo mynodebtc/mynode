@@ -1102,6 +1102,7 @@ def delete_lnd_data():
     os.system("rm -rf /mnt/hdd/mynode/pool/*")
     os.system("rm -rf /mnt/hdd/mynode/loop/*")
     os.system("rm -rf /mnt/hdd/mynode/lit/*")
+    os.system("rm -rf /mnt/hdd/mynode/faraday/*")
     os.system("rm -rf /tmp/lnd_deposit_address")
     os.system("rm -rf /home/bitcoin/.lnd-admin/credentials.json")
     os.system("rm -rf /mnt/hdd/mynode/settings/.lndpw")
