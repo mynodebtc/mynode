@@ -104,6 +104,13 @@ if ! skip_base_upgrades ; then
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 66F6C87B98EBCFE2   # I2P (R4SAS)
     set -e
 
+    # Remove old node repo to prevent issues during apt-update
+    if [ -f /etc/apt/sources.list.d/nodesource.list ]; then
+        CURRENT_NODE_VERSION=$(cat /etc/apt/sources.list.d/nodesource.list)
+        if [[ "$CURRENT_NODE_VERSION" != *"node_${NODE_JS_VERSION}"* ]]; then
+            echo "" > /etc/apt/sources.list.d/nodesource.list
+        fi
+    fi
 
     # Check for updates (might auto-install all updates later)
     export DEBIAN_FRONTEND=noninteractive
