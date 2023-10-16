@@ -54,7 +54,8 @@ elif [ "$APP" = "tor" ]; then
     apt-get remove -y tor
     apt-get install -y tor
 elif [ "$APP" = "nodejs" ]; then
-    apt-get install -y --reinstall nodejs
+    # This will force a re-install of node + node based apps in the post upgrade script
+    echo "" > /etc/apt/sources.list.d/nodesource.list
 elif [ "$APP" = "ufw" ]; then
     apt-get purge -y ufw
     apt-get install -y ufw
