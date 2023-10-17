@@ -29,12 +29,12 @@ LND_UPGRADE_MANIFEST_URL=https://github.com/lightningnetwork/lnd/releases/downlo
 LND_UPGRADE_MANIFEST_ROASBEEF_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-roasbeef-$LND_VERSION.sig
 LND_UPGRADE_MANIFEST_GUGGERO_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-guggero-$LND_VERSION.sig
 
-LOOP_VERSION="v0.26.2-beta"
+LOOP_VERSION="v0.26.4-beta"
 LOOP_VERSION=$(get_app_version "$LOOP_VERSION" "loop")
 LOOP_VERSION_FILE=/home/bitcoin/.mynode/loop_version
 LOOP_LATEST_VERSION_FILE=/home/bitcoin/.mynode/loop_version_latest
 LOOP_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt
-LOOP_UPGRADE_MANIFEST_SIG_MODIFIER="-bhandras"
+LOOP_UPGRADE_MANIFEST_SIG_MODIFIER=""
 LOOP_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest$LOOP_UPGRADE_MANIFEST_SIG_MODIFIER-$LOOP_VERSION.txt.sig
 
 POOL_VERSION="v0.6.4-beta"
