@@ -16,7 +16,7 @@ function get_app_version()
     echo "$version"
 }
 
-BTC_VERSION="25.0"
+BTC_VERSION="25.1"
 BTC_VERSION=$(get_app_version "$BTC_VERSION" "bitcoin")
 BTC_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version
 BTC_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version_latest
