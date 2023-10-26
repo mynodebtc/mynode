@@ -571,6 +571,7 @@ def index():
             "low_drive_space_error": low_drive_space_error,
             "low_os_drive_space_error": low_os_drive_space_error,
             "usb_error": has_usb_error(),
+            "show_32_bit_warning": show_32_bit_warning(),
             "is_quicksync_disabled": not is_quicksync_enabled(),
             "usb_extras": get_usb_extras(),
             "cpu_usage": get_cpu_usage(),
@@ -674,6 +675,12 @@ def page_toggle_app():
 def page_clear_fsck_error():
     check_logged_in()
     clear_fsck_error()
+    return redirect("/")
+
+@app.route("/clear-32-bit-warning")
+def page_clear_32_bit_warning():
+    check_logged_in()
+    hide_32_bit_warning()
     return redirect("/")
 
 @app.route("/dismiss-expiration-warning")

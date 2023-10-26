@@ -669,6 +669,19 @@ def unset_uploader():
 
 
 #==================================
+# Warning Message Functions
+#==================================
+def show_32_bit_warning():
+    if not os.path.isfile("/tmp/hide_32_bit_warning"):
+        if get_device_type() == "raspi4" and get_device_arch != "aarch64":
+            return True
+    return False
+
+def hide_32_bit_warning():
+    touch("/tmp/hide_32_bit_warning")
+
+
+#==================================
 # QuickSync Functions
 #==================================
 def is_quicksync_enabled():
