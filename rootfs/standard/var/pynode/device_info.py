@@ -673,7 +673,7 @@ def unset_uploader():
 #==================================
 def show_32_bit_warning():
     if not os.path.isfile("/tmp/hide_32_bit_warning"):
-        if get_device_type() == "raspi4" and get_device_arch != "aarch64":
+        if get_device_type() == "raspi4" and get_device_arch() != "aarch64":
             return True
     return False
 
