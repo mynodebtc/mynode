@@ -224,8 +224,10 @@ apt-get -y install hdparm iotop nut obfs4proxy libpq-dev socat btrfs-progs i2pd 
 # Install packages dependent on Debian release
 if [ "$DEBIAN_VERSION" == "bullseye" ]; then
     apt-get -y install wireguard
+elif [ "$DEBIAN_VERSION" == "bookworm" ]; then
+    apt-get -y install wireguard
 elif [ "$DEBIAN_VERSION" == "buster" ]; then
-    $TORIFY apt-get -y -t buster-backports install wireguard
+    apt-get -y -t buster-backports install wireguard
 else
     echo "========================================="
     echo "== UNKNOWN DEBIAN VERSION: $DEBIAN_VERSION"
@@ -259,7 +261,7 @@ apt-get -y install --no-install-recommends expect
 
 # Install nginx
 mkdir -p /var/log/nginx
-$TORIFY apt-get -y install nginx || true
+apt-get -y install nginx || true
 # Install may fail, so we need to edit the default config file and reconfigure
 rm -f /etc/nginx/modules-enabled/50-mod-* || true
 echo "" > /etc/nginx/sites-available/default
