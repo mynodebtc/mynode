@@ -23,9 +23,8 @@
             <div class="info_tile">
                 <div class="info_tile_header">Actions</div>
                 <div class="info_tile_contents">
-                    <!-- TODO: Disable button if JAM not enabled-->
                     <button
-                        class="ui-button ui-widget ui-corner-all mynode_button_small"
+                        class="ui-button ui-widget ui-corner-all mynode_button_small {% if not is_jam_installed or not is_jam_enabled %}ui-state-disabled{% endif %}"
                         onclick="open_app_in_new_tab('{{jam_http_port}}', '{{jam_https_port}}', false, '{{jam_tor_address}}')"
                         {% if not is_jam_installed or not is_jam_enabled %}
                         disabled="disabled" title="JAM must be installed and running"
