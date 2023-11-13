@@ -57,6 +57,19 @@ elif [ "$APP" = "electrs" ]; then
     cargo +$RUST_VERSION build --release
     sudo install -g root -o root target/release/electrs /usr/bin/electrs
     cd ~
+elif [ "$APP" = "wifi" ]; then
+    sudo apt-get update 
+    sudo apt-get install bc module-assistant build-essential dkms git
+    sudo apt-get install linux-headers-$(uname -r)
+
+    mkdir -p /home/admin/download
+    cd /home/admin/download
+    rm -rf cd rtl8821ce
+    git clone https://github.com/tomaspinho/rtl8821ce.git
+    cd rtl8821ce
+    sudo m-a prepare
+    chmod +x dkms-install.sh
+    sudo ./dkms-install.sh
 else
     echo "Dont know what to do for app: $APP"
     exit
