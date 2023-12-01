@@ -125,14 +125,19 @@ if ! skip_base_upgrades ; then
     $TORIFY apt-get -y install libatlas-base-dev libffi-dev libssl-dev python3-bottle
     $TORIFY apt-get -y -qq install apt-transport-https ca-certificates
     $TORIFY apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
-    $TORIFY apt-get -y install openjdk-11-jre libevent-dev ncurses-dev
+    $TORIFY apt-get -y install libevent-dev ncurses-dev
     $TORIFY apt-get -y install libudev-dev libusb-1.0-0-dev python3-venv gunicorn sqlite3 libsqlite3-dev
     $TORIFY apt-get -y install torsocks python3-requests libsystemd-dev libjpeg-dev zlib1g-dev psmisc
     $TORIFY apt-get -y install hexyl libbz2-dev liblzma-dev netcat-openbsd hdparm iotop nut obfs4proxy
-    $TORIFY apt-get -y install libpq-dev socat btrfs-progs i2pd apparmor pass
+    $TORIFY apt-get -y install libpq-dev socat btrfs-progs i2pd apparmor pass gdisk xxd
+
+    # Install Java
+    $TORIFY apt-get -y install default-jre
 
     # Install software specific to debian version
     if [ "$DEBIAN_VERSION" == "bullseye" ]; then
+        apt-get -y install wireguard
+    elif [ "$DEBIAN_VERSION" == "bookworm" ]; then
         apt-get -y install wireguard
     elif [ "$DEBIAN_VERSION" == "buster" ]; then
         $TORIFY apt-get -y -t buster-backports install wireguard
@@ -166,6 +171,7 @@ if ! skip_base_upgrades ; then
     # Install nginx
     mkdir -p /var/log/nginx || true
     $TORIFY apt-get -y install nginx || true
+    $TORIFY apt-get install libnginx-mod-stream || true
     # Install may fail, so we need to edit the default config file and reconfigure
     rm -f /etc/nginx/modules-enabled/50-mod-* || true
     echo "" > /etc/nginx/sites-available/default
