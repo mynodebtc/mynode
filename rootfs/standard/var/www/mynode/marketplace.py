@@ -30,7 +30,7 @@ def marketplace_page():
 
     # Load page
     templateData = {
-        "title": "MyNode Marketplace",
+        "title": "Marketplace",
         "ui_settings": read_ui_settings(),
         "load_time": t2-t1,
         "product_key_skipped": skipped_product_key(),
@@ -47,7 +47,7 @@ def marketplace_add_app_page():
     # Load page (no form submission)
     if request.method == 'GET':
         templateData = {
-            "title": "MyNode - Add Community Application",
+            "title": "Add Community Application",
             "ui_settings": read_ui_settings(),
             "product_key_skipped": skipped_product_key()
         }
@@ -114,7 +114,7 @@ def marketplace_app_page(app_name):
 
     # Load page
     templateData = {
-        "title": "MyNode - " + app["name"],
+        "title": app["name"],
         "ui_settings": read_ui_settings(),
         "product_key_skipped": skipped_product_key(),
         "app_status": app_status,

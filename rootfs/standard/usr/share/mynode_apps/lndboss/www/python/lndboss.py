@@ -22,7 +22,7 @@ def lndboss_page():
 
     # Load page
     templateData = {
-        "title": "MyNode - " + app["name"],
+        "title": app["name"],
         "ui_settings": read_ui_settings(),
         "app_status": app_status,
         "app_status_color": app_status_color,

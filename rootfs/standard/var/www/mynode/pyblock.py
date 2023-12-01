@@ -16,7 +16,7 @@ def pyblock_page():
 
     # Load page
     templateData = {
-        "title": "MyNode PyBlock",
+        "title": "PyBlock",
         "ui_settings": read_ui_settings(),
     }
     return render_template('pyblock.html', **templateData)

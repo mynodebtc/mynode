@@ -37,7 +37,7 @@ def page_vpn_info():
         status = "Running"
 
     templateData = {
-        "title": "MyNode VPN Info",
+        "title": "VPN Info",
         "status": status,
         "vpn_file_exists": vpn_file_exists,
         "port_forwarded": port_forwarded,
