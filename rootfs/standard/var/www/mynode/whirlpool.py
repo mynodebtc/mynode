@@ -34,7 +34,7 @@ def whirlpool_page():
 
     # Load page
     templateData = {
-        "title": "MyNode Whirlpool",
+        "title": "Whirlpool",
         "ui_settings": read_ui_settings(),
         "local_ip": get_local_ip(),
         "whirlpool_onion_url": get_onion_url_for_service("whirlpool"),

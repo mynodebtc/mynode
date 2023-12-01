@@ -16,7 +16,7 @@ def caravan_page():
 
     # Load page
     templateData = {
-        "title": "MyNode Caravan",
+        "title": "Caravan",
         "local_ip": get_local_ip(),
         "ui_settings": read_ui_settings()
     }

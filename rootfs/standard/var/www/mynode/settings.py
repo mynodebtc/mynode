@@ -53,7 +53,7 @@ def page_settings():
     logout_time_days, logout_time_hours = get_flask_session_timeout()
 
     templateData = {
-        "title": "MyNode Settings",
+        "title": "Settings",
         "apps": get_all_applications(order_by="alphabetic"),
         "password_message": "",
         "current_version": current_version,
@@ -181,7 +181,7 @@ def page_status():
     running_containers = get_docker_running_containers()
 
     templateData = {
-        "title": "MyNode Status",
+        "title": "Status",
         "password_message": "",
         "current_version": current_version,
         "latest_version": latest_version,
@@ -347,7 +347,7 @@ def upgrade_page():
 
     # Display wait page
     templateData = {
-        "title": "MyNode Upgrade",
+        "title": "Upgrading",
         "header_text": "Upgrading",
         "subheader_text": "This may take a while...",
         "show_upgrade_log": True,
@@ -367,7 +367,7 @@ def upgrade_beta_page():
 
     # Display wait page
     templateData = {
-        "title": "MyNode Upgrade",
+        "title": "Upgrading",
         "header_text": "Upgrading",
         "subheader_text": "This may take a while...",
         "show_upgrade_log": True,
@@ -401,7 +401,7 @@ def upgrade_page_test():
 
     # Display wait page
     templateData = {
-        "title": "MyNode Upgrade",
+        "title": "Upgrading",
         "header_text": "Upgrading",
         "subheader_text": "This may take a while...",
         "show_upgrade_log": True,
@@ -487,7 +487,7 @@ def shutdown_device_page():
 
     # Wait until device is restarted
     templateData = {
-        "title": "MyNode Shutdown",
+        "title": "Shutting Down",
         "header_text": "Shutting down...",
         "ui_settings": read_ui_settings()
     }
@@ -527,7 +527,7 @@ def open_clone_tool_page():
 
     # Display wait page
     templateData = {
-        "title": "MyNode Reboot",
+        "title": "Rebooting",
         "header_text": "Restarting",
         "subheader_text": "Restarting to Open Clone Tool....",
         "ui_settings": read_ui_settings()
@@ -924,7 +924,7 @@ def reinstall_app_page():
 
     # Display wait page
     templateData = {
-        "title": "MyNode Install",
+        "title": "Installing",
         "header_text": "Installing",
         "subheader_text": "This may take a while...",
         "show_upgrade_log": True,
@@ -999,7 +999,7 @@ def install_custom_bitcoin_page():
 
     # Display wait page
     templateData = {
-        "title": "MyNode Install",
+        "title": "Installing",
         "header_text": "Installing",
         "subheader_text": "This may take a while...",
         "show_upgrade_log": True,

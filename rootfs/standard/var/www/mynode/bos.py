@@ -16,7 +16,7 @@ def bos_page():
 
     # Load page
     templateData = {
-        "title": "MyNode Balance of Satoshis",
+        "title": "Balance of Satoshis",
         "ui_settings": read_ui_settings(),
     }
     return render_template('bos.html', **templateData)

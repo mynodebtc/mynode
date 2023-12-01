@@ -29,7 +29,7 @@ def premium_plus_page():
     
     # Load page
     templateData = {
-        "title": "MyNode Premium+",
+        "title": "Premium+",
         "product_key_skipped": skipped_product_key(),
         "has_access_token": has_premium_plus_token(),
         "access_token": get_premium_plus_token(),

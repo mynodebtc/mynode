@@ -20,7 +20,7 @@ def manage_apps_page():
     t2 = get_system_time_in_ms()
     # Load page
     templateData = {
-        "title": "MyNode Manage Apps",
+        "title": "Manage Apps",
         "ui_settings": read_ui_settings(),
         "load_time": t2-t1,
         "product_key_skipped": skipped_product_key(),
@@ -74,7 +74,7 @@ def customize_app_versions_page():
 
     # Load page
     templateData = {
-        "title": "MyNode Customize App Versions",
+        "title": "Customize App Versions",
         "ui_settings": read_ui_settings(),
         "product_key_skipped": skipped_product_key(),
         "apps": apps,
