@@ -514,7 +514,7 @@
             " - Remote Static Channel Backup (SCB) file backups",
             " - Lightning Watchtower Monitors Node",
             " - View Node Status on mynodebtc.com",
-            " - myNode Support"
+            " - MyNode Support"
         ],
         "category": "networking",
         "latest_version": "v1.0",
@@ -538,7 +538,7 @@
         "author": {"name": "Tor", "link": "https://www.torproject.org/"},
         "website": {"name": "GitHub", "link": "https://github.com/TheTorProject"},
         "description": [
-            "Tor services are avilable for remotely connecting and using myNode services and applications. It can provide access to web-based wallets and well as support remote connections to LND and Bitcoin directly.",
+            "Tor services are avilable for remotely connecting and using MyNode services and applications. It can provide access to web-based wallets and well as support remote connections to LND and Bitcoin directly.",
             "Tor Mission - To advance human rights and freedoms by creating and deploying free and open source anonymity and privacy technologies, supporting their unrestricted availability and use, and furthering their scientific and popular understanding."
         ],
         "category": "networking",
@@ -559,7 +559,7 @@
         "name": "VPN",
         "short_name": "vpn",
         "short_description": "Private Connections",
-        "description": "VPN services on myNode allow simple, remote access to your node no matter where are you are! When VPN is enabled, a server runs on your device which allows secure connections between remote devices and your node using OpenVPN. This not only allows access to your node, but also provides additional security and privacy by encrypting data being sent and received by your phone, tablet, or laptop and hiding it from the local network you are connected to.",
+        "description": "VPN services on MyNode allow simple, remote access to your node no matter where are you are! When VPN is enabled, a server runs on your device which allows secure connections between remote devices and your node using OpenVPN. This not only allows access to your node, but also provides additional security and privacy by encrypting data being sent and received by your phone, tablet, or laptop and hiding it from the local network you are connected to.",
         "category": "networking",
         "latest_version": "v1.0",
         "app_tile_button_text": "Info",

@@ -14,8 +14,8 @@
                         window.location.href="/settings/upgrade"
                     }
                     openConfirmDialog("confirm-dialog", 
-                                      "Upgrade myNode",
-                                      "<p>This will upgrade your myNode to the latest version and reboot your device.</p>" +
+                                      "Upgrade MyNode",
+                                      "<p>This will upgrade your MyNode to the latest version and reboot your device.</p>" +
                                       "<p>Would you still like to upgrade your device?</p>",
                                       okFunction)
                 });
@@ -25,8 +25,8 @@
                         window.location.href="/settings/upgrade-beta"
                     }
                     openConfirmDialog("confirm-dialog", 
-                                      "Upgrade myNode",
-                                      "<p>This will upgrade your myNode to the latest beta version and reboot your device.</p>" +
+                                      "Upgrade MyNode",
+                                      "<p>This will upgrade your MyNode to the latest beta version and reboot your device.</p>" +
                                       "<p>Would you still like to upgrade your device?</p>",
                                       okFunction)
                 });
@@ -722,7 +722,7 @@
         <br/>
         <div class="settings_block">
             <a id="mynode"></a>
-            <div class="settings_block_header">myNode</div>
+            <div class="settings_block_header">MyNode</div>
             
             <div class="settings_block_subheader">Version</div>
             <table class="info_table">
@@ -744,7 +744,7 @@
                 <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Upgrade</button>
                 <button id="upgrade_changelog" class="ui-button ui-widget ui-corner-all settings_button">See Changes</button>
                 {% if product_key_skipped %}
-                    <p>Upgrade to myNode Premium to get one-click updates!</p>
+                    <p>Upgrade to MyNode Premium to get one-click updates!</p>
                     <p>For manual upgrades, see our <a target="_blank" href="https://mynodebtc.github.io/device/upgrading-device.html">upgrade guide</a>!</p>
                 {% endif %}
             {% elif not product_key_skipped and upgrade_error %}
@@ -794,7 +794,7 @@
 
             <div class="settings_block_subheader">Change Password</div>
             {{password_message}}
-            This will change the password you use in the myNode GUI, the password for SSH, and the password for apps like RTL.
+            This will change the password you use in the MyNode GUI, the password for SSH, and the password for apps like RTL.
             <br/><br/>
             <form action="/settings/password" method="POST">
                 <table class="info_table">
@@ -826,7 +826,7 @@
 
             <div class="settings_block_subheader">Manage Applications</div>
             You can view application information and manage app upgrades on the Manage page. You can also customize and override the
-            application versions supported by myNode.
+            application versions supported by MyNode.
             <br/>
             <a href="/apps" class="ui-button ui-widget ui-corner-all settings_button">Manage</a>
             <a href="/apps/customize-app-versions" class="ui-button ui-widget ui-corner-all settings_button">Customize Application Versions</a>
@@ -879,7 +879,7 @@
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Automatic Logout</div>
-            Your myNode will logout automatically after a period of inactivity. It can be changed below.
+            Your MyNode will logout automatically after a period of inactivity. It can be changed below.
             <br/><br/>
 
             <form action="/settings/logout_time" method="POST">
@@ -903,7 +903,7 @@
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Force HTTPS</div>
-            You can force the myNode web interface to only use HTTPS.
+            You can force the MyNode web interface to only use HTTPS.
             <br/><br/>
             <label class="switch">
                 <input type="checkbox" id="https_forced_checkbox" {% if is_https_forced %}checked{% endif %}>
@@ -1140,7 +1140,7 @@
             <div class="settings_block_header">BTC RPC Explorer</div>
             
             <div class="settings_block_subheader">Access Token</div>
-            To improve security, a token is required to access BTC RPC Explorer. This restricts access to people who have logged into myNode and navigated to
+            To improve security, a token is required to access BTC RPC Explorer. This restricts access to people who have logged into MyNode and navigated to
             BTC RPC Explorer via the interface. To allow access to all users on the network, you can disable requiring the token. This is less secure.
             <br/><br/>
             <label class="switch">
@@ -1324,7 +1324,7 @@
                 <div class="divider"></div>
 
                 <div class="settings_block_subheader">QuickSync Rates</div>
-                You can control the background upload and download rates for QuickSync. This helps the myNode network.
+                You can control the background upload and download rates for QuickSync. This helps the MyNode network.
                 <br/>
 
                 <form action="/settings/quicksync_rates" method="POST">
@@ -1364,7 +1364,7 @@
             <div class="settings_block_header">Advanced</div>
 
             <div class="settings_block_subheader">Download Debug Logs</div>
-            This will download all recent logs from your myNode. This can be helpful for debugging issues.
+            This will download all recent logs from your MyNode. This can be helpful for debugging issues.
             <br/>
             It may take about one minute to gather and download the logs.
             <br/>
@@ -1388,7 +1388,7 @@
             <div class="divider"></div>
 
             <div class="settings_block_subheader">HTTPS Certificates</div>
-            This will download or regenerate your HTTPS certificates for the myNode web interface.
+            This will download or regenerate your HTTPS certificates for the MyNode web interface.
             <br/>
             <a href="/settings/mynode_web.cert" class="ui-button ui-widget ui-corner-all settings_button">Download</a>
             <a href="/settings/regen-https-certs" class="ui-button ui-widget ui-corner-all settings_button">Regenerate</a>
@@ -1511,7 +1511,7 @@
 
             {% if not product_key_skipped %}
                 <div class="settings_block_subheader">Install Beta</div>
-                You can install beta releases of myNode software to help test. These may be less stable.
+                You can install beta releases of MyNode software to help test. These may be less stable.
                 <br/><br/>
                 <table class="info_table">
                     <tr>
@@ -1528,7 +1528,7 @@
                 {% if current_beta_version != latest_beta_version and latest_beta_version != "" %}
                     <button id="upgrade-beta" class="ui-button ui-widget ui-corner-all settings_button">Install Beta</button>
                     {% if product_key_skipped %}
-                        <p>Upgrade to myNode Premium to get one-click updates!</p>
+                        <p>Upgrade to MyNode Premium to get one-click updates!</p>
                         <p>For manual upgrades, see our <a target="_blank" href="https://mynodebtc.github.io/device/upgrading-device.html">upgrade guide</a>!</p>
                     {% endif %}
                 {% elif upgrade_error %}
@@ -1597,9 +1597,9 @@
             <form id="delete_lnd_wallet_form" name="delete_lnd_wallet_form" action="/settings/delete-lnd-wallet" method="POST">
                 <p class="red_text">Attention! This will delete your wallet and all remaining bitcoin!</p>
                 <p>Please ensure you have closed all channels and withdrawn all bitcoin. If you still want to delete your wallet,
-                    enter the admin password for your myNode.</p>
+                    enter the admin password for your MyNode.</p>
                 <p>This will restart your device.</p>
-                <p>myNode is not responsible for any lost assets.</p>
+                <p>MyNode is not responsible for any lost assets.</p>
                 <b>Password:</b>
                 <br/>
                 <input type="password" name="password_lnd_delete" id="password_lnd_delete" value="" class="text ui-widget-content ui-corner-all">

@@ -6,14 +6,14 @@ proc checkPartitionForExistingMyNodeFs {partition} {
         return 0
     }
     if { [file exists /mnt/hdd/.mynode] } {
-        puts "Found existing myNode FS on ${partition}"
+        puts "Found existing MyNode FS on ${partition}"
         runCommand echo /dev/${partition} > /tmp/.mynode_drive
         return 1
     }
 
     runCommand umount /mnt/hdd
 
-    puts "No myNode filesystem on existing partition ${partition}"
+    puts "No MyNode filesystem on existing partition ${partition}"
     return 0
 }
 
@@ -73,7 +73,7 @@ proc findAllPartitionsForBlockDevices {blockDevices partitionsName} {
 
 proc createMyNodeFsOnBlockDevice {blockDevice} {
     if [exec cat /sys/block/$blockDevice/ro] {
-        puts "Cannot create myNode partition on ${blockDevice} because it is read-only"
+        puts "Cannot create MyNode partition on ${blockDevice} because it is read-only"
         return 0
     }
 
@@ -100,9 +100,9 @@ proc createMyNodeFsOnBlockDevice {blockDevice} {
 
         puts "Formatting new partition ${blockPartition}"
         if [file exists "/tmp/format_filesystem_btrfs"] {
-            runCommand mkfs.btrfs -f -L myNode /dev/${blockPartition}
+            runCommand mkfs.btrfs -f -L MyNode /dev/${blockPartition}
         } else {
-            runCommand mkfs.ext4 -F -L myNode /dev/${blockPartition}
+            runCommand mkfs.ext4 -F -L MyNode /dev/${blockPartition}
         }
 
         #runCommand mount /dev/${blockPartition} /mnt/hdd -o errors=continue
@@ -124,7 +124,7 @@ proc createMyNodeFsOrDie {blockDevices} {
         }
     }
 
-    fatal "Cannot find a suitable drive for storing myNode files"
+    fatal "Cannot find a suitable drive for storing MyNode files"
 }
 
 proc runCommand {args} {

@@ -1,8 +1,8 @@
-# myNode Install Docker Images
+# MyNode Install Docker Images
 # /etc/systemd/system/docker_images.service
 
 [Unit]
-Description=myNode Install Docker Images
+Description=MyNode Install Docker Images
 Wants=mynode.service
 After=mynode.service
 

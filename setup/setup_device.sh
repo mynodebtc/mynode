@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ###
-### Setup myNode (all devices)
+### Setup MyNode (all devices)
 ### Run with "sudo"
 ###
 
@@ -186,9 +186,9 @@ chown bitcoin:bitcoin /home/bitcoin
 chown -R bitcoin:bitcoin /home/bitcoin/.mynode/
 
 # Update host info
-echo "myNode" > /etc/hostname
-sed -i 's/rock64/myNode/g' /etc/hosts
-sed -i 's/rockpi4-b/myNode/g' /etc/hosts
+echo "mynode" > /etc/hostname
+sed -i 's/rock64/mynode/g' /etc/hosts
+sed -i 's/rockpi4-b/mynode/g' /etc/hosts
 
 # Update sources
 apt-get -y update --allow-releaseinfo-change
@@ -1019,7 +1019,7 @@ mkdir -p /opt/download
 # Clean apt-cache
 apt-get clean
 
-# Setup myNode Startup Script
+# Setup MyNode Startup Script
 systemctl daemon-reload
 systemctl enable check_in
 systemctl enable premium_plus_connect

@@ -1,8 +1,8 @@
-# myNode Bandwidth Management
+# MyNode Bandwidth Management
 # /etc/systemd/system/bandwidth.service
 
 [Unit]
-Description=myNode Bandwidth Management
+Description=MyNode Bandwidth Management
 Wants=quicksync.service
 After=quicksync.service
 

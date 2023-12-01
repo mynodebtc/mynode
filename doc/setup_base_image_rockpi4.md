@@ -18,8 +18,8 @@
 4. Set hostname
 
    ```sh
-   echo "myNode" | sudo tee /etc/hostname
-   sudo sed -i 's/rockpi4-b/myNode/g' /etc/hosts
+   echo "mynode" | sudo tee /etc/hostname
+   sudo sed -i 's/rockpi4-b/mynode/g' /etc/hosts
    # OR armbian-config -> Personal -> Hostname
    ```
 

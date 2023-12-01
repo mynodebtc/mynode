@@ -15,6 +15,7 @@ DAYS=10000
 
 mkdir -p $OUTPUT_DIR
 mkdir -p $HDD_DIR
+# Domain needs to remain "myNode.local" or new certs will be generated
 domain=myNode.local
 commonname=myNode.local
 
@@ -38,15 +39,15 @@ fi
  
 # Change to your company details
 country=US
-state=myNode
-locality=myNode
-organization=myNode
-organizationalunit=myNode
+state=MyNode
+locality=MyNode
+organization=MyNode
+organizationalunit=MyNode
 email=satoshi.nakamoto@example.com
 
 # Create Certificate
 echo "Creating Certificate"
-cat > /tmp/cert_req.conf <<DELIM
+cat > /tmp/cert_req_electrs.conf <<DELIM
 [req]
 prompt             = no
 default_bits       = 2048
@@ -75,7 +76,7 @@ DNS.5 = $LOCAL_IP_ADDR
 DNS.6 = $TOR
 DELIM
 
-openssl req -x509 -nodes -days $DAYS -newkey rsa:2048 -keyout $OUTPUT_DIR/$domain.key -out $OUTPUT_DIR/$domain.crt -config /tmp/cert_req.conf
+openssl req -x509 -nodes -days $DAYS -newkey rsa:2048 -keyout $OUTPUT_DIR/$domain.key -out $OUTPUT_DIR/$domain.crt -config /tmp/cert_req_electrs.conf
 
 echo "Creating PEM"
 cat $OUTPUT_DIR/$domain.key > $OUTPUT_DIR/$domain.pem

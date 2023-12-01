@@ -1,8 +1,8 @@
-# myNode background service
+# MyNode background service
 # /etc/systemd/system/background.service
 
 [Unit]
-Description=myNode Background Checks
+Description=MyNode Background Checks
 After=network.target
 
 [Service]

@@ -1,8 +1,8 @@
-# myNode check in service
+# MyNode check in service
 # /etc/systemd/system/check_in.service
 
 [Unit]
-Description=myNode Check In
+Description=MyNode Check In
 Wants=network-online.target
 After=network-online.target
 

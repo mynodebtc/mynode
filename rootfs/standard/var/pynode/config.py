@@ -1,6 +1,6 @@
 CONFIG = {}
 
-# myNode variables
+# MyNode variables
 CHECKIN_URL = "https://www.mynodebtc.com/device_api/check_in.php"
 
 # Bitcoin Variables

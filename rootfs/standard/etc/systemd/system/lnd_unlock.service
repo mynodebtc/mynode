@@ -1,4 +1,4 @@
-# myNode Unlock LND
+# MyNode Unlock LND
 # /etc/systemd/system/lnd_unlock.service
 
 [Unit]

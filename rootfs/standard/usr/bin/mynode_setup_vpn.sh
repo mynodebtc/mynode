@@ -314,7 +314,7 @@ install_dependent_packages() {
     #    done
     #fi
 
-    # myNode - Install all dependent packages without GUI
+    # MyNode - Install all dependent packages without GUI
     for i in "${argArray1[@]}"; do
         echo -n ":::    Checking for $i..."
         $SUDO package_check_install "${i}" &> /dev/null
@@ -332,7 +332,7 @@ unattendedUpgrades() {
     #    UNATTUPG=""
     #fi
 
-    # myNode will manage upgrades since this would make some OS assumptions
+    # MyNode will manage upgrades since this would make some OS assumptions
     UNATTUPG=""
 }
 
@@ -631,7 +631,7 @@ EOF
 }
 
 confUnattendedUpgrades() {
-    # myNode Removed
+    # MyNode Removed
     echo "skipped confUnattendedUpgrades"
 }
 

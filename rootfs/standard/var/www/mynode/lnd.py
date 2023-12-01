@@ -73,7 +73,7 @@ def page_lnd():
 
     if not lnd_wallet_exists():
         templateData = {
-            "title": "myNode Lightning Wallet",
+            "title": "MyNode Lightning Wallet",
             "wallet_exists": wallet_exists,
             "wallet_logged_in": wallet_logged_in,
             "lnd_has_error": lnd_has_error,
@@ -88,7 +88,7 @@ def page_lnd():
 
     if not is_lnd_logged_in():
         templateData = {
-            "title": "myNode Lightning Wallet",
+            "title": "MyNode Lightning Wallet",
             "wallet_exists": wallet_exists,
             "wallet_logged_in": wallet_logged_in,
             "lnd_has_error": lnd_has_error,
@@ -108,7 +108,7 @@ def page_lnd():
         # If lightning data is still None, show message
         if data == None:
             templateData = {
-                "title": "myNode Lightning Wallet",
+                "title": "MyNode Lightning Wallet",
                 "wallet_exists": wallet_exists,
                 "wallet_logged_in": False,
                 "lnd_has_error": lnd_has_error,
@@ -168,7 +168,7 @@ def page_lnd():
 
     except Exception as e:
         templateData = {
-            "title": "myNode Lightning Status",
+            "title": "MyNode Lightning Status",
             "header": "Lightning Status",
             #"message": str(e),
             "message": traceback.format_exc(),
@@ -181,7 +181,7 @@ def page_lnd():
         refresh_rate = 15
 
     templateData = {
-        "title": "myNode Lightning Status",
+        "title": "MyNode Lightning Status",
         "is_community_edition": is_community_edition(),
         "wallet_exists": wallet_exists,
         "wallet_logged_in": wallet_logged_in,
@@ -266,7 +266,7 @@ def page_lnd_create_wallet():
         session['seed'] = seed.strip()
     except:
         templateData = {
-            "title": "myNode Lightning Wallet",
+            "title": "MyNode Lightning Wallet",
             "show_lightning_back_button": True,
             "header": "Lightning Status",
             "message": Markup("Waiting on Lightning...<br/>Please try again in a minute."),
@@ -275,7 +275,7 @@ def page_lnd_create_wallet():
         return render_template('error.html', **templateData)
 
     templateData = {
-        "title": "myNode Lightning Wallet",
+        "title": "MyNode Lightning Wallet",
         "seed": seed,
         "ui_settings": read_ui_settings()
     }
@@ -288,7 +288,7 @@ def page_lnd_create_wallet_with_seed():
     # Load page
     if request.method == 'GET':
         templateData = {
-            "title": "myNode Lightning Wallet",
+            "title": "MyNode Lightning Wallet",
             "ui_settings": read_ui_settings()
         }
         return render_template('lnd_wallet_create_with_seed.html', **templateData)
@@ -321,7 +321,7 @@ def page_lnd_create_wallet_confirm():
     # Load page
     if request.method == 'GET':
         templateData = {
-            "title": "myNode Lightning Wallet",
+            "title": "MyNode Lightning Wallet",
             "ui_settings": read_ui_settings()
         }
         return render_template('lnd_wallet_create_confirm.html', **templateData)
@@ -423,7 +423,7 @@ def page_lnd_pair_wallet():
 
     # Show lndconnect page
     templateData = {
-        "title": "myNode Lightning Wallet",
+        "title": "MyNode Lightning Wallet",
         "dots_img": get_image_src_b64("/var/www/mynode/static/images/dots.png"),
         "pairs": pairs,
         "ui_settings": read_ui_settings()
@@ -467,7 +467,7 @@ def lnd_reset_config_page():
 
     # Wait until device is restarted
     templateData = {
-        "title": "myNode Reboot",
+        "title": "MyNode Reboot",
         "header_text": "Restarting",
         "subheader_text": "This will take several minutes...",
         "ui_settings": read_ui_settings()
@@ -493,7 +493,7 @@ def lnd_config_page():
 
         # Wait until device is restarted
         templateData = {
-            "title": "myNode Reboot",
+            "title": "MyNode Reboot",
             "header_text": "Restarting",
             "subheader_text": "This will take several minutes...",
             "ui_settings": read_ui_settings()
@@ -505,7 +505,7 @@ def lnd_config_page():
         lnd_config = get_lnd_config()
 
     templateData = {
-        "title": "myNode LND Config",
+        "title": "MyNode LND Config",
         "using_lnd_custom_config": using_lnd_custom_config(),
         "lnd_config": lnd_config,
         "extra_lnd_config": get_lnd_extra_config(),
@@ -551,7 +551,7 @@ def page_lnd_watchtower():
     watchtower_client_policy = get_lightning_watchtower_client_policy() 
 
     templateData = {
-        "title": "myNode Lightning Watchtower",
+        "title": "MyNode Lightning Watchtower",
         "watchtower_server_enabled": is_watchtower_server_enabled(),
         "watchtower_server_uri": Markup(watchtower_server_info["watchtower_server_uri"]),
         "watchtower_client_enabled": is_watchtower_client_enabled(),

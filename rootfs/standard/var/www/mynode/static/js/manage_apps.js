@@ -82,7 +82,7 @@ function get_custom_enable_message(short_name) {
     message = "";
     if (short_name == "electrs") {
         message = "Enabling Electrum Server will take several days to fully sync for \
-                   the first time. Your myNode may run slowly during this period.";
+                   the first time. Your MyNode may run slowly during this period.";
     } else if (short_name == "vpn") {
         message = "Enabling VPN will set your IP to a static IP rather than a dynamic one via DHCP. \
                    The initial setup may take about an hour.";

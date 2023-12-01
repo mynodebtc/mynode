@@ -6,7 +6,7 @@ drive=""
 drive=$(cat /tmp/.mynode_drive)
 while [ -z "$drive" ]; do
     sleep 10
-    echo "Waiting on myNode Drive..."
+    echo "Waiting on MyNode Drive..."
     drive=$(cat /tmp/.mynode_drive)
 done
 

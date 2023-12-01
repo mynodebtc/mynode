@@ -27,7 +27,7 @@ fi
 
 # Setup Initial LND Node Name
 if [ ! -f /mnt/hdd/mynode/settings/.lndalias ]; then
-    echo "mynodebtc.com [myNode]" > /mnt/hdd/mynode/settings/.lndalias
+    echo "mynodebtc.com [MyNode]" > /mnt/hdd/mynode/settings/.lndalias
 fi
 
 # Generate LND Config

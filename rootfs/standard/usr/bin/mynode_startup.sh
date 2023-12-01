@@ -26,10 +26,10 @@ if settings_file_exists "skip_backup_dns_servers" ; then
     sed -i "s/^.*append domain-name-servers/#append domain-name-servers/g" /etc/dhcp/dhclient.conf || true
 else
     needDns=0
-    grep "Added at myNode startup" /etc/resolv.conf || needDns=1
+    grep "Added at MyNode startup" /etc/resolv.conf || needDns=1
     if [ $needDns = 1 ]; then
         echo '' >> /etc/resolv.conf
-        echo '# Added at myNode startup' >> /etc/resolv.conf
+        echo '# Added at MyNode startup' >> /etc/resolv.conf
         echo 'nameserver 1.1.1.1' >> /etc/resolv.conf
         echo 'nameserver 208.67.222.222' >> /etc/resolv.conf
         echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
@@ -133,7 +133,7 @@ dphys-swapfile uninstall || true
 umount /mnt/hdd || true
 
 
-# Generate myNode serial number
+# Generate MyNode serial number
 while [ ! -f /home/bitcoin/.mynode/mynode_serial ] || [ ! -s /home/bitcoin/.mynode/mynode_serial ]
 do
     # Generate random serial for backup devices that don't have serial numbers

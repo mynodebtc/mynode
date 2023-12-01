@@ -67,7 +67,7 @@ def bitcoin_status_page():
 
     except Exception as e:
         templateData = {
-            "title": "myNode Bitcoin Error",
+            "title": "MyNode Bitcoin Error",
             "header": "Bitcoin Status",
             "message": Markup("Error communicating with bitcoin. Node may be busy syncing.<br/><br/>{}".format(str(e))),
             "ui_settings": read_ui_settings()
@@ -76,7 +76,7 @@ def bitcoin_status_page():
 
 
     templateData = {
-        "title": "myNode Bitcoin Status",
+        "title": "MyNode Bitcoin Status",
         "blocks": blocks,
         "peers": peers,
         "addresses": addresses,
@@ -153,7 +153,7 @@ def bitcoin_reset_config_page():
 
     # Wait until device is restarted
     templateData = {
-        "title": "myNode Reboot",
+        "title": "MyNode Reboot",
         "header_text": "Restarting",
         "subheader_text": "This will take several minutes...",
         "ui_settings": read_ui_settings()
@@ -179,7 +179,7 @@ def bitcoin_config_page():
 
         # Wait until device is restarted
         templateData = {
-            "title": "myNode Reboot",
+            "title": "MyNode Reboot",
             "header_text": "Restarting",
             "subheader_text": "This will take several minutes...",
             "ui_settings": read_ui_settings()
@@ -191,7 +191,7 @@ def bitcoin_config_page():
         bitcoin_config = get_bitcoin_config()
 
     templateData = {
-        "title": "myNode Bitcoin Config",
+        "title": "MyNode Bitcoin Config",
         "using_bitcoin_custom_config": using_bitcoin_custom_config(),
         "extra_bitcoin_config": get_bitcoin_extra_config(),
         "bitcoin_config": bitcoin_config,
@@ -205,7 +205,7 @@ def bitcoincli():
 
     # Load page
     templateData = {
-        "title": "myNode Bitcoin Terminal",
+        "title": "MyNode Bitcoin Terminal",
         "ui_settings": read_ui_settings()
     }
     return render_template('bitcoin_cli.html', **templateData)
@@ -232,7 +232,7 @@ def bitcoin_toggle_bip37():
 
     # Wait until device is restarted
     templateData = {
-        "title": "myNode Reboot",
+        "title": "MyNode Reboot",
         "header_text": "Restarting",
         "subheader_text": "This will take several minutes...",
         "ui_settings": read_ui_settings()
@@ -252,7 +252,7 @@ def bitcoin_toggle_bip157():
 
     # Wait until device is restarted
     templateData = {
-        "title": "myNode Reboot",
+        "title": "MyNode Reboot",
         "header_text": "Restarting",
         "subheader_text": "This will take several minutes...",
         "ui_settings": read_ui_settings()
@@ -274,7 +274,7 @@ def bitcoin_toggle_bip158():
 
     # Wait until device is restarted
     templateData = {
-        "title": "myNode Reboot",
+        "title": "MyNode Reboot",
         "header_text": "Restarting",
         "subheader_text": "This will take several minutes...",
         "ui_settings": read_ui_settings()

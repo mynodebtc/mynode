@@ -428,7 +428,7 @@ def get_swap_size():
     return to_string( get_file_contents("/mnt/hdd/mynode/settings/swap_size") )
 
 #==================================
-# myNode Status
+# MyNode Status
 #==================================
 STATE_DRIVE_MISSING =         "drive_missing"
 STATE_DRIVE_CONFIRM_FORMAT =  "drive_format_confirm"
@@ -478,7 +478,7 @@ def get_mynode_status():
     return status
 
 #==================================
-# myNode Clone Tool
+# MyNode Clone Tool
 #==================================
 CLONE_STATE_DETECTING       = "detecting"
 CLONE_STATE_ERROR           = "error"

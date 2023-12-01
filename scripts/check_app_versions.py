@@ -147,12 +147,12 @@ def get_app_version_data_list(apps):
 
 def check_app_versions(include_all_apps):
     data = get_app_version_data_list(priority_apps)
-    table = tabulate(data, headers=['Priority App', 'myNode Version', 'Latest Version', 'Needs Update'], tablefmt='pretty')
+    table = tabulate(data, headers=['Priority App', 'MyNode Version', 'Latest Version', 'Needs Update'], tablefmt='pretty')
     print(table)
 
     if include_all_apps:
         data = get_app_version_data_list(other_apps)
-        table = tabulate(data, headers=['App', 'myNode Version', 'Latest Version', 'Needs Update'], tablefmt='pretty')
+        table = tabulate(data, headers=['App', 'MyNode Version', 'Latest Version', 'Needs Update'], tablefmt='pretty')
         print(table)
     else:
         print("\n\n***Skipping optional apps. Include with '-a'.***\n")

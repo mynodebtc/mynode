@@ -1,8 +1,8 @@
-# myNode Seed Bitcoin Peers
+# MyNode Seed Bitcoin Peers
 # /etc/systemd/system/seed_bitcoin_peers.service
 
 [Unit]
-Description=myNode Add Seed Peers
+Description=MyNode Add Seed Peers
 Wants=bitcoin.service
 After=bitcoin.service
 

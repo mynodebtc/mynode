@@ -10,7 +10,7 @@
     "nodes": [
         {
             "index": 1,
-            "lnNode": "myNode",
+            "lnNode": "MyNode",
             "lnImplementation": "LND",
             "Authentication": {
                 "macaroonPath": "/home/bitcoin/.lnd/data/chain/bitcoin/mainnet",

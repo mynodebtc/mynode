@@ -1,4 +1,4 @@
-# myNode btcpayserver service
+# MyNode btcpayserver service
 # /etc/systemd/system/btcpayserver.service
 
 [Unit]
@@ -10,7 +10,7 @@ Requires=docker.service network-online.target bitcoin.service
 Type=oneshot
 RemainAfterExit=yes
 
-# myNode Customizations
+# MyNode Customizations
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/is_mainnet.sh
 ExecStartPre=/usr/bin/wait_on_docker_image_install.sh

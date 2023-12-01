@@ -1,8 +1,8 @@
-# myNode Fan Control (RockPro64)
+# MyNode Fan Control (RockPro64)
 # /etc/systemd/system/fan_control.service
 
 [Unit]
-Description=myNode Fan Control
+Description=MyNode Fan Control
 
 [Service]
 Type=simple

@@ -1,8 +1,8 @@
-# myNode Rotate Logs
+# MyNode Rotate Logs
 # /etc/systemd/system/rotate_logs.service
 
 [Unit]
-Description=myNode Rotate Logs
+Description=MyNode Rotate Logs
 
 [Service]
 Type=simple

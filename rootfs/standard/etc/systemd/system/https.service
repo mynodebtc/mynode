@@ -1,4 +1,4 @@
-# myNode www service
+# MyNode www service
 # /etc/systemd/system/www.service
 
 ###############################
@@ -6,7 +6,7 @@
 ###############################
 
 [Unit]
-Description=myNode Web Server
+Description=MyNode Web Server
 After=network.target
 
 [Service]

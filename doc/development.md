@@ -1,10 +1,10 @@
-# Developing for myNode
+# Developing for MyNode
 
 ## Loading Modified Software
-Once you are running myNode, you can easily modify and update the software yourself!
+Once you are running MyNode, you can easily modify and update the software yourself!
 
-1. Start by running myNode on your device via the instructions above in "Running myNode"
-2. Modify myNode files
+1. Start by running MyNode on your device via the instructions above in "Running MyNode"
+2. Modify MyNode files
     * Clone this git repo on your PC or laptop - `git clone https://github.com/mynodebtc/mynode.git`
     * Make your modifications
 3. Run `make rootfs`
@@ -24,7 +24,7 @@ Add another argument to the local upgrade script:
 - To update files and restart web server, run `sudo mynode-local-upgrade [dev pc ip address] www`
 
 
-## Setup new device to run myNode
+## Setup new device to run MyNode
 This steps will setup a new device and can be used for making images. These steps allow for updates to the `setup_device.sh` script that does the initial install.
 
 1. Run make command for your device. Ex:
@@ -36,4 +36,4 @@ This steps will setup a new device and can be used for making images. These step
     * `make setup_new_other`
 3. Follow Instructions
 2. Reboot Device
-4. Congratulations! You're running a new myNode device!
+4. Congratulations! You're running a new MyNode device!
