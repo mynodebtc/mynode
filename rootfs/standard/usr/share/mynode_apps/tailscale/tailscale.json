@@ -42,7 +42,7 @@
             "heading": "Instructions",
             "content": [
                 "Setting up Tailscale is simple! First, once Tailscale is enabled it will run a web interface that allows you to login to your Tailscale account.",
-                "After logging in, Tailscale will start running on your device and if you re-open the Tailscale web app, you will see a an IP address. This IP address can be used on any device you have running Tailscale to access the myNode interface!",
+                "After logging in, Tailscale will start running on your device and if you re-open the Tailscale web app, you will see a an IP address. This IP address can be used on any device you have running Tailscale to access the MyNode interface!",
                 "Enjoy!"
             ]
         }

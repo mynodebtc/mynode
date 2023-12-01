@@ -27,7 +27,7 @@ def dojo_page():
 
     # Load page
     templateData = {
-        "title": "myNode Dojo",
+        "title": "MyNode Dojo",
         "ui_settings": read_ui_settings(),
         "dojo_status": dojo_status,
         "dojo_version": get_dojo_version(),

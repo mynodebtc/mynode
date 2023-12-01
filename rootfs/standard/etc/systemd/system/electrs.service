@@ -1,8 +1,8 @@
-# myNode electrs service
+# MyNode electrs service
 # /etc/systemd/system/electrs.service
 
 [Unit]
-Description=myNode Electrum Server
+Description=MyNode Electrum Server
 Wants=bitcoin.service quicksync.service
 After=bitcoin.service
 

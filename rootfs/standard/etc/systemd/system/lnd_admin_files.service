@@ -1,4 +1,4 @@
-# myNode LND Admin Files
+# MyNode LND Admin Files
 # /etc/systemd/system/lnd_admin_files.service
 
 [Unit]

@@ -70,7 +70,7 @@ def page_tor():
 
     # v3 Services
     v3_services = []
-    v3_services.append(create_v3_service("myNode Web", general_onion_url, "80", True, ""))
+    v3_services.append(create_v3_service("MyNode Web", general_onion_url, "80", True, ""))
     v3_services.append(create_v3_service("WebSSH", general_onion_url, "2222 / 2223", True, ""))
     v3_services.append(create_v3_service("LND Hub", lndhub_onion_url, "80 / 443", True, ""))
     v3_services.append(create_v3_service("BTC RPC Explorer", general_onion_url, "3002 / 3003", False, ""))
@@ -97,11 +97,11 @@ def page_tor():
     
     # App links
     rpc_password = get_bitcoin_rpc_password()
-    fully_noded_link = "btcstandup://mynode:{}@{}:8332?label=myNode%20Tor".format(rpc_password, btc_onion_url)
+    fully_noded_link = "btcstandup://mynode:{}@{}:8332?label=MyNode%20Tor".format(rpc_password, btc_onion_url)
 
     # Load page
     templateData = {
-        "title": "myNode Tor Services",
+        "title": "MyNode Tor Services",
         "version": get_tor_version(),
         "is_btc_tor_enabled": settings_file_exists("btc_tor_enabled"),
         "is_lnd_tor_enabled": settings_file_exists("lnd_tor_enabled"),

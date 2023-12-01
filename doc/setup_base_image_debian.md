@@ -22,10 +22,10 @@
 
      - Graphical Install
      - English, US, American English
-     - Hostname: myNode
+     - Hostname: mynode
      - Domain Name: <LEAVE_EMPTY>
      - Root Password: bolt
-     - Full Name: myNode
+     - Full Name: mynode
      - Username: mynode
      - Password: bolt
      - Timezone: Central

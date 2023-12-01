@@ -1,4 +1,4 @@
-[![myNode](https://mynodebtc.github.io/images/logo.png)](https://github.com/mynodebtc/mynode)
+[![MyNode](https://mynodebtc.github.io/images/logo.png)](https://github.com/mynodebtc/mynode)
 
 [![Version](https://img.shields.io/github/v/tag/mynodebtc/mynode?label=version&color=green)](https://github.com/mynodebtc/mynode/tag)
 [![Community Chat](https://img.shields.io/badge/community%20chat-telegram-blue)](https://t.me/mynode_btc)
@@ -7,7 +7,7 @@
 
 
 # Bitcoin, Lightning, and more!
-myNode aims to be the easiest way to run a dedicated, easy to use, Bitcoin Node and Lightning Wallet!
+MyNode aims to be the easiest way to run a dedicated, easy to use, Bitcoin Node and Lightning Wallet!
                             
 We combine the best open source software with our interface, management, and support so you can easily, privately, and securely use Bitcoin and Lightning.
 
@@ -18,12 +18,12 @@ Website: https://mynodebtc.com
 <img src="images/ui_dual_mode.png" width="600">
 
 ## Overview
-myNode is a platform that provides uptime, reliability, ease-of-use and a huge variety of applications! By integrating a number of Bitcoin-related open source projects, it provides access to Bitcoin and Lightning along with a number of other features.
+MyNode is a platform that provides uptime, reliability, ease-of-use and a huge variety of applications! By integrating a number of Bitcoin-related open source projects, it provides access to Bitcoin and Lightning along with a number of other features.
 
-By running Bitcoin and Lightning on your myNode device, you maintain all the security and privacy originally intended in the Bitcoin protocol. Your transactions are verified by your local node, removing the need to trust online 3rd parties for spending or verifying funds.
+By running Bitcoin and Lightning on your MyNode device, you maintain all the security and privacy originally intended in the Bitcoin protocol. Your transactions are verified by your local node, removing the need to trust online 3rd parties for spending or verifying funds.
 
-## myNode Premium
-myNode offers premium support, simplified upgrades and more! If you are running myNode Community Edition and want one-click upgrades or you want to purchase a supported, high quality device, please visit mynodebtc.com.
+## MyNode Premium
+MyNode offers premium support, simplified upgrades and more! If you are running MyNode Community Edition and want one-click upgrades or you want to purchase a supported, high quality device, please visit mynodebtc.com.
 
 Upgrade now or purchase a device at:<br/>
 https://mynodebtc.com/order_now
@@ -33,7 +33,7 @@ https://mynodebtc.com/order_now
 <img src="images/devices.png" width="600">
 
 ## Features
-Each myNode device comes with a number of wonderful features.
+Each MyNode device comes with a number of wonderful features.
 
 <img src="images/app_icons.png" width="600">
 <!--
@@ -72,8 +72,8 @@ Each myNode device comes with a number of wonderful features.
 - Dedicated hardware keeps you constantly and securely connected!
 -->
 
-## Running myNode
-You can run myNode on your own device in just a few easy steps!
+## Running MyNode
+You can run MyNode on your own device in just a few easy steps!
 
 1. Download an Image
     * [Downloads](https://mynodebtc.com/download)
@@ -93,17 +93,17 @@ We currently have images for the following devices available for download.
  - PCs and Servers
  - Virtual Machine Support (VirtualBox, VMWare)
 
-## Upgrading your myNode
-Once you are running myNode, you can easily [update the software](https://mynodebtc.github.io/device/upgrading-device.html) yourself!
+## Upgrading your MyNode
+Once you are running MyNode, you can easily [update the software](https://mynodebtc.github.io/device/upgrading-device.html) yourself!
 
 
-## Developing for myNode
+## Developing for MyNode
 
-### Developing the myNode Platform
+### Developing the MyNode Platform
 See the [development guide](https://github.com/mynodebtc/mynode/blob/master/doc/development.md).
 
-### Adding new Applications to myNode
-To develop and add new applications to mynode, check out the [Software Development Kit (SDK)](https://github.com/mynodebtc/mynode_sdk).
+### Adding new Applications to MyNode
+To develop and add new applications to MyNode, check out the [Software Development Kit (SDK)](https://github.com/mynodebtc/mynode_sdk).
 
 
 ## Install on Existing System (beta)
@@ -118,7 +118,7 @@ wget https://raw.githubusercontent.com/mynodebtc/mynode/latest_release/setup/set
 sudo bash ./mynode_setup.sh online
 ```
 
-Once the script successfully completed, reboot and you will be running myNode!
+Once the script successfully completed, reboot and you will be running MyNode!
 
 ## Screenshots
 <img src="images/ui.png" width="600">
@@ -156,26 +156,26 @@ There is much more to Bitcoin and the Lighting Network than is mentioned here. F
 <a href="https://www.lopp.net/bitcoin-information.html">Bitcoin Information</a>
 
 ## Security
-There are many reasons to run a Bitcoin Node. It helps keep the Bitcoin network secure and reduces the trust you are giving others when using 3rd party Bitcoin Explorers or Bitcoin Light Wallet servers. They can track you or give you false information, reducing your security and privacy. A “full node”, like the Bitcoin node running on your myNode device, personally validates all blocks in the Bitcoin blockchain making sure your Bitcoin transactions and Lightning network use is built on the strongest, most trusted foundation possible.
+There are many reasons to run a Bitcoin Node. It helps keep the Bitcoin network secure and reduces the trust you are giving others when using 3rd party Bitcoin Explorers or Bitcoin Light Wallet servers. They can track you or give you false information, reducing your security and privacy. A “full node”, like the Bitcoin node running on your MyNode device, personally validates all blocks in the Bitcoin blockchain making sure your Bitcoin transactions and Lightning network use is built on the strongest, most trusted foundation possible.
 
-By using myNode for your Lightning Wallet, Bitcoin Wallet, and Block Explorer, you no longer have to trust others to give you the correct information! This increases your security when protecting your valuable assets.
+By using MyNode for your Lightning Wallet, Bitcoin Wallet, and Block Explorer, you no longer have to trust others to give you the correct information! This increases your security when protecting your valuable assets.
 
-Please note, myNode is not responsible for any lost funds while using your device. We have taken significant measures to protect your assets by securing myNode, but lightning wallets are meant to be online and used for spending where risks are greater. Please do your own research into Bitcoin and the Lightning Network before investing in cryptocurrency.
+Please note, MyNode is not responsible for any lost funds while using your device. We have taken significant measures to protect your assets by securing MyNode, but lightning wallets are meant to be online and used for spending where risks are greater. Please do your own research into Bitcoin and the Lightning Network before investing in cryptocurrency.
 
 For long term storage of cryptocurrency assets, please consider using a hardware wallet, like a Ledger or Trezor.
 
 ## Community
-myNode has a wonderful, helpful community that assists with development and support. It would be impossible to run this project without their involvement and support! The effort they put in to make this, and all Bitcoin projects, a success is truly appreciated.
+MyNode has a wonderful, helpful community that assists with development and support. It would be impossible to run this project without their involvement and support! The effort they put in to make this, and all Bitcoin projects, a success is truly appreciated.
 
 ## Bounties
-It takes a lot of work to add new features and maintain myNode. In order to provide desired features, improve documentation, and help provide the best product possible, some new features and improvements have bounties associsated with them. If anyone in the community would like to implement improvements, they can claim the bounty.
+It takes a lot of work to add new features and maintain MyNode. In order to provide desired features, improve documentation, and help provide the best product possible, some new features and improvements have bounties associsated with them. If anyone in the community would like to implement improvements, they can claim the bounty.
 
 [Bounty List](https://github.com/mynodebtc/mynode/blob/master/doc/bounties.md)
 
 ## License
-The primary myNode License is a variation of CC BY-NC-ND 4.0 with some modifications in Section 9.
+The primary MyNode License is a variation of CC BY-NC-ND 4.0 with some modifications in Section 9.
 
-This license applies to the myNode platform, but each application likely has its own license and code to integrate each application to myNode uses the LGPL v3.0. Code to add applications can be stored under `./rootfs/standard/usr/share/mynode_apps/` and uses the License file at `./rootfs/standard/usr/share/mynode_apps/LICENSE.md`.
+This license applies to the MyNode platform, but each application likely has its own license and code to integrate each application to MyNode uses the LGPL v3.0. Code to add applications can be stored under `./rootfs/standard/usr/share/mynode_apps/` and uses the License file at `./rootfs/standard/usr/share/mynode_apps/LICENSE.md`.
 
 ## Responsible Disclosure
 Found any critical bugs or vulnerabilities? Please send us an email at admin@mynodebtc.com. Thanks!

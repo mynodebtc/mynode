@@ -7,7 +7,7 @@
 3. Run `sudo raspi-config`
 
    - Update 8: Get latest configuration tool
-   - Network Options 2: Hostname -> myNode
+   - Network Options 2: Hostname -> mynode
    - Boot Options 3: Choose Desktop / CLI -> Console
    - Boot Options 3: Wait for Network at Boot
    - Localisation 4: I2 -> US -> Central

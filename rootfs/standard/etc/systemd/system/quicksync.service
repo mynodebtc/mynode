@@ -1,8 +1,8 @@
-# myNode QuickSync Service
+# MyNode QuickSync Service
 # /etc/systemd/system/quicksync.service
 
 [Unit]
-Description=myNode QuickSync
+Description=MyNode QuickSync
 Wants=mynode.service
 After=mynode.service
 

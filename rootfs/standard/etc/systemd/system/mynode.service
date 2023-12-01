@@ -1,8 +1,8 @@
-# myNode start service
+# MyNode start service
 # /etc/systemd/system/mynode.service
 
 [Unit]
-Description=myNode Startup
+Description=MyNode Startup
 Before=docker.service containerd.service
 Wants=network-online.target
 After=network-online.target

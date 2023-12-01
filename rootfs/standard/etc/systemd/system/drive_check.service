@@ -1,8 +1,8 @@
-# myNode www service
+# MyNode www service
 # /etc/systemd/system/www.service
 
 [Unit]
-Description=myNode Drive Check
+Description=MyNode Drive Check
 Wants=mynode.service
 After=mynode.service
 

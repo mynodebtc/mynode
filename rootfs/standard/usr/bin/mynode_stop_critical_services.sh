@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Message
-echo "Stopping myNode services..."
+echo "Stopping MyNode services..."
 
 # Mark we are shutting down
 touch /tmp/shutting_down

@@ -24,7 +24,7 @@ stop_file_server:
 
 
 
-# Download base myNode images
+# Download base MyNode images
 out/base_images/raspi3_base.img.gz:
 	@mkdir -p out/base_images/
 	@wget https://mynodebtc.com/device/mynode_images/raspi3_base.img.gz -O out/base_images/raspi3_base.img.gz

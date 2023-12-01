@@ -25,7 +25,7 @@
 #   but is also sensible on 64bit to prevent filling /var or even / partition
 #CONF_MAXSWAP=8000
 
-# myNode Settings
+# MyNode Settings
 CONF_SWAPSIZE=2048
 CONF_MAXSWAP=8000
 CONF_SWAPFILE=/mnt/hdd/swapfile

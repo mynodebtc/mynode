@@ -1,4 +1,4 @@
-# myNode glances service (system monitoring)
+# MyNode glances service (system monitoring)
 # /etc/systemd/system/glances.service
 
 [Unit]

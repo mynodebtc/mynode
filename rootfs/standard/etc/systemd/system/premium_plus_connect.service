@@ -1,8 +1,8 @@
-# myNode Premium+ Connect
+# MyNode Premium+ Connect
 # /etc/systemd/system/premium_plus_connect.service
 
 [Unit]
-Description=myNode Premium+ Connect
+Description=MyNode Premium+ Connect
 Wants=network-online.target
 After=network-online.target
 

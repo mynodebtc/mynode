@@ -60,7 +60,7 @@ def joininbox_page():
 
     # Load page
     templateData = {
-        "title": "myNode JoinMarket",
+        "title": "MyNode JoinMarket",
         "is_jam_installed": is_installed("jam"),
         "is_jam_enabled": is_service_enabled("jam"),
         "joinmarket_version": joinmarket_version,

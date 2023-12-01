@@ -1,8 +1,8 @@
-# myNode firewall service
+# MyNode firewall service
 # /etc/systemd/system/firewall.service
 
 [Unit]
-Description=myNode Firewall
+Description=MyNode Firewall
 After=network.target
 
 [Service]

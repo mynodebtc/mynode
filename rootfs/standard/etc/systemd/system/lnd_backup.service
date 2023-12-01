@@ -1,4 +1,4 @@
-# myNode Backup LND
+# MyNode Backup LND
 # /etc/systemd/system/lnd_backup.service
 
 [Unit]

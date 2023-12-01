@@ -51,7 +51,7 @@
             "heading": "Instructions",
             "content": [
                 "JoinMarket is a mixing wallet for Bitcoin that can be used with a web interface via Jam.",
-                "First, for the application to run properly, JoinMarket also needs be installed via the myNode Marketplace.",
+                "First, for the application to run properly, JoinMarket also needs be installed via the MyNode Marketplace.",
                 "To get started, you just need enable Jam and click the open button on the left. Then, follow the instructions within the app!",
                 "Enjoy mixing your coins!"
             ]

@@ -1,8 +1,8 @@
-# myNode usb driver check
+# MyNode usb driver check
 # /etc/systemd/system/usb_driver_check.service
 
 [Unit]
-Description=myNode USB Driver Check
+Description=MyNode USB Driver Check
 Wants=mynode.service
 After=mynode.service
 

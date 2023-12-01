@@ -5,7 +5,7 @@
 2. Set hostname
 
    ```sh
-   hostname myNode
+   hostname mynode
    ```
 
 3. Add admin user

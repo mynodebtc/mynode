@@ -86,17 +86,17 @@ def main():
             # No partition found - must be target drive since its empty
             if target_found:
                 set_clone_state("error")
-                set_clone_error("Two target drives found. Is myNode drive missing?")
+                set_clone_error("Two target drives found. Is MyNode drive missing?")
                 wait_on_clone_error_dismiss()
                 return
             else:
                 target_found = True
                 target_drive = d
         elif len(partitions) > 1:
-            # Multiple partitions found - myNode only uses one, so must be target
+            # Multiple partitions found - MyNode only uses one, so must be target
             if target_found:
                 set_clone_state("error")
-                set_clone_error("Two target drives found. Is myNode drive missing?")
+                set_clone_error("Two target drives found. Is MyNode drive missing?")
                 wait_on_clone_error_dismiss()
                 return
             else:
@@ -107,7 +107,7 @@ def main():
                 a = round(time.time() * 1000)
                 if check_partition_for_mynode(p):
                     if mynode_found:
-                        # Second drive has myNode partition (failed clone?) - use size to determine target
+                        # Second drive has MyNode partition (failed clone?) - use size to determine target
                         both_drives_have_mynode = True
                         drive_1_size = get_drive_size(mynode_drive)
                         drive_2_size = get_drive_size(d)
@@ -119,13 +119,13 @@ def main():
                             mynode_drive = d
                         target_found = True
                     else:
-                        log_message(f"myNode Partition Found: {p}")
+                        log_message(f"MyNode Partition Found: {p}")
                         mynode_drive = d
                         mynode_found = True
                 else:
                     if target_found:
                         set_clone_state("error")
-                        set_clone_error("Two target drives found. Is myNode drive missing?")
+                        set_clone_error("Two target drives found. Is MyNode drive missing?")
                         wait_on_clone_error_dismiss()
                         return
                     else:
@@ -168,7 +168,7 @@ def main():
     # Make new partition on dest drive
     log_message("Creating Partition...")
     os.system("echo 'Creating Partition...' > /tmp/.clone_progress")
-    subprocess.check_output(f"mkfs.ext4 -F -L myNode /dev/{target_drive}1", shell=True)
+    subprocess.check_output(f"mkfs.ext4 -F -L MyNode /dev/{target_drive}1", shell=True)
     time.sleep(2)
 
     # Mounting Partitions

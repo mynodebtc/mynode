@@ -215,7 +215,7 @@ CookieAuthFileGroupReadable 1
 UseEntryGuards 1
 NumEntryGuards 3
 
-# Hidden Service for myNode
+# Hidden Service for MyNode
 HiddenServiceDir /var/lib/tor/mynode/
 HiddenServiceVersion 3
 HiddenServicePort 80 127.0.0.1:80
@@ -246,18 +246,18 @@ HiddenServicePort 25441 127.0.0.1:25441
 HiddenServicePort 61208 127.0.0.1:61208
 HiddenServicePort 61209 127.0.0.1:61209
 
-# Hidden Service for myNode (BTC)
+# Hidden Service for MyNode (BTC)
 HiddenServiceDir /var/lib/tor/mynode_btc/
 HiddenServiceVersion 3
 HiddenServicePort 8332 127.0.0.1:8332
 
-# Hidden Service for myNode (LND)
+# Hidden Service for MyNode (LND)
 HiddenServiceDir /var/lib/tor/mynode_lnd/
 HiddenServiceVersion 3
 HiddenServicePort 10009 127.0.0.1:10009
 HiddenServicePort 10080 127.0.0.1:10080
 
-# Hidden Service for myNode (LNDHub)
+# Hidden Service for MyNode (LNDHub)
 HiddenServiceDir /var/lib/tor/mynode_lndhub/
 HiddenServiceVersion 3
 HiddenServicePort 80 127.0.0.1:3000
@@ -265,7 +265,7 @@ HiddenServicePort 443 127.0.0.1:3001
 HiddenServicePort 3000 127.0.0.1:3000
 HiddenServicePort 3001 127.0.0.1:3001
 
-# Hidden Service for myNode (LNBits)
+# Hidden Service for MyNode (LNBits)
 HiddenServiceDir /var/lib/tor/mynode_lnbits/
 HiddenServiceVersion 3
 HiddenServicePort 80 127.0.0.1:5000
@@ -273,18 +273,18 @@ HiddenServicePort 443 127.0.0.1:5001
 HiddenServicePort 5000 127.0.0.1:5000
 HiddenServicePort 5001 127.0.0.1:5001
 
-# Hidden Service for myNode (Electrum Server)
+# Hidden Service for MyNode (Electrum Server)
 HiddenServiceDir /var/lib/tor/mynode_electrs/
 HiddenServiceVersion 3
 HiddenServicePort 50001 127.0.0.1:50001
 HiddenServicePort 50002 127.0.0.1:50002
 
-# Hidden Service for myNode (Whirlpool)
+# Hidden Service for MyNode (Whirlpool)
 HiddenServiceDir /var/lib/tor/mynode_whirlpool/
 HiddenServiceVersion 3
 HiddenServicePort 8899 127.0.0.1:8899
 
-# Hidden Service for myNode (SSH)
+# Hidden Service for MyNode (SSH)
 HiddenServiceDir /var/lib/tor/mynode_ssh/
 HiddenServiceVersion 3
 HiddenServicePort 22022 127.0.0.1:22

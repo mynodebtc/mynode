@@ -24,6 +24,7 @@ fi
 
 mkdir -p $OUTPUT_DIR
 mkdir -p $HDD_DIR
+# Domain needs to remain "myNode.local" or new certs will be generated
 domain=myNode.local
 commonname=myNode.local
 
@@ -49,10 +50,10 @@ fi
  
 # Change to your company details
 country=US
-state=myNode
-locality=myNode
-organization=myNode
-organizationalunit=myNode
+state=MyNode
+locality=MyNode
+organization=MyNode
+organizationalunit=MyNode
 email=satoshi.nakamoto@example.com
 password=dummypassword
  
@@ -66,7 +67,7 @@ openssl rsa -in $OUTPUT_DIR/$domain.key -passin pass:$password -out $OUTPUT_DIR/
  
 # Create Certificate
 echo "Creating Certificate"
-cat > /tmp/cert_req.conf <<DELIM
+cat > /tmp/cert_req_$1.conf <<DELIM
 [req]
 distinguished_name = req_distinguished_name
 x509_extensions = v3_req
@@ -93,7 +94,7 @@ DNS.5 = $LOCAL_IP_ADDR
 DNS.6 = $TOR
 DELIM
 
-openssl req -x509 -nodes -days 730 -key $OUTPUT_DIR/$domain.key -out $OUTPUT_DIR/$domain.crt -config /tmp/cert_req.conf -extensions 'v3_req'
+openssl req -x509 -nodes -days 730 -key $OUTPUT_DIR/$domain.key -out $OUTPUT_DIR/$domain.crt -config /tmp/cert_req_$1.conf -extensions 'v3_req'
 
 echo "Creating PEM"
 cat $OUTPUT_DIR/$domain.key > $OUTPUT_DIR/$domain.pem

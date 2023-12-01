@@ -26,7 +26,7 @@ def sphinxrelay_page():
 
     # Load page
     templateData = {
-        "title": "myNode Sphinx Relay",
+        "title": "MyNode Sphinx Relay",
         "ui_settings": read_ui_settings(),
         "sphinxrelay_status": sphinxrelay_status,
         "sphinxrelay_connection_string": get_connection_string(),

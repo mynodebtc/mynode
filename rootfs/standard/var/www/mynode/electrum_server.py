@@ -41,7 +41,7 @@ def electrum_server_page():
 
     # Load page
     templateData = {
-        "title": "myNode Electrum Server",
+        "title": "MyNode Electrum Server",
         "port": 50002,
         "status": status,
         "db_size": db_size,

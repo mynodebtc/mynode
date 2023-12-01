@@ -16,7 +16,7 @@ def bos_page():
 
     # Load page
     templateData = {
-        "title": "myNode lndmanage",
+        "title": "MyNode lndmanage",
         "ui_settings": read_ui_settings(),
     }
     return render_template('lndmanage.html', **templateData)

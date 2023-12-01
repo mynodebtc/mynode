@@ -746,7 +746,7 @@
 === v0.2.12 ===
 - Add Thunderhub v0.8.13
 - Upgrade Specter to v0.5.5
-- Decrease CPU usage when electrum wallet is using myNode
+- Decrease CPU usage when electrum wallet is using MyNode
 - Use gunicorn for HTTPS
 - Add tor service for lnbits, caravan, and specter
 - Fix serial on RockPro64 devices
@@ -801,7 +801,7 @@
 - Add Docker container info to status page
 - Add option to run apt-get upgrade via tor
 - Add Onion URL for BTCPay Server
-- Add more myNode CLI commands
+- Add more MyNode CLI commands
 - Upgrade RTL to v0.7.1
 - Add more detail to lnd status
 - Bug fixes and minor improvements
@@ -1133,7 +1133,7 @@
 - Upgrade RTL to 0.5.1
 
 === v0.1.50 ===
-- Big fixes for myNode VM (still beta)
+- Big fixes for MyNode VM (still beta)
 - Display footer on status page
 
 === v0.1.49 ===
@@ -1166,7 +1166,7 @@
 === v0.1.44 ===
 - Add changelog to settings page
 - Add shutdown option on settings page
-- LND Admin password will match the overall myNode password
+- LND Admin password will match the overall MyNode password
 
 === v0.1.43 ===
 - Initial changelog

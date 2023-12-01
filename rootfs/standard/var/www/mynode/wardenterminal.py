@@ -16,7 +16,7 @@ def pyblock_page():
 
     # Load page
     templateData = {
-        "title": "myNode Warden Terminal",
+        "title": "MyNode Warden Terminal",
         "ui_settings": read_ui_settings(),
     }
     return render_template('wardenterminal.html', **templateData)

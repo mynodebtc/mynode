@@ -153,7 +153,7 @@ def index():
         status = status.decode("utf8")
         status = Markup("<div style='text-align: left; font-size: 12px; width: 800px;'><pre>"+status+"</pre></div>")
         templateData = {
-            "title": "myNode Uploader",
+            "title": "MyNode Uploader",
             "header_text": "Uploader Device",
             "quicksync_status": status,
             "ui_settings": read_ui_settings()
@@ -162,7 +162,7 @@ def index():
 
     if status == STATE_UNKNOWN:
         templateData = {
-            "title": "myNode Error",
+            "title": "MyNode Error",
             "header_text": "Status Unknown",
             "subheader_text": "An error has occurred. You may want to reboot the device.",
             "ui_settings": read_ui_settings()
@@ -170,7 +170,7 @@ def index():
         return render_template('state.html', **templateData)
     elif status == STATE_ROOTFS_READ_ONLY:
         templateData = {
-            "title": "myNode Error",
+            "title": "MyNode Error",
             "header_text": "SD Card Error",
             "subheader_text": "The root filesystem is read only. Your SD card may be corrupt.",
             "ui_settings": read_ui_settings()
@@ -178,7 +178,7 @@ def index():
         return render_template('state.html', **templateData)
     elif status == STATE_HDD_READ_ONLY:
         templateData = {
-            "title": "myNode Error",
+            "title": "MyNode Error",
             "header_text": "Drive Error",
             "subheader_text": "The external drive filesystem is read only. Try rebooting the device.",
             "ui_settings": read_ui_settings()
@@ -187,7 +187,7 @@ def index():
     elif is_warning_present():
         warning = get_current_warning()
         templateData = {
-            "title": "myNode Warning",
+            "title": "MyNode Warning",
             "header_text": "Warning",
             "subheader_text": get_warning_header(warning),
             "description_text": get_warning_description(warning),
@@ -199,7 +199,7 @@ def index():
         # Drive may be getting repaired
         if is_drive_being_repaired():
             templateData = {
-                "title": "myNode Repairing Drive",
+                "title": "MyNode Repairing Drive",
                 "header_text": "Repairing Drive",
                 "subheader_text": Markup("Drive is being checked and repaired...<br/><br/>This may take several hours."),
                 "ui_settings": read_ui_settings()
@@ -207,9 +207,9 @@ def index():
             return render_template('state.html', **templateData)
 
         templateData = {
-            "title": "myNode Looking for Drive",
+            "title": "MyNode Looking for Drive",
             "header_text": "Looking for Drive",
-            "subheader_text": "Please attach a drive to your myNode",
+            "subheader_text": "Please attach a drive to your MyNode",
             "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
@@ -221,21 +221,21 @@ def index():
             return redirect("/")
 
         templateData = {
-            "title": "myNode Confirm Drive Format",
+            "title": "MyNode Confirm Drive Format",
             "ui_settings": read_ui_settings()
         }
         return render_template('confirm_drive_format.html', **templateData)
     elif status == STATE_DRIVE_FORMATTING:
         templateData = {
-            "title": "myNode Drive Formatting",
+            "title": "MyNode Drive Formatting",
             "header_text": "Drive Formatting",
-            "subheader_text": "myNode is preparing the drive for use...",
+            "subheader_text": "MyNode is preparing the drive for use...",
             "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
     elif status == STATE_DRIVE_MOUNTED:
         templateData = {
-            "title": "myNode Drive Mounted",
+            "title": "MyNode Drive Mounted",
             "header_text": "Starting...",
             "subheader_text": "Drive Mounted",
             "ui_settings": read_ui_settings()
@@ -243,13 +243,13 @@ def index():
         return render_template('state.html', **templateData)
     elif status == STATE_CHOOSE_NETWORK:
         templateData = {
-            "title": "myNode Choose Network",
+            "title": "MyNode Choose Network",
             "ui_settings": read_ui_settings()
         }
         return render_template('choose_network.html', **templateData)
     elif status == STATE_DOCKER_RESET:
         templateData = {
-            "title": "myNode",
+            "title": "MyNode",
             "header_text": "Resetting Docker Data",
             "subheader_text": "This will take several minutes...",
             "ui_settings": read_ui_settings()
@@ -264,7 +264,7 @@ def index():
         message += "To move to larger drive, try the <a href='/settings#clone_tool'>Clone Tool</a>."
         message += "</p>"
         templateData = {
-            "title": "myNode Drive Full",
+            "title": "MyNode Drive Full",
             "header_text": "Drive Full",
             "subheader_text": Markup(message),
             "ui_settings": read_ui_settings()
@@ -276,7 +276,7 @@ def index():
         log_message(clone_state)
         if clone_state == CLONE_STATE_DETECTING:
             templateData = {
-                "title": "myNode Clone Tool",
+                "title": "MyNode Clone Tool",
                 "header_text": "Cloning Tool",
                 "subheader_text": Markup("Detecting Drives..."),
                 "ui_settings": read_ui_settings(),
@@ -300,7 +300,7 @@ def index():
             msg += "<br/><br/>"
             msg += "<a class='ui-button ui-widget ui-corner-all mynode_button_small' style='width: 120px;' href='/settings/reboot-device'>Exit Clone Tool</a>"
             templateData = {
-                "title": "myNode Clone Tool",
+                "title": "MyNode Clone Tool",
                 "header_text": "Cloning Tool",
                 "subheader_text": Markup(msg),
                 "ui_settings": read_ui_settings(),
@@ -324,7 +324,7 @@ def index():
             source_drive_info = get_drive_info(source_drive)
             target_drive_info = get_drive_info(target_drive)
             templateData = {
-                "title": "myNode Clone Tool",
+                "title": "MyNode Clone Tool",
                 "header_text": "Cloning Tool",
                 "target_drive_has_mynode": target_drive_has_mynode,
                 "source_drive_info": source_drive_info,
@@ -335,7 +335,7 @@ def index():
         elif clone_state == CLONE_STATE_IN_PROGRESS:
             progress = get_clone_progress()
             templateData = {
-                "title": "myNode Clone Tool",
+                "title": "MyNode Clone Tool",
                 "header_text": "Cloning Tool",
                 "subheader_text": Markup("Cloning...<br/><br/>" + progress),
                 "ui_settings": read_ui_settings(),
@@ -344,7 +344,7 @@ def index():
             return render_template('state.html', **templateData)
         elif clone_state == CLONE_STATE_COMPLETE:
             templateData = {
-                "title": "myNode Clone Tool",
+                "title": "MyNode Clone Tool",
                 "header_text": "Cloning Tool",
                 "subheader_text": Markup("Clone Complete!"),
                 "ui_settings": read_ui_settings(),
@@ -352,7 +352,7 @@ def index():
             return render_template('clone_complete.html', **templateData)
         else:
             templateData = {
-                "title": "myNode Clone Tool",
+                "title": "MyNode Clone Tool",
                 "header_text": "Cloning Tool",
                 "subheader_text": "Unknown Clone State: " + clone_state,
                 "ui_settings": read_ui_settings()
@@ -360,7 +360,7 @@ def index():
             return render_template('state.html', **templateData)
     elif status == STATE_GEN_DHPARAM:
         templateData = {
-            "title": "myNode Generating Data",
+            "title": "MyNode Generating Data",
             "header_text": "Generating Data",
             "subheader_text": "This may take 15-20 minutes...",
             "ui_settings": read_ui_settings()
@@ -387,7 +387,7 @@ def index():
         subheader_msg = Markup("Copying files... This will take several hours.<br/>{:.2f}%{}".format(percent, message))
 
         templateData = {
-            "title": "myNode QuickSync",
+            "title": "MyNode QuickSync",
             "header_text": "QuickSync",
             "subheader_text": subheader_msg,
             "ui_settings": read_ui_settings()
@@ -395,7 +395,7 @@ def index():
         return render_template('state.html', **templateData)
     elif status == STATE_QUICKSYNC_RESET:
         templateData = {
-            "title": "myNode QuickSync",
+            "title": "MyNode QuickSync",
             "header_text": "QuickSync",
             "subheader_text": "Restarting QuickSync...",
             "ui_settings": read_ui_settings()
@@ -420,7 +420,7 @@ def index():
             subheader = Markup("Starting<br/>Waiting on download client to start...")
 
         templateData = {
-            "title": "myNode QuickSync",
+            "title": "MyNode QuickSync",
             "header_text": "QuickSync",
             "subheader_text": subheader,
             "ui_settings": read_ui_settings()
@@ -428,7 +428,7 @@ def index():
         return render_template('state.html', **templateData)
     elif status == STATE_UPGRADING:
         templateData = {
-            "title": "myNode Upgrading",
+            "title": "MyNode Upgrading",
             "header_text": "Upgrading...",
             "subheader_text": "This may take a while...",
             "refresh_rate": 120,
@@ -453,9 +453,9 @@ def index():
                 error_message = "Bitcoin has experienced an error. Please check the Bitcoin log on the status page."
             message = "<div class='small_message'>{}</<div>".format( get_message(include_funny=True) )
             templateData = {
-                "title": "myNode Status",
+                "title": "MyNode Status",
                 "header_text": "Starting...",
-                "subheader_text": Markup("Launching myNode Services{}".format(message)),
+                "subheader_text": Markup("Launching MyNode Services{}".format(message)),
                 "error_message": Markup(error_message + "<br/><br/>"),
                 "ui_settings": read_ui_settings()
             }
@@ -464,7 +464,7 @@ def index():
         # if is_installing_docker_images():
         #     message = "<div class='small_message'>{}</<div>".format( get_message(include_funny=True) )
         #     templateData = {
-        #         "title": "myNode Status",
+        #         "title": "MyNode Status",
         #         "header_text": "Starting...",
         #         "subheader_text": Markup("Building Docker Images...{}".format(message)),
         #         "ui_settings": read_ui_settings()
@@ -479,7 +479,7 @@ def index():
             if mynode_block_height == None:
                 mynode_block_height = 0
             templateData = {
-                "title": "myNode Sync",
+                "title": "MyNode Sync",
                 "header_text": "Bitcoin Blockchain",
                 "bitcoin_block_height": bitcoin_block_height,
                 "mynode_block_height": mynode_block_height,
@@ -526,7 +526,7 @@ def index():
             refresh_rate = 120
 
         templateData = {
-            "title": "myNode Home",
+            "title": "MyNode Home",
             "refresh_rate": refresh_rate,
             "config": CONFIG,
             "apps": get_all_applications(order_by="homepage"),
@@ -586,9 +586,9 @@ def index():
         return render_template('main.html', **templateData)
     else:
         templateData = {
-            "title": "myNode Error",
+            "title": "MyNode Error",
             "header_text": "Error",
-            "subheader_text": "Unknown State ("+status+"). Please restart your myNode.",
+            "subheader_text": "Unknown State ("+status+"). Please restart your MyNode.",
             "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
@@ -606,7 +606,7 @@ def page_product_key():
             return redirect("/")
         else:
             templateData = {
-                "title": "myNode Product Key",
+                "title": "MyNode Product Key",
                 "header_text": "Product Key",
                 "ui_settings": read_ui_settings()
             }
@@ -728,7 +728,7 @@ def page_rebooting():
     
     # Show that device is rebooting and use JS to refresh once back online
     templateData = {
-        "title": "myNode Reboot",
+        "title": "MyNode Reboot",
         "header_text": "Restarting",
         "subheader_text": "This will take several minutes...",
         "ui_settings": read_ui_settings()
@@ -739,9 +739,9 @@ def page_rebooting():
 @app.errorhandler(404)
 def not_found_error(error):
     templateData = {
-        "title": "myNode 404",
+        "title": "MyNode 404",
         "header_text": "Page not found",
-        "subheader_text": "Click on the myNode logo to reach the home page",
+        "subheader_text": "Click on the MyNode logo to reach the home page",
         "ui_settings": read_ui_settings()
     }
     return render_template('state.html', **templateData), 404
@@ -749,9 +749,9 @@ def not_found_error(error):
 @app.errorhandler(500)
 def internal_error(error):
     templateData = {
-        "title": "myNode 500",
+        "title": "MyNode 500",
         "header_text": "Internal server error",
-        "subheader_text": "If you were manually upgrading myNode, please try again.",
+        "subheader_text": "If you were manually upgrading MyNode, please try again.",
         "ui_settings": read_ui_settings()
     }
     return render_template('state.html', **templateData), 500

@@ -1,4 +1,4 @@
-# myNode www service
+# MyNode www service
 # /etc/systemd/system/www.service
 
 #############################################

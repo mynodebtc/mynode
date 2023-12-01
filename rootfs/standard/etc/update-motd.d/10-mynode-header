@@ -3,8 +3,8 @@
 THIS_SCRIPT="header"
 MOTD_DISABLE=""
 
-toilet -f standard -F metal myNode
+toilet -f standard -F metal MyNode
 
-printf '\nWelcome to myNode!\n'
+printf '\nWelcome to MyNode!\n'
 uname -a
 printf '\n'

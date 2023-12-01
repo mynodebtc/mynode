@@ -1,8 +1,8 @@
-# myNode invalid block service
+# MyNode invalid block service
 # /etc/systemd/system/invalid_block_check.service
 
 [Unit]
-Description=myNode Bitcoin Invalid Block Check
+Description=MyNode Bitcoin Invalid Block Check
 After=network.target mynode.service
 
 [Service]

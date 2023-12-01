@@ -1,8 +1,8 @@
-# myNode VPN Service
+# MyNode VPN Service
 # /etc/systemd/system/vpn.service
 
 [Unit]
-Description=myNode VPN
+Description=MyNode VPN
 Wants=mynode.service
 After=mynode.service
 

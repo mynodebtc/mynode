@@ -16,7 +16,7 @@ THIS_SCRIPT="sysinfo"
 MOTD_DISABLE=""
 STORAGE=/dev/sda1
 #SHOW_IP_PATTERN="^[ewr].*|^br.*|^lt.*|^umts.*"
-# myNode Customization
+# MyNode Customization
 SHOW_IP_PATTERN="^[ew].*|^lt.*|^umts.*"
 
 [[ -f /etc/default/armbian-motd ]] && . /etc/default/armbian-motd
@@ -199,7 +199,7 @@ echo ""
 echo ""
 echo ""
 echo   "======================================================="
-echo   "===            Visit the myNode Web GUI             "
+echo   "===            Visit the MyNode Web GUI             "
 echo   "===               http://mynode.local/              "
 echo   "===                        OR                       "
 printf "===              http://%s/              \n" "$ip_address"
