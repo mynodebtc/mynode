@@ -89,9 +89,45 @@ dhclient -r
 #ping -c 2 piwheels.org
 
 
-# Make sure FS is expanded for armbian
+# Make sure FS is expanded
 if [ $IS_ARMBIAN = 1 ] ; then
     /usr/lib/armbian/armbian-resize-filesystem start
+fi
+if [ $IS_X86 = 1 ]; then
+    apt-get -y install gdisk parted
+
+    X86_ROOT_PARTITION="$(mount | grep ' / ' | cut -d ' ' -f1)"
+    X86_DEVICE="$(lsblk -no pkname $X86_ROOT_PARTITION)"
+    X86_DEVICE_PATH="/dev/$X86_DEVICE"
+    case "$X86_DEVICE" in
+        sd* | hd* | vd*)
+            # SATA
+            X86_PARTITION_NUMBER=$(cat /proc/partitions | grep -c "${X86_DEVICE}[0-9]")
+            ;;
+        nvme*)
+            # NVMe
+            X86_PARTITION_NUMBER=$(cat /proc/partitions | grep -c "${X86_DEVICE}p[0-9]")
+            ;;            
+    esac    
+    X86_FDISK_TYPE=$(fdisk -l "$X86_DEVICE_PATH" | grep "Disklabel")
+    echo "Root Partition:   $X86_ROOT_PARTITION"
+    echo "Root Device:      $X86_DEVICE"
+    echo "Root Dev Path:    $X86_DEVICE_PATH"
+    echo "Root Partition #: $X86_PARTITION_NUMBER"
+    if [[ "$X86_FDISK_TYPE" = *"Disklabel type: gpt"* ]]; then
+        if [ "$X86_PARTITION_NUMBER" = "2" ]; then
+            sgdisk -e $X86_DEVICE_PATH
+            sgdisk -d $X86_PARTITION_NUMBER $X86_DEVICE_PATH
+            sgdisk -N $X86_PARTITION_NUMBER $X86_DEVICE_PATH
+            partprobe $X86_DEVICE_PATH
+            resize2fs $X86_ROOT_PARTITION
+        else
+            echo "Not resizing - Expected 2 partitions, found $X86_PARTITION_NUMBER"
+        fi
+    else
+        echo "Not resizing - Expected GPT partition"
+        echo "$X86_FDISK"
+    fi
 fi
 
 
@@ -215,11 +251,15 @@ apt-get -y install pv sysstat network-manager rsync parted unzip pkg-config
 apt-get -y install libfreetype6-dev libpng-dev libatlas-base-dev libgmp-dev libltdl-dev
 apt-get -y install libffi-dev libssl-dev python3-bottle automake libtool libltdl7
 apt -y -qq install apt-transport-https ca-certificates
-apt-get -y install openjdk-11-jre libevent-dev ncurses-dev
+apt-get -y install libevent-dev ncurses-dev
 apt-get -y install zlib1g-dev libudev-dev libusb-1.0-0-dev python3-venv gunicorn
 apt-get -y install sqlite3 libsqlite3-dev torsocks python3-requests libsystemd-dev
 apt-get -y install libjpeg-dev zlib1g-dev psmisc hexyl libbz2-dev liblzma-dev netcat-openbsd
 apt-get -y install hdparm iotop nut obfs4proxy libpq-dev socat btrfs-progs i2pd apparmor pass
+apt-get -y install gdisk xxd
+
+# Install Java
+apt-get -y install default-jre
 
 # Install packages dependent on Debian release
 if [ "$DEBIAN_VERSION" == "bullseye" ]; then
@@ -262,6 +302,7 @@ apt-get -y install --no-install-recommends expect
 # Install nginx
 mkdir -p /var/log/nginx
 apt-get -y install nginx || true
+apt-get -y install libnginx-mod-stream || true
 # Install may fail, so we need to edit the default config file and reconfigure
 rm -f /etc/nginx/modules-enabled/50-mod-* || true
 echo "" > /etc/nginx/sites-available/default
