@@ -797,7 +797,7 @@ def get_check_in_data():
         with open("/tmp/check_in_response.json", "r") as f:
             data = json.load(f)
     except Exception as e:
-        data =  None
+        data = None
     return data
 
 def dismiss_expiration_warning():

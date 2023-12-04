@@ -24,16 +24,28 @@
     <tr>
         <th>Support</th>
         <td>
-            {% if check_in_data.support is defined and check_in_data.support.active is defined and check_in_data.support.days_remaining is defined %}
+            {% if check_in_data.support is defined and check_in_data.support.active is defined %}
                 {% if check_in_data.support.active %}
-                    <i class='fas fa-check' style="vertical-align: middle;" data-toggle='tooltip' data-placement='bottom' title='Active - Expires in {{check_in_data.support.days_remaining}} days'></i>
-                    {% if check_in_data.support.days_remaining|int < 45 %}
+                    <i class='fas fa-check' style="vertical-align: middle;" data-toggle='tooltip' data-placement='bottom'
+                        {% if check_in_data.support.days_remaining is defined %}
+                            title='Active - Expires in {{check_in_data.support.days_remaining}} days'
+                        {% else %}
+                            title='Active'
+                        {% endif %}
+                        ></i>
+                    {% if check_in_data.support.days_remaining is defined and check_in_data.support.days_remaining|int < 45 %}
                         <i class='fas fa-exclamation' style="color: red; vertical-align: middle; margin-left: 5px;" data-toggle='tooltip' data-placement='bottom' title='Expiring Soon! {{check_in_data.support.days_remaining}} days remaining.'></i>
                         <a href="https://mynodebtc.com/order/premium_plus" target="_blank" style="margin-left: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Extend</a>
                     {% endif %}
                 {% else %}
-                    <i class='fas fa-times' style="vertical-align: middle;" data-toggle='tooltip' data-placement='bottom' title='Inactive - Expired {{check_in_data.support.days_remaining|int|abs}} days ago'></i>
-                    {% if check_in_data.support.days_remaining|int > -45 %}
+                    <i class='fas fa-times' style="vertical-align: middle;" data-toggle='tooltip' data-placement='bottom'
+                        {% if check_in_data.support.days_remaining is defined %}
+                            title='Inactive - Expired {{check_in_data.support.days_remaining|int|abs}} days ago'
+                        {% else %}
+                            title='Inactive - Expired'
+                        {% endif %}
+                    ></i>
+                    {% if check_in_data.support.days_remaining is defined and check_in_data.support.days_remaining|int > -45 %}
                         <i class='fas fa-exclamation' style="color: red; vertical-align: middle; margin-left: 5px;" data-toggle='tooltip' data-placement='bottom' title='Expired recently! Expired {{check_in_data.support.days_remaining|int|abs}} days ago.'></i>
                     {% endif %}
                     <a href="https://mynodebtc.com/order/premium_plus" target="_blank" style="margin-left: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Extend</a>
