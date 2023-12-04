@@ -27,8 +27,8 @@ PIVPN_DEPS=(openvpn git tar wget grep iptables-persistent dnsutils expect whipta
 pivpnGitUrl="https://github.com/pivpn/pivpn.git"
 pivpnVersionHash="8e3a95152412a9d35b67d51bfc80379350815252"
 pivpnFilesDir="/etc/.pivpn"
-easyrsaVer="3.0.6"
-easyrsaRel="https://github.com/OpenVPN/easy-rsa/releases/download/v${easyrsaVer}/EasyRSA-unix-v${easyrsaVer}.tgz"
+easyrsaVer="3.1.7"
+easyrsaRel="https://github.com/OpenVPN/easy-rsa/releases/download/v${easyrsaVer}/EasyRSA-${easyrsaVer}.tgz"
 
 # Raspbian's unattended-upgrades package downloads Debian's config, so this is the link for the proper config 
 UNATTUPG_RELEASE="1.9"
@@ -216,6 +216,9 @@ installScripts() {
         $SUDO chown "$pivpnUser":root /opt/pivpn
         $SUDO chmod u+srwx /opt/pivpn
     fi
+    # Modify scripts
+    sed -i 's/easyrsa build-client-full/easyrsa --batch build-client-full/g' /etc/.pivpn/scripts/makeOVPN.sh
+
     $SUDO cp /etc/.pivpn/scripts/makeOVPN.sh /opt/pivpn/makeOVPN.sh
     $SUDO cp /etc/.pivpn/scripts/clientStat.sh /opt/pivpn/clientStat.sh
     $SUDO cp /etc/.pivpn/scripts/listOVPN.sh /opt/pivpn/listOVPN.sh
@@ -521,7 +524,7 @@ confOpenVPN() {
 
 
     # Get easy-rsa
-    wget -q -O - "${easyrsaRel}" | $SUDO tar xz -C /etc/openvpn && $SUDO mv /etc/openvpn/EasyRSA-v${easyrsaVer} /etc/openvpn/easy-rsa
+    wget -q -O - "${easyrsaRel}" | $SUDO tar xz -C /etc/openvpn && $SUDO mv /etc/openvpn/EasyRSA-${easyrsaVer} /etc/openvpn/easy-rsa
     # fix ownership
     $SUDO chown -R root:root /etc/openvpn/easy-rsa
     $SUDO mkdir /etc/openvpn/easy-rsa/pki
@@ -566,7 +569,7 @@ EOF
     #fi
 
     # Build the server
-    ${SUDOE} ./easyrsa build-server-full ${SERVER_NAME} nopass
+    ${SUDOE} ./easyrsa --batch build-server-full ${SERVER_NAME} nopass
 
     if [[ ${useUpdateVars} == false ]]; then
       if [[ ${APPLY_TWO_POINT_FOUR} == false ]]; then
@@ -586,7 +589,7 @@ EOF
         ${SUDOE} curl "https://2ton.com.au/getprimes/random/dhparam/${ENCRYPT}" -o "/etc/openvpn/easy-rsa/pki/dh${ENCRYPT}.pem"
       else
         # Generate Diffie-Hellman key exchange
-        ${SUDOE} ./easyrsa gen-dh
+        ${SUDOE} ./easyrsa --batch gen-dh
         ${SUDOE} mv pki/dh.pem pki/dh${ENCRYPT}.pem
       fi
     fi
