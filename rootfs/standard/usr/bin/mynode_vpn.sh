@@ -2,6 +2,8 @@
 
 source /usr/share/mynode/mynode_config.sh
 
+set -x
+
 apt -y update
 
 mkdir -p $VPN_BACKUP_DIR
