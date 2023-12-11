@@ -34,7 +34,7 @@ while true; do
         echo "Attempting to add peer $RANDOM_PEER"
         bitcoin-cli addnode "$RANDOM_PEER" "onetry"
 
-        sleep 30s
+        sleep 10s
     else
         echo "We have $PEER_COUNT peers!"
         sleep 60m
