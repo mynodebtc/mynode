@@ -179,6 +179,18 @@ while true; do
 
             echo $BTCPAYSERVER_VERSION > $BTCPAYSERVER_VERSION_FILE
         fi
+    else
+        # BTC Pay Not Installed, make sure old images are gone to prevent docker compose from running
+        # For some reason, containers will re-launch after uninstalling btcpayserver
+        echo "Removing BTC Pay Containers..."
+        docker kill $(docker ps -a -q --filter name=generated_postgres) 2>/dev/null || true
+        docker kill $(docker ps -a -q --filter name=generated_btcpayserver) 2>/dev/null || true
+        docker kill $(docker ps -a -q --filter name=generated_nbxplorer) 2>/dev/null || true
+        docker rm $(docker ps -a -q --filter name=generated_postgres) 2>/dev/null || true
+        docker rm $(docker ps -a -q --filter name=generated_btcpayserver) 2>/dev/null || true
+        docker rm $(docker ps -a -q --filter name=generated_nbxplorer) 2>/dev/null || true
+        docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'btcpayserver') 2>/dev/null || true
+        docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'nbxplorer') 2>/dev/null || true
     fi
     touch /tmp/need_application_refresh
 
