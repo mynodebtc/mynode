@@ -235,7 +235,7 @@ def index():
         return render_template('state.html', **templateData)
     elif status == STATE_DRIVE_MOUNTED:
         templateData = {
-            "title": "Drive Mounted",
+            "title": "Starting",
             "header_text": "Starting...",
             "subheader_text": "Drive Mounted",
             "ui_settings": read_ui_settings()
@@ -453,7 +453,7 @@ def index():
                 error_message = "Bitcoin has experienced an error. Please check the Bitcoin log on the status page."
             message = "<div class='small_message'>{}</<div>".format( get_message(include_funny=True) )
             templateData = {
-                "title": "Status",
+                "title": "Starting",
                 "header_text": "Starting...",
                 "subheader_text": Markup("Launching MyNode Services{}".format(message)),
                 "error_message": Markup(error_message + "<br/><br/>"),
