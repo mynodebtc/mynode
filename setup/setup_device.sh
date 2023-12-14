@@ -1067,6 +1067,7 @@ systemctl enable rathole
 systemctl disable hitch || true
 systemctl disable mongodb || true
 systemctl disable dhcpcd || true
+systemctl disable dphys-swapfile || true
 
 
 # Delete junk
