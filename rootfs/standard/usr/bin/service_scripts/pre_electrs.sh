@@ -16,12 +16,15 @@ else
 fi
 
 # Update for tx limit
-INDEX_LOOKUP_LIMIT=201
+INDEX_LOOKUP_LIMIT=200
 if [ $IS_X86 = 1 ]; then
-    INDEX_LOOKUP_LIMIT=1001
+    INDEX_LOOKUP_LIMIT=1000
 fi
 if [ -f /mnt/hdd/mynode/electrs/index_lookup_limit ]; then
     INDEX_LOOKUP_LIMIT=$(cat /mnt/hdd/mynode/electrs/index_lookup_limit)
+fi
+if [ ! -f /mnt/hdd/mynode/electrs/index_lookup_limit ]; then
+    echo "$INDEX_LOOKUP_LIMIT" > /mnt/hdd/mynode/electrs/index_lookup_limit
 fi
 sed -i "s/index_lookup_limit =.*/index_lookup_limit = $INDEX_LOOKUP_LIMIT/g" /mnt/hdd/mynode/electrs/electrs.toml || true
 

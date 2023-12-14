@@ -1167,11 +1167,20 @@ def restart_electrs():
 def delete_electrs_data():
     os.system("rm -rf /mnt/hdd/mynode/electrs/bitcoin")
     os.system("rm -rf /mnt/hdd/mynode/electrs/testnet")
+    os.system("rm -rf /mnt/hdd/mynode/electrs/index_lookup_limit")
 
 def reset_electrs():
     stop_electrs()
     delete_electrs_data()
     restart_electrs()
+
+def get_electrs_index_lookup_limit():
+    if os.path.isfile("/mnt/hdd/mynode/electrs/index_lookup_limit"):
+       return to_string( get_file_contents("/mnt/hdd/mynode/electrs/index_lookup_limit") )
+    return "200"
+
+def set_electrs_index_lookup_limit(limit):
+    set_file_contents("/mnt/hdd/mynode/electrs/index_lookup_limit", limit)
 
 #==================================
 # RTL Functions
