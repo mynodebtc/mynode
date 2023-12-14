@@ -1169,6 +1169,7 @@ systemctl disable mongodb > /dev/null 2>&1 || true
 systemctl disable lnd_admin > /dev/null 2>&1 || true
 systemctl disable lnd_unlock > /dev/null 2>&1 || true
 systemctl disable dhcpcd > /dev/null 2>&1 || true
+systemctl disable dphys-swapfile > /dev/null 2>&1 || true
 rm -f /etc/systemd/system/bitcoind.service
 rm -f /etc/systemd/system/btc_rpc_explorer.service
 rm -f /etc/systemd/system/mempoolspace.service
