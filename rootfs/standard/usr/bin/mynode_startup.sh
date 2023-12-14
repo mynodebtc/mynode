@@ -17,6 +17,9 @@ fi
 # Set sticky bit on /tmp
 chmod +t /tmp
 
+# Kernel settings
+echo "180" > /proc/sys/kernel/hung_task_timeout_secs || true
+
 # Save dmidecode info
 dmidecode | grep UUID | cut -d ' ' -f 2 > /tmp/dmidecode_serial
 
