@@ -55,11 +55,11 @@ def update_device_info():
         reload_throttled_data()
 
         # Get CPU usage
-        cpu_info = psutil.cpu_times_percent(interval=10.0, percpu=False)
+        cpu_info = psutil.cpu_times_percent(interval=5.0, percpu=False)
         cpu_usage = "{:.1f}%".format(100.0 - cpu_info.idle)
 
-        # Update every 24 hrs
-        if device_info_call_count % 60*24 == 0:
+        # Update every 24 hrs (start at ~5 min)
+        if device_info_call_count % (60*24) == 5:
             os_drive_usage_details = ""
             os_drive_usage_details += "<small>"
             os_drive_usage_details += "<b>App Storage</b><br/>"
