@@ -522,6 +522,8 @@
 
                 $("#background").selectmenu();
 
+                $("#electrs_tx_lookup_limit").selectmenu();
+
                 var swap_choice="";
                 $("#swap_size").selectmenu( {
                     change: function( event, data ) {
@@ -1098,6 +1100,24 @@
         <div class="settings_block">
             <a id="electrum"></a>
             <div class="settings_block_header">Electrum Server</div>
+
+            <div class="settings_block_subheader">TX Lookup Limit</div>
+            Your device will limit the number of transactions per address to prevent Electrum from consuming too many resources. It can be changed below.
+            <br/><br/>
+
+            <form action="/settings/electrs_tx_lookup_limit" method="POST">
+                <select name="electrs_tx_lookup_limit" id="electrs_tx_lookup_limit">
+                    <option value="200"     {% if electrs_tx_lookup_limit == "200" %}selected{% endif %}>200 (RP4 Default)</option>
+                    <option value="500"     {% if electrs_tx_lookup_limit == "500" %}selected{% endif %}>500</option>
+                    <option value="1000"    {% if electrs_tx_lookup_limit == "1000" %}selected{% endif %}>1000 (PC Default)</option>
+                    <option value="2000"    {% if electrs_tx_lookup_limit == "2000" %}selected{% endif %}>2000</option>
+                    <option value="10000"   {% if electrs_tx_lookup_limit == "10000" %}selected{% endif %}>10000</option>
+                    <option value="9999999" {% if electrs_tx_lookup_limit == "9999999" %}selected{% endif %}>Unlimited</option>
+                </select>
+                <input type="submit" id="electrs_tx_lookup_limit_save_button" value="Save" class="ui-button ui-widget ui-corner-all"/>
+            </form>
+
+            <div class="divider"></div>
             
             <div class="settings_block_subheader">Reset Electrum Server</div>
             This will delete your Electrum Server data and restart Electrum Server.

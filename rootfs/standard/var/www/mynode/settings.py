@@ -95,6 +95,7 @@ def page_settings():
         "is_uploader_device": is_uploader(),
         "download_rate": download_rate,
         "upload_rate": upload_rate,
+        "electrs_tx_lookup_limit": get_electrs_index_lookup_limit(),
         "btcrpcexplorer_token_enabled": is_btcrpcexplorer_token_enabled(),
         "is_btc_ipv4_enabled": settings_file_exists("btc_ipv4_enabled"),
         "is_btc_tor_enabled": settings_file_exists("btc_tor_enabled"),
@@ -533,6 +534,21 @@ def open_clone_tool_page():
         "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
+
+@mynode_settings.route("/settings/electrs_tx_lookup_limit", methods=['POST'])
+def electrs_tx_lookup_limit_page():
+    check_logged_in()
+    if not request:
+        return redirect("/settings")
+
+    limit = request.form.get('electrs_tx_lookup_limit')
+    set_electrs_index_lookup_limit(limit)
+
+    t = Timer(1.0, restart_electrs)
+    t.start()
+
+    flash("Restarting Electrum Server...", category="message")
+    return redirect("/settings")
 
 @mynode_settings.route("/settings/reset-electrs")
 def reset_electrs_page():
