@@ -102,10 +102,12 @@ def update_bitcoin_main_info_thread():
                 bitcoin_block_height = get_bitcoin_block_height()
                 mynode_block_height = get_mynode_block_height()
                 remaining = bitcoin_block_height - mynode_block_height
-                if remaining == 0 and bitcoin_block_height > 710000:
+                if remaining == 0 and bitcoin_block_height > 820000:
                     synced = True
                     if not os.path.isfile(BITCOIN_SYNCED_FILE):
                         open(BITCOIN_SYNCED_FILE, 'a').close() # touch file
+                    if not os.path.isfile(BITCOIN_SYNCED_AT_LEAST_ONCE):
+                        open(BITCOIN_SYNCED_AT_LEAST_ONCE, 'a').close() # touch file
                 elif remaining > 18:
                     synced = False
                     if os.path.isfile(BITCOIN_SYNCED_FILE):

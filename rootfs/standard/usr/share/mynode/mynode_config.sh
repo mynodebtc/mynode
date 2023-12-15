@@ -34,6 +34,7 @@ if [ -f $IS_TESTNET_ENABLED_FILE ]; then
 fi
 
 BITCOIN_SYNCED_FILE="/mnt/hdd/mynode/.mynode_bitcoin_synced"
+BITCOIN_SYNCED_AT_LEAST_ONCE="/mnt/hdd/mynode/.mynode_bitcoin_synced_at_least_once"
 QUICKSYNC_COMPLETE_FILE="$QUICKSYNC_DIR/.quicksync_complete"
 
 IS_PREMIUM=0
