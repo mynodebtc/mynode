@@ -1,5 +1,8 @@
 gnureadline
 docker-compose
+# Docker package pinned to <7 to prevent btcpayserver issue
+# https://github.com/docker/docker-py/issues/3194
+docker>=6.0.0,<7.0.0
 pipenv
 bcrypt
 pysocks
