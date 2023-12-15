@@ -364,7 +364,7 @@ fi
 BTC_UPGRADE_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/bitcoin-$BTC_VERSION-$ARCH.tar.gz
 BTC_UPGRADE_SHA256SUM_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/SHA256SUMS
 BTC_UPGRADE_SHA256SUM_ASC_URL=https://bitcoincore.org/bin/bitcoin-core-$BTC_VERSION/SHA256SUMS.asc
-BTC_CLI_COMPLETION_URL=https://raw.githubusercontent.com/bitcoin/bitcoin/v$BTC_VERSION/contrib/completions/bash/bitcoin-cli.bash-completion
+BTC_CLI_COMPLETION_URL=https://raw.githubusercontent.com/bitcoin/bitcoin/v$BTC_VERSION/contrib/completions/bash/bitcoin-cli.bash
 CURRENT=""
 if [ -f $BTC_VERSION_FILE ]; then
     CURRENT=$(cat $BTC_VERSION_FILE)
@@ -391,9 +391,9 @@ if [ "$CURRENT" != "$BTC_VERSION" ]; then
             # Mark current version
             echo $BTC_VERSION > $BTC_VERSION_FILE
 
-            # Install bash-completion for bitcoin-cli
-            wget $BTC_CLI_COMPLETION_URL -O bitcoin-cli.bash-completion
-            sudo cp bitcoin-cli.bash-completion /etc/bash_completion.d/bitcoin-cli
+            # Install bash completion for bitcoin-cli
+            wget $BTC_CLI_COMPLETION_URL -O bitcoin-cli.bash
+            sudo cp bitcoin-cli.bash /etc/bash_completion.d/bitcoin-cli
         else
             echo "ERROR UPGRADING BITCOIN - GPG FAILED"
         fi
