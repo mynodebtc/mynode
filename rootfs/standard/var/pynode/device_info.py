@@ -1077,6 +1077,7 @@ def delete_bitcoin_peer_database():
 def delete_bitcoin_data():
     os.system("rm -rf /mnt/hdd/mynode/bitcoin")
     os.system("rm -rf /mnt/hdd/mynode/quicksync/.quicksync_complete")
+    os.system("rm -rf /mnt/hdd/mynode/.mynode_bitcoin_synced_at_least_once")
     #os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpc_environment")
     #os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpcpw")
 
