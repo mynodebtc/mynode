@@ -105,6 +105,27 @@ else
         cat /usr/share/mynode/bitcoin_bip158.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
     fi
 
+    # Add assumevalid setting
+    if [ ! -f /mnt/hdd/mynode/.mynode_bitcoin_synced_at_least_once ]; then
+        rm -f /tmp/bitcoin_assumevalid
+        torify wget https://mynodebtc.com/device_api/get_assumevalid.php --timeout 5 --tries 2 -q -O /tmp/bitcoin_assumevalid || \
+               wget https://mynodebtc.com/device_api/get_assumevalid.php --timeout 5 --tries 2 -q -O /tmp/bitcoin_assumevalid || \
+               true
+        if [ -f /tmp/bitcoin_assumevalid ]; then
+            assumevalid_hash=$(cat /tmp/bitcoin_assumevalid)
+            echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+            echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+            echo "# Dynamic Assume Valid Setting for Faster Initial Sync" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+            if [ "${#assumevalid_hash}" = "64" ]; then
+                echo "assumevalid=$assumevalid_hash" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+            else
+                echo "# BAD HASH" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+            fi
+            echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+            echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        fi
+    fi
+
     # Update Debug Log Settings
     if [ -f /home/bitcoin/.mynode/keep_bitcoin_debug_log ] || [ -f /mnt/hdd/mynode/settings/keep_bitcoin_debug_log ]; then
         sed -i "s/shrinkdebugfile=.*/shrinkdebugfile=0/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
