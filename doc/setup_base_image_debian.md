@@ -4,9 +4,9 @@
 
    Install latest Debian Net-install via CD
    
-   **LATEST TESTED IMAGE (10.11)** <br/>
-   Basic: https://cdimage.debian.org/mirror/cdimage/archive/10.11.0/amd64/iso-cd/ <br/>
-   Additional Firmware: https://cdimage.debian.org/mirror/cdimage/unofficial/non-free/cd-including-firmware/archive/10.11.0+nonfree/amd64/iso-cd/ <br/>
+   **LATEST TESTED IMAGE (12.2)** <br/>
+   Basic: https://cdimage.debian.org/mirror/cdimage/archive/12.2.0/amd64/iso-cd/ <br/>
+   Note: No need to use "Additional Firmware" images any more
    
    **MOST RECENT DEBIAN IMAGES (not tested)** <br/>
    Basic: [https://www.debian.org/CD/netinst/](https://www.debian.org/CD/netinst/) <br/>
@@ -15,7 +15,6 @@
      - Set Ethernet adapter to Bridged Mode
 
    If PC, set PC / UEFI Settings:
-     - Use Debian Image with Firmware
      - Disable Secure Boot
 
    Follow instructions:
