@@ -1,3 +1,14 @@
+=== v0.3.24 ===
+- Released: 12/18/23
+- Upgrade Bitcoin to v26.0
+- Upgrade Lightning Terminal to v0.12.1
+- Upgrade Loop to v0.26.6
+- Upgrade LND to v0.17.2
+- Improved support for Debian 12
+- Added setting for Electrum TX Limit
+- Dynamic setting for assumevalid during initial sync
+- Minor UI Improvements
+
 === v0.3.23 ===
 - Released: 11/05/23
 - Fix issue determining LND status
