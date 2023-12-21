@@ -308,6 +308,8 @@ rm -f /etc/nginx/modules-enabled/50-mod-* || true
 echo "" > /etc/nginx/sites-available/default
 dpkg --configure -a
 
+# Cleanup apt-get cache to save some space
+apt-get clean
 
 # Update users
 usermod -a -G debian-tor bitcoin
@@ -806,6 +808,9 @@ if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
         # Install
         sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket.sh --install install" || true
         sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket-api.sh on" || true
+
+        # Cleanup apt-get cache to save some space
+        apt-get clean
             
         # Enable obwatcher at the end of setup_device.sh
 
