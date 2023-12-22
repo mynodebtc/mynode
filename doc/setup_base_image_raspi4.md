@@ -1,57 +1,42 @@
 # Setup Base Image (Raspberry Pi 4)
 
-1. After Raspi Flash `touch` ssh file on rootfs
+**LATEST TESTED IMAGE (Debian 12 - Bookworm)**
+2023-12-11-raspios-bookworm-arm64-lite.img
 
-2. Login as pi / raspberry
+1. Flash Using Raspberry Pi Images
+   
+   Settings
+   - Enable SSH
+   - Hostname: mynode.local
+   - Username: admin
+   - Password: bolt
+
+2. Login as admin / bolt
 
 3. Run `sudo raspi-config`
 
    - Update 8: Get latest configuration tool
-   - Network Options 2: Hostname -> mynode
-   - Boot Options 3: Choose Desktop / CLI -> Console
-   - Boot Options 3: Wait for Network at Boot
-   - Localisation 4: I2 -> US -> Central
-   - Localisation 4: I4 -> US
-   - Advanced 7: Expand Filesystem
-   - Advanced 7: Memory Split -> 16
+   - System Options 1: Hostname -> mynode
+   - System Options 1- > Boot Options -> Console
+   - Localisation 5: Timezone -> US -> Central
+   - Localisation 5: Keyboard
+   - Advanced 6: Expand Filesystem
    - Exit by selecting <Finish>, and <No> as no reboot is necessary
 
-4. Add admin user
-
-   ```sh
-   sudo useradd -p $(openssl passwd -1 bolt) -m -s /bin/bash admin
-   sudo adduser admin sudo
-   ```
-
-5. Update OS
+4. Update OS
 
    ```sh
    sudo apt-get update
    sudo apt-get -y upgrade
    ```
 
-6. Install some basics
+5. Install some basics
 
    ```sh
    sudo apt-get -y install tmux
    ```
 
-7. Reboot
-
-   ```sh
-   sudo reboot
-   ```
-
-8. Log back in as admin
-
-9. Delete pi user
-
-   ```sh
-   sudo deluser pi
-   sudo rm -rf /home/pi
-   ```
-
-10. Install Log2Ram (Armbian has own solution)
+6. Install Log2Ram (Armbian has own solution)
 
    ```sh
    cd /tmp
@@ -64,14 +49,14 @@
    cd ~
    ```
 
-11. Sync
+7. Sync
 
    ```sh
    sync
    sudo shutdown -h now
    ```
 
-12. Make image now (if imaging)
+8. Make image now (if imaging)
 
     Final results:
 
