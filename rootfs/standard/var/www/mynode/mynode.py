@@ -774,7 +774,8 @@ def before_request():
 def set_response_headers(response):
     # Cache OK responses for 24 hrs
     if response.status_code in [200]:
-        response.headers['Cache-Control'] = 'max-age=86400, private'
+        if "Cache-Control" not in response.headers:
+            response.headers['Cache-Control'] = 'max-age=86400, private'
     else:
         # Prevents 301 from saving forever
         response.headers['Cache-Control'] = 'no-store'
