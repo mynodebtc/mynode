@@ -72,6 +72,11 @@ setup_new_raspi4: start_file_server out/base_images/raspi4_base.img.gz rootfs
 	@cp -f setup/setup_device.sh out/setup_device.sh 
 	@/bin/bash scripts/setup_new_raspi4.sh
 
+.PHONY: setup_new_raspi5
+setup_new_raspi5: start_file_server rootfs 
+	@cp -f setup/setup_device.sh out/setup_device.sh 
+	@/bin/bash scripts/setup_new_raspi5.sh
+
 .PHONY: setup_new_debian
 setup_new_debian: start_file_server out/base_images/debian_base.ova rootfs 
 	@cp -f setup/setup_device.sh out/setup_device.sh 

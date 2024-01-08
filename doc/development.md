@@ -32,6 +32,7 @@ This steps will setup a new device and can be used for making images. These step
     * `make setup_new_rockpro64`
     * `make setup_new_raspi3`
     * `make setup_new_raspi4`
+    * `make setup_new_raspi5`
     * `make setup_new_debian`
     * `make setup_new_other`
 3. Follow Instructions
