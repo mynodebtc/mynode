@@ -21,9 +21,10 @@ IS_ROCKPRO64=0
 IS_RASPI=0
 IS_RASPI3=0
 IS_RASPI4=0
-IS_RASPI4_ARM64=0
+IS_RASPI5=0
 IS_ROCKPI4=0
 IS_X86=0
+IS_ARM64=0
 IS_32_BIT=0
 IS_64_BIT=0
 IS_UNKNOWN=0
@@ -49,10 +50,15 @@ elif [[ $MODEL == *"Raspberry Pi 4"* ]]; then
     IS_32_BIT=1
     UNAME=$(uname -a)
     if [[ $UNAME == *"aarch64"* ]]; then
-        IS_RASPI4_ARM64=1
+        IS_ARM64=1
         IS_32_BIT=0
         IS_64_BIT=1
     fi
+elif [[ $MODEL == *"Raspberry Pi 5"* ]]; then
+    IS_RASPI=1
+    IS_RASPI5=1
+    IS_ARM64=1
+    IS_64_BIT=1
 elif [[ $MODEL == *"ROCK Pi 4"* ]]; then
     IS_ARMBIAN=1
     IS_ROCKPI4=1
@@ -145,6 +151,8 @@ elif [ $IS_RASPI3 = 1 ]; then
     TARBALL="mynode_rootfs_raspi3.tar.gz"
 elif [ $IS_RASPI4 = 1 ]; then
     TARBALL="mynode_rootfs_raspi4.tar.gz"
+elif [ $IS_RASPI5 = 1 ]; then
+    TARBALL="mynode_rootfs_raspi5.tar.gz"
 elif [ $IS_ROCKPI4 = 1 ]; then
     TARBALL="mynode_rootfs_rockpi4.tar.gz"
 elif [ $IS_X86 = 1 ]; then
@@ -365,7 +373,7 @@ if [ -f $HOME/.cargo/env ]; then
         fi
     done
     # Manage rust toolchains
-    if [ $IS_RASPI = 1 ] && [ $IS_RASPI4_ARM64 = 0 ]; then
+    if [ $IS_RASPI = 1 ] && [ $IS_ARM64 = 0 ]; then
         # Install and use desired version
         rustup install $RUST_VERSION
         rustup default $RUST_VERSION
@@ -467,7 +475,7 @@ rm -rf /etc/update-motd.d/*
 ARCH="UNKNOWN"
 if [ $IS_RASPI = 1 ]; then
     ARCH="arm-linux-gnueabihf"
-    if [ $IS_RASPI4_ARM64 = 1 ]; then
+    if [ $IS_ARM64 = 1 ]; then
         ARCH="aarch64-linux-gnu"
     fi
 elif [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ] || [ $IS_ROCKPI4 = 1 ]; then
@@ -524,7 +532,7 @@ LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
 fi
-if [ $IS_RASPI4_ARM64 = 1 ] || [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ] || [ $IS_ROCKPI4 = 1 ]; then
+if [ $IS_ARM64 = 1 ] || [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ] || [ $IS_ROCKPI4 = 1 ]; then
     LND_ARCH="lnd-linux-arm64"
 fi
 LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/$LND_ARCH-$LND_VERSION.tar.gz
@@ -566,7 +574,7 @@ LOOP_ARCH="loop-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LOOP_ARCH="loop-linux-amd64"
 fi
-if [ $IS_RASPI4_ARM64 = 1 ]; then
+if [ $IS_ARM64 = 1 ]; then
     LOOP_ARCH="loop-linux-arm64"
 fi
 LOOP_UPGRADE_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/$LOOP_ARCH-$LOOP_VERSION.tar.gz
@@ -604,7 +612,7 @@ POOL_ARCH="pool-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     POOL_ARCH="pool-linux-amd64"
 fi
-if [ $IS_RASPI4_ARM64 = 1 ]; then
+if [ $IS_ARM64 = 1 ]; then
     POOL_ARCH="pool-linux-arm64"
 fi
 POOL_UPGRADE_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/$POOL_ARCH-$POOL_VERSION.tar.gz
@@ -642,7 +650,7 @@ LIT_ARCH="lightning-terminal-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LIT_ARCH="lightning-terminal-linux-amd64"
 fi
-if [ $IS_RASPI4_ARM64 = 1 ]; then
+if [ $IS_ARM64 = 1 ]; then
     LIT_ARCH="lightning-terminal-linux-arm64"
 fi
 LIT_UPGRADE_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/$LIT_ARCH-$LIT_VERSION.tar.gz
@@ -681,7 +689,7 @@ CHANTOOLS_ARCH="chantools-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     CHANTOOLS_ARCH="chantools-linux-amd64"
 fi
-if [ $IS_RASPI4_ARM64 = 1 ]; then
+if [ $IS_ARM64 = 1 ]; then
     CHANTOOLS_ARCH="chantools-linux-arm64"
 fi
 CHANTOOLS_UPGRADE_URL=https://github.com/lightninglabs/chantools/releases/download/$CHANTOOLS_VERSION/$CHANTOOLS_ARCH-$CHANTOOLS_VERSION.tar.gz

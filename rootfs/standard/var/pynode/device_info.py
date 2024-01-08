@@ -95,7 +95,7 @@ def reload_throttled_data():
 
 def get_throttled_data():
     global cached_data
-    if "get_throttled_data" in cached_data:
+    if "get_throttled_data" in cached_data and cached_data["get_throttled_data"] != "":
         data = cached_data["get_throttled_data"]
         hex_data = int(data, 16)
         r = {}

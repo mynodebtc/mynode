@@ -33,10 +33,10 @@ sed -i "s/index_lookup_limit =.*/index_lookup_limit = $INDEX_LOOKUP_LIMIT/g" /mn
 rm -rf /mnt/hdd/mynode/electrs/mainnet
 
 # Use correct binary on RP4 (32 bit/64bit)
-if [ $IS_RASPI4 -eq 1 ]; then
+if [ $IS_RASPI4 -eq 1 ] || [ $IS_RASPI5 -eq 1 ]; then
     ELECTRS_DST=/usr/bin/electrs
     ELECTRS_SRC=/usr/bin/electrs_arm32
-    if [ $IS_RASPI4_ARM64 -eq 1 ]; then
+    if [ $IS_ARM64 -eq 1 ]; then
         ELECTRS_SRC=/usr/bin/electrs_arm64
     fi
     if [ ! -f $ELECTRS_DST ]; then
