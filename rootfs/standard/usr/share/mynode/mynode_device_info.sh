@@ -7,9 +7,10 @@ IS_ROCKPRO64=0
 IS_RASPI=0
 IS_RASPI3=0
 IS_RASPI4=0
-IS_RASPI4_ARM64=0
+IS_RASPI5=0
 IS_ROCKPI4=0
 IS_X86=0
+IS_ARM64=0
 IS_32_BIT=0
 IS_64_BIT=0
 DEVICE_TYPE="unknown"
@@ -35,10 +36,15 @@ elif [[ $MODEL == *"Raspberry Pi 4"* ]]; then
     IS_32_BIT=1
     UNAME=$(uname -a)
     if [[ $UNAME == *"aarch64"* ]]; then
-        IS_RASPI4_ARM64=1
+        IS_ARM64=1
         IS_32_BIT=0
         IS_64_BIT=1
     fi
+elif [[ $MODEL == *"Raspberry Pi 5"* ]]; then
+    IS_RASPI=1
+    IS_RASPI5=1
+    IS_ARM64=1
+    IS_64_BIT=1
 elif [[ $MODEL == *"ROCK Pi 4"* ]]; then
     IS_ARMBIAN=1
     IS_ROCKPI4=1
@@ -49,6 +55,8 @@ if [ $IS_RASPI3 -eq 1 ]; then
     DEVICE_TYPE="raspi3"
 elif [ $IS_RASPI4 -eq 1 ]; then
     DEVICE_TYPE="raspi4"
+elif [ $IS_RASPI5 -eq 1 ]; then
+    DEVICE_TYPE="raspi5"
 elif [ $IS_ROCKPI4 -eq 1 ]; then
     DEVICE_TYPE="rockpi4"
 elif [ $IS_ROCK64 -eq 1 ]; then
