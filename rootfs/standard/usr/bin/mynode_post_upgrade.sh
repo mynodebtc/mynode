@@ -25,7 +25,7 @@ fi
 # Delete ramlog to prevent ram issues (remake necessary folders)
 rm -rf /var/log/*
 mkdir -p /var/log/nginx
-if [ $IS_RASPI = 1 ]; then
+if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
     log2ram write || true
     log2ram stop || true
 fi
@@ -1077,6 +1077,22 @@ if [ "$CURRENT" != "$RATHOLE_VERSION" ]; then
     install -o root -g root -t /usr/local/bin rathole
 
     echo $RATHOLE_VERSION > $RATHOLE_VERSION_FILE
+fi
+
+# Install Log2Ram
+if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
+    if [ ! -f /usr/local/bin/log2ram ]; then
+        cd /tmp
+        rm -rf log2ram* || true
+        wget https://github.com/azlux/log2ram/archive/v1.2.2.tar.gz -O log2ram.tar.gz
+        tar -xvf log2ram.tar.gz
+        mv log2ram-* log2ram
+        cd log2ram
+        chmod +x install.sh
+        service log2ram stop || true
+        ./install.sh || true
+        cd ~
+    fi
 fi
 
 # Make sure "Remote Access" apps are marked installed
