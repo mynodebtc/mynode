@@ -1,3 +1,11 @@
+=== v0.3.25 ===
+- Released 1/11/24
+- Initial Raspberry Pi 5 Support
+- Add log2ram on x86 devices
+- Fix issue where JM certificates aren not gnerated
+- Fix issue creating legacy wallet for JoinMarket
+- Fix issue where some API requests would return cached data
+
 === v0.3.24 ===
 - Released: 12/18/23
 - Upgrade Bitcoin to v26.0
