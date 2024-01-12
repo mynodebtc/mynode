@@ -451,7 +451,7 @@ npm install -g npm@$NODE_NPM_VERSION
 npm install -g yarn
 
 # Install Log2Ram
-if [ $IS_RASPI = 1 ]; then
+if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
     cd /tmp
     rm -rf log2ram*
     wget https://github.com/azlux/log2ram/archive/v1.2.2.tar.gz -O log2ram.tar.gz
