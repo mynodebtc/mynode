@@ -1,3 +1,11 @@
+=== v0.3.26 ===
+- Released 1/21/24
+- Upgrade Thunderhub to v0.13.30
+- Upgrade RTL to v0.15.0
+- Upgrade LiT to v0.12.2
+- Upgrade LND to v0.17.3
+- Resolve Mempool launch issue
+
 === v0.3.25 ===
 - Released 1/11/24
 - Initial Raspberry Pi 5 Support
