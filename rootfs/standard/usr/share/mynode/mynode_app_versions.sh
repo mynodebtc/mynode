@@ -21,7 +21,7 @@ BTC_VERSION=$(get_app_version "$BTC_VERSION" "bitcoin")
 BTC_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version
 BTC_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version_latest
 
-LND_VERSION="v0.17.2-beta"
+LND_VERSION="v0.17.3-beta"
 LND_VERSION=$(get_app_version "$LND_VERSION" "lnd")
 LND_VERSION_FILE=/home/bitcoin/.mynode/lnd_version
 LND_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnd_version_latest
@@ -44,7 +44,7 @@ POOL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/pool_version_latest
 POOL_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/manifest-$POOL_VERSION.txt
 POOL_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/manifest-$POOL_VERSION.sig
 
-LIT_VERSION="v0.12.1-alpha"
+LIT_VERSION="v0.12.2-alpha"
 LIT_VERSION=$(get_app_version "$LIT_VERSION" "lit")
 LIT_VERSION_FILE=/home/bitcoin/.mynode/lit_version
 LIT_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lit_version_latest
@@ -113,7 +113,7 @@ fi
 DOJO_VERSION_FILE=/mnt/hdd/mynode/settings/dojo_version
 DOJO_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/dojo_version_latest
 
-RTL_VERSION="v0.14.1"
+RTL_VERSION="v0.15.0"
 RTL_VERSION=$(get_app_version "$RTL_VERSION" "rtl")
 RTL_VERSION_FILE=/home/bitcoin/.mynode/rtl_version
 RTL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/rtl_version_latest
@@ -141,7 +141,7 @@ SPECTER_VERSION=$(get_app_version "$SPECTER_VERSION" "specter")
 SPECTER_VERSION_FILE=/home/bitcoin/.mynode/specter_version
 SPECTER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/specter_version_latest
 
-THUNDERHUB_VERSION="v0.13.23"
+THUNDERHUB_VERSION="v0.13.30"
 THUNDERHUB_VERSION=$(get_app_version "$THUNDERHUB_VERSION" "thunderhub")
 THUNDERHUB_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version
 THUNDERHUB_LATEST_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version_latest
