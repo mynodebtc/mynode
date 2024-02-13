@@ -9,7 +9,8 @@ After=mynode.service
 [Service]
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/service_scripts/pre_rathole.sh
-ExecStart=/usr/local/bin/rathole /opt/mynode/rathole/client.toml
+# ExecStart=/usr/local/bin/rathole /opt/mynode/rathole/client.toml
+ExecStart=sleep 30d
 
 User=root
 Group=root
