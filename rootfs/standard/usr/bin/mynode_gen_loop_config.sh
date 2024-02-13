@@ -10,3 +10,7 @@ else
     echo "LND_ADMIN_MACAROON_PATH=/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon"    >> /mnt/hdd/mynode/loop/env
 fi
 chown bitcoin:bitcoin /mnt/hdd/mynode/loop/env
+
+# Copy config file
+cp -f /usr/share/mynode/loopd.conf /mnt/hdd/mynode/loop/loopd.conf
+chown bitcoin:bitcoin /mnt/hdd/mynode/loop/loopd.conf

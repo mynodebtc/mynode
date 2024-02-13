@@ -11,7 +11,7 @@ ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_lnd.sh
 ExecStartPre=+/usr/bin/mynode_gen_pool_config.sh
 EnvironmentFile=-/mnt/hdd/mynode/pool/env
-ExecStart=/usr/local/bin/poold --network=${NETWORK} --basedir=/mnt/hdd/mynode/pool 
+ExecStart=/usr/local/bin/poold --network=${NETWORK} --basedir=/mnt/hdd/mynode/pool --rpclisten=127.0.0.1:12010 --restlisten=127.0.0.1:8281
 
 User=bitcoin
 Group=bitcoin

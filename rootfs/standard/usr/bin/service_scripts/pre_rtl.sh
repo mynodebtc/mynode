@@ -42,5 +42,8 @@ else
     sed -i "s/testnet/mainnet/g" /mnt/hdd/mynode/rtl/RTL-Config.json || true
 fi
 
+# Update for loop connection
+sed -i "s/localhost:8081/127.0.0.1:8081/g" /mnt/hdd/mynode/rtl/RTL-Config.json || true
+
 sync
 sleep 3s
