@@ -666,6 +666,22 @@
                     }
                 });
 
+                $('#i2p_checkbox').change(function () {
+                    $("#i2p").show();
+                });
+                $("#i2p").on("click", function() {
+                    checked=$('#i2p_checkbox').is(":checked")
+                    $('#loading_spinner_overlay').fadeIn();
+                    if (checked)
+                    {
+                        window.location.href='/settings/i2p?enable=1'
+                    }
+                    else
+                    {
+                        window.location.href='/settings/i2p?enable=0'
+                    }
+                });
+
                 $('#tor_repo_checkbox').change(function () {
                     $("#tor_repo").show();
                 });
@@ -962,10 +978,14 @@
                             </label>
                         </td>
                         <td>
+                            {% if is_i2p_enabled %}
                             <label class="switch">
                                 <input type="checkbox" name="btc_i2p_checkbox" {% if is_btc_i2p_enabled %}checked{% endif %}>
                                 <span class="slider round"></span>
                             </label>
+                            {% else %}
+                                disabled
+                            {% endif %}
                         </td>
                     </tr>
                     <tr>
@@ -991,6 +1011,19 @@
                 <br/>
                 <input type="submit" id="btc_lnd_networks_save" class="ui-button ui-widget ui-corner-all" value="Save"/>
             </form>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">I2P</div>
+            A privacy network option, similar to Tor, can be be enabled. Enabling I2P will run the service in the background and it can be used as a network for Bitcoin.
+            <br/><br/>
+            <label class="switch">
+                <input type="checkbox" id="i2p_checkbox" {% if is_i2p_enabled %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <br/><br/>
+            <button id="i2p" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+
 
         </div>
 

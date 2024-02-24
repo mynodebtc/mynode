@@ -1166,7 +1166,6 @@ systemctl enable docker_images
 systemctl enable glances
 systemctl enable webssh2
 systemctl enable tor
-systemctl enable i2pd
 systemctl enable loop
 systemctl enable pool
 systemctl enable rotate_logs
