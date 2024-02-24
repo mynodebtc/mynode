@@ -97,6 +97,7 @@ def page_settings():
         "upload_rate": upload_rate,
         "electrs_tx_lookup_limit": get_electrs_index_lookup_limit(),
         "btcrpcexplorer_token_enabled": is_btcrpcexplorer_token_enabled(),
+        "is_i2p_enabled": is_service_enabled("i2pd"),
         "is_btc_ipv4_enabled": settings_file_exists("btc_ipv4_enabled"),
         "is_btc_tor_enabled": settings_file_exists("btc_tor_enabled"),
         "is_btc_i2p_enabled": settings_file_exists("btc_i2p_enabled"),
@@ -849,6 +850,19 @@ def page_reset_tor_connections():
 
     flash("Tor connections reset", category="message")
     return redirect("/settings")
+
+@mynode_settings.route("/settings/i2p")
+def page_i2p():
+    check_logged_in()
+    
+    enable = request.args.get('enable')
+    if enable == "1":
+        enable_service("i2pd")
+    else:
+        disable_service("i2pd")
+
+    flash("I2P Setting Saved", category="message")
+    return redirect(url_for(".page_settings")) 
 
 @mynode_settings.route("/settings/btcrpcexplorer_token")
 def page_btcrpcexplorer_token():

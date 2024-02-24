@@ -1062,7 +1062,6 @@ systemctl enable redis-server
 #systemctl enable btcrpcexplorer # DISABLED BY DEFAULT
 systemctl enable rtl
 systemctl enable tor
-systemctl enable i2pd
 systemctl enable invalid_block_check
 systemctl enable usb_driver_check
 systemctl enable docker_images
