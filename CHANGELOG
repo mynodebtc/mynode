@@ -1,3 +1,11 @@
+=== v0.3.27 ===
+- Released 3/03/24
+- Upgrade LNBits to v0.12.2
+- Add option to disable I2P
+- Improve internal networking issues with IPv6
+- Fix possible BTC RPC Explorer connection issue
+- Fix issue with RTL connecting to Loop
+
 === v0.3.26 ===
 - Released 1/21/24
 - Upgrade Thunderhub to v0.13.30
