@@ -710,6 +710,18 @@
                     $('#loading_spinner_overlay').fadeIn();
                     window.location.href='/settings/toggle_setting?name=torify_apt_get&enable='+val
                 });
+
+                $("#run-lnbits-cli-superuser").on("click", function() {
+                    $("#run-lnbits-cli-superuser").prop("disabled",true);
+                    $("#run-lnbits-cli-superuser-result").html("Loading...");
+                    $.get("/api/get_lnbits_superuser")
+                        .done(function( data ) {
+                            $("#run-lnbits-cli-superuser").prop("disabled",false);
+                            $("#run-lnbits-cli-superuser-result").html( data["data"] );
+                        }
+                    );
+                });
+
             });
 
             function hideAllUpgradeLogs() {
@@ -1214,6 +1226,24 @@
             <a href="/settings/clear-mempool-cache" class="ui-button ui-widget ui-corner-all settings_button">Clear Cache</a>
         </div>
 
+
+        <div class="settings_block">
+            <a id="lnbits"></a>
+            <div class="settings_block_header">LNbits</div>
+            
+            <div class="settings_block_subheader">Reset LNbits Settings</div>
+            This will delete your LNbits settings from database. This should not impact users, wallets and installed extension data stored in LNbits. When applied LNbits will read its default settings from .env file to database. Use this also if you need reset super user username and password.
+            <br/>
+            <a href="/settings/delete-lnbits-settings" class="ui-button ui-widget ui-corner-all settings_button">Delete Settings</a>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Show LNbits superuser ID</div>
+            Run lnbits-cli superuser command and show usr ID. It is needed to access LNbits admin UI.
+            <br/>
+            <button id="run-lnbits-cli-superuser" class="ui-button ui-widget ui-corner-all settings_button">Show superuser ID</button>
+            <pre id="run-lnbits-cli-superuser-result"></pre>
+        </div>
 
         <div class="settings_block">
             <a id="specter"></a>

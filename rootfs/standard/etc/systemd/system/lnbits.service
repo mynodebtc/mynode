@@ -15,15 +15,15 @@ ExecStartPre=/usr/bin/service_scripts/pre_lnbits.sh
 WorkingDirectory=/opt/mynode/lnbits
 
 ExecStart=/usr/bin/docker run --rm \
-                              --name lnbits-legend \
+                              --name lnbits \
                               -p 5000:5000 \
                               --volume /mnt/hdd/mynode/lnbits/.env:/app/.env \
                               --volume /mnt/hdd/mynode/lnbits/:/app/data \
                               --volume /mnt/hdd/mynode/lnd/tls.cert:/app/tls.cert \
                               --volume /mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon:/app/admin.macaroon \
                               --add-host=host.docker.internal:host-gateway \
-                              lnbits-legend
-ExecStop=/usr/bin/docker stop -t 2 lnbits-legend
+                              lnbits
+ExecStop=/usr/bin/docker stop -t 2 lnbits
 
 User=bitcoin
 Group=bitcoin
