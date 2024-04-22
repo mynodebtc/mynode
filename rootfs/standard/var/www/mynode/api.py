@@ -314,3 +314,21 @@ def api_get_usb_info():
     except Exception as e:
         data["data"] = str(e)
     return generate_api_json_response(data)
+
+@mynode_api.route("/api/get_lnbits_superuser")
+def api_get_lnbits_superuser():
+    check_logged_in()
+
+    data = {}
+    data["status"] = "error"
+    data["data"] = "UNKNOWN"
+    try:
+        info = ""
+
+        info += to_string(subprocess.check_output("cat /mnt/hdd/mynode/lnbits/.super_user", shell=True))
+        info += "\n"
+        data["data"] = info
+        data["status"] = "success"
+    except Exception as e:
+        data["data"] = str(e)
+    return generate_api_json_response(data)

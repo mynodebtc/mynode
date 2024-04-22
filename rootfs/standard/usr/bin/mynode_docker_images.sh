@@ -217,7 +217,7 @@ while true; do
             # Handled in pre_lnbits.sh
 
             # Build lnbits docker container
-            docker build --no-cache -t lnbits-legend .
+            docker build --no-cache -t lnbits .
 
             echo $LNBITS_VERSION > $LNBITS_VERSION_FILE
         fi

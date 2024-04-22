@@ -591,6 +591,16 @@ def reset_thunderhub_config_page():
     flash("Thunderhub Configuration Reset", category="message")
     return redirect("/settings")
 
+@mynode_settings.route("/settings/delete-lnbits-settings")
+def delete_lnbits_settings_page():
+    check_logged_in()
+
+    t = Timer(1.0, delete_lnbits_settings)
+    t.start()
+
+    flash("LNbits Settings Deleted", category="message")
+    return redirect("/settings")
+
 @mynode_settings.route("/settings/reset-specter-config")
 def reset_specter_config_page():
     check_logged_in()
