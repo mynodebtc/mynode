@@ -1229,6 +1229,19 @@ def clear_mempool_cache():
     os.system("systemctl restart mempool")
 
 #==================================
+# LNbits Functions
+#==================================
+def delete_lnbits_settings():
+    os.system("rm -rf /mnt/hdd/mynode/lnbits/.super_user")
+    os.system("/usr/bin/docker run --rm \
+                              --name lnbits-delete-settings \
+                              --volume /mnt/hdd/mynode/lnbits/.env:/app/.env \
+                              --volume /mnt/hdd/mynode/lnbits/:/app/data \
+                              lnbits poetry run lnbits-cli delete-settings")
+    if is_service_enabled("lnbits"):
+        restart_service("lnbits")
+
+#==================================
 # Specter Functions
 #==================================
 def reset_specter_config():
