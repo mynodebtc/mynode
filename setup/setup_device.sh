@@ -829,24 +829,6 @@ if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
     fi
 fi
 
-# Install Whirlpool
-WHIRLPOOL_UPGRADE_URL=https://code.samourai.io/whirlpool/whirlpool-client-cli/uploads/$WHIRLPOOL_UPLOAD_FILE_ID/whirlpool-client-cli-$WHIRLPOOL_VERSION-run.jar
-CURRENT=""
-if [ -f $WHIRLPOOL_VERSION_FILE ]; then
-    CURRENT=$(cat $WHIRLPOOL_VERSION_FILE)
-fi
-if [ "$CURRENT" != "$WHIRLPOOL_VERSION" ]; then
-    sudo -u bitcoin mkdir -p /opt/mynode/whirlpool
-    cd /opt/mynode/whirlpool
-    sudo rm -rf *.jar
-    sudo -u bitcoin wget -O whirlpool.jar $WHIRLPOOL_UPGRADE_URL
-
-    cp -f $TMP_INSTALL_PATH/usr/share/whirlpool/whirlpool.asc whirlpool.asc
-    gpg --verify whirlpool.asc
-
-    echo $WHIRLPOOL_VERSION > $WHIRLPOOL_VERSION_FILE
-fi
-
 
 # Install RTL
 RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/$RTL_VERSION.tar.gz
