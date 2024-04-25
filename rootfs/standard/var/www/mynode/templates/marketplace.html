@@ -43,7 +43,7 @@
 
                 <div class="marketplace_category_container">
                     {% for app in apps %}
-                        {% if app.show_on_application_page and app.category == category.name %}
+                        {% if app.show_on_marketplace_page and app.category == category.name %}
                             <div class="marketplace_app_tile" data-shortname="{{app.short_name}}">
                                 <div class="marketplace_app_tile_left">
                                     <img class="marketplace_app_tile_icon" src="{{ url_for('static', filename="images/app_icons/")}}{{app.short_name}}.png"/>

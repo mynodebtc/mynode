@@ -240,6 +240,7 @@
             <div class="divider"></div>
             {% endif %}
 
+            {% if whirlpool_installed %}
             <div class="settings_block_subheader">Whirlpool Status</div>
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ whirlpool_status_color }}"></div>
@@ -248,7 +249,9 @@
             <button id="show_whirlpool_log" onclick="showLog('whirlpool')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="whirlpool_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{whirlpool_status_log}}</pre></div>
             <div class="divider"></div>
+            {% endif %}
 
+            {% if dojo_installed %}
             <div class="settings_block_subheader">Dojo Status</div>
             <div class="settings_block_subheader_status">
                 <div class="settings_block_subheader_status_icon {{ dojo_status_color }}"></div>
@@ -264,6 +267,7 @@
             <button id="show_dojo_log" onclick="showLog('dojo')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="dojo_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{dojo_status_log}}</pre></div>
             <div class="divider"></div>
+            {% endif %}
 
             <div class="settings_block_subheader">BTCPay Server Status</div>
             <div class="settings_block_subheader_status">
