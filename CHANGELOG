@@ -1,5 +1,14 @@
+=== v0.3.28 ===
+- Released 04/27/24
+- Upgrade Bitcoin to v26.1
+- Upgrade LND to v0.17.4
+- Upgrade LNBits to v0.12.5
+- Upgrade Loop to v0.28.1
+- Resolve issue with debian backports updates
+- Remove Dojo and Whirlpool from Marketplace
+
 === v0.3.27 ===
-- Released 3/03/24
+- Released 03/03/24
 - Upgrade LNBits to v0.12.2
 - Add option to disable I2P
 - Improve internal networking issues with IPv6
@@ -7,7 +16,7 @@
 - Fix issue with RTL connecting to Loop
 
 === v0.3.26 ===
-- Released 1/21/24
+- Released 01/21/24
 - Upgrade Thunderhub to v0.13.30
 - Upgrade RTL to v0.15.0
 - Upgrade LiT to v0.12.2
