@@ -41,6 +41,6 @@ echo "" >> lndg/settings.py
 echo "SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')" >> lndg/settings.py
 
 # Load initial data
-.venv/bin/python jobs.py
+#.venv/bin/python jobs.py
 
 echo "==================== DONE INSTALLING APP ===================="
