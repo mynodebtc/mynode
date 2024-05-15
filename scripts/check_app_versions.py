@@ -19,7 +19,7 @@ priority_apps = [\
     {"name": "apotdevin/thunderhub",                    "current_version_variable": "THUNDERHUB_VERSION"},
     {"name": "openoms/joininbox",                       "current_version_variable": "JOININBOX_VERSION"},
     {"name": "joinmarket-webui/jam",                    "dynamic_app_name":         "jam"},
-    {"name": "dojo/samourai-dojo",                      "current_version_variable": "DOJO_VERSION"},
+    #{"name": "dojo/samourai-dojo",                      "current_version_variable": "DOJO_VERSION"}, # REMOVED
 ]
 other_apps = [\
     {"name": "lightninglabs/chantools",                 "current_version_variable": "CHANTOOLS_VERSION"},
@@ -32,7 +32,7 @@ other_apps = [\
     {"name": "bitromortac/lndmanage",                   "current_version_variable": "LNDMANAGE_VERSION"},
     {"name": "pxsocs/warden_terminal",                  "current_version":          "64e5db1"},
     {"name": "stakwork/sphinx-relay",                   "current_version_variable": "SPHINXRELAY_VERSION"},
-    {"name": "whirlpool/whirlpool-client-cli",          "current_version_variable": "WHIRLPOOL_VERSION"},
+    #{"name": "whirlpool/whirlpool-client-cli",          "current_version_variable": "WHIRLPOOL_VERSION"}, # REMOVED
     {"name": "dojo/samourai-dojo",                      "current_version_variable": "DOJO_VERSION"},
     #{"name": "JoinMarket-Org/joinmarket-clientserver",  "current_version_variable": "JOINMARKET_VERSION"}, # Old, now use within joininbox
     {"name": "curly60e/pyblock",                        "current_version_variable": "PYBLOCK_VERSION"},
