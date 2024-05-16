@@ -38,7 +38,10 @@ def get_bitcoin_rpc_password():
 def get_bitcoin_version():
     global bitcoin_version
     if bitcoin_version == None:
-        bitcoin_version = to_string(subprocess.check_output("bitcoind --version | egrep -o 'v[0-9]+\\.[0-9]+\\.[0-9]+'", shell=True))
+        try:
+            bitcoin_version = to_string(subprocess.check_output("bitcoind --version | egrep -o 'v[0-9]+\\.[0-9]+\\.[a-z0-9]+'", shell=True))
+        except Exception as e:
+            bitcoin_version = "unknown"
     return bitcoin_version
 
 def is_bitcoin_synced():
