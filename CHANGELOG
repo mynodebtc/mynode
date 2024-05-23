@@ -1,3 +1,10 @@
+=== v0.3.29 ===
+- Released 05/23/24
+- Add Bitcoin Knots v26.1
+- Upgrade LNDg to v1.8.0
+- Fix JAM container issue
+- Enable IPv6 system networking
+
 === v0.3.28 ===
 - Released 04/27/24
 - Upgrade Bitcoin to v26.1
