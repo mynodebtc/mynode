@@ -98,6 +98,7 @@ def page_settings():
         "electrs_tx_lookup_limit": get_electrs_index_lookup_limit(),
         "btcrpcexplorer_token_enabled": is_btcrpcexplorer_token_enabled(),
         "is_i2p_enabled": is_service_enabled("i2pd"),
+        "is_ipv6_enabled": not settings_file_exists("ipv6_disabled"),
         "is_btc_ipv4_enabled": settings_file_exists("btc_ipv4_enabled"),
         "is_btc_tor_enabled": settings_file_exists("btc_tor_enabled"),
         "is_btc_i2p_enabled": settings_file_exists("btc_i2p_enabled"),
@@ -1203,6 +1204,8 @@ def page_toggle_setting():
     else:
         flash("Error Updating Setting", category="error")
         return redirect("/settings")
+    
+    custom_settings_file_handler(name, (enable == "1"))
 
     # Restart service if necessary
     service_to_restart = request.args.get('restart_service')

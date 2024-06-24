@@ -682,6 +682,21 @@
                     }
                 });
 
+                $('#ipv6_checkbox').change(function () {
+                    $("#ipv6").show();
+                });
+                $("#ipv6").on("click", function() {
+                    checked=$('#ipv6_checkbox').is(":checked")
+                    // Inverted setting (uses disable flag)              
+                    val = "1"
+                    if (checked)
+                    {
+                        val = "0"
+                    }
+                    $('#loading_spinner_overlay').fadeIn();
+                    window.location.href='/settings/toggle_setting?name=ipv6_disabled&enable='+val+'&reboot=1'
+                });
+
                 $('#tor_repo_checkbox').change(function () {
                     $("#tor_repo").show();
                 });
@@ -1034,6 +1049,18 @@
             </label>
             <br/><br/>
             <button id="i2p" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">IPv6</div>
+            IPv6 can be enabled or disabled. It is enabled by default, but some older nodes may have issues with some apps or connections while enabled, so it can be disabled here.
+            <br/><br/>
+            <label class="switch">
+                <input type="checkbox" id="ipv6_checkbox" {% if is_ipv6_enabled %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <br/><br/>
+            <button id="ipv6" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
 
 
         </div>
