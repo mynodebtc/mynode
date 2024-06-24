@@ -1459,3 +1459,17 @@ def generate_qr_code(url):
     except Exception as e:
         log_message("generate_qr_code exception: {}".format(str(e)))
         return None
+
+#==================================
+# General Settings Functions
+#==================================
+def custom_settings_file_handler(name, enabled):
+    if name == "ipv6_disabled":
+        if enabled:
+            os.system("cp -f /usr/share/mynode/sysctl_noipv6.conf /etc/sysctl.d/10-disableipv6.conf")
+            os.system("sync")
+        else:
+            os.system("rm -f /etc/sysctl.d/10-disableipv6.conf")
+            os.system("sync")
+    else:
+        log_message("No custom setting handler for: "+name)
