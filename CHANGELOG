@@ -1,3 +1,13 @@
+=== v0.3.30 ===
+- Released 07/04/24
+- Upgrade Bitcoin to v27.1
+- Upgrade LND to v0.18.1
+- Upgrade Loop to v0.28.5
+- Upgrade Lightning Terminal to v0.13.1
+- Add option to enable/disable IPv6
+- Device info efficiency improvements
+- Bug fixes
+
 === v0.3.29 ===
 - Released 05/23/24
 - Add Bitcoin Knots v26.1
