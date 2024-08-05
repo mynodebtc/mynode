@@ -15,7 +15,10 @@ IS_32_BIT=0
 IS_64_BIT=0
 DEVICE_TYPE="unknown"
 DEVICE_ARCH=$(uname -m) # Examples: armv7l aarch64 x86_64
-MODEL=$(tr -d '\0' < /proc/device-tree/model) || MODEL="unknown"
+MODEL="unknown"
+if [ -f /proc/device-tree/model ]; then
+    MODEL=$(tr -d '\0' < /proc/device-tree/model) || MODEL="unknown"
+fi
 DEBIAN_VERSION=$(lsb_release -c -s) || DEBIAN_VERSION="unknown"
 uname -a | grep amd64 && IS_X86=1 && IS_64_BIT=1 || true
 if [[ $MODEL == *"Rock64"* ]]; then 
