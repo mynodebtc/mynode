@@ -16,6 +16,22 @@ APP="$1"
 # Stop services so we have plenty of RAM
 /usr/bin/mynode_stop_critical_services.sh
 
+# Determine arch
+ARCH="UNKNOWN"
+if [ $IS_RASPI = 1 ]; then
+    ARCH="arm-linux-gnueabihf"
+    if [ $IS_ARM64 = 1 ]; then
+        ARCH="aarch64-linux-gnu"
+    fi
+elif [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ] || [ $IS_ROCKPI4 = 1 ]; then
+    ARCH="aarch64-linux-gnu"
+elif [ $IS_X86 = 1 ]; then
+    ARCH="x86_64-linux-gnu"
+else
+    echo "Unknown Arch"
+    exit 1
+fi
+
 # Custom re-install steps
 if [ "$APP" = "ordisrespector" ]; then
     apt-get install -y build-essential libtool autotools-dev automake pkg-config bsdmainutils python3
@@ -65,21 +81,6 @@ if [ "$APP" = "ordisrespector" ]; then
 
     cd ~
 elif [ "$APP" = "knots_26_1" ]; then
-    # Determin arch
-    ARCH="UNKNOWN"
-    if [ $IS_RASPI = 1 ]; then
-        ARCH="arm-linux-gnueabihf"
-        if [ $IS_ARM64 = 1 ]; then
-            ARCH="aarch64-linux-gnu"
-        fi
-    elif [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ] || [ $IS_ROCKPI4 = 1 ]; then
-        ARCH="aarch64-linux-gnu"
-    elif [ $IS_X86 = 1 ]; then
-        ARCH="x86_64-linux-gnu"
-    else
-        echo "Unknown Bitcoin Version"
-        exit 1
-    fi
     BTC_UPGRADE_URL=https://bitcoinknots.org/files/26.x/26.1.knots20240513/bitcoin-26.1.knots20240513-$ARCH.tar.gz
 
     rm -rf /opt/download
@@ -95,6 +96,24 @@ elif [ "$APP" = "knots_26_1" ]; then
     echo "26.1-knots" > /home/bitcoin/.mynode/bitcoin_version
     echo "26.1-knots" > /home/bitcoin/.mynode/bitcoin_version_latest_custom
     echo "26.1-knots" > /mnt/hdd/mynode/settings/bitcoin_version_latest_custom
+
+    cd ~
+elif [ "$APP" = "knots_27_1" ]; then
+    BTC_UPGRADE_URL=https://bitcoinknots.org/files/27.x/27.1.knots20240801/bitcoin-27.1.knots20240801-$ARCH.tar.gz
+
+    rm -rf /opt/download
+    mkdir -p /opt/download
+    cd /opt/download
+
+    # Download and install
+    wget $BTC_UPGRADE_URL -O knots.tar.gz
+    tar -xvf knots.tar.gz
+    mv bitcoin-* bitcoin
+    install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
+
+    echo "27.1-knots" > /home/bitcoin/.mynode/bitcoin_version
+    echo "27.1-knots" > /home/bitcoin/.mynode/bitcoin_version_latest_custom
+    echo "27.1-knots" > /mnt/hdd/mynode/settings/bitcoin_version_latest_custom
 
     cd ~
 elif [ "$APP" = "default" ]; then
