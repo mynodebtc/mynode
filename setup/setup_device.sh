@@ -454,17 +454,20 @@ npm install -g yarn
 
 # Install Log2Ram
 if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
-    cd /tmp
-    rm -rf log2ram*
-    wget https://github.com/azlux/log2ram/archive/v1.2.2.tar.gz -O log2ram.tar.gz
-    tar -xvf log2ram.tar.gz
-    mv log2ram-* log2ram
-    cd log2ram
-    chmod +x install.sh
-    service log2ram stop
-    ./install.sh
-    cd ~
+    if [ ! -f /usr/local/bin/log2ram ]; then
+        cd /tmp
+        rm -rf log2ram* || true
+        wget https://github.com/azlux/log2ram/archive/v1.2.2.tar.gz -O log2ram.tar.gz
+        tar -xvf log2ram.tar.gz
+        mv log2ram-* log2ram
+        cd log2ram
+        chmod +x install.sh
+        service log2ram stop || true
+        ./install.sh || true
+        cd ~
+    fi
 fi
+
 
 # Remove existing MOTD login info
 rm -rf /etc/motd
