@@ -62,7 +62,7 @@ ELECTRS_VERSION="v0.9.9"
 ELECTRS_VERSION_FILE=/home/bitcoin/.mynode/electrs_version
 ELECTRS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/electrs_version_latest
 
-MEMPOOL_VERSION="v2.5.0"
+MEMPOOL_VERSION="v3.0.0"
 if [ "$IS_32_BIT" = "1" ]; then
     MEMPOOL_VERSION="v2.3.1"
 fi
