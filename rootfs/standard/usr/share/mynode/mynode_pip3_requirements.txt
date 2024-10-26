@@ -10,6 +10,7 @@ redis
 systemd
 flask>=2.2.2,<2.4.0
 pam
+packaging>=22.0
 python-bitcoinrpc
 prometheus_client
 psutil
