@@ -34,7 +34,8 @@ cat << EOF > /tmp/jam/Dockerfile
 FROM jam-orig:latest
 
 RUN sed -i 's/zone upstreams 64K/zone upstreams 256K/g' /etc/nginx/conf.d/default.conf
+RUN sed -i 's/zone upstreams 64K/zone upstreams 256K/g' /etc/nginx/templates/default.conf.template
 EOF
-docker build -t jam:latest /tmp/jam
+docker build --no-cache -t jam:latest /tmp/jam
 
 echo "================== DONE INSTALLING APP ================="
