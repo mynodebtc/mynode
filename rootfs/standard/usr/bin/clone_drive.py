@@ -74,8 +74,10 @@ def main():
 
     # Detect Source and Target Drives
     mynode_drive = "not_found"
+    mynode_partition = "not_found"
     mynode_found = False
     target_drive = "not_found"
+    target_partition = "not_found"
     target_found = False
     both_drives_have_mynode = False
     for d in drives:
@@ -149,13 +151,21 @@ def main():
     # User asked for rescan, return, script will re-run right away
     if os.path.isfile("/tmp/.clone_rescan"):
         return
+    
+    # Calculate partitions
+    target_partition =  f"{target_drive}1"
+    if "nvme" in target_drive:
+        target_partition =  f"{target_drive}p1"
+    mynode_partition =  f"{mynode_drive}1"
+    if "nvme" in mynode_drive:
+        mynode_partition =  f"{mynode_drive}p1"
 
     # Setup for clone
     set_clone_state("in_progress")
     os.system(f"mkdir -p /tmp/drive1")
     os.system(f"mkdir -p /tmp/drive2")
-    os.system(f"umount /dev/{mynode_drive}1")
-    os.system(f"umount /dev/{target_drive}1")
+    os.system(f"umount /dev/{mynode_partition}")
+    os.system(f"umount /dev/{target_partition}")
 
     # Update partitions (removes all + makes new without removing data)
     log_message("Formatting Drive...")
@@ -168,14 +178,14 @@ def main():
     # Make new partition on dest drive
     log_message("Creating Partition...")
     os.system("echo 'Creating Partition...' > /tmp/.clone_progress")
-    subprocess.check_output(f"mkfs.ext4 -F -L MyNode /dev/{target_drive}1", shell=True)
+    subprocess.check_output(f"mkfs.ext4 -F -L MyNode /dev/{target_partition}", shell=True)
     time.sleep(2)
 
     # Mounting Partitions
     log_message("Mounting Partitions...")
     os.system("echo 'Mounting Partitions...' > /tmp/.clone_progress")
-    subprocess.check_output(f"mount /dev/{mynode_drive}1 /tmp/drive1", shell=True)
-    subprocess.check_output(f"mount /dev/{target_drive}1 /tmp/drive2", shell=True)
+    subprocess.check_output(f"mount /dev/{mynode_partition} /tmp/drive1", shell=True)
+    subprocess.check_output(f"mount /dev/{target_partition} /tmp/drive2", shell=True)
 
     # Clone drives
     os.system("echo 'Starting clone.' > /tmp/.clone_progress")
