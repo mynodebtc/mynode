@@ -109,6 +109,11 @@ def is_device_detected_by_fdisk(d):
         detected = True
     except:
         pass
+
+    # Fdisk can't see nvme drives, so assume true for them
+    if "nvme" in d:
+        detected = True
+
     return detected
 
 def find_unmounted_drives():
