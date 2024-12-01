@@ -24,16 +24,21 @@ def is_uas_forced():
 
 def device_checks_uas():
     d = get_device_type()
-    if (d == "raspi4" or d == "rockpi4"):
+    if (d == "raspi4" or d == "raspi5" or d == "rockpi4"):
         return True
     return False
 
 def has_quirks_setting():
     d = get_device_type()
-    if d == "raspi4":
-        line = run_linux_cmd("head -n 1 /boot/cmdline.txt")
-        if "usb-storage.quirks=" in line:
-            return True
+    if d == "raspi4" or d == "raspi5":
+        if os.path.isfile("/boot/firmware/cmdline.txt"):
+            line = run_linux_cmd("head -n 1 /boot/firmware/cmdline.txt")
+            if "usb-storage.quirks=" in line:
+                return True
+        elif os.path.isfile("/boot/cmdline.txt"):
+            line = run_linux_cmd("head -n 1 /boot/cmdline.txt")
+            if "usb-storage.quirks=" in line:
+                return True
     elif d == "rockpi4":
         lines = run_linux_cmd("cat /boot/armbianEnv.txt")
         if "usbstoragequirks=" in lines:
@@ -46,14 +51,19 @@ def get_current_usb_quirks():
     d = get_device_type()
     quirks = []
     try:
-        if d == "raspi4":
-            if os.path.isfile("/boot/cmdline.txt"):
+        if d == "raspi4" or d == "raspi5":
+            if os.path.isfile("/boot/firmware/cmdline.txt"):
+                content = run_linux_cmd("head -n 1 /boot/firmware/cmdline.txt")
+                m = re.search("usb-storage.quirks=(.+)", content)
+                quirks_string = m.group(1)
+                quirks = quirks_string.split(",")
+            elif os.path.isfile("/boot/cmdline.txt"):
                 content = run_linux_cmd("head -n 1 /boot/cmdline.txt")
                 m = re.search("usb-storage.quirks=(.+)", content)
                 quirks_string = m.group(1)
                 quirks = quirks_string.split(",")
             else:
-                raise Exception("Missing file: /boot/cmdline.txt")
+                raise Exception("Missing file: /boot/cmdline.txt and /boot/firmware/cmdline.txt")
         elif d == "rockpi4":
             if os.path.isfile("/boot/armbianEnv.txt"):
                 content = run_linux_cmd("cat /boot/armbianEnv.txt")
@@ -71,7 +81,7 @@ def get_current_usb_quirks():
 def generate_quirks_string(quirks_list):
     quirks_string = ""
     d = get_device_type()
-    if d == "raspi4":
+    if d == "raspi4" or d == "raspi5":
         quirks_string += "usb-storage.quirks="
     elif d == "rockpi4":
         quirks_string += "usbstoragequirks="
@@ -89,8 +99,11 @@ def update_usb_quirks(quirks_list):
     log_message("Updating Quirks: {}".format(quirks_string))
     if has_quirks_setting():
         # Update Quirks
-        if d == "raspi4":
-            run_linux_cmd("sed -i \"s/usb-storage.quirks=.*/"+quirks_string+"/g\" /boot/cmdline.txt")
+        if d == "raspi4" or d == "raspi5":
+            if os.path.isfile("/boot/firmware/cmdline.txt"):
+                run_linux_cmd("sed -i \"s/usb-storage.quirks=.*/"+quirks_string+"/g\" /boot/firmware/cmdline.txt")
+            elif os.path.isfile("/boot/cmdline.txt"):
+                run_linux_cmd("sed -i \"s/usb-storage.quirks=.*/"+quirks_string+"/g\" /boot/cmdline.txt")
         elif d == "rockpi4":
             run_linux_cmd("sed -i \"s/usbstoragequirks=.*/"+quirks_string+"/g\" /boot/armbianEnv.txt")
             run_linux_cmd("mkimage -C none -A arm -T script -d /boot/boot.cmd /boot/boot.scr")
@@ -98,10 +111,15 @@ def update_usb_quirks(quirks_list):
             raise Exception("Unexpected Device Type")
     else:
         # Add Quirks
-        if d == "raspi4":
-            contents = run_linux_cmd("head -n 1 /boot/cmdline.txt").strip()
-            contents += " " + quirks_string
-            set_file_contents("/boot/cmdline.txt", contents)
+        if d == "raspi4" or d == "raspi5":
+            if os.path.isfile("/boot/firmware/cmdline.txt"):
+                contents = run_linux_cmd("head -n 1 /boot/firmware/cmdline.txt").strip()
+                contents += " " + quirks_string
+                set_file_contents("/boot/firmware/cmdline.txt", contents)
+            elif os.path.isfile("/boot/cmdline.txt"):
+                contents = run_linux_cmd("head -n 1 /boot/cmdline.txt").strip()
+                contents += " " + quirks_string
+                set_file_contents("/boot/cmdline.txt", contents)
         elif d == "rockpi4":
             # Rock pi 4 normally never has this missing, if so, need updates
             run_linux_cmd("sed -i \"s/usbstoragequirks=.*/"+quirks_string+"/g\" /boot/armbianEnv.txt")
@@ -143,6 +161,7 @@ def get_required_usb_quirks():
 
     # Add known devices
     required_quirks.append("174c:55aa:u") # ASMedia Technology Inc.
+    required_quirks.append("174c:1153:u") # ASMedia Technology Inc.
     required_quirks.append("152d:1561:u") # JMicron Technology Corp.
     required_quirks.append("152d:0578:u") # JMicron Technology Corp.
 
