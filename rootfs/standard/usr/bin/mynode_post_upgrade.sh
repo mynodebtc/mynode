@@ -373,6 +373,15 @@ if [ -f $BTC_VERSION_FILE ]; then
     CURRENT=$(cat $BTC_VERSION_FILE)
 fi
 if [ "$CURRENT" != "$BTC_VERSION" ]; then
+    # Fix - check if custom name is in bitcoin version and clear custom files
+    # Fixes issue if SD card was reflashed, but custom bitcoin version had been installed prior
+    # and we still have custom marker files on the data drive. This install may fail, but subsequent
+    # attempts will succeed.
+    if [[ "$BTC_VERSION" = *"knots"* ]] || [[ "$BTC_VERSION" = *"ordisrespector"* ]]; then
+        rm -f /home/bitcoin/.mynode/bitcoin_version_latest_custom
+        rm -f /mnt/hdd/mynode/settings/bitcoin_version_latest_custom
+    fi
+
     # Download and install Bitcoin
     rm -rf /opt/download
     mkdir -p /opt/download
