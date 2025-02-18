@@ -1,3 +1,7 @@
+=== v0.3.33 ===
+- Released 02/17/25
+- Resolve python exception issue
+
 === v0.3.32 ===
 - Released 12/30/24
 - Add NVMe support to Clone Tool
