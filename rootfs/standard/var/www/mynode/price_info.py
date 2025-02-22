@@ -40,9 +40,10 @@ def update_price_info():
     if get_ui_setting("price_ticker"):
         price = "N/A"
         try:
-            price_json_string = to_string(subprocess.check_output("torify curl --max-time 15 --silent https://api.coindesk.com/v1/bpi/currentprice.json", shell=True))
+            price_api_endpoint = "https://blockchain.info/ticker"
+            price_json_string = to_string(subprocess.check_output(f"torify curl --max-time 15 --silent {price_api_endpoint}", shell=True))
             data = json.loads(price_json_string)
-            price = data["bpi"]["USD"]["rate_float"]
+            price = data["USD"]["last"]
 
         except Exception as e:
             log_message("update_price_info EXCEPTION: {}".format(str(e)))
