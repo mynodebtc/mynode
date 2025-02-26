@@ -7,6 +7,7 @@ pipenv
 bcrypt
 pysocks
 redis
+requests<=2.31.0
 cysystemd<2.0.0
 systemd
 flask>=2.2.2,<2.4.0
