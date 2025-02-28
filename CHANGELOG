@@ -1,3 +1,10 @@
+=== v0.3.34 ===
+- Released 02/27/25
+- Fix issue launching Mempool
+- Fix upgrade issue on Buster
+- Fix display of bitcoin peer ping time to correct value
+- Fix issue with Price Ticker price not being found
+
 === v0.3.33 ===
 - Released 02/17/25
 - Resolve python exception issue
