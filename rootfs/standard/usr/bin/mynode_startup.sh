@@ -14,6 +14,9 @@ if [ ! -w / ]; then
     mount -o remount,rw /;
 fi
 
+# Improve write times, especially if running off USB flash drive
+sudo mount -o remount,noatime /
+
 # Set sticky bit on /tmp
 chmod +t /tmp
 
