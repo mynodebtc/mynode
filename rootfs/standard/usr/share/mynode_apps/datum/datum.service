@@ -1,0 +1,31 @@
+# datum service
+# /etc/systemd/system/datum.service
+
+[Unit]
+Description=datum
+Wants=www.service docker_images.service
+After=www.service docker_images.service
+
+[Service]
+WorkingDirectory=/opt/mynode/datum
+
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_datum.sh ]; then /bin/bash /usr/bin/service_scripts/pre_datum.sh; fi'
+ExecStart=/opt/mynode/datum/datum_gateway -c /mnt/hdd/mynode/datum/datum_config.json
+ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_datum.sh ]; then /bin/bash /usr/bin/service_scripts/post_datum.sh; fi'
+#ExecStop=FILL_IN_EXECSTOP_AND_UNCOMMENT_IF_NEEDED
+
+User=bitcoin
+Group=bitcoin
+Type=simple
+TimeoutSec=120
+Restart=always
+RestartSec=60
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=datum
+
+LimitNOFILE=4096
+
+[Install]
+WantedBy=multi-user.target
