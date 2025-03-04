@@ -45,11 +45,12 @@
         {
             "heading": "Instructions",
             "content": [
-                "Add general usage instructions here. You can open the app with the Open button on the left (if web based).",
-                "For more custom content, update the template and python files under the 'www' folder.",
-                "Paragraph 3",
-                "Paragraph 4",
-                "Enjoy!"
+                "If you want to mine with OEAN then enter these informations into your miners:",
+                "Stratum URL: <Your node IP>:23334",
+                "User: <Your Bitcoin address>",
+                "Password: x",
+                "",
+                "If you want to solo mine, please edit datum conf at /opt/mynode/datum/datum_config.json"
             ]
         }
     ],
