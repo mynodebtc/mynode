@@ -648,7 +648,7 @@ def create_application_tor_service(app_data):
     if "http_port" in app_data and app_data["http_port"] != None:
         contents += "HiddenServicePort 80 127.0.0.1:{}\n".format(app_data["http_port"])
         has_ports = True
-    if "http_port" in app_data and app_data["http_port"] != None:
+    if "https_port" in app_data and app_data["https_port"] != None:
         contents += "HiddenServicePort 443 127.0.0.1:{}\n".format(app_data["https_port"])
         has_ports = True
     if "extra_ports" in app_data and app_data["extra_ports"] != None:
@@ -676,10 +676,10 @@ def install_application_tarball(app_data):
     # Download and extract
     if not app_data["download_skip"]:
         download_url = "not_specified"
-        if app_data["download_type"] == "source" and "download_source_url" == None:
+        if app_data["download_type"] == "source" and app_data["download_source_url"] == None:
             log_message("  APP MISSING SOURCE DOWNLOAD URL")
             raise ValueError("APP MISSING SOURCE DOWNLOAD URL")
-        if app_data["download_type"] == "binary" and "download_binary_url" == None:
+        if app_data["download_type"] == "binary" and app_data["download_binary_url"] == None:
             log_message("  APP MISSING BINARY DOWNLOAD URL")
             raise ValueError("APP MISSING BINARY DOWNLOAD URL")
 
@@ -690,6 +690,7 @@ def install_application_tarball(app_data):
             for arch in app_data["download_binary_url"]:
                 if arch == get_device_arch():
                     download_url = app_data["download_binary_url"][arch]
+                    found = True
             if not found:
                 log_message("  CANNOT FIND BINARY URL FOR APP: {} CURRENT ARCH: {}".format(app_data["short_name"], get_device_arch()))
         else:
