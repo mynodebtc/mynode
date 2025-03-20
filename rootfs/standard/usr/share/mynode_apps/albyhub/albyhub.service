@@ -1,0 +1,30 @@
+# albyhub service
+# /etc/systemd/system/albyhub.service
+
+[Unit]
+Description=albyhub
+Wants=www.service docker_images.service
+After=www.service docker_images.service
+
+[Service]
+WorkingDirectory=/opt/mynode/albyhub
+
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_albyhub.sh ]; then /bin/bash /usr/bin/service_scripts/pre_albyhub.sh; fi'
+ExecStart=docker run --rm \
+  --name albyhub \
+  --publish 8080:8080 \
+  --volume /mnt/hdd/mynode/albyhub/.albyhub-data:/data \
+  --env WORK_DIR='/data' \
+  albyhub
+ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_albyhub.sh ]; then /bin/bash /usr/bin/service_scripts/post_albyhub.sh; fi'
+ExecStop=docker stop -t 2 albyhub
+
+Type=simple
+TimeoutSec=120
+Restart=always
+RestartSec=60
+SyslogIdentifier=albyhub
+
+[Install]
+WantedBy=multi-user.target
