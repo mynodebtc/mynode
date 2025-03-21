@@ -464,6 +464,7 @@ chown -R joinmarket:joinmarket /mnt/hdd/mynode/joinmarket
 
 # Setup Mempool
 # Moved to pre_mempool.sh
+chown -R mempool:mempool /mnt/hdd/mynode/mempool
 
 # Setup Netdata
 mkdir -p /opt/mynode/netdata
