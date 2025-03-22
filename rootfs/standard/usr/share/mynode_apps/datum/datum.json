@@ -1,0 +1,69 @@
+{
+    "name": "DATUM",
+    "short_name": "datum",
+    "author": {
+        "name": "OCEAN",
+        "link": "https://ocean.xyz"
+    },
+    "website": {
+        "name": "GitHub",
+        "link": "https://github.com/OCEAN-xyz/datum_gateway"
+    },
+    "category": "bitcoin_app",
+    "short_description": "Self-sovereign Bitcoin mining",
+    "description": [
+        "DATUM (Decentralized Alternative Templates for Universal Mining) is a brand new bitcoin mining protocol that allows you to create your own block templates using your own Bitcoin node."
+    ],
+    "latest_version": "v0.3.1",
+    "supported_archs": ["aarch64","x86_64"],
+    "download_skip": true,
+    "download_type": "source",
+    "download_source_url": "https://github.com/OCEAN-xyz/datum_gateway/archive/refs/tags/{VERSION}beta.tar.gz",
+    "download_binary_url": {
+        "aarch64": "",
+        "x86_64": ""
+    },
+    "install_env_vars": {},
+    "supports_app_page": true,
+    "supports_testnet": false,
+    "http_port": 21000,
+    "https_port": 21001,
+    "requires_bitcoin": true,
+    "requires_docker_image_installation": false,
+    "requires_electrs": false,
+    "requires_lightning": false,
+    "show_on_application_page": true,
+    "show_on_homepage": true,
+    "show_on_status_page": true,
+    "hide_status_icon": false,
+    "app_tile_name": "Datum",
+    "app_tile_running_status_text": "Running",
+    "app_tile_button_text": "Info",
+    "app_tile_button_href": "/app/datum/info",
+    "app_page_show_open_button": true,
+    "app_page_content": [
+        {
+            "heading": "Instructions",
+            "content": [
+                "⚠️ Dont forget to add your Bitcoin address in the GUI otherwise DATUM won't start.",
+        		"The user is \"admin\" and the password is \"bolt\"",
+                "If you want to mine with OEAN then enter these informations into your miners:",
+                "Stratum URL: <Your node IP>:23334",
+                "User: <Your Bitcoin address>",
+                "Password: x",
+                "",
+                "If you want to solo mine, please edit datum conf at /mnt/hdd/mynode/datum/datum_config.json",
+                "It's recommended to add this to your bitcoin.conf to avoid mining stale work: \"blocknotify=curl -s -m 5 http://127.0.0.1:21000/NOTIFY\""
+            ]
+        }
+    ],
+    "can_uninstall": true,
+    "can_reinstall": true,
+    "can_enable_disable": true,
+    "is_beta": false,
+    "is_premium": false,
+    "homepage_section": "apps",
+    "homepage_order": 91,
+    "app_type": "custom",
+    "sdk_version": 2
+}
