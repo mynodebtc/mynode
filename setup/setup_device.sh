@@ -267,6 +267,7 @@ apt-get -y install sqlite3 libsqlite3-dev torsocks python3-requests libsystemd-d
 apt-get -y install libjpeg-dev zlib1g-dev psmisc hexyl libbz2-dev liblzma-dev netcat-openbsd
 apt-get -y install hdparm iotop nut obfs4proxy libpq-dev socat btrfs-progs i2pd apparmor pass
 apt-get -y install gdisk xxd
+apt-get -y install cmake pkgconf libcurl4-openssl-dev libjansson-dev libmicrohttpd-dev libsodium-dev
 
 # Install Java
 apt-get -y install default-jre

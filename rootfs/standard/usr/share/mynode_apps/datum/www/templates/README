@@ -1,0 +1,3 @@
+Custom Jinja templates (HTML files) can be added here for unique application pages
+
+Templates will be available under applications/<short_name>/xyz.html
