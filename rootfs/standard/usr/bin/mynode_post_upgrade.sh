@@ -138,6 +138,7 @@ if ! skip_base_upgrades ; then
     $TORIFY apt-get -y install torsocks python3-requests libsystemd-dev libjpeg-dev zlib1g-dev psmisc
     $TORIFY apt-get -y install hexyl libbz2-dev liblzma-dev netcat-openbsd hdparm iotop nut obfs4proxy
     $TORIFY apt-get -y install libpq-dev socat btrfs-progs i2pd apparmor pass gdisk xxd
+    $TORIFY apt-get -y install cmake pkgconf libcurl4-openssl-dev libjansson-dev libmicrohttpd-dev libsodium-dev
 
     # Install Java
     $TORIFY apt-get -y install default-jre
