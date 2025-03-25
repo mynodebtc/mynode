@@ -316,12 +316,21 @@ def get_device_arch():
     cached_data["device_arch"] = arch
     return arch
 
+def get_debian_codename():
+    global cached_data
+    if "debian_codename" in cached_data:
+        return cached_data["debian_codename"]
+
+    debian_codename = to_string(subprocess.check_output("lsb_release -c -s", shell=True).decode("utf-8").strip())
+    cached_data["debian_codename"] = debian_codename
+    return debian_codename
+
 def get_debian_version():
     global cached_data
     if "debian_version" in cached_data:
         return cached_data["debian_version"]
 
-    debian_version = to_string(subprocess.check_output("lsb_release -c -s", shell=True).decode("utf-8").strip())
+    debian_version = int(to_string(subprocess.check_output("lsb_release -r -s", shell=True).decode("utf-8").strip()))
     cached_data["debian_version"] = debian_version
     return debian_version
 
