@@ -106,6 +106,7 @@ def check_in(check_for_updates):
                 "device_type": get_device_type(),
                 "device_arch": get_device_arch(),
                 "debian_version": get_debian_version(),
+                "debian_codename": get_debian_codename(),
                 "version": get_current_version(),
                 "product_key": product_key,
                 "drive_size": get_mynode_drive_size(),
