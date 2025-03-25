@@ -172,6 +172,14 @@ def replace_app_info_variables(app_data, text):
     text = text.replace("{LOCAL_IP_ADDRESS}", get_local_ip())
     return text
 
+def get_app_not_supported_reason(app):
+    if get_debian_version() < app["minimum_debian_version"]:
+        return "Requires Debian "+app["minimum_debian_version"]+"+"
+    return ""
+
+def is_app_supported(app):
+    return get_app_not_supported_reason(app) == ""
+
 def initialize_application_defaults(app):
     if not "name" in app: app["name"] = "NO_NAME"
     if not "short_name" in app: app["short_name"] = "NO_SHORT_NAME"
@@ -185,6 +193,7 @@ def initialize_application_defaults(app):
     if not "app_tile_name" in app: app["app_tile_name"] = app["name"]
     if not "linux_user" in app: app["linux_user"] = "bitcoin"
     if not "supported_archs" in app: app["supported_archs"] = None 
+    if not "minimum_debian_version" in app: app["minimum_debian_version"] = 10
     if not "download_skip" in app: app["download_skip"] = False
     if not "download_type" in app: app["download_type"] = "source"      # source or binary
     if not "download_source_url" in app: app["download_source_url"] = "not_specified"
@@ -247,6 +256,10 @@ def initialize_application_defaults(app):
         for j,line in enumerate(section["content"]):
             section["content"][j] = replace_app_info_variables(app, line)
         app["app_page_content"][i] = section
+
+    # Check if app is supported
+    app["is_supported"] = is_app_supported(app)
+    app["not_supported_reason"] = get_app_not_supported_reason(app)
 
     return app
 
