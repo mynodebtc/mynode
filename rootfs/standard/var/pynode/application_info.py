@@ -174,7 +174,7 @@ def replace_app_info_variables(app_data, text):
 
 def get_app_not_supported_reason(app):
     if get_debian_version() < app["minimum_debian_version"]:
-        return "Requires Debian "+app["minimum_debian_version"]+"+"
+        return "Requires Debian "+str(app["minimum_debian_version"])+"+"
     return ""
 
 def is_app_supported(app):
