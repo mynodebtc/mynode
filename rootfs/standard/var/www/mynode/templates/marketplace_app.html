@@ -62,26 +62,31 @@
                     <br/>
 
                     {% if not product_key_skipped or product_key_skipped and not app.is_premium %}
-                        <!-- On Marketplace, only show install / uninstall (app pages show others) -->
-                        {% if not app.is_installed %}
-                            <!-- Install -->
-                            <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button install_button" onclick="install('{{ app.name }}', '{{ app.short_name }}');">Install</button>
+                        {% if app.is_supported %}
+                            <!-- On Marketplace, only show install / uninstall (app pages show others) -->
+                            {% if not app.is_installed %}
+                                <!-- Install -->
+                                <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button install_button" onclick="install('{{ app.name }}', '{{ app.short_name }}');">Install</button>
 
-                            {% if app.is_manually_added %}
-                                <br/><br/>
-                                <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button uninstall_button" onclick="remove_from_device('{{ app.name }}', '{{ app.short_name }}');">Remove from Device</button>
+                                {% if app.is_manually_added %}
+                                    <br/><br/>
+                                    <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button uninstall_button" onclick="remove_from_device('{{ app.name }}', '{{ app.short_name }}');">Remove from Device</button>
+                                {% endif %}
+                            {% else %}
+                                <!-- Upgrade / Re-install / Uninstall -->
+                                {% if app.current_version != app.latest_version %}
+                                    <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button install_button" onclick="upgrade('{{ app.name }}', '{{ app.short_name }}');">Upgrade</button>
+                                {% endif %}
+                                {% if app.can_reinstall %}
+                                    <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button" onclick="reinstall('{{ app.name }}', '{{ app.short_name }}');">Reinstall</button>
+                                {% endif %}
+                                {% if app.can_uninstall %}
+                                    <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button uninstall_button" onclick="uninstall('{{ app.name }}', '{{ app.short_name }}', 'marketplace_app');">Uninstall</button>
+                                {% endif %}
                             {% endif %}
                         {% else %}
-                            <!-- Upgrade / Re-install / Uninstall -->
-                            {% if app.current_version != app.latest_version %}
-                                <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button install_button" onclick="upgrade('{{ app.name }}', '{{ app.short_name }}');">Upgrade</button>
-                            {% endif %}
-                            {% if app.can_reinstall %}
-                                <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button" onclick="reinstall('{{ app.name }}', '{{ app.short_name }}');">Reinstall</button>
-                            {% endif %}
-                            {% if app.can_uninstall %}
-                                <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button uninstall_button" onclick="uninstall('{{ app.name }}', '{{ app.short_name }}', 'marketplace_app');">Uninstall</button>
-                            {% endif %}
+                            <p style="font-size: 14px; text-align: center;"><i>App Not Supported</i></p>
+                            <p style="font-size: 10px; text-align: center;">{{app.not_supported_reason}}</p>
                         {% endif %}
                     {% else %}
                         <p style="font-size: 14px; text-align: center;"><i>Premium Feature</i></p>
