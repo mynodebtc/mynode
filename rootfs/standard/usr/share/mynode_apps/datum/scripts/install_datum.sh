@@ -11,15 +11,18 @@ echo \"==================== INSTALLING APP ====================\"
 # export bitcoin password
 BTCPSW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
 
+# GIT VERIFY IS FAILING DUE TO EXPIRED KEY
+# USE GITHUB TARBALL FOR INSTALL FOR NOW
+
 # git clone datum repo
-git clone https://github.com/OCEAN-xyz/datum_gateway.git .
+#git clone https://github.com/OCEAN-xyz/datum_gateway.git .
 
 # verify datum
-curl -L "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x1a3e761f19d2cc7785c5502ea291a2c45d0c504a" | gpg --import
-git verify-tag ${VERSION}beta
+#curl -L "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x1a3e761f19d2cc7785c5502ea291a2c45d0c504a" | gpg --import
+#git verify-tag ${VERSION}beta
 
 # checkout the tag
-git checkout ${VERSION}beta
+#git checkout ${VERSION}beta
 
 # build datum
 cmake . && make
