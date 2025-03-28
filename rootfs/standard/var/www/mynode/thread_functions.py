@@ -172,7 +172,7 @@ def find_public_ip():
     global public_ip
 
     #urls = ["https://mynodebtc.com/device_api/get_public_ip.php"]
-    urls = ["https://api.ipify.org/","https://ip.seeip.org/","https://ip.seeip.org"]
+    urls = ["https://api.ipify.org/","https://api.seeip.org"]
     url = random.choice(urls)
 
     # Get public IP
