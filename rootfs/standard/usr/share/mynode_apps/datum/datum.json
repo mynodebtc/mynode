@@ -48,7 +48,7 @@
             "content": [
                 "⚠️ Dont forget to add your Bitcoin address in the GUI otherwise DATUM won't start.",
         		"The user is \"admin\" and the password is \"bolt\"",
-                "If you want to mine with OEAN then enter these informations into your miners:",
+                "If you want to mine with OCEAN then enter this information into your miners:",
                 "Stratum URL: <Your node IP>:23334",
                 "User: <Your Bitcoin address>",
                 "Password: x",

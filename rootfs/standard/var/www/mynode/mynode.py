@@ -171,8 +171,8 @@ def index():
     elif status == STATE_ROOTFS_READ_ONLY:
         templateData = {
             "title": "Error",
-            "header_text": "SD Card Error",
-            "subheader_text": "The root filesystem is read only. Your SD card may be corrupt.",
+            "header_text": "OS Drive Error",
+            "subheader_text": "The root filesystem is read only. Your SD card or USB thumdrive may be corrupt.",
             "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
