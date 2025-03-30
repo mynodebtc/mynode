@@ -1,3 +1,13 @@
+=== v0.3.35 ===
+- Released 03/29/25
+- Add Datum Gateway v0.3.1
+- Add Bitcoin Knots v28.1
+- Upgrade Tailscale to v1.78.1
+- Change references from SD Card to OS Drive
+- Fix possible issue with Mempool file permissions
+- Minor speed improvements
+- Minor bug fixes
+
 === v0.3.34 ===
 - Released 02/27/25
 - Fix issue launching Mempool
