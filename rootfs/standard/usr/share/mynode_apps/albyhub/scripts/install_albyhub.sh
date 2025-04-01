@@ -18,7 +18,7 @@ echo "==================== INSTALLING APP ===================="
 # TODO: Perform installation steps here
 
 # Make dir that will be volume mounted to the container
-mkdir -p $MYNODE_DIR/albyhub/.albyhub-data || true
+mkdir -p /mnt/hdd/mynode/albyhub/.albyhub-data || true
 
 # Clear any old images
 docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'albyhub') || true
