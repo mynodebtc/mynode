@@ -14,7 +14,7 @@ ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_albyhub.sh ]; th
 ExecStart=docker run --rm \
   --name albyhub \
   --publish 8080:8080 \
-  --volume /mnt/hdd/mynode/albyhub/.albyhub-data:/data \
+  --volume /mnt/hdd/mynode/albyhub:/data \
   --env WORK_DIR='/data' \
   albyhub
 ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_albyhub.sh ]; then /bin/bash /usr/bin/service_scripts/post_albyhub.sh; fi'

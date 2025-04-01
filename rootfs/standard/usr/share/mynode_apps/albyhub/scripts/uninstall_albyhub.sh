@@ -16,4 +16,9 @@ docker rmi $(sudo docker images --format '{{.Repository}}:{{.Tag}}' | grep 'ghcr
 # if source build docked used
 #docker rmi $(sudo docker images --format '{{.Repository}}:{{.Tag}}' | grep 'albyhub') || true
 
+# TODO - Implement backup!
+#
+# do not
+#rm -rfv /mnt/hdd/mynode/albyhub
+
 echo "================== DONE UNINSTALLING APP ================="
