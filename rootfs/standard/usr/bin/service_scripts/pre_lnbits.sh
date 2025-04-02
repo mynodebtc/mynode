@@ -21,6 +21,6 @@ fi
 
 # Update env file
 sed -i "s|^LNBITS_BACKEND_WALLET_CLASS=.*|LNBITS_BACKEND_WALLET_CLASS=LndRestWallet\"|g" /mnt/hdd/mynode/lnbits/.env
-sed -i "s|^LND_REST_ENDPOINT=.*|LND_REST_ENDPOINT=https\:\/\/127.0.0.1\:10080\"|g" /mnt/hdd/mynode/lnbits/.env
+sed -i "s|^LND_REST_ENDPOINT=.*|LND_REST_ENDPOINT=https\:\/\/127.0.0.1\:10080\/\"|g" /mnt/hdd/mynode/lnbits/.env
 sed -i "s|^LND_REST_CERT=.*|LND_REST_CERT=\"/app/tls.cert\"|g" /mnt/hdd/mynode/lnbits/.env
 sed -i "s|^LND_REST_MACAROON=.*|LND_REST_MACAROON=\"/app/admin.macaroon\"|g" /mnt/hdd/mynode/lnbits/.env
