@@ -325,7 +325,10 @@ def api_get_lnbits_superuser():
     try:
         info = ""
 
-        info += to_string(subprocess.check_output("cat /mnt/hdd/mynode/lnbits/.super_user", shell=True))
+        info += to_string(subprocess.check_output(
+            "[ -f /mnt/hdd/mynode/lnbits/.super_user ] && cat /mnt/hdd/mynode/lnbits/.super_user || echo \\\"LNBITS_ADMIN_UI is not enabled in .env\\\"",
+            shell=True)
+        )
         info += "\n"
         data["data"] = info
         data["status"] = "success"
