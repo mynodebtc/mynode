@@ -21,6 +21,7 @@ echo "==================== INSTALLING APP ===================="
 # add check if exists
 # if not exists see if _backup exists and populate from there
 mkdir -p /opt/mynode/albyhub || true
+mkdir -p /mnt/hdd/mynode/albyhub || true
 
 # Clear any old images
 docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'albyhub') || true
