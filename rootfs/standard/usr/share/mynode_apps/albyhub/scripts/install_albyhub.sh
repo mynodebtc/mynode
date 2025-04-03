@@ -18,6 +18,9 @@ echo "==================== INSTALLING APP ===================="
 # TODO: Perform installation steps here
 
 # Make dir that will be volume mounted to the container
+# add check if exists
+# if not exists see if _backup exists and populate from there
+mkdir -p /opt/mynode/albyhub || true
 mkdir -p /mnt/hdd/mynode/albyhub || true
 
 # Clear any old images
@@ -29,6 +32,11 @@ docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'ghcr.io/g
 # Pull docker image
 docker pull ghcr.io/getalby/hub:$ALBYHUB_VERSION
 docker tag ghcr.io/getalby/hub:$ALBYHUB_VERSION albyhub
+
+# somehow password should be set automatically and backed up too with data, cause it cant be changed!
+
+#If exists both
+cp -av /mnt/hdd/mynode/albyhub_backup/* /mnt/hdd/mynode/albyhub/
 
 # Build docker image (slow)
 # docker build -t albyhub .

@@ -10,15 +10,16 @@ echo "==================== UNINSTALLING APP ===================="
 # TODO: Perform special uninstallation steps here
 
 # if pulled docker used
-docker rmi $(sudo docker images --format '{{.Repository}}:{{.Tag}}' | grep 'albyhub') || true
-docker rmi $(sudo docker images --format '{{.Repository}}:{{.Tag}}' | grep 'ghcr.io/getalby/hub') || true
+#docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'albyhub') || true
+#docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'ghcr.io/getalby/hub') || true
 
 # if source build docked used
 #docker rmi $(sudo docker images --format '{{.Repository}}:{{.Tag}}' | grep 'albyhub') || true
 
-# TODO - Implement backup!
+# TODO - Implement (proper) backup!
 #
-# do not
-#rm -rfv /mnt/hdd/mynode/albyhub
+rm -rf /mnt/hdd/mynode/albyhub_backup
+cp -av /mnt/hdd/mynode/albyhub /mnt/hdd/mynode/albyhub_backup || true
+rm -rf /mnt/hdd/mynode/albyhub
 
 echo "================== DONE UNINSTALLING APP ================="

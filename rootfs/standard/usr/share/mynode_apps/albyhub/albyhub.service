@@ -20,6 +20,8 @@ ExecStart=docker run --rm \
 ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_albyhub.sh ]; then /bin/bash /usr/bin/service_scripts/post_albyhub.sh; fi'
 ExecStop=docker stop -t 2 albyhub
 
+User=bitcoin
+Group=bitcoin
 Type=simple
 TimeoutSec=120
 Restart=always
