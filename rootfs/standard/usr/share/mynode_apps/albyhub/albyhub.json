@@ -9,7 +9,7 @@
         "name": "GitHub",
         "link": "https://github.com/getAlby/hub"
     },
-    "category": "bitcoin_app",
+    "category": "lightning_app",
     "short_description": "Lightning Wallet and LDK node",
     "description": [
         "Alby Hub is a self-custodial, open source lightning wallet that connects to apps",
