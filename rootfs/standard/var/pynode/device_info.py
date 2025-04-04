@@ -1250,6 +1250,92 @@ def delete_lnbits_settings():
     if is_service_enabled("lnbits"):
         restart_service("lnbits")
 
+def is_lnbits_admin_ui_enabled():
+    try:
+        with open("/mnt/hdd/mynode/lnbits/.env", "r") as env_file:
+            for line in env_file:
+                if "LNBITS_ADMIN_UI=true" in line:
+                    return "LNBITS_ADMIN_UI=true found in .env file."
+        return "LNBITS_ADMIN_UI setting DOES NOT EXIST in .env file!"
+    except Exception as e:
+        return f"Error reading .env file: {str(e)}"
+
+def is_lnbits_super_user_file_present():
+    try:
+        # Check if the .super_user file exists
+        super_user_file_path = "/mnt/hdd/mynode/lnbits/.super_user"
+        if os.path.isfile(super_user_file_path):
+            return "Also .super_user file was found."
+        else:
+            return ".super_user file IS NOT found!"
+    except Exception as e:
+        return f"Error checking .super_user file: {str(e)}"
+
+def get_lnbits_superuser_setup():
+    data = {}
+    data["status"] = "error"
+    try:
+        info = is_lnbits_admin_ui_enabled() + " " + is_lnbits_super_user_file_present()
+
+        data["data"] = info
+        data["status"] = "success"
+    except Exception as e:
+        data["data"] = str(e)
+    return data["data"]
+
+def get_lnbits_superuser():
+    try:
+        db_path = "/mnt/hdd/mynode/lnbits/database.sqlite3"
+        if not os.path.isfile(db_path):
+            return "LNbits database file not found."
+
+        is_settings_table_present = subprocess.run(
+            f"sqlite3 {db_path} \"SELECT name FROM sqlite_master WHERE type='table' AND name='settings';\"",
+            shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+        ).stdout.strip()
+
+        is_system_settings_table_present = subprocess.run(
+            f"sqlite3 {db_path} \"SELECT name FROM sqlite_master WHERE type='table' AND name='system_settings';\"",
+            shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+        ).stdout.strip()
+
+        super_user_id = None
+
+        if is_settings_table_present:
+            super_user_id = to_string(
+                subprocess.check_output(
+                    f"sqlite3 {db_path} \"SELECT super_user FROM settings;\"",
+                    shell=True,
+                )
+            ).strip().replace('"', '')
+
+        elif is_system_settings_table_present:
+            super_user_id = to_string(
+                subprocess.check_output(
+                    f"sqlite3 {db_path} \"SELECT value FROM system_settings WHERE id = 'super_user';\"",
+                    shell=True,
+                )
+            ).strip().replace('"', '')
+
+        if not super_user_id:
+            return "super_user ID not found in the database."
+
+        username = to_string(
+            subprocess.check_output(
+                f"sqlite3 {db_path} \"SELECT username FROM accounts WHERE id = '{super_user_id}';\"",
+                shell=True,
+            )
+        ).strip()
+
+        if username:
+            return f"super_user ID: {super_user_id}\nsuper_user username: {username}"
+        else:
+            return f"super_user ID: {super_user_id}\nusername NOT FOUND."
+
+    except Exception as e:
+        return f"Fetching super_user information failed: {str(e)}"
+
+
 #==================================
 # Specter Functions
 #==================================
