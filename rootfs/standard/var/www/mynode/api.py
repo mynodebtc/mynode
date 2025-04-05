@@ -323,12 +323,83 @@ def api_get_lnbits_superuser():
     data["status"] = "error"
     data["data"] = "UNKNOWN"
     try:
+        import subprocess
+        import os
+
         info = ""
 
-        info += to_string(subprocess.check_output("cat /mnt/hdd/mynode/lnbits/.super_user", shell=True))
+        grep_output = to_string(
+            subprocess.check_output(
+                "grep LNBITS_ADMIN_UI /mnt/hdd/mynode/lnbits/.env", shell=True
+            )
+        )
+        if "LNBITS_ADMIN_UI=true" in grep_output:
+            info += (
+                "LNBITS_ADMIN_UI=true found from .env file."
+            )
+            if subprocess.run(
+                "[ -f /mnt/hdd/mynode/lnbits/.super_user ]", shell=True
+            ).returncode == 0:
+                info += to_string(
+                    subprocess.check_output(
+                        "echo \" Also LNbits .super_user file was found.\"",
+                        shell=True,
+                    )
+                )
+            else:
+                info += (
+                    " But .super_user file is not found!\n"
+                )
+        else:
+            info += (
+                "LNBITS_ADMIN_UI setting DOES NOT EXIST .env file!\n"
+            )
+
+        if not os.path.isfile("/mnt/hdd/mynode/lnbits/database.sqlite3"):
+            info += "\nLNbits database not initialized!"
+            data["data"] = info
+            return generate_api_json_response(data)
+
         info += "\n"
+        info += to_string(
+            subprocess.check_output(
+                "'echo -n LNbits super_user user ID: '", shell=True
+            )
+        )
+        user_id = to_string(
+            subprocess.check_output(
+                "sqlite3 /mnt/hdd/mynode/lnbits/database.sqlite3 "
+                "\"SELECT super_user FROM settings;\" -noheader",
+                shell=True,
+            )
+        )
+        if not user_id.strip():
+            info += "Error: No super_user ID found in the database.\n"
+        else:
+            info += user_id
+
+        info += "\n"
+        info += to_string(
+            subprocess.check_output(
+                "echo -n 'LNbits super_user username: '", shell=True
+            )
+        )
+        username = to_string(
+            subprocess.check_output(
+                "sqlite3 /mnt/hdd/mynode/lnbits/database.sqlite3 "
+                "\"SELECT username FROM accounts WHERE id = "
+                "(SELECT super_user FROM settings);\" -noheader",
+                shell=True,
+            )
+        )
+        if not username.strip():
+            info += "Error: No username found in the database.\n"
+        else:
+            info += username
+
         data["data"] = info
         data["status"] = "success"
+
     except Exception as e:
         data["data"] = str(e)
     return generate_api_json_response(data)
