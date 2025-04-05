@@ -82,15 +82,22 @@ if [ "$APP" = "ordisrespector" ]; then
     cd ~
 elif [ "$APP" = "knots_26_1" ]; then
     BTC_UPGRADE_URL=https://bitcoinknots.org/files/26.x/26.1.knots20240513/bitcoin-26.1.knots20240513-$ARCH.tar.gz
+    BTC_SHASUM=https://bitcoinknots.org/files/26.x/26.1.knots20240513/SHA256SUMS
+    BTC_ASC=https://bitcoinknots.org/files/26.x/26.1.knots20240513/SHA256SUMS.asc
+
+    curl -s "https://api.github.com/repos/bitcoinknots/guix.sigs/contents/builder-keys" |
+    jq -r '.[].download_url' | while read url; do curl -s "$url" | gpg --import; done
 
     rm -rf /opt/download
     mkdir -p /opt/download
     cd /opt/download
 
-    # Download and install
-    wget $BTC_UPGRADE_URL -O knots.tar.gz
-    tar -xvf knots.tar.gz
-    mv bitcoin-* bitcoin
+    # Download, install and verify
+    wget $BTC_UPGRADE_URL $BTC_SHASUM $BTC_ASC
+    gpg --verify SHA256SUMS.asc SHA256SUMS
+    sha256sum -c SHA256SUMS --ignore-missing
+    tar -xvf bitcoin-26.1.knots20240513-$ARCH.tar.gz
+    mv bitcoin-26.1.knots20240513/ bitcoin/
     install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
 
     echo "26.1-knots" > /home/bitcoin/.mynode/bitcoin_version
@@ -100,15 +107,22 @@ elif [ "$APP" = "knots_26_1" ]; then
     cd ~
 elif [ "$APP" = "knots_27_1" ]; then
     BTC_UPGRADE_URL=https://bitcoinknots.org/files/27.x/27.1.knots20240801/bitcoin-27.1.knots20240801-$ARCH.tar.gz
+    BTC_SHASUM=https://bitcoinknots.org/files/27.x/27.1.knots20240801/SHA256SUMS
+    BTC_ASC=https://bitcoinknots.org/files/27.x/27.1.knots20240801/SHA256SUMS.asc
+
+    curl -s "https://api.github.com/repos/bitcoinknots/guix.sigs/contents/builder-keys" |
+    jq -r '.[].download_url' | while read url; do curl -s "$url" | gpg --import; done
 
     rm -rf /opt/download
     mkdir -p /opt/download
     cd /opt/download
 
-    # Download and install
-    wget $BTC_UPGRADE_URL -O knots.tar.gz
-    tar -xvf knots.tar.gz
-    mv bitcoin-* bitcoin
+    # Download, install and verify
+    wget $BTC_UPGRADE_URL $BTC_SHASUM $BTC_ASC
+    gpg --verify SHA256SUMS.asc SHA256SUMS
+    sha256sum -c SHA256SUMS --ignore-missing
+    tar -xvf bitcoin-27.1.knots20240801-$ARCH.tar.gz
+    mv tar -xvf bitcoin-27.1.knots20240801 bitcoin
     install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
 
     echo "27.1-knots" > /home/bitcoin/.mynode/bitcoin_version
@@ -118,15 +132,22 @@ elif [ "$APP" = "knots_27_1" ]; then
     cd ~
 elif [ "$APP" = "knots_28_1" ]; then
     BTC_UPGRADE_URL=https://bitcoinknots.org/files/28.x/28.1.knots20250305/bitcoin-28.1.knots20250305-$ARCH.tar.gz
+    BTC_SHASUM=https://bitcoinknots.org/files/28.x/28.1.knots20250305/SHA256SUMS
+    BTC_ASC=https://bitcoinknots.org/files/28.x/28.1.knots20250305/SHA256SUMS.asc
+
+    curl -s "https://api.github.com/repos/bitcoinknots/guix.sigs/contents/builder-keys" |
+    jq -r '.[].download_url' | while read url; do curl -s "$url" | gpg --import; done
 
     rm -rf /opt/download
     mkdir -p /opt/download
     cd /opt/download
 
-    # Download and install
-    wget $BTC_UPGRADE_URL -O knots.tar.gz
-    tar -xvf knots.tar.gz
-    mv bitcoin-* bitcoin
+    # Download, install and verify
+    wget $BTC_UPGRADE_URL $BTC_SHASUM $BTC_ASC
+    gpg --verify SHA256SUMS.asc SHA256SUMS
+    sha256sum -c SHA256SUMS --ignore-missing
+    tar -xvf bitcoin-28.1.knots20250305-$ARCH.tar.gz
+    mv bitcoin-28.1.knots20250305 bitcoin
     install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
 
     echo "28.1-knots" > /home/bitcoin/.mynode/bitcoin_version
