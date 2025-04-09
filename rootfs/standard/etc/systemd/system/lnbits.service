@@ -12,6 +12,7 @@ ExecStartPre=/usr/bin/is_mainnet.sh
 ExecStartPre=/usr/bin/wait_on_lnd.sh
 ExecStartPre=/usr/bin/wait_on_docker_image_install.sh
 ExecStartPre=/usr/bin/service_scripts/pre_lnbits.sh
+ExecStartPRe=/usr/bin/docker rm -f lnbits
 WorkingDirectory=/opt/mynode/lnbits
 
 ExecStart=/usr/bin/docker run --rm \
@@ -23,14 +24,16 @@ ExecStart=/usr/bin/docker run --rm \
                               --volume /mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon:/app/admin.macaroon \
                               --add-host=host.docker.internal:host-gateway \
                               lnbits
+ExecStartPost=+/usr/bin/service_scripts/post_lnbits.sh
+
 ExecStop=/usr/bin/docker stop -t 2 lnbits
 
 User=bitcoin
 Group=bitcoin
 Type=simple
-TimeoutSec=120
+TimeoutSec=300
 Restart=always
-RestartSec=30
+RestartSec=60
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=lnbits
