@@ -606,6 +606,27 @@ def delete_lnbits_settings_page():
     flash("LNbits Settings Deleted", category="message")
     return redirect("/settings")
 
+@mynode_settings.route("/settings/reset-lnbits-super_user-pwd")
+def reset_lnbits_super_user_pwd_page():
+    check_logged_in()
+    if is_service_enabled("lnbits"):
+        def reset_password():
+            reset_lnbits_super_user_pwd()  # Call the reset function
+
+        # Start Timer for delayed execution
+        t = Timer(1.0, reset_password)
+        t.start()
+
+        # Fetch user information using the new helper function
+        super_user_id, super_user_username = fetch_super_user_info()
+
+        # Flash the result message
+        flash(f'LNbits super_user "{super_user_username}" password set to "securebolt"', category="message")
+    else:
+        flash(f"LNbits super_user changes are possible only when service is active.", category="message")
+
+    return redirect("/settings")
+
 @mynode_settings.route("/settings/reset-specter-config")
 def reset_specter_config_page():
     check_logged_in()

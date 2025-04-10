@@ -1250,6 +1250,41 @@ def delete_lnbits_settings():
     if is_service_enabled("lnbits"):
         restart_service("lnbits")
 
+def fetch_super_user_info():
+    super_user_id = os.popen(
+        "sqlite3 /mnt/hdd/mynode/lnbits/database.sqlite3 "
+        "'SELECT value FROM system_settings WHERE id=\"super_user\";' | sed 's/\"//g'"
+    ).read().strip()
+
+    super_user_username = os.popen(
+        f"sqlite3 /mnt/hdd/mynode/lnbits/database.sqlite3 "
+        f"'SELECT username FROM accounts WHERE id=\"{super_user_id}\";'"
+    ).read().strip()
+
+    return super_user_id, super_user_username
+    
+def reset_lnbits_super_user_pwd():
+    super_user_id = ''
+    super_user_username = ''
+
+    print("Fetching super_user ID from database...")
+
+    super_user_id, super_user_username = fetch_super_user_info()
+    
+    print(f"super_user ID: {super_user_id}")
+    print(f"super_user username: {super_user_username}")
+    print(f"Resetting password to: securebolt")
+
+    subprocess.run(
+    [
+        "sudo", "sqlite3", "/mnt/hdd/mynode/lnbits/database.sqlite3",
+        "UPDATE accounts SET password_hash = "
+        "'$2b$12$9pijx8vNNNT1SoDT2cJJj.wcLw/Qn3URr3odVCel9keRDPOZ89jGi' "
+        f"WHERE id = '{super_user_id}';"
+    ],
+    shell=False
+    )
+    
 #==================================
 # Specter Functions
 #==================================
