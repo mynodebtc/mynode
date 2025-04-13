@@ -725,17 +725,6 @@
                     $('#loading_spinner_overlay').fadeIn();
                     window.location.href='/settings/toggle_setting?name=torify_apt_get&enable='+val
                 });
-
-                $("#run-lnbits-cli-superuser").on("click", function() {
-                    $("#run-lnbits-cli-superuser").prop("disabled",true);
-                    $("#run-lnbits-cli-superuser-result").html("Loading...");
-                    $.get("/api/get_lnbits_superuser")
-                        .done(function( data ) {
-                            $("#run-lnbits-cli-superuser").prop("disabled",false);
-                            $("#run-lnbits-cli-superuser-result").html( data["data"] );
-                        }
-                    );
-                });
             });
 
             function hideAllUpgradeLogs() {
@@ -1259,22 +1248,9 @@
             <a id="lnbits"></a>
             <div class="settings_block_header">LNbits</div>
 
-            <div class="settings_block_subheader">Reset Settings</div>
-            This will delete your LNbits settings from the database. This should not impact users, wallets and installed extension data. After deletion, LNbits will re-read its default settings from the environment file and save it in the new settings database. This will also reset super user username and password.
-            <br/>
-            <a href="/settings/delete-lnbits-settings" class="ui-button ui-widget ui-corner-all settings_button">Delete Settings</a></br>
-            </br>
             <div class="settings_block_subheader">Recover super_user</div>
             This will show super_user account name and set password to: "securebolt"</br>
             <a href="/settings/reset-lnbits-super_user-pwd" class="ui-button ui-widget ui-corner-all settings_button">Reset password</a></br>
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Show LNbits superuser ID</div>
-            Show the superuser ID for LNbits. It is needed to access the admin UI.
-            <br/>
-            <button id="run-lnbits-cli-superuser" class="ui-button ui-widget ui-corner-all settings_button">Show Superuser ID</button>
-            <pre id="run-lnbits-cli-superuser-result"></pre>
         </div>
 
 
