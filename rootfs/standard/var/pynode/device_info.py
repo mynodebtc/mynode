@@ -1240,16 +1240,6 @@ def clear_mempool_cache():
 #==================================
 # LNbits Functions
 #==================================
-def delete_lnbits_settings():
-    os.system("rm -rf /mnt/hdd/mynode/lnbits/.super_user")
-    os.system("/usr/bin/docker run --rm \
-                              --name lnbits-delete-settings \
-                              --volume /mnt/hdd/mynode/lnbits/.env:/app/.env \
-                              --volume /mnt/hdd/mynode/lnbits/:/app/data \
-                              lnbits poetry run lnbits-cli delete-settings")
-    if is_service_enabled("lnbits"):
-        restart_service("lnbits")
-
 def fetch_super_user_info():
     super_user_id = os.popen(
         "sqlite3 /mnt/hdd/mynode/lnbits/database.sqlite3 "
