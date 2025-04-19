@@ -96,7 +96,7 @@ if ! skip_base_upgrades ; then
     curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
     curl https://keybase.io/bitconner/pgp_keys.asc | gpg --import
     curl https://keybase.io/guggero/pgp_keys.asc | gpg --import # Pool
-    curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
+    curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/refs/heads/master/pubkeys/AdamGibson-LOST-Aug-2024.asc | gpg --import # JoinMarket
     gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
     gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys E777299FC265DD04793070EB944D35F9AC3DB76A # Bitcoin - Michael Ford (fanquake)
     curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
