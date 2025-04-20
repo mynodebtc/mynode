@@ -125,6 +125,20 @@
         <td style="color: red;"><b>Error contacting mynodebtc.com via Tor!</b><br/>You may have issues checking for new versions or saving product keys. This may be a temporary issue.</td>
     </tr>
     {% endif %}
+    {% if debian_version < 12 %}
+    <tr>
+        <th>OS Version</th>
+        <td>
+            <span style="font-size: 10px;">
+                <span style="color: red; font-weight: bold;">Notice!</span><br/>
+                You are currently using an old Operating System version (Debian {{debian_version}}). It is recommended to upgrade by reflashing
+                your OS drive. Otherwise, some apps will remain on old versions and you may have issues. The new image can be downloaded
+                <a href="https://mynodebtc.com/download" target="_blank">here</a> and a guide is
+                <a href="https://mynodebtc.github.io/advanced/flash-sd-card.html" target="_blank">available</a>.
+            </span>
+        </td>
+    </tr>
+    {% endif %}
 
     <!-- From here down are the "Details" (hidden unless show details is clicked)-->
     <tr>
