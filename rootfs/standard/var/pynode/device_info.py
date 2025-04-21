@@ -1240,41 +1240,101 @@ def clear_mempool_cache():
 #==================================
 # LNbits Functions
 #==================================
-def fetch_super_user_info():
-    super_user_id = os.popen(
+def is_lnbits_10():
+    """
+    Returns True if the LNbits database is version 1.0.x
+    (i.e., the "system_settings" table exists), otherwise False.
+    """
+    cmd = (
         "sqlite3 /mnt/hdd/mynode/lnbits/database.sqlite3 "
-        "'SELECT value FROM system_settings WHERE id=\"super_user\";' | sed 's/\"//g'"
-    ).read().strip()
-
-    super_user_username = os.popen(
-        f"sqlite3 /mnt/hdd/mynode/lnbits/database.sqlite3 "
-        f"'SELECT username FROM accounts WHERE id=\"{super_user_id}\";'"
-    ).read().strip()
-
-    return super_user_id, super_user_username
-    
-def reset_lnbits_super_user_pwd():
-    super_user_id = ''
-    super_user_username = ''
-
-    print("Fetching super_user ID from database...")
-
-    super_user_id, super_user_username = fetch_super_user_info()
-    
-    print(f"super_user ID: {super_user_id}")
-    print(f"super_user username: {super_user_username}")
-    print(f"Resetting password to: securebolt")
-
-    subprocess.run(
-    [
-        "sudo", "sqlite3", "/mnt/hdd/mynode/lnbits/database.sqlite3",
-        "UPDATE accounts SET password_hash = "
-        "'$2b$12$9pijx8vNNNT1SoDT2cJJj.wcLw/Qn3URr3odVCel9keRDPOZ89jGi' "
-        f"WHERE id = '{super_user_id}';"
-    ],
-    shell=False
+        "'SELECT name FROM sqlite_master WHERE type=\"table\" AND name=\"system_settings\";'"
     )
-    
+    return os.popen(cmd).read().strip() == "system_settings"
+
+def fetch_super_user_info():
+    """
+    Retrieves the super_user id and username for both LNbits versions.
+
+    For LNbits 1.0.x:
+      - The super_user id is obtained from the "system_settings" table via:
+          SELECT value FROM system_settings WHERE id="super_user";
+
+    For LNbits 0.12.x:
+      - The super_user id is obtained from the "settings" table via:
+          SELECT super_user FROM settings;
+
+    In both cases, the account is then retrieved from the accounts table by its id.
+    """
+    try:
+        if is_lnbits_10():
+            super_user_id_cmd = (
+                "sqlite3 /mnt/hdd/mynode/lnbits/database.sqlite3 "
+                "'SELECT value FROM system_settings WHERE id=\"super_user\";' | sed 's/\"//g'"
+            )
+            super_user_id = os.popen(super_user_id_cmd).read().strip()
+        else:
+            super_user_id_cmd = (
+                "sqlite3 /mnt/hdd/mynode/lnbits/database.sqlite3 "
+                "'SELECT super_user FROM settings;'"
+            )
+            super_user_id = os.popen(super_user_id_cmd).read().strip()
+
+        if not super_user_id:
+            raise ValueError("Super_user ID not found in the database.")
+
+        # Use the super_user id to retrieve the username from the accounts table.
+        super_user_username_cmd = (
+            f"sqlite3 /mnt/hdd/mynode/lnbits/database.sqlite3 "
+            f"'SELECT username FROM accounts WHERE id=\"{super_user_id}\";'"
+        )
+        super_user_username = os.popen(super_user_username_cmd).read().strip()
+        if not super_user_username:
+            raise ValueError(f"Username for super_user id {super_user_id} not found.")
+        return super_user_id, super_user_username
+    except Exception as e:
+        print(f"Error in fetch_super_user_info: {e}")
+        raise
+
+def reset_lnbits_super_user_pwd():
+    """
+    Resets the LNbits super_user password to "securebolt".
+
+    In LNbits 1.0.x the password hash is stored in the "password_hash" column,
+    while in LNbits 0.12.x it is stored in the "pass" column.
+    """
+    try:
+        super_user_id, super_user_username = fetch_super_user_info()
+        version_str = "1.0.x" if is_lnbits_10() else "0.12.x"
+        print(f"LNbits v{version_str} super_user password reset")
+        print(f"super_user ID: {super_user_id}")
+        print(f"super_user username: {super_user_username}")
+        print("Resetting password to: securebolt")
+
+        if is_lnbits_10():
+            update_query = (
+                "UPDATE accounts SET password_hash = '$2b$12$9pijx8vNNNT1SoDT2cJJj."
+                "wcLw/Qn3URr3odVCel9keRDPOZ89jGi' WHERE id = '{0}';".format(super_user_id)
+            )
+        else:
+            update_query = (
+                "UPDATE accounts SET pass = '$2b$12$9pijx8vNNNT1SoDT2cJJj."
+                "wcLw/Qn3URr3odVCel9keRDPOZ89jGi' WHERE id = '{0}';".format(super_user_id)
+            )
+
+        result = subprocess.run(
+            ["sudo", "sqlite3", "/mnt/hdd/mynode/lnbits/database.sqlite3", update_query],
+            shell=False,
+            capture_output=True,
+            text=True
+        )
+        if result.returncode != 0:
+            raise RuntimeError(f"Password reset failed: {result.stderr.strip()}")
+        else:
+            print("Password reset successfully.")
+    except Exception as e:
+        print(f"Error in reset_lnbits_super_user_pwd: {e}")
+        raise
+
 #==================================
 # Specter Functions
 #==================================

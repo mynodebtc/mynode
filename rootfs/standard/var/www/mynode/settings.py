@@ -601,17 +601,22 @@ def reset_lnbits_super_user_pwd_page():
     check_logged_in()
     if is_service_enabled("lnbits"):
         def reset_password():
-            reset_lnbits_super_user_pwd()  # Call the reset function
+            try:
+                reset_lnbits_super_user_pwd()
+            except Exception as err:
+                flash(f"Error resetting LNbits super_user password: {err}", category="error")
 
         # Start Timer for delayed execution
         t = Timer(1.0, reset_password)
         t.start()
 
         # Fetch user information using the new helper function
-        super_user_id, super_user_username = fetch_super_user_info()
+        try:
+            super_user_id, super_user_username = fetch_super_user_info()
+            flash(f'LNbits super_user "{super_user_username}" password set to "securebolt"', category="message")
+        except Exception as err:
+            flash(f"Error fetching LNbits super_user info: {err}", category="error")
 
-        # Flash the result message
-        flash(f'LNbits super_user "{super_user_username}" password set to "securebolt"', category="message")
     else:
         flash(f"LNbits super_user changes are possible only when service is active.", category="message")
 
