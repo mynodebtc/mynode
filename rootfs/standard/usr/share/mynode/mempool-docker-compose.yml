@@ -6,6 +6,8 @@ services:
         FRONTEND_HTTP_PORT: "8080"
         BACKEND_MAINNET_HTTP_HOST: "api"
     image: mempool/frontend:${VERSION}
+# user defined on mempool v3.0.0 docker-compose.yml
+#    user: "1000:1000"
     restart: on-failure
     stop_grace_period: 1m
     command: "./wait-for db:3306 --timeout=720 -- nginx -g 'daemon off;'"
@@ -28,6 +30,10 @@ services:
         DATABASE_PASSWORD: "mempool"
         STATISTICS_ENABLED: "true"
     image: mempool/backend:${VERSION}
+# user defined on mempool v3.0.0 docker-compose.yml
+#    user: "1000:1000"
+# would correct format here now be?
+#    user: "0:0"
     user: 0:0
     restart: on-failure
     stop_grace_period: 1m
@@ -41,6 +47,8 @@ services:
         MYSQL_PASSWORD: "mempool"
         MYSQL_ROOT_PASSWORD: "admin"
     image: ${MARIA_DB_IMAGE}
+# user defined on mempool v3.0.0 docker-compose.yml
+#    user: "1000:1000"
     restart: on-failure
     stop_grace_period: 1m
     volumes:
