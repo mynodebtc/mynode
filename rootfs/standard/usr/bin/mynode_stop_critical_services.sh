@@ -20,8 +20,7 @@ systemctl stop thunderhub mempool
 date
 
 
-# Manually stop services (backup)
-if [ "$(systemctl is-active docker)" = "active" ]; then
+if [ "$(systemctl is-active docker)" = "active" ] && [ -f /mnt/hdd/mynode/dojo/docker/my-dojo/dojo.sh ]; then
     /mnt/hdd/mynode/dojo/docker/my-dojo/dojo.sh stop || true
 fi
 
