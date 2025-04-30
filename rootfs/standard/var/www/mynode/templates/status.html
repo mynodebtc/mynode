@@ -293,6 +293,9 @@
                     {% if 'mempool_web_1' in running_containers %} mempool_web_1 {% endif %}
                     {% if 'mempool_db_1' in running_containers %} mempool_db_1 {% endif %}
                     {% if 'mempool_api_1' in running_containers %} mempool_api_1 {% endif %}
+                    {% if 'mempool-web-1' in running_containers %} mempool-web-1 {% endif %}
+                    {% if 'mempool-db-1' in running_containers %} mempool-db-1 {% endif %}
+                    {% if 'mempool-api-1' in running_containers %} mempool-api-1 {% endif %}
                 </span>
             </div>
             <button id="show_mempool_log" onclick="showLog('mempool')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
