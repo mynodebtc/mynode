@@ -74,4 +74,4 @@ TOTAL_RAM_GB=$(free --giga | grep Mem | awk '{print $2}')
 
 SERIAL_NUM=$(mynode-get-device-serial)
 
-DEBIAN_VERSION=$(lsb_release -r -s)
+DEBIAN_VER_NUM=$(lsb_release -r -s)
