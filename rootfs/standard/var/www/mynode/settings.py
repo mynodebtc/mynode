@@ -596,14 +596,30 @@ def reset_thunderhub_config_page():
     flash("Thunderhub Configuration Reset", category="message")
     return redirect("/settings")
 
-@mynode_settings.route("/settings/delete-lnbits-settings")
-def delete_lnbits_settings_page():
+@mynode_settings.route("/settings/reset-lnbits-super_user-pwd")
+def reset_lnbits_super_user_pwd_page():
     check_logged_in()
+    if is_service_enabled("lnbits"):
+        def reset_password():
+            try:
+                reset_lnbits_super_user_pwd()
+            except Exception as err:
+                flash(f"Error resetting LNbits super_user password: {err}", category="error")
 
-    t = Timer(1.0, delete_lnbits_settings)
-    t.start()
+        # Start Timer for delayed execution
+        t = Timer(1.0, reset_password)
+        t.start()
 
-    flash("LNbits Settings Deleted", category="message")
+        # Fetch user information using the new helper function
+        try:
+            super_user_id, super_user_username = fetch_super_user_info()
+            flash(f'LNbits super_user "{super_user_username}" password set to "securebolt"', category="message")
+        except Exception as err:
+            flash(f"Error fetching LNbits super_user info: {err}", category="error")
+
+    else:
+        flash(f"LNbits super_user changes are possible only when service is active.", category="message")
+
     return redirect("/settings")
 
 @mynode_settings.route("/settings/reset-specter-config")
