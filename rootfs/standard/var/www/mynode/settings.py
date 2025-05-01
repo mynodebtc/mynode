@@ -622,6 +622,16 @@ def reset_lnbits_super_user_pwd_page():
 
     return redirect("/settings")
 
+@mynode_settings.route("/settings/reset-lnbits-data")
+def reset_lnbits_data_page():
+    check_logged_in()
+
+    t = Timer(1.0, reset_lnbits_data)
+    t.start()
+
+    flash("LNbits Data Deleted", category="message")
+    return redirect("/settings")
+
 @mynode_settings.route("/settings/reset-specter-config")
 def reset_specter_config_page():
     check_logged_in()

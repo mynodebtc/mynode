@@ -1240,6 +1240,15 @@ def clear_mempool_cache():
 #==================================
 # LNbits Functions
 #==================================
+def reset_lnbits_data():
+    if is_service_enabled("lnbits"):
+        stop_service("lnbits")
+    
+    os.system("rm -rf /mnt/hdd/mynode/lnbits/*")
+    
+    if is_service_enabled("lnbits"):
+        restart_service("lnbits")
+
 def is_lnbits_10():
     """
     Returns True if the LNbits database is version 1.0.x
