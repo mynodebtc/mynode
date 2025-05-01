@@ -119,9 +119,12 @@ def update_bitcoin_other_info():
             # Recent blocks
             if mynode_block_height != bitcoin_recent_blocks_last_cache_height:
                 commands = [ [ "getblockhash", height] for height in range(mynode_block_height-9, mynode_block_height+1) ]
-                block_hashes = rpc_connection.batch_(commands)
-                bitcoin_recent_blocks = rpc_connection.batch_([ [ "getblock", h ] for h in block_hashes ])
-                bitcoin_recent_blocks_last_cache_height = mynode_block_height
+                try:
+                    block_hashes = rpc_connection.batch_(commands)
+                    bitcoin_recent_blocks = rpc_connection.batch_([ [ "getblock", h ] for h in block_hashes ])
+                    bitcoin_recent_blocks_last_cache_height = mynode_block_height
+                except Exception as e_block:
+                    log_message("ERROR: getblockhash batch command failure " + str(e_block))
 
             # Get peers and cleanup data
             log_message("update_bitcoin_other_info - PEERS")
