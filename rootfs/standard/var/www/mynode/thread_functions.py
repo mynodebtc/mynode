@@ -2,7 +2,6 @@ import subprocess
 import psutil
 import os
 from config import *
-from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from bitcoin_info import *
 from lightning_info import *
 from device_info import *
