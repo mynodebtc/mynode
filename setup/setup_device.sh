@@ -30,7 +30,7 @@ IS_64_BIT=0
 IS_UNKNOWN=0
 DEVICE_TYPE="unknown"
 MODEL=$(cat /proc/device-tree/model) || IS_UNKNOWN=1
-DEBIAN_VERSION=$(lsb_release -c -s) || DEBIAN_VERSION="unknown"
+DEBIAN_CODENAME=$(lsb_release -c -s) || DEBIAN_CODENAME="unknown"
 uname -a | grep amd64 && IS_X86=1 && IS_64_BIT=1 && IS_UNKNOWN=0 || true
 if [[ $MODEL == *"Rock64"* ]]; then
     IS_ARMBIAN=1
@@ -205,10 +205,10 @@ apt-get -y update --allow-releaseinfo-change
 apt-get -y install apt-transport-https curl gnupg ca-certificates
 # Tor (arm32 support was dropped)
 if [ $IS_64_BIT = 1 ]; then
-    grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
-    grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+    grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list
+    grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list
 fi
-if [ "$DEBIAN_VERSION" = "buster" ]; then
+if [ "$DEBIAN_CODENAME" = "buster" ]; then
     # Migrate old buster backports to archive
     sed -i 's|deb.debian.org/debian buster-backports|archive.debian.org/debian buster-backports|g' /etc/apt/sources.list
     # Add backports repo
@@ -273,15 +273,15 @@ apt-get -y install cmake pkgconf libcurl4-openssl-dev libjansson-dev libmicrohtt
 apt-get -y install default-jre
 
 # Install packages dependent on Debian release
-if [ "$DEBIAN_VERSION" == "bullseye" ]; then
+if [ "$DEBIAN_CODENAME" == "bullseye" ]; then
     apt-get -y install wireguard
-elif [ "$DEBIAN_VERSION" == "bookworm" ]; then
+elif [ "$DEBIAN_CODENAME" == "bookworm" ]; then
     apt-get -y install wireguard
-elif [ "$DEBIAN_VERSION" == "buster" ]; then
+elif [ "$DEBIAN_CODENAME" == "buster" ]; then
     apt-get -y -t buster-backports install wireguard
 else
     echo "========================================="
-    echo "== UNKNOWN DEBIAN VERSION: $DEBIAN_VERSION"
+    echo "== UNKNOWN DEBIAN VERSION: $DEBIAN_CODENAME"
     echo "== SOME APPS MAY NOT WORK PROPERLY"
     echo "========================================="
 fi
