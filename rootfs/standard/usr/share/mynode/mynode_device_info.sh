@@ -19,7 +19,6 @@ MODEL="unknown"
 if [ -f /proc/device-tree/model ]; then
     MODEL=$(tr -d '\0' < /proc/device-tree/model) || MODEL="unknown"
 fi
-DEBIAN_VERSION=$(lsb_release -c -s) || DEBIAN_VERSION="unknown"
 uname -a | grep amd64 && IS_X86=1 && IS_64_BIT=1 || true
 if [[ $MODEL == *"Rock64"* ]]; then 
     IS_ARMBIAN=1
@@ -74,4 +73,5 @@ TOTAL_RAM_GB=$(free --giga | grep Mem | awk '{print $2}')
 
 SERIAL_NUM=$(mynode-get-device-serial)
 
-DEBIAN_VER_NUM=$(lsb_release -r -s)
+DEBIAN_VERSION=$(lsb_release -r -s)
+DEBIAN_CODENAME=$(lsb_release -c -s) || DEBIAN_CODENAME="unknown"

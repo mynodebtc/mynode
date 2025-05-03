@@ -1,5 +1,6 @@
 #!/bin/bash
 
+source /usr/share/mynode/mynode_device_info.sh
 source /usr/share/mynode/mynode_config.sh
 source /usr/share/mynode/mynode_functions.sh
 source /usr/share/mynode/mynode_app_versions.sh
@@ -61,13 +62,12 @@ if ! skip_base_upgrades ; then
 
     # Add sources
     apt-get -y install apt-transport-https
-    DEBIAN_VERSION=$(lsb_release -c | awk '{ print $2 }')
     # Tor (arm32 support was dropped)
     if [ $IS_64_BIT = 1 ]; then
-        grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
-        grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+        grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list
+        grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list
     fi
-    if [ "$DEBIAN_VERSION" = "buster" ]; then
+    if [ "$DEBIAN_CODENAME" = "buster" ]; then
         # Disable tor repo on buster
         sed -i '/^deb https:\/\/deb.torproject.org/d' /etc/apt/sources.list
         sed -i '/^deb-src https:\/\/deb.torproject.org/d' /etc/apt/sources.list
@@ -76,7 +76,7 @@ if ! skip_base_upgrades ; then
         sed -i '/^deb https:\/\/deb.torproject.org/d' /etc/apt/sources.list
         sed -i '/^deb-src https:\/\/deb.torproject.org/d' /etc/apt/sources.list
     fi
-    if [ "$DEBIAN_VERSION" = "buster" ]; then
+    if [ "$DEBIAN_CODENAME" = "buster" ]; then
         # Migrate old buster backports to archive
         sed -i 's|deb.debian.org/debian buster-backports|archive.debian.org/debian buster-backports|g' /etc/apt/sources.list
         # Add backports repo
@@ -87,8 +87,8 @@ if ! skip_base_upgrades ; then
 
     # Raspbian mirrors
     #if [ $IS_RASPI = 1 ]; then
-    #    grep -qxF "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
-    #    grep -qxF "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+    #    grep -qxF "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_CODENAME} main" /etc/apt/sources.list  || echo "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list
+    #    grep -qxF "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_CODENAME} main" /etc/apt/sources.list  || echo "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list
     #fi
 
     # Import Keys
@@ -144,15 +144,15 @@ if ! skip_base_upgrades ; then
     $TORIFY apt-get -y install default-jre
 
     # Install software specific to debian version
-    if [ "$DEBIAN_VERSION" == "bullseye" ]; then
+    if [ "$DEBIAN_CODENAME" == "bullseye" ]; then
         apt-get -y install wireguard
-    elif [ "$DEBIAN_VERSION" == "bookworm" ]; then
+    elif [ "$DEBIAN_CODENAME" == "bookworm" ]; then
         apt-get -y install wireguard
-    elif [ "$DEBIAN_VERSION" == "buster" ]; then
+    elif [ "$DEBIAN_CODENAME" == "buster" ]; then
         $TORIFY apt-get -y -t buster-backports install wireguard
     else
         echo "========================================="
-        echo "== UNKNOWN DEBIAN VERSION: $DEBIAN_VERSION"
+        echo "== UNKNOWN DEBIAN VERSION: $DEBIAN_CODENAME"
         echo "== SOME APPS MAY NOT WORK PROPERLY"
         echo "========================================="
     fi
