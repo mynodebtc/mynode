@@ -1,6 +1,5 @@
 from config import *
 from flask import Blueprint, render_template, session, abort, Markup, request, redirect, url_for, flash
-from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from bitcoin import is_bitcoin_synced
 from bitcoin_info import using_bitcoin_custom_config
 from lightning_info import using_lnd_custom_config, restart_lnd
