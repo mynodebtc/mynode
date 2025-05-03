@@ -43,7 +43,7 @@ elif [[ $MODEL == *"Raspberry Pi 4"* ]]; then
         IS_32_BIT=0
         IS_64_BIT=1
     fi
-elif [[ $MODEL == *"Raspberry Pi 5"* ]]; then
+elif [[ $MODEL == *"Raspberry Pi 5"* || $MODEL == *"Raspberry Pi Compute Module 5"* ]]; then
     IS_RASPI=1
     IS_RASPI5=1
     IS_ARM64=1
@@ -74,4 +74,4 @@ TOTAL_RAM_GB=$(free --giga | grep Mem | awk '{print $2}')
 
 SERIAL_NUM=$(mynode-get-device-serial)
 
-DEBIAN_VERSION=$(lsb_release -r -s)
+DEBIAN_VER_NUM=$(lsb_release -r -s)
