@@ -1245,6 +1245,7 @@ def reset_lnbits_data():
         stop_service("lnbits")
     
     os.system("rm -rf /mnt/hdd/mynode/lnbits/*")
+    os.system("rm -rf /mnt/hdd/mynode/lnbits/.*")
     
     if is_service_enabled("lnbits"):
         restart_service("lnbits")
