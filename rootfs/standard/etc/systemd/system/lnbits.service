@@ -31,9 +31,8 @@ Type=simple
 TimeoutSec=120
 Restart=always
 RestartSec=30
-# Causes exessive logging now days
-# StandardOutput=syslog
-# StandardError=syslog
+StandardOutput=syslog
+StandardError=syslog
 SyslogIdentifier=lnbits
 
 [Install]
