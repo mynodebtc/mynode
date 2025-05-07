@@ -120,7 +120,7 @@ elif [ "$APP" = "knots_27_1" ]; then
     gpg --verify SHA256SUMS.asc SHA256SUMS
     sha256sum -c SHA256SUMS --ignore-missing
     tar -xvf bitcoin-27.1.knots20240801-$ARCH.tar.gz
-    mv tar -xvf bitcoin-27.1.knots20240801 bitcoin
+    mv bitcoin-27.1.knots20240801 bitcoin
     install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
 
     echo "27.1-knots" > /home/bitcoin/.mynode/bitcoin_version
