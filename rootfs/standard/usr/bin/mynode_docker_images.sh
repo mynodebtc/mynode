@@ -204,6 +204,10 @@ while true; do
         if [ "$CURRENT" != "$LNBITS_VERSION" ]; then
             docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'lnbits') || true
 
+            if [ ! -d "/opt/mynode/lnbits" ]; then
+                mkdir -p "/opt/mynode/lnbits"
+            fi
+
             # Copy over config file
             # Handled in pre_lnbits.sh
 
