@@ -476,6 +476,10 @@ cp -f /usr/share/mynode/netdata.conf /opt/mynode/netdata/netdata.conf
 mkdir -p /opt/mynode/webssh2
 cp -f /usr/share/mynode/webssh2_config.json /opt/mynode/webssh2/config.json
 
+# Setup lnbits
+mkdir -p /opt/mynode/lnbits
+# Folder needs to exist for service to run, other setup done in pre_lnbits.sh
+
 # Initialize Dynamic Apps
 mynode-manage-apps init || true
 mynode-manage-apps openports || true
