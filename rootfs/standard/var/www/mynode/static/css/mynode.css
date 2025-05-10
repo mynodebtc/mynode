@@ -609,6 +609,13 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     background-color: #f0a0a0 !important;
 }
 
+.marketplace_button {
+    background-color: #ffcc77 !important;
+}
+.marketplace_button:hover {
+    background-color: #ffbb55 !important;
+}
+
 .mynode_button_small {
     font-size: 12px !important;
 }
