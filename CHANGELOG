@@ -1,4 +1,14 @@
-- Update LNbits to v0.12.12 and use vendors docker
+=== v0.3.36 ===
+- Released 05/09/25
+- Upgrade Bitcoin to v0.28.1
+- Upgrade LND to v0.18.5
+- Upgrade Mempool to v3.2.1
+- Upgrade LNbits to v0.12.12
+- Add support for Raspberry Pi 5 Compute Module
+- Enable Admin UI for LNbits
+- Upgrade Rust to v1.86.0
+- Improve support for NVMe USB Adapters
+- Fix for Glances v4.0
 
 === v0.3.35 ===
 - Released 03/29/25
