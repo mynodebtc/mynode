@@ -50,7 +50,7 @@ echo "Done in ${diff_time}s!"
 # Install files
 echo -n "Copying new rootfs... "
 start_time=$(date +%s)
-rsync --checksum -r -K /tmp/rootfs/out/rootfs_${DEVICE_TYPE}/* /
+rsync -r -K /tmp/rootfs/out/rootfs_${DEVICE_TYPE}/* /
 end_time=$(date +%s)
 diff_time=$((end_time - start_time))
 echo "Done in ${diff_time}s!"
