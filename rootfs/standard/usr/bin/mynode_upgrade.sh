@@ -62,7 +62,7 @@ done
 # Install files (migrate all to rsync?)
 VERSION=$(cat /opt/upgrade/out/rootfs_*/usr/share/mynode/version)
 if [ $IS_X86 = 1 ] || [ $IS_ARM64 = 1 ] || [ $IS_ROCKPI4 = 1 ] || [ $IS_RASPI5 = 1 ]; then
-    rsync --checksum -r -K /opt/upgrade/out/rootfs_${DEVICE_TYPE}/* / 2>&1
+    rsync -r -K /opt/upgrade/out/rootfs_${DEVICE_TYPE}/* / 2>&1
 else
     cp -rf /opt/upgrade/out/rootfs_${DEVICE_TYPE}/* / 2>&1
 fi
