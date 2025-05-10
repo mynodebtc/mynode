@@ -9,6 +9,7 @@
 - Upgrade Rust to v1.86.0
 - Improve support for NVMe USB Adapters
 - Fix for Glances v4.0
+- Various bug fixes
 
 === v0.3.35 ===
 - Released 03/29/25
