@@ -143,7 +143,10 @@ LNBITS_VERSION=$(get_app_version "$LNBITS_VERSION" "lnbits")
 LNBITS_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version
 LNBITS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version_latest
 
-SPECTER_VERSION="1.14.1"
+SPECTER_VERSION="2.1.1"
+if [ "$DEBIAN_VERSION" -lt "12" ]; then
+    SPECTER_VERSION="1.14.1"
+fi
 SPECTER_VERSION=$(get_app_version "$SPECTER_VERSION" "specter")
 SPECTER_VERSION_FILE=/home/bitcoin/.mynode/specter_version
 SPECTER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/specter_version_latest

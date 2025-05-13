@@ -856,12 +856,19 @@ if should_install_app "specter" ; then
         chown -R bitcoin:bitcoin specter
         cd specter
 
+        SPECTER_PYTHON_VER=python3.11
+        if [ "$DEBIAN_VERSION" -lt "12" ]; then
+            # Use default python to get 3.8
+            SPECTER_PYTHON_VER=python3
+        fi
+
         # Make venv
         if [ ! -d env ]; then
-            sudo -u bitcoin python3 -m venv env
+            sudo -u bitcoin $SPECTER_PYTHON_VER -m venv env
         fi
         source env/bin/activate
         pip3 install ecdsa===0.13.3
+        pip3 install "sqlalchemy<2" # Needed for 2.1.1
         pip3 install cryptoadvance.specter===$SPECTER_VERSION --upgrade
         deactivate
 
