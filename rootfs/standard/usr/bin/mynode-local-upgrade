@@ -59,7 +59,7 @@ echo "Done in ${diff_time}s!"
 echo -n "Syncing filesystem... "
 start_time=$(date +%s)
 sleep 1
-sync
+sync /
 end_time=$(date +%s)
 diff_time=$((end_time - start_time))
 echo "Done in ${diff_time}s!"

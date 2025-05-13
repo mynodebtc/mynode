@@ -67,7 +67,7 @@ else
     cp -rf /opt/upgrade/out/rootfs_${DEVICE_TYPE}/* / 2>&1
 fi
 sleep 1
-sync
+sync /
 sleep 1
 
 VERSION=$(cat /usr/share/mynode/version)

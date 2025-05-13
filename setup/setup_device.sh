@@ -30,7 +30,7 @@ IS_64_BIT=0
 IS_UNKNOWN=0
 DEVICE_TYPE="unknown"
 MODEL=$(cat /proc/device-tree/model) || IS_UNKNOWN=1
-DEBIAN_VERSION=$(lsb_release -c -s) || DEBIAN_VERSION="unknown"
+DEBIAN_CODENAME=$(lsb_release -c -s) || DEBIAN_CODENAME="unknown"
 uname -a | grep amd64 && IS_X86=1 && IS_64_BIT=1 && IS_UNKNOWN=0 || true
 if [[ $MODEL == *"Rock64"* ]]; then
     IS_ARMBIAN=1
@@ -54,7 +54,7 @@ elif [[ $MODEL == *"Raspberry Pi 4"* ]]; then
         IS_32_BIT=0
         IS_64_BIT=1
     fi
-elif [[ $MODEL == *"Raspberry Pi 5"* ]]; then
+elif [[ $MODEL == *"Raspberry Pi 5"* || $MODEL == *"Raspberry Pi Compute Module 5"* ]]; then
     IS_RASPI=1
     IS_RASPI5=1
     IS_ARM64=1
@@ -205,10 +205,10 @@ apt-get -y update --allow-releaseinfo-change
 apt-get -y install apt-transport-https curl gnupg ca-certificates
 # Tor (arm32 support was dropped)
 if [ $IS_64_BIT = 1 ]; then
-    grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
-    grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+    grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list
+    grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list
 fi
-if [ "$DEBIAN_VERSION" = "buster" ]; then
+if [ "$DEBIAN_CODENAME" = "buster" ]; then
     # Migrate old buster backports to archive
     sed -i 's|deb.debian.org/debian buster-backports|archive.debian.org/debian buster-backports|g' /etc/apt/sources.list
     # Add backports repo
@@ -221,7 +221,7 @@ fi
 curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
 curl https://keybase.io/bitconner/pgp_keys.asc | gpg --import
 curl https://keybase.io/guggero/pgp_keys.asc | gpg --import # Pool
-curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
+curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/refs/heads/master/pubkeys/AdamGibson-LOST-Aug-2024.asc | gpg --import # JoinMarket
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys E777299FC265DD04793070EB944D35F9AC3DB76A # Bitcoin - Michael Ford (fanquake)
 curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
@@ -273,15 +273,15 @@ apt-get -y install cmake pkgconf libcurl4-openssl-dev libjansson-dev libmicrohtt
 apt-get -y install default-jre
 
 # Install packages dependent on Debian release
-if [ "$DEBIAN_VERSION" == "bullseye" ]; then
+if [ "$DEBIAN_CODENAME" == "bullseye" ]; then
     apt-get -y install wireguard
-elif [ "$DEBIAN_VERSION" == "bookworm" ]; then
+elif [ "$DEBIAN_CODENAME" == "bookworm" ]; then
     apt-get -y install wireguard
-elif [ "$DEBIAN_VERSION" == "buster" ]; then
+elif [ "$DEBIAN_CODENAME" == "buster" ]; then
     apt-get -y -t buster-backports install wireguard
 else
     echo "========================================="
-    echo "== UNKNOWN DEBIAN VERSION: $DEBIAN_VERSION"
+    echo "== UNKNOWN DEBIAN VERSION: $DEBIAN_CODENAME"
     echo "== SOME APPS MAY NOT WORK PROPERLY"
     echo "========================================="
 fi
@@ -1060,7 +1060,7 @@ systemctl enable rotate_logs
 systemctl enable corsproxy_btcrpc
 systemctl enable usb_extras
 systemctl enable ob-watcher
-systemctl enable rathole
+#systemctl enable rathole
 
 
 # Disable services

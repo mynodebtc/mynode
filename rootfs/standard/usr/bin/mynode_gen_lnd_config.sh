@@ -108,5 +108,5 @@ fi
 
 # Set Alias
 ALIAS=$(cat /mnt/hdd/mynode/settings/.lndalias)
-sed -i "s/alias=.*/alias=$ALIAS/g" /mnt/hdd/mynode/lnd/lnd.conf
+sed -i "s/^alias=.*/alias=$ALIAS/g" /mnt/hdd/mynode/lnd/lnd.conf
 chown bitcoin:bitcoin /mnt/hdd/mynode/lnd/lnd.conf

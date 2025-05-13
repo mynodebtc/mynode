@@ -19,7 +19,6 @@ MODEL="unknown"
 if [ -f /proc/device-tree/model ]; then
     MODEL=$(tr -d '\0' < /proc/device-tree/model) || MODEL="unknown"
 fi
-DEBIAN_VERSION=$(lsb_release -c -s) || DEBIAN_VERSION="unknown"
 uname -a | grep amd64 && IS_X86=1 && IS_64_BIT=1 || true
 if [[ $MODEL == *"Rock64"* ]]; then 
     IS_ARMBIAN=1
@@ -43,7 +42,7 @@ elif [[ $MODEL == *"Raspberry Pi 4"* ]]; then
         IS_32_BIT=0
         IS_64_BIT=1
     fi
-elif [[ $MODEL == *"Raspberry Pi 5"* ]]; then
+elif [[ $MODEL == *"Raspberry Pi 5"* || $MODEL == *"Raspberry Pi Compute Module 5"* ]]; then
     IS_RASPI=1
     IS_RASPI5=1
     IS_ARM64=1
@@ -73,3 +72,6 @@ fi
 TOTAL_RAM_GB=$(free --giga | grep Mem | awk '{print $2}')
 
 SERIAL_NUM=$(mynode-get-device-serial)
+
+DEBIAN_VERSION=$(lsb_release -r -s)
+DEBIAN_CODENAME=$(lsb_release -c -s) || DEBIAN_CODENAME="unknown"

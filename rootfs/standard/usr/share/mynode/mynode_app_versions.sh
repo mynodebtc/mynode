@@ -16,12 +16,15 @@ function get_app_version()
     echo "$version"
 }
 
-BTC_VERSION="27.1"
+BTC_VERSION="28.1"
+if [ "$DEBIAN_VERSION" -lt "12" ]; then
+    BTC_VERSION="27.2"
+fi
 BTC_VERSION=$(get_app_version "$BTC_VERSION" "bitcoin")
 BTC_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version
 BTC_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version_latest
 
-LND_VERSION="v0.18.3-beta"
+LND_VERSION="v0.18.5-beta"
 LND_VERSION=$(get_app_version "$LND_VERSION" "lnd")
 LND_VERSION_FILE=/home/bitcoin/.mynode/lnd_version
 LND_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnd_version_latest
@@ -58,11 +61,14 @@ CHANTOOLS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/chantools_version_latest
 CHANTOOLS_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/chantools/releases/download/$CHANTOOLS_VERSION/manifest-$CHANTOOLS_VERSION.txt
 CHANTOOLS_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/chantools/releases/download/$CHANTOOLS_VERSION/manifest-$CHANTOOLS_VERSION.sig
 
-ELECTRS_VERSION="v0.9.9"
+ELECTRS_VERSION="v0.10.9"
+if [ "$IS_32_BIT" = "1" ]; then
+    ELECTRS_VERSION="v0.9.9"
+fi
 ELECTRS_VERSION_FILE=/home/bitcoin/.mynode/electrs_version
 ELECTRS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/electrs_version_latest
 
-MEMPOOL_VERSION="v3.0.0"
+MEMPOOL_VERSION="v3.2.1"
 if [ "$IS_32_BIT" = "1" ]; then
     MEMPOOL_VERSION="v2.3.1"
 fi
@@ -132,12 +138,15 @@ BTCRPCEXPLORER_VERSION=$(get_app_version "$BTCRPCEXPLORER_VERSION" "btcrpcexplor
 BTCRPCEXPLORER_VERSION_FILE=/home/bitcoin/.mynode/btcrpcexplorer_version
 BTCRPCEXPLORER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/btcrpcexplorer_version_latest
 
-LNBITS_VERSION="0.12.5"
+LNBITS_VERSION="v0.12.12"
 LNBITS_VERSION=$(get_app_version "$LNBITS_VERSION" "lnbits")
 LNBITS_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version
 LNBITS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version_latest
 
-SPECTER_VERSION="1.14.1"
+SPECTER_VERSION="2.1.1"
+if [ "$DEBIAN_VERSION" -lt "12" ]; then
+    SPECTER_VERSION="1.14.1"
+fi
 SPECTER_VERSION=$(get_app_version "$SPECTER_VERSION" "specter")
 SPECTER_VERSION_FILE=/home/bitcoin/.mynode/specter_version
 SPECTER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/specter_version_latest
@@ -212,7 +221,7 @@ PYTHON_ARM32_GRPCIO_VERSION="1.40.0"
 NODE_JS_VERSION="18.x"
 NODE_NPM_VERSION="^8.1.0"
 
-RUST_VERSION="1.56.1"
+RUST_VERSION="1.86.0"
 
 GO_VERSION="1.19.4"
 GO_VERSION_FILE=/home/bitcoin/.mynode/go_version

@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, session, abort, Markup, request, redirect, flash
-from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from pprint import pprint, pformat
 from bitcoin_info import *
 from device_info import get_local_ip, skipped_product_key, get_onion_url_electrs, read_ui_settings, restart_electrs, is_testnet_enabled

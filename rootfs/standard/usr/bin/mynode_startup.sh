@@ -476,6 +476,10 @@ cp -f /usr/share/mynode/netdata.conf /opt/mynode/netdata/netdata.conf
 mkdir -p /opt/mynode/webssh2
 cp -f /usr/share/mynode/webssh2_config.json /opt/mynode/webssh2/config.json
 
+# Setup lnbits
+mkdir -p /opt/mynode/lnbits
+# Folder needs to exist for service to run, other setup done in pre_lnbits.sh
+
 # Initialize Dynamic Apps
 mynode-manage-apps init || true
 mynode-manage-apps openports || true
@@ -704,7 +708,7 @@ timedatectl set-ntp True || true # Make sure NTP is enabled for Tor and Bitcoin
 rm -f /var/swap || true # Remove old swap file to save SD card space
 systemctl enable check_in || true
 systemctl enable premium_plus_connect || true
-systemctl enable rathole || true
+#systemctl enable rathole || true
 systemctl enable bitcoin || true                # Make sure new bitcoin service is used
 systemctl disable bitcoind || true              # Make sure new bitcoin service is used
 rm /etc/systemd/system/bitcoind.service || true # Make sure new bitcoin service is used

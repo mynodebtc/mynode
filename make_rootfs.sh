@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# DEPRECATED DEVICES: raspi3
+# DEPRECATED DEVICES: raspi3 rock64 rockpi4
 
 # Make each device
-for i in 'raspi4' 'raspi5' 'debian' 'rockpro64' 'rock64' 'rockpi4' ; do
+for i in 'raspi4' 'raspi5' 'debian' 'rockpro64' ; do
 	echo "Creating root file system for $i"
 	mkdir -p out/rootfs_$i/
 

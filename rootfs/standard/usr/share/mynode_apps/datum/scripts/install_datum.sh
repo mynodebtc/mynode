@@ -19,10 +19,10 @@ BTCPSW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
 
 # verify datum
 #curl -L "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x1a3e761f19d2cc7785c5502ea291a2c45d0c504a" | gpg --import
-#git verify-tag ${VERSION}beta
+#git verify-tag ${VERSION}
 
 # checkout the tag
-#git checkout ${VERSION}beta
+#git checkout ${VERSION}
 
 # build datum
 cmake . && make
