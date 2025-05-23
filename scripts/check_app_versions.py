@@ -42,7 +42,6 @@ other_apps = [\
     {"name": "monlovesmango/astral",                    "dynamic_app_name":         "astral"},
     {"name": "fiatjaf/noscl",                           "dynamic_app_name":         "noscl"},
     {"name": "scsibug/nostr-rs-relay",                  "dynamic_app_name":         "nostrrsrelay"},
-    {"name": "getalby/hub",                             "dynamic_app_name":         "albyhub"},
 ]
 
 # Apps that don't work or are not on GitHub

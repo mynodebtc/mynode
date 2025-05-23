@@ -208,11 +208,6 @@ RATHOLE_VERSION=$(get_app_version "$RATHOLE_VERSION" "rathole")
 RATHOLE_VERSION_FILE=/home/bitcoin/.mynode/rathole_version
 RATHOLE_LATEST_VERSION_FILE=/home/bitcoin/.mynode/rathole_version_latest
 
-ALBYHUB_VERSION="v1.15.0"
-ALBYHUB_VERSION=$(get_app_version "$ALBYHUB_VERSION" "albyhub")
-ALBYHUB_VERSION_FILE=/home/bitcoin/.mynode/albyhub_version
-ALBYHUB_LATEST_VERSION_FILE=/home/bitcoin/.mynode/albyhub_version_latest
-
 # Dependency versions
 PYTHON_VERSION="3.8.9"
 
