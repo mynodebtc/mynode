@@ -10,16 +10,14 @@
         "link": "https://github.com/getAlby/hub"
     },
     "category": "lightning_app",
-    "short_description": "Lightning Wallet and LDK node",
+    "short_description": "Lightning Wallet",
     "description": [
         "Alby Hub is a self-custodial, open source lightning wallet that connects to apps.",
         "Lightning Made Easy - Running your own node has never been easier.",
-        "Set up your own node in one click,",
-        "top up channels via credit card or bank transfer,",
-        "choose from the most reliable liquidity providers in the space and",
-        "get 24/7 live support – all in one intuitive interface.",
-        "You will also easily understand how the lightning network works and",
-        "learning effortlessly along the way."
+        "Set up your own LDK Lightning node in one click, top up channels via credit card or bank transfer,",
+        "choose from the most reliable liquidity providers in the space and get 24/7 live support",
+        "– all in one intuitive interface.",
+        "You will also easily understand how the lightning network works and learning effortlessly along the way."
     ],
     "latest_version": "v1.15.0",
     "supported_archs": null,
@@ -52,10 +50,10 @@
         {
             "heading": "Instructions",
             "content": [
-                "AlbyHub - Your Own Center for Internet Money",
+                "Alby Hub - Your Own Center for Internet Money",
                 "On first login non-recoverable password will be created.",
-                "Configuration with LDK will create non-custodial Lighning Node.",
-                "Lightning node uses external services for Bitcoin Blockchain data and indexes. So disk space usage of albyHub is minimal.",
+                "Configuration with LDK will create non-custodial Lightning Node.",
+                "Lightning node uses external services for Bitcoin Blockchain data and indexes. So disk space usage of Alby Hub is minimal.",
                 "Make sure you have backups https://guides.getalby.com/user-guide/alby-account-and-browser-extension/alby-hub/backups-and-recover",
                 "You can open the app with the Open button on the left.",
                 "Enjoy!"
