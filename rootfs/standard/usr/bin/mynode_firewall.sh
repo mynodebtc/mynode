@@ -90,8 +90,6 @@ ufw allow 62602 comment 'allow JoinMarket Orderbook HTTPS'
 ufw allow 27183 comment 'allow JoinMarket API'
 ufw allow 28183 comment 'allow JoinMarket API'
 ufw allow 23334  comment 'allow DATUM stratum'
-ufw allow 9740  comment 'allow phoenixd'
-ufw allow 8080  comment 'allow albyHub'
 ufw allow from 127.0.0.1 comment 'allow from localhost'
 #ufw allow from ::1 comment 'allow from localhost'
 
