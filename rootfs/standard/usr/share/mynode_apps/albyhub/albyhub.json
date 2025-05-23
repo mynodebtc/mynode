@@ -23,7 +23,7 @@
     ],
     "latest_version": "v1.15.0",
     "supported_archs": null,
-    "download_skip": false,
+    "download_skip": true,
     "download_type": "source",
     "download_source_url": "not_required",
     "download_binary_url": {
