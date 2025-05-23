@@ -242,6 +242,7 @@ def initialize_application_defaults(app):
     if not "app_page_show_open_button" in app: app["app_page_show_open_button"] = True
     if not "app_page_additional_buttons" in app: app["app_page_additional_buttons"] = []
     if not "app_page_content" in app: app["app_page_content"] = []
+    if not "data_manageable" in app: app["data_manageable"] = False
 
     # Update fields that may use variables that need replacing, like {VERSION}, {SHORT_NAME}, etc...
     app["download_source_url"] = replace_app_info_variables(app, app["download_source_url"])
