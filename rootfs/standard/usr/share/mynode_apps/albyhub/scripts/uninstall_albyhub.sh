@@ -11,4 +11,6 @@ echo "==================== UNINSTALLING APP ===================="
 docker images --format '{{.Repository}}:{{.Tag}}' | grep 'albyhub' | xargs --no-run-if-empty docker rmi
 docker images --format '{{.Repository}}:{{.Tag}}' | grep 'ghcr.io/getalby/hub' | xargs --no-run-if-empty docker rmi
 
+# no backup / restore implemented
+
 echo "================== DONE UNINSTALLING APP ================="

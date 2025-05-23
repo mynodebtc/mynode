@@ -15,13 +15,11 @@ echo "==================== INSTALLING APP ===================="
 #echo "DOCKER NAME: $DOCKER_IMAGE_NAME"
 #echo "VERSION: $VERSION"
 
-# TODO: Perform installation steps here
-
-# Make dir that will be volume mounted to the container
-# add check if exists
-# if not exists see if _backup exists and populate from there
+# Make dir that is used as .service Workdirectory if not exist
 mkdir -p /opt/mynode/albyhub || true
+# Make dir that will be volume mounted to the container if not exist
 mkdir -p /mnt/hdd/mynode/albyhub || true
+# no backup / restore implemented
 
 # Clear any old images, only if they exist
 docker images --format '{{.Repository}}:{{.Tag}}' | grep 'albyhub' | xargs --no-run-if-empty docker rmi
@@ -30,10 +28,5 @@ docker images --format '{{.Repository}}:{{.Tag}}' | grep 'ghcr.io/getalby/hub' |
 # Pull ready dockers, instead of source
 docker pull ghcr.io/getalby/hub:$ALBYHUB_VERSION
 docker tag ghcr.io/getalby/hub:$ALBYHUB_VERSION albyhub
-
-# somehow password should be set automatically and backed up too with data, cause it cant be changed!
-
-#If exists both
-cp -av /mnt/hdd/mynode/albyhub_backup/* /mnt/hdd/mynode/albyhub/
 
 echo "================== DONE INSTALLING APP ================="
