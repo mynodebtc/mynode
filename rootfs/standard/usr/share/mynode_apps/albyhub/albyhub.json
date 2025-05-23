@@ -25,10 +25,10 @@
     "supported_archs": null,
     "download_skip": false,
     "download_type": "source",
-    "download_source_url": "https://github.com/getAlby/hub/archive/refs/tags/{VERSION}.tar.gz",
+    "download_source_url": "not_required",
     "download_binary_url": {
-        "aarch64": "https://github.com/getAlby/hub/releases/download/{VERSION}/albyhub-Server-Linux-aarch64.tar.bz2",
-        "x86_64": "https://github.com/getAlby/hub/releases/download/{VERSION}/albyhub-Server-Linux-x86_64.tar.bz2"
+        "aarch64": "download_url",
+        "x86_64": "download_url"
     },
     "install_env_vars": {},
     "supports_app_page": true,
