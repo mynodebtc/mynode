@@ -23,13 +23,11 @@ echo "==================== INSTALLING APP ===================="
 mkdir -p /opt/mynode/albyhub || true
 mkdir -p /mnt/hdd/mynode/albyhub || true
 
-# Clear any old images
-docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'albyhub') || true
-docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'ghcr.io/getalby/hub') || true
+# Clear any old images, only if they exist
+docker images --format '{{.Repository}}:{{.Tag}}' | grep 'albyhub' | xargs --no-run-if-empty docker rmi
+docker images --format '{{.Repository}}:{{.Tag}}' | grep 'ghcr.io/getalby/hub' | xargs --no-run-if-empty docker rmi
 
-# Use ready dockers, instead of source
-
-# Pull docker image
+# Pull ready dockers, instead of source
 docker pull ghcr.io/getalby/hub:$ALBYHUB_VERSION
 docker tag ghcr.io/getalby/hub:$ALBYHUB_VERSION albyhub
 
@@ -37,8 +35,5 @@ docker tag ghcr.io/getalby/hub:$ALBYHUB_VERSION albyhub
 
 #If exists both
 cp -av /mnt/hdd/mynode/albyhub_backup/* /mnt/hdd/mynode/albyhub/
-
-# Build docker image (slow)
-# docker build -t albyhub .
 
 echo "================== DONE INSTALLING APP ================="
