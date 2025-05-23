@@ -88,11 +88,6 @@ elif [ "$APP" = "mempool" ]; then
     rm -rf data
     rm -rf mysql/data
     cd ~
-elif [ "$APP" = "albyhub" ]; then
-    systemctl stop albyhub
-	docker rmi albyhub
-	docker rmi ghcr.io/getalby/hub:$ALBYHUB_VERSION
-    rm -rf /mnt/hdd/mynode/albyhub/.albyhub-data
 else
     echo "No custom re-install steps"
 fi
