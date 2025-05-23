@@ -153,12 +153,12 @@ def api_restart_app():
 def api_backup_data_folder():
     check_logged_in()
 
-    app = request.args.get("app")
-    if not app:
+    short_name = request.args.get("short_name")
+    if not short_name:
         return "NO_APP_SPECIFIED"
-    if not is_application_valid(app):
+    if not is_application_valid(short_name):
         return "INVALID_APP_NAME"
-    if not backup_data_folder(app):
+    if not backup_data_folder(short_name):
         return "ERROR"
     return "OK"
 
@@ -166,12 +166,12 @@ def api_backup_data_folder():
 def api_restore_data_folder():
     check_logged_in()
 
-    app = request.args.get("app")
-    if not app:
+    short_name = request.args.get("short_name")
+    if not short_name:
         return "NO_APP_SPECIFIED"
-    if not is_application_valid(app):
+    if not is_application_valid(short_name):
         return "INVALID_APP_NAME"
-    if not restore_data_folder(app):
+    if not restore_data_folder(short_name):
         return "ERROR"
     return "OK"
 
@@ -179,12 +179,12 @@ def api_restore_data_folder():
 def api_reset_data_folder():
     check_logged_in()
 
-    app = request.args.get("app")
-    if not app:
+    short_name = request.args.get("short_name")
+    if not short_name:
         return "NO_APP_SPECIFIED"
-    if not is_application_valid(app):
+    if not is_application_valid(short_name):
         return "INVALID_APP_NAME"
-    if not reset_data_folder(app):
+    if not reset_data_folder(short_name):
         return "ERROR"
     return "OK"
 
