@@ -26,7 +26,7 @@ docker images --format '{{.Repository}}:{{.Tag}}' | grep 'albyhub' | xargs --no-
 docker images --format '{{.Repository}}:{{.Tag}}' | grep 'ghcr.io/getalby/hub' | xargs --no-run-if-empty docker rmi
 
 # Pull ready dockers, instead of source
-docker pull ghcr.io/getalby/hub:$ALBYHUB_VERSION
-docker tag ghcr.io/getalby/hub:$ALBYHUB_VERSION albyhub
+docker pull ghcr.io/getalby/hub:$VERSION
+docker tag ghcr.io/getalby/hub:$VERSION albyhub
 
 echo "================== DONE INSTALLING APP ================="
