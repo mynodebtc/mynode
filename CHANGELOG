@@ -1,3 +1,6 @@
+- Add Alby Hub v1.17.2
+- Add support to Reset App storage via API and Info Page
+
 === v0.3.36 ===
 - Released 05/09/25
 - Upgrade Bitcoin to v0.28.1
