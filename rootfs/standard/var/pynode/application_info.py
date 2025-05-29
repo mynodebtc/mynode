@@ -633,24 +633,38 @@ def create_application_user(app_data):
     if app_data["requires_docker_image_installation"]:
         add_user_to_group(username, "docker")
 
-def create_application_folders(app_data):
-    log_message("  Running create_application_folders...")
+def create_application_install_folder(app_data):
+    log_message("  Running create_application_install_folder...")
     app_folder = app_data["install_folder"]
-    data_folder = app_data["storage_folder"]
 
     # Clear old data (not storage)
     if os.path.isdir(app_folder):
         log_message("  App folder exists, deleting...")
         run_linux_cmd("rm -rf {}".format(app_folder))
 
-    log_message("  Making application folders...")
+    log_message("  Making application install folder...")
     run_linux_cmd("mkdir {}".format(app_folder))
+
+    # Set folder permissions (always set for now - could check to see if already proper user)
+    log_message("  Updating install folder permissions...")
+    run_linux_cmd("chown -R {}:{} {}".format(app_data["linux_user"], app_data["linux_user"], app_folder))
+
+def create_application_storage_folder(app_data):
+    log_message("  Running create_application_storage_folder...")
+    data_folder = app_data["storage_folder"]
+
+    log_message("  Making application storage_folder...")
     run_linux_cmd("mkdir -p {}".format(data_folder))
 
     # Set folder permissions (always set for now - could check to see if already proper user)
-    log_message("  Updating folder permissions...")
-    run_linux_cmd("chown -R {}:{} {}".format(app_data["linux_user"], app_data["linux_user"], app_folder))
+    log_message("  Updating storage folder permissions...")
     run_linux_cmd("chown -R {}:{} {}".format(app_data["linux_user"], app_data["linux_user"], data_folder))
+
+def create_application_folders(app_data):
+    log_message("  Running create_application_folders...")
+
+    create_application_install_folder(app_data)
+    create_application_storage_folder(app_data)
 
 def create_application_tor_service(app_data):
     has_ports = False
