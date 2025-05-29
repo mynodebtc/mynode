@@ -288,6 +288,11 @@ if ! skip_base_upgrades ; then
     # Install any pip3 software
     pip3 install --upgrade pip setuptools wheel || pip3 install --upgrade pip setuptools wheel --use-deprecated=html5lib
     
+    # PyYAML Workaround (maybe only needed for python 3.10+)
+    #echo 'Cython < 3.0' > /tmp/constraint.txt
+    #PIP_CONSTRAINT=/tmp/constraint.txt pip3 wheel PyYAML==5.4.1
+    #pip3 install 'PyYAML==5.4.1'
+    
     pip3 install -r /usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir || \
         pip3 install -r /usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir --use-deprecated=html5lib
 
