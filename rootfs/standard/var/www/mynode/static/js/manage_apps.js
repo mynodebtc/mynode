@@ -153,7 +153,6 @@ function restore_data_folder_via_api(name, short_name) {
         $('#loading_spinner_message').html("Restoring...");
         $('#loading_spinner_overlay').fadeIn();
         $.get('/api/restore_data_folder?app='+short_name)
-
             .done(function( data ) {
                 if (data != "OK") {
                     alert("Error restoring app data: "+data)
