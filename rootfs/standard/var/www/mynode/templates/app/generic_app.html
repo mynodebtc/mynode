@@ -83,9 +83,9 @@
                             <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="restart_app_via_api('{{ app.name }}', '{{ app.short_name }}');">Restart</button>
 
                             {% if app.is_enabled and app.data_manageable %}
-                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="backup_data_folder_via_api('{{ app.name }}', '{{ app.short_name }}');">Backup Data</button>
+<!--                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="backup_data_folder_via_api('{{ app.name }}', '{{ app.short_name }}');">Backup Data</button>
                                 <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="restore_data_folder_via_api('{{ app.name }}', '{{ app.short_name }}');">Restore Data</button>
-                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="reset_data_folder_via_api('{{ app.name }}', '{{ app.short_name }}');">Reset Data</button>
+-->                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="reset_data_folder_via_api('{{ app.name }}', '{{ app.short_name }}');">Reset Data</button>
                             {% endif %}
 
                             {% for btn in app.app_page_additional_buttons %}

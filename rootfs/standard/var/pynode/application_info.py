@@ -754,6 +754,44 @@ def restart_application(short_name):
     except Exception as e:
         return False
 
+def backup_data_folder(app_data):
+    log_message("  Running backup_data_folder...")
+
+def restore_data_folder(app_data):
+    log_message("  Running restore_data_folder...")
+
+def reset_data_folder(app_data):
+    log_message("  Running reset_data_folder...")
+
+    # If app_data is a string (short name), convert it to a full configuration
+    # and preserve the original short name.
+    if isinstance(app_data, str):
+        original_short_name = app_data  # Save the short name for service commands.
+        app_data = get_application(app_data)
+    else:
+        original_short_name = app_data["short_name"]
+
+    data_folder = app_data["storage_folder"]
+    
+    # Stop the service before removing data_folder
+    log_message("Stopping '{}'.".format(original_short_name))
+    stop_service(original_short_name)
+
+    # Remove App data_folder
+    log_message("Removing storage folder '{}' of '{}'...".format(data_folder, original_short_name))
+    data_folder = app_data["storage_folder"]
+    run_linux_cmd("rm -rf {}".format(data_folder))
+
+    # Re-create the storage folder
+    log_message("Creating storage folder '{}' of '{}'...".format(data_folder, original_short_name))
+    create_application_storage_folder(app_data)
+
+    # Re-start the service
+    log_message("Starting '{}'.".format(original_short_name))
+    start_service(original_short_name)
+
+    return True
+
 ######################################################################################
 ## Bulk Application Actions
 ######################################################################################
