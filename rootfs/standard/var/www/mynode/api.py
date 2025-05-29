@@ -150,7 +150,7 @@ def api_restart_app():
     return "OK"
 
 #    @mynode_api.route("/api/restart_app")
-@mynode_api.route("/api/backup_app_data")
+@mynode_api.route("/api/backup_data_folder")
 def api_backup_data_folder():
     check_logged_in()
 
@@ -185,7 +185,7 @@ def api_reset_data_folder():
         return "NO_APP_SPECIFIED"
     if not is_application_valid(app):
         return "INVALID_APP_NAME"
-    if not reset__data_folder(app):
+    if not reset_data_folder(app):
         return "ERROR"
     return "OK"
 
