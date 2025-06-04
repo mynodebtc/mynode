@@ -9,6 +9,7 @@ import urllib
 import requests
 import pwd
 import grp
+from decimal import Decimal
 
 mynode_logger = None
 
@@ -139,10 +140,15 @@ def increment_cached_integer(key):
 #==================================
 # Read and Write Python Dictionaries to JSON Cache Functions
 #==================================
+def decimal_serializer(obj):
+    if isinstance(obj, Decimal):
+        return float(obj)
+    return TypeError("Type not Serializable")
+
 def set_dictionary_file_cache(data, file_path):
     try:
         with open(file_path, 'w') as file:
-            json.dump(data, file)
+            json.dump(data, file, default=decimal_serializer)
         return True
     except Exception as e:
         log_message("ERROR set_dictionary_file_cache ({}):{} ".format(file_path, str(e)))
