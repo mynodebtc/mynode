@@ -19,7 +19,7 @@
         "– all in one intuitive interface.",
         "You will also easily understand how the lightning network works and learning effortlessly along the way."
     ],
-    "latest_version": "v1.15.0",
+    "latest_version": "v1.17.2",
     "supported_archs": null,
     "download_skip": true,
     "download_type": "source",
@@ -56,6 +56,7 @@
                 "Lightning node uses external services for Bitcoin Blockchain data and indexes. So disk space usage of Alby Hub is minimal.",
                 "Make sure you have backups https://guides.getalby.com/user-guide/alby-account-and-browser-extension/alby-hub/backups-and-recover",
                 "You can open the app with the Open button on the left.",
+                "Reset Data button will delete all Alby Hub data and will NOT backup anything.",
                 "Enjoy!"
             ]
         }
@@ -68,5 +69,6 @@
     "homepage_section": "apps",
     "homepage_order": 91,
     "app_type": "custom",
-    "sdk_version": 2
+    "sdk_version": 2,
+    "data_manageable": true
 }
