@@ -17,13 +17,15 @@ def get_latest_price():
 def get_price_diff_24hrs():
     global price_data
     try:
+        msg_calc = "n/a"
         latest = get_latest_price()
         if len(price_data) > 0:
             old = price_data[0]["price"]
             if latest != "N/A" and old != "N/A":
+                msg_calc = f"({latest} - {old})"
                 return latest - old
     except Exception as e:
-        log_message("ERROR get_price_diff_24hrs: {}".format(str(e)))
+        log_message("ERROR get_price_diff_24hrs: {} | {}".format(msg_calc, str(e)))
     return 0.0
 
 def get_price_up_down_flat_24hrs():
