@@ -1133,7 +1133,7 @@ touch /home/bitcoin/.mynode/install_vpn
 # Init dynamic apps, so any new applications are picked up before reboot
 mynode-manage-apps init || true
 
-# Upgrade Dyanmic Applications
+# Upgrade Dynamic Applications
 mynode-manage-apps upgrade || true
 
 
