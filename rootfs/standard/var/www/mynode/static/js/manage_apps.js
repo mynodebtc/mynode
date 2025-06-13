@@ -137,7 +137,7 @@ function backup_data_folder_via_api(name, short_name) {
     if ( confirm("Are you sure you want to backup "+name+"? This will stop, backup data and start app.") ) {
         $('#loading_spinner_message').html("Making backup...");
         $('#loading_spinner_overlay').fadeIn();
-        $.get('/api/backup_data_folder?app='+short_name)
+        $.get('/api/backup_data_folder?short_name=' + short_name)
             .done(function( data ) {
                 if (data != "OK") {
                     alert("Error backupping app data: "+data)
@@ -152,7 +152,7 @@ function restore_data_folder_via_api(name, short_name) {
     if ( confirm("Are you sure you want to restore "+name+"? This will stop, DELETE DATA, restore backup and start app.") ) {
         $('#loading_spinner_message').html("Restoring...");
         $('#loading_spinner_overlay').fadeIn();
-        $.get('/api/restore_data_folder?app='+short_name)
+        $.get('/api/restore_data_folder?short_name=' + short_name)
             .done(function( data ) {
                 if (data != "OK") {
                     alert("Error restoring app data: "+data)
@@ -167,7 +167,7 @@ function reset_data_folder_via_api(name, short_name) {
     if ( confirm("Are you sure you want to reset "+name+"? This will stop app, RESET ALL THE APP DATA and start app.") ) {
         $('#loading_spinner_message').html("Reseting app...");
         $('#loading_spinner_overlay').fadeIn();
-        $.get('/api/reset_data_folder?app='+short_name)
+        $.get('/api/reset_data_folder?short_name=' + short_name)
             .done(function( data ) {
                 if (data != "OK") {
                     alert("Error removing app data: "+data)
