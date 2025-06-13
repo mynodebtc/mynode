@@ -13,7 +13,7 @@ ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_albyhub.sh ]; then /bin/bash /usr/bin/service_scripts/pre_albyhub.sh; fi'
 ExecStart=docker run --rm \
   --name albyhub \
-  --publish 8080:8080 \
+  --publish 3040:8080 \
   --volume /mnt/hdd/mynode/albyhub:/data \
   --env WORK_DIR='/data' \
   albyhub
