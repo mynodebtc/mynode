@@ -21,7 +21,7 @@ def get_price_diff_24hrs():
         latest = get_latest_price()
         if len(price_data) > 0:
             old = price_data[0]["price"]
-            if latest != "N/A" and old != "N/A":
+            if latest != "N/A" and latest != "ERR" and old != "N/A" and old != "ERR":
                 msg_calc = f"({latest} - {old})"
                 return latest - old
     except Exception as e:
