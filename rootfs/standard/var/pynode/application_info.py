@@ -6,6 +6,7 @@ from device_info import *
 from drive_info import *
 from systemctl_info import *
 from utilities import *
+from enable_disable_functions import * 
 import copy
 import json
 import time
@@ -241,6 +242,7 @@ def initialize_application_defaults(app):
     if not "app_page_show_open_button" in app: app["app_page_show_open_button"] = True
     if not "app_page_additional_buttons" in app: app["app_page_additional_buttons"] = []
     if not "app_page_content" in app: app["app_page_content"] = []
+    if not "data_manageable" in app: app["data_manageable"] = False
 
     # Update fields that may use variables that need replacing, like {VERSION}, {SHORT_NAME}, etc...
     app["download_source_url"] = replace_app_info_variables(app, app["download_source_url"])
@@ -633,24 +635,38 @@ def create_application_user(app_data):
     if app_data["requires_docker_image_installation"]:
         add_user_to_group(username, "docker")
 
-def create_application_folders(app_data):
-    log_message("  Running create_application_folders...")
+def create_application_install_folder(app_data):
+    log_message("  Running create_application_install_folder...")
     app_folder = app_data["install_folder"]
-    data_folder = app_data["storage_folder"]
 
     # Clear old data (not storage)
     if os.path.isdir(app_folder):
         log_message("  App folder exists, deleting...")
         run_linux_cmd("rm -rf {}".format(app_folder))
 
-    log_message("  Making application folders...")
+    log_message("  Making application install folder...")
     run_linux_cmd("mkdir {}".format(app_folder))
+
+    # Set folder permissions (always set for now - could check to see if already proper user)
+    log_message("  Updating install folder permissions...")
+    run_linux_cmd("chown -R {}:{} {}".format(app_data["linux_user"], app_data["linux_user"], app_folder))
+
+def create_application_storage_folder(app_data):
+    log_message("  Running create_application_storage_folder...")
+    data_folder = app_data["storage_folder"]
+
+    log_message("  Making application storage_folder...")
     run_linux_cmd("mkdir -p {}".format(data_folder))
 
     # Set folder permissions (always set for now - could check to see if already proper user)
-    log_message("  Updating folder permissions...")
-    run_linux_cmd("chown -R {}:{} {}".format(app_data["linux_user"], app_data["linux_user"], app_folder))
+    log_message("  Updating storage folder permissions...")
     run_linux_cmd("chown -R {}:{} {}".format(app_data["linux_user"], app_data["linux_user"], data_folder))
+
+def create_application_folders(app_data):
+    log_message("  Running create_application_folders...")
+
+    create_application_install_folder(app_data)
+    create_application_storage_folder(app_data)
 
 def create_application_tor_service(app_data):
     has_ports = False
@@ -737,6 +753,39 @@ def restart_application(short_name):
         return True
     except Exception as e:
         return False
+
+def backup_data_folder(app_data):
+    log_message("  Running backup_data_folder...")
+
+def restore_data_folder(app_data):
+    log_message("  Running restore_data_folder...")
+
+def reset_data_folder(short_name):
+    log_message(f"  Running reset_data_folder for '{short_name}'...")
+    
+    app_data = get_application(short_name)
+    if not app_data:
+        log_message(f"  ERROR: application '{short_name}' not found")
+        return False
+    data_folder = app_data["storage_folder"]
+    
+    # Stop the service before removing data_folder
+    log_message(f"  Stopping '{short_name}'…")
+    stop_service(short_name)
+
+    # Remove App data_folder
+    log_message(f"  Removing storage folder '{data_folder}'…")
+    run_linux_cmd(f"rm -rf {data_folder}")
+
+    # Re-create the storage folder
+    log_message(f"  Creating storage folder '{data_folder}'…")
+    create_application_storage_folder(app_data)
+
+    # Re-start the service
+    log_message(f"  Starting '{short_name}'…")
+    start_service(short_name)
+
+    return True
 
 ######################################################################################
 ## Bulk Application Actions
