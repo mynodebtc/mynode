@@ -140,7 +140,7 @@ function backup_data_folder_via_api(name, short_name) {
         $.get('/api/backup_data_folder?short_name=' + short_name)
             .done(function( data ) {
                 if (data != "OK") {
-                    alert("Error backupping app data: "+data)
+                    alert("Error backing up app data: "+data)
                 }
                 $('#loading_spinner_overlay').fadeOut();
             }
@@ -165,7 +165,7 @@ function restore_data_folder_via_api(name, short_name) {
 
 function reset_data_folder_via_api(name, short_name) {
     if ( confirm("Are you sure you want to reset "+name+"? This will stop app, RESET ALL THE APP DATA and start app.") ) {
-        $('#loading_spinner_message').html("Reseting app...");
+        $('#loading_spinner_message').html("Resetting app...");
         $('#loading_spinner_overlay').fadeIn();
         $.get('/api/reset_data_folder?short_name=' + short_name)
             .done(function( data ) {
