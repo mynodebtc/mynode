@@ -128,3 +128,52 @@ function toggleEnabled(short_name, full_name, enable, return_page="") {
                            });
     }
 }
+
+// ==========================================
+// Manage app storage (data_folder)
+// ==========================================
+
+function backup_data_folder_via_api(name, short_name) {
+    if ( confirm("Are you sure you want to backup "+name+"? This will stop, backup data and start app.") ) {
+        $('#loading_spinner_message').html("Making backup...");
+        $('#loading_spinner_overlay').fadeIn();
+        $.get('/api/backup_data_folder?app='+short_name)
+            .done(function( data ) {
+                if (data != "OK") {
+                    alert("Error backing up app data: "+data)
+                }
+                $('#loading_spinner_overlay').fadeOut();
+            }
+        );
+    }
+}
+
+function restore_data_folder_via_api(name, short_name) {
+    if ( confirm("Are you sure you want to restore "+name+"? This will stop, DELETE DATA, restore backup and start app.") ) {
+        $('#loading_spinner_message').html("Restoring...");
+        $('#loading_spinner_overlay').fadeIn();
+        $.get('/api/restore_data_folder?app='+short_name)
+            .done(function( data ) {
+                if (data != "OK") {
+                    alert("Error restoring app data: "+data)
+                }
+                $('#loading_spinner_overlay').fadeOut();
+            }
+        );
+    }
+}
+
+function reset_data_folder_via_api(name, short_name) {
+    if ( confirm("Are you sure you want to reset "+name+"? This will stop app, RESET ALL THE APP DATA and start app.") ) {
+        $('#loading_spinner_message').html("Resetting app...");
+        $('#loading_spinner_overlay').fadeIn();
+        $.get('/api/reset_data_folder?app='+short_name)
+            .done(function( data ) {
+                if (data != "OK") {
+                    alert("Error removing app data: "+data)
+                }
+                $('#loading_spinner_overlay').fadeOut();
+            }
+        );
+    }
+}
