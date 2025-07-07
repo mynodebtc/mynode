@@ -13,8 +13,8 @@ Restart=always
 RestartSec=1
 User=root
 Group=root
-StandardOutput=syslog
-StandardError=syslog
+StandardOutput=journal
+StandardError=journal
 SyslogIdentifier=lndbackup
 
 [Install]

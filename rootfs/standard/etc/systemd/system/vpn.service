@@ -15,8 +15,8 @@ RestartSec=30
 ExecStart=/usr/bin/mynode_vpn.sh
 User=root
 Group=root
-StandardOutput=syslog
-StandardError=syslog
+StandardOutput=journal
+StandardError=journal
 SyslogIdentifier=vpn
 
 [Install]

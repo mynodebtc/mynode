@@ -16,8 +16,8 @@ KillMode=control-group
 TimeoutSec=30
 Restart=always
 RestartSec=30
-StandardOutput=syslog
-StandardError=syslog
+StandardOutput=journal
+StandardError=journal
 SyslogIdentifier=lndconnect
 
 [Install]

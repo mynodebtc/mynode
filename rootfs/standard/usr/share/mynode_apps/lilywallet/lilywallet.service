@@ -21,8 +21,8 @@ Type=simple
 TimeoutSec=120
 Restart=always
 RestartSec=60
-StandardOutput=syslog
-StandardError=syslog
+StandardOutput=journal
+StandardError=journal
 SyslogIdentifier=lilywallet
 
 [Install]

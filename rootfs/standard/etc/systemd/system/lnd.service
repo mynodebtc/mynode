@@ -25,8 +25,8 @@ IOAccounting=true
 IOWeight=400
 Restart=always
 RestartSec=1
-StandardOutput=syslog
-StandardError=syslog
+StandardOutput=journal
+StandardError=journal
 SyslogIdentifier=lnd
 
 [Install]

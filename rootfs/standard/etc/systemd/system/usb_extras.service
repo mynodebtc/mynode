@@ -9,8 +9,8 @@ After=network.target mynode.service
 ExecStart=/usr/local/bin/python3 /usr/bin/mynode_usb_extras.py
 User=root
 Group=root
-StandardOutput=syslog
-StandardError=syslog
+StandardOutput=journal
+StandardError=journal
 SyslogIdentifier=usb_extras
 RestartSec=30
 
