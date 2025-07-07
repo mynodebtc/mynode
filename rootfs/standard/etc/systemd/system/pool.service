@@ -20,8 +20,8 @@ KillMode=control-group
 TimeoutSec=240
 Restart=always
 RestartSec=60
-StandardOutput=syslog
-StandardError=syslog
+StandardOutput=journal
+StandardError=journal
 SyslogIdentifier=pool
 
 [Install]

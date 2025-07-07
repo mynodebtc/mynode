@@ -19,8 +19,8 @@ KillMode=control-group
 TimeoutSec=30
 Restart=on-failure
 RestartSec=120
-StandardOutput=syslog
-StandardError=syslog
+StandardOutput=journal
+StandardError=journal
 SyslogIdentifier=ratthole
 
 [Install]

@@ -19,8 +19,8 @@ TimeoutSec=300
 Restart=always
 RestartSec=60
 Nice=5
-StandardOutput=syslog
-StandardError=syslog
+StandardOutput=journal
+StandardError=journal
 SyslogIdentifier=electrs
 
 [Install]

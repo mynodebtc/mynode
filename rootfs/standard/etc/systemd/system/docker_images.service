@@ -13,8 +13,8 @@ ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStart=/usr/bin/mynode_docker_images.sh
 User=root
 Group=root
-StandardOutput=syslog
-StandardError=syslog
+StandardOutput=journal
+StandardError=journal
 SyslogIdentifier=mynode_docker_images
 
 RestartSec=60
