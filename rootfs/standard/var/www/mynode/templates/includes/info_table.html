@@ -140,18 +140,20 @@
     </tr>
     {% endif %}
 
-    <!-- From here down are the "Details" (hidden unless show details is clicked)-->
+    <!-- BUTTON DISABLED: From here down are the "Details" (hidden unless show details is clicked)-->
+    <!--
     <tr>
         <th>Advanced Info</th>
         <td>
             <button id="info_table_show_advanced_info" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
         </td>
     </tr>
-    <tr class="info_table_advanced_row" style="display: none;">
+    -->
+    <tr class="info_table_advanced_row" style="">
         <th>Debian Version</th>
         <td>{{debian_version}} ({{debian_codename}})</td>
     </tr>
-    <tr class="info_table_advanced_row" style="display: none;">
+    <tr class="info_table_advanced_row" style="">
         <th>Architecture</th>
         <td>{{device_arch}}</td>
     </tr>
