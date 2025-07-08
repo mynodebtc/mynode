@@ -31,7 +31,7 @@ IS_UNKNOWN=0
 DEVICE_TYPE="unknown"
 MODEL=$(cat /proc/device-tree/model) || IS_UNKNOWN=1
 DEBIAN_CODENAME=$(lsb_release -c -s) || DEBIAN_CODENAME="unknown"
-uname -a | grep amd64 && IS_X86=1 && IS_64_BIT=1 && IS_UNKNOWN=0 || true
+uname -a | grep -E 'amd64|x86_64' && IS_X86=1 && IS_64_BIT=1 && IS_UNKNOWN=0 || true
 if [[ $MODEL == *"Rock64"* ]]; then
     IS_ARMBIAN=1
     IS_ROCK64=1
