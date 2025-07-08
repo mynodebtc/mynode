@@ -149,45 +149,6 @@ def api_restart_app():
 
     return "OK"
 
-@mynode_api.route("/api/backup_data_folder")
-def api_backup_data_folder():
-    check_logged_in()
-
-    short_name = request.args.get("short_name")
-    if not short_name:
-        return "NO_APP_SPECIFIED"
-    if not is_application_valid(short_name):
-        return "INVALID_APP_NAME"
-    if not backup_data_folder(short_name):
-        return "ERROR"
-    return "OK"
-
-@mynode_api.route("/api/restore_data_folder")
-def api_restore_data_folder():
-    check_logged_in()
-
-    short_name = request.args.get("short_name")
-    if not short_name:
-        return "NO_APP_SPECIFIED"
-    if not is_application_valid(short_name):
-        return "INVALID_APP_NAME"
-    if not restore_data_folder(short_name):
-        return "ERROR"
-    return "OK"
-
-@mynode_api.route("/api/reset_data_folder")
-def api_reset_data_folder():
-    check_logged_in()
-
-    short_name = request.args.get("short_name")
-    if not short_name:
-        return "NO_APP_SPECIFIED"
-    if not is_application_valid(short_name):
-        return "INVALID_APP_NAME"
-    if not reset_data_folder(short_name):
-        return "ERROR"
-    return "OK"
-
 @mynode_api.route("/api/get_device_info")
 def api_get_device_info():
     check_logged_in()
