@@ -37,7 +37,7 @@
     "requires_docker_image_installation": true,
     "requires_electrs": false,
     "requires_lightning": false,
-    "show_on_marketplace_page": false,
+    "show_on_marketplace_page": true,
     "show_on_application_page": true,
     "show_on_homepage": true,
     "show_on_status_page": true,
