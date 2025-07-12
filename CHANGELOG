@@ -1,6 +1,7 @@
 === v0.3.37 ===
 - Released 07/11/25
 - Upgrade LND to v0.19.1
+- Upgrade Thunderhub to v0.13.32
 - Upgrade Specter to v2.1.1
 - Upgrade Loop to v0.31.1
 - Better handling of some 64-bit platforms
