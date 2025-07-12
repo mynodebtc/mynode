@@ -1,3 +1,12 @@
+=== v0.3.37 ===
+- Released 07/11/25
+- Upgrade LND to v0.19.1
+- Upgrade Specter to v2.1.1
+- Upgrade Loop to v0.31.1
+- Better handling of some 64-bit platforms
+- Fixes Specter with Bitcoin v0.28+
+- Various bug fixes
+
 === v0.3.36 ===
 - Released 05/09/25
 - Upgrade Bitcoin to v0.28.1
