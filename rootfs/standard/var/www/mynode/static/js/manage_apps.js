@@ -134,7 +134,7 @@ function toggleEnabled(short_name, full_name, enable, return_page="") {
 // ==========================================
 
 function backup_data_folder_via_api(name, short_name) {
-    if ( confirm("Are you sure you want to backup "+name+"? This will stop, backup data and start app.") ) {
+    if ( confirm("Are you sure you want to backup "+name+"? This will stop the app, backup data, and restart the app.") ) {
         $('#loading_spinner_message').html("Making backup...");
         $('#loading_spinner_overlay').fadeIn();
         $.get('/api/backup_data_folder?app='+short_name)
@@ -149,7 +149,7 @@ function backup_data_folder_via_api(name, short_name) {
 }
 
 function restore_data_folder_via_api(name, short_name) {
-    if ( confirm("Are you sure you want to restore "+name+"? This will stop, DELETE DATA, restore backup and start app.") ) {
+    if ( confirm("Are you sure you want to restore "+name+"? This will stop the app, DELETE DATA, restore the backup files, and restart the app.") ) {
         $('#loading_spinner_message').html("Restoring...");
         $('#loading_spinner_overlay').fadeIn();
         $.get('/api/restore_data_folder?app='+short_name)
