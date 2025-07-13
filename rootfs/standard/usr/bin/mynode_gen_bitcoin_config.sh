@@ -35,8 +35,24 @@ if [ -f /mnt/hdd/mynode/settings/bitcoin_custom.conf ]; then
     # Use Custom Config
     cp -f /mnt/hdd/mynode/settings/bitcoin_custom.conf /mnt/hdd/mynode/bitcoin/bitcoin.conf
 else
+    # Start with blank config
+    echo "" > /mnt/hdd/mynode/bitcoin/bitcoin.conf
+
+    # Append "pre" config
+    if [ -f /mnt/hdd/mynode/settings/bitcoin_pre_config.conf ]; then
+        echo "### Custom Pre BTC Config ###############" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        cat /mnt/hdd/mynode/settings/bitcoin_pre_config.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        echo "#########################################" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    fi
+
+    echo "### MyNode Generated BTC Config #########" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+
     # Generate a default config
-    cp -f /usr/share/mynode/bitcoin.conf /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    cat /usr/share/mynode/bitcoin.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
     sync
 
     # Generate config based on RAM
@@ -131,12 +147,24 @@ else
         sed -i "s/shrinkdebugfile=.*/shrinkdebugfile=0/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
     fi
 
-    # Append "extra" config
+    echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    echo "#########################################" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+
+    # Append "post" config
     if [ -f /mnt/hdd/mynode/settings/bitcoin_extra_config.conf ]; then
+        # Migrate old file to new name
+        cp -f /mnt/hdd/mynode/settings/bitcoin_extra_config.conf /mnt/hdd/mynode/settings/bitcoin_post_config.conf
+        rm -f /mnt/hdd/mynode/settings/bitcoin_extra_config.conf
+        sleep 1s
+        sync
+    fi
+    if [ -f /mnt/hdd/mynode/settings/bitcoin_post_config.conf ]; then
         echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
-        echo "# Extra BTC Config" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
         echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
-        cat /mnt/hdd/mynode/settings/bitcoin_extra_config.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        echo "### Custom Post BTC Config ##############" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        cat /mnt/hdd/mynode/settings/bitcoin_post_config.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        echo "#########################################" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
         echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
     fi
 fi
