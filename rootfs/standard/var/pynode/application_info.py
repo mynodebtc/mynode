@@ -756,9 +756,15 @@ def restart_application(short_name):
 
 def backup_data_folder(app_data):
     log_message("  Running backup_data_folder...")
+    
+    # Not yet implemented
+    return False
 
 def restore_data_folder(app_data):
     log_message("  Running restore_data_folder...")
+    
+    # Not yet implemented
+    return False
 
 def reset_data_folder(short_name):
     log_message(f"  Running reset_data_folder for '{short_name}'...")
