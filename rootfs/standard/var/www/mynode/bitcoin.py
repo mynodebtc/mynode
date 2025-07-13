@@ -165,10 +165,13 @@ def bitcoin_config_page():
 
     # Handle form
     if request.method == 'POST':
+        pre_bitcoin_config = request.form.get('pre_bitcoin_config')
+        if pre_bitcoin_config != None:
+            set_bitcoin_pre_config(pre_bitcoin_config)
+        post_bitcoin_config = request.form.get('post_bitcoin_config')
+        if post_bitcoin_config != None:
+            set_bitcoin_post_config(post_bitcoin_config)
         custom_config = request.form.get('custom_config')
-        extra_bitcoin_config = request.form.get('extra_bitcoin_config')
-        if extra_bitcoin_config != None:
-            set_bitcoin_extra_config(extra_bitcoin_config)
         if custom_config != None:
             set_bitcoin_custom_config(custom_config)
         
@@ -192,7 +195,8 @@ def bitcoin_config_page():
     templateData = {
         "title": "Bitcoin Config",
         "using_bitcoin_custom_config": using_bitcoin_custom_config(),
-        "extra_bitcoin_config": get_bitcoin_extra_config(),
+        "pre_bitcoin_config": get_bitcoin_pre_config(),
+        "post_bitcoin_config": get_bitcoin_post_config(),
         "bitcoin_config": bitcoin_config,
         "ui_settings": read_ui_settings()
     }
