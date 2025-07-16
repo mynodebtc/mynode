@@ -14,6 +14,9 @@ if [ ! -w / ]; then
     mount -o remount,rw /;
 fi
 
+# Improve write times, especially if running off USB flash drive
+sudo mount -o remount,noatime /
+
 # Set sticky bit on /tmp
 chmod +t /tmp
 
@@ -450,14 +453,18 @@ fi
 JOINMARKET_CONFIG_UPDATE_NUM=1
 if [ ! -f /mnt/hdd/mynode/joinmarket/update_settings_$JOINMARKET_CONFIG_UPDATE_NUM ]; then
     cp /usr/share/mynode/joinmarket.cfg /mnt/hdd/mynode/joinmarket/joinmarket.cfg
-    touch /mnt/hdd/mynode/rtl/update_settings_$JOINMARKET_CONFIG_UPDATE_NUM
+    touch /mnt/hdd/mynode/joinmarket/update_settings_$JOINMARKET_CONFIG_UPDATE_NUM
 fi
 sed -i "s/#max_cj_fee_abs = x/max_cj_fee_abs = 2000/g" /mnt/hdd/mynode/joinmarket/joinmarket.cfg
 sed -i "s/#max_cj_fee_rel = x/max_cj_fee_rel = 0.001/g" /mnt/hdd/mynode/joinmarket/joinmarket.cfg
+if [ -f /home/joinmarket/install.selfsignedcert.sh ]; then
+    sudo -u joinmarket /home/joinmarket/install.selfsignedcert.sh || true
+fi
 chown -R joinmarket:joinmarket /mnt/hdd/mynode/joinmarket
 
 # Setup Mempool
 # Moved to pre_mempool.sh
+chown -R mempool:mempool /mnt/hdd/mynode/mempool
 
 # Setup Netdata
 mkdir -p /opt/mynode/netdata
@@ -468,6 +475,10 @@ cp -f /usr/share/mynode/netdata.conf /opt/mynode/netdata/netdata.conf
 # Setup webssh2
 mkdir -p /opt/mynode/webssh2
 cp -f /usr/share/mynode/webssh2_config.json /opt/mynode/webssh2/config.json
+
+# Setup lnbits
+mkdir -p /opt/mynode/lnbits
+# Folder needs to exist for service to run, other setup done in pre_lnbits.sh
 
 # Initialize Dynamic Apps
 mynode-manage-apps init || true
@@ -697,7 +708,7 @@ timedatectl set-ntp True || true # Make sure NTP is enabled for Tor and Bitcoin
 rm -f /var/swap || true # Remove old swap file to save SD card space
 systemctl enable check_in || true
 systemctl enable premium_plus_connect || true
-systemctl enable rathole || true
+#systemctl enable rathole || true
 systemctl enable bitcoin || true                # Make sure new bitcoin service is used
 systemctl disable bitcoind || true              # Make sure new bitcoin service is used
 rm /etc/systemd/system/bitcoind.service || true # Make sure new bitcoin service is used

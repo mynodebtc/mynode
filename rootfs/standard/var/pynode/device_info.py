@@ -95,7 +95,7 @@ def reload_throttled_data():
 
 def get_throttled_data():
     global cached_data
-    if "get_throttled_data" in cached_data:
+    if "get_throttled_data" in cached_data and cached_data["get_throttled_data"] != "":
         data = cached_data["get_throttled_data"]
         hex_data = int(data, 16)
         r = {}
@@ -316,12 +316,21 @@ def get_device_arch():
     cached_data["device_arch"] = arch
     return arch
 
+def get_debian_codename():
+    global cached_data
+    if "debian_codename" in cached_data:
+        return cached_data["debian_codename"]
+
+    debian_codename = to_string(subprocess.check_output("lsb_release -c -s", shell=True).decode("utf-8").strip())
+    cached_data["debian_codename"] = debian_codename
+    return debian_codename
+
 def get_debian_version():
     global cached_data
     if "debian_version" in cached_data:
         return cached_data["debian_version"]
 
-    debian_version = to_string(subprocess.check_output("lsb_release -c -s", shell=True).decode("utf-8").strip())
+    debian_version = int(to_string(subprocess.check_output("lsb_release -r -s", shell=True).decode("utf-8").strip()))
     cached_data["debian_version"] = debian_version
     return debian_version
 
@@ -1077,6 +1086,7 @@ def delete_bitcoin_peer_database():
 def delete_bitcoin_data():
     os.system("rm -rf /mnt/hdd/mynode/bitcoin")
     os.system("rm -rf /mnt/hdd/mynode/quicksync/.quicksync_complete")
+    os.system("rm -rf /mnt/hdd/mynode/.mynode_bitcoin_synced_at_least_once")
     #os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpc_environment")
     #os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpcpw")
 
@@ -1226,6 +1236,114 @@ def clear_mempool_cache():
     os.system("rm -rf /mnt/hdd/mynode/mempool/mysql/data/*")
     os.system("sync")
     os.system("systemctl restart mempool")
+
+#==================================
+# LNbits Functions
+#==================================
+def reset_lnbits_data():
+    if is_service_enabled("lnbits"):
+        stop_service("lnbits")
+    
+    os.system("rm -rf /mnt/hdd/mynode/lnbits/*")
+    os.system("rm -rf /mnt/hdd/mynode/lnbits/.*")
+    
+    if is_service_enabled("lnbits"):
+        restart_service("lnbits")
+
+def is_lnbits_10():
+    """
+    Returns True if the LNbits database is version 1.0.x
+    (i.e., the "system_settings" table exists), otherwise False.
+    """
+    cmd = (
+        "sqlite3 /mnt/hdd/mynode/lnbits/database.sqlite3 "
+        "'SELECT name FROM sqlite_master WHERE type=\"table\" AND name=\"system_settings\";'"
+    )
+    return os.popen(cmd).read().strip() == "system_settings"
+
+def fetch_super_user_info():
+    """
+    Retrieves the super_user id and username for both LNbits versions.
+
+    For LNbits 1.0.x:
+      - The super_user id is obtained from the "system_settings" table via:
+          SELECT value FROM system_settings WHERE id="super_user";
+
+    For LNbits 0.12.x:
+      - The super_user id is obtained from the "settings" table via:
+          SELECT super_user FROM settings;
+
+    In both cases, the account is then retrieved from the accounts table by its id.
+    """
+    try:
+        if is_lnbits_10():
+            super_user_id_cmd = (
+                "sqlite3 /mnt/hdd/mynode/lnbits/database.sqlite3 "
+                "'SELECT value FROM system_settings WHERE id=\"super_user\";' | sed 's/\"//g'"
+            )
+            super_user_id = os.popen(super_user_id_cmd).read().strip()
+        else:
+            super_user_id_cmd = (
+                "sqlite3 /mnt/hdd/mynode/lnbits/database.sqlite3 "
+                "'SELECT super_user FROM settings;'"
+            )
+            super_user_id = os.popen(super_user_id_cmd).read().strip()
+
+        if not super_user_id:
+            raise ValueError("Super_user ID not found in the database.")
+
+        # Use the super_user id to retrieve the username from the accounts table.
+        super_user_username_cmd = (
+            f"sqlite3 /mnt/hdd/mynode/lnbits/database.sqlite3 "
+            f"'SELECT username FROM accounts WHERE id=\"{super_user_id}\";'"
+        )
+        super_user_username = os.popen(super_user_username_cmd).read().strip()
+        if not super_user_username:
+            raise ValueError(f"Username for super_user id {super_user_id} not found.")
+        return super_user_id, super_user_username
+    except Exception as e:
+        print(f"Error in fetch_super_user_info: {e}")
+        raise
+
+def reset_lnbits_super_user_pwd():
+    """
+    Resets the LNbits super_user password to "securebolt".
+
+    In LNbits 1.0.x the password hash is stored in the "password_hash" column,
+    while in LNbits 0.12.x it is stored in the "pass" column.
+    """
+    try:
+        super_user_id, super_user_username = fetch_super_user_info()
+        version_str = "1.0.x" if is_lnbits_10() else "0.12.x"
+        print(f"LNbits v{version_str} super_user password reset")
+        print(f"super_user ID: {super_user_id}")
+        print(f"super_user username: {super_user_username}")
+        print("Resetting password to: securebolt")
+
+        if is_lnbits_10():
+            update_query = (
+                "UPDATE accounts SET password_hash = '$2b$12$9pijx8vNNNT1SoDT2cJJj."
+                "wcLw/Qn3URr3odVCel9keRDPOZ89jGi' WHERE id = '{0}';".format(super_user_id)
+            )
+        else:
+            update_query = (
+                "UPDATE accounts SET pass = '$2b$12$9pijx8vNNNT1SoDT2cJJj."
+                "wcLw/Qn3URr3odVCel9keRDPOZ89jGi' WHERE id = '{0}';".format(super_user_id)
+            )
+
+        result = subprocess.run(
+            ["sudo", "sqlite3", "/mnt/hdd/mynode/lnbits/database.sqlite3", update_query],
+            shell=False,
+            capture_output=True,
+            text=True
+        )
+        if result.returncode != 0:
+            raise RuntimeError(f"Password reset failed: {result.stderr.strip()}")
+        else:
+            print("Password reset successfully.")
+    except Exception as e:
+        print(f"Error in reset_lnbits_super_user_pwd: {e}")
+        raise
 
 #==================================
 # Specter Functions
@@ -1445,3 +1563,17 @@ def generate_qr_code(url):
     except Exception as e:
         log_message("generate_qr_code exception: {}".format(str(e)))
         return None
+
+#==================================
+# General Settings Functions
+#==================================
+def custom_settings_file_handler(name, enabled):
+    if name == "ipv6_disabled":
+        if enabled:
+            os.system("cp -f /usr/share/mynode/sysctl_noipv6.conf /etc/sysctl.d/10-disableipv6.conf")
+            os.system("sync")
+        else:
+            os.system("rm -f /etc/sysctl.d/10-disableipv6.conf")
+            os.system("sync")
+    else:
+        log_message("No custom setting handler for: "+name)

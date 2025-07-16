@@ -26,6 +26,16 @@ docker rmi jam:latest || true
 docker pull ghcr.io/joinmarket-webui/$DOCKER_IMAGE_NAME
 
 # Tag latest as "jam:latest"
-docker tag ghcr.io/joinmarket-webui/$DOCKER_IMAGE_NAME jam:latest
+docker tag ghcr.io/joinmarket-webui/$DOCKER_IMAGE_NAME jam-orig:latest
+
+rm -rf /tmp/jam
+mkdir -p /tmp/jam
+cat << EOF > /tmp/jam/Dockerfile
+FROM jam-orig:latest
+
+RUN sed -i 's/zone upstreams 64K/zone upstreams 256K/g' /etc/nginx/conf.d/default.conf
+RUN sed -i 's/zone upstreams 64K/zone upstreams 256K/g' /etc/nginx/templates/default.conf.template
+EOF
+docker build --no-cache -t jam:latest /tmp/jam
 
 echo "================== DONE INSTALLING APP ================="

@@ -20,8 +20,8 @@ KillMode=control-group
 TimeoutSec=60
 Restart=always
 RestartSec=30
-StandardOutput=syslog
-StandardError=syslog
+StandardOutput=journal
+StandardError=journal
 SyslogIdentifier=sphinxrelay
 
 [Install]

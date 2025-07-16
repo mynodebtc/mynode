@@ -30,7 +30,10 @@ out/base_images/raspi3_base.img.gz:
 	@wget https://mynodebtc.com/device/mynode_images/raspi3_base.img.gz -O out/base_images/raspi3_base.img.gz
 out/base_images/raspi4_base.img.gz:
 	@mkdir -p out/base_images/
-	@wget https://mynodebtc.com/device/mynode_images/raspi4_base.img.gz -O out/base_images/raspi4_base.img.gz
+	@wget https://mynodebtc.com/device/mynode_images/raspi45_base_arm64_deb12.img.gz -O out/base_images/raspi4_base.img.gz
+out/base_images/raspi5_base.img.gz:
+	@mkdir -p out/base_images/
+	@wget https://mynodebtc.com/device/mynode_images/raspi45_base_arm64_deb12.img.gz -O out/base_images/raspi5_base.img.gz
 out/base_images/rock64_base.img.gz:
 	@mkdir -p out/base_images/
 	@wget https://mynodebtc.com/device/mynode_images/rock64_base.img.gz -O out/base_images/rock64_base.img.gz
@@ -43,6 +46,9 @@ out/base_images/rockpi4_base.img.gz:
 out/base_images/debian_base.ova:
 	@mkdir -p out/base_images/
 	@wget https://mynodebtc.com/device/mynode_images/vm_base.ova -O out/base_images/debian_base.ova
+out/base_images/amd64_base_uefi_deb12.img:
+	@mkdir -p out/base_images/
+	@wget https://mynodebtc.com/device/mynode_images/amd64_base_uefi_deb12.img.gz -O out/base_images/amd64_base_uefi_deb12.img.gz
 
 
 
@@ -71,6 +77,11 @@ setup_new_raspi3: start_file_server out/base_images/raspi3_base.img.gz rootfs
 setup_new_raspi4: start_file_server out/base_images/raspi4_base.img.gz rootfs 
 	@cp -f setup/setup_device.sh out/setup_device.sh 
 	@/bin/bash scripts/setup_new_raspi4.sh
+
+.PHONY: setup_new_raspi5
+setup_new_raspi5: start_file_server rootfs 
+	@cp -f setup/setup_device.sh out/setup_device.sh 
+	@/bin/bash scripts/setup_new_raspi5.sh
 
 .PHONY: setup_new_debian
 setup_new_debian: start_file_server out/base_images/debian_base.ova rootfs 

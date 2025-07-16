@@ -6,6 +6,7 @@ from device_info import *
 from drive_info import *
 from systemctl_info import *
 from utilities import *
+from enable_disable_functions import * 
 import copy
 import json
 import time
@@ -172,6 +173,14 @@ def replace_app_info_variables(app_data, text):
     text = text.replace("{LOCAL_IP_ADDRESS}", get_local_ip())
     return text
 
+def get_app_not_supported_reason(app):
+    if get_debian_version() < app["minimum_debian_version"]:
+        return "Requires Debian "+str(app["minimum_debian_version"])+"+"
+    return ""
+
+def is_app_supported(app):
+    return get_app_not_supported_reason(app) == ""
+
 def initialize_application_defaults(app):
     if not "name" in app: app["name"] = "NO_NAME"
     if not "short_name" in app: app["short_name"] = "NO_SHORT_NAME"
@@ -185,6 +194,7 @@ def initialize_application_defaults(app):
     if not "app_tile_name" in app: app["app_tile_name"] = app["name"]
     if not "linux_user" in app: app["linux_user"] = "bitcoin"
     if not "supported_archs" in app: app["supported_archs"] = None 
+    if not "minimum_debian_version" in app: app["minimum_debian_version"] = 10
     if not "download_skip" in app: app["download_skip"] = False
     if not "download_type" in app: app["download_type"] = "source"      # source or binary
     if not "download_source_url" in app: app["download_source_url"] = "not_specified"
@@ -212,6 +222,7 @@ def initialize_application_defaults(app):
     if not "supports_testnet" in app: app["supports_testnet"] = False
     if not "show_on_homepage" in app: app["show_on_homepage"] = False
     if not "show_on_application_page" in app: app["show_on_application_page"] = True
+    if not "show_on_marketplace_page" in app: app["show_on_marketplace_page"] = app["show_on_application_page"]
     if not "show_on_status_page" in app: app["show_on_status_page"] = False             # New apps should set to true
     if not "can_enable_disable" in app: app["can_enable_disable"] = True
     if not "is_enabled" in app: app["is_enabled"] = is_service_enabled( app["short_name"] )
@@ -231,6 +242,7 @@ def initialize_application_defaults(app):
     if not "app_page_show_open_button" in app: app["app_page_show_open_button"] = True
     if not "app_page_additional_buttons" in app: app["app_page_additional_buttons"] = []
     if not "app_page_content" in app: app["app_page_content"] = []
+    if not "data_manageable" in app: app["data_manageable"] = False
 
     # Update fields that may use variables that need replacing, like {VERSION}, {SHORT_NAME}, etc...
     app["download_source_url"] = replace_app_info_variables(app, app["download_source_url"])
@@ -246,6 +258,10 @@ def initialize_application_defaults(app):
         for j,line in enumerate(section["content"]):
             section["content"][j] = replace_app_info_variables(app, line)
         app["app_page_content"][i] = section
+
+    # Check if app is supported
+    app["is_supported"] = is_app_supported(app)
+    app["not_supported_reason"] = get_app_not_supported_reason(app)
 
     return app
 
@@ -619,24 +635,38 @@ def create_application_user(app_data):
     if app_data["requires_docker_image_installation"]:
         add_user_to_group(username, "docker")
 
-def create_application_folders(app_data):
-    log_message("  Running create_application_folders...")
+def create_application_install_folder(app_data):
+    log_message("  Running create_application_install_folder...")
     app_folder = app_data["install_folder"]
-    data_folder = app_data["storage_folder"]
 
     # Clear old data (not storage)
     if os.path.isdir(app_folder):
         log_message("  App folder exists, deleting...")
         run_linux_cmd("rm -rf {}".format(app_folder))
 
-    log_message("  Making application folders...")
+    log_message("  Making application install folder...")
     run_linux_cmd("mkdir {}".format(app_folder))
+
+    # Set folder permissions (always set for now - could check to see if already proper user)
+    log_message("  Updating install folder permissions...")
+    run_linux_cmd("chown -R {}:{} {}".format(app_data["linux_user"], app_data["linux_user"], app_folder))
+
+def create_application_storage_folder(app_data):
+    log_message("  Running create_application_storage_folder...")
+    data_folder = app_data["storage_folder"]
+
+    log_message("  Making application storage_folder...")
     run_linux_cmd("mkdir -p {}".format(data_folder))
 
     # Set folder permissions (always set for now - could check to see if already proper user)
-    log_message("  Updating folder permissions...")
-    run_linux_cmd("chown -R {}:{} {}".format(app_data["linux_user"], app_data["linux_user"], app_folder))
+    log_message("  Updating storage folder permissions...")
     run_linux_cmd("chown -R {}:{} {}".format(app_data["linux_user"], app_data["linux_user"], data_folder))
+
+def create_application_folders(app_data):
+    log_message("  Running create_application_folders...")
+
+    create_application_install_folder(app_data)
+    create_application_storage_folder(app_data)
 
 def create_application_tor_service(app_data):
     has_ports = False
@@ -647,7 +677,7 @@ def create_application_tor_service(app_data):
     if "http_port" in app_data and app_data["http_port"] != None:
         contents += "HiddenServicePort 80 127.0.0.1:{}\n".format(app_data["http_port"])
         has_ports = True
-    if "http_port" in app_data and app_data["http_port"] != None:
+    if "https_port" in app_data and app_data["https_port"] != None:
         contents += "HiddenServicePort 443 127.0.0.1:{}\n".format(app_data["https_port"])
         has_ports = True
     if "extra_ports" in app_data and app_data["extra_ports"] != None:
@@ -675,10 +705,10 @@ def install_application_tarball(app_data):
     # Download and extract
     if not app_data["download_skip"]:
         download_url = "not_specified"
-        if app_data["download_type"] == "source" and "download_source_url" == None:
+        if app_data["download_type"] == "source" and app_data["download_source_url"] == None:
             log_message("  APP MISSING SOURCE DOWNLOAD URL")
             raise ValueError("APP MISSING SOURCE DOWNLOAD URL")
-        if app_data["download_type"] == "binary" and "download_binary_url" == None:
+        if app_data["download_type"] == "binary" and app_data["download_binary_url"] == None:
             log_message("  APP MISSING BINARY DOWNLOAD URL")
             raise ValueError("APP MISSING BINARY DOWNLOAD URL")
 
@@ -689,6 +719,7 @@ def install_application_tarball(app_data):
             for arch in app_data["download_binary_url"]:
                 if arch == get_device_arch():
                     download_url = app_data["download_binary_url"][arch]
+                    found = True
             if not found:
                 log_message("  CANNOT FIND BINARY URL FOR APP: {} CURRENT ARCH: {}".format(app_data["short_name"], get_device_arch()))
         else:
@@ -722,6 +753,45 @@ def restart_application(short_name):
         return True
     except Exception as e:
         return False
+
+def backup_data_folder(app_data):
+    log_message("  Running backup_data_folder...")
+    
+    # Not yet implemented
+    return False
+
+def restore_data_folder(app_data):
+    log_message("  Running restore_data_folder...")
+    
+    # Not yet implemented
+    return False
+
+def reset_data_folder(short_name):
+    log_message(f"  Running reset_data_folder for '{short_name}'...")
+    
+    app_data = get_application(short_name)
+    if not app_data:
+        log_message(f"  ERROR: application '{short_name}' not found")
+        return False
+    data_folder = app_data["storage_folder"]
+    
+    # Stop the service before removing data_folder
+    log_message(f"  Stopping '{short_name}'…")
+    stop_service(short_name)
+
+    # Remove App data_folder
+    log_message(f"  Removing storage folder '{data_folder}'…")
+    run_linux_cmd(f"rm -rf {data_folder}")
+
+    # Re-create the storage folder
+    log_message(f"  Creating storage folder '{data_folder}'…")
+    create_application_storage_folder(app_data)
+
+    # Re-start the service
+    log_message(f"  Starting '{short_name}'…")
+    start_service(short_name)
+
+    return True
 
 ######################################################################################
 ## Bulk Application Actions

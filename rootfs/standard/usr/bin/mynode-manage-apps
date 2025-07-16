@@ -73,13 +73,6 @@ def main():
             if app_name != "all" and is_application_valid(app_name):
                 mark_app_installed(app_name)
             upgrade_dynamic_apps(app_name)
-    elif args.command == "upgrade":
-        # If no app name, upgrade all
-        app_names = args.app
-        if not isinstance(app_names, list):
-            app_names = [app_names]
-        for app_name in app_names:
-            upgrade_dynamic_apps(app_name)
     elif args.command == "uninstall":
         # Requires specified application
         app_names = args.app

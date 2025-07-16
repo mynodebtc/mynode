@@ -17,13 +17,15 @@ def get_latest_price():
 def get_price_diff_24hrs():
     global price_data
     try:
+        msg_calc = "n/a"
         latest = get_latest_price()
         if len(price_data) > 0:
             old = price_data[0]["price"]
-            if latest != "N/A" and old != "N/A":
+            if latest != "N/A" and latest != "ERR" and old != "N/A" and old != "ERR":
+                msg_calc = f"({latest} - {old})"
                 return latest - old
     except Exception as e:
-        log_message("ERROR get_price_diff_24hrs: {}".format(str(e)))
+        log_message("ERROR get_price_diff_24hrs: {} | {}".format(msg_calc, str(e)))
     return 0.0
 
 def get_price_up_down_flat_24hrs():
@@ -40,9 +42,10 @@ def update_price_info():
     if get_ui_setting("price_ticker"):
         price = "N/A"
         try:
-            price_json_string = to_string(subprocess.check_output("torify curl --max-time 15 --silent https://api.coindesk.com/v1/bpi/currentprice.json", shell=True))
+            price_api_endpoint = "https://blockchain.info/ticker"
+            price_json_string = to_string(subprocess.check_output(f"torify curl --max-time 15 --silent {price_api_endpoint}", shell=True))
             data = json.loads(price_json_string)
-            price = data["bpi"]["USD"]["rate_float"]
+            price = data["USD"]["last"]
 
         except Exception as e:
             log_message("update_price_info EXCEPTION: {}".format(str(e)))

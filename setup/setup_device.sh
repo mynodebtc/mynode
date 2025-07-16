@@ -21,16 +21,17 @@ IS_ROCKPRO64=0
 IS_RASPI=0
 IS_RASPI3=0
 IS_RASPI4=0
-IS_RASPI4_ARM64=0
+IS_RASPI5=0
 IS_ROCKPI4=0
 IS_X86=0
+IS_ARM64=0
 IS_32_BIT=0
 IS_64_BIT=0
 IS_UNKNOWN=0
 DEVICE_TYPE="unknown"
 MODEL=$(cat /proc/device-tree/model) || IS_UNKNOWN=1
-DEBIAN_VERSION=$(lsb_release -c -s) || DEBIAN_VERSION="unknown"
-uname -a | grep amd64 && IS_X86=1 && IS_64_BIT=1 && IS_UNKNOWN=0 || true
+DEBIAN_CODENAME=$(lsb_release -c -s) || DEBIAN_CODENAME="unknown"
+uname -a | grep -E 'amd64|x86_64' && IS_X86=1 && IS_64_BIT=1 && IS_UNKNOWN=0 || true
 if [[ $MODEL == *"Rock64"* ]]; then
     IS_ARMBIAN=1
     IS_ROCK64=1
@@ -49,10 +50,15 @@ elif [[ $MODEL == *"Raspberry Pi 4"* ]]; then
     IS_32_BIT=1
     UNAME=$(uname -a)
     if [[ $UNAME == *"aarch64"* ]]; then
-        IS_RASPI4_ARM64=1
+        IS_ARM64=1
         IS_32_BIT=0
         IS_64_BIT=1
     fi
+elif [[ $MODEL == *"Raspberry Pi 5"* || $MODEL == *"Raspberry Pi Compute Module 5"* ]]; then
+    IS_RASPI=1
+    IS_RASPI5=1
+    IS_ARM64=1
+    IS_64_BIT=1
 elif [[ $MODEL == *"ROCK Pi 4"* ]]; then
     IS_ARMBIAN=1
     IS_ROCKPI4=1
@@ -145,6 +151,8 @@ elif [ $IS_RASPI3 = 1 ]; then
     TARBALL="mynode_rootfs_raspi3.tar.gz"
 elif [ $IS_RASPI4 = 1 ]; then
     TARBALL="mynode_rootfs_raspi4.tar.gz"
+elif [ $IS_RASPI5 = 1 ]; then
+    TARBALL="mynode_rootfs_raspi5.tar.gz"
 elif [ $IS_ROCKPI4 = 1 ]; then
     TARBALL="mynode_rootfs_rockpi4.tar.gz"
 elif [ $IS_X86 = 1 ]; then
@@ -197,11 +205,14 @@ apt-get -y update --allow-releaseinfo-change
 apt-get -y install apt-transport-https curl gnupg ca-certificates
 # Tor (arm32 support was dropped)
 if [ $IS_64_BIT = 1 ]; then
-    grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
-    grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+    grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list
+    grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list
 fi
-if [ "$DEBIAN_VERSION" = "buster" ]; then
-    grep -qxF "deb http://deb.debian.org/debian buster-backports main" /etc/apt/sources.list  || echo "deb http://deb.debian.org/debian buster-backports main" >> /etc/apt/sources.list
+if [ "$DEBIAN_CODENAME" = "buster" ]; then
+    # Migrate old buster backports to archive
+    sed -i 's|deb.debian.org/debian buster-backports|archive.debian.org/debian buster-backports|g' /etc/apt/sources.list
+    # Add backports repo
+    grep -qxF "deb http://archive.debian.org/debian buster-backports main" /etc/apt/sources.list  || echo "deb http://archive.debian.org/debian buster-backports main" >> /etc/apt/sources.list
 fi
 # Add I2P Repo
 /bin/bash $TMP_INSTALL_PATH/usr/share/mynode/scripts/add_i2p_repo.sh
@@ -210,11 +221,10 @@ fi
 curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
 curl https://keybase.io/bitconner/pgp_keys.asc | gpg --import
 curl https://keybase.io/guggero/pgp_keys.asc | gpg --import # Pool
-curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
+curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/refs/heads/master/pubkeys/AdamGibson-LOST-Aug-2024.asc | gpg --import # JoinMarket
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys E777299FC265DD04793070EB944D35F9AC3DB76A # Bitcoin - Michael Ford (fanquake)
 curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
-curl https://samouraiwallet.com/pgp.txt | gpg --import # two keys from Samourai team
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E # Loop (abosworth)
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 9FC6B0BFD597A94DBF09708280E5375C094198D8 # Loop (bhandras)
 gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 26984CB69EB8C4A26196F7A4D7D916376026F177 # Lightning Terminal
@@ -257,20 +267,21 @@ apt-get -y install sqlite3 libsqlite3-dev torsocks python3-requests libsystemd-d
 apt-get -y install libjpeg-dev zlib1g-dev psmisc hexyl libbz2-dev liblzma-dev netcat-openbsd
 apt-get -y install hdparm iotop nut obfs4proxy libpq-dev socat btrfs-progs i2pd apparmor pass
 apt-get -y install gdisk xxd
+apt-get -y install cmake pkgconf libcurl4-openssl-dev libjansson-dev libmicrohttpd-dev libsodium-dev
 
 # Install Java
 apt-get -y install default-jre
 
 # Install packages dependent on Debian release
-if [ "$DEBIAN_VERSION" == "bullseye" ]; then
+if [ "$DEBIAN_CODENAME" == "bullseye" ]; then
     apt-get -y install wireguard
-elif [ "$DEBIAN_VERSION" == "bookworm" ]; then
+elif [ "$DEBIAN_CODENAME" == "bookworm" ]; then
     apt-get -y install wireguard
-elif [ "$DEBIAN_VERSION" == "buster" ]; then
+elif [ "$DEBIAN_CODENAME" == "buster" ]; then
     apt-get -y -t buster-backports install wireguard
 else
     echo "========================================="
-    echo "== UNKNOWN DEBIAN VERSION: $DEBIAN_VERSION"
+    echo "== UNKNOWN DEBIAN VERSION: $DEBIAN_CODENAME"
     echo "== SOME APPS MAY NOT WORK PROPERLY"
     echo "========================================="
 fi
@@ -308,6 +319,8 @@ rm -f /etc/nginx/modules-enabled/50-mod-* || true
 echo "" > /etc/nginx/sites-available/default
 dpkg --configure -a
 
+# Cleanup apt-get cache to save some space
+apt-get clean
 
 # Update users
 usermod -a -G debian-tor bitcoin
@@ -363,7 +376,7 @@ if [ -f $HOME/.cargo/env ]; then
         fi
     done
     # Manage rust toolchains
-    if [ $IS_RASPI = 1 ] && [ $IS_RASPI4_ARM64 = 0 ]; then
+    if [ $IS_RASPI = 1 ] && [ $IS_ARM64 = 0 ]; then
         # Install and use desired version
         rustup install $RUST_VERSION
         rustup default $RUST_VERSION
@@ -441,18 +454,21 @@ npm install -g npm@$NODE_NPM_VERSION
 npm install -g yarn
 
 # Install Log2Ram
-if [ $IS_RASPI = 1 ]; then
-    cd /tmp
-    rm -rf log2ram*
-    wget https://github.com/azlux/log2ram/archive/v1.2.2.tar.gz -O log2ram.tar.gz
-    tar -xvf log2ram.tar.gz
-    mv log2ram-* log2ram
-    cd log2ram
-    chmod +x install.sh
-    service log2ram stop
-    ./install.sh
-    cd ~
+if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
+    if [ ! -f /usr/local/bin/log2ram ]; then
+        cd /tmp
+        rm -rf log2ram* || true
+        wget https://github.com/azlux/log2ram/archive/v1.2.2.tar.gz -O log2ram.tar.gz
+        tar -xvf log2ram.tar.gz
+        mv log2ram-* log2ram
+        cd log2ram
+        chmod +x install.sh
+        service log2ram stop || true
+        ./install.sh || true
+        cd ~
+    fi
 fi
+
 
 # Remove existing MOTD login info
 rm -rf /etc/motd
@@ -465,7 +481,7 @@ rm -rf /etc/update-motd.d/*
 ARCH="UNKNOWN"
 if [ $IS_RASPI = 1 ]; then
     ARCH="arm-linux-gnueabihf"
-    if [ $IS_RASPI4_ARM64 = 1 ]; then
+    if [ $IS_ARM64 = 1 ]; then
         ARCH="aarch64-linux-gnu"
     fi
 elif [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ] || [ $IS_ROCKPI4 = 1 ]; then
@@ -522,7 +538,7 @@ LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
 fi
-if [ $IS_RASPI4_ARM64 = 1 ] || [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ] || [ $IS_ROCKPI4 = 1 ]; then
+if [ $IS_ARM64 = 1 ] || [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ] || [ $IS_ROCKPI4 = 1 ]; then
     LND_ARCH="lnd-linux-arm64"
 fi
 LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/$LND_ARCH-$LND_VERSION.tar.gz
@@ -564,7 +580,7 @@ LOOP_ARCH="loop-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LOOP_ARCH="loop-linux-amd64"
 fi
-if [ $IS_RASPI4_ARM64 = 1 ]; then
+if [ $IS_ARM64 = 1 ]; then
     LOOP_ARCH="loop-linux-arm64"
 fi
 LOOP_UPGRADE_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/$LOOP_ARCH-$LOOP_VERSION.tar.gz
@@ -602,7 +618,7 @@ POOL_ARCH="pool-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     POOL_ARCH="pool-linux-amd64"
 fi
-if [ $IS_RASPI4_ARM64 = 1 ]; then
+if [ $IS_ARM64 = 1 ]; then
     POOL_ARCH="pool-linux-arm64"
 fi
 POOL_UPGRADE_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/$POOL_ARCH-$POOL_VERSION.tar.gz
@@ -640,7 +656,7 @@ LIT_ARCH="lightning-terminal-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LIT_ARCH="lightning-terminal-linux-amd64"
 fi
-if [ $IS_RASPI4_ARM64 = 1 ]; then
+if [ $IS_ARM64 = 1 ]; then
     LIT_ARCH="lightning-terminal-linux-arm64"
 fi
 LIT_UPGRADE_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/$LIT_ARCH-$LIT_VERSION.tar.gz
@@ -679,7 +695,7 @@ CHANTOOLS_ARCH="chantools-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     CHANTOOLS_ARCH="chantools-linux-amd64"
 fi
-if [ $IS_RASPI4_ARM64 = 1 ]; then
+if [ $IS_ARM64 = 1 ]; then
     CHANTOOLS_ARCH="chantools-linux-arm64"
 fi
 CHANTOOLS_UPGRADE_URL=https://github.com/lightninglabs/chantools/releases/download/$CHANTOOLS_VERSION/$CHANTOOLS_ARCH-$CHANTOOLS_VERSION.tar.gz
@@ -806,29 +822,14 @@ if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
         # Install
         sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket.sh --install install" || true
         sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket-api.sh on" || true
+
+        # Cleanup apt-get cache to save some space
+        apt-get clean
             
         # Enable obwatcher at the end of setup_device.sh
 
         echo $JOININBOX_VERSION > $JOININBOX_VERSION_FILE
     fi
-fi
-
-# Install Whirlpool
-WHIRLPOOL_UPGRADE_URL=https://code.samourai.io/whirlpool/whirlpool-client-cli/uploads/$WHIRLPOOL_UPLOAD_FILE_ID/whirlpool-client-cli-$WHIRLPOOL_VERSION-run.jar
-CURRENT=""
-if [ -f $WHIRLPOOL_VERSION_FILE ]; then
-    CURRENT=$(cat $WHIRLPOOL_VERSION_FILE)
-fi
-if [ "$CURRENT" != "$WHIRLPOOL_VERSION" ]; then
-    sudo -u bitcoin mkdir -p /opt/mynode/whirlpool
-    cd /opt/mynode/whirlpool
-    sudo rm -rf *.jar
-    sudo -u bitcoin wget -O whirlpool.jar $WHIRLPOOL_UPGRADE_URL
-
-    cp -f $TMP_INSTALL_PATH/usr/share/whirlpool/whirlpool.asc whirlpool.asc
-    gpg --verify whirlpool.asc
-
-    echo $WHIRLPOOL_VERSION > $WHIRLPOOL_VERSION_FILE
 fi
 
 
@@ -1049,7 +1050,6 @@ systemctl enable redis-server
 #systemctl enable btcrpcexplorer # DISABLED BY DEFAULT
 systemctl enable rtl
 systemctl enable tor
-systemctl enable i2pd
 systemctl enable invalid_block_check
 systemctl enable usb_driver_check
 systemctl enable docker_images
@@ -1060,7 +1060,7 @@ systemctl enable rotate_logs
 systemctl enable corsproxy_btcrpc
 systemctl enable usb_extras
 systemctl enable ob-watcher
-systemctl enable rathole
+#systemctl enable rathole
 
 
 # Disable services

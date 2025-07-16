@@ -23,10 +23,10 @@ Restart=always
 Nice=0
 IOAccounting=true
 IOWeight=200
-TimeoutSec=300
+TimeoutSec=400
 RestartSec=30
-StandardOutput=syslog
-StandardError=syslog
+StandardOutput=journal
+StandardError=journal
 SyslogIdentifier=bitcoin
 
 [Install]

@@ -38,7 +38,10 @@ def get_bitcoin_rpc_password():
 def get_bitcoin_version():
     global bitcoin_version
     if bitcoin_version == None:
-        bitcoin_version = to_string(subprocess.check_output("bitcoind --version | egrep -o 'v[0-9]+\\.[0-9]+\\.[0-9]+'", shell=True))
+        try:
+            bitcoin_version = to_string(subprocess.check_output("bitcoind --version | egrep -o 'v[0-9]+\\.[0-9]+\\.[a-z0-9]+'", shell=True))
+        except Exception as e:
+            bitcoin_version = "unknown"
     return bitcoin_version
 
 def is_bitcoin_synced():
@@ -116,9 +119,12 @@ def update_bitcoin_other_info():
             # Recent blocks
             if mynode_block_height != bitcoin_recent_blocks_last_cache_height:
                 commands = [ [ "getblockhash", height] for height in range(mynode_block_height-9, mynode_block_height+1) ]
-                block_hashes = rpc_connection.batch_(commands)
-                bitcoin_recent_blocks = rpc_connection.batch_([ [ "getblock", h ] for h in block_hashes ])
-                bitcoin_recent_blocks_last_cache_height = mynode_block_height
+                try:
+                    block_hashes = [rpc_connection.getblockhash(cmd[1]) for cmd in commands]
+                    bitcoin_recent_blocks = [rpc_connection.getblock(h) for h in block_hashes]
+                    bitcoin_recent_blocks_last_cache_height = mynode_block_height
+                except Exception as e_block:
+                    log_message("ERROR: getblockhash batch command failure " + str(e_block))
 
             # Get peers and cleanup data
             log_message("update_bitcoin_other_info - PEERS")
@@ -128,7 +134,7 @@ def update_bitcoin_other_info():
                 for p in peerdata:
                     peer = p
 
-                    peer["pingtime"] = int(p["pingtime"]) if ("pingtime" in p) else "N/A"
+                    peer["pingtime"] = int(float(p["pingtime"])*1000) if ("pingtime" in p) else "N/A"
                     peer["tx"] = "{:.2f}".format(float(p["bytessent"]) / 1000 / 1000) if ("bytessent" in p) else "N/A"
                     peer["rx"] = "{:.2f}".format(float(p["bytesrecv"]) / 1000 / 1000) if ("bytesrecv" in p) else "N/A"
                     peer["minping"] = str(p["minping"]) if ("minping" in p) else "N/A"
@@ -331,18 +337,36 @@ def get_bitcoin_config():
     except:
         return "ERROR"
 
-def get_bitcoin_extra_config():
+def get_bitcoin_pre_config():
     try:
-        if not os.path.isfile("/mnt/hdd/mynode/settings/bitcoin_extra_config.conf"):
+        if not os.path.isfile("/mnt/hdd/mynode/settings/bitcoin_pre_config.conf"):
             return ""
-        with open("/mnt/hdd/mynode/settings/bitcoin_extra_config.conf") as f:
+        with open("/mnt/hdd/mynode/settings/bitcoin_pre_config.conf") as f:
             return f.read()
     except:
         return "ERROR"
 
-def set_bitcoin_extra_config(config):
+def set_bitcoin_pre_config(config):
     try:
-        with open("/mnt/hdd/mynode/settings/bitcoin_extra_config.conf", "w") as f:
+        with open("/mnt/hdd/mynode/settings/bitcoin_pre_config.conf", "w") as f:
+            f.write(config)
+        os.system("sync")
+        return True
+    except:
+        return False
+    
+def get_bitcoin_post_config():
+    try:
+        if not os.path.isfile("/mnt/hdd/mynode/settings/bitcoin_post_config.conf"):
+            return ""
+        with open("/mnt/hdd/mynode/settings/bitcoin_post_config.conf") as f:
+            return f.read()
+    except:
+        return "ERROR"
+
+def set_bitcoin_post_config(config):
+    try:
+        with open("/mnt/hdd/mynode/settings/bitcoin_post_config.conf", "w") as f:
             f.write(config)
         os.system("sync")
         return True

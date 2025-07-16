@@ -195,9 +195,8 @@ while true; do
     touch /tmp/need_application_refresh
 
 
-    # Upgrade LNBits
+    # Upgrade LNbits
     if should_install_app "lnbits" ; then
-        LNBITS_UPGRADE_URL=https://github.com/lnbits/lnbits/archive/$LNBITS_VERSION.tar.gz
         CURRENT=""
         if [ -f $LNBITS_VERSION_FILE ]; then
             CURRENT=$(cat $LNBITS_VERSION_FILE)
@@ -205,19 +204,16 @@ while true; do
         if [ "$CURRENT" != "$LNBITS_VERSION" ]; then
             docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'lnbits') || true
 
-            cd /opt/mynode
-            rm -rf lnbits
-            sudo -u bitcoin wget $LNBITS_UPGRADE_URL -O lnbits.tar.gz
-            sudo -u bitcoin tar -xvf lnbits.tar.gz
-            sudo -u bitcoin rm lnbits.tar.gz
-            sudo -u bitcoin mv lnbits-* lnbits
-            cd lnbits
+            if [ ! -d "/opt/mynode/lnbits" ]; then
+                mkdir -p "/opt/mynode/lnbits"
+            fi
 
             # Copy over config file
             # Handled in pre_lnbits.sh
 
-            # Build lnbits docker container
-            docker build --no-cache -t lnbits-legend .
+            # Pull lnbits docker container
+             docker pull lnbits/lnbits:$LNBITS_VERSION
+             docker tag lnbits/lnbits:$LNBITS_VERSION lnbits
 
             echo $LNBITS_VERSION > $LNBITS_VERSION_FILE
         fi

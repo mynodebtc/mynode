@@ -16,5 +16,7 @@ echo "==================== INSTALLING APP ===================="
 # This file comes from https://tailscale.com/install.sh on 9/3/22
 bash /usr/share/mynode_apps/tailscale/app_data/install_tailscale.sh
 
+# Install targetted version of tailscale
+apt-get -y --allow-downgrades install tailscale=$VERSION
 
 echo "================== DONE INSTALLING APP ================="

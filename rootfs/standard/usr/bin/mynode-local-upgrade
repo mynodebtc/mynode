@@ -27,29 +27,47 @@ rm -f mynode_rootfs_${DEVICE_TYPE}.tar.gz
 wget http://${ip_address}:8000/mynode_rootfs_${DEVICE_TYPE}.tar.gz -O /tmp/mynode_rootfs_${DEVICE_TYPE}.tar.gz --progress=bar
 
 # Extract to temp location
+echo -n "Extracting rootfs TAR for ${DEVICE_TYPE}... "
+start_time=$(date +%s)
 rm -rf /tmp/rootfs/
 mkdir -p /tmp/rootfs/
-echo -n "Extracting rootfs TAR for ${DEVICE_TYPE}... "
 tar -xf /tmp/mynode_rootfs_${DEVICE_TYPE}.tar.gz -C /tmp/rootfs/
-echo Done!
+end_time=$(date +%s)
+diff_time=$((end_time - start_time))
+echo "Done in ${diff_time}s!"
 
 # Clear files before installing/overwriting new ones
+echo -n "Clearing old rootfs files... "
+start_time=$(date +%s)
 rm -rf /var/www/mynode/static/images/screenshots
 for d in /usr/share/mynode_apps/*/screenshots ; do
     rm -rf "$d"
 done
+end_time=$(date +%s)
+diff_time=$((end_time - start_time))
+echo "Done in ${diff_time}s!"
 
 # Install files
+echo -n "Copying new rootfs... "
+start_time=$(date +%s)
 rsync -r -K /tmp/rootfs/out/rootfs_${DEVICE_TYPE}/* /
-
+end_time=$(date +%s)
+diff_time=$((end_time - start_time))
+echo "Done in ${diff_time}s!"
 
 # Sleep and sync FS
-echo "Syncing filesystem..."
+echo -n "Syncing filesystem... "
+start_time=$(date +%s)
 sleep 1
-sync
+sync /
+end_time=$(date +%s)
+diff_time=$((end_time - start_time))
+echo "Done in ${diff_time}s!"
 
 # Reload systemd files
 systemctl daemon-reload
+
+echo ""
 
 # Restart or reboot
 if [ "$#" -ge 2 ]; then

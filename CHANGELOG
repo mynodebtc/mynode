@@ -1,3 +1,124 @@
+=== v0.3.37 ===
+- Released 07/11/25
+- Upgrade LND to v0.19.1
+- Upgrade Thunderhub to v0.13.32
+- Upgrade Specter to v2.1.1
+- Upgrade Loop to v0.31.1
+- Better handling of some 64-bit platforms
+- Fixes Specter with Bitcoin v0.28+
+- Various bug fixes
+
+=== v0.3.36 ===
+- Released 05/09/25
+- Upgrade Bitcoin to v0.28.1
+- Upgrade LND to v0.18.5
+- Upgrade Mempool to v3.2.1
+- Upgrade LNbits to v0.12.12
+- Add support for Raspberry Pi 5 Compute Module
+- Enable Admin UI for LNbits
+- Upgrade Rust to v1.86.0
+- Improve support for NVMe USB Adapters
+- Fix for Glances v4.0
+- Various bug fixes
+
+=== v0.3.35 ===
+- Released 03/29/25
+- Add Datum Gateway v0.3.1
+- Add Bitcoin Knots v28.1
+- Upgrade Tailscale to v1.78.1
+- Change references from SD Card to OS Drive
+- Fix possible issue with Mempool file permissions
+- Minor speed improvements
+- Minor bug fixes
+
+=== v0.3.34 ===
+- Released 02/27/25
+- Fix issue launching Mempool
+- Fix upgrade issue on Buster
+- Fix display of bitcoin peer ping time to correct value
+- Fix issue with Price Ticker price not being found
+
+=== v0.3.33 ===
+- Released 02/17/25
+- Resolve python exception issue
+
+=== v0.3.32 ===
+- Released 12/30/24
+- Add NVMe support to Clone Tool
+- Disable UAS on Raspbery Pi 5 devices
+- Resolve issue launching JAM
+- Resolve issue installing LNDg
+
+=== v0.3.31 ===
+- Released 10/05/24
+- Upgrade LND to v0.18.3
+- Upgrade LiT to v0.13.3
+- Upgrade Loop to v0.28.7
+- Upgrade Mempool to v3.0.0
+- Upgrade Thunderhub to v0.13.31
+- Add Bitcoin Knots 27.1
+
+=== v0.3.30 ===
+- Released 07/04/24
+- Upgrade Bitcoin to v27.1
+- Upgrade LND to v0.18.1
+- Upgrade Loop to v0.28.5
+- Upgrade Lightning Terminal to v0.13.1
+- Add option to enable/disable IPv6
+- Device info efficiency improvements
+- Bug fixes
+
+=== v0.3.29 ===
+- Released 05/23/24
+- Add Bitcoin Knots v26.1
+- Upgrade LNDg to v1.8.0
+- Fix JAM container issue
+- Enable IPv6 system networking
+
+=== v0.3.28 ===
+- Released 04/27/24
+- Upgrade Bitcoin to v26.1
+- Upgrade LND to v0.17.4
+- Upgrade LNBits to v0.12.5
+- Upgrade Loop to v0.28.1
+- Resolve issue with debian backports updates
+- Remove Dojo and Whirlpool from Marketplace
+
+=== v0.3.27 ===
+- Released 03/03/24
+- Upgrade LNBits to v0.12.2
+- Add option to disable I2P
+- Improve internal networking issues with IPv6
+- Fix possible BTC RPC Explorer connection issue
+- Fix issue with RTL connecting to Loop
+
+=== v0.3.26 ===
+- Released 01/21/24
+- Upgrade Thunderhub to v0.13.30
+- Upgrade RTL to v0.15.0
+- Upgrade LiT to v0.12.2
+- Upgrade LND to v0.17.3
+- Resolve Mempool launch issue
+
+=== v0.3.25 ===
+- Released 1/11/24
+- Initial Raspberry Pi 5 Support
+- Add log2ram on x86 devices
+- Fix issue where JM certificates aren not gnerated
+- Fix issue creating legacy wallet for JoinMarket
+- Fix issue where some API requests would return cached data
+
+=== v0.3.24 ===
+- Released: 12/18/23
+- Upgrade Bitcoin to v26.0
+- Upgrade Lightning Terminal to v0.12.1
+- Upgrade Loop to v0.26.6
+- Upgrade LND to v0.17.2
+- Improved support for Debian 12
+- Added setting for Electrum TX Limit
+- Dynamic setting for assumevalid during initial sync
+- Minor UI Improvements
+
 === v0.3.23 ===
 - Released: 11/05/23
 - Fix issue determining LND status

@@ -64,7 +64,7 @@
                 {% if device_arch == "aarch64" %}
                 64-bit
                 {% else %}
-                32-bit<br/><br/><small>* It is recommended to upgrade to a 64-bit image by reflashing your SD card. Some apps can no longer be updated on 32-bit.
+                32-bit<br/><br/><small>* It is recommended to upgrade to a 64-bit image by reflashing your OS. Some apps can no longer be updated on 32-bit.
                 The image can be downloaded <a href="https://mynodebtc.com/download" target="_blank">here</a> and a guide is <a href="https://mynodebtc.github.io/advanced/flash-sd-card.html" target="_blank">available</a>.</small>
                 {% endif %}
             {% endif %}
@@ -125,19 +125,35 @@
         <td style="color: red;"><b>Error contacting mynodebtc.com via Tor!</b><br/>You may have issues checking for new versions or saving product keys. This may be a temporary issue.</td>
     </tr>
     {% endif %}
+    {% if debian_version < 12 %}
+    <tr>
+        <th>OS Version</th>
+        <td>
+            <span style="font-size: 10px;">
+                <span style="color: red; font-weight: bold;">Notice!</span><br/>
+                You are currently using an old Operating System version (Debian {{debian_version}}). It is recommended to upgrade by reflashing
+                your OS drive. Otherwise, some apps will remain on old versions and you may have issues. The new image can be downloaded
+                <a href="https://mynodebtc.com/download" target="_blank">here</a> and a guide is
+                <a href="https://mynodebtc.github.io/advanced/flash-sd-card.html" target="_blank">available</a>.
+            </span>
+        </td>
+    </tr>
+    {% endif %}
 
-    <!-- From here down are the "Details" (hidden unless show details is clicked)-->
+    <!-- BUTTON DISABLED: From here down are the "Details" (hidden unless show details is clicked)-->
+    <!--
     <tr>
         <th>Advanced Info</th>
         <td>
             <button id="info_table_show_advanced_info" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
         </td>
     </tr>
-    <tr class="info_table_advanced_row" style="display: none;">
+    -->
+    <tr class="info_table_advanced_row" style="">
         <th>Debian Version</th>
-        <td>{{debian_version}}</td>
+        <td>{{debian_version}} ({{debian_codename}})</td>
     </tr>
-    <tr class="info_table_advanced_row" style="display: none;">
+    <tr class="info_table_advanced_row" style="">
         <th>Architecture</th>
         <td>{{device_arch}}</td>
     </tr>

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+source /usr/share/mynode/mynode_device_info.sh
 source /usr/share/mynode/mynode_config.sh
 source /usr/share/mynode/mynode_functions.sh
 source /usr/share/mynode/mynode_app_versions.sh
@@ -25,7 +26,7 @@ fi
 # Delete ramlog to prevent ram issues (remake necessary folders)
 rm -rf /var/log/*
 mkdir -p /var/log/nginx
-if [ $IS_RASPI = 1 ]; then
+if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
     log2ram write || true
     log2ram stop || true
 fi
@@ -61,26 +62,33 @@ if ! skip_base_upgrades ; then
 
     # Add sources
     apt-get -y install apt-transport-https
-    DEBIAN_VERSION=$(lsb_release -c | awk '{ print $2 }')
     # Tor (arm32 support was dropped)
     if [ $IS_64_BIT = 1 ]; then
-        grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
-        grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+        grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list
+        grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list
+    fi
+    if [ "$DEBIAN_CODENAME" = "buster" ]; then
+        # Disable tor repo on buster
+        sed -i '/^deb https:\/\/deb.torproject.org/d' /etc/apt/sources.list
+        sed -i '/^deb-src https:\/\/deb.torproject.org/d' /etc/apt/sources.list
     fi
     if [ -f /mnt/hdd/mynode/settings/tor_repo_disabled ]; then
         sed -i '/^deb https:\/\/deb.torproject.org/d' /etc/apt/sources.list
         sed -i '/^deb-src https:\/\/deb.torproject.org/d' /etc/apt/sources.list
     fi
-    if [ "$DEBIAN_VERSION" = "buster" ]; then
-        grep -qxF "deb http://deb.debian.org/debian buster-backports main" /etc/apt/sources.list  || echo "deb http://deb.debian.org/debian buster-backports main" >> /etc/apt/sources.list
+    if [ "$DEBIAN_CODENAME" = "buster" ]; then
+        # Migrate old buster backports to archive
+        sed -i 's|deb.debian.org/debian buster-backports|archive.debian.org/debian buster-backports|g' /etc/apt/sources.list
+        # Add backports repo
+        grep -qxF "deb http://archive.debian.org/debian buster-backports main" /etc/apt/sources.list  || echo "deb http://archive.debian.org/debian buster-backports main" >> /etc/apt/sources.list
     fi
     # Add I2P Repo
     /bin/bash /usr/share/mynode/scripts/add_i2p_repo.sh
 
     # Raspbian mirrors
     #if [ $IS_RASPI = 1 ]; then
-    #    grep -qxF "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
-    #    grep -qxF "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+    #    grep -qxF "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_CODENAME} main" /etc/apt/sources.list  || echo "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list
+    #    grep -qxF "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_CODENAME} main" /etc/apt/sources.list  || echo "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list
     #fi
 
     # Import Keys
@@ -88,7 +96,7 @@ if ! skip_base_upgrades ; then
     curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
     curl https://keybase.io/bitconner/pgp_keys.asc | gpg --import
     curl https://keybase.io/guggero/pgp_keys.asc | gpg --import # Pool
-    curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
+    curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/refs/heads/master/pubkeys/AdamGibson-LOST-Aug-2024.asc | gpg --import # JoinMarket
     gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
     gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys E777299FC265DD04793070EB944D35F9AC3DB76A # Bitcoin - Michael Ford (fanquake)
     curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
@@ -130,20 +138,21 @@ if ! skip_base_upgrades ; then
     $TORIFY apt-get -y install torsocks python3-requests libsystemd-dev libjpeg-dev zlib1g-dev psmisc
     $TORIFY apt-get -y install hexyl libbz2-dev liblzma-dev netcat-openbsd hdparm iotop nut obfs4proxy
     $TORIFY apt-get -y install libpq-dev socat btrfs-progs i2pd apparmor pass gdisk xxd
+    $TORIFY apt-get -y install cmake pkgconf libcurl4-openssl-dev libjansson-dev libmicrohttpd-dev libsodium-dev
 
     # Install Java
     $TORIFY apt-get -y install default-jre
 
     # Install software specific to debian version
-    if [ "$DEBIAN_VERSION" == "bullseye" ]; then
+    if [ "$DEBIAN_CODENAME" == "bullseye" ]; then
         apt-get -y install wireguard
-    elif [ "$DEBIAN_VERSION" == "bookworm" ]; then
+    elif [ "$DEBIAN_CODENAME" == "bookworm" ]; then
         apt-get -y install wireguard
-    elif [ "$DEBIAN_VERSION" == "buster" ]; then
+    elif [ "$DEBIAN_CODENAME" == "buster" ]; then
         $TORIFY apt-get -y -t buster-backports install wireguard
     else
         echo "========================================="
-        echo "== UNKNOWN DEBIAN VERSION: $DEBIAN_VERSION"
+        echo "== UNKNOWN DEBIAN VERSION: $DEBIAN_CODENAME"
         echo "== SOME APPS MAY NOT WORK PROPERLY"
         echo "========================================="
     fi
@@ -223,7 +232,7 @@ if ! skip_base_upgrades ; then
             fi
         done
         # Manage rust toolchains
-        if [ $IS_RASPI = 1 ] && [ $IS_RASPI4_ARM64 = 0 ]; then
+        if [ $IS_RASPI = 1 ] && [ $IS_ARM64 = 0 ]; then
             # Install and use desired version
             rustup install $RUST_VERSION
             rustup default $RUST_VERSION
@@ -278,6 +287,11 @@ if ! skip_base_upgrades ; then
 
     # Install any pip3 software
     pip3 install --upgrade pip setuptools wheel || pip3 install --upgrade pip setuptools wheel --use-deprecated=html5lib
+    
+    # PyYAML Workaround (maybe only needed for python 3.10+)
+    #echo 'Cython < 3.0' > /tmp/constraint.txt
+    #PIP_CONSTRAINT=/tmp/constraint.txt pip3 wheel PyYAML==5.4.1
+    #pip3 install 'PyYAML==5.4.1'
     
     pip3 install -r /usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir || \
         pip3 install -r /usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir --use-deprecated=html5lib
@@ -350,7 +364,7 @@ echo "Upgrading BTC..."
 ARCH="UNKNOWN"
 if [ $IS_RASPI = 1 ]; then
     ARCH="arm-linux-gnueabihf"
-    if [ $IS_RASPI4_ARM64 = 1 ]; then
+    if [ $IS_ARM64 = 1 ]; then
         ARCH="aarch64-linux-gnu"
     fi
 elif [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ] || [ $IS_ROCKPI4 = 1 ]; then
@@ -370,6 +384,15 @@ if [ -f $BTC_VERSION_FILE ]; then
     CURRENT=$(cat $BTC_VERSION_FILE)
 fi
 if [ "$CURRENT" != "$BTC_VERSION" ]; then
+    # Fix - check if custom name is in bitcoin version and clear custom files
+    # Fixes issue if SD card was reflashed, but custom bitcoin version had been installed prior
+    # and we still have custom marker files on the data drive. This install may fail, but subsequent
+    # attempts will succeed.
+    if [[ "$BTC_VERSION" = *"knots"* ]] || [[ "$BTC_VERSION" = *"ordisrespector"* ]]; then
+        rm -f /home/bitcoin/.mynode/bitcoin_version_latest_custom
+        rm -f /mnt/hdd/mynode/settings/bitcoin_version_latest_custom
+    fi
+
     # Download and install Bitcoin
     rm -rf /opt/download
     mkdir -p /opt/download
@@ -408,7 +431,7 @@ LND_ARCH="lnd-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LND_ARCH="lnd-linux-amd64"
 fi
-if [ $IS_RASPI4_ARM64 = 1 ] || [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ] || [ $IS_ROCKPI4 = 1 ]; then
+if [ $IS_ARM64 = 1 ] || [ $IS_ROCK64 = 1 ] || [ $IS_ROCKPRO64 = 1 ] || [ $IS_ROCKPI4 = 1 ]; then
     LND_ARCH="lnd-linux-arm64"
 fi
 LND_UPGRADE_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/$LND_ARCH-$LND_VERSION.tar.gz
@@ -453,7 +476,7 @@ LOOP_ARCH="loop-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LOOP_ARCH="loop-linux-amd64"
 fi
-if [ $IS_RASPI4_ARM64 = 1 ]; then
+if [ $IS_ARM64 = 1 ]; then
     LOOP_ARCH="loop-linux-arm64"
 fi
 LOOP_UPGRADE_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/$LOOP_ARCH-$LOOP_VERSION.tar.gz
@@ -491,7 +514,7 @@ POOL_ARCH="pool-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     POOL_ARCH="pool-linux-amd64"
 fi
-if [ $IS_RASPI4_ARM64 = 1 ]; then
+if [ $IS_ARM64 = 1 ]; then
     POOL_ARCH="pool-linux-arm64"
 fi
 POOL_UPGRADE_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/$POOL_ARCH-$POOL_VERSION.tar.gz
@@ -529,7 +552,7 @@ LIT_ARCH="lightning-terminal-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     LIT_ARCH="lightning-terminal-linux-amd64"
 fi
-if [ $IS_RASPI4_ARM64 = 1 ]; then
+if [ $IS_ARM64 = 1 ]; then
     LIT_ARCH="lightning-terminal-linux-arm64"
 fi
 LIT_UPGRADE_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/$LIT_ARCH-$LIT_VERSION.tar.gz
@@ -567,7 +590,7 @@ CHANTOOLS_ARCH="chantools-linux-armv7"
 if [ $IS_X86 = 1 ]; then
     CHANTOOLS_ARCH="chantools-linux-amd64"
 fi
-if [ $IS_RASPI4_ARM64 = 1 ]; then
+if [ $IS_ARM64 = 1 ]; then
     CHANTOOLS_ARCH="chantools-linux-arm64"
 fi
 CHANTOOLS_UPGRADE_URL=https://github.com/lightninglabs/chantools/releases/download/$CHANTOOLS_VERSION/$CHANTOOLS_ARCH-$CHANTOOLS_VERSION.tar.gz
@@ -838,12 +861,19 @@ if should_install_app "specter" ; then
         chown -R bitcoin:bitcoin specter
         cd specter
 
+        SPECTER_PYTHON_VER=python3.11
+        if [ "$DEBIAN_VERSION" -lt "12" ]; then
+            # Use default python to get 3.8
+            SPECTER_PYTHON_VER=python3
+        fi
+
         # Make venv
         if [ ! -d env ]; then
-            sudo -u bitcoin python3 -m venv env
+            sudo -u bitcoin $SPECTER_PYTHON_VER -m venv env
         fi
         source env/bin/activate
         pip3 install ecdsa===0.13.3
+        pip3 install "sqlalchemy<2" # Needed for 2.1.1
         pip3 install cryptoadvance.specter===$SPECTER_VERSION --upgrade
         deactivate
 
@@ -1056,27 +1086,43 @@ if should_install_app "bos" ; then
 fi
 
 # Install Rathole proxy
-RATHOLEARCH="armv7-unknown-linux-musleabihf"
-if [ $IS_X86 = 1 ]; then
-    RATHOLEARCH="x86_64-unknown-linux-musl"
-elif [ "$DEVICE_ARCH" == "aarch64" ]; then
-    RATHOLEARCH="aarch64-unknown-linux-musl"
-fi
-RATHOLE_UPGRADE_URL=https://github.com/rapiz1/rathole/releases/download/$RATHOLE_VERSION/rathole-$RATHOLEARCH.zip
-CURRENT=""
-if [ -f $RATHOLE_VERSION_FILE ]; then
-    CURRENT=$(cat $RATHOLE_VERSION_FILE)
-fi
-if [ "$CURRENT" != "$RATHOLE_VERSION" ]; then
-    rm -rf /opt/download
-    mkdir -p /opt/download
-    cd /opt/download
-    wget $RATHOLE_UPGRADE_URL -O rathole.zip
-    unzip rathole.zip
-    rm rathole.zip
-    install -o root -g root -t /usr/local/bin rathole
+# RATHOLEARCH="armv7-unknown-linux-musleabihf"
+# if [ $IS_X86 = 1 ]; then
+#     RATHOLEARCH="x86_64-unknown-linux-musl"
+# elif [ "$DEVICE_ARCH" == "aarch64" ]; then
+#     RATHOLEARCH="aarch64-unknown-linux-musl"
+# fi
+# RATHOLE_UPGRADE_URL=https://github.com/rapiz1/rathole/releases/download/$RATHOLE_VERSION/rathole-$RATHOLEARCH.zip
+# CURRENT=""
+# if [ -f $RATHOLE_VERSION_FILE ]; then
+#     CURRENT=$(cat $RATHOLE_VERSION_FILE)
+# fi
+# if [ "$CURRENT" != "$RATHOLE_VERSION" ]; then
+#     rm -rf /opt/download
+#     mkdir -p /opt/download
+#     cd /opt/download
+#     wget $RATHOLE_UPGRADE_URL -O rathole.zip
+#     unzip rathole.zip
+#     rm rathole.zip
+#     install -o root -g root -t /usr/local/bin rathole
 
-    echo $RATHOLE_VERSION > $RATHOLE_VERSION_FILE
+#     echo $RATHOLE_VERSION > $RATHOLE_VERSION_FILE
+# fi
+
+# Install Log2Ram
+if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
+    if [ ! -f /usr/local/bin/log2ram ]; then
+        cd /tmp
+        rm -rf log2ram* || true
+        wget https://github.com/azlux/log2ram/archive/v1.2.2.tar.gz -O log2ram.tar.gz
+        tar -xvf log2ram.tar.gz
+        mv log2ram-* log2ram
+        cd log2ram
+        chmod +x install.sh
+        service log2ram stop || true
+        ./install.sh || true
+        cd ~
+    fi
 fi
 
 # Make sure "Remote Access" apps are marked installed
@@ -1087,7 +1133,7 @@ touch /home/bitcoin/.mynode/install_vpn
 # Init dynamic apps, so any new applications are picked up before reboot
 mynode-manage-apps init || true
 
-# Upgrade Dyanmic Applications
+# Upgrade Dynamic Applications
 mynode-manage-apps upgrade || true
 
 
@@ -1150,13 +1196,12 @@ systemctl enable docker_images
 systemctl enable glances
 systemctl enable webssh2
 systemctl enable tor
-systemctl enable i2pd
 systemctl enable loop
 systemctl enable pool
 systemctl enable rotate_logs
 systemctl enable corsproxy_btcrpc
 systemctl enable usb_extras
-systemctl enable rathole
+#systemctl enable rathole
 
 # Disable any old services
 systemctl disable bitcoind > /dev/null 2>&1 || true

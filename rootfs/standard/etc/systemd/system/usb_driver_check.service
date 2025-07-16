@@ -11,8 +11,8 @@ Type=oneshot
 ExecStart=/usr/local/bin/python3 /usr/bin/mynode_usb_driver_check.py
 User=root
 Group=root
-StandardOutput=syslog
-StandardError=syslog
+StandardOutput=journal
+StandardError=journal
 SyslogIdentifier=mynode
 
 RestartSec=30

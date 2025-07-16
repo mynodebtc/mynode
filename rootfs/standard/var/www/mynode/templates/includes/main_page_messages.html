@@ -19,7 +19,7 @@
 
 {% if sd_rw_error %}
 <div class="main_page_error_block">
-    <p style="text-align: center;">There may be an error with the filesystem on your SD card. It was mounted as read-only and has been updated to read/write.</p>
+    <p style="text-align: center;">There may be an error with the filesystem on your OS drive. It was mounted as read-only and has been updated to read/write.</p>
 </div>
 {% endif %}
 
@@ -37,8 +37,8 @@
 {% if low_os_drive_space_error %}
 <div class="main_page_error_block">
     <p style="text-align: center;"><b>Warning!</b></p>
-    <p style="text-align: center;">Your SD card is {{os_drive_usage}} full and free space is running low.</p>
-    <p style="text-align: center;">You can flash the latest image for your device onto a larger SD card. Instructions
+    <p style="text-align: center;">Your OS drive is {{os_drive_usage}} full and free space is running low.</p>
+    <p style="text-align: center;">You can flash the latest image for your device onto a larger drive. Instructions
         and download links are available <a href="https://mynodebtc.com/download" target="_blank">here</a>.</p>
 </div>
 {% endif %}
@@ -69,7 +69,7 @@
 <div class="main_page_warning_block">
     <p style="text-align: center;"><b>Warning!</b></p>
     <p style="text-align: center;">You are currently using an old 32-bit image. It is highly recommended to upgrade to 64-bit
-        by reflashing your SD card. Some apps can no longer be updated on 32-bit. The new image can be downloaded
+        by reflashing your OS drive. Some apps can no longer be updated on 32-bit and you may have issues. The new image can be downloaded
         <a href="https://mynodebtc.com/download" target="_blank">here</a> and a guide is
         <a href="https://mynodebtc.github.io/advanced/flash-sd-card.html" target="_blank">available</a>.</p>
     <p style="text-align: center;">

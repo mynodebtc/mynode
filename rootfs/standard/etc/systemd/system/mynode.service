@@ -12,8 +12,8 @@ Type=oneshot
 ExecStart=/usr/bin/mynode_startup.sh
 User=root
 Group=root
-StandardOutput=syslog
-StandardError=syslog
+StandardOutput=journal
+StandardError=journal
 SyslogIdentifier=mynode
 
 RestartSec=30

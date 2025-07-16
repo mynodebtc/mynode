@@ -42,8 +42,6 @@ Each MyNode device comes with a number of wonderful features.
 - Electrum Server
 - BTCPay Server
 - RTL (Ride the Lightning) - Lightning Wallet
-- Samourai Dojo
-- Samourai Whirlpool
 - Specter Desktop
 - Thunderhub
 - BTC RPC Explorer

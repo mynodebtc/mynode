@@ -666,6 +666,37 @@
                     }
                 });
 
+                $('#i2p_checkbox').change(function () {
+                    $("#i2p").show();
+                });
+                $("#i2p").on("click", function() {
+                    checked=$('#i2p_checkbox').is(":checked")
+                    $('#loading_spinner_overlay').fadeIn();
+                    if (checked)
+                    {
+                        window.location.href='/settings/i2p?enable=1'
+                    }
+                    else
+                    {
+                        window.location.href='/settings/i2p?enable=0'
+                    }
+                });
+
+                $('#ipv6_checkbox').change(function () {
+                    $("#ipv6").show();
+                });
+                $("#ipv6").on("click", function() {
+                    checked=$('#ipv6_checkbox').is(":checked")
+                    // Inverted setting (uses disable flag)              
+                    val = "1"
+                    if (checked)
+                    {
+                        val = "0"
+                    }
+                    $('#loading_spinner_overlay').fadeIn();
+                    window.location.href='/settings/toggle_setting?name=ipv6_disabled&enable='+val+'&reboot=1'
+                });
+
                 $('#tor_repo_checkbox').change(function () {
                     $("#tor_repo").show();
                 });
@@ -962,10 +993,14 @@
                             </label>
                         </td>
                         <td>
+                            {% if is_i2p_enabled %}
                             <label class="switch">
                                 <input type="checkbox" name="btc_i2p_checkbox" {% if is_btc_i2p_enabled %}checked{% endif %}>
                                 <span class="slider round"></span>
                             </label>
+                            {% else %}
+                                disabled
+                            {% endif %}
                         </td>
                     </tr>
                     <tr>
@@ -991,6 +1026,31 @@
                 <br/>
                 <input type="submit" id="btc_lnd_networks_save" class="ui-button ui-widget ui-corner-all" value="Save"/>
             </form>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">I2P</div>
+            A privacy network option, similar to Tor, can be be enabled. Enabling I2P will run the service in the background and it can be used as a network for Bitcoin.
+            <br/><br/>
+            <label class="switch">
+                <input type="checkbox" id="i2p_checkbox" {% if is_i2p_enabled %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <br/><br/>
+            <button id="i2p" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">IPv6</div>
+            IPv6 can be enabled or disabled. It is enabled by default, but some older nodes may have issues with some apps or connections while enabled, so it can be disabled here.
+            <br/><br/>
+            <label class="switch">
+                <input type="checkbox" id="ipv6_checkbox" {% if is_ipv6_enabled %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <br/><br/>
+            <button id="ipv6" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+
 
         </div>
 
@@ -1035,14 +1095,18 @@
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Custom Bitcoin Version</div>
-            Some users may want to use a specific fork or patched version of Bitcoin. You can choose some options from the list below.
-            Installing a new version may take up to 2 hours and will reboot the device. To undo a previous change, select Default.
+            Advanced: To install a specific fork or patched version of Bitcoin, you can select an option from the list below.
+            Installing a new version may take a long time and will reboot the device. To undo a previous change, select Default.
+            Using a custom version, may break other features and applications or require configuration changes to work properly.
             <br/><br/>
 
             <select name="custom_bitcoin_select" id="custom_bitcoin_select">
                 <option value="none" selected="selected">Choose...</option>
                 <option value="default">Default</option>
                 <option value="ordisrespector">Ordisrespector (v24.0.1)</option>
+                <option value="knots_26_1">Bitcoin Knots (v26.1)</option>
+                <option value="knots_27_1">Bitcoin Knots (v27.1)</option>
+                <option value="knots_28_1">Bitcoin Knots (v28.1)</option>
             </select>
             <button id="custom_bitcoin_install_button">Install</button>
         </div>
@@ -1179,6 +1243,22 @@
             This will clear the Mempool cache. If Mempool is having issues seeing new blocks, this may help. This can occur after switching between mainnet and testnet.
             <br/>
             <a href="/settings/clear-mempool-cache" class="ui-button ui-widget ui-corner-all settings_button">Clear Cache</a>
+        </div>
+
+        <div class="settings_block">
+            <a id="lnbits"></a>
+            <div class="settings_block_header">LNbits</div>
+
+            <div class="settings_block_subheader">Recover super_user</div>
+            This will show super_user account name and set password to: "securebolt"</br>
+            <a href="/settings/reset-lnbits-super_user-pwd" class="ui-button ui-widget ui-corner-all settings_button">Reset password</a></br>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Reset LNbits Data</div>
+            This will delete your LNbits settings from the database. All users, wallets and extensions will be lost.
+            <br/>
+            <a href="/settings/reset-lnbits-data" class="ui-button ui-widget ui-corner-all settings_button">Delete Settings</a>
         </div>
 
 

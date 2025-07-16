@@ -1,5 +1,5 @@
 
-from flask import Blueprint, render_template, redirect, jsonify, request, send_file
+from flask import Blueprint, render_template, redirect, jsonify, request, send_file, make_response
 from flask import current_app as app
 from user_management import check_logged_in
 from bitcoin_info import *
@@ -23,6 +23,17 @@ import os
 
 mynode_api = Blueprint('mynode_api',__name__)
 
+### API Helper Functions
+def generate_api_json_response(data):
+    json_data = jsonify(data)
+    resp = make_response(json_data)
+
+    # Don't cache API requests
+    resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    resp.headers['Pragma'] = 'no-cache'
+    resp.headers['Expires'] = '0'
+
+    return resp
 
 ### Page functions
 @mynode_api.route("/api/ping")
@@ -32,7 +43,7 @@ def api_ping():
     data = {}
     data["status"] = get_mynode_status()
     data["uptime_seconds"] = get_system_uptime_in_seconds()
-    return jsonify(data)
+    return generate_api_json_response(data)
 
 @mynode_api.route("/api/get_bitcoin_info")
 def api_get_bitcoin_info():
@@ -59,7 +70,7 @@ def api_get_bitcoin_info():
         data["recent_blocks"] = blocks
 
     #log_message("api_get_bitcoin_info data: "+json.dumps(data))
-    return jsonify(data)
+    return generate_api_json_response(data)
 
 @mynode_api.route("/api/get_lightning_info")
 def api_get_lightning_info():
@@ -74,7 +85,7 @@ def api_get_lightning_info():
     data["transactions"] = get_lightning_transactions()
     data["payments_and_invoices"] = get_lightning_payments_and_invoices()
 
-    return jsonify(data)
+    return generate_api_json_response(data)
 
 @mynode_api.route("/api/get_price_info")
 def api_get_price_info():
@@ -85,7 +96,7 @@ def api_get_price_info():
     data["delta"] = get_price_diff_24hrs()
     data["direction"] = get_price_up_down_flat_24hrs()
 
-    return jsonify(data)
+    return generate_api_json_response(data)
 
 @mynode_api.route("/api/get_service_status")
 def api_get_service_status():
@@ -104,7 +115,7 @@ def api_get_service_status():
     data["color"] = get_application_status_color(service)
     data["sso_token"] = get_application_sso_token(service)
     data["sso_token_enabled"] = get_application_sso_token_enabled(service)
-    return jsonify(data)
+    return generate_api_json_response(data)
 
 @mynode_api.route("/api/get_app_info")
 def api_get_app_info():
@@ -122,7 +133,7 @@ def api_get_app_info():
     else:
         data = get_all_applications()
 
-    return jsonify(data)
+    return generate_api_json_response(data)
 
 @mynode_api.route("/api/restart_app")
 def api_restart_app():
@@ -138,6 +149,45 @@ def api_restart_app():
 
     return "OK"
 
+@mynode_api.route("/api/backup_data_folder")
+def api_backup_data_folder():
+    check_logged_in()
+
+    app = request.args.get("app")
+    if not app:
+        return "NO_APP_SPECIFIED"
+    if not is_application_valid(app):
+        return "INVALID_APP_NAME"
+    if not backup_data_folder(app):
+        return "ERROR"
+    return "OK"
+
+@mynode_api.route("/api/restore_data_folder")
+def api_restore_data_folder():
+    check_logged_in()
+
+    app = request.args.get("app")
+    if not app:
+        return "NO_APP_SPECIFIED"
+    if not is_application_valid(app):
+        return "INVALID_APP_NAME"
+    if not restore_data_folder(app):
+        return "ERROR"
+    return "OK"
+
+@mynode_api.route("/api/reset_data_folder")
+def api_reset_data_folder():
+    check_logged_in()
+
+    app = request.args.get("app")
+    if not app:
+        return "NO_APP_SPECIFIED"
+    if not is_application_valid(app):
+        return "INVALID_APP_NAME"
+    if not reset_data_folder(app):
+        return "ERROR"
+    return "OK"
+
 @mynode_api.route("/api/get_device_info")
 def api_get_device_info():
     check_logged_in()
@@ -151,7 +201,7 @@ def api_get_device_info():
     data["is_installing_docker_images"] = is_installing_docker_images()
     data["is_electrs_active"] = is_electrs_active()
 
-    return jsonify(data)
+    return generate_api_json_response(data)
 
 @mynode_api.route("/api/homepage_needs_refresh")
 def api_homepage_needs_refresh():
@@ -174,7 +224,7 @@ def api_homepage_needs_refresh():
         data["needs_refresh"] = "yes"
         os.system("rm /tmp/homepage_needs_refresh")
 
-    return jsonify(data)
+    return generate_api_json_response(data)
 
 @mynode_api.route("/api/get_log")
 def api_get_log():
@@ -185,12 +235,12 @@ def api_get_log():
 
     if not request.args.get("app"):
         data["log"] = "NO APP SPECIFIED"
-        return jsonify(data)
+        return generate_api_json_response(data)
 
     app_name = request.args.get("app")
     data["log"] = get_application_log(app_name)
     
-    return jsonify(data)
+    return generate_api_json_response(data)
 
 @mynode_api.route("/api/get_qr_code_image")
 def api_get_qr_code_image():
@@ -223,7 +273,7 @@ def api_get_message():
     
     data = {}
     data["message"] = get_message(funny)
-    return jsonify(data)
+    return generate_api_json_response(data)
 
 @mynode_api.route("/api/toggle_setting")
 def api_toggle_setting():
@@ -234,7 +284,7 @@ def api_toggle_setting():
 
     if not request.args.get("setting"):
         data["status"] = "no_setting_specified"
-        return jsonify(data)
+        return generate_api_json_response(data)
 
     setting = request.args.get("setting")
     if setting == "pinned_bitcoin_details":
@@ -246,7 +296,7 @@ def api_toggle_setting():
     else:
         data["status"] = "unknown_setting"
     
-    return jsonify(data)
+    return generate_api_json_response(data)
 
 @mynode_api.route("/api/set_setting")
 def api_set_setting():
@@ -257,10 +307,10 @@ def api_set_setting():
 
     if not request.args.get("setting"):
         data["status"] = "no_setting_specified"
-        return jsonify(data)
+        return generate_api_json_response(data)
     if not request.args.get("value"):
         data["status"] = "no_value_specified"
-        return jsonify(data)
+        return generate_api_json_response(data)
 
     setting = request.args.get("setting")
     value = request.args.get("value")
@@ -270,7 +320,7 @@ def api_set_setting():
     else:
         data["status"] = "unknown_setting"
     
-    return jsonify(data)
+    return generate_api_json_response(data)
 
 @mynode_api.route("/api/get_drive_benchmark")
 def api_get_drive_benchmark():
@@ -284,7 +334,7 @@ def api_get_drive_benchmark():
         data["status"] = "success"
     except Exception as e:
         data["data"] = str(e)
-    return jsonify(data)
+    return generate_api_json_response(data)
 
 @mynode_api.route("/api/get_usb_info")
 def api_get_usb_info():
@@ -302,4 +352,4 @@ def api_get_usb_info():
         data["status"] = "success"
     except Exception as e:
         data["data"] = str(e)
-    return jsonify(data)
+    return generate_api_json_response(data)

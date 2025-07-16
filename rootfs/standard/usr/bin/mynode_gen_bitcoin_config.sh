@@ -35,8 +35,24 @@ if [ -f /mnt/hdd/mynode/settings/bitcoin_custom.conf ]; then
     # Use Custom Config
     cp -f /mnt/hdd/mynode/settings/bitcoin_custom.conf /mnt/hdd/mynode/bitcoin/bitcoin.conf
 else
+    # Start with blank config
+    echo "" > /mnt/hdd/mynode/bitcoin/bitcoin.conf
+
+    # Append "pre" config
+    if [ -f /mnt/hdd/mynode/settings/bitcoin_pre_config.conf ]; then
+        echo "### Custom Pre BTC Config ###############" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        cat /mnt/hdd/mynode/settings/bitcoin_pre_config.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        echo "#########################################" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    fi
+
+    echo "### MyNode Generated BTC Config #########" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+
     # Generate a default config
-    cp -f /usr/share/mynode/bitcoin.conf /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    cat /usr/share/mynode/bitcoin.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
     sync
 
     # Generate config based on RAM
@@ -54,16 +70,16 @@ else
         sed -i "s/maxmempool=.*/maxmempool=250/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
     elif [ "$TOTAL_RAM_GB" -le "6" ]; then
         sed -i "s/dbcache=.*/dbcache=2000/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
-        sed -i "s/maxmempool=.*/maxmempool=400/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        sed -i "s/maxmempool=.*/maxmempool=300/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
     elif [ "$TOTAL_RAM_GB" -le "8" ]; then
+        sed -i "s/dbcache=.*/dbcache=2500/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        sed -i "s/maxmempool=.*/maxmempool=300/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    elif [ "$TOTAL_RAM_GB" -le "12" ]; then
         sed -i "s/dbcache=.*/dbcache=3000/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
         sed -i "s/maxmempool=.*/maxmempool=500/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
-    elif [ "$TOTAL_RAM_GB" -le "12" ]; then
+    elif [ "$TOTAL_RAM_GB" -le "16" ]; then
         sed -i "s/dbcache=.*/dbcache=4000/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
         sed -i "s/maxmempool=.*/maxmempool=800/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
-    elif [ "$TOTAL_RAM_GB" -le "16" ]; then
-        sed -i "s/dbcache=.*/dbcache=5000/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
-        sed -i "s/maxmempool=.*/maxmempool=1000/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
     elif [ "$TOTAL_RAM_GB" -le "32" ]; then
         sed -i "s/dbcache=.*/dbcache=8000/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
         sed -i "s/maxmempool=.*/maxmempool=1500/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
@@ -105,17 +121,50 @@ else
         cat /usr/share/mynode/bitcoin_bip158.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
     fi
 
+    # Add assumevalid setting
+    if [ ! -f /mnt/hdd/mynode/.mynode_bitcoin_synced_at_least_once ]; then
+        rm -f /tmp/bitcoin_assumevalid
+        torify wget https://mynodebtc.com/device_api/get_assumevalid.php --timeout 5 --tries 2 -q -O /tmp/bitcoin_assumevalid || \
+               wget https://mynodebtc.com/device_api/get_assumevalid.php --timeout 5 --tries 2 -q -O /tmp/bitcoin_assumevalid || \
+               true
+        if [ -f /tmp/bitcoin_assumevalid ]; then
+            assumevalid_hash=$(cat /tmp/bitcoin_assumevalid)
+            echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+            echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+            echo "# Dynamic Assume Valid Setting for Faster Initial Sync" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+            if [ "${#assumevalid_hash}" = "64" ]; then
+                echo "assumevalid=$assumevalid_hash" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+            else
+                echo "# BAD HASH" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+            fi
+            echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+            echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        fi
+    fi
+
     # Update Debug Log Settings
     if [ -f /home/bitcoin/.mynode/keep_bitcoin_debug_log ] || [ -f /mnt/hdd/mynode/settings/keep_bitcoin_debug_log ]; then
         sed -i "s/shrinkdebugfile=.*/shrinkdebugfile=0/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
     fi
 
-    # Append "extra" config
+    echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+    echo "#########################################" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+
+    # Append "post" config
     if [ -f /mnt/hdd/mynode/settings/bitcoin_extra_config.conf ]; then
+        # Migrate old file to new name
+        cp -f /mnt/hdd/mynode/settings/bitcoin_extra_config.conf /mnt/hdd/mynode/settings/bitcoin_post_config.conf
+        rm -f /mnt/hdd/mynode/settings/bitcoin_extra_config.conf
+        sleep 1s
+        sync
+    fi
+    if [ -f /mnt/hdd/mynode/settings/bitcoin_post_config.conf ]; then
         echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
-        echo "# Extra BTC Config" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
         echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
-        cat /mnt/hdd/mynode/settings/bitcoin_extra_config.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        echo "### Custom Post BTC Config ##############" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        cat /mnt/hdd/mynode/settings/bitcoin_post_config.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        echo "#########################################" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
         echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
     fi
 fi

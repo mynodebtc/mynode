@@ -7,9 +7,12 @@ pipenv
 bcrypt
 pysocks
 redis
+requests<=2.31.0
+cysystemd<2.0.0
 systemd
 flask>=2.2.2,<2.4.0
 pam
+packaging>=22.0
 python-bitcoinrpc
 prometheus_client
 psutil
@@ -20,3 +23,5 @@ pyudev
 inotify_simple
 glances
 bottle
+fastapi
+uvicorn

@@ -28,8 +28,8 @@ Type=simple
 TimeoutSec=180
 Restart=always
 RestartSec=30
-StandardOutput=syslog
-StandardError=syslog
+StandardOutput=journal
+StandardError=journal
 SyslogIdentifier=mempool
 
 [Install]
