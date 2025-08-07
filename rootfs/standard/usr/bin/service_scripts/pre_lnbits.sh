@@ -16,6 +16,11 @@ if [ ! -f /mnt/hdd/mynode/lnbits/update_config_$LNBITS_CONFIG_UPDATE_NUM ]; then
     touch /mnt/hdd/mynode/lnbits/update_config_$LNBITS_CONFIG_UPDATE_NUM
 fi
 
+# Make folder for persistent extensions
+if [ ! -d "/mnt/hdd/mynode/lnbits/extensions" ]; then
+    mkdir -p "/mnt/hdd/mynode/lnbits/extensions"
+fi
+
 # Generate hex macaroons
 #macaroonAdminHex=$(xxd -ps -u -c 1000 /mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon)
 
