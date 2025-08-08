@@ -766,18 +766,18 @@ def restore_data_folder(app_data):
     # Not yet implemented
     return False
 
-def reset_data_folder(short_name):
-    log_message(f"  Running reset_data_folder for '{short_name}'...")
+def reset_data_folder(app):
+    log_message(f"  Running reset_data_folder for '{app}'…")
     
-    app_data = get_application(short_name)
+    app_data = get_application(app)
     if not app_data:
-        log_message(f"  ERROR: application '{short_name}' not found")
+        log_message(f"  ERROR: application '{app}' not found")
         return False
     data_folder = app_data["storage_folder"]
     
     # Stop the service before removing data_folder
-    log_message(f"  Stopping '{short_name}'…")
-    stop_service(short_name)
+    log_message(f"  Stopping '{app}'…")
+    stop_service(app)
 
     # Remove App data_folder
     log_message(f"  Removing storage folder '{data_folder}'…")
@@ -788,8 +788,8 @@ def reset_data_folder(short_name):
     create_application_storage_folder(app_data)
 
     # Re-start the service
-    log_message(f"  Starting '{short_name}'…")
-    start_service(short_name)
+    log_message(f"  Starting '{app}'…")
+    start_service(app)
 
     return True
 
