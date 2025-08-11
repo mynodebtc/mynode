@@ -209,6 +209,9 @@ if [ $IS_64_BIT = 1 ]; then
     grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list
 fi
 if [ "$DEBIAN_CODENAME" = "buster" ]; then
+    # Migrate buster repos to archive
+    sed -i 's|deb.debian.org/debian|archive.debian.org/debian|g' /etc/apt/sources.list
+
     # Migrate old buster backports to archive
     sed -i 's|deb.debian.org/debian buster-backports|archive.debian.org/debian buster-backports|g' /etc/apt/sources.list
     # Add backports repo
