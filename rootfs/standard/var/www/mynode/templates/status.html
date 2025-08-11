@@ -238,6 +238,15 @@
             <button id="show_joinmarket-api_log" onclick="showLog('joinmarket-api')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="joinmarket-api_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{joinmarket_api_status_log}}</pre></div>
             <div class="divider"></div>
+
+            <div class="settings_block_subheader">Joinmarket Orderbook Watcher Status</div>
+            <div class="settings_block_subheader_status">
+                <div class="settings_block_subheader_status_icon {{ joinmarket_obwatcher_status_color }}"></div>
+                {{ joinmarket_obwatcher_status }}
+            </div>
+            <button id="show_joinmarket-obwatcher_log" onclick="showLog('joinmarket-obwatcher')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <div id="joinmarket-obwatcher_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{joinmarket_obwatcher_status_log}}</pre></div>
+            <div class="divider"></div>
             {% endif %}
 
             {% if whirlpool_installed %}
