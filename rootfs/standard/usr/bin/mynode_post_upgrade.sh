@@ -77,6 +77,9 @@ if ! skip_base_upgrades ; then
         sed -i '/^deb-src https:\/\/deb.torproject.org/d' /etc/apt/sources.list
     fi
     if [ "$DEBIAN_CODENAME" = "buster" ]; then
+        # Migrate buster repos to archive
+        sed -i 's|deb.debian.org/debian|archive.debian.org/debian|g' /etc/apt/sources.list
+
         # Migrate old buster backports to archive
         sed -i 's|deb.debian.org/debian buster-backports|archive.debian.org/debian buster-backports|g' /etc/apt/sources.list
         # Add backports repo
