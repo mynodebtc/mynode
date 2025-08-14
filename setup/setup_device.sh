@@ -327,6 +327,8 @@ apt-get clean
 
 # Update users
 usermod -a -G debian-tor bitcoin
+usermod -a -G debian-tor joinmarket
+usermod -a -G debian-tor admin
 
 # Make admin a member of bitcoin
 adduser admin bitcoin
