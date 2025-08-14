@@ -457,6 +457,7 @@ if [ ! -f /mnt/hdd/mynode/joinmarket/update_settings_$JOINMARKET_CONFIG_UPDATE_N
 fi
 sed -i "s/#max_cj_fee_abs = x/max_cj_fee_abs = 2000/g" /mnt/hdd/mynode/joinmarket/joinmarket.cfg
 sed -i "s/#max_cj_fee_rel = x/max_cj_fee_rel = 0.001/g" /mnt/hdd/mynode/joinmarket/joinmarket.cfg
+sed -i "s/directory_nodes =.*/directory_nodes = jmarketxf5wc4aldf3slm5u6726zsky52bqnfv6qyxe5hnafgly6yuyd.onion:5222,coinjointovy3eq5fjygdwpkbcdx63d7vd4g32mw7y553uj3kjjzkiqd.onion:5222,satoshi2vcg5e2ept7tjkzlkpomkobqmgtsjzegg6wipnoajadissead.onion:5222,shssats5ucnwdpbticbb4dymjzf2o27tdecpes35ededagjpdmpxm6yd.onion:5222,3kxw6lf5vf6y26emzwgibzhrzhmhqiw6ekrek3nqfjjmhwznb2moonad.onion:5222,bqlpq6ak24mwvuixixitift4yu42nxchlilrcqwk2ugn45tdclg42qid.onion:5222,odpwaf67rs5226uabcamvypg3y4bngzmfk7255flcdodesqhsvkptaid.onion:5222,ylegp63psfqh3zk2huckf2xth6dxvh2z364ykjfmvsoze6tkfjceq7qd.onion:5222/g" /mnt/hdd/mynode/joinmarket/joinmarket.cfg
 if [ -f /home/joinmarket/install.selfsignedcert.sh ]; then
     sudo -u joinmarket /home/joinmarket/install.selfsignedcert.sh || true
 fi
