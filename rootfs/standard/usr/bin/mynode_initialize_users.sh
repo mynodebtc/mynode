@@ -23,6 +23,10 @@ sudo_users="admin"
 for sudo_user in $sudo_users; do
     adduser $sudo_user sudo
 done
+tor_users="admin joinmarket"
+for tor_user in $tor_users; do
+    adduser $tor_user debian-tor
+done
 
 # User updates and settings
 grep "joinmarket" /etc/sudoers || (echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo)
