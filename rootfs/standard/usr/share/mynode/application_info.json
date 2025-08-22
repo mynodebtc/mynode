@@ -6,7 +6,7 @@
         "website": {"name": "GitHub", "link": "https://github.com/bitcoin/bitcoin"},
         "description": "Bitcoin Core connects to the Bitcoin peer-to-peer network to download and fully validate blocks and transactions.",
         "category": "core",
-        "short_description": "Bitcoin Core",
+        "short_description": "Bitcoin",
         "app_tile_running_status_text": "Running",
         "supports_testnet": true
     },
