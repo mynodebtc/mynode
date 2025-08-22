@@ -17,7 +17,7 @@ ExecStart=/usr/bin/docker run --rm \
         --name jam \
         --env JAM_JMWALLETD_HOST="host.docker.internal" \
         --env JAM_JMWALLETD_API_PORT="28183" \
-        --env JAM_JMWALLETD_WEBSOCKET_PORT="28283" \
+        --env JAM_JMWALLETD_WEBSOCKET_PORT="27183" \
         --env JAM_JMOBWATCH_PORT="62601" \
         --env REMOVE_LOCK_FILES="true" \
         --env APP_USER="admin" \
