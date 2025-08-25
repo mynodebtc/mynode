@@ -14,8 +14,16 @@ ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_albyhub.sh ]; th
 ExecStart=docker run --rm \
   --name albyhub \
   --publish 3040:8080 \
+  --add-host=host.docker.internal:host-gateway \
   --volume /mnt/hdd/mynode/albyhub:/data \
-  --env WORK_DIR='/data' \
+  --volume /mnt/hdd/mynode/lnd/tls.cert:/lnd/tls.cert \
+  --volume /mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon:/lnd/admin.macaroon \
+  --env WORK_DIR="/data" \
+  --env LN_BACKEND_TYPE="LND" \
+  --env LND_ADDRESS="host.docker.internal:10009" \
+  --env LND_CERT_FILE="/lnd/tls.cert" \
+  --env LND_MACAROON_FILE="/lnd/admin.macaroon" \
+  --env ENABLE_ADVANCED_SETUP=false \
   albyhub
 ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_albyhub.sh ]; then /bin/bash /usr/bin/service_scripts/post_albyhub.sh; fi'
 ExecStop=docker stop -t 2 albyhub
