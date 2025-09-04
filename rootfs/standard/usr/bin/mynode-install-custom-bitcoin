@@ -150,6 +150,28 @@ elif [ "$APP" = "knots_28_1" ]; then
     echo "28.1-knots" > /mnt/hdd/mynode/settings/bitcoin_version_latest_custom
 
     cd ~
+elif [ "$APP" = "knots_29_1" ]; then
+    BTC_UPGRADE_URL=https://bitcoinknots.org/files/29.x/29.1.knots20250903/bitcoin-29.1.knots20250903-$ARCH.tar.gz
+    BTC_SHASUM=https://bitcoinknots.org/files/29.x/29.1.knots20250903/SHA256SUMS
+    BTC_ASC=https://bitcoinknots.org/files/29.x/29.1.knots20250903/SHA256SUMS.asc
+
+    rm -rf /opt/download
+    mkdir -p /opt/download
+    cd /opt/download
+
+    # Download, install and verify
+    wget $BTC_UPGRADE_URL $BTC_SHASUM $BTC_ASC
+    gpg --verify SHA256SUMS.asc SHA256SUMS
+    sha256sum -c SHA256SUMS --ignore-missing
+    tar -xvf bitcoin-29.1.knots20250903-$ARCH.tar.gz
+    mv bitcoin-29.1.knots20250903 bitcoin
+    install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
+
+    echo "29.1-knots" > /home/bitcoin/.mynode/bitcoin_version
+    echo "29.1-knots" > /home/bitcoin/.mynode/bitcoin_version_latest_custom
+    echo "29.1-knots" > /mnt/hdd/mynode/settings/bitcoin_version_latest_custom
+
+    cd ~
 elif [ "$APP" = "default" ]; then
     # Clear custom info and re-install bitcoin
     echo "unknown" > /home/bitcoin/.mynode/bitcoin_version
