@@ -16,6 +16,11 @@ APP="$1"
 # Stop services so we have plenty of RAM
 /usr/bin/mynode_stop_critical_services.sh
 
+# Import GPG keys specific to Custom Bitcoin versions
+set +e
+gpg --keyserver keys.openpgp.org --recv-keys CACC7CBB26B3D2EE8FC2F2BC0E37EBAB8574F005   # Leo Haf (Knots)
+set -e
+
 # Determine arch
 ARCH="UNKNOWN"
 if [ $IS_RASPI = 1 ]; then
