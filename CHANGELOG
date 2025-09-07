@@ -1,3 +1,15 @@
+=== v0.3.38 ===
+- Released 09/06/25
+- Add AlbyHub v0.19.3
+- Add Bitcoin Knots v29.1
+- Upgrade LND to v0.19.3
+- Upgrade Datum to v0.4.0
+- Upgrade Joininbox to v0.8.4
+- Upgrade Jam to v0.4.0
+- Update default JoinMarket servers to improve connections
+- Fix issue with viewing JoinMarket order book
+- Various bug fixes
+
 === v0.3.37 ===
 - Released 07/11/25
 - Upgrade LND to v0.19.1
