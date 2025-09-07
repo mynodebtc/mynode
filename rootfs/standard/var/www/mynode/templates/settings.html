@@ -1099,15 +1099,22 @@
             Installing a new version may take a long time and will reboot the device. To undo a previous change, select Default.
             Using a custom version, may break other features and applications or require configuration changes to work properly.
             <br/><br/>
+            {% if debian_version < 12 %}
+            <b>Note: </b>Some custom Bitcoin versions are not supported on Debian 11 or older. You can re-flash your OS drive to 
+            upgrade to Debian 12+.
+            <br/><br/>
+            {% endif %}
 
             <select name="custom_bitcoin_select" id="custom_bitcoin_select">
                 <option value="none" selected="selected">Choose...</option>
+                <option value="none">--- Recommended ---</option>
                 <option value="default">Default</option>
-                <option value="ordisrespector">Ordisrespector (v24.0.1)</option>
-                <option value="knots_26_1">Bitcoin Knots (v26.1)</option>
+                <option value="knots_29_1" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v29.1)</option>
+                <option value="knots_28_1" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v28.1)</option>
+                <option value="none">--- Old / Not Recommended ---</option>
                 <option value="knots_27_1">Bitcoin Knots (v27.1)</option>
-                <option value="knots_28_1">Bitcoin Knots (v28.1)</option>
-                <option value="knots_29_1">Bitcoin Knots (v29.1)</option>
+                <option value="knots_26_1">Bitcoin Knots (v26.1)</option>
+                <option value="ordisrespector">Ordisrespector (v24.0.1)</option>
             </select>
             <button id="custom_bitcoin_install_button">Install</button>
         </div>
