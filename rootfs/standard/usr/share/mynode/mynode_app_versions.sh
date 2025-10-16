@@ -16,7 +16,7 @@ function get_app_version()
     echo "$version"
 }
 
-BTC_VERSION="28.1"
+BTC_VERSION="29.1"
 if [ "$DEBIAN_VERSION" -lt "12" ]; then
     BTC_VERSION="27.2"
 fi
