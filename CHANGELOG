@@ -1,3 +1,9 @@
+=== v0.3.39 ===
+- Released 10/15/25
+- Upgrade Bitcoin v29.1
+- Add Bitcoin Knots v29.2
+- Upgrade LNBits to v1.2.1
+
 === v0.3.38 ===
 - Released 09/06/25
 - Add AlbyHub v0.19.3
