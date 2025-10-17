@@ -4,7 +4,6 @@ log_filters = "INFO"
 #timestamp = true # Disabled, removed in later new electrs versions
 #jsonrpc_import = true
 jsonrpc_timeout_secs = 30
-daemon_p2p_addr = "127.0.0.1:8334"  # Connect to bitcoin's whitebind port for unlimited download
 daemon_rpc_addr = "127.0.0.1:8332"
 db_dir = "/mnt/hdd/mynode/electrs"
 electrum_rpc_addr = "0.0.0.0:50001"
