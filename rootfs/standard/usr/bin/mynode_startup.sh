@@ -333,6 +333,10 @@ if [ ! -f /mnt/hdd/mynode/settings/btc_network_settings_defaulted ] &&
 fi
 echo "drive_mounted" > $MYNODE_STATUS_FILE
 
+if [ ! -f /mnt/hdd/mynode/settings/bitcoin_implementation_choosen ]; then
+    echo "choose_implementation" > $MYNODE_STATUS_FILE
+fi
+
 # BTC Config
 source /usr/bin/mynode_gen_bitcoin_config.sh
 
