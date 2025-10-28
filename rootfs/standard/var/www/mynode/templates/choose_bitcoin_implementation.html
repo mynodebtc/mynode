@@ -1,0 +1,75 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        {% include 'includes/head.html' %}
+        <meta http-equiv="refresh" content="3600">
+
+        <script>
+            $(document).ready(function() {
+
+                
+            });
+        </script>
+
+        <style>
+            td, th {
+                border-top: none !important;
+            }
+        </style>
+
+     </head>
+
+    <body>
+        {% include 'includes/logo_header.html' %}
+
+        {% include 'includes/message_display.html' %}
+        
+        <div class="state_header">Choose Bitcoin implementation</div>
+
+        <div class="format_div" style="width: 500px;">
+
+            <table style="margin: auto; width: 500px; text-align: center;">
+                <tr>
+                    <td><img style="width: 160px; margin: auto;" src="{{ url_for('static', filename="images/knots.png")}}"/></td>
+                    <td></td>
+                    <td><img style="width: 160px; margin: auto;" src="{{ url_for('static', filename="images/core.png")}}"/></td>
+                </tr>
+                <tr>
+                    <tr style="font-size: 20px;">
+                        <td><b>Bitcoin Knots</b></td>
+                        <td></td>
+                        <td><b>Bitcoin Core</b></td>
+                    </tr>
+                </tr>
+                <tr>
+                    <td>
+                        <br/>
+                        <p>Focused on monetary propriety of Bitcoin</p>
+                        <p>Extensive control over node configuration</p>
+                        <br/>
+                    </td>
+                    <td></td>
+                    <td>
+                        <br/>
+                        <p>Most widely used implementation</p>
+                        <p>&nbsp;</p>
+                        <br/>
+                    </td>
+                </tr>
+                <tr>
+                    <td><a href="/settings/install-custom-bitcoin?version=latest-knots" style="width: 80%;" class="ui-button ui-widget ui-corner-all">Choose Bitcoin Knots</a></td>
+                    <td></td>
+                    <td><a href="/settings/install-custom-bitcoin?version=default" style="width: 80%;" class="ui-button ui-widget ui-corner-all">Choose Bitcoin Core</a></td>
+                </tr>
+            </table>
+
+            <br/>
+
+            <p><small><i>Note: This can be changed later on the settings page.</i></small></p>
+
+        </div>
+
+        <div style="height: 40px;">&nbsp;</div>
+        {% include 'includes/footer.html' %}
+     </body>
+</html>
