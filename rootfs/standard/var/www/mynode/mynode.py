@@ -246,6 +246,12 @@ def index():
             "ui_settings": read_ui_settings()
         }
         return render_template('choose_network.html', **templateData)
+    elif status == STATE_CHOOSE_IMPLEMENTATION:
+        templateData = {
+            "title": "Choose Bitcoin Implementation",
+            "ui_settings": read_ui_settings()
+        }
+        return render_template('choose_bitcoin_implementation.html', **templateData)
     elif status == STATE_DOCKER_RESET:
         templateData = {
             "title": "MyNode",
