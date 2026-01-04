@@ -19,6 +19,7 @@ APP="$1"
 # Import GPG keys specific to Custom Bitcoin versions
 set +e
 gpg --keyserver keys.openpgp.org --recv-keys CACC7CBB26B3D2EE8FC2F2BC0E37EBAB8574F005   # Leo Haf (Knots)
+gpg --keyserver keyserver.ubuntu.com --recv-keys 2B97F03293744D70F6BBA82F2E3A66FF67F98B4F   # Dathon Ohm (BIP-110)
 set -e
 
 # Determine arch
@@ -219,6 +220,28 @@ elif [ "$APP" = "knots_29_2_2" ]; then
     echo "29.2.2-knots" > /home/bitcoin/.mynode/bitcoin_version
     echo "29.2.2-knots" > /home/bitcoin/.mynode/bitcoin_version_latest_custom
     echo "29.2.2-knots" > /mnt/hdd/mynode/settings/bitcoin_version_latest_custom
+
+    cd ~
+elif [ "$APP" = "bip110" ]; then
+    BTC_UPGRADE_URL=https://github.com/dathonohm/bitcoin/releases/download/v29.2.knots20251110%2Bbip110-v0.1rc2/bitcoin-29.2.knots20251110+bip110-v0.1rc2-$ARCH.tar.gz
+    BTC_SHASUM=https://raw.githubusercontent.com/dathonohm/guix.sigs/refs/heads/bip110/29.2.knots20251110%2Bbip110-v0.1rc2/dathonohm/all.SHA256SUMS
+    BTC_ASC=https://raw.githubusercontent.com/dathonohm/guix.sigs/refs/heads/bip110/29.2.knots20251110%2Bbip110-v0.1rc2/dathonohm/all.SHA256SUMS.asc
+
+    rm -rf /opt/download
+    mkdir -p /opt/download
+    cd /opt/download
+
+    # Download, install and verify
+    wget $BTC_UPGRADE_URL $BTC_SHASUM $BTC_ASC
+    gpg --verify all.SHA256SUMS.asc all.SHA256SUMS
+    sha256sum -c all.SHA256SUMS --ignore-missing
+    tar -xvf bitcoin-29.2.knots20251110+bip110-v0.1rc2-$ARCH.tar.gz
+    mv bitcoin-29.2.knots20251110+bip110-v0.1rc2 bitcoin
+    install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
+
+    echo "bip110" > /home/bitcoin/.mynode/bitcoin_version
+    echo "bip110" > /home/bitcoin/.mynode/bitcoin_version_latest_custom
+    echo "bip110" > /mnt/hdd/mynode/settings/bitcoin_version_latest_custom
 
     cd ~
 elif [ "$APP" = "default" ]; then
