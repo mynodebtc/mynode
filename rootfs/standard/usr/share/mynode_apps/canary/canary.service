@@ -1,0 +1,23 @@
+[Unit]
+Description=Canary
+Wants=electrs.service docker.service
+After=electrs.service docker.service
+
+[Service]
+# Clean up any existing containers
+ExecStartPre=-/usr/bin/docker stop canary canary-frontend
+ExecStartPre=-/usr/bin/docker rm canary canary-frontend
+# Start backend container
+ExecStartPre=/usr/bin/docker run -d --name canary --network host -v /mnt/hdd/mynode/canary:/app/data -e CANARY_DATA_DIR=/app/data -e CANARY_ELECTRUM_URL=tcp://127.0.0.1:50001 -e CANARY_NETWORK=mainnet -e CANARY_MODE=self-hosted -e CANARY_BIND_ADDRESS=0.0.0.0:3010 schjonhaug/canary-backend:v1.3.0
+# Give backend time to start
+ExecStartPre=/bin/sleep 2
+# Start frontend container (main process)
+ExecStart=/usr/bin/docker run --rm --name canary-frontend --network host -e API_URL=http://127.0.0.1:3010 -e PORT=3005 schjonhaug/canary-frontend:v1.3.0
+ExecStop=/usr/bin/docker stop canary canary-frontend
+ExecStopPost=-/usr/bin/docker rm canary
+Type=simple
+Restart=always
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target
