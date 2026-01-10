@@ -1109,6 +1109,7 @@
                 <option value="none" selected="selected">Choose...</option>
                 <option value="none">--- Recommended ---</option>
                 <option value="default">Default</option>
+                <option value="bip110" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots + BIP-110</option>
                 <option value="knots_29_2_2" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v29.2.knots20251110)</option>
                 <option value="none">--- Old / Not Recommended ---</option>
                 <option value="knots_29_2" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v29.2)</option>
