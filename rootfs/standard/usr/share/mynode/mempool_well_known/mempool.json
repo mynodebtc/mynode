@@ -1,6 +1,6 @@
 {
   "name": "MyNode Mempool Explorer",
-  "url": "http://mynode.local:4081",
+  "url": "https://mynode.local:4081",
   "description": "Self-hosted mempool explorer running on MyNode - A Bitcoin and Lightning full node platform",
   "type": "private",
   "networks": ["mainnet"],
