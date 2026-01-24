@@ -1,4 +1,4 @@
-[![MyNode](https://mynodebtc.github.io/images/logo.png)](https://github.com/mynodebtc/mynode)
+sudo su && [![MyNode](https://mynodebtc.github.io/images/logo.png)](https://github.com/mynodebtc/mynode)
 
 [![Version](https://img.shields.io/github/v/tag/mynodebtc/mynode?label=version&color=green)](https://github.com/mynodebtc/mynode/tag)
 [![Community Chat](https://img.shields.io/badge/community%20chat-telegram-blue)](https://t.me/mynode_btc)
