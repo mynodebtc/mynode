@@ -1,0 +1,29 @@
+# publicpool service
+# /etc/systemd/system/publicpool.service
+
+[Unit]
+Description=publicpool
+Wants=www.service docker_images.service
+After=www.service docker_images.service
+
+[Service]
+WorkingDirectory=/opt/mynode/publicpool
+
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_publicpool.sh ]; then /bin/bash /usr/bin/service_scripts/pre_publicpool.sh; fi'
+ExecStart=node dist/main
+ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_publicpool.sh ]; then /bin/bash /usr/bin/service_scripts/post_publicpool.sh; fi'
+#ExecStop=FILL_IN_EXECSTOP_AND_UNCOMMENT_IF_NEEDED
+
+User=bitcoin
+Group=bitcoin
+Type=simple
+TimeoutSec=120
+Restart=always
+RestartSec=60
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=publicpool
+
+[Install]
+WantedBy=multi-user.target

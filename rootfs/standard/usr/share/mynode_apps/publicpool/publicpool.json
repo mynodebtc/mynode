@@ -1,0 +1,66 @@
+{
+    "name": "Public Pool",
+    "short_name": "publicpool",
+    "author": {
+        "name": "Benjamin Wilson",
+        "link": ""
+    },
+    "website": {
+        "name": "GitHub",
+        "link": "https://github.com/benjamin-wilson/public-pool"
+    },
+    "category": "bitcoin_app",
+    "short_description": "Stratum Server",
+    "description": [
+        "Public Pool is an open source, self-hosted Stratum server that allows you to solo mine Bitcoin.",
+        "This application provides the backend Stratum server. To monitor and manage your mining pool, please install the separate Public Pool UI application from the MyNode Marketplace."
+    ],
+    "latest_version": "b971e9ce4ccd23ae98536d57dcf63657ade7919f",
+    "supported_archs": null,
+    "download_skip": false,
+    "download_type": "source",
+    "download_source_url": "https://github.com/benjamin-wilson/public-pool/archive/{VERSION}.tar.gz",
+    "download_binary_url": {
+        "aarch64": "download_url",
+        "x86_64": "download_url"
+    },
+    "install_env_vars": {},
+    "supports_app_page": true,
+    "supports_testnet": false,
+    "http_port": null,
+    "https_port": null,
+    "extra_ports": [3333],
+    "requires_bitcoin": true,
+    "requires_docker_image_installation": false,
+    "requires_electrs": false,
+    "requires_lightning": false,
+    "show_on_application_page": true,
+    "show_on_homepage": true,
+    "show_on_status_page": true,
+    "hide_status_icon": false,
+    "app_tile_name": "Public Pool",
+    "app_tile_running_status_text": "Running",
+    "app_tile_button_text": "Info",
+    "app_tile_button_href": "/app/publicpool/info",
+    "app_page_show_open_button": false,
+    "app_page_content": [
+        {
+            "heading": "Instructions",
+            "content": [
+                "To start mining, configure your miner to connect to your MyNode IP address on port 3333, like below:",
+                "Stratum URL: <Your node IP>:3333",
+                "To access the Public Pool web dashboard, install the Public Pool UI application from the MyNode Marketplace.",
+                "Enjoy!"
+            ]
+        }
+    ],
+    "can_uninstall": true,
+    "can_reinstall": true,
+    "can_enable_disable": true,
+    "is_beta": false,
+    "is_premium": true,
+    "homepage_section": "apps",
+    "homepage_order": 91,
+    "app_type": "custom",
+    "sdk_version": 2
+}

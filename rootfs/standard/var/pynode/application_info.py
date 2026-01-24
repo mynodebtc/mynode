@@ -174,8 +174,16 @@ def replace_app_info_variables(app_data, text):
     return text
 
 def get_app_not_supported_reason(app):
+    # Check Debian Version
     if get_debian_version() < app["minimum_debian_version"]:
         return "Requires Debian "+str(app["minimum_debian_version"])+"+"
+    
+    # Check app dependencies (dependent apps that must be installed first)
+    if len(app["installed_app_dependencies"]) > 0:
+        for required_app_short_name in app["installed_app_dependencies"]:
+            if not is_installed(required_app_short_name):
+                required_app = get_application(required_app_short_name)
+                return f"Requires {required_app['name']} to be installed"
     return ""
 
 def is_app_supported(app):
@@ -195,6 +203,7 @@ def initialize_application_defaults(app):
     if not "linux_user" in app: app["linux_user"] = "bitcoin"
     if not "supported_archs" in app: app["supported_archs"] = None 
     if not "minimum_debian_version" in app: app["minimum_debian_version"] = 10
+    if not "installed_app_dependencies" in app: app["installed_app_dependencies"] = []    # Prevents installation unless these apps are installed
     if not "download_skip" in app: app["download_skip"] = False
     if not "download_type" in app: app["download_type"] = "source"      # source or binary
     if not "download_source_url" in app: app["download_source_url"] = "not_specified"
