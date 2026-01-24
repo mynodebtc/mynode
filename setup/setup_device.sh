@@ -456,7 +456,7 @@ usermod -aG docker root
 # Install node packages
 npm install -g pug-cli browserify uglify-js babel-cli
 npm install -g npm@$NODE_NPM_VERSION
-npm install -g yarn
+npm install -g yarn @quasar/cli @angular/cli
 
 # Install Log2Ram
 if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
