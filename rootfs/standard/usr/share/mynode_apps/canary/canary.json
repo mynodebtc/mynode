@@ -1,0 +1,39 @@
+{
+    "name": "Canary",
+    "short_name": "canary",
+    "author": {
+        "name": "Canary Team",
+        "link": "https://github.com/schjonhaug/canary"
+    },
+    "website": {
+        "name": "Canary",
+        "link": "https://github.com/schjonhaug/canary"
+    },
+    "category": "bitcoin_app",
+    "short_description": "Wallet Monitor",
+    "description": [
+        "Canary is a Bitcoin wallet monitoring and early warning system for cold storage.",
+        "Get instant notifications when your bitcoins move via ntfy push notifications.",
+        "Features include: transaction monitoring, RBF/CPFP detection, balance alerts, and deep wallet scanning."
+    ],
+    "latest_version": "v1.3.0",
+    "supported_archs": ["amd64", "arm64"],
+    "download_skip": true,
+    "requires_docker_image_installation": true,
+    "requires_electrs": true,
+    "requires_bitcoin": false,
+    "requires_lightning": false,
+    "http_port": "3005",
+    "show_on_homepage": true,
+    "show_on_application_page": true,
+    "app_tile_name": "Canary",
+    "app_tile_running_status_text": "Monitoring",
+    "app_tile_default_status_text": "Wallet Monitor",
+    "app_tile_button_text": "Open",
+    "app_tile_button_href": "http://mynode.local:3005",
+    "can_uninstall": true,
+    "can_reinstall": true,
+    "can_enable_disable": true,
+    "homepage_order": 75,
+    "sdk_version": 1
+}
