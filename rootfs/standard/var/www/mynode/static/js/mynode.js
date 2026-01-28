@@ -87,7 +87,7 @@ function open_app_in_new_tab(http_port, https_port="NA", requires_https=false, c
         }
 
         // If app is HTTP only
-        if (tor_https_port == "NA") {
+        if (tor_https_port == "NA" || tor_https_port == "None") {
             protocol = "http:"
             port_string = ":"+tor_http_port
         }
@@ -100,7 +100,7 @@ function open_app_in_new_tab(http_port, https_port="NA", requires_https=false, c
         }
 
         // If app is HTTP only
-        if (https_port == "NA") {
+        if (https_port == "NA" || https_port == "None") {
             protocol = "http:"
             port_string = ":"+http_port
         }
