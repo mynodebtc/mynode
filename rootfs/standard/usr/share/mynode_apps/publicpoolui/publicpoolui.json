@@ -1,0 +1,64 @@
+{
+    "name": "Public Pool UI",
+    "short_name": "publicpoolui",
+    "author": {
+        "name": "Benjamin Wilson",
+        "link": "https://github.com/benjamin-wilson"
+    },
+    "website": {
+        "name": "GitHub",
+        "link": "https://github.com/benjamin-wilson/public-pool-ui"
+    },
+    "category": "bitcoin_app",
+    "short_description": "Public Pool Web Dashboard",
+    "description": [
+        "Public Pool UI is a web-based dashboard for managing and monitoring your Public Pool Stratum Server."
+    ],
+    "latest_version": "1c0b2d93e3ce0a81d4faa7b1d444ace936e3f63d",
+    "supported_archs": null,
+    "download_skip": false,
+    "download_type": "source",
+    "download_source_url": "https://github.com/benjamin-wilson/public-pool-ui/archive/{VERSION}.tar.gz",
+    "download_binary_url": {
+        "aarch64": "download_url",
+        "x86_64": "download_url"
+    },
+    "installed_app_dependencies": ["publicpool"],
+    "install_env_vars": {},
+    "supports_app_page": true,
+    "supports_testnet": false,
+    "http_port": 4200,
+    "https_port": null,
+    "requires_bitcoin": true,
+    "requires_docker_image_installation": false,
+    "requires_electrs": false,
+    "requires_lightning": false,
+    "show_on_application_page": true,
+    "show_on_homepage": true,
+    "show_on_status_page": true,
+    "hide_status_icon": false,
+    "app_tile_name": "Public Pool UI",
+    "app_tile_running_status_text": "Running",
+    "app_tile_button_text": "Info",
+    "app_tile_button_href": "/app/publicpoolui/info",
+    "app_page_show_open_button": true,
+    "app_page_content": [
+        {
+            "heading": "Instructions",
+            "content": [
+                "You can open the Public Pool UI app with the Open button on the left! It will launch the Public Pool web dashboard in a new browser tab.",
+                "Be sure the Public Pool application is installed and running prior to using the dashboard.",
+                "Enjoy!"
+            ]
+        }
+    ],
+    "can_uninstall": true,
+    "can_reinstall": true,
+    "can_enable_disable": true,
+    "is_beta": false,
+    "is_premium": false,
+    "homepage_section": "apps",
+    "homepage_order": 91,
+    "app_type": "custom",
+    "sdk_version": 2
+}
