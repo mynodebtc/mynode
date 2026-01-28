@@ -3,7 +3,7 @@
     "short_name": "publicpool",
     "author": {
         "name": "Benjamin Wilson",
-        "link": ""
+        "link": "https://github.com/benjamin-wilson"
     },
     "website": {
         "name": "GitHub",
@@ -48,7 +48,7 @@
             "heading": "Instructions",
             "content": [
                 "To start mining, configure your miner to connect to your MyNode IP address on port 3333, like below:",
-                "Stratum URL: <Your node IP>:3333",
+                "Stratum URL: {LOCAL_IP_ADDRESS}:3333",
                 "To access the Public Pool web dashboard, install the Public Pool UI application from the MyNode Marketplace.",
                 "Enjoy!"
             ]
