@@ -29,7 +29,7 @@
     "supports_testnet": false,
     "http_port": null,
     "https_port": null,
-    "extra_ports": [3333],
+    "extra_ports": [3333, 3334],
     "requires_bitcoin": true,
     "requires_docker_image_installation": false,
     "requires_electrs": false,
