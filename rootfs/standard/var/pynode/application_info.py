@@ -268,11 +268,23 @@ def initialize_application_defaults(app):
             section["content"][j] = replace_app_info_variables(app, line)
         app["app_page_content"][i] = section
 
-    # Check if app is supported
-    app["is_supported"] = is_app_supported(app)
-    app["not_supported_reason"] = get_app_not_supported_reason(app)
+    # This data will be initialized once all apps are loaded
+    app["is_supported"] = None
+    app["not_supported_reason"] = None
 
     return app
+
+def initialize_application_advanced_data(app):
+    # Initialize data that needs to be done once all apps are initialized
+    # Some app values, need to check install dependences and things which require
+    # all apps to have been initialized into the mynode_applications object. This
+    # function runs after the defaults have been initialized into mynode_applications.
+    global mynode_applications
+    for app in mynode_applications:
+        if app["is_supported"] == None:
+            app["is_supported"] = is_app_supported(app)
+        if app["not_supported_reason"] == None:
+            app["not_supported_reason"] = get_app_not_supported_reason(app)
 
 def update_application(app, include_status=False):
     short_name = app["short_name"]
@@ -311,6 +323,11 @@ def initialize_applications():
             apps.append( initialize_application_defaults( app ) )
 
     mynode_applications = copy.deepcopy(apps)
+
+    # Initialize advanced data that needs all apps loaded
+    for app in mynode_applications:
+        initialize_application_advanced_data(app)
+
     return
 
 def update_applications(include_status=False):
