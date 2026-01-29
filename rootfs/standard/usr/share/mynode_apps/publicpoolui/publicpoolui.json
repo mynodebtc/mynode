@@ -16,6 +16,7 @@
     ],
     "latest_version": "1c0b2d93e3ce0a81d4faa7b1d444ace936e3f63d",
     "supported_archs": null,
+    "minimum_debian_version": 12,
     "download_skip": false,
     "download_type": "source",
     "download_source_url": "https://github.com/benjamin-wilson/public-pool-ui/archive/{VERSION}.tar.gz",
