@@ -481,6 +481,9 @@ def get_application_status_special(short_name):
     elif short_name == "jam":
         if not is_installed("joininbox"):
             return "Requires JoinMarket"
+    elif short_name == "publicpoolui":
+        if not is_installed("publicpool") or not is_service_enabled("publicpool"):
+            return "Waiting for Public Pool..."
 
     return ""
 
@@ -538,6 +541,9 @@ def get_application_status_color_special(short_name):
             return "gray"
     elif short_name == "jam":
         if not is_installed("joininbox"):
+            return "yellow"
+    elif short_name == "publicpoolui":
+        if not is_installed("publicpool") or not is_service_enabled("publicpool"):
             return "yellow"
     return ""
 
