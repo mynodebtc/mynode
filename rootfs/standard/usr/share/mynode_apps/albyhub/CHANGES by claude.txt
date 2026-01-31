@@ -1,0 +1,415 @@
+https://claude.ai/chat/c185814a-8984-42cc-b28e-1dad7c75950a
+
+---
+
+Perfect! Now I can see the existing structure. Let me propose changes that work with what you already have:
+Proposed Changes for PR #975
+1. Update pre_albyhub.sh
+Create this file to generate the env file with proper phoenixd authentication:
+#!/bin/bash
+# File: rootfs/standard/usr/bin/service_scripts/pre_albyhub.sh
+
+source /usr/share/mynode/mynode_config.sh
+
+# Paths
+ENV_FILE="/mnt/hdd/mynode/albyhub/albyhub.env"
+PHOENIXD_FLAG="/mnt/hdd/mynode/settings/albyhub_conf_phoenixd"
+PHOENIXD_CONFIG="/mnt/hdd/mynode/phoenixd/phoenix.conf"
+
+# Create directories
+mkdir -p /mnt/hdd/mynode/albyhub
+mkdir -p /mnt/hdd/mynode/settings
+
+# Determine which backend to use
+if [ -f "$PHOENIXD_FLAG" ]; then
+    # Verify phoenixd is available
+    if ! systemctl is-active --quiet phoenixd; then
+        echo "Warning: phoenixd service is not running, falling back to LND"
+        rm -f "$PHOENIXD_FLAG"
+        USE_PHOENIXD=false
+    elif [ ! -f "$PHOENIXD_CONFIG" ]; then
+        echo "Warning: phoenixd config not found, falling back to LND"
+        rm -f "$PHOENIXD_FLAG"
+        USE_PHOENIXD=false
+    else
+        USE_PHOENIXD=true
+    fi
+else
+    USE_PHOENIXD=false
+fi
+
+# Generate environment file
+if [ "$USE_PHOENIXD" = true ]; then
+    # Extract phoenixd password from config
+    PHOENIXD_PASSWORD=$(grep -E "^http-password=" "$PHOENIXD_CONFIG" | cut -d"=" -f2)
+    
+    cat > "$ENV_FILE" << EOF
+WORK_DIR=/data
+LN_BACKEND_TYPE=PHOENIX
+PHOENIXD_ADDRESS=http://172.17.0.1:9740
+PHOENIXD_AUTHORIZATION=$PHOENIXD_PASSWORD
+ENABLE_ADVANCED_SETUP=false
+EOF
+else
+    cat > "$ENV_FILE" << EOF
+WORK_DIR=/data
+LN_BACKEND_TYPE=LND
+LND_ADDRESS=host.docker.internal:10009
+LND_CERT_FILE=/lnd/tls.cert
+LND_MACAROON_FILE=/lnd/admin.macaroon
+ENABLE_ADVANCED_SETUP=false
+EOF
+fi
+
+# Set permissions
+chmod 600 "$ENV_FILE"
+chown bitcoin:bitcoin "$ENV_FILE"
+2. Update albyhub.service
+Simplify to use the env file:
+# File: rootfs/standard/etc/systemd/system/albyhub.service
+[Unit]
+Description=albyhub
+Wants=www.service docker_images.service
+After=www.service docker_images.service
+
+[Service]
+WorkingDirectory=/opt/mynode/albyhub
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/bin/bash /usr/bin/service_scripts/pre_albyhub.sh
+ExecStart=/bin/bash -c 'docker run --rm \
+    --name albyhub \
+    --publish 3040:8080 \
+    --add-host=host.docker.internal:host-gateway \
+    --volume /mnt/hdd/mynode/albyhub:/data \
+    --volume /mnt/hdd/mynode/lnd/tls.cert:/lnd/tls.cert:ro \
+    --volume /mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon:/lnd/admin.macaroon:ro \
+    --env-file /mnt/hdd/mynode/albyhub/albyhub.env \
+    albyhub'
+ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_albyhub.sh ]; then /bin/bash /usr/bin/service_scripts/post_albyhub.sh; fi'
+ExecStop=docker stop -t 2 albyhub
+User=bitcoin
+Group=bitcoin
+Type=simple
+TimeoutSec=120
+Restart=always
+RestartSec=60
+SyslogIdentifier=albyhub
+
+[Install]
+WantedBy=multi-user.target
+3. Create albyhub_utils.py
+Add helper functions for the existing albyhub.py:
+# File: rootfs/standard/var/www/mynode/albyhub_utils.py
+import os
+import subprocess
+
+PHOENIXD_FLAG = "/mnt/hdd/mynode/settings/albyhub_conf_phoenixd"
+ALBYHUB_DATA_DIR = "/mnt/hdd/mynode/albyhub"
+PHOENIXD_CONFIG = "/mnt/hdd/mynode/phoenixd/phoenix.conf"
+
+def get_albyhub_backend():
+    """Get current AlbyHub backend (lnd or phoenixd)"""
+    if os.path.isfile(PHOENIXD_FLAG):
+        return "phoenixd"
+    return "lnd"
+
+def is_phoenixd_available():
+    """Check if phoenixd is installed and running"""
+    try:
+        # Check if service exists and is active
+        result = subprocess.run(['systemctl', 'is-active', 'phoenixd'], 
+                              capture_output=True, text=True, timeout=5)
+        if result.returncode != 0:
+            return False
+        
+        # Check if config file exists
+        if not os.path.isfile(PHOENIXD_CONFIG):
+            return False
+            
+        return True
+    except:
+        return False
+
+def set_albyhub_backend(backend):
+    """
+    Set AlbyHub backend to 'lnd' or 'phoenixd'
+    Returns: (success, message)
+    """
+    if backend == "phoenixd":
+        if not is_phoenixd_available():
+            return (False, "phoenixd is not installed or not running. Please enable phoenixd first.")
+        
+        # Create phoenixd flag
+        try:
+            os.makedirs(os.path.dirname(PHOENIXD_FLAG), exist_ok=True)
+            open(PHOENIXD_FLAG, 'a').close()
+            return (True, "Backend switched to phoenixd")
+        except Exception as e:
+            return (False, f"Failed to set phoenixd backend: {str(e)}")
+    
+    elif backend == "lnd":
+        # Remove phoenixd flag
+        try:
+            if os.path.exists(PHOENIXD_FLAG):
+                os.remove(PHOENIXD_FLAG)
+            return (True, "Backend switched to LND")
+        except Exception as e:
+            return (False, f"Failed to set LND backend: {str(e)}")
+    
+    return (False, "Invalid backend specified")
+
+def requires_albyhub_reset(new_backend):
+    """Check if switching to new_backend requires data reset"""
+    current_backend = get_albyhub_backend()
+    return current_backend != new_backend
+
+def backup_albyhub_data():
+    """Create a backup of AlbyHub data"""
+    try:
+        import datetime
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_dir = f"/mnt/hdd/mynode/albyhub_backup_{timestamp}"
+        
+        if os.path.exists(ALBYHUB_DATA_DIR):
+            subprocess.run(['cp', '-r', ALBYHUB_DATA_DIR, backup_dir], check=True)
+            subprocess.run(['chown', '-R', 'bitcoin:bitcoin', backup_dir], check=True)
+            return (True, f"Backup created at {backup_dir}")
+        return (True, "No data to backup")
+    except Exception as e:
+        return (False, f"Backup failed: {str(e)}")
+
+def reset_albyhub_data():
+    """Reset AlbyHub data directory (warning: destructive!)"""
+    try:
+        if os.path.exists(ALBYHUB_DATA_DIR):
+            # Remove all files in the directory
+            for item in os.listdir(ALBYHUB_DATA_DIR):
+                item_path = os.path.join(ALBYHUB_DATA_DIR, item)
+                if os.path.isfile(item_path):
+                    os.remove(item_path)
+                elif os.path.isdir(item_path):
+                    subprocess.run(['rm', '-rf', item_path], check=True)
+        
+        # Recreate directory with proper permissions
+        os.makedirs(ALBYHUB_DATA_DIR, exist_ok=True)
+        subprocess.run(['chown', 'bitcoin:bitcoin', ALBYHUB_DATA_DIR], check=True)
+        return (True, "AlbyHub data reset successfully")
+    except Exception as e:
+        return (False, f"Failed to reset data: {str(e)}")
+4. Update existing albyhub.py
+Modify to add backend switching routes:
+# File: rootfs/standard/var/www/mynode/albyhub.py
+from flask import Blueprint, render_template, redirect, request, flash
+from user_management import check_logged_in
+from enable_disable_functions import *
+from device_info import *
+from application_info import *
+from systemctl_info import *
+import albyhub_utils
+import subprocess
+import os
+
+mynode_albyhub = Blueprint('mynode_albyhub',__name__)
+
+### Page functions (have prefix /app/<app name/)
+@mynode_albyhub.route("/info")
+def albyhub_page():
+    check_logged_in()
+    app = get_application("albyhub")
+    app_status = get_application_status("albyhub")
+    app_status_color = get_application_status_color("albyhub")
+    
+    # Get backend info
+    current_backend = albyhub_utils.get_albyhub_backend()
+    phoenixd_available = albyhub_utils.is_phoenixd_available()
+    
+    # Load page
+    templateData = {
+        "title": "myNode - " + app["name"],
+        "ui_settings": read_ui_settings(),
+        "app_status": app_status,
+        "app_status_color": app_status_color,
+        "app": app,
+        "current_backend": current_backend,
+        "phoenixd_available": phoenixd_available
+    }
+    return render_template('albyhub.html', **templateData)
+
+@mynode_albyhub.route("/switch-backend", methods=['POST'])
+def albyhub_switch_backend():
+    check_logged_in()
+    
+    new_backend = request.form.get('backend')
+    confirmed = request.form.get('confirmed') == 'true'
+    
+    if not new_backend or new_backend not in ['lnd', 'phoenixd']:
+        flash("Invalid backend selection", category="error")
+        return redirect("/app/albyhub/info")
+    
+    # Check if backend change is needed
+    if not albyhub_utils.requires_albyhub_reset(new_backend):
+        flash("Already using " + new_backend.upper() + " backend", category="message")
+        return redirect("/app/albyhub/info")
+    
+    # Require confirmation for data reset
+    if not confirmed:
+        flash("Please confirm that you want to switch backends. This will reset AlbyHub data!", category="error")
+        return redirect("/app/albyhub/info")
+    
+    # Create backup before switching
+    success, message = albyhub_utils.backup_albyhub_data()
+    if not success:
+        flash("Warning: " + message, category="warning")
+    else:
+        flash(message, category="message")
+    
+    # Reset AlbyHub data
+    success, message = albyhub_utils.reset_albyhub_data()
+    if not success:
+        flash("Failed to reset data: " + message, category="error")
+        return redirect("/app/albyhub/info")
+    
+    # Switch backend
+    success, message = albyhub_utils.set_albyhub_backend(new_backend)
+    if success:
+        # Restart AlbyHub service
+        restart_service("albyhub")
+        flash(message + ". AlbyHub is restarting with new backend...", category="message")
+    else:
+        flash("Failed to switch backend: " + message, category="error")
+    
+    return redirect("/app/albyhub/info")
+5. Create custom albyhub.html template
+Instead of using generic_app.html, create a custom template:
+<!-- File: rootfs/standard/var/www/mynode/templates/albyhub.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="main_page_header">
+    <div class="main_header">{{ app.name }}</div>
+</div>
+
+<div class="main_contents">
+    <!-- Status Section -->
+    <div class="settings_block">
+        <div class="settings_block_header">Status</div>
+        <div style="padding: 10px;">
+            <div>Service Status: <span style="color: {{ app_status_color }};">{{ app_status }}</span></div>
+            <div>Lightning Backend: <strong>{{ current_backend|upper }}</strong></div>
+        </div>
+    </div>
+
+    <!-- Backend Configuration -->
+    <div class="settings_block">
+        <div class="settings_block_header">Lightning Backend Configuration</div>
+        
+        <div style="padding: 10px;">
+            {% if not phoenixd_available %}
+            <div class="alert alert-warning" style="background-color: #fff3cd; border: 1px solid #ffc107; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
+                <strong>⚠️ Warning:</strong> phoenixd is not installed or not running. Only LND backend is available.
+            </div>
+            {% endif %}
+
+            <form method="POST" action="/app/albyhub/switch-backend" onsubmit="return confirmBackendSwitch()">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 10px;">
+                        <input type="radio" name="backend" value="lnd" 
+                               {% if current_backend == "lnd" %}checked{% endif %}
+                               style="margin-right: 8px;">
+                        <strong>LND</strong> (Default myNode Lightning Implementation)
+                    </label>
+                    
+                    <label style="display: block; margin-bottom: 10px;">
+                        <input type="radio" name="backend" value="phoenixd" 
+                               {% if current_backend == "phoenixd" %}checked{% endif %}
+                               {% if not phoenixd_available %}disabled{% endif %}
+                               style="margin-right: 8px;">
+                        <strong>phoenixd</strong> (Lightweight Phoenix Lightning Node)
+                        {% if not phoenixd_available %}<em>(Not Available)</em>{% endif %}
+                    </label>
+                </div>
+                
+                <input type="hidden" name="confirmed" id="confirmed" value="false">
+                
+                <div class="alert alert-danger" style="background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
+                    <strong>⚠️ IMPORTANT:</strong> Switching backends will <strong>reset all AlbyHub data</strong>.
+                    <ul style="margin: 10px 0 0 20px;">
+                        <li>A backup will be created automatically</li>
+                        <li>You will need to set up AlbyHub again</li>
+                        <li>All channels and balances will be lost</li>
+                    </ul>
+                </div>
+                
+                <button type="submit" class="ui-button ui-widget ui-corner-all" style="margin-top: 10px;">
+                    Switch Backend and Reset Data
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="settings_block">
+        <div class="settings_block_header">Quick Actions</div>
+        <div style="padding: 10px;">
+            <a href="http://{{ local_ip }}:3040" target="_blank" class="ui-button ui-widget ui-corner-all">
+                Open Alby Hub Interface
+            </a>
+            
+            <a href="/restart-service?service=albyhub&from=/app/albyhub/info" class="ui-button ui-widget ui-corner-all">
+                Restart Service
+            </a>
+        </div>
+    </div>
+
+    <!-- Application Info from generic template -->
+    <div class="settings_block">
+        <div class="settings_block_header">About {{ app.name }}</div>
+        <div style="padding: 10px;">
+            {{ app.description|safe }}
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmBackendSwitch() {
+    var currentBackend = "{{ current_backend }}";
+    var selectedBackend = document.querySelector('input[name="backend"]:checked').value;
+    
+    if (currentBackend === selectedBackend) {
+        alert("Already using " + currentBackend.toUpperCase() + " backend. No changes needed.");
+        return false;
+    }
+    
+    var backupInfo = "\n\n✓ A backup will be created automatically before switching.";
+    
+    var confirmed = confirm(
+        "⚠️  WARNING: DESTRUCTIVE ACTION  ⚠️\n\n" +
+        "Switching from " + currentBackend.toUpperCase() + " to " + 
+        selectedBackend.toUpperCase() + " will:\n\n" +
+        "• RESET all AlbyHub data\n" +
+        "• Remove all Lightning channels\n" +
+        "• Clear all wallet balances\n" +
+        "• Require complete AlbyHub setup again" +
+        backupInfo + "\n\n" +
+        "Are you absolutely sure you want to proceed?"
+    );
+    
+    if (confirmed) {
+        document.getElementById('confirmed').value = 'true';
+        return true;
+    }
+    return false;
+}
+</script>
+{% endblock %}
+Summary of Changes
+This implementation:
+1.	✅ Uses Taylor's env file approach - moves logic from service file to pre_albyhub.sh
+2.	✅ Preserves your phoenixd authentication - extracts password from phoenix.conf exactly as your current implementation
+3.	✅ Works with existing albyhub.py - extends it rather than replacing
+4.	✅ Python-based UI switching - all backend switching logic in Python utilities
+5.	✅ Proper safety checks - verifies phoenixd is running and config exists
+6.	✅ User warnings - clear destructive action warnings with confirmation
+7.	✅ Automatic backups - creates timestamped backup before switching
+8.	✅ Follows MyNode patterns - uses existing structures and conventions
+
