@@ -1097,7 +1097,9 @@
             <div class="settings_block_subheader">Custom Bitcoin Version</div>
             Advanced: To install a specific fork or patched version of Bitcoin, you can select an option from the list below.
             Installing a new version may take a long time and will reboot the device. To undo a previous change, select Default.
-            Using a custom version, may break other features and applications or require configuration changes to work properly.
+            Using a custom version may break other features and applications or require configuration changes to work properly.
+            <br/><br/>
+            Caution: Some custom versions may lead to a hard fork in Bitcoin which could result in lost Lightning funds. Only install versions you trust and are familiar with.
             <br/><br/>
             {% if debian_version < 12 %}
             <b>Note: </b>Some custom Bitcoin versions are not supported on Debian 11 or older. You can re-flash your OS drive to 
