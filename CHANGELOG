@@ -1,3 +1,11 @@
+=== v0.3.41 ===
+- Released 02/06/26
+- Add Public Pool UI Application
+- Add Public Pool Application (stratum server backend)
+- Add Bitcoin Knots + BIP110 Custom Bitcoin Version
+- Upgrade DATUM to v0.4.1
+- Upgrade AlbyHub to v1.20.0
+
 === v0.3.40 ===
 - Released 10/17/25
 - Revert Bitcoin config causing port 8333 issues
