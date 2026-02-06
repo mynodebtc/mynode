@@ -1098,8 +1098,14 @@
             Advanced: To install a specific fork or patched version of Bitcoin, you can select an option from the list below.
             Installing a new version may take a long time and will reboot the device. To undo a previous change, select Default.
             Using a custom version may break other features and applications or require configuration changes to work properly.
+            Only install versions you trust and are familiar with as misunderstandings or chain-splits could lead to lost funds. 
             <br/><br/>
-            "Caution: When BIP-110 activates, running an out-of-consensus software version could leave your node vulnerable to accepting invalid blocks, which could result in lost funds. Only install versions you trust and are familiar with."
+            MyNode is not responsible for any issues or lost funds resulting from using custom Bitcoin versions.
+            <br/><br/>
+            Version Info<br/>
+            <small>
+            - BIP-110: Will activate after block 965,664, even without network consensus. After activation, running an out-of-consensus software version will leave your node vulnerable to missing blocks or accepting invalid blocks, which could result in lost funds.
+            </small>
             <br/><br/>
             {% if debian_version < 12 %}
             <b>Note: </b>Some custom Bitcoin versions are not supported on Debian 11 or older. You can re-flash your OS drive to 
