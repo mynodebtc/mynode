@@ -42,6 +42,10 @@ fi
 curl -s "https://api.github.com/repos/bitcoinknots/guix.sigs/contents/builder-keys" |
 jq -r '.[].download_url' | while read url; do curl -s "$url" | gpg --import; done
 
+# Install BIP110 keys
+curl -s "https://api.github.com/repos/dathonohm/guix.sigs/contents/builder-keys" |
+jq -r '.[].download_url' | while read url; do curl -s "$url" | gpg --import; done
+
 # Custom re-install steps
 if [ "$APP" = "ordisrespector" ]; then
     apt-get install -y build-essential libtool autotools-dev automake pkg-config bsdmainutils python3
@@ -223,9 +227,9 @@ elif [ "$APP" = "knots_29_2_2" ]; then
 
     cd ~
 elif [ "$APP" = "bip110" ]; then
-    BTC_UPGRADE_URL=https://github.com/dathonohm/bitcoin/releases/download/v29.2.knots20251110%2Bbip110-v0.1rc3/bitcoin-29.2.knots20251110+bip110-v0.1rc3-$ARCH.tar.gz
-    BTC_SHASUM=https://raw.githubusercontent.com/dathonohm/guix.sigs/refs/heads/bip110/29.2.knots20251110%2Bbip110-v0.1rc3/dathonohm/all.SHA256SUMS
-    BTC_ASC=https://raw.githubusercontent.com/dathonohm/guix.sigs/refs/heads/bip110/29.2.knots20251110%2Bbip110-v0.1rc3/dathonohm/all.SHA256SUMS.asc
+    BTC_UPGRADE_URL=https://github.com/dathonohm/bitcoin/releases/download/v29.2.knots20251110%2Bbip110-v0.1/bitcoin-29.2.knots20251110+bip110-v0.1-$ARCH.tar.gz
+    BTC_SHASUM=https://github.com/dathonohm/bitcoin/releases/download/v29.2.knots20251110%2Bbip110-v0.1/SHA256SUMS
+    BTC_ASC=https://github.com/dathonohm/bitcoin/releases/download/v29.2.knots20251110%2Bbip110-v0.1/SHA256SUMS.asc
 
     rm -rf /opt/download
     mkdir -p /opt/download
@@ -233,10 +237,10 @@ elif [ "$APP" = "bip110" ]; then
 
     # Download, install and verify
     wget $BTC_UPGRADE_URL $BTC_SHASUM $BTC_ASC
-    gpg --verify all.SHA256SUMS.asc all.SHA256SUMS
-    sha256sum -c all.SHA256SUMS --ignore-missing
-    tar -xvf bitcoin-29.2.knots20251110+bip110-v0.1rc3-$ARCH.tar.gz
-    mv bitcoin-29.2.knots20251110+bip110-v0.1rc3 bitcoin
+    gpg --verify SHA256SUMS.asc SHA256SUMS
+    sha256sum -c SHA256SUMS --ignore-missing
+    tar -xvf bitcoin-29.2.knots20251110+bip110-v0.1-$ARCH.tar.gz
+    mv bitcoin-29.2.knots20251110+bip110-v0.1 bitcoin
     install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
 
     echo "bip110" > /home/bitcoin/.mynode/bitcoin_version
