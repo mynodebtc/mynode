@@ -428,6 +428,53 @@ if [ "$CURRENT" != "$BTC_VERSION" ]; then
     fi
 fi
 
+if [ "$CURRENT" == "bip110" ]; then
+    # Fix - check if custom name is in bitcoin version and clear custom files
+    # Fixes issue if SD card was reflashed, but custom bitcoin version had been installed prior
+    # and we still have custom marker files on the data drive. This install may fail, but subsequent
+    # attempts will succeed.
+    if [[ "$BTC_VERSION" = *"knots"* ]] || [[ "$BTC_VERSION" = *"ordisrespector"* ]]; then
+        rm -f /home/bitcoin/.mynode/bitcoin_version_latest_custom
+        rm -f /mnt/hdd/mynode/settings/bitcoin_version_latest_custom
+    fi
+
+    # Fetch GPG keys again in case the asc file has been updated
+    curl -s "https://api.github.com/repos/dathonohm/guix.sigs/contents/builder-keys" |
+    jq -r '.[].download_url' | while read url; do curl -s "$url" | gpg --import; done
+
+    # Redefine download URLs
+    BTC_UPGRADE_URL=https://github.com/dathonohm/bitcoin/releases/download/v29.2.knots20251110%2Bbip110-v0.1/bitcoin-29.2.knots20251110+bip110-v0.1-$ARCH.tar.gz
+    BTC_UPGRADE_SHA256SUM_URL=https://github.com/dathonohm/bitcoin/releases/download/v29.2.knots20251110%2Bbip110-v0.1/SHA256SUMS
+    BTC_UPGRADE_SHA256SUM_ASC_URL=https://github.com/dathonohm/bitcoin/releases/download/v29.2.knots20251110%2Bbip110-v0.1/SHA256SUMS.asc
+
+    # Download and install Bitcoin
+    rm -rf /opt/download
+    mkdir -p /opt/download
+    cd /opt/download
+
+    wget $BTC_UPGRADE_URL
+    wget $BTC_UPGRADE_SHA256SUM_URL -O SHA256SUMS
+    wget $BTC_UPGRADE_SHA256SUM_ASC_URL -O SHA256SUMS.asc
+
+    sha256sum --ignore-missing --check SHA256SUMS
+    if [ $? == 0 ]; then
+        gpg --verify SHA256SUMS.asc SHA256SUMS |& grep "gpg: Good signature"
+        if [ $? == 0 ]; then
+            # Install Bitcoin
+            tar -xvf bitcoin-29.2.knots20251110+bip110-v0.1-$ARCH.tar.gz
+            mv bitcoin-29.2.knots20251110+bip110-v0.1 bitcoin
+            install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
+
+            # Mark current version
+            echo $BTC_VERSION > $BTC_VERSION_FILE
+        else
+            echo "ERROR UPGRADING BITCOIN - GPG FAILED"
+        fi
+    else
+        echo "ERROR UPGRADING BITCOIN - SHASUM FAILED"
+    fi
+fi
+
 # Upgrade LND
 echo "Upgrading LND..."
 LND_ARCH="lnd-linux-armv7"
