@@ -227,9 +227,9 @@ elif [ "$APP" = "knots_29_2_2" ]; then
 
     cd ~
 elif [ "$APP" = "bip110" ]; then
-    BTC_UPGRADE_URL=https://github.com/dathonohm/bitcoin/releases/download/v29.2.knots20251110%2Bbip110-v0.1/bitcoin-29.2.knots20251110+bip110-v0.1-$ARCH.tar.gz
-    BTC_SHASUM=https://github.com/dathonohm/bitcoin/releases/download/v29.2.knots20251110%2Bbip110-v0.1/SHA256SUMS
-    BTC_ASC=https://github.com/dathonohm/bitcoin/releases/download/v29.2.knots20251110%2Bbip110-v0.1/SHA256SUMS.asc
+    BTC_UPGRADE_URL=https://github.com/dathonohm/bitcoin/releases/download/v29.3.knots20260210%2Bbip110-v0.3/bitcoin-29.3.knots20260210+bip110-v0.3-$ARCH.tar.gz
+    BTC_SHASUM=https://github.com/dathonohm/bitcoin/releases/download/v29.3.knots20260210%2Bbip110-v0.3/SHA256SUMS
+    BTC_ASC=https://github.com/dathonohm/bitcoin/releases/download/v29.3.knots20260210%2Bbip110-v0.3/SHA256SUMS.asc
 
     rm -rf /opt/download
     mkdir -p /opt/download
@@ -239,8 +239,8 @@ elif [ "$APP" = "bip110" ]; then
     wget $BTC_UPGRADE_URL $BTC_SHASUM $BTC_ASC
     gpg --verify SHA256SUMS.asc SHA256SUMS
     sha256sum -c SHA256SUMS --ignore-missing
-    tar -xvf bitcoin-29.2.knots20251110+bip110-v0.1-$ARCH.tar.gz
-    mv bitcoin-29.2.knots20251110+bip110-v0.1 bitcoin
+    tar -xvf bitcoin-29.3.knots20260210+bip110-v0.3-$ARCH.tar.gz
+    mv bitcoin-29.3.knots20260210+bip110-v0.3 bitcoin
     install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
 
     echo "bip110" > /home/bitcoin/.mynode/bitcoin_version
