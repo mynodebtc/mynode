@@ -1017,6 +1017,9 @@ def reset_docker():
     os.system("rm -f /mnt/hdd/mynode/settings/webssh2_version")
     os.system("rm -f /mnt/hdd/mynode/settings/mempool_version")
     os.system("rm -f /mnt/hdd/mynode/settings/dojo_version")
+    os.system("rm -f /mnt/hdd/mynode/settings/jam_version")
+    os.system("rm -f /home/bitcoin/.mynode/lnbits_version")
+    os.system("rm -f /mnt/hdd/mynode/settings/albyhub_version")
 
     # Delete Dojo files
     os.system("rm -rf /opt/download/dojo")
