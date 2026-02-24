@@ -45,6 +45,7 @@ def reinstall_app(app):
         # Reboot
         reboot_device()
 
+# For Legacy Apps (dynamic apps use remove_app)
 def uninstall_app(app):
     # Make sure app is disabled
     disable_service(app)
@@ -62,6 +63,7 @@ def uninstall_app(app):
     # Sync
     os.system("sync")
 
+# For Dynamic Apps (legacy apps use uninstall_app)
 def remove_app(app):
     # Remove install markers
     clear_app_installed(app)
