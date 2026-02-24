@@ -413,10 +413,16 @@ fi
 [ -d /usr/local/lib/python2.7/dist-packages ] && echo "/var/pynode" > /usr/local/lib/python2.7/dist-packages/pynode.pth
 [ -d /usr/local/lib/python3.7/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.7/site-packages/pynode.pth
 [ -d /usr/local/lib/python3.8/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.8/site-packages/pynode.pth
+[ -d /usr/local/lib/python3.11/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.11/site-packages/pynode.pth
 
 
 # Install Python3 specific tools
 pip3 install --upgrade pip wheel setuptools
+
+# PyYAML Workaround (maybe only needed for python 3.10+)
+#echo 'Cython < 3.0' > /tmp/constraint.txt
+#PIP_CONSTRAINT=/tmp/constraint.txt pip3 wheel PyYAML==5.4.1
+#pip3 install 'PyYAML==5.4.1'
 
 pip3 install -r $TMP_INSTALL_PATH/usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir || \
     pip3 install -r $TMP_INSTALL_PATH/usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir --use-deprecated=html5lib
