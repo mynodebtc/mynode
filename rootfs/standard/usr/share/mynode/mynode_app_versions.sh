@@ -210,6 +210,10 @@ RATHOLE_LATEST_VERSION_FILE=/home/bitcoin/.mynode/rathole_version_latest
 
 # Dependency versions
 PYTHON_VERSION="3.8.9"
+#PYTHON_VERSION="3.11.14"   # New python needed once JoinMarket goes past v0.9.11
+if [ "$DEBIAN_VERSION" -lt "12" ]; then
+    PYTHON_VERSION="3.8.9"
+fi
 
 PYTHON_ARM32_GRPCIO_VERSION="1.40.0"
 

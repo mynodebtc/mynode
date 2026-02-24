@@ -259,6 +259,7 @@ if ! skip_base_upgrades ; then
         ./configure
         make -j4
         make install
+        #make altinstall # Installs version, but doesn't become default python3
 
         # Mark apps using python as needing re-install
         rm -f /home/bitcoin/.mynode/specter_version
@@ -275,6 +276,7 @@ if ! skip_base_upgrades ; then
     [ -d /usr/local/lib/python2.7/dist-packages ] && echo "/var/pynode" > /usr/local/lib/python2.7/dist-packages/pynode.pth
     [ -d /usr/local/lib/python3.7/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.7/site-packages/pynode.pth
     [ -d /usr/local/lib/python3.8/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.8/site-packages/pynode.pth
+    [ -d /usr/local/lib/python3.11/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.11/site-packages/pynode.pth
 
     # Remove old python files so new copies are used (files migrated to pynode)
     set +x
@@ -766,8 +768,24 @@ if should_install_app "joininbox" ; then
                 JM_ENV_VARS="export JM_PYTHON=python3.7; "
             fi
 
-            # Install
+            # Patch JoininBox
+            if [ "$JOININBOX_VERSION" == "v0.8.4" ]; then
+                sed -i '219i\
+\
+  # PATCHING JM FOR OLDER LIBSODIUM (MYNODE) \
+  sed -i "s|libsodium-1.0.18|libsodium-1.0.20|g" /home/joinmarket/joinmarket-clientserver/install.sh \
+  sed -i "s|6f504490b342a4f8a4c4a02fc9b866cbef8622d5df4e5452b46be121e46636c1|ebb65ef6ca439333c2bb41a0c1990587288da07f6c7fd07cb3a18cc18d30ce19|g" /home/joinmarket/joinmarket-clientserver/install.sh \
+' /home/joinmarket/install.joinmarket.sh
+            fi
+            
+            # Install latest joinmarket commit to pick up bug fix preventing proper intall
+            # https://github.com/mynodebtc/mynode/issues/991
+            #sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket.sh --install commit" || true
+            
+            # Install version as expected from joininbox
             sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket.sh --install install" || true
+
+            # Install joinmarket-api
             sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket-api.sh on" || true            
             
             # Enable obwatcher service
