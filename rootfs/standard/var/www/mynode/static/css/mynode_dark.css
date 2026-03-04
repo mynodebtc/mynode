@@ -135,6 +135,10 @@ th td {
     color: #222 !important;
 }
 
+.marketplace_button {
+    color: #222 !important;
+}
+
 .loading_spinner_overlay {
     color: #ddd;
     background-color: #303841;
