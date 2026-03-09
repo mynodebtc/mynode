@@ -1,3 +1,10 @@
+=== v0.3.42 ===
+- Released 03/08/26
+- Fix bug with JoinMarket v0.9.11 installation
+- Fix config issue causing slow Electrs sync with Knots
+- Update Knots + BIP Custom Version to v0.3
+- Improve Marketplace button color in dark mode
+
 === v0.3.41 ===
 - Released 02/06/26
 - Add Public Pool UI Application
