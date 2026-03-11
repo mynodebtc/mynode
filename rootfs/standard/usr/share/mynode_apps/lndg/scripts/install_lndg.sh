@@ -24,11 +24,11 @@ virtualenv -p python3 .venv
 .venv/bin/pip install supervisor
 
 # Patch to store file locally
-sed -i 's|/usr/local/etc/supervisord.conf|/opt/mynode/lndg/.venv/supervisord.conf|g' initialize.py
-sed -i 's|lndg-admin|admin|g' initialize.py
+sed -i 's|/usr/local/supervisord.conf|/opt/mynode/lndg/.venv/supervisord.conf|g' initialize.py
+#sed -i 's|lndg-admin|admin|g' initialize.py
 
 # Init LNDg
-.venv/bin/python initialize.py --lnddir=/mnt/hdd/mynode/lnd --adminpw=bolt -wn -dx -sd --sduser=lndg
+.venv/bin/python initialize.py --lnddir=/mnt/hdd/mynode/lnd --adminuser=admin --adminpw=bolt -wn -dx -sd --sduser=lndg
 
 # Patch supervisord config
 mkdir -p logs
@@ -36,7 +36,10 @@ sed -i 's|/var/log|/opt/mynode/lndg/logs|g' .venv/supervisord.conf
 sed -i 's|/var/supervisord.pid|/tmp/supervisord.pid|g' .venv/supervisord.conf
 sed -i 's|"python|".venv/bin/python|g' .venv/supervisord.conf
 
-# Patch Django
+# Patch Python - Set GUI to use new log location
+sed -i 's|/var/log|/opt/mynode/lndg/logs|g' gui/views.py
+
+# Patch Python - Update Django Settings
 echo "" >> lndg/settings.py
 echo "SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')" >> lndg/settings.py
 
