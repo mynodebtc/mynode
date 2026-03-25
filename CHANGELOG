@@ -1,8 +1,15 @@
 === v0.3.42 ===
+- Released 03/24/26
+- Upgrade Bitcoin to v29.3
+- Upgrade LND to v0.20.1
+- Upgrade LNDg to v1.10.1
+- Update Knots + BIP 110 Custom Version to v0.4.1
+
+=== v0.3.42 ===
 - Released 03/08/26
 - Fix bug with JoinMarket v0.9.11 installation
 - Fix config issue causing slow Electrs sync with Knots
-- Update Knots + BIP Custom Version to v0.3
+- Update Knots + BIP 110 Custom Version to v0.3
 - Improve Marketplace button color in dark mode
 
 === v0.3.41 ===
