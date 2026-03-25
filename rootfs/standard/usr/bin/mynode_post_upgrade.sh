@@ -366,6 +366,23 @@ fi
 
 # Upgrade BTC
 echo "Upgrading BTC..."
+
+# Auto-update Bitcoin Knots if user selected "Latest Knots"
+if [ -f /home/bitcoin/.mynode/bitcoin_custom_knots_latest ] || [ -f /mnt/hdd/mynode/settings/bitcoin_custom_knots_latest ]; then
+    CURRENT_KNOTS=""
+    if [ -f $BTC_VERSION_FILE ]; then
+        CURRENT_KNOTS=$(cat $BTC_VERSION_FILE)
+    fi
+    if [ "$CURRENT_KNOTS" != "$KNOTS_LATEST_VERSION_STRING" ]; then
+        echo "Auto-updating Bitcoin Knots to latest version ($KNOTS_LATEST_VERSION_STRING)..."
+        set +e
+        /usr/bin/mynode-install-custom-bitcoin "$KNOTS_LATEST_APP" --no-reboot --auto-update
+        set -e
+        # Re-source app versions to pick up updated custom version files
+        source /usr/share/mynode/mynode_app_versions.sh
+    fi
+fi
+
 ARCH="UNKNOWN"
 if [ $IS_RASPI = 1 ]; then
     ARCH="arm-linux-gnueabihf"

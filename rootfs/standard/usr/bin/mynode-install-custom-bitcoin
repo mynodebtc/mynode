@@ -8,10 +8,28 @@ source /usr/share/mynode/mynode_app_versions.sh
 
 # Make sure we have an app argument
 if [ "$#" -lt 1 ]; then
-    echo "Usage: mynode-install-custom-bitcoin <app_name>"
+    echo "Usage: mynode-install-custom-bitcoin <app_name> [--no-reboot] [--auto-update]"
     exit 1
 fi
 APP="$1"
+NO_REBOOT=0
+AUTO_UPDATE=0
+shift
+for arg in "$@"; do
+    if [ "$arg" = "--no-reboot" ]; then
+        NO_REBOOT=1
+    fi
+    if [ "$arg" = "--auto-update" ]; then
+        AUTO_UPDATE=1
+    fi
+done
+
+# Clear knots_latest auto-update marker unless this is a knots_latest or auto-update invocation.
+# This ensures that explicitly selecting a specific version disables auto-update.
+if [ "$APP" != "knots_latest" ] && [ $AUTO_UPDATE -eq 0 ]; then
+    rm -f /home/bitcoin/.mynode/bitcoin_custom_knots_latest
+    rm -f /mnt/hdd/mynode/settings/bitcoin_custom_knots_latest
+fi
 
 # Stop services so we have plenty of RAM
 /usr/bin/mynode_stop_critical_services.sh
@@ -248,6 +266,18 @@ elif [ "$APP" = "knots_29_3" ]; then
     echo "29.3-knots" > /mnt/hdd/mynode/settings/bitcoin_version_latest_custom
 
     cd ~
+elif [ "$APP" = "knots_latest" ]; then
+    # Set marker file indicating user wants auto-update to latest Knots
+    touch /home/bitcoin/.mynode/bitcoin_custom_knots_latest
+    mkdir -p /mnt/hdd/mynode/settings
+    touch /mnt/hdd/mynode/settings/bitcoin_custom_knots_latest
+
+    # Re-invoke with the actual latest Knots version, preserving flags
+    EXTRA_ARGS="--auto-update"
+    if [ $NO_REBOOT -eq 1 ]; then
+        EXTRA_ARGS="$EXTRA_ARGS --no-reboot"
+    fi
+    exec /usr/bin/mynode-install-custom-bitcoin "$KNOTS_LATEST_APP" $EXTRA_ARGS
 elif [ "$APP" = "bip110" ]; then
     BTC_UPGRADE_URL=https://github.com/dathonohm/bitcoin/releases/download/v29.3.knots20260210%2Bbip110-v0.4.1/bitcoin-29.3.knots20260210+bip110-v0.4.1-$ARCH.tar.gz
     BTC_SHASUM=https://github.com/dathonohm/bitcoin/releases/download/v29.3.knots20260210%2Bbip110-v0.4.1/SHA256SUMS
@@ -285,5 +315,9 @@ fi
 
 sync
 echo "Install Complete!"
-echo "Rebooting..."
-reboot
+if [ $NO_REBOOT -eq 1 ]; then
+    echo "Skipping reboot (--no-reboot)"
+else
+    echo "Rebooting..."
+    reboot
+fi

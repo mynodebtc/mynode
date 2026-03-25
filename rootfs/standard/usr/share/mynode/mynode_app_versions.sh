@@ -24,6 +24,10 @@ BTC_VERSION=$(get_app_version "$BTC_VERSION" "bitcoin")
 BTC_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version
 BTC_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version_latest
 
+# Latest Knots version definition (used for knots_latest auto-update)
+KNOTS_LATEST_APP="knots_29_3"
+KNOTS_LATEST_VERSION_STRING="29.3-knots"
+
 LND_VERSION="v0.20.1-beta"
 LND_VERSION=$(get_app_version "$LND_VERSION" "lnd")
 LND_VERSION_FILE=/home/bitcoin/.mynode/lnd_version
