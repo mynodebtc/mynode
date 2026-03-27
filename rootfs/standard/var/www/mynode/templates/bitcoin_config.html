@@ -16,15 +16,17 @@
 
         <div class="text_block">
             <h3>Additional Bitcoin Config</h3>
-            You can add extra config to the bottom of the automatically generated Bitcoin config here. Invalid config may have adverse effects and it may confict with other settings and cause issues.
+            You can add extra config to the top or bottom of the automatically generated Bitcoin config here. Invalid config may have adverse effects and it may confict with other settings and cause issues.
             <br/><br/>
             Saving will reboot your device.
-            <br/>
-        </div>
+            <br/><br/>
 
-        <div class="centered_text_div">
             <form action="/bitcoin/config" method="POST">
-                <textarea class="config_textarea_short" name="extra_bitcoin_config" id="extra_bitcoin_config">{{ extra_bitcoin_config }}</textarea>
+                <b>Pre Bitcoin Config</b>
+                <textarea class="config_textarea_short" name="pre_bitcoin_config" id="pre_bitcoin_config">{{ pre_bitcoin_config }}</textarea>
+                <br/><br/>
+                <b>Post Bitcoin Config</b>
+                <textarea class="config_textarea_short" name="post_bitcoin_config" id="post_bitcoin_config">{{ post_bitcoin_config }}</textarea>
                 <br/><br/>
                 <input class="ui-button ui-widget ui-corner-all" type="submit" value="Save"/>
             </form>

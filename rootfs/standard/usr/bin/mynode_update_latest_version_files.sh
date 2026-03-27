@@ -2,6 +2,10 @@
 
 source /usr/share/mynode/mynode_app_versions.sh
 
+################################################################
+# LEGACY APPS ONLY - DYNAMIC APPS DO NOT NEED TO BE ADDED HERE #
+################################################################
+
 echo $BTC_VERSION > $BTC_LATEST_VERSION_FILE
 echo $LND_VERSION > $LND_LATEST_VERSION_FILE
 echo $LOOP_VERSION > $LOOP_LATEST_VERSION_FILE
@@ -32,3 +36,7 @@ echo $NETDATA_VERSION > $NETDATA_LATEST_VERSION_FILE
 echo $WEBSSH2_VERSION > $WEBSSH2_LATEST_VERSION_FILE
 echo $PYBLOCK_VERSION > $PYBLOCK_LATEST_VERSION_FILE
 echo $WARDENTERMINAL_VERSION > $WARDENTERMINAL_LATEST_VERSION_FILE
+
+################################################################
+# LEGACY APPS ONLY - DYNAMIC APPS DO NOT NEED TO BE ADDED HERE #
+################################################################

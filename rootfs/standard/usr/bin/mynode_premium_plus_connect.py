@@ -35,6 +35,7 @@ def get_premium_plus_device_info():
     info["device_type"] = get_device_type()
     info["device_arch"] = get_device_arch()
     info["debian_version"] = get_debian_version()
+    info["debian_codename"] = get_debian_codename()
     info["drive_size"] = get_mynode_drive_size()
     info["data_drive_usage"] = get_data_drive_usage()
     info["os_drive_usage"] = get_os_drive_usage()
@@ -76,26 +77,33 @@ def connect_success_handler_watchtower(connect_response_data):
     try:
         settings = get_premium_plus_settings()
         if "watchtower_uri" in connect_response_data:
-            w = connect_response_data["watchtower_uri"]
-            parts = w.split("@")
-            pubkey = parts[0]
+            premium_plus_watchtower_uri = connect_response_data["watchtower_uri"]
+            parts = premium_plus_watchtower_uri.split("@")
+            premium_plus_watchtower_pubkey = parts[0]
             output = run_lncli_command("lncli wtclient towers")
             info = json.loads(output)
             towers = info["towers"]
             
-            found_watchtower = False
-            for t in towers:
-                #log_message("EXISTING TOWER: {} active={}".format(t["pubkey"], t["active_session_candidate"]))
-                if t["pubkey"] == pubkey and t["active_session_candidate"] == True:
-                    if settings["watchtower"]:
-                        log_message("Found Premium+ Tower")
-                    else:
-                        log_message("Removing Premium+ Tower {}".format(pubkey))
-                        run_lncli_command("lncli wtclient remove {}".format(pubkey))
-                    found_watchtower = True
-            if not found_watchtower:
-                log_message("Adding Premium+ Tower {}".format(w))
-                run_lncli_command("lncli wtclient add {}".format(w))
+            if settings["watchtower"]:
+                # Looking for P+ watchtower to add if missing
+                found_watchtower = False
+                for t in towers:
+                    for addr in t["addresses"]:
+                        #log_message("EXISTING TOWER: {}@{} active={}".format(t["pubkey"], addr, t["active_session_candidate"]))
+                        t_uri = "{}@{}".format(t["pubkey"], addr)
+                        if premium_plus_watchtower_uri == t_uri and t["active_session_candidate"] == True:
+                            found_watchtower = True
+                            log_message("Found Premium+ Tower")
+                if not found_watchtower:
+                    log_message("Adding Premium+ Tower {}".format(premium_plus_watchtower_uri))
+                    run_lncli_command("lncli wtclient add {}".format(premium_plus_watchtower_uri))
+            else:
+                # Look for P+ watchtower to remove it
+                for t in towers:
+                    if premium_plus_watchtower_pubkey == t["pubkey"] and t["active_session_candidate"] == True:
+                        log_message("Removing Premium+ Tower {}".format(premium_plus_watchtower_pubkey))
+                        run_lncli_command("lncli wtclient remove {}".format(premium_plus_watchtower_pubkey))
+
     except Exception as e:
         log_message("connect_success_handler_watchtower exception: {}".format(str(e)))
 

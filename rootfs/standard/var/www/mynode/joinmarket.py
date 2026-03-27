@@ -28,7 +28,7 @@ def get_jm_wallets():
 
 def get_joinmarket_version():
     version = "not_found"
-    package_info_file = "/home/joinmarket/joinmarket-clientserver/jmclient/joinmarketclient.egg-info/PKG-INFO"
+    package_info_file = "/home/joinmarket/joinmarket-clientserver/src/joinmarket.egg-info/PKG-INFO"
     try:
         if os.path.isfile(package_info_file):
             with open(package_info_file, 'r') as f:

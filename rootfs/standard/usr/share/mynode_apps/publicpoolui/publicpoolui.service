@@ -1,0 +1,29 @@
+# publicpoolui service
+# /etc/systemd/system/publicpoolui.service
+
+[Unit]
+Description=publicpoolui
+Wants=www.service docker_images.service
+After=www.service docker_images.service
+
+[Service]
+WorkingDirectory=/opt/mynode/publicpoolui
+
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_publicpoolui.sh ]; then /bin/bash /usr/bin/service_scripts/pre_publicpoolui.sh; fi'
+ExecStart=ng serve --host 0.0.0.0
+ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_publicpoolui.sh ]; then /bin/bash /usr/bin/service_scripts/post_publicpoolui.sh; fi'
+#ExecStop=FILL_IN_EXECSTOP_AND_UNCOMMENT_IF_NEEDED
+
+User=bitcoin
+Group=bitcoin
+Type=simple
+TimeoutSec=120
+Restart=always
+RestartSec=60
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=publicpoolui
+
+[Install]
+WantedBy=multi-user.target

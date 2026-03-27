@@ -16,12 +16,15 @@ function get_app_version()
     echo "$version"
 }
 
-BTC_VERSION="26.1"
+BTC_VERSION="29.3"
+if [ "$DEBIAN_VERSION" -lt "12" ]; then
+    BTC_VERSION="27.2"
+fi
 BTC_VERSION=$(get_app_version "$BTC_VERSION" "bitcoin")
 BTC_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version
 BTC_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version_latest
 
-LND_VERSION="v0.17.4-beta"
+LND_VERSION="v0.20.1-beta"
 LND_VERSION=$(get_app_version "$LND_VERSION" "lnd")
 LND_VERSION_FILE=/home/bitcoin/.mynode/lnd_version
 LND_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnd_version_latest
@@ -29,7 +32,7 @@ LND_UPGRADE_MANIFEST_URL=https://github.com/lightningnetwork/lnd/releases/downlo
 LND_UPGRADE_MANIFEST_ROASBEEF_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-roasbeef-$LND_VERSION.sig
 LND_UPGRADE_MANIFEST_GUGGERO_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-guggero-$LND_VERSION.sig
 
-LOOP_VERSION="v0.28.1-beta"
+LOOP_VERSION="v0.31.1-beta"
 LOOP_VERSION=$(get_app_version "$LOOP_VERSION" "loop")
 LOOP_VERSION_FILE=/home/bitcoin/.mynode/loop_version
 LOOP_LATEST_VERSION_FILE=/home/bitcoin/.mynode/loop_version_latest
@@ -44,7 +47,7 @@ POOL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/pool_version_latest
 POOL_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/manifest-$POOL_VERSION.txt
 POOL_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/manifest-$POOL_VERSION.sig
 
-LIT_VERSION="v0.12.2-alpha"
+LIT_VERSION="v0.13.3-alpha"
 LIT_VERSION=$(get_app_version "$LIT_VERSION" "lit")
 LIT_VERSION_FILE=/home/bitcoin/.mynode/lit_version
 LIT_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lit_version_latest
@@ -58,11 +61,14 @@ CHANTOOLS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/chantools_version_latest
 CHANTOOLS_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/chantools/releases/download/$CHANTOOLS_VERSION/manifest-$CHANTOOLS_VERSION.txt
 CHANTOOLS_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/chantools/releases/download/$CHANTOOLS_VERSION/manifest-$CHANTOOLS_VERSION.sig
 
-ELECTRS_VERSION="v0.9.9"
+ELECTRS_VERSION="v0.10.9"
+if [ "$IS_32_BIT" = "1" ]; then
+    ELECTRS_VERSION="v0.9.9"
+fi
 ELECTRS_VERSION_FILE=/home/bitcoin/.mynode/electrs_version
 ELECTRS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/electrs_version_latest
 
-MEMPOOL_VERSION="v2.5.0"
+MEMPOOL_VERSION="v3.2.1"
 if [ "$IS_32_BIT" = "1" ]; then
     MEMPOOL_VERSION="v2.3.1"
 fi
@@ -86,7 +92,7 @@ CORSPROXY_VERSION=$(get_app_version "$CORSPROXY_VERSION" "corsproxy")
 CORSPROXY_VERSION_FILE=/home/bitcoin/.mynode/corsproxy_version
 CORSPROXY_LATEST_VERSION_FILE=/home/bitcoin/.mynode/corsproxy_version_latest
 
-JOININBOX_VERSION="v0.8.1"
+JOININBOX_VERSION="v0.8.4"
 JOININBOX_VERSION=$(get_app_version "$JOININBOX_VERSION" "joininbox")
 JOININBOX_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version
 JOININBOX_LATEST_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version_latest
@@ -113,6 +119,7 @@ fi
 DOJO_VERSION_FILE=/mnt/hdd/mynode/settings/dojo_version
 DOJO_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/dojo_version_latest
 
+# Requies NodeJS at v18.19.0+ to go past v0.15.0
 RTL_VERSION="v0.15.0"
 RTL_VERSION=$(get_app_version "$RTL_VERSION" "rtl")
 RTL_VERSION_FILE=/home/bitcoin/.mynode/rtl_version
@@ -131,17 +138,20 @@ BTCRPCEXPLORER_VERSION=$(get_app_version "$BTCRPCEXPLORER_VERSION" "btcrpcexplor
 BTCRPCEXPLORER_VERSION_FILE=/home/bitcoin/.mynode/btcrpcexplorer_version
 BTCRPCEXPLORER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/btcrpcexplorer_version_latest
 
-LNBITS_VERSION="0.12.5"
+LNBITS_VERSION="v1.2.1"
 LNBITS_VERSION=$(get_app_version "$LNBITS_VERSION" "lnbits")
 LNBITS_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version
 LNBITS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version_latest
 
-SPECTER_VERSION="1.14.1"
+SPECTER_VERSION="2.1.1"
+if [ "$DEBIAN_VERSION" -lt "12" ]; then
+    SPECTER_VERSION="1.14.1"
+fi
 SPECTER_VERSION=$(get_app_version "$SPECTER_VERSION" "specter")
 SPECTER_VERSION_FILE=/home/bitcoin/.mynode/specter_version
 SPECTER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/specter_version_latest
 
-THUNDERHUB_VERSION="v0.13.30"
+THUNDERHUB_VERSION="v0.13.32"
 THUNDERHUB_VERSION=$(get_app_version "$THUNDERHUB_VERSION" "thunderhub")
 THUNDERHUB_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version
 THUNDERHUB_LATEST_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version_latest
@@ -200,13 +210,17 @@ RATHOLE_LATEST_VERSION_FILE=/home/bitcoin/.mynode/rathole_version_latest
 
 # Dependency versions
 PYTHON_VERSION="3.8.9"
+#PYTHON_VERSION="3.11.14"   # New python needed once JoinMarket goes past v0.9.11
+if [ "$DEBIAN_VERSION" -lt "12" ]; then
+    PYTHON_VERSION="3.8.9"
+fi
 
 PYTHON_ARM32_GRPCIO_VERSION="1.40.0"
 
 NODE_JS_VERSION="18.x"
 NODE_NPM_VERSION="^8.1.0"
 
-RUST_VERSION="1.56.1"
+RUST_VERSION="1.86.0"
 
 GO_VERSION="1.19.4"
 GO_VERSION_FILE=/home/bitcoin/.mynode/go_version

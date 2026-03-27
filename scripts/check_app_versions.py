@@ -19,7 +19,7 @@ priority_apps = [\
     {"name": "apotdevin/thunderhub",                    "current_version_variable": "THUNDERHUB_VERSION"},
     {"name": "openoms/joininbox",                       "current_version_variable": "JOININBOX_VERSION"},
     {"name": "joinmarket-webui/jam",                    "dynamic_app_name":         "jam"},
-    #{"name": "dojo/samourai-dojo",                      "current_version_variable": "DOJO_VERSION"}, # REMOVED
+    {"name": "OCEAN-xyz/datum_gateway",                 "dynamic_app_name":         "datum"},
 ]
 other_apps = [\
     {"name": "lightninglabs/chantools",                 "current_version_variable": "CHANTOOLS_VERSION"},

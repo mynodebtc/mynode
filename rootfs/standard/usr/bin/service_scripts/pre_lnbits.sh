@@ -9,12 +9,17 @@ if [ ! -f /mnt/hdd/mynode/lnbits/.env ]; then
 fi
 
 # Force update of LNBits config file (increment to force new update)
-# LNBITS_CONFIG_UPDATE_NUM=1
-# if [ ! -f /mnt/hdd/mynode/lnbits/update_config_$LNBITS_CONFIG_UPDATE_NUM ]; then
-#     cp -f /usr/share/mynode/lnbits.env /mnt/hdd/mynode/lnbits/.env
-#     chown bitcoin:bitcoin /mnt/hdd/mynode/lnbits/.env
-#     touch /mnt/hdd/mynode/lnbits/update_config_$LNBITS_CONFIG_UPDATE_NUM
-# fi
+LNBITS_CONFIG_UPDATE_NUM=1
+if [ ! -f /mnt/hdd/mynode/lnbits/update_config_$LNBITS_CONFIG_UPDATE_NUM ]; then
+    cp -f /usr/share/mynode/lnbits.env /mnt/hdd/mynode/lnbits/.env
+    chown bitcoin:bitcoin /mnt/hdd/mynode/lnbits/.env
+    touch /mnt/hdd/mynode/lnbits/update_config_$LNBITS_CONFIG_UPDATE_NUM
+fi
+
+# Make folder for persistent extensions
+if [ ! -d "/mnt/hdd/mynode/lnbits/extensions" ]; then
+    mkdir -p "/mnt/hdd/mynode/lnbits/extensions"
+fi
 
 # Generate hex macaroons
 #macaroonAdminHex=$(xxd -ps -u -c 1000 /mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon)

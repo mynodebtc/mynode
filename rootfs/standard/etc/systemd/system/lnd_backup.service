@@ -16,8 +16,8 @@ Restart=always
 RestartSec=1
 User=bitcoin
 Group=bitcoin
-StandardOutput=syslog
-StandardError=syslog
+StandardOutput=journal
+StandardError=journal
 SyslogIdentifier=lndbackup
 
 [Install]

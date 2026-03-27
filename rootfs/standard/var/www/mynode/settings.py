@@ -1,6 +1,5 @@
 from config import *
 from flask import Blueprint, render_template, session, abort, Markup, request, redirect, url_for, flash
-from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from bitcoin import is_bitcoin_synced
 from bitcoin_info import using_bitcoin_custom_config
 from lightning_info import using_lnd_custom_config, restart_lnd
@@ -68,6 +67,7 @@ def page_settings():
         "device_type": get_device_type(),
         "device_arch": get_device_arch(),
         "debian_version": get_debian_version(),
+        "debian_codename": get_debian_codename(),
         "device_ram": device_ram,
         "swap_size": get_swap_size(),
         "check_in_data": get_check_in_data(),
@@ -98,6 +98,7 @@ def page_settings():
         "electrs_tx_lookup_limit": get_electrs_index_lookup_limit(),
         "btcrpcexplorer_token_enabled": is_btcrpcexplorer_token_enabled(),
         "is_i2p_enabled": is_service_enabled("i2pd"),
+        "is_ipv6_enabled": not settings_file_exists("ipv6_disabled"),
         "is_btc_ipv4_enabled": settings_file_exists("btc_ipv4_enabled"),
         "is_btc_tor_enabled": settings_file_exists("btc_tor_enabled"),
         "is_btc_i2p_enabled": settings_file_exists("btc_i2p_enabled"),
@@ -196,6 +197,7 @@ def page_status():
         "device_type": get_device_type(),
         "device_arch": get_device_arch(),
         "debian_version": get_debian_version(),
+        "debian_codename": get_debian_codename(),
         "device_ram": device_ram,
         "check_in_data": get_check_in_data(),
         "product_key": product_key,
@@ -265,10 +267,13 @@ def page_status():
         #"docker_image_build_status_log": docker_image_build_status_log,
         "docker_image_build_status": get_docker_image_build_status(),
         "docker_image_build_status_color": get_docker_image_build_status_color(),
-        #"joinmarket_api_status_log": get_journalctl_log("joinmarket-api"),
         "joininbox_installed": is_installed("joininbox"),
+        #"joinmarket_api_status_log": get_journalctl_log("joinmarket-api"),
         "joinmarket_api_status": get_service_status_basic_text("joinmarket-api"),
         "joinmarket_api_status_color": get_service_status_color("joinmarket-api"),
+        #"joinmarket_obwatcher_status_log": get_journalctl_log("ob-watcher"),
+        "joinmarket_obwatcher_status": get_service_status_basic_text("ob-watcher"),
+        "joinmarket_obwatcher_status_color": get_service_status_color("ob-watcher"),
         #"whirlpool_status_log": get_journalctl_log("whirlpool"),
         "whirlpool_installed": is_installed("whirlpool"),
         "whirlpool_status": get_service_status_basic_text("whirlpool"),
@@ -299,8 +304,8 @@ def page_status():
         "premium_plus_connect_status": get_service_status_basic_text("premium_plus_connect"),
         "premium_plus_connect_status_color": get_service_status_color("premium_plus_connect"),
         #"rathole_status_log": get_journalctl_log("rathole"),
-        "rathole_status": get_service_status_basic_text("rathole"),
-        "rathole_status_color": get_service_status_color("rathole"),
+        #"rathole_status": get_service_status_basic_text("rathole"),
+        #"rathole_status_color": get_service_status_color("rathole"),
         #"corsproxy_status_log": get_journalctl_log("corsproxy"),
         "corsproxy_status": get_service_status_basic_text("corsproxy_btcrpc"),
         "corsproxy_status_color": get_service_status_color("corsproxy_btcrpc"),
@@ -593,14 +598,40 @@ def reset_thunderhub_config_page():
     flash("Thunderhub Configuration Reset", category="message")
     return redirect("/settings")
 
-@mynode_settings.route("/settings/delete-lnbits-settings")
-def delete_lnbits_settings_page():
+@mynode_settings.route("/settings/reset-lnbits-super_user-pwd")
+def reset_lnbits_super_user_pwd_page():
+    check_logged_in()
+    if is_service_enabled("lnbits"):
+        def reset_password():
+            try:
+                reset_lnbits_super_user_pwd()
+            except Exception as err:
+                flash(f"Error resetting LNbits super_user password: {err}", category="error")
+
+        # Start Timer for delayed execution
+        t = Timer(1.0, reset_password)
+        t.start()
+
+        # Fetch user information using the new helper function
+        try:
+            super_user_id, super_user_username = fetch_super_user_info()
+            flash(f'LNbits super_user "{super_user_username}" password set to "securebolt"', category="message")
+        except Exception as err:
+            flash(f"Error fetching LNbits super_user info: {err}", category="error")
+
+    else:
+        flash(f"LNbits super_user changes are possible only when service is active.", category="message")
+
+    return redirect("/settings")
+
+@mynode_settings.route("/settings/reset-lnbits-data")
+def reset_lnbits_data_page():
     check_logged_in()
 
-    t = Timer(1.0, delete_lnbits_settings)
+    t = Timer(1.0, reset_lnbits_data)
     t.start()
 
-    flash("LNbits Settings Deleted", category="message")
+    flash("LNbits Data Deleted", category="message")
     return redirect("/settings")
 
 @mynode_settings.route("/settings/reset-specter-config")
@@ -1203,6 +1234,8 @@ def page_toggle_setting():
     else:
         flash("Error Updating Setting", category="error")
         return redirect("/settings")
+    
+    custom_settings_file_handler(name, (enable == "1"))
 
     # Restart service if necessary
     service_to_restart = request.args.get('restart_service')

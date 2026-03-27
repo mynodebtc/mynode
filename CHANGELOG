@@ -1,3 +1,117 @@
+=== v0.3.42 ===
+- Released 03/24/26
+- Upgrade Bitcoin to v29.3
+- Upgrade LND to v0.20.1
+- Upgrade LNDg to v1.10.1
+- Update Knots + BIP 110 Custom Version to v0.4.1
+
+=== v0.3.42 ===
+- Released 03/08/26
+- Fix bug with JoinMarket v0.9.11 installation
+- Fix config issue causing slow Electrs sync with Knots
+- Update Knots + BIP 110 Custom Version to v0.3
+- Improve Marketplace button color in dark mode
+
+=== v0.3.41 ===
+- Released 02/06/26
+- Add Public Pool UI Application
+- Add Public Pool Application (stratum server backend)
+- Add Bitcoin Knots + BIP110 Custom Bitcoin Version
+- Upgrade DATUM to v0.4.1
+- Upgrade AlbyHub to v1.20.0
+
+=== v0.3.40 ===
+- Released 10/17/25
+- Revert Bitcoin config causing port 8333 issues
+
+=== v0.3.39 ===
+- Released 10/15/25
+- Upgrade Bitcoin v29.1
+- Add Bitcoin Knots v29.2
+- Upgrade LNBits to v1.2.1
+
+=== v0.3.38 ===
+- Released 09/06/25
+- Add AlbyHub v0.19.3
+- Add Bitcoin Knots v29.1
+- Upgrade LND to v0.19.3
+- Upgrade Datum to v0.4.0
+- Upgrade Joininbox to v0.8.4
+- Upgrade Jam to v0.4.0
+- Update default JoinMarket servers to improve connections
+- Fix issue with viewing JoinMarket order book
+- Various bug fixes
+
+=== v0.3.37 ===
+- Released 07/11/25
+- Upgrade LND to v0.19.1
+- Upgrade Thunderhub to v0.13.32
+- Upgrade Specter to v2.1.1
+- Upgrade Loop to v0.31.1
+- Better handling of some 64-bit platforms
+- Fixes Specter with Bitcoin v0.28+
+- Various bug fixes
+
+=== v0.3.36 ===
+- Released 05/09/25
+- Upgrade Bitcoin to v0.28.1
+- Upgrade LND to v0.18.5
+- Upgrade Mempool to v3.2.1
+- Upgrade LNbits to v0.12.12
+- Add support for Raspberry Pi 5 Compute Module
+- Enable Admin UI for LNbits
+- Upgrade Rust to v1.86.0
+- Improve support for NVMe USB Adapters
+- Fix for Glances v4.0
+- Various bug fixes
+
+=== v0.3.35 ===
+- Released 03/29/25
+- Add Datum Gateway v0.3.1
+- Add Bitcoin Knots v28.1
+- Upgrade Tailscale to v1.78.1
+- Change references from SD Card to OS Drive
+- Fix possible issue with Mempool file permissions
+- Minor speed improvements
+- Minor bug fixes
+
+=== v0.3.34 ===
+- Released 02/27/25
+- Fix issue launching Mempool
+- Fix upgrade issue on Buster
+- Fix display of bitcoin peer ping time to correct value
+- Fix issue with Price Ticker price not being found
+
+=== v0.3.33 ===
+- Released 02/17/25
+- Resolve python exception issue
+
+=== v0.3.32 ===
+- Released 12/30/24
+- Add NVMe support to Clone Tool
+- Disable UAS on Raspbery Pi 5 devices
+- Resolve issue launching JAM
+- Resolve issue installing LNDg
+
+=== v0.3.31 ===
+- Released 10/05/24
+- Upgrade LND to v0.18.3
+- Upgrade LiT to v0.13.3
+- Upgrade Loop to v0.28.7
+- Upgrade Mempool to v3.0.0
+- Upgrade Thunderhub to v0.13.31
+- Add Bitcoin Knots 27.1
+
+=== v0.3.30 ===
+- Released 07/04/24
+- Upgrade Bitcoin to v27.1
+- Upgrade LND to v0.18.1
+- Upgrade Loop to v0.28.5
+- Upgrade Lightning Terminal to v0.13.1
+- Add option to enable/disable IPv6
+- Device info efficiency improvements
+- Bug fixes
+
 === v0.3.29 ===
 - Released 05/23/24
 - Add Bitcoin Knots v26.1

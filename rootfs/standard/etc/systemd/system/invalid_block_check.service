@@ -15,8 +15,8 @@ TimeoutSec=120
 Restart=always
 RestartSec=30
 Nice=5
-StandardOutput=syslog
-StandardError=syslog
+StandardOutput=journal
+StandardError=journal
 SyslogIdentifier=bitcoin
 
 [Install]

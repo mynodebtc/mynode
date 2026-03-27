@@ -24,7 +24,6 @@ from electrum_server import *
 from lnd import mynode_lnd, lnd_wallet_exists, is_lnd_logged_in, lnd_get, get_lnd_status
 from settings import *
 from pprint import pprint
-from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from background_thread import BackgroundThread
 from prometheus_client.parser import text_string_to_metric_families
 from bitcoin_info import *
@@ -171,8 +170,8 @@ def index():
     elif status == STATE_ROOTFS_READ_ONLY:
         templateData = {
             "title": "Error",
-            "header_text": "SD Card Error",
-            "subheader_text": "The root filesystem is read only. Your SD card may be corrupt.",
+            "header_text": "OS Drive Error",
+            "subheader_text": "The root filesystem is read only. Your SD card or USB thumdrive may be corrupt.",
             "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)

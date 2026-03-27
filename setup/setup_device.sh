@@ -30,8 +30,8 @@ IS_64_BIT=0
 IS_UNKNOWN=0
 DEVICE_TYPE="unknown"
 MODEL=$(cat /proc/device-tree/model) || IS_UNKNOWN=1
-DEBIAN_VERSION=$(lsb_release -c -s) || DEBIAN_VERSION="unknown"
-uname -a | grep amd64 && IS_X86=1 && IS_64_BIT=1 && IS_UNKNOWN=0 || true
+DEBIAN_CODENAME=$(lsb_release -c -s) || DEBIAN_CODENAME="unknown"
+uname -a | grep -E 'amd64|x86_64' && IS_X86=1 && IS_64_BIT=1 && IS_UNKNOWN=0 || true
 if [[ $MODEL == *"Rock64"* ]]; then
     IS_ARMBIAN=1
     IS_ROCK64=1
@@ -54,7 +54,7 @@ elif [[ $MODEL == *"Raspberry Pi 4"* ]]; then
         IS_32_BIT=0
         IS_64_BIT=1
     fi
-elif [[ $MODEL == *"Raspberry Pi 5"* ]]; then
+elif [[ $MODEL == *"Raspberry Pi 5"* || $MODEL == *"Raspberry Pi Compute Module 5"* ]]; then
     IS_RASPI=1
     IS_RASPI5=1
     IS_ARM64=1
@@ -205,10 +205,13 @@ apt-get -y update --allow-releaseinfo-change
 apt-get -y install apt-transport-https curl gnupg ca-certificates
 # Tor (arm32 support was dropped)
 if [ $IS_64_BIT = 1 ]; then
-    grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
-    grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+    grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list
+    grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list
 fi
-if [ "$DEBIAN_VERSION" = "buster" ]; then
+if [ "$DEBIAN_CODENAME" = "buster" ]; then
+    # Migrate buster repos to archive
+    sed -i 's|deb.debian.org/debian|archive.debian.org/debian|g' /etc/apt/sources.list
+
     # Migrate old buster backports to archive
     sed -i 's|deb.debian.org/debian buster-backports|archive.debian.org/debian buster-backports|g' /etc/apt/sources.list
     # Add backports repo
@@ -221,11 +224,10 @@ fi
 curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
 curl https://keybase.io/bitconner/pgp_keys.asc | gpg --import
 curl https://keybase.io/guggero/pgp_keys.asc | gpg --import # Pool
-curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
+curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/refs/heads/master/pubkeys/AdamGibson-LOST-Aug-2024.asc | gpg --import # JoinMarket
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys E777299FC265DD04793070EB944D35F9AC3DB76A # Bitcoin - Michael Ford (fanquake)
 curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
-curl https://samouraiwallet.com/pgp.txt | gpg --import # two keys from Samourai team
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E # Loop (abosworth)
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 9FC6B0BFD597A94DBF09708280E5375C094198D8 # Loop (bhandras)
 gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 26984CB69EB8C4A26196F7A4D7D916376026F177 # Lightning Terminal
@@ -268,20 +270,21 @@ apt-get -y install sqlite3 libsqlite3-dev torsocks python3-requests libsystemd-d
 apt-get -y install libjpeg-dev zlib1g-dev psmisc hexyl libbz2-dev liblzma-dev netcat-openbsd
 apt-get -y install hdparm iotop nut obfs4proxy libpq-dev socat btrfs-progs i2pd apparmor pass
 apt-get -y install gdisk xxd
+apt-get -y install cmake pkgconf libcurl4-openssl-dev libjansson-dev libmicrohttpd-dev libsodium-dev
 
 # Install Java
 apt-get -y install default-jre
 
 # Install packages dependent on Debian release
-if [ "$DEBIAN_VERSION" == "bullseye" ]; then
+if [ "$DEBIAN_CODENAME" == "bullseye" ]; then
     apt-get -y install wireguard
-elif [ "$DEBIAN_VERSION" == "bookworm" ]; then
+elif [ "$DEBIAN_CODENAME" == "bookworm" ]; then
     apt-get -y install wireguard
-elif [ "$DEBIAN_VERSION" == "buster" ]; then
+elif [ "$DEBIAN_CODENAME" == "buster" ]; then
     apt-get -y -t buster-backports install wireguard
 else
     echo "========================================="
-    echo "== UNKNOWN DEBIAN VERSION: $DEBIAN_VERSION"
+    echo "== UNKNOWN DEBIAN VERSION: $DEBIAN_CODENAME"
     echo "== SOME APPS MAY NOT WORK PROPERLY"
     echo "========================================="
 fi
@@ -324,6 +327,8 @@ apt-get clean
 
 # Update users
 usermod -a -G debian-tor bitcoin
+usermod -a -G debian-tor joinmarket
+usermod -a -G debian-tor admin
 
 # Make admin a member of bitcoin
 adduser admin bitcoin
@@ -408,10 +413,16 @@ fi
 [ -d /usr/local/lib/python2.7/dist-packages ] && echo "/var/pynode" > /usr/local/lib/python2.7/dist-packages/pynode.pth
 [ -d /usr/local/lib/python3.7/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.7/site-packages/pynode.pth
 [ -d /usr/local/lib/python3.8/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.8/site-packages/pynode.pth
+[ -d /usr/local/lib/python3.11/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.11/site-packages/pynode.pth
 
 
 # Install Python3 specific tools
 pip3 install --upgrade pip wheel setuptools
+
+# PyYAML Workaround (maybe only needed for python 3.10+)
+#echo 'Cython < 3.0' > /tmp/constraint.txt
+#PIP_CONSTRAINT=/tmp/constraint.txt pip3 wheel PyYAML==5.4.1
+#pip3 install 'PyYAML==5.4.1'
 
 pip3 install -r $TMP_INSTALL_PATH/usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir || \
     pip3 install -r $TMP_INSTALL_PATH/usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir --use-deprecated=html5lib
@@ -451,21 +462,24 @@ usermod -aG docker root
 # Install node packages
 npm install -g pug-cli browserify uglify-js babel-cli
 npm install -g npm@$NODE_NPM_VERSION
-npm install -g yarn
+npm install -g yarn @quasar/cli @angular/cli
 
 # Install Log2Ram
 if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
-    cd /tmp
-    rm -rf log2ram*
-    wget https://github.com/azlux/log2ram/archive/v1.2.2.tar.gz -O log2ram.tar.gz
-    tar -xvf log2ram.tar.gz
-    mv log2ram-* log2ram
-    cd log2ram
-    chmod +x install.sh
-    service log2ram stop
-    ./install.sh
-    cd ~
+    if [ ! -f /usr/local/bin/log2ram ]; then
+        cd /tmp
+        rm -rf log2ram* || true
+        wget https://github.com/azlux/log2ram/archive/v1.2.2.tar.gz -O log2ram.tar.gz
+        tar -xvf log2ram.tar.gz
+        mv log2ram-* log2ram
+        cd log2ram
+        chmod +x install.sh
+        service log2ram stop || true
+        ./install.sh || true
+        cd ~
+    fi
 fi
+
 
 # Remove existing MOTD login info
 rm -rf /etc/motd
@@ -1057,7 +1071,7 @@ systemctl enable rotate_logs
 systemctl enable corsproxy_btcrpc
 systemctl enable usb_extras
 systemctl enable ob-watcher
-systemctl enable rathole
+#systemctl enable rathole
 
 
 # Disable services

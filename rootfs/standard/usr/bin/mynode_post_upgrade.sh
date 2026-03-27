@@ -1,5 +1,6 @@
 #!/bin/bash
 
+source /usr/share/mynode/mynode_device_info.sh
 source /usr/share/mynode/mynode_config.sh
 source /usr/share/mynode/mynode_functions.sh
 source /usr/share/mynode/mynode_app_versions.sh
@@ -61,17 +62,24 @@ if ! skip_base_upgrades ; then
 
     # Add sources
     apt-get -y install apt-transport-https
-    DEBIAN_VERSION=$(lsb_release -c | awk '{ print $2 }')
     # Tor (arm32 support was dropped)
     if [ $IS_64_BIT = 1 ]; then
-        grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
-        grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+        grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list
+        grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list
+    fi
+    if [ "$DEBIAN_CODENAME" = "buster" ]; then
+        # Disable tor repo on buster
+        sed -i '/^deb https:\/\/deb.torproject.org/d' /etc/apt/sources.list
+        sed -i '/^deb-src https:\/\/deb.torproject.org/d' /etc/apt/sources.list
     fi
     if [ -f /mnt/hdd/mynode/settings/tor_repo_disabled ]; then
         sed -i '/^deb https:\/\/deb.torproject.org/d' /etc/apt/sources.list
         sed -i '/^deb-src https:\/\/deb.torproject.org/d' /etc/apt/sources.list
     fi
-    if [ "$DEBIAN_VERSION" = "buster" ]; then
+    if [ "$DEBIAN_CODENAME" = "buster" ]; then
+        # Migrate buster repos to archive
+        sed -i 's|deb.debian.org/debian|archive.debian.org/debian|g' /etc/apt/sources.list
+
         # Migrate old buster backports to archive
         sed -i 's|deb.debian.org/debian buster-backports|archive.debian.org/debian buster-backports|g' /etc/apt/sources.list
         # Add backports repo
@@ -82,8 +90,8 @@ if ! skip_base_upgrades ; then
 
     # Raspbian mirrors
     #if [ $IS_RASPI = 1 ]; then
-    #    grep -qxF "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
-    #    grep -qxF "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_VERSION} main" /etc/apt/sources.list  || echo "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
+    #    grep -qxF "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_CODENAME} main" /etc/apt/sources.list  || echo "deb http://plug-mirror.rcac.purdue.edu/raspbian/ ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list
+    #    grep -qxF "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_CODENAME} main" /etc/apt/sources.list  || echo "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list
     #fi
 
     # Import Keys
@@ -91,7 +99,7 @@ if ! skip_base_upgrades ; then
     curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
     curl https://keybase.io/bitconner/pgp_keys.asc | gpg --import
     curl https://keybase.io/guggero/pgp_keys.asc | gpg --import # Pool
-    curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/master/pubkeys/AdamGibson.asc | gpg --import
+    curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/refs/heads/master/pubkeys/AdamGibson-LOST-Aug-2024.asc | gpg --import # JoinMarket
     gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
     gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys E777299FC265DD04793070EB944D35F9AC3DB76A # Bitcoin - Michael Ford (fanquake)
     curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
@@ -133,20 +141,21 @@ if ! skip_base_upgrades ; then
     $TORIFY apt-get -y install torsocks python3-requests libsystemd-dev libjpeg-dev zlib1g-dev psmisc
     $TORIFY apt-get -y install hexyl libbz2-dev liblzma-dev netcat-openbsd hdparm iotop nut obfs4proxy
     $TORIFY apt-get -y install libpq-dev socat btrfs-progs i2pd apparmor pass gdisk xxd
+    $TORIFY apt-get -y install cmake pkgconf libcurl4-openssl-dev libjansson-dev libmicrohttpd-dev libsodium-dev
 
     # Install Java
     $TORIFY apt-get -y install default-jre
 
     # Install software specific to debian version
-    if [ "$DEBIAN_VERSION" == "bullseye" ]; then
+    if [ "$DEBIAN_CODENAME" == "bullseye" ]; then
         apt-get -y install wireguard
-    elif [ "$DEBIAN_VERSION" == "bookworm" ]; then
+    elif [ "$DEBIAN_CODENAME" == "bookworm" ]; then
         apt-get -y install wireguard
-    elif [ "$DEBIAN_VERSION" == "buster" ]; then
+    elif [ "$DEBIAN_CODENAME" == "buster" ]; then
         $TORIFY apt-get -y -t buster-backports install wireguard
     else
         echo "========================================="
-        echo "== UNKNOWN DEBIAN VERSION: $DEBIAN_VERSION"
+        echo "== UNKNOWN DEBIAN VERSION: $DEBIAN_CODENAME"
         echo "== SOME APPS MAY NOT WORK PROPERLY"
         echo "========================================="
     fi
@@ -250,6 +259,7 @@ if ! skip_base_upgrades ; then
         ./configure
         make -j4
         make install
+        #make altinstall # Installs version, but doesn't become default python3
 
         # Mark apps using python as needing re-install
         rm -f /home/bitcoin/.mynode/specter_version
@@ -266,6 +276,7 @@ if ! skip_base_upgrades ; then
     [ -d /usr/local/lib/python2.7/dist-packages ] && echo "/var/pynode" > /usr/local/lib/python2.7/dist-packages/pynode.pth
     [ -d /usr/local/lib/python3.7/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.7/site-packages/pynode.pth
     [ -d /usr/local/lib/python3.8/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.8/site-packages/pynode.pth
+    [ -d /usr/local/lib/python3.11/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.11/site-packages/pynode.pth
 
     # Remove old python files so new copies are used (files migrated to pynode)
     set +x
@@ -281,6 +292,11 @@ if ! skip_base_upgrades ; then
 
     # Install any pip3 software
     pip3 install --upgrade pip setuptools wheel || pip3 install --upgrade pip setuptools wheel --use-deprecated=html5lib
+    
+    # PyYAML Workaround (maybe only needed for python 3.10+)
+    #echo 'Cython < 3.0' > /tmp/constraint.txt
+    #PIP_CONSTRAINT=/tmp/constraint.txt pip3 wheel PyYAML==5.4.1
+    #pip3 install 'PyYAML==5.4.1'
     
     pip3 install -r /usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir || \
         pip3 install -r /usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir --use-deprecated=html5lib
@@ -316,7 +332,7 @@ if ! skip_base_upgrades ; then
 
     # Update NPM (Node Package Manager)
     #npm install -g npm@$NODE_NPM_VERSION
-    npm install -g yarn @quasar/cli
+    npm install -g yarn @quasar/cli @angular/cli
     
     # Install Docker
     mkdir -p /etc/apt/keyrings
@@ -373,6 +389,15 @@ if [ -f $BTC_VERSION_FILE ]; then
     CURRENT=$(cat $BTC_VERSION_FILE)
 fi
 if [ "$CURRENT" != "$BTC_VERSION" ]; then
+    # Fix - check if custom name is in bitcoin version and clear custom files
+    # Fixes issue if SD card was reflashed, but custom bitcoin version had been installed prior
+    # and we still have custom marker files on the data drive. This install may fail, but subsequent
+    # attempts will succeed.
+    if [[ "$BTC_VERSION" = *"knots"* ]] || [[ "$BTC_VERSION" = *"bip110"* ]] || [[ "$BTC_VERSION" = *"ordisrespector"* ]]; then
+        rm -f /home/bitcoin/.mynode/bitcoin_version_latest_custom
+        rm -f /mnt/hdd/mynode/settings/bitcoin_version_latest_custom
+    fi
+
     # Download and install Bitcoin
     rm -rf /opt/download
     mkdir -p /opt/download
@@ -404,6 +429,7 @@ if [ "$CURRENT" != "$BTC_VERSION" ]; then
         echo "ERROR UPGRADING BITCOIN - SHASUM FAILED"
     fi
 fi
+
 
 # Upgrade LND
 echo "Upgrading LND..."
@@ -742,8 +768,24 @@ if should_install_app "joininbox" ; then
                 JM_ENV_VARS="export JM_PYTHON=python3.7; "
             fi
 
-            # Install
+            # Patch JoininBox
+            if [ "$JOININBOX_VERSION" == "v0.8.4" ]; then
+                sed -i '219i\
+\
+  # PATCHING JM FOR OLDER LIBSODIUM (MYNODE) \
+  sed -i "s|libsodium-1.0.18|libsodium-1.0.20|g" /home/joinmarket/joinmarket-clientserver/install.sh \
+  sed -i "s|6f504490b342a4f8a4c4a02fc9b866cbef8622d5df4e5452b46be121e46636c1|ebb65ef6ca439333c2bb41a0c1990587288da07f6c7fd07cb3a18cc18d30ce19|g" /home/joinmarket/joinmarket-clientserver/install.sh \
+' /home/joinmarket/install.joinmarket.sh
+            fi
+            
+            # Install latest joinmarket commit to pick up bug fix preventing proper intall
+            # https://github.com/mynodebtc/mynode/issues/991
+            #sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket.sh --install commit" || true
+            
+            # Install version as expected from joininbox
             sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket.sh --install install" || true
+
+            # Install joinmarket-api
             sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket-api.sh on" || true            
             
             # Enable obwatcher service
@@ -841,12 +883,19 @@ if should_install_app "specter" ; then
         chown -R bitcoin:bitcoin specter
         cd specter
 
+        SPECTER_PYTHON_VER=python3.11
+        if [ "$DEBIAN_VERSION" -lt "12" ]; then
+            # Use default python to get 3.8
+            SPECTER_PYTHON_VER=python3
+        fi
+
         # Make venv
         if [ ! -d env ]; then
-            sudo -u bitcoin python3 -m venv env
+            sudo -u bitcoin $SPECTER_PYTHON_VER -m venv env
         fi
         source env/bin/activate
         pip3 install ecdsa===0.13.3
+        pip3 install "sqlalchemy<2" # Needed for 2.1.1
         pip3 install cryptoadvance.specter===$SPECTER_VERSION --upgrade
         deactivate
 
@@ -1059,28 +1108,28 @@ if should_install_app "bos" ; then
 fi
 
 # Install Rathole proxy
-RATHOLEARCH="armv7-unknown-linux-musleabihf"
-if [ $IS_X86 = 1 ]; then
-    RATHOLEARCH="x86_64-unknown-linux-musl"
-elif [ "$DEVICE_ARCH" == "aarch64" ]; then
-    RATHOLEARCH="aarch64-unknown-linux-musl"
-fi
-RATHOLE_UPGRADE_URL=https://github.com/rapiz1/rathole/releases/download/$RATHOLE_VERSION/rathole-$RATHOLEARCH.zip
-CURRENT=""
-if [ -f $RATHOLE_VERSION_FILE ]; then
-    CURRENT=$(cat $RATHOLE_VERSION_FILE)
-fi
-if [ "$CURRENT" != "$RATHOLE_VERSION" ]; then
-    rm -rf /opt/download
-    mkdir -p /opt/download
-    cd /opt/download
-    wget $RATHOLE_UPGRADE_URL -O rathole.zip
-    unzip rathole.zip
-    rm rathole.zip
-    install -o root -g root -t /usr/local/bin rathole
+# RATHOLEARCH="armv7-unknown-linux-musleabihf"
+# if [ $IS_X86 = 1 ]; then
+#     RATHOLEARCH="x86_64-unknown-linux-musl"
+# elif [ "$DEVICE_ARCH" == "aarch64" ]; then
+#     RATHOLEARCH="aarch64-unknown-linux-musl"
+# fi
+# RATHOLE_UPGRADE_URL=https://github.com/rapiz1/rathole/releases/download/$RATHOLE_VERSION/rathole-$RATHOLEARCH.zip
+# CURRENT=""
+# if [ -f $RATHOLE_VERSION_FILE ]; then
+#     CURRENT=$(cat $RATHOLE_VERSION_FILE)
+# fi
+# if [ "$CURRENT" != "$RATHOLE_VERSION" ]; then
+#     rm -rf /opt/download
+#     mkdir -p /opt/download
+#     cd /opt/download
+#     wget $RATHOLE_UPGRADE_URL -O rathole.zip
+#     unzip rathole.zip
+#     rm rathole.zip
+#     install -o root -g root -t /usr/local/bin rathole
 
-    echo $RATHOLE_VERSION > $RATHOLE_VERSION_FILE
-fi
+#     echo $RATHOLE_VERSION > $RATHOLE_VERSION_FILE
+# fi
 
 # Install Log2Ram
 if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
@@ -1106,7 +1155,7 @@ touch /home/bitcoin/.mynode/install_vpn
 # Init dynamic apps, so any new applications are picked up before reboot
 mynode-manage-apps init || true
 
-# Upgrade Dyanmic Applications
+# Upgrade Dynamic Applications
 mynode-manage-apps upgrade || true
 
 
@@ -1174,7 +1223,7 @@ systemctl enable pool
 systemctl enable rotate_logs
 systemctl enable corsproxy_btcrpc
 systemctl enable usb_extras
-systemctl enable rathole
+#systemctl enable rathole
 
 # Disable any old services
 systemctl disable bitcoind > /dev/null 2>&1 || true

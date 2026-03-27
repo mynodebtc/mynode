@@ -211,6 +211,8 @@ Log notice stdout
 ControlPort 9051
 CookieAuthentication 1
 CookieAuthFileGroupReadable 1
+CacheDirectoryGroupReadable 1
+CookieAuthFile /var/run/tor/control.authcookie
 
 UseEntryGuards 1
 NumEntryGuards 3

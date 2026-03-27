@@ -17,8 +17,8 @@ ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStart=/usr/bin/mynode_quicksync.sh
 User=bitcoin
 Group=bitcoin
-StandardOutput=syslog
-StandardError=syslog
+StandardOutput=journal
+StandardError=journal
 SyslogIdentifier=mynode_quicksync
 
 [Install]

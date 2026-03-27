@@ -2,7 +2,6 @@ import subprocess
 import psutil
 import os
 from config import *
-from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from bitcoin_info import *
 from lightning_info import *
 from device_info import *
@@ -58,28 +57,32 @@ def update_device_info():
         cpu_info = psutil.cpu_times_percent(interval=5.0, percpu=False)
         cpu_usage = "{:.1f}%".format(100.0 - cpu_info.idle)
 
-        # Update every 24 hrs (start at ~5 min)
-        if device_info_call_count % (60*24) == 5:
-            os_drive_usage_details = ""
-            os_drive_usage_details += "<small>"
-            os_drive_usage_details += "<b>App Storage</b><br/>"
-            os_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /opt/mynode/", ignore_failure=True) + "</pre><br/>"
-            os_drive_usage_details += "<b>User Storage</b><br/>"
-            os_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /home/", ignore_failure=True) + "</pre><br/>"
-            os_drive_usage_details += "<b>Rust Toolchain Storage</b><br/>"
-            if os.path.isdir("/root/.cargo/"):
-                os_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /root/.cargo/", ignore_failure=True) + "</pre><br/>"
-            if os.path.isdir("/home/admin/.cargo/"):
-                os_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /home/admin/.cargo/", ignore_failure=True) + "</pre><br/>"
-            os_drive_usage_details += "</small>"
+        # Update every 3 days (72 hrs) (start at ~15 min)
+        if device_info_call_count % (60*24*3) == 15:
+            if not os.path.isfile(BITCOIN_SYNCED_FILE):
+                os_drive_usage_details = "<small>Waiting on Bitcoin sync...</small>"
+                data_drive_usage_details = "<small>Waiting on Bitcoin sync...</small>"
+            else:
+                os_drive_usage_details = ""
+                os_drive_usage_details += "<small>"
+                os_drive_usage_details += "<b>App Storage</b><br/>"
+                os_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /opt/mynode/", ignore_failure=True) + "</pre><br/>"
+                os_drive_usage_details += "<b>User Storage</b><br/>"
+                os_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /home/", ignore_failure=True) + "</pre><br/>"
+                os_drive_usage_details += "<b>Rust Toolchain Storage</b><br/>"
+                if os.path.isdir("/root/.cargo/"):
+                    os_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /root/.cargo/", ignore_failure=True) + "</pre><br/>"
+                if os.path.isdir("/home/admin/.cargo/"):
+                    os_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /home/admin/.cargo/", ignore_failure=True) + "</pre><br/>"
+                os_drive_usage_details += "</small>"
 
-            data_drive_usage_details = ""
-            data_drive_usage_details += "<small>"
-            data_drive_usage_details += "<b>Disk Format</b>"
-            data_drive_usage_details += "<p>" + get_current_drive_filesystem_type() + "</p>"
-            data_drive_usage_details += "<b>Data Storage</b><br/>"
-            data_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /mnt/hdd/mynode/", ignore_failure=True) + "</pre><br/>"
-            data_drive_usage_details += "</small>"
+                data_drive_usage_details = ""
+                data_drive_usage_details += "<small>"
+                data_drive_usage_details += "<b>Disk Format</b>"
+                data_drive_usage_details += "<p>" + get_current_drive_filesystem_type() + "</p>"
+                data_drive_usage_details += "<b>Data Storage</b><br/>"
+                data_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /mnt/hdd/mynode/", ignore_failure=True) + "</pre><br/>"
+                data_drive_usage_details += "</small>"
 
     except Exception as e:
         log_message("CAUGHT update_device_info EXCEPTION: " + str(e))
@@ -102,7 +105,7 @@ def update_bitcoin_main_info_thread():
                 bitcoin_block_height = get_bitcoin_block_height()
                 mynode_block_height = get_mynode_block_height()
                 remaining = bitcoin_block_height - mynode_block_height
-                if remaining == 0 and bitcoin_block_height > 820000:
+                if remaining == 0 and bitcoin_block_height > 845000:
                     synced = True
                     if not os.path.isfile(BITCOIN_SYNCED_FILE):
                         open(BITCOIN_SYNCED_FILE, 'a').close() # touch file
@@ -168,7 +171,7 @@ def find_public_ip():
     global public_ip
 
     #urls = ["https://mynodebtc.com/device_api/get_public_ip.php"]
-    urls = ["https://api.ipify.org/","https://ip.seeip.org/","https://ip.seeip.org"]
+    urls = ["https://api.ipify.org/","https://api.seeip.org"]
     url = random.choice(urls)
 
     # Get public IP
