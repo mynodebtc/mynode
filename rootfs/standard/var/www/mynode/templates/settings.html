@@ -1095,33 +1095,38 @@
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Custom Bitcoin Version</div>
-            Advanced: To install a specific fork or patched version of Bitcoin, you can select an option from the list below.
+            <small>
+            <i>Advanced</i>
+            <br/><br/>
+            To install a specific fork or patched version of Bitcoin, you can select an option from the list below.
             Installing a new version may take a long time and will reboot the device. To undo a previous change, select Default.
             Using a custom version may break other features and applications or require configuration changes to work properly.
             Only install versions you trust and are familiar with as misunderstandings or chain-splits could lead to lost funds. 
             <br/><br/>
+            Custom Bitcoin versions with a specific version will stick to that version and versions listed with (latest) will automatically update to new versions. The default option will also always auto-update. Updates only occur upon installing a new version of MyNode.
+            <br/><br/>
             MyNode is not responsible for any issues or lost funds resulting from using custom Bitcoin versions.
             <br/><br/>
             Version Info<br/>
-            <small>
             - BIP-110: Will activate after block 965,664, even without network consensus. After activation, running an out-of-consensus software version will leave your node vulnerable to missing blocks or accepting invalid blocks, which could result in lost funds.
-            </small>
             <br/><br/>
+            
             {% if debian_version < 12 %}
             <b>Note: </b>Some custom Bitcoin versions are not supported on Debian 11 or older. You can re-flash your OS drive to 
             upgrade to Debian 12+.
             <br/><br/>
             {% endif %}
+            </small>
 
             <select name="custom_bitcoin_select" id="custom_bitcoin_select">
                 <option value="none" selected="selected">Choose...</option>
                 <option value="none">--- Recommended ---</option>
                 <option value="default">Bitcoin Core (default)</option>
-                <option value="bip110" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots + BIP-110 (v29.3 + v0.4.1)</option>
+                <option value="bip110_autoupdate" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots + BIP-110 (latest)</option>
+                <option value="knots_autoupdate" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (latest)</option>
                 <option value="knots_29_3" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v29.3)</option>
                 <option value="none">--- Old / Not Recommended ---</option>
                 <option value="knots_29_2_2" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v29.2.2)</option>
-                <option value="knots_29_2" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v29.2)</option>
                 <option value="knots_29_1" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v29.1)</option>
                 <option value="knots_28_1" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v28.1)</option>
                 <option value="knots_27_1">Bitcoin Knots (v27.1)</option>

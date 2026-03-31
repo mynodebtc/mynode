@@ -6,12 +6,21 @@ set -e
 source /usr/share/mynode/mynode_config.sh
 source /usr/share/mynode/mynode_app_versions.sh
 
+CUSTOM_BITCOIN_AUTOUPDATE_VERSION_FILE="/home/bitcoin/.mynode/custom_bitcoin_autoupdate_version"
+
 # Make sure we have an app argument
 if [ "$#" -lt 1 ]; then
-    echo "Usage: mynode-install-custom-bitcoin <app_name>"
+    echo "Usage: mynode-install-custom-bitcoin <app_name> [--no-reboot]"
     exit 1
 fi
 APP="$1"
+NO_REBOOT=0
+shift
+for arg in "$@"; do
+    if [ "$arg" = "--no-reboot" ]; then
+        NO_REBOOT=1
+    fi
+done
 
 # Stop services so we have plenty of RAM
 /usr/bin/mynode_stop_critical_services.sh
@@ -46,8 +55,70 @@ jq -r '.[].download_url' | while read url; do curl -s "$url" | gpg --import; don
 curl -s "https://api.github.com/repos/dathonohm/guix.sigs/contents/builder-keys" |
 jq -r '.[].download_url' | while read url; do curl -s "$url" | gpg --import; done
 
+
+# Clear autoupdate version file if we aren't autoupdating (prevents issues with switching between autoupdate and non-autoupdate versions)
+if [[ "$APP" != *"autoupdate"* ]]; then
+    rm -f $CUSTOM_BITCOIN_AUTOUPDATE_VERSION_FILE
+fi
+
 # Custom re-install steps
-if [ "$APP" = "ordisrespector" ]; then
+if [ "$APP" = "bip110_autoupdate" ]; then
+    BIP110_LATEST_VERSION="bip110-v0.4.1" # Must be unique each version (only used to track trigger upgrade)
+    BTC_UPGRADE_URL=https://github.com/dathonohm/bitcoin/releases/download/v29.3.knots20260210%2Bbip110-v0.4.1/bitcoin-29.3.knots20260210+bip110-v0.4.1-$ARCH.tar.gz
+    BTC_SHASUM=https://github.com/dathonohm/bitcoin/releases/download/v29.3.knots20260210%2Bbip110-v0.4.1/SHA256SUMS
+    BTC_ASC=https://github.com/dathonohm/bitcoin/releases/download/v29.3.knots20260210%2Bbip110-v0.4.1/SHA256SUMS.asc
+
+    CURRENT=""
+    if [ -f $CUSTOM_BITCOIN_AUTOUPDATE_VERSION_FILE ]; then
+        CURRENT=$(cat $CUSTOM_BITCOIN_AUTOUPDATE_VERSION_FILE)
+    fi
+    if [ "$CURRENT" != "$BIP110_LATEST_VERSION" ]; then
+        rm -rf /opt/download
+        mkdir -p /opt/download
+        cd /opt/download
+
+        # Download, install and verify
+        wget $BTC_UPGRADE_URL $BTC_SHASUM $BTC_ASC
+        gpg --verify SHA256SUMS.asc SHA256SUMS
+        sha256sum -c SHA256SUMS --ignore-missing
+        tar -xvf bitcoin-29.3.knots20260210+bip110-v0.4.1-$ARCH.tar.gz
+        mv bitcoin-29.3.knots20260210+bip110-v0.4.1 bitcoin
+        install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
+    fi
+    echo "bip110_autoupdate" > /home/bitcoin/.mynode/bitcoin_version
+    echo "bip110_autoupdate" > /home/bitcoin/.mynode/bitcoin_version_latest_custom
+    echo "bip110_autoupdate" > /mnt/hdd/mynode/settings/bitcoin_version_latest_custom
+    echo "$BIP110_LATEST_VERSION" > $CUSTOM_BITCOIN_AUTOUPDATE_VERSION_FILE
+    cd ~
+elif [ "$APP" = "knots_autoupdate" ]; then
+    KNOTS_LATEST_VERSION="29.3-knots" # Must be unique each version (only used to track trigger upgrade)
+    BTC_UPGRADE_URL=https://bitcoinknots.org/files/29.x/29.3.knots20260210/bitcoin-29.3.knots20260210-$ARCH.tar.gz
+    BTC_SHASUM=https://bitcoinknots.org/files/29.x/29.3.knots20260210/SHA256SUMS
+    BTC_ASC=https://bitcoinknots.org/files/29.x/29.3.knots20260210/SHA256SUMS.asc
+
+    CURRENT=""
+    if [ -f $CUSTOM_BITCOIN_AUTOUPDATE_VERSION_FILE ]; then
+        CURRENT=$(cat $CUSTOM_BITCOIN_AUTOUPDATE_VERSION_FILE)
+    fi
+    if [ "$CURRENT" != "$KNOTS_LATEST_VERSION" ]; then
+        rm -rf /opt/download
+        mkdir -p /opt/download
+        cd /opt/download
+
+        # Download, install and verify
+        wget $BTC_UPGRADE_URL $BTC_SHASUM $BTC_ASC
+        gpg --verify SHA256SUMS.asc SHA256SUMS
+        sha256sum -c SHA256SUMS --ignore-missing
+        tar -xvf bitcoin-29.3.knots20260210-$ARCH.tar.gz
+        mv bitcoin-29.3.knots20260210 bitcoin
+        install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
+    fi
+    echo "knots_autoupdate" > /home/bitcoin/.mynode/bitcoin_version
+    echo "knots_autoupdate" > /home/bitcoin/.mynode/bitcoin_version_latest_custom
+    echo "knots_autoupdate" > /mnt/hdd/mynode/settings/bitcoin_version_latest_custom
+    echo "$KNOTS_LATEST_VERSION" > $CUSTOM_BITCOIN_AUTOUPDATE_VERSION_FILE
+    cd ~
+elif [ "$APP" = "ordisrespector" ]; then
     apt-get install -y build-essential libtool autotools-dev automake pkg-config bsdmainutils python3
     apt-get install -y libevent-dev libboost-dev libsqlite3-dev libminiupnpc-dev libnatpmp-dev libzmq3-dev
 
@@ -57,9 +128,6 @@ if [ "$APP" = "ordisrespector" ]; then
     rm -rf bitcoin
 
     URL="https://github.com/bitcoin/bitcoin/archive/refs/tags/v24.0.1.tar.gz"
-    if [ "$#" -eq 2 ]; then
-        URL="$2"
-    fi
     wget $URL -O bitcoin.tar.gz
     tar -xvf bitcoin.tar.gz
     mv bitcoin-* bitcoin
@@ -182,28 +250,6 @@ elif [ "$APP" = "knots_29_1" ]; then
     echo "29.1-knots" > /mnt/hdd/mynode/settings/bitcoin_version_latest_custom
 
     cd ~
-elif [ "$APP" = "knots_29_2" ]; then
-    BTC_UPGRADE_URL=https://bitcoinknots.org/files/29.x/29.2.knots20251010/bitcoin-29.2.knots20251010-$ARCH.tar.gz
-    BTC_SHASUM=https://bitcoinknots.org/files/29.x/29.2.knots20251010/SHA256SUMS
-    BTC_ASC=https://bitcoinknots.org/files/29.x/29.2.knots20251010/SHA256SUMS.asc
-
-    rm -rf /opt/download
-    mkdir -p /opt/download
-    cd /opt/download
-
-    # Download, install and verify
-    wget $BTC_UPGRADE_URL $BTC_SHASUM $BTC_ASC
-    gpg --verify SHA256SUMS.asc SHA256SUMS
-    sha256sum -c SHA256SUMS --ignore-missing
-    tar -xvf bitcoin-29.2.knots20251010-$ARCH.tar.gz
-    mv bitcoin-29.2.knots20251010 bitcoin
-    install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
-
-    echo "29.2-knots" > /home/bitcoin/.mynode/bitcoin_version
-    echo "29.2-knots" > /home/bitcoin/.mynode/bitcoin_version_latest_custom
-    echo "29.2-knots" > /mnt/hdd/mynode/settings/bitcoin_version_latest_custom
-
-    cd ~
 elif [ "$APP" = "knots_29_2_2" ]; then
     BTC_UPGRADE_URL=https://bitcoinknots.org/files/29.x/29.2.knots20251110/bitcoin-29.2.knots20251110-$ARCH.tar.gz
     BTC_SHASUM=https://bitcoinknots.org/files/29.x/29.2.knots20251110/SHA256SUMS
@@ -248,28 +294,6 @@ elif [ "$APP" = "knots_29_3" ]; then
     echo "29.3-knots" > /mnt/hdd/mynode/settings/bitcoin_version_latest_custom
 
     cd ~
-elif [ "$APP" = "bip110" ]; then
-    BTC_UPGRADE_URL=https://github.com/dathonohm/bitcoin/releases/download/v29.3.knots20260210%2Bbip110-v0.4.1/bitcoin-29.3.knots20260210+bip110-v0.4.1-$ARCH.tar.gz
-    BTC_SHASUM=https://github.com/dathonohm/bitcoin/releases/download/v29.3.knots20260210%2Bbip110-v0.4.1/SHA256SUMS
-    BTC_ASC=https://github.com/dathonohm/bitcoin/releases/download/v29.3.knots20260210%2Bbip110-v0.4.1/SHA256SUMS.asc
-
-    rm -rf /opt/download
-    mkdir -p /opt/download
-    cd /opt/download
-
-    # Download, install and verify
-    wget $BTC_UPGRADE_URL $BTC_SHASUM $BTC_ASC
-    gpg --verify SHA256SUMS.asc SHA256SUMS
-    sha256sum -c SHA256SUMS --ignore-missing
-    tar -xvf bitcoin-29.3.knots20260210+bip110-v0.4.1-$ARCH.tar.gz
-    mv bitcoin-29.3.knots20260210+bip110-v0.4.1 bitcoin
-    install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
-
-    echo "bip110" > /home/bitcoin/.mynode/bitcoin_version
-    echo "bip110" > /home/bitcoin/.mynode/bitcoin_version_latest_custom
-    echo "bip110" > /mnt/hdd/mynode/settings/bitcoin_version_latest_custom
-
-    cd ~
 elif [ "$APP" = "default" ]; then
     # Clear custom info and re-install bitcoin
     echo "unknown" > /home/bitcoin/.mynode/bitcoin_version
@@ -285,5 +309,9 @@ fi
 
 sync
 echo "Install Complete!"
-echo "Rebooting..."
-reboot
+if [ $NO_REBOOT -eq 1 ]; then
+    echo "Skipping reboot (--no-reboot)"
+else
+    echo "Rebooting..."
+    reboot
+fi
