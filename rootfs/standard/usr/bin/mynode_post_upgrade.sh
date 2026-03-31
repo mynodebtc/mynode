@@ -428,6 +428,9 @@ if [ "$CURRENT" != "$BTC_VERSION" ]; then
     else
         echo "ERROR UPGRADING BITCOIN - SHASUM FAILED"
     fi
+elif [[ "$CURRENT" == *"_autoupdate" ]]; then
+    # Handle custom versions that auto-update
+    /usr/bin/mynode-install-custom-bitcoin "$CURRENT" --no-reboot
 fi
 
 
