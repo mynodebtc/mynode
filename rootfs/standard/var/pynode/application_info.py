@@ -17,7 +17,7 @@ import re
 
 def _is_valid_short_name(short_name):
     """Validate that a short_name is safe for use in file paths and shell commands."""
-    return bool(short_name and re.match(r'^[a-zA-Z0-9_\-]+$', short_name))
+    return bool(short_name) and bool(re.match(r'^[a-zA-Z0-9_-]+$', short_name))
 
 # Globals
 DYNAMIC_APPLICATIONS_FOLDER = "/usr/share/mynode_apps"
