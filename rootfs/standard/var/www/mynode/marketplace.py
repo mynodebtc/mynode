@@ -75,6 +75,12 @@ def marketplace_add_app_page():
         for f in os.listdir(add_app_tmp_path):
             if os.path.isdir(add_app_tmp_path + "/" + f):
                 app_short_name = f
+
+        # Validate app_short_name to prevent shell injection and path traversal
+        if not re.match(r'^[a-zA-Z0-9_\-]+$', app_short_name):
+            flash("Invalid application name in tarball!", category="error")
+            return redirect("/marketplace/add_app")
+
         if app_short_name == "app_short_name":
             flash("Error Finding App Name".format(str(e)), category="error")
             return redirect("/marketplace/add_app")

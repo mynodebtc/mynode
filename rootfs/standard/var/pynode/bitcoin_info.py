@@ -50,10 +50,16 @@ def is_bitcoin_synced():
     return False
 
 def run_bitcoincli_command(cmd):
-    cmd = "bitcoin-cli --conf=/mnt/hdd/mynode/bitcoin/bitcoin.conf --datadir=/mnt/hdd/mynode/bitcoin "+cmd+"; exit 0"
-    log_message("Running bitcoin-cli cmd:  {}".format(cmd))
+    import shlex
+    base_args = ["bitcoin-cli", "--conf=/mnt/hdd/mynode/bitcoin/bitcoin.conf", "--datadir=/mnt/hdd/mynode/bitcoin"]
     try:
-        results = to_string(subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True))
+        cmd_args = shlex.split(cmd)
+    except ValueError as e:
+        return "Error parsing command: {}".format(str(e))
+    full_cmd = base_args + cmd_args
+    log_message("Running bitcoin-cli cmd:  {}".format(" ".join(full_cmd)))
+    try:
+        results = to_string(subprocess.check_output(full_cmd, stderr=subprocess.STDOUT))
     except Exception as e:
         results = str(e)
     return results

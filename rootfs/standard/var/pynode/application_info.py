@@ -13,6 +13,11 @@ import time
 import subprocess
 import importlib
 import os
+import re
+
+def _is_valid_short_name(short_name):
+    """Validate that a short_name is safe for use in file paths and shell commands."""
+    return bool(short_name and re.match(r'^[a-zA-Z0-9_\-]+$', short_name))
 
 # Globals
 DYNAMIC_APPLICATIONS_FOLDER = "/usr/share/mynode_apps"
@@ -643,12 +648,18 @@ def has_custom_app_version(short_name):
     return False
 
 def save_custom_app_version(short_name, version):
+    if not _is_valid_short_name(short_name):
+        log_message("Invalid short_name for save_custom_app_version: {}".format(short_name))
+        return
     set_file_contents("/home/bitcoin/.mynode/"+short_name+"_version_latest_custom", version)
     set_file_contents("/mnt/hdd/mynode/settings/"+short_name+"_version_latest_custom", version)
     os.system("sync")
     trigger_application_refresh()
 
 def clear_custom_app_version(short_name):
+    if not _is_valid_short_name(short_name):
+        log_message("Invalid short_name for clear_custom_app_version: {}".format(short_name))
+        return
     os.system("rm -f /home/bitcoin/.mynode/"+short_name+"_version_latest_custom")
     os.system("rm -f /mnt/hdd/mynode/settings/"+short_name+"_version_latest_custom")
     os.system("sync")
@@ -780,12 +791,18 @@ def install_application_tarball(app_data):
         run_linux_cmd("chown -R {}:{} {}".format(app_data["linux_user"],app_data["linux_user"],app_data_dest))
 
 def clear_installed_version(short_name):
+    if not _is_valid_short_name(short_name):
+        log_message("Invalid short_name for clear_installed_version: {}".format(short_name))
+        return
     run_linux_cmd("rm -rf /home/bitcoin/.mynode/{}_version".format(short_name))
     run_linux_cmd("rm -rf /mnt/hdd/mynode/settings/{}_version".format(short_name))
 
 def restart_application(short_name):
+    if not _is_valid_short_name(short_name):
+        log_message("Invalid short_name for restart_application: {}".format(short_name))
+        return False
     try:
-        subprocess.check_output('systemctl restart {}'.format(short_name), shell=True)
+        subprocess.check_output(['systemctl', 'restart', short_name])
         return True
     except Exception as e:
         return False

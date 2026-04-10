@@ -9,6 +9,7 @@ from user_management import check_logged_in
 import socket
 import json
 import time
+import re
 
 mynode_bitcoin = Blueprint('mynode_bitcoin',__name__)
 
@@ -105,6 +106,11 @@ def bitcoin_download_wallet():
         flash("Error finding wallet to download!", category="error")
         return redirect("/bitcoin")
 
+    # Sanitize wallet name to prevent shell injection and path traversal
+    if not re.match(r'^[a-zA-Z0-9_\-\.]+$', wallet_name):
+        flash("Invalid wallet name!", category="error")
+        return redirect("/bitcoin")
+
     os.system("mkdir -p /tmp/download_wallets")
     os.system("chmod 777 /tmp/download_wallets")
     run_bitcoincli_command("-rpcwallet='"+wallet_name+"' dumpwallet '/tmp/download_wallets/"+wallet_name+"'")
@@ -124,6 +130,11 @@ def bitcoin_delete_wallet():
     wallet_name = request.args.get('wallet')
     if wallet_name is None:
         flash("Error finding wallet to delete!", category="error")
+        return redirect("/bitcoin")
+
+    # Sanitize wallet name to prevent shell injection and path traversal
+    if not re.match(r'^[a-zA-Z0-9_\-\.]+$', wallet_name):
+        flash("Invalid wallet name!", category="error")
         return redirect("/bitcoin")
 
     run_bitcoincli_command("unloadwallet {}".format(wallet_name))
@@ -224,6 +235,8 @@ def runcmd_page():
 
 @mynode_bitcoin.route("/bitcoin/toggle_bip37")
 def bitcoin_toggle_bip37():
+    check_logged_in()
+
     if request.args.get("enabled") and request.args.get("enabled") == "1":
         enable_bip37()
     else:
@@ -244,6 +257,8 @@ def bitcoin_toggle_bip37():
 
 @mynode_bitcoin.route("/bitcoin/toggle_bip157")
 def bitcoin_toggle_bip157():
+    check_logged_in()
+
     if request.args.get("enabled") and request.args.get("enabled") == "1":
         enable_bip157()
     else:

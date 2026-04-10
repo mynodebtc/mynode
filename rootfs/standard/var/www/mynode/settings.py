@@ -739,8 +739,16 @@ def change_quicksync_rates_page():
     downloadRate = request.form.get('download-rate')
     uploadRate = request.form.get('upload-rate')
 
-    os.system("echo {} > /mnt/hdd/mynode/settings/quicksync_upload_rate".format(uploadRate))
-    os.system("echo {} > /mnt/hdd/mynode/settings/quicksync_background_download_rate".format(downloadRate))
+    # Validate rates are numeric to prevent shell injection
+    try:
+        int(uploadRate)
+        int(downloadRate)
+    except (ValueError, TypeError):
+        flash("Invalid rate value. Must be a number.", category="error")
+        return redirect(url_for(".page_settings"))
+
+    set_file_contents("/mnt/hdd/mynode/settings/quicksync_upload_rate", str(uploadRate))
+    set_file_contents("/mnt/hdd/mynode/settings/quicksync_background_download_rate", str(downloadRate))
     os.system("sync")
     os.system("systemctl restart bandwidth")
 
@@ -756,6 +764,14 @@ def change_logout_time_page():
 
     d = request.form.get('logout_days')
     h = request.form.get('logout_hours')
+
+    # Validate inputs are numeric
+    try:
+        int(d)
+        int(h)
+    except (ValueError, TypeError):
+        flash("Invalid logout time values. Must be numbers.", category="error")
+        return redirect(url_for(".page_settings"))
 
     if d == "0" and h == "0":
         flash("Logout time cannot be 0 hours and 0 days", category="error")
