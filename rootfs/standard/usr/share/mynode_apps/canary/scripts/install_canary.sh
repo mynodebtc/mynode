@@ -2,8 +2,8 @@
 set -e
 
 echo "Pulling Canary Docker images..."
-docker pull schjonhaug/canary-backend:v1.3.0
-docker pull schjonhaug/canary-frontend:v1.3.0
+docker pull schjonhaug/canary-backend:v1.4.0
+docker pull schjonhaug/canary-frontend:v1.4.0
 
 echo "Creating data directory..."
 mkdir -p /mnt/hdd/mynode/canary
