@@ -19,8 +19,8 @@ ExecStart=/usr/bin/docker run --rm \
     -p 5000:5000 \
     --volume /mnt/hdd/mynode/lnbits/.env:/app/.env \
     --volume /mnt/hdd/mynode/lnbits/:/app/data \
-    --volume /mnt/hdd/mynode/lnd/tls.cert:/app/tls.cert \
-    --volume /mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon:/app/admin.macaroon \
+    --mount type=bind,src=/mnt/hdd/mynode/lnd/tls.cert,target=/app/tls.cert,readonly \
+    --mount type=bind,src=/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon,target=/app/admin.macaroon,readonly \
     --add-host=host.docker.internal:host-gateway \
     lnbits
 ExecStop=/usr/bin/docker stop -t 2 lnbits

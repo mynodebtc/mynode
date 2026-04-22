@@ -223,8 +223,10 @@ def page_lnd():
 def lnd_regen_tls_cert():
     check_logged_in()
 
-    os.system("rm /mnt/hdd/mynode/lnd/tls.cert")
-    os.system("rm /mnt/hdd/mynode/lnd/tls.key")
+    # Use -rf because the docker bind mount can accidentally cause a folder
+    # to be made in place of these files in rare race conditions.
+    os.system("rm -rf /mnt/hdd/mynode/lnd/tls.cert")
+    os.system("rm -rf /mnt/hdd/mynode/lnd/tls.key")
 
     t = Timer(3.0, restart_lnd)
     t.start()
