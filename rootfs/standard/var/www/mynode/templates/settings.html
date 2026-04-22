@@ -513,7 +513,21 @@
                     disabled: true
                 });
                 $("#custom_bitcoin_install_button").on("click", function() {
-                    window.location.href='/settings/install-custom-bitcoin?version='+custom_bitcoin_choice
+                    if (custom_bitcoin_choice == "knots_29_3_2") {
+                        var okFunction = function() {
+                            window.location.href='/settings/install-custom-bitcoin?version='+custom_bitcoin_choice
+                        }
+                        openConfirmDialog("confirm-dialog",
+                                          "Custom Bitcoin Version",
+                                          "<p>This release adds enforcement of the one-year \"reduced data\" protocol change to the Bitcoin rules, beginning no later than September.</p>" +
+                                          "<p>Protocol changes require user consent to be effective, and if enforced inconsistently within the community may compromise your security or others!</p>" +
+                                          "<p>If you do not know what you are doing, you can learn more at https://bitcoinknots.org/learn/2026-rdts</p>" +
+                                          "<p>Note that to reject this softfork, you must implement your own rejection fork.</p>" +
+                                          "<p>Are you sure you want to install this version?</p>",
+                                          okFunction)
+                    } else {
+                        window.location.href='/settings/install-custom-bitcoin?version='+custom_bitcoin_choice
+                    }
                 });
 
                 $("#logout_days").selectmenu({width: 70});
@@ -1124,6 +1138,7 @@
                 <option value="default">Bitcoin Core (default)</option>
                 <option value="bip110_autoupdate" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots + BIP-110 (latest)</option>
                 <option value="knots_autoupdate" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (latest)</option>
+                <option value="knots_29_3_2" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v29.3.knots20260416rc1)</option>
                 <option value="knots_29_3" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v29.3)</option>
                 <option value="none">--- Old / Not Recommended ---</option>
                 <option value="knots_29_2_2" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v29.2.2)</option>
