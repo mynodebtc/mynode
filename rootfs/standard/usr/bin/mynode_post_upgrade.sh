@@ -84,6 +84,9 @@ if ! skip_base_upgrades ; then
         sed -i 's|deb.debian.org/debian buster-backports|archive.debian.org/debian buster-backports|g' /etc/apt/sources.list
         # Add backports repo
         grep -qxF "deb http://archive.debian.org/debian buster-backports main" /etc/apt/sources.list  || echo "deb http://archive.debian.org/debian buster-backports main" >> /etc/apt/sources.list
+    
+        # Comment out nodesource repo for buster (doesn't work anymore)
+        sed -i 's|^deb|#deb|' /etc/apt/sources.list.d/nodesource.list
     fi
     # Add I2P Repo
     /bin/bash /usr/share/mynode/scripts/add_i2p_repo.sh
