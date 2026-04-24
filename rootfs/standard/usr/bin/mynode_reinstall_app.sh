@@ -5,6 +5,7 @@ set -x
 
 source /usr/share/mynode/mynode_config.sh
 source /usr/share/mynode/mynode_app_versions.sh
+source /usr/share/mynode/mynode_functions.sh
 
 # Make sure we have an app argument
 if [ "$#" -ne 1 ]; then
@@ -35,7 +36,7 @@ if [ "$APP" = "bos" ]; then
     npm uninstall -g balanceofsatoshis
 elif [ "$APP" = "netdata" ]; then
     systemctl stop netdata
-    docker rmi netdata/netdata || true
+    remove_docker_images_by_name 'netdata'
 elif [ "$APP" = "btcpayserver" ]; then
     # Stop and clean images
     /usr/local/bin/btcpay-down.sh
@@ -62,7 +63,7 @@ elif [ "$APP" = "ufw" ]; then
 elif [ "$APP" = "webssh2" ]; then
     rm -f /mnt/hdd/mynode/settings/webssh2_version
     systemctl stop webssh2
-    docker rmi webssh2
+    remove_docker_images_by_name 'webssh2'
 elif [ "$APP" = "vpn" ]; then
     rm -rf /etc/openvpn
     rm -rf /etc/.pivpn

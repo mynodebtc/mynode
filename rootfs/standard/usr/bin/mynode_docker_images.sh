@@ -34,7 +34,7 @@ while true; do
         docker system prune --all --force
 
         # Remove containers known to cause problems if cached
-        docker rmi debian:buster-slim
+        remove_docker_images_by_name 'debian:buster-slim'
 
         # Mark mempool and dojo for re-install
         #  Must reset version for Dojo or it will fully re-install and break rather than 'upgrade'
@@ -61,7 +61,7 @@ while true; do
             CURRENT=$(cat $NETDATA_VERSION_FILE)
         fi
         if [ "$CURRENT" != "$NETDATA_VERSION" ]; then
-            docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'netdata') || true
+            remove_docker_images_by_name 'netdata'
 
             docker pull netdata/netdata:${NETDATA_VERSION}
 
@@ -79,7 +79,7 @@ while true; do
         CURRENT=$(cat $WEBSSH2_VERSION_FILE)
     fi
     if [ "$CURRENT" != "$WEBSSH2_VERSION" ]; then
-        docker rmi webssh2 || true
+        remove_docker_images_by_name 'webssh2'
 
         cd /tmp/
         rm -rf webssh2
@@ -105,8 +105,8 @@ while true; do
             CURRENT=$(cat $MEMPOOL_VERSION_FILE)
         fi
         if [ "$CURRENT" != "$MEMPOOL_VERSION" ]; then
-            docker rmi mempoolspace || true     # Remove old v1 image
-            docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'mempool') || true # Remove v2 images
+            remove_docker_images_by_name 'mempoolspace' # Remove old v1 image
+            remove_docker_images_by_name 'mempool'      # Remove v2 images
 
             cd /mnt/hdd/mynode/mempool
             rm -rf data
@@ -189,8 +189,8 @@ while true; do
         docker rm $(docker ps -a -q --filter name=generated_postgres) 2>/dev/null || true
         docker rm $(docker ps -a -q --filter name=generated_btcpayserver) 2>/dev/null || true
         docker rm $(docker ps -a -q --filter name=generated_nbxplorer) 2>/dev/null || true
-        docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'btcpayserver') 2>/dev/null || true
-        docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'nbxplorer') 2>/dev/null || true
+        remove_docker_images_by_name 'btcpayserver'
+        remove_docker_images_by_name 'nbxplorer'
     fi
     touch /tmp/need_application_refresh
 
@@ -202,7 +202,7 @@ while true; do
             CURRENT=$(cat $LNBITS_VERSION_FILE)
         fi
         if [ "$CURRENT" != "$LNBITS_VERSION" ]; then
-            docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'lnbits') || true
+            remove_docker_images_by_name 'lnbits'
 
             if [ ! -d "/opt/mynode/lnbits" ]; then
                 mkdir -p "/opt/mynode/lnbits"
@@ -262,7 +262,7 @@ while true; do
                 sudo /usr/bin/mynode_gen_dojo_config.sh || MARK_DOJO_COMPLETE=0
 
                 # Fix for v1.12.1 (may need to remove later)
-                docker rmi node:14-alpine || true
+                remove_docker_images_by_name 'node:14-alpine'
                 if [ "$IS_32_BIT" = "1" ]; then
                     sed -i "s/node:14-alpine.*/node:14-alpine3.12/g" /mnt/hdd/mynode/dojo/docker/my-dojo/node/Dockerfile
                 fi
