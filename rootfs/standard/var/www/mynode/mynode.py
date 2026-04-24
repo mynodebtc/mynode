@@ -571,6 +571,8 @@ def index():
             "low_os_drive_space_error": low_os_drive_space_error,
             "usb_error": has_usb_error(),
             "show_32_bit_warning": show_32_bit_warning(),
+            "show_old_debian_warning": show_old_debian_warning(),
+            "debian_version": get_debian_version(),
             "is_quicksync_disabled": not is_quicksync_enabled(),
             "usb_extras": get_usb_extras(),
             "cpu_usage": get_cpu_usage(),
@@ -680,6 +682,12 @@ def page_clear_fsck_error():
 def page_clear_32_bit_warning():
     check_logged_in()
     hide_32_bit_warning()
+    return redirect("/")
+
+@app.route("/clear-old-debian-warning")
+def page_clear_old_debian_warning():
+    check_logged_in()
+    hide_old_debian_warning()
     return redirect("/")
 
 @app.route("/dismiss-expiration-warning")
