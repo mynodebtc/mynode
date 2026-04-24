@@ -2,6 +2,7 @@
 
 source /usr/share/mynode/mynode_device_info.sh
 source /usr/share/mynode/mynode_app_versions.sh
+source /usr/share/mynode/mynode_functions.sh
 
 set -x
 set -e
@@ -13,8 +14,8 @@ echo "==================== INSTALLING APP ===================="
 # in the JSON file are also present.
 
 # Remove old containers
-docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'lndboss') || true
-docker rmi lndboss || true
+remove_docker_images_by_name 'lndboss'
+remove_docker_images_by_name 'lndboss:latest'
 
 # Pull latest image and tag latest
 docker pull niteshbalusu/lndboss:v2.16.0
