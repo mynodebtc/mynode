@@ -2,6 +2,7 @@
 
 source /usr/share/mynode/mynode_device_info.sh
 source /usr/share/mynode/mynode_app_versions.sh
+source /usr/share/mynode/mynode_functions.sh
 
 set -x
 set -e
@@ -19,7 +20,7 @@ if [ ! -f /mnt/hdd/mynode/nostrrsrelay/app_data/config.toml ]; then
 fi
 
 # Remove old containers
-docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'nostrrsrelay') || true
+remove_docker_images_by_name 'nostrrsrelay'
 
 # Build docker container
 # The HOME=. is a hack to use the current folder since nostrrsrelay user doesn't have a home holder which causes failure
