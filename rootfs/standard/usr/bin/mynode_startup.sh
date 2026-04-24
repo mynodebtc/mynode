@@ -539,6 +539,11 @@ echo "BITCOIN_GID=$BITCOIN_GID" >> /mnt/hdd/mynode/settings/.btcrpc_environment
 # Reset BTCARGS
 echo "BTCARGS=" > /mnt/hdd/mynode/bitcoin/env
 
+CHECK_CONSENSUS=$(cat /home/bitcoin/.mynode/bitcoin_version | head -n 1)
+if [ "$CHECK_CONSENSUS" == "29.3.2-knots" ]; then
+    echo "BTCARGS=-consensusrules=rdts" > /mnt/hdd/mynode/bitcoin/env
+fi
+
 
 # Set proper permissions on drive
 USER=$(stat -c '%U' /mnt/hdd/mynode/quicksync)
