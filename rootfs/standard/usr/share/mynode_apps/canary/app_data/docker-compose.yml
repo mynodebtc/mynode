@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  backend:
+    image: canary-backend:latest
+    network_mode: host
+    restart: unless-stopped
+    stop_grace_period: 30s
+    volumes:
+      - /mnt/hdd/mynode/canary:/app/data
+    environment:
+      CANARY_DATA_DIR: /app/data
+      CANARY_ELECTRUM_URL: tcp://127.0.0.1:50001
+      CANARY_NETWORK: mainnet
+      CANARY_MODE: self-hosted
+      CANARY_BIND_ADDRESS: 127.0.0.1:3004
+
+  frontend:
+    image: canary-frontend:latest
+    network_mode: host
+    restart: unless-stopped
+    stop_grace_period: 30s
+    depends_on:
+      - backend
+    environment:
+      API_URL: http://127.0.0.1:3004
+      PORT: "3005"
