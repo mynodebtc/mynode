@@ -20,6 +20,7 @@ instance/
 
 # Output (rootfs, etc...)
 out/
+plans/
 
 # Release tarballs stuff
 releases/

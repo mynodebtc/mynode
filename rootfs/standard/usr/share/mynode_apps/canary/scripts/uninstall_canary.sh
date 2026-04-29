@@ -2,16 +2,18 @@
 
 source /usr/share/mynode/mynode_device_info.sh
 source /usr/share/mynode/mynode_app_versions.sh
+source /usr/share/mynode/mynode_functions.sh
+
+set -x
 
 echo "==================== UNINSTALLING APP ===================="
 
-docker stop canary canary-frontend 2>/dev/null || true
-docker rm canary canary-frontend 2>/dev/null || true
+cp -f app_data/docker-compose.yml docker-compose.yml 2>/dev/null || true
+/usr/local/bin/docker-compose down --remove-orphans 2>/dev/null || true
 
-docker images --format '{{.Repository}}:{{.Tag}}' | grep 'canary-backend' | xargs --no-run-if-empty docker rmi
-docker images --format '{{.Repository}}:{{.Tag}}' | grep 'schjonhaug/canary-backend' | xargs --no-run-if-empty docker rmi
-docker images --format '{{.Repository}}:{{.Tag}}' | grep 'canary-frontend' | xargs --no-run-if-empty docker rmi
-docker images --format '{{.Repository}}:{{.Tag}}' | grep 'schjonhaug/canary-frontend' | xargs --no-run-if-empty docker rmi
+
+remove_docker_images_by_name "canary-backend"
+remove_docker_images_by_name "canary-frontend"
 
 rm -rf /mnt/hdd/mynode/canary
 

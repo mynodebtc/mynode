@@ -250,6 +250,7 @@ def initialize_application_defaults(app):
     if not "app_tile_running_status_text" in app: app["app_tile_running_status_text"] = app["short_description"]
     if not "app_tile_button_href" in app: app["app_tile_button_href"] = "#"
     if not "app_tile_button_onclick" in app: app["app_tile_button_onclick"] = ""
+    if not "app_tile_button_open_app_directly" in app: app["app_tile_button_open_app_directly"] = False
     if not "app_page_show_open_button" in app: app["app_page_show_open_button"] = True
     if not "app_page_additional_buttons" in app: app["app_page_additional_buttons"] = []
     if not "app_page_content" in app: app["app_page_content"] = []
