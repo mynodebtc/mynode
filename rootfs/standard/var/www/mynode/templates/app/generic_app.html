@@ -72,7 +72,7 @@
                         <!-- Open -->
                         {% if app.is_enabled and app.app_page_show_open_button %}
                             {% if app.http_port != "" or app.https_port != "" %}
-                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="open_app_in_new_tab('{{app.http_port}}', '{{app.https_port}}', false, '{APP_TOR_ADDRESS}')">Open</button>
+                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="open_app_in_new_tab('{{app.http_port}}', '{{app.https_port}}', false, '{{app.tor_address}}')">Open</button>
 
                                 <div class="divider button_divider"></div>
                             {% endif %}
