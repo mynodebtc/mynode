@@ -1,0 +1,28 @@
+[Unit]
+Description=Canary
+Wants=electrs.service docker_images.service
+After=electrs.service docker_images.service
+
+[Service]
+WorkingDirectory=/opt/mynode/canary
+
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_canary.sh ]; then /bin/bash /usr/bin/service_scripts/pre_canary.sh; fi'
+ExecStartPre=-/usr/bin/docker stop canary canary-frontend
+ExecStartPre=-/usr/bin/docker rm canary canary-frontend
+ExecStartPre=/usr/bin/docker run -d --name canary --network host -v /mnt/hdd/mynode/canary:/app/data -e CANARY_DATA_DIR=/app/data -e CANARY_ELECTRUM_URL=tcp://127.0.0.1:50001 -e CANARY_NETWORK=mainnet -e CANARY_MODE=self-hosted -e CANARY_BIND_ADDRESS=127.0.0.1:3004 canary-backend:latest
+ExecStartPre=/bin/sleep 2
+ExecStart=/usr/bin/docker run --rm --name canary-frontend --network host -e API_URL=http://127.0.0.1:3004 -e PORT=3005 canary-frontend:latest
+ExecStop=/usr/bin/docker stop canary canary-frontend
+ExecStopPost=-/usr/bin/docker rm canary
+
+User=bitcoin
+Group=bitcoin
+Type=simple
+TimeoutSec=120
+Restart=always
+RestartSec=60
+SyslogIdentifier=canary
+
+[Install]
+WantedBy=multi-user.target
