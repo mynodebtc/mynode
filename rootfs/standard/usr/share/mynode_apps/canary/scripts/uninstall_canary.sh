@@ -8,7 +8,10 @@ set -x
 
 echo "==================== UNINSTALLING APP ===================="
 
-cp -f app_data/docker-compose.yml docker-compose.yml 2>/dev/null || true
+APP_DIR="/opt/mynode/canary"
+
+cp -f "$APP_DIR/app_data/docker-compose.yml" "$APP_DIR/docker-compose.yml" 2>/dev/null || true
+cd "$APP_DIR" 2>/dev/null || true
 /usr/local/bin/docker-compose down --remove-orphans 2>/dev/null || true
 
 

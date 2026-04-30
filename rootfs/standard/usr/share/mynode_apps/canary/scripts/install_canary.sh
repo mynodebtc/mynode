@@ -9,11 +9,15 @@ set -e
 
 echo "==================== INSTALLING APP ===================="
 
+APP_DIR="/opt/mynode/canary"
+VERSION="${VERSION:-v1.4.0}"
+
 mkdir -p /opt/mynode/canary || true
 mkdir -p /mnt/hdd/mynode/canary || true
 
-cp -f app_data/docker-compose.yml docker-compose.yml
+cp -f "$APP_DIR/app_data/docker-compose.yml" "$APP_DIR/docker-compose.yml"
 
+cd "$APP_DIR"
 /usr/local/bin/docker-compose down --remove-orphans 2>/dev/null || true
 
 remove_docker_images_by_name "canary-backend"

@@ -29,6 +29,8 @@
     "app_tile_name": "Canary",
     "app_tile_running_status_text": "Monitoring",
     "app_tile_default_status_text": "Wallet Monitor",
+    "app_tile_button_text": "Open",
+    "app_tile_button_href": "/app/canary/info",
     "app_tile_button_open_app_directly": true,
     "can_uninstall": true,
     "can_reinstall": true,
