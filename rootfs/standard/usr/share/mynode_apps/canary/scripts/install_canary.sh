@@ -19,7 +19,7 @@ version: "3.8"
 
 services:
   backend:
-    image: schjonhaug/canary-backend:$VERSION
+    image: canary-backend:latest
     network_mode: host
     restart: unless-stopped
     stop_grace_period: 30s
@@ -35,7 +35,7 @@ services:
       CANARY_BIND_ADDRESS: 127.0.0.1:3004
 
   frontend:
-    image: schjonhaug/canary-frontend:$VERSION
+    image: canary-frontend:latest
     network_mode: host
     restart: unless-stopped
     stop_grace_period: 30s
@@ -54,6 +54,15 @@ write_compose_file
 
 cd "$APP_DIR"
 /usr/local/bin/docker-compose down --remove-orphans 2>/dev/null || true
+
+remove_docker_images_by_name "canary-backend"
+remove_docker_images_by_name "canary-frontend"
+
+docker pull schjonhaug/canary-backend:$VERSION
+docker pull schjonhaug/canary-frontend:$VERSION
+
+docker tag schjonhaug/canary-backend:$VERSION canary-backend:latest
+docker tag schjonhaug/canary-frontend:$VERSION canary-frontend:latest
 
 echo "$VERSION" > "$VERSION_FILE"
 chown bitcoin:bitcoin "$VERSION_FILE"

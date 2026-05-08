@@ -17,7 +17,7 @@ version: "3.8"
 
 services:
   backend:
-    image: schjonhaug/canary-backend:$VERSION
+    image: canary-backend:latest
     network_mode: host
     restart: unless-stopped
     stop_grace_period: 30s
@@ -33,7 +33,7 @@ services:
       CANARY_BIND_ADDRESS: 127.0.0.1:3004
 
   frontend:
-    image: schjonhaug/canary-frontend:$VERSION
+    image: canary-frontend:latest
     network_mode: host
     restart: unless-stopped
     stop_grace_period: 30s
