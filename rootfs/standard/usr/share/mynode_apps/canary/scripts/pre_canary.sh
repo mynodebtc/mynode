@@ -3,10 +3,70 @@
 set -e
 
 APP_DIR="/opt/mynode/canary"
+DATA_DIR="/mnt/hdd/mynode/canary"
+VERSION_FILE="/mnt/hdd/mynode/settings/canary_version"
+VERSION="${VERSION:-$(cat "$VERSION_FILE" 2>/dev/null || echo v1.5.0)}"
+ADMIN_PASSWORD_FILE="$DATA_DIR/admin_password"
+JWT_SECRET_FILE="$DATA_DIR/jwt_secret"
+ENV_FILE="$DATA_DIR/canary.env"
 
-# Keep the compose file in sync with the packaged app data.
-cp -f "$APP_DIR/app_data/docker-compose.yml" "$APP_DIR/docker-compose.yml"
+write_compose_file() {
+    mkdir -p "$APP_DIR"
+    cat > "$APP_DIR/docker-compose.yml" <<EOF
+version: "3.8"
+
+services:
+  backend:
+    image: schjonhaug/canary-backend:$VERSION
+    network_mode: host
+    restart: unless-stopped
+    stop_grace_period: 30s
+    volumes:
+      - /mnt/hdd/mynode/canary:/app/data
+    env_file:
+      - /mnt/hdd/mynode/canary/canary.env
+    environment:
+      CANARY_DATA_DIR: /app/data
+      CANARY_ELECTRUM_URL: tcp://127.0.0.1:50001
+      CANARY_NETWORK: mainnet
+      CANARY_MODE: self-hosted
+      CANARY_BIND_ADDRESS: 127.0.0.1:3004
+
+  frontend:
+    image: schjonhaug/canary-frontend:$VERSION
+    network_mode: host
+    restart: unless-stopped
+    stop_grace_period: 30s
+    depends_on:
+      - backend
+    environment:
+      API_URL: http://127.0.0.1:3004
+      PORT: "3005"
+EOF
+}
+
+generate_secret() {
+    local length="$1"
+    tr -dc A-Za-z0-9 < /dev/urandom | head -c "$length"
+}
+
+write_compose_file
 
 # Ensure data directory exists before starting.
-mkdir -p /mnt/hdd/mynode/canary
-chown -R bitcoin:bitcoin /mnt/hdd/mynode/canary
+mkdir -p "$DATA_DIR"
+
+if [ ! -s "$ADMIN_PASSWORD_FILE" ]; then
+    generate_secret 32 > "$ADMIN_PASSWORD_FILE"
+fi
+
+if [ ! -s "$JWT_SECRET_FILE" ]; then
+    generate_secret 64 > "$JWT_SECRET_FILE"
+fi
+
+cat > "$ENV_FILE" <<EOF
+CANARY_SELF_HOSTED_ADMIN_PASSWORD=$(cat "$ADMIN_PASSWORD_FILE")
+JWT_SECRET=$(cat "$JWT_SECRET_FILE")
+EOF
+
+chown -R bitcoin:bitcoin "$DATA_DIR"
+chmod 600 "$ADMIN_PASSWORD_FILE" "$JWT_SECRET_FILE" "$ENV_FILE"
