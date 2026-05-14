@@ -193,7 +193,10 @@
                             <td><a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/bitcoin/bitcoin_whitepaper.pdf">download</a></td>
                         </tr>
                         <tr>
-                            <th>Peer Bloom Filters (BIP 37)</th>
+                            <th>
+                                Peer Bloom Filters (BIP 37)
+                                <img style="width: 16px; margin-left: 8px; vertical-align: middle; cursor: help;" src="{{ url_for('static', filename="images/tooltip_icon.png")}}" title="Lets lightweight SPV wallets request transactions that match their bloom filters. This improves compatibility with older wallets, but enabling it can increase resource usage and has known privacy tradeoffs.">
+                            </th>
                             <td>
                                 <label class="switch">
                                     <input type="checkbox" id="bip37_checkbox" {% if bip37_enabled %}checked{% endif %}>
@@ -203,7 +206,10 @@
                             </td>
                         </tr>
                         <tr>
-                            <th>Peer Block Filters (BIP 157)</th>
+                            <th>
+                                Peer Block Filters (BIP 157)
+                                <img style="width: 16px; margin-left: 8px; vertical-align: middle; cursor: help;" src="{{ url_for('static', filename="images/tooltip_icon.png")}}" title="This enables your node to act as a Neutrino server for lightweight clients and lets this node serve compact block filter data to peers using BIP 157. Enable it if clients on your network need Neutrino-style filter queries from this node. This also enables BIP 158 and uses about 5 GB of storage.">
+                            </th>
                             <td>
                                 <label class="switch">
                                     <input type="checkbox" id="bip157_checkbox" {% if bip157_enabled %}checked{% endif %}>
@@ -213,7 +219,11 @@
                             </td>
                         </tr>
                         <tr>
-                            <th>Block Filters (BIP 158)</th>
+                            <th>
+                                Block Filter Index (BIP 158)
+                                <img style="width: 16px; margin-left: 8px; vertical-align: middle; cursor: help;" src="{{ url_for('static', filename="images/tooltip_icon.png")}}" title="This builds and stores the compact block filters defined by BIP 158. This is required for BIP 157 peers, takes time to download, and uses about 5 GB of storage.">
+
+                            </th>
                             <td>
                                 <label class="switch">
                                     <input type="checkbox" id="bip158_checkbox" {% if bip158_enabled %}checked{% endif %}>
