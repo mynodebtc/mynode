@@ -81,5 +81,9 @@ if service_is_enabled btcrpcexplorer; then
     echo "CANARY_BTC_RPC_EXPLORER_PORT=3002" >> "$ENV_FILE"
 fi
 
+if service_is_enabled mempool || service_is_enabled btcrpcexplorer; then
+    echo "CANARY_TX_EXPLORER_PLATFORM=mynode" >> "$ENV_FILE"
+fi
+
 chown -R bitcoin:bitcoin "$DATA_DIR"
 chmod 600 "$ADMIN_PASSWORD_FILE" "$JWT_SECRET_FILE" "$ENV_FILE"
