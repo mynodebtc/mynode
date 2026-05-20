@@ -513,7 +513,8 @@
                     disabled: true
                 });
                 $("#custom_bitcoin_install_button").on("click", function() {
-                    if (custom_bitcoin_choice == "knots_29_3_3") {
+                    bip110_confirmation_versions = ["knots_29_3_3", "bip110_autoupdate"]
+                    if (bip110_confirmation_versions.includes(custom_bitcoin_choice)) {
                         var okFunction = function() {
                             window.location.href='/settings/install-custom-bitcoin?version='+custom_bitcoin_choice
                         }
@@ -1137,7 +1138,7 @@
                 <option value="default">Bitcoin Core (default)</option>
                 <option value="bip110_autoupdate" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots + BIP-110 (latest)</option>
                 <option value="knots_autoupdate" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (latest)</option>
-                <option value="knots_29_3_3" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v29.3.knots20260508)</option>
+                <option value="knots_29_3_3" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots + BIP-110 (v29.3.knots20260508)</option>
                 <option value="knots_29_3_2" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v29.3.knots20260507)</option>
                 <option value="none">--- Old / Not Recommended ---</option>
                 <option value="knots_29_3" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v29.3)</option>
