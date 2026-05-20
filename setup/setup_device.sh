@@ -963,8 +963,8 @@ touch /home/bitcoin/.mynode/install_vpn
 
 # Mark docker images for install (on SD so install occurs after drive attach)
 touch /home/bitcoin/.mynode/install_mempool
-touch /home/bitcoin/.mynode/install_btcpayserver
 
+# SKIPPING BTCPAYSERVER - OPTIONAL APP
 # SKIPPING SPECTER - OPTIONAL APP
 # SKIPPING LNBITS - OPTIONAL APP
 # SKIPPING CKBUNKER - OPTIONAL APP
