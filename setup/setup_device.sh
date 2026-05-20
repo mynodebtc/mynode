@@ -890,31 +890,6 @@ if [ "$CURRENT" != "$BTCRPCEXPLORER_VERSION" ]; then
 fi
 
 
-# Upgrade Specter Desktop
-CURRENT=""
-if [ -f $SPECTER_VERSION_FILE ]; then
-    CURRENT=$(cat $SPECTER_VERSION_FILE)
-fi
-if [ "$CURRENT" != "$SPECTER_VERSION" ]; then
-    cd /opt/mynode
-    rm -rf specter
-    mkdir -p specter
-    chown -R bitcoin:bitcoin specter
-    cd specter
-
-    # Make venv
-    if [ ! -d env ]; then
-        sudo -u bitcoin python3 -m venv env
-    fi
-    source env/bin/activate
-    pip3 install ecdsa===0.13.3
-    pip3 install cryptoadvance.specter===$SPECTER_VERSION --upgrade
-    deactivate
-
-    echo $SPECTER_VERSION > $SPECTER_VERSION_FILE
-fi
-
-
 # Upgrade Thunderhub
 THUNDERHUB_UPGRADE_URL=https://github.com/apotdevin/thunderhub/archive/$THUNDERHUB_VERSION.tar.gz
 CURRENT=""
@@ -990,7 +965,8 @@ touch /home/bitcoin/.mynode/install_vpn
 touch /home/bitcoin/.mynode/install_mempool
 touch /home/bitcoin/.mynode/install_btcpayserver
 
-# SKIPPING LNBITS - OPTIONAL ALL
+# SKIPPING SPECTER - OPTIONAL APP
+# SKIPPING LNBITS - OPTIONAL APP
 # SKIPPING CKBUNKER - OPTIONAL APP
 # SKIPPING SPHINX - OPTIONAL APP
 # SKIPPING BOS - OPTIONAL APP
