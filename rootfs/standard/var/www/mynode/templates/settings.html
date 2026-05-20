@@ -513,7 +513,20 @@
                     disabled: true
                 });
                 $("#custom_bitcoin_install_button").on("click", function() {
-                    window.location.href='/settings/install-custom-bitcoin?version='+custom_bitcoin_choice
+                    if (custom_bitcoin_choice == "knots_29_3_3") {
+                        var okFunction = function() {
+                            window.location.href='/settings/install-custom-bitcoin?version='+custom_bitcoin_choice
+                        }
+                        openConfirmDialog("confirm-dialog",
+                                          "Custom Bitcoin Version",
+                                          "<p>This version of Bitcoin Knots applies the BIP110 (RDTS) network upgrade, which fixes critical vulnerabilities in long-standing network design. To avoid applying this upgrade by accident, this version asks for explicit confirmation.</p>" +
+                                          "<p>Important: Because this upgrade already has broad community support, skipping this update or reverting to an older software version does not reject it. Running outdated software after any network upgrade only leaves your node vulnerable to displaying fake or fraudulent transactions. To effectively reject this upgrade, you need to run alternative software designed to split away from the upgraded network.<p>" +
+                                          "<p>If you do not know what you are doing, you can learn more at https://bitcoinknots.org/learn/2026-rdts</p>" +
+                                          "<p>Do you want to install this version?</p>",
+                                          okFunction)
+                    } else {
+                        window.location.href='/settings/install-custom-bitcoin?version='+custom_bitcoin_choice
+                    }
                 });
 
                 $("#logout_days").selectmenu({width: 70});
@@ -1124,8 +1137,10 @@
                 <option value="default">Bitcoin Core (default)</option>
                 <option value="bip110_autoupdate" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots + BIP-110 (latest)</option>
                 <option value="knots_autoupdate" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (latest)</option>
-                <option value="knots_29_3" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v29.3)</option>
+                <option value="knots_29_3_3" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v29.3.knots20260508)</option>
+                <option value="knots_29_3_2" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v29.3.knots20260507)</option>
                 <option value="none">--- Old / Not Recommended ---</option>
+                <option value="knots_29_3" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v29.3)</option>
                 <option value="knots_29_2_2" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v29.2.2)</option>
                 <option value="knots_29_1" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v29.1)</option>
                 <option value="knots_28_1" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v28.1)</option>
