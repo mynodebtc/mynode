@@ -8,7 +8,6 @@ import os
 mynode_canary = Blueprint("mynode_canary", __name__)
 
 CANARY_PASSWORD_FILE = "/mnt/hdd/mynode/canary/admin_password"
-CANARY_VERSION_FILE = "/mnt/hdd/mynode/settings/canary_version"
 
 
 def get_canary_password():
@@ -18,22 +17,11 @@ def get_canary_password():
         return password_file.read().strip()
 
 
-def get_canary_current_version():
-    if not os.path.isfile(CANARY_VERSION_FILE):
-        return None
-    with open(CANARY_VERSION_FILE, "r") as version_file:
-        return version_file.read().strip()[0:16]
-
-
 @mynode_canary.route("/info")
 def canary_page():
     check_logged_in()
 
     app = get_application("canary")
-    current_version = get_canary_current_version()
-    if current_version:
-        app["current_version"] = current_version
-
     app_status = get_application_status("canary")
     app_status_color = get_application_status_color("canary")
 

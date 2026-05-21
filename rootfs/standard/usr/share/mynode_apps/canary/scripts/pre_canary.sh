@@ -2,55 +2,17 @@
 
 set -e
 
-APP_DIR="/opt/mynode/canary"
 DATA_DIR="/mnt/hdd/mynode/canary"
-VERSION_FILE="/mnt/hdd/mynode/settings/canary_version"
-VERSION="${VERSION:-$(cat "$VERSION_FILE" 2>/dev/null || echo v1.5.0)}"
 ADMIN_PASSWORD_FILE="$DATA_DIR/admin_password"
 JWT_SECRET_FILE="$DATA_DIR/jwt_secret"
 ENV_FILE="$DATA_DIR/canary.env"
-
-write_compose_file() {
-    mkdir -p "$APP_DIR"
-    cat > "$APP_DIR/docker-compose.yml" <<EOF
-version: "3.8"
-
-services:
-  backend:
-    image: canary-backend:latest
-    network_mode: host
-    restart: unless-stopped
-    stop_grace_period: 30s
-    volumes:
-      - /mnt/hdd/mynode/canary:/app/data
-    env_file:
-      - /mnt/hdd/mynode/canary/canary.env
-    environment:
-      CANARY_DATA_DIR: /app/data
-      CANARY_ELECTRUM_URL: tcp://127.0.0.1:50001
-      CANARY_NETWORK: mainnet
-      CANARY_MODE: self-hosted
-      CANARY_BIND_ADDRESS: 127.0.0.1:3004
-
-  frontend:
-    image: canary-frontend:latest
-    network_mode: host
-    restart: unless-stopped
-    stop_grace_period: 30s
-    depends_on:
-      - backend
-    environment:
-      API_URL: http://127.0.0.1:3004
-      PORT: "3005"
-EOF
-}
 
 generate_secret() {
     local length="$1"
     tr -dc A-Za-z0-9 < /dev/urandom | head -c "$length"
 }
 
-write_compose_file
+cp -f app_data/docker-compose.yml docker-compose.yml
 
 # Ensure data directory exists before starting.
 mkdir -p "$DATA_DIR"
