@@ -64,7 +64,7 @@ fi
 # Custom re-install steps
 if [ "$APP" = "bip110_autoupdate" ]; then
     BIP110_LATEST_VERSION="29.3.3-knots" # Must be unique each version (only used to track trigger upgrade)
-    BTC_UPGRADE_URL=https://bitcoinknots.org/files/29.x/29.3.knots20260507/bitcoin-29.3.knots20260508-$ARCH.tar.gz
+    BTC_UPGRADE_URL=https://bitcoinknots.org/files/29.x/29.3.knots20260508/bitcoin-29.3.knots20260508-$ARCH.tar.gz
     BTC_SHASUM=https://bitcoinknots.org/files/29.x/29.3.knots20260508/SHA256SUMS
     BTC_ASC=https://bitcoinknots.org/files/29.x/29.3.knots20260508/SHA256SUMS.asc
 

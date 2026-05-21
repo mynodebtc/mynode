@@ -433,6 +433,7 @@ def disable_bip158():
 def update_bitcoin_json_cache():
     global BITCOIN_CACHE_FILE
     bitcoin_data = {}
+    bitcoin_data["version"] = get_bitcoin_version()
     bitcoin_data["current_block_height"] = mynode_block_height
     bitcoin_data["blockchain_info"] = get_bitcoin_blockchain_info()
     #bitcoin_data["recent_blocks"] = bitcoin_recent_blocks
