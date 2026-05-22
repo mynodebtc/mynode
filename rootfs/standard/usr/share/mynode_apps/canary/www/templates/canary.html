@@ -1,0 +1,210 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{app.name}}</title>
+        {% include 'includes/head.html' %}
+
+        <script src="{{ url_for('static', filename='js/manage_apps.js')}}"></script>
+
+        <style>
+            .canary_credentials_value {
+                font-family: monospace;
+                word-break: break-all;
+            }
+            .canary_credentials_missing {
+                color: #888;
+            }
+        </style>
+
+        <script>
+        $(document).ready(function() {
+            $("#show_canary_password").on("click", function() {
+                $("#show_canary_password").hide(0);
+                $("#canary_password").show();
+                $("#copy_canary_password").show();
+            });
+
+            $("#copy_canary_password").on("click", function() {
+                var password = "{{canary_password}}";
+                function showCopied() {
+                    showAlertPopup("alert_popup", "<b>Password copied!</b>");
+                }
+                function showFailed() {
+                    showAlertPopup("alert_popup", "<b>Password copy failed!</b>");
+                }
+
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(password).then(showCopied, showFailed);
+                    return;
+                }
+
+                var input = document.createElement("input");
+                input.value = password;
+                document.body.appendChild(input);
+                input.select();
+                try {
+                    document.execCommand("copy") ? showCopied() : showFailed();
+                } catch (e) {
+                    showFailed();
+                }
+                document.body.removeChild(input);
+            });
+        });
+        </script>
+    </head>
+    <body>
+        {% include 'includes/logo_header.html' %}
+        <div class="mynode_top_left_div">
+            <a href="/"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/home.png")}}"/></a>
+        </div>
+
+        <div class="main_header">{{app.name}}</div>
+        <br/>
+
+        <div class="app_page_container">
+            <div class="app_page_block_header">&nbsp;</div>
+            <div class="app_page_block_contents">
+
+                <div class="app_page_block_contents_left">
+                    <img class="app_page_icon" src="{{ url_for('static', filename="images/app_icons/")}}{{app.short_name}}.png"/>
+                    {% if not app.hide_status_icon %}
+                    <div class="app_page_status_bar {{app_status_color}}"></div>
+                    {% endif %}
+                    <p style="font-size: 14px; text-align: center;">{{app_status}}</p>
+
+                    <br/>
+
+                    {% if not app.is_installed %}
+                        <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button install_button" onclick="install('{{ app.name }}', '{{ app.short_name }}');">Install</button>
+                    {% else %}
+
+                        {% if app.is_enabled and app.app_page_show_open_button %}
+                            {% if app.http_port != "" or app.https_port != "" %}
+                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="open_app_in_new_tab('{{app.http_port}}', '{{app.https_port}}', false, '{{app.tor_address}}')">Open</button>
+
+                                <div class="divider button_divider"></div>
+                            {% endif %}
+                        {% endif %}
+
+                        {% if app.is_enabled %}
+                            <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="restart_app_via_api('{{ app.name }}', '{{ app.short_name }}');">Restart</button>
+
+                            {% if app.is_enabled and app.data_manageable %}
+                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="reset_data_folder_via_api('{{ app.name }}', '{{ app.short_name }}');">Reset Data</button>
+                            {% endif %}
+
+                            {% for btn in app.app_page_additional_buttons %}
+                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button"
+                                    {% if btn.href is defined and btn.href != "" %}
+                                        onclick="window.location='{{btn.href}}'"
+                                    {% elif btn.onclick is defined and btn.onclick != "" %}
+                                        onclick="{{btn.onclick|safe}}"
+                                    {% endif %}
+                                        >{{btn.title}}</button>
+                            {% endfor %}
+
+                            <div class="divider button_divider"></div>
+                        {% endif %}
+
+                        {% if app.can_enable_disable %}
+                            {% if not app.is_enabled %}
+                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="toggleEnabled('{{app.short_name}}', '{{app.name}}', true)">Enable</button>
+                            {% else %}
+                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="toggleEnabled('{{app.short_name}}', '{{app.name}}', false)">Disable</button>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+
+                </div>
+
+                <div class="app_page_block_contents_right">
+                    <div class="app_page_block_contents_heading">
+                        <div class="info-page-block">Info</div>
+                    </div>
+                    <div class="app_page_block_contents_text">
+                        <table class="info_table" style="font-size: 12px; margin-left: 10px">
+                            <tr>
+                                <th>Installed Version</th>
+                                <td>
+                                    {% if app.is_installed %}
+                                        {{app.current_version}}
+                                    {% else %}
+                                        Not Installed
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% if app.author.name is defined %}
+                            <tr>
+                                <th>Author</th>
+                                <td>
+                                    {% if app.author.link is defined and app.author.link != "" %}
+                                        <a href="{{app.author.link}}" target="_blank">{{app.author.name}}</a>
+                                    {% else %}
+                                        {{app.author.name}}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% if app.website.name is defined and app.website.link is defined %}
+                            <tr>
+                                <th>Website</th>
+                                <td>
+                                    <a href="{{app.website.link}}" target="_blank">{{app.website.name}}</a>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </table>
+                    </div>
+
+                    <div class="app_page_block_contents_heading">
+                        <div class="info-page-block">Credentials</div>
+                    </div>
+                    <div class="app_page_block_contents_text">
+                        <table class="info_table" style="font-size: 12px; margin-left: 10px">
+                            <tr>
+                                <th>Username</th>
+                                <td><span class="canary_credentials_value">{{canary_username}}</span></td>
+                            </tr>
+                            <tr>
+                                <th>Password</th>
+                                <td>
+                                    {% if canary_password %}
+                                        <span id="canary_password" class="canary_credentials_value" style="display: none; margin: 0;">{{canary_password}}</span>
+                                        <span id="copy_canary_password" class="ui-icon ui-icon-copy" style="cursor: pointer; display: none;" title="Copy Password"></span>
+                                        <a id="show_canary_password" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;">show password</a>
+                                    {% else %}
+                                        <span class="canary_credentials_missing">Not generated yet</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    {% if app.app_page_content is defined and app.app_page_content|length > 0 %}
+                        {% for section in app.app_page_content %}
+                            <div class="app_page_block_contents_heading">
+                                <div class="info-page-block">{{section.heading}}</div>
+                            </div>
+                            <div class="app_page_block_contents_text">
+                                {% for parapraph in section.content %}
+                                    <p>{{parapraph}}</p>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                </div>
+
+            </div>
+        </div>
+
+        <div id="confirm-dialog"></div>
+
+        <div id="loading_spinner_overlay" class="loading_spinner_overlay" style="display:none;">
+            <img id="loading_spinner" class="loading_image" src="{{ url_for('static', filename="images/loading.gif")}}"/>
+            <br/>
+            <span id="loading_spinner_message">Loading...</span>
+        </div>
+
+        {% include 'includes/footer.html' %}
+    </body>
+</html>

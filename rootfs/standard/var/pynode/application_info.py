@@ -45,6 +45,7 @@ def reinstall_app(app):
         # Reboot
         reboot_device()
 
+# For Legacy Apps (dynamic apps use remove_app)
 def uninstall_app(app):
     # Make sure app is disabled
     disable_service(app)
@@ -62,6 +63,7 @@ def uninstall_app(app):
     # Sync
     os.system("sync")
 
+# For Dynamic Apps (legacy apps use uninstall_app)
 def remove_app(app):
     # Remove install markers
     clear_app_installed(app)
@@ -174,8 +176,16 @@ def replace_app_info_variables(app_data, text):
     return text
 
 def get_app_not_supported_reason(app):
+    # Check Debian Version
     if get_debian_version() < app["minimum_debian_version"]:
         return "Requires Debian "+str(app["minimum_debian_version"])+"+"
+    
+    # Check app dependencies (dependent apps that must be installed first)
+    if len(app["installed_app_dependencies"]) > 0:
+        for required_app_short_name in app["installed_app_dependencies"]:
+            if not is_installed(required_app_short_name):
+                required_app = get_application(required_app_short_name)
+                return f"Requires {required_app['name']} to be installed"
     return ""
 
 def is_app_supported(app):
@@ -195,6 +205,7 @@ def initialize_application_defaults(app):
     if not "linux_user" in app: app["linux_user"] = "bitcoin"
     if not "supported_archs" in app: app["supported_archs"] = None 
     if not "minimum_debian_version" in app: app["minimum_debian_version"] = 10
+    if not "installed_app_dependencies" in app: app["installed_app_dependencies"] = []    # Prevents installation unless these apps are installed
     if not "download_skip" in app: app["download_skip"] = False
     if not "download_type" in app: app["download_type"] = "source"      # source or binary
     if not "download_source_url" in app: app["download_source_url"] = "not_specified"
@@ -239,6 +250,7 @@ def initialize_application_defaults(app):
     if not "app_tile_running_status_text" in app: app["app_tile_running_status_text"] = app["short_description"]
     if not "app_tile_button_href" in app: app["app_tile_button_href"] = "#"
     if not "app_tile_button_onclick" in app: app["app_tile_button_onclick"] = ""
+    if not "app_tile_button_open_app_directly" in app: app["app_tile_button_open_app_directly"] = False
     if not "app_page_show_open_button" in app: app["app_page_show_open_button"] = True
     if not "app_page_additional_buttons" in app: app["app_page_additional_buttons"] = []
     if not "app_page_content" in app: app["app_page_content"] = []
@@ -259,11 +271,23 @@ def initialize_application_defaults(app):
             section["content"][j] = replace_app_info_variables(app, line)
         app["app_page_content"][i] = section
 
-    # Check if app is supported
-    app["is_supported"] = is_app_supported(app)
-    app["not_supported_reason"] = get_app_not_supported_reason(app)
+    # This data will be initialized once all apps are loaded
+    app["is_supported"] = None
+    app["not_supported_reason"] = None
 
     return app
+
+def initialize_application_advanced_data(app):
+    # Initialize data that needs to be done once all apps are initialized
+    # Some app values, need to check install dependences and things which require
+    # all apps to have been initialized into the mynode_applications object. This
+    # function runs after the defaults have been initialized into mynode_applications.
+    global mynode_applications
+    for app in mynode_applications:
+        if app["is_supported"] == None:
+            app["is_supported"] = is_app_supported(app)
+        if app["not_supported_reason"] == None:
+            app["not_supported_reason"] = get_app_not_supported_reason(app)
 
 def update_application(app, include_status=False):
     short_name = app["short_name"]
@@ -302,6 +326,11 @@ def initialize_applications():
             apps.append( initialize_application_defaults( app ) )
 
     mynode_applications = copy.deepcopy(apps)
+
+    # Initialize advanced data that needs all apps loaded
+    for app in mynode_applications:
+        initialize_application_advanced_data(app)
+
     return
 
 def update_applications(include_status=False):
@@ -455,6 +484,9 @@ def get_application_status_special(short_name):
     elif short_name == "jam":
         if not is_installed("joininbox"):
             return "Requires JoinMarket"
+    elif short_name == "publicpoolui":
+        if not is_installed("publicpool") or not is_service_enabled("publicpool"):
+            return "Waiting for Public Pool..."
 
     return ""
 
@@ -512,6 +544,9 @@ def get_application_status_color_special(short_name):
             return "gray"
     elif short_name == "jam":
         if not is_installed("joininbox"):
+            return "yellow"
+    elif short_name == "publicpoolui":
+        if not is_installed("publicpool") or not is_service_enabled("publicpool"):
             return "yellow"
     return ""
 

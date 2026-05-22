@@ -413,10 +413,16 @@ fi
 [ -d /usr/local/lib/python2.7/dist-packages ] && echo "/var/pynode" > /usr/local/lib/python2.7/dist-packages/pynode.pth
 [ -d /usr/local/lib/python3.7/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.7/site-packages/pynode.pth
 [ -d /usr/local/lib/python3.8/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.8/site-packages/pynode.pth
+[ -d /usr/local/lib/python3.11/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.11/site-packages/pynode.pth
 
 
 # Install Python3 specific tools
 pip3 install --upgrade pip wheel setuptools
+
+# PyYAML Workaround (maybe only needed for python 3.10+)
+#echo 'Cython < 3.0' > /tmp/constraint.txt
+#PIP_CONSTRAINT=/tmp/constraint.txt pip3 wheel PyYAML==5.4.1
+#pip3 install 'PyYAML==5.4.1'
 
 pip3 install -r $TMP_INSTALL_PATH/usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir || \
     pip3 install -r $TMP_INSTALL_PATH/usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir --use-deprecated=html5lib
@@ -456,7 +462,7 @@ usermod -aG docker root
 # Install node packages
 npm install -g pug-cli browserify uglify-js babel-cli
 npm install -g npm@$NODE_NPM_VERSION
-npm install -g yarn
+npm install -g yarn @quasar/cli @angular/cli
 
 # Install Log2Ram
 if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
@@ -884,31 +890,6 @@ if [ "$CURRENT" != "$BTCRPCEXPLORER_VERSION" ]; then
 fi
 
 
-# Upgrade Specter Desktop
-CURRENT=""
-if [ -f $SPECTER_VERSION_FILE ]; then
-    CURRENT=$(cat $SPECTER_VERSION_FILE)
-fi
-if [ "$CURRENT" != "$SPECTER_VERSION" ]; then
-    cd /opt/mynode
-    rm -rf specter
-    mkdir -p specter
-    chown -R bitcoin:bitcoin specter
-    cd specter
-
-    # Make venv
-    if [ ! -d env ]; then
-        sudo -u bitcoin python3 -m venv env
-    fi
-    source env/bin/activate
-    pip3 install ecdsa===0.13.3
-    pip3 install cryptoadvance.specter===$SPECTER_VERSION --upgrade
-    deactivate
-
-    echo $SPECTER_VERSION > $SPECTER_VERSION_FILE
-fi
-
-
 # Upgrade Thunderhub
 THUNDERHUB_UPGRADE_URL=https://github.com/apotdevin/thunderhub/archive/$THUNDERHUB_VERSION.tar.gz
 CURRENT=""
@@ -982,9 +963,10 @@ touch /home/bitcoin/.mynode/install_vpn
 
 # Mark docker images for install (on SD so install occurs after drive attach)
 touch /home/bitcoin/.mynode/install_mempool
-touch /home/bitcoin/.mynode/install_btcpayserver
 
-# SKIPPING LNBITS - OPTIONAL ALL
+# SKIPPING BTCPAYSERVER - OPTIONAL APP
+# SKIPPING SPECTER - OPTIONAL APP
+# SKIPPING LNBITS - OPTIONAL APP
 # SKIPPING CKBUNKER - OPTIONAL APP
 # SKIPPING SPHINX - OPTIONAL APP
 # SKIPPING BOS - OPTIONAL APP

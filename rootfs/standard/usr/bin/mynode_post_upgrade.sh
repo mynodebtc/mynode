@@ -84,6 +84,9 @@ if ! skip_base_upgrades ; then
         sed -i 's|deb.debian.org/debian buster-backports|archive.debian.org/debian buster-backports|g' /etc/apt/sources.list
         # Add backports repo
         grep -qxF "deb http://archive.debian.org/debian buster-backports main" /etc/apt/sources.list  || echo "deb http://archive.debian.org/debian buster-backports main" >> /etc/apt/sources.list
+    
+        # Comment out nodesource repo for buster (doesn't work anymore)
+        sed -i 's|^deb|#deb|' /etc/apt/sources.list.d/nodesource.list
     fi
     # Add I2P Repo
     /bin/bash /usr/share/mynode/scripts/add_i2p_repo.sh
@@ -259,6 +262,7 @@ if ! skip_base_upgrades ; then
         ./configure
         make -j4
         make install
+        #make altinstall # Installs version, but doesn't become default python3
 
         # Mark apps using python as needing re-install
         rm -f /home/bitcoin/.mynode/specter_version
@@ -275,6 +279,7 @@ if ! skip_base_upgrades ; then
     [ -d /usr/local/lib/python2.7/dist-packages ] && echo "/var/pynode" > /usr/local/lib/python2.7/dist-packages/pynode.pth
     [ -d /usr/local/lib/python3.7/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.7/site-packages/pynode.pth
     [ -d /usr/local/lib/python3.8/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.8/site-packages/pynode.pth
+    [ -d /usr/local/lib/python3.11/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.11/site-packages/pynode.pth
 
     # Remove old python files so new copies are used (files migrated to pynode)
     set +x
@@ -330,7 +335,7 @@ if ! skip_base_upgrades ; then
 
     # Update NPM (Node Package Manager)
     #npm install -g npm@$NODE_NPM_VERSION
-    npm install -g yarn @quasar/cli
+    npm install -g yarn @quasar/cli @angular/cli
     
     # Install Docker
     mkdir -p /etc/apt/keyrings
@@ -391,7 +396,7 @@ if [ "$CURRENT" != "$BTC_VERSION" ]; then
     # Fixes issue if SD card was reflashed, but custom bitcoin version had been installed prior
     # and we still have custom marker files on the data drive. This install may fail, but subsequent
     # attempts will succeed.
-    if [[ "$BTC_VERSION" = *"knots"* ]] || [[ "$BTC_VERSION" = *"ordisrespector"* ]]; then
+    if [[ "$BTC_VERSION" = *"knots"* ]] || [[ "$BTC_VERSION" = *"bip110"* ]] || [[ "$BTC_VERSION" = *"ordisrespector"* ]]; then
         rm -f /home/bitcoin/.mynode/bitcoin_version_latest_custom
         rm -f /mnt/hdd/mynode/settings/bitcoin_version_latest_custom
     fi
@@ -426,7 +431,11 @@ if [ "$CURRENT" != "$BTC_VERSION" ]; then
     else
         echo "ERROR UPGRADING BITCOIN - SHASUM FAILED"
     fi
+elif [[ "$CURRENT" == *"_autoupdate" ]]; then
+    # Handle custom versions that auto-update
+    /usr/bin/mynode-install-custom-bitcoin "$CURRENT" --no-reboot
 fi
+
 
 # Upgrade LND
 echo "Upgrading LND..."
@@ -765,8 +774,24 @@ if should_install_app "joininbox" ; then
                 JM_ENV_VARS="export JM_PYTHON=python3.7; "
             fi
 
-            # Install
+            # Patch JoininBox
+            if [ "$JOININBOX_VERSION" == "v0.8.4" ]; then
+                sed -i '219i\
+\
+  # PATCHING JM FOR OLDER LIBSODIUM (MYNODE) \
+  sed -i "s|libsodium-1.0.18|libsodium-1.0.20|g" /home/joinmarket/joinmarket-clientserver/install.sh \
+  sed -i "s|6f504490b342a4f8a4c4a02fc9b866cbef8622d5df4e5452b46be121e46636c1|ebb65ef6ca439333c2bb41a0c1990587288da07f6c7fd07cb3a18cc18d30ce19|g" /home/joinmarket/joinmarket-clientserver/install.sh \
+' /home/joinmarket/install.joinmarket.sh
+            fi
+            
+            # Install latest joinmarket commit to pick up bug fix preventing proper intall
+            # https://github.com/mynodebtc/mynode/issues/991
+            #sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket.sh --install commit" || true
+            
+            # Install version as expected from joininbox
             sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket.sh --install install" || true
+
+            # Install joinmarket-api
             sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket-api.sh on" || true            
             
             # Enable obwatcher service

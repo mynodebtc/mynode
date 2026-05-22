@@ -2,6 +2,7 @@
 
 source /usr/share/mynode/mynode_device_info.sh
 source /usr/share/mynode/mynode_app_versions.sh
+source /usr/share/mynode/mynode_functions.sh
 
 set -x
 set -e
@@ -22,8 +23,8 @@ mkdir -p /mnt/hdd/mynode/albyhub || true
 # no backup / restore implemented
 
 # Clear any old images, only if they exist
-docker images --format '{{.Repository}}:{{.Tag}}' | grep 'albyhub' | xargs --no-run-if-empty docker rmi
-docker images --format '{{.Repository}}:{{.Tag}}' | grep 'ghcr.io/getalby/hub' | xargs --no-run-if-empty docker rmi
+remove_docker_images_by_name 'albyhub'
+remove_docker_images_by_name 'ghcr.io/getalby/hub'
 
 # Pull ready dockers, instead of source
 docker pull ghcr.io/getalby/hub:$VERSION

@@ -2,6 +2,7 @@
 
 source /usr/share/mynode/mynode_device_info.sh
 source /usr/share/mynode/mynode_app_versions.sh
+source /usr/share/mynode/mynode_functions.sh
 
 set -x
 set -e
@@ -19,8 +20,8 @@ echo "==================== INSTALLING APP ===================="
 mkdir -p ${STORAGE_FOLDER}/data
 
 # Clear any old images
-docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'jam-') || true
-docker rmi jam:latest || true
+remove_docker_images_by_name 'jam-'
+remove_docker_images_by_name 'jam:latest'
 
 # Pull latest image
 docker pull ghcr.io/joinmarket-webui/$DOCKER_IMAGE_NAME

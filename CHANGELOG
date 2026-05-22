@@ -1,3 +1,25 @@
+=== v0.3.43 ===
+- Released 03/24/26
+- Upgrade Bitcoin to v29.3
+- Upgrade LND to v0.20.1
+- Upgrade LNDg to v1.10.1
+- Update Knots + BIP 110 Custom Version to v0.4.1
+
+=== v0.3.42 ===
+- Released 03/08/26
+- Fix bug with JoinMarket v0.9.11 installation
+- Fix config issue causing slow Electrs sync with Knots
+- Update Knots + BIP 110 Custom Version to v0.3
+- Improve Marketplace button color in dark mode
+
+=== v0.3.41 ===
+- Released 02/06/26
+- Add Public Pool UI Application
+- Add Public Pool Application (stratum server backend)
+- Add Bitcoin Knots + BIP110 Custom Bitcoin Version
+- Upgrade DATUM to v0.4.1
+- Upgrade AlbyHub to v1.20.0
+
 === v0.3.40 ===
 - Released 10/17/25
 - Revert Bitcoin config causing port 8333 issues

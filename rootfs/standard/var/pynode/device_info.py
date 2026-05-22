@@ -685,9 +685,16 @@ def show_32_bit_warning():
         if get_device_type() == "raspi4" and get_device_arch() != "aarch64":
             return True
     return False
-
 def hide_32_bit_warning():
     touch("/tmp/hide_32_bit_warning")
+
+def show_old_debian_warning():
+    if not os.path.isfile("/tmp/hide_old_debian_warning"):
+        if get_debian_version() < 12:
+            return True
+    return False
+def hide_old_debian_warning():
+    touch("/tmp/hide_old_debian_warning")
 
 
 #==================================
@@ -1017,6 +1024,9 @@ def reset_docker():
     os.system("rm -f /mnt/hdd/mynode/settings/webssh2_version")
     os.system("rm -f /mnt/hdd/mynode/settings/mempool_version")
     os.system("rm -f /mnt/hdd/mynode/settings/dojo_version")
+    os.system("rm -f /mnt/hdd/mynode/settings/jam_version")
+    os.system("rm -f /home/bitcoin/.mynode/lnbits_version")
+    os.system("rm -f /mnt/hdd/mynode/settings/albyhub_version")
 
     # Delete Dojo files
     os.system("rm -rf /opt/download/dojo")

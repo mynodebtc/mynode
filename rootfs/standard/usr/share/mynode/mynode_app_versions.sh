@@ -16,7 +16,7 @@ function get_app_version()
     echo "$version"
 }
 
-BTC_VERSION="29.1"
+BTC_VERSION="29.3"
 if [ "$DEBIAN_VERSION" -lt "12" ]; then
     BTC_VERSION="27.2"
 fi
@@ -24,7 +24,7 @@ BTC_VERSION=$(get_app_version "$BTC_VERSION" "bitcoin")
 BTC_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version
 BTC_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version_latest
 
-LND_VERSION="v0.19.3-beta"
+LND_VERSION="v0.20.1-beta"
 LND_VERSION=$(get_app_version "$LND_VERSION" "lnd")
 LND_VERSION_FILE=/home/bitcoin/.mynode/lnd_version
 LND_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnd_version_latest
@@ -210,6 +210,10 @@ RATHOLE_LATEST_VERSION_FILE=/home/bitcoin/.mynode/rathole_version_latest
 
 # Dependency versions
 PYTHON_VERSION="3.8.9"
+#PYTHON_VERSION="3.11.14"   # New python needed once JoinMarket goes past v0.9.11
+if [ "$DEBIAN_VERSION" -lt "12" ]; then
+    PYTHON_VERSION="3.8.9"
+fi
 
 PYTHON_ARM32_GRPCIO_VERSION="1.40.0"
 
