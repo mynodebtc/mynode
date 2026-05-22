@@ -11,9 +11,10 @@ echo "==================== UNINSTALLING APP ===================="
 cp -f app_data/docker-compose.yml docker-compose.yml 2>/dev/null || true
 /usr/local/bin/docker-compose down --remove-orphans 2>/dev/null || true
 
-
 remove_docker_images_by_name "canary-backend"
 remove_docker_images_by_name "canary-frontend"
+remove_docker_images_by_name "schjonhaug/canary-backend"
+remove_docker_images_by_name "schjonhaug/canary-frontend"
 
 rm -rf /mnt/hdd/mynode/canary
 

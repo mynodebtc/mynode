@@ -8,6 +8,8 @@ services:
     stop_grace_period: 30s
     volumes:
       - /mnt/hdd/mynode/canary:/app/data
+    env_file:
+      - /mnt/hdd/mynode/canary/canary.env
     environment:
       CANARY_DATA_DIR: /app/data
       CANARY_ELECTRUM_URL: tcp://127.0.0.1:50001
