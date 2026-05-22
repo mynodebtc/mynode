@@ -26,3 +26,5 @@ plans/
 releases/
 release.sh
 
+# myNode app build artifacts
+rootfs/standard/usr/share/mynode_apps/*/dist/
