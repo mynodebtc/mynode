@@ -1,3 +1,12 @@
+=== v0.3.44 ===
+- Released 05/25/26
+- Add Canary wallet monitor application
+- Upgrade Knots to 29.3.3
+- Add autoupdate choices for Knots and Knots+Bip110
+- Add help text to BIP toggles
+- Add warning to homepage for old Operating Systems
+- Minor bug fixes
+
 === v0.3.43 ===
 - Released 03/24/26
 - Upgrade Bitcoin to v29.3
