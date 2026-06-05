@@ -9,7 +9,7 @@ set -e
 
 echo "==================== INSTALLING APP ===================="
 
-VERSION="${VERSION:-v1.5.1}"
+VERSION="${VERSION:-v1.5.2}"
 
 mkdir -p /opt/mynode/canary || true
 mkdir -p /mnt/hdd/mynode/canary || true
