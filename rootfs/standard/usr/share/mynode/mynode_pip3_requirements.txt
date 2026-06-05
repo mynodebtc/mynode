@@ -23,5 +23,6 @@ pyudev
 inotify_simple
 glances
 bottle
+django>=4.2.15 # not directly required, pinned by Snyk to avoid a vulnerability
 fastapi
 uvicorn
