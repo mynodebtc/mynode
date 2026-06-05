@@ -17,6 +17,16 @@ service_is_enabled() {
     systemctl is-enabled "$service_name" > /dev/null 2>&1
 }
 
+service_is_active() {
+    local service_name="$1"
+    systemctl is-active "$service_name" > /dev/null 2>&1
+}
+
+service_is_available() {
+    local service_name="$1"
+    service_is_enabled "$service_name" && service_is_active "$service_name"
+}
+
 cp -f app_data/docker-compose.yml docker-compose.yml
 
 # Ensure data directory exists before starting.
@@ -35,15 +45,19 @@ CANARY_SELF_HOSTED_ADMIN_PASSWORD=$(cat "$ADMIN_PASSWORD_FILE")
 JWT_SECRET=$(cat "$JWT_SECRET_FILE")
 EOF
 
-if service_is_enabled mempool; then
+has_local_tx_explorer=0
+
+if service_is_available mempool; then
     echo "CANARY_MEMPOOL_PORT=4080" >> "$ENV_FILE"
+    has_local_tx_explorer=1
 fi
 
-if service_is_enabled btcrpcexplorer; then
+if service_is_available btcrpcexplorer; then
     echo "CANARY_BTC_RPC_EXPLORER_PORT=3002" >> "$ENV_FILE"
+    has_local_tx_explorer=1
 fi
 
-if service_is_enabled mempool || service_is_enabled btcrpcexplorer; then
+if [ "$has_local_tx_explorer" = "1" ]; then
     echo "CANARY_TX_EXPLORER_PLATFORM=mynode" >> "$ENV_FILE"
 fi
 
