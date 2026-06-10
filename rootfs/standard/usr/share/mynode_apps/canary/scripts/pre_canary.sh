@@ -2,6 +2,8 @@
 
 set -e
 
+source /usr/share/mynode/mynode_functions.sh
+
 DATA_DIR="/mnt/hdd/mynode/canary"
 ADMIN_PASSWORD_FILE="$DATA_DIR/admin_password"
 JWT_SECRET_FILE="$DATA_DIR/jwt_secret"
@@ -10,21 +12,6 @@ ENV_FILE="$DATA_DIR/canary.env"
 generate_secret() {
     local length="$1"
     tr -dc A-Za-z0-9 < /dev/urandom | head -c "$length"
-}
-
-service_is_enabled() {
-    local service_name="$1"
-    systemctl is-enabled "$service_name" > /dev/null 2>&1
-}
-
-service_is_active() {
-    local service_name="$1"
-    systemctl is-active "$service_name" > /dev/null 2>&1
-}
-
-service_is_available() {
-    local service_name="$1"
-    service_is_enabled "$service_name" && service_is_active "$service_name"
 }
 
 cp -f app_data/docker-compose.yml docker-compose.yml
@@ -47,12 +34,12 @@ EOF
 
 has_local_tx_explorer=0
 
-if service_is_available mempool; then
+if is_service_enabled mempool; then
     echo "CANARY_MEMPOOL_PORT=4080" >> "$ENV_FILE"
     has_local_tx_explorer=1
 fi
 
-if service_is_available btcrpcexplorer; then
+if is_service_enabled btcrpcexplorer; then
     echo "CANARY_BTC_RPC_EXPLORER_PORT=3002" >> "$ENV_FILE"
     has_local_tx_explorer=1
 fi
