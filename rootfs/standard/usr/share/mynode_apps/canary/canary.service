@@ -1,5 +1,5 @@
 [Unit]
-Description=Canary
+Description=Canary Wallet
 Wants=electrs.service docker_images.service
 After=electrs.service docker_images.service
 
