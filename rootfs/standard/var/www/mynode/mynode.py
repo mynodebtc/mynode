@@ -787,6 +787,8 @@ def set_response_headers(response):
         # Prevents 301 from saving forever
         response.headers['Cache-Control'] = 'no-store'
 
+    response.headers["Access-Control-Allow-Private-Network"] = "true"
+
     # No Caching
     #response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     #response.headers['Pragma'] = 'no-cache'
