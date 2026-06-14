@@ -40,7 +40,10 @@ elif [ "$APP" = "netdata" ]; then
 elif [ "$APP" = "btcpayserver" ]; then
     # Stop and clean images
     /usr/local/bin/btcpay-down.sh
-    /usr/local/bin/btcpay-clean.sh
+    #/usr/local/bin/btcpay-clean.sh # This removes WAY too much!
+    remove_docker_images_by_name 'btcpayserver/btcpayserver'
+    remove_docker_images_by_name 'nicolasdorier/nbxplorer'
+    remove_docker_images_by_name 'btcpayserver/postgres'
 
     # Remove files and data (don't remove volume for re-install)
     rm -f /etc/profile.d/btcpay-env.sh

@@ -156,7 +156,7 @@ while true; do
             export BTCPAY_HOST="mynode.local"
             export NBITCOIN_NETWORK="mainnet"
             export BTCPAYGEN_CRYPTO1="btc"
-            export BTCPAYGEN_ADDITIONAL_FRAGMENTS="btcpayserver-noreverseproxy;bitcoin.custom;lnd.custom"
+            export BTCPAYGEN_ADDITIONAL_FRAGMENTS="btcpayserver-noreverseproxy;bitcoin.custom;lnd.custom;nbxplorer"
             export BTCPAYGEN_EXCLUDE_FRAGMENTS="opt-add-tor;bitcoin;bitcoin-lnd;"
             export BTCPAYGEN_REVERSEPROXY="none"
             export NOREVERSEPROXY_HTTP_PORT=49392

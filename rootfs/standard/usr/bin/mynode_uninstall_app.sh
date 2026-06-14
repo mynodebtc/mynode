@@ -5,6 +5,7 @@ set -x
 
 source /usr/share/mynode/mynode_config.sh
 source /usr/share/mynode/mynode_app_versions.sh
+source /usr/share/mynode/mynode_functions.sh
 
 # Make sure we have an app argument
 if [ "$#" -ne 1 ]; then
@@ -27,7 +28,10 @@ if [ "$APP" = "bos" ]; then
 elif [ "$APP" = "btcpayserver" ]; then
     # Stop and clean images
     /usr/local/bin/btcpay-down.sh
-    /usr/local/bin/btcpay-clean.sh
+    #/usr/local/bin/btcpay-clean.sh # This removes WAY too much!
+    remove_docker_images_by_name 'btcpayserver/btcpayserver'
+    remove_docker_images_by_name 'nicolasdorier/nbxplorer'
+    remove_docker_images_by_name 'btcpayserver/postgres'
 
     # Remove files and data
     source /etc/profile.d/btcpay-env.sh
