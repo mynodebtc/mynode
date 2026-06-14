@@ -13,6 +13,7 @@ RemainAfterExit=yes
 # MyNode Customizations
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/is_mainnet.sh
+ExecStartPre=/usr/bin/wait_on_bitcoin.sh
 ExecStartPre=/usr/bin/wait_on_docker_image_install.sh
 ExecStartPre=+/usr/bin/service_scripts/pre_btcpayserver.sh
 

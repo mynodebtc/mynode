@@ -12,6 +12,8 @@ WorkingDirectory=/opt/mynode/jam
 EnvironmentFile=/mnt/hdd/mynode/settings/.btcrpc_environment
 
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/usr/bin/wait_on_bitcoin.sh
+ExecStartPre=/usr/bin/wait_on_docker_image_install.sh
 ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_jam.sh ]; then /bin/bash /usr/bin/service_scripts/pre_jam.sh; fi'
 ExecStart=/usr/bin/docker run --rm \
         --name jam \

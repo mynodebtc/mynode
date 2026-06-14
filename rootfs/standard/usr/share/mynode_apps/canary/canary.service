@@ -7,6 +7,8 @@ After=electrs.service docker_images.service
 WorkingDirectory=/opt/mynode/canary
 
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/usr/bin/wait_on_bitcoin.sh
+ExecStartPre=/usr/bin/wait_on_docker_image_install.sh
 ExecStartPre=+/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_canary.sh ]; then /bin/bash /usr/bin/service_scripts/pre_canary.sh; fi'
 ExecStartPre=-/usr/local/bin/docker-compose down --remove-orphans
 ExecStart=/usr/local/bin/docker-compose up

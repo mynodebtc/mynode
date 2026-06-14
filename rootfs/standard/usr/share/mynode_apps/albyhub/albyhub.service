@@ -10,6 +10,8 @@ After=www.service docker_images.service
 WorkingDirectory=/opt/mynode/albyhub
 
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=/usr/bin/wait_on_bitcoin.sh
+ExecStartPre=/usr/bin/wait_on_docker_image_install.sh
 ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_albyhub.sh ]; then /bin/bash /usr/bin/service_scripts/pre_albyhub.sh; fi'
 ExecStart=docker run --rm \
   --name albyhub \
