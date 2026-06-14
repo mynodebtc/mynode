@@ -177,6 +177,14 @@ while true; do
             #. ./btcpay-setup.sh # Install and run
             bash -c ". ./btcpay-setup.sh --install-only --no-startup-register --no-systemd-reload"
 
+            # Update NBXplorer variables (needed to pull containers)
+            NBXPLORER_VARIABLES_FILE=/mnt/hdd/mynode/btcpayserver/btcpayserver-docker/Generated/nbxplorer-variables.env
+            echo "NBXPLORER_BTCRPCUSER=mynode"            > $NBXPLORER_VARIABLES_FILE
+            echo "NBXPLORER_BTCRPCPASSWORD=$BTCRPCPW"    >> $NBXPLORER_VARIABLES_FILE
+
+            # Pull latest containers
+            /bin/bash -c  '. "/etc/profile.d/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY/btcpayserver-docker" && . helpers.sh && btcpay_pull'
+            
             echo $BTCPAYSERVER_VERSION > $BTCPAYSERVER_VERSION_FILE
         fi
     else
@@ -189,8 +197,9 @@ while true; do
         docker rm $(docker ps -a -q --filter name=generated_postgres) 2>/dev/null || true
         docker rm $(docker ps -a -q --filter name=generated_btcpayserver) 2>/dev/null || true
         docker rm $(docker ps -a -q --filter name=generated_nbxplorer) 2>/dev/null || true
-        remove_docker_images_by_name 'btcpayserver'
-        remove_docker_images_by_name 'nbxplorer'
+        remove_docker_images_by_name 'btcpayserver/btcpayserver'
+        remove_docker_images_by_name 'nicolasdorier/nbxplorer'
+        remove_docker_images_by_name 'btcpayserver/postgres'
     fi
     touch /tmp/need_application_refresh
 
