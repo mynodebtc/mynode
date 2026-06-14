@@ -4,11 +4,13 @@
 [Unit]
 Description=BTCPayServer service
 After=docker.service network-online.target bitcoin.service
-Requires=docker.service network-online.target bitcoin.service
+Wants=docker.service network-online.target bitcoin.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
+Restart=on-failure
+RestartSec=120s
 
 # MyNode Customizations
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
