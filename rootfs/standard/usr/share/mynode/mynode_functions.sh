@@ -20,6 +20,10 @@ function settings_file_exists {
     return 1
 }
 
+function is_service_enabled {
+    systemctl is-enabled "$1" > /dev/null 2>&1
+}
+
 function skip_base_upgrades {
     if [ -f /tmp/skip_base_upgrades ]; then
         return 0

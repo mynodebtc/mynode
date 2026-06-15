@@ -31,7 +31,6 @@ def canary_page():
         "app_status": app_status,
         "app_status_color": app_status_color,
         "app": app,
-        "canary_username": "admin@local",
         "canary_password": get_canary_password(),
     }
     return render_template("/app/canary/canary.html", **template_data)
