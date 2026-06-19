@@ -14,6 +14,8 @@ body, input, select, textarea {
 
 .logo_image {
     width: 100%;
+    height: auto;
+    display: block;
 }
 
 .footer {
@@ -1101,6 +1103,8 @@ input:checked + .slider:before {
 .marketplace_app_tile_icon {
     float: left;
     width: 60px;
+    height: 60px;
+    object-fit: contain;
     margin-top: 10px;
     margin-left: 10px;
 }
@@ -1174,6 +1178,8 @@ input:checked + .slider:before {
     margin: auto;
     display: block;
     width: 150px;
+    height: 150px;
+    object-fit: contain;
 }
 .marketplace_app_page_button {
     margin: auto;
