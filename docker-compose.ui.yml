@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  mynode-ui:
+    build:
+      context: .
+      dockerfile: docker/ui/Dockerfile
+    image: mynode-ui-mock:latest
+    container_name: mynode-ui-mock
+    ports:
+      - "${MYNODE_UI_PORT:-8001}:8000"
+    volumes:
+      - ./rootfs/standard/var/www/mynode:/var/www/mynode
+      - ./rootfs/standard/var/pynode:/var/pynode
+      - ./rootfs/standard/usr/share/mynode:/usr/share/mynode
+      - ./rootfs/standard/usr/share/mynode_apps:/usr/share/mynode_apps
+      - ./docker/ui/init_dynamic_apps_ui.sh:/docker/ui/init_dynamic_apps_ui.sh
+    environment:
+      - MYNODE_UI_MOCK=1
+      - MYNODE_UI_SCENARIO=${MYNODE_UI_SCENARIO:-stable-synced}
+      - MYNODE_UI_PORT=8000
+      - MYNODE_UI_RELOAD=${MYNODE_UI_RELOAD:-1}
+    restart: always

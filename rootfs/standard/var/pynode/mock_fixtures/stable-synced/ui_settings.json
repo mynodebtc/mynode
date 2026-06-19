@@ -1,0 +1,7 @@
+{
+  "theme": "dark",
+  "currency": "USD",
+  "pin_bitcoin": "true",
+  "pin_lnd": "true",
+  "pin_electrs": "false"
+}

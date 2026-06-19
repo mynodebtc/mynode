@@ -1,0 +1,13 @@
+{
+  "bitcoin": {"running": true, "enabled": true, "color": "green", "text": "Running"},
+  "lnd": {"running": true, "enabled": true, "color": "green", "text": "Running"},
+  "electrs": {"running": true, "enabled": true, "color": "green", "text": "Running"},
+  "lndg": {"running": true, "enabled": true, "color": "green", "text": "Running"},
+  "rtl": {"running": true, "enabled": true, "color": "green", "text": "Running"},
+  "btcpayserver": {"running": true, "enabled": true, "color": "green", "text": "Running"},
+  "lndhub": {"running": true, "enabled": true, "color": "green", "text": "Running"},
+  "lnbits": {"running": true, "enabled": true, "color": "green", "text": "Running"},
+  "mempool": {"running": true, "enabled": true, "color": "green", "text": "Running"},
+  "canary": {"running": true, "enabled": true, "color": "green", "text": "Running"},
+  "btcrpcexplorer": {"running": true, "enabled": true, "color": "green", "text": "Running"}
+}

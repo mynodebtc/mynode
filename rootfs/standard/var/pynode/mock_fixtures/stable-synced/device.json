@@ -1,0 +1,23 @@
+{
+  "status": "stable",
+  "current_version": "0.3.0",
+  "latest_version": "0.3.0",
+  "current_beta_version": "0.3.0-beta",
+  "latest_beta_version": "0.3.0-beta",
+  "uptime_seconds": 123456,
+  "ip": "127.0.0.1",
+  "temp": "45.2 C",
+  "serial": "MYNODE-MOCK-SERIAL-999",
+  "type": "raspi4",
+  "arch": "aarch64",
+  "debian_version": "12",
+  "debian_codename": "bookworm",
+  "cpu_usage": 12.5,
+  "ram_usage": 42.1,
+  "os_drive": {"total": "59.2 GB", "used": "15.4 GB", "free": "41.6 GB", "percent": 27},
+  "data_drive": {"total": "931.5 GB", "used": "612.4 GB", "free": "319.1 GB", "percent": 65},
+  "warnings": [],
+  "has_product_key": true,
+  "is_valid_product_key": true,
+  "skipped_product_key": false
+}

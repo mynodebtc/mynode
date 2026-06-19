@@ -22,6 +22,28 @@ start_file_server:
 stop_file_server:
 	@/bin/bash scripts/stop_http_server.sh
 
+# Start UI mock in Docker container
+.PHONY: dev-ui-build
+dev-ui-build:
+	@docker compose -f docker-compose.ui.yml build
+
+.PHONY: dev-ui-start
+dev-ui-start:
+	@docker compose -f docker-compose.ui.yml up -d
+	@echo "MyNode Web UI Mock is launching! Open http://localhost:8001 in your browser."
+
+.PHONY: dev-ui-stop
+dev-ui-stop:
+	@docker compose -f docker-compose.ui.yml down
+
+.PHONY: dev-ui-restart
+dev-ui-restart:
+	@docker compose -f docker-compose.ui.yml restart
+
+.PHONY: dev-ui-logs
+dev-ui-logs:
+	@docker compose -f docker-compose.ui.yml logs -f
+
 
 
 # Download base MyNode images

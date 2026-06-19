@@ -1,3 +1,11 @@
+import os
+import sys
+
+if os.environ.get("MYNODE_UI_MOCK") == "1":
+    if "/var/pynode" not in sys.path:
+        sys.path.append("/var/pynode")
+    import mock_bootstrap
+    mock_bootstrap.enable_mock_mode()
 
 from config import *
 from flask import Flask, render_template, Markup, redirect, request, url_for
@@ -82,7 +90,15 @@ app.wsgi_app = ReverseProxied(app.wsgi_app)
 
 my_logger = logging.getLogger('FlaskLogger')
 my_logger.setLevel(logging.DEBUG)
-handler = logging.handlers.RotatingFileHandler(filename='/var/log/flask', maxBytes=2000000, backupCount=2)
+if os.environ.get("MYNODE_UI_MOCK") == "1":
+    handler = logging.StreamHandler(sys.stdout)
+    
+    @app.before_request
+    def force_mock_login():
+        from flask import session
+        session["logged_in"] = True
+else:
+    handler = logging.handlers.RotatingFileHandler(filename='/var/log/flask', maxBytes=2000000, backupCount=2)
 my_logger.addHandler(handler)
 app.logger.addHandler(my_logger)
 app.logger.setLevel(logging.INFO)
@@ -872,16 +888,25 @@ if __name__ == "__main__":
 
     set_logger(app.logger)
 
-    # Setup and start threads
-    start_threads()
+    is_mock = os.environ.get("MYNODE_UI_MOCK") == "1"
+
+    if not is_mock:
+        # Setup and start threads
+        start_threads()
 
     # Register blueprints for dynamic apps
     register_dynamic_app_flask_blueprints(app)
 
     try:
-        app.run(host='0.0.0.0', port=80)
+        if is_mock:
+            port = int(os.environ.get("MYNODE_UI_PORT", 8000))
+            debug = os.environ.get("MYNODE_UI_RELOAD", "1") == "1"
+            app.run(host='0.0.0.0', port=port, debug=debug, use_reloader=is_mock)
+        else:
+            app.run(host='0.0.0.0', port=80)
     except ServiceExit:
-        # Stop background threads
-        stop_app()
+        if not is_mock:
+            # Stop background threads
+            stop_app()
 
     app.logger.info("Service www exiting...")

@@ -1,0 +1,5 @@
+{
+  "bitcoin": "Bitcoin Mock Log - everything is looking stable.\nBlock 840000 found!\nConnection from peer 1.2.3.4:8333 accepted",
+  "lnd": "LND Mock Log - channels active.\nsyncing to chain...\nReady for payments!\nLoaded wallet successfully.",
+  "lndg": "LNDg Mock Log - running and collecting fee suggestions.\nProcessing incoming routing events."
+}

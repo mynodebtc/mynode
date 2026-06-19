@@ -1,0 +1,122 @@
+{
+  "lnd": {
+    "name": "LND",
+    "short_name": "lnd",
+    "is_installed": true,
+    "is_running": true,
+    "can_enable_disable": true,
+    "status": "Up",
+    "status_color": "green",
+    "supported_archs": ["all"],
+    "requires_bitcoin": true,
+    "requires_lightning": false
+  },
+  "electrs": {
+    "name": "Electrs",
+    "short_name": "electrs",
+    "is_installed": true,
+    "is_running": true,
+    "can_enable_disable": true,
+    "status": "Up",
+    "status_color": "green",
+    "supported_archs": ["all"],
+    "requires_bitcoin": true,
+    "requires_lightning": false
+  },
+  "lndg": {
+    "name": "LNDg",
+    "short_name": "lndg",
+    "is_installed": true,
+    "is_running": true,
+    "can_enable_disable": true,
+    "status": "Up",
+    "status_color": "green",
+    "supported_archs": ["all"],
+    "requires_bitcoin": true,
+    "requires_lightning": true
+  },
+  "rtl": {
+    "name": "Ride the Lightning",
+    "short_name": "rtl",
+    "is_installed": true,
+    "is_running": true,
+    "can_enable_disable": true,
+    "status": "Up",
+    "status_color": "green",
+    "supported_archs": ["all"],
+    "requires_bitcoin": true,
+    "requires_lightning": true
+  },
+  "btcpayserver": {
+    "name": "BTCPay Server",
+    "short_name": "btcpayserver",
+    "is_installed": true,
+    "is_running": true,
+    "can_enable_disable": true,
+    "status": "Up",
+    "status_color": "green",
+    "supported_archs": ["all"],
+    "requires_bitcoin": true,
+    "requires_lightning": false
+  },
+  "lndhub": {
+    "name": "LNDHub",
+    "short_name": "lndhub",
+    "is_installed": true,
+    "is_running": true,
+    "can_enable_disable": true,
+    "status": "Up",
+    "status_color": "green",
+    "supported_archs": ["all"],
+    "requires_bitcoin": true,
+    "requires_lightning": true
+  },
+  "lnbits": {
+    "name": "LNbits",
+    "short_name": "lnbits",
+    "is_installed": true,
+    "is_running": true,
+    "can_enable_disable": true,
+    "status": "Up",
+    "status_color": "green",
+    "supported_archs": ["all"],
+    "requires_bitcoin": true,
+    "requires_lightning": true
+  },
+  "mempool": {
+    "name": "Mempool Space",
+    "short_name": "mempool",
+    "is_installed": true,
+    "is_running": true,
+    "can_enable_disable": true,
+    "status": "Up",
+    "status_color": "green",
+    "supported_archs": ["all"],
+    "requires_bitcoin": true,
+    "requires_lightning": false
+  },
+  "canary": {
+    "name": "Canary",
+    "short_name": "canary",
+    "is_installed": true,
+    "is_running": true,
+    "can_enable_disable": true,
+    "status": "Up",
+    "status_color": "green",
+    "supported_archs": ["all"],
+    "requires_bitcoin": true,
+    "requires_lightning": false
+  },
+  "btcrpcexplorer": {
+    "name": "BTC RPC Explorer",
+    "short_name": "btcrpcexplorer",
+    "is_installed": true,
+    "is_running": true,
+    "can_enable_disable": true,
+    "status": "Up",
+    "status_color": "green",
+    "supported_archs": ["all"],
+    "requires_bitcoin": true,
+    "requires_lightning": false
+  }
+}

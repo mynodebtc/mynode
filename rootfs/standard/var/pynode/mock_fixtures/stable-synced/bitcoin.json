@@ -1,0 +1,22 @@
+{
+  "synced": true,
+  "sync_progress": 1.0,
+  "status": "Up",
+  "version": "26.0",
+  "block_height": 840000,
+  "mynode_block_height": 840000,
+  "difficulty": 83123456789.0,
+  "peer_count": 12,
+  "network_info": {"connections": 12, "version": 260000},
+  "mempool_info": {"size": 4321, "bytes": 1234567},
+  "recommended_fees": {"fastestFee": 15, "halfHourFee": 12, "hourFee": 10, "economyFee": 5, "minimumFee": 1},
+  "disk_usage": "600 GB",
+  "peers": [
+    {"id": 1, "addr": "1.2.3.4:8333", "subver": "/Satoshi:26.0.0/", "inbound": false},
+    {"id": 2, "addr": "5.6.7.8:8333", "subver": "/Satoshi:25.0.0/", "inbound": true}
+  ],
+  "recent_blocks": [
+    {"height": 840000, "hash": "000000000000000000010abcde...", "time": 1718300000},
+    {"height": 839999, "hash": "000000000000000000021ffeed...", "time": 1718299400}
+  ]
+}

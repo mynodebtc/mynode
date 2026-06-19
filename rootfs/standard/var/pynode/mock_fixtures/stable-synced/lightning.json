@@ -1,0 +1,36 @@
+{
+  "wallet_exists": true,
+  "logged_in": true,
+  "ready": true,
+  "status": "Up",
+  "status_color": "green",
+  "version": "0.17.4-beta",
+  "loop_version": "0.26.4-beta",
+  "pool_version": "0.28.2-beta",
+  "deposit_address": "tb1qmockaddresslnddepositaddress1234567",
+  "info": {
+    "identity_pubkey": "02mockpubkeylndnode1234567890abcdef1234567890abcdef",
+    "alias": "MyNode-Mock",
+    "num_active_channels": 4,
+    "num_peers": 8,
+    "block_height": 840000,
+    "synced_to_chain": true,
+    "synced_to_graph": true
+  },
+  "balance_info": {
+    "wallet_balance": 1500000,
+    "channel_balance": 3500000,
+    "pending_channel_balance": 0
+  },
+  "channels": [
+    {"active": true, "remote_pubkey": "03peer1pubkey...", "capacity": 2000000, "local_balance": 1200000, "remote_balance": 800000, "chan_id": "123456780"},
+    {"active": true, "remote_pubkey": "02peer2pubkey...", "capacity": 3000000, "local_balance": 2300000, "remote_balance": 700000, "chan_id": "987654320"}
+  ],
+  "peers": [
+    {"pub_key": "03peer1pubkey...", "address": "1.1.1.1:9735"},
+    {"pub_key": "02peer2pubkey...", "address": "2.2.2.2:9735"}
+  ],
+  "transactions": [],
+  "payments": [],
+  "invoices": []
+}
