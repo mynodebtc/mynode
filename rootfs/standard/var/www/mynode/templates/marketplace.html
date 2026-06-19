@@ -46,7 +46,7 @@
                         {% if app.show_on_marketplace_page and app.category == category.name %}
                             <div class="marketplace_app_tile" data-shortname="{{app.short_name}}">
                                 <div class="marketplace_app_tile_left">
-                                    <img class="marketplace_app_tile_icon" src="{{ url_for('static', filename="images/app_icons/")}}{{app.short_name}}.png"/>
+                                    <img class="marketplace_app_tile_icon" width="60" height="60" alt="{{app.name}} icon" src="{{ url_for('static', filename="images/app_icons/")}}{{app.short_name}}.png"/>
                                 </div>
                                 <div class="marketplace_app_tile_right">
                                     <div class="marketplace_app_tile_name">{{app.name}}</div>
