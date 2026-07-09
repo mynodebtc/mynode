@@ -88,8 +88,8 @@ def page_tor():
     v3_services.append(create_v3_service("LND API (gRPC)", lnd_onion_url, "10009", False, ""))
     v3_services.append(create_v3_service("LND API (REST)", lnd_onion_url, "10080", False, ""))
     v3_services.append(create_v3_service("SSH", ssh_onion_url, "22022", False, ""))
-    v3_services.append(create_v3_service("Electrum Server", electrs_onion_url, "50001", False, "https://mynodebtc.github.io/tor/electrum.html"))
-    v3_services.append(create_v3_service("Electrum Server", electrs_onion_url, "50002", False, "https://mynodebtc.github.io/tor/electrum.html"))
+    v3_services.append(create_v3_service("Electrum Server", electrs_onion_url, "50001", False, "https://docs.mynodebtc.com/tor/electrum.html"))
+    v3_services.append(create_v3_service("Electrum Server", electrs_onion_url, "50002", False, "https://docs.mynodebtc.com/tor/electrum.html"))
     v3_services.append(create_v3_service("Sphinx Relay", sphinxrelay_onion_url, "53001", True, ""))
 
     add_dynamic_app_v3_services(v3_services)

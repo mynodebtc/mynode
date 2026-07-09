@@ -1172,6 +1172,25 @@ mynode-manage-apps upgrade || true
 #    $TORIFY apt-get remove -y tor
 #    $TORIFY apt-get install -y tor
 #fi
+# On older Debian versions, check if we have old Tor and upgrade
+if [ "$DEBIAN_VERSION" -lt "12" ]; then
+    tor_version=$(tor --version | head -n 1)
+    if [[ "$tor_version" == *"0.4.8"* ]]; then
+        echo "Upgrading Tor..."
+        set +e
+
+        # cd /tmp
+        # rm -rf tor-0.4.9.11.tar.gz tor-0.4.9.11
+        # wget https://dist.torproject.org/tor-0.4.9.11.tar.gz
+        # tar xzf tor-0.4.9.11.tar.gz
+        # cd tor-0.4.9.11
+
+        # ./configure --disable-unittests --prefix=/usr && make -j2
+        # make install
+
+        set -e
+    fi
+fi
 
 
 # Enable fan control

@@ -1,4 +1,4 @@
-[![MyNode](https://mynodebtc.github.io/images/logo.png)](https://github.com/mynodebtc/mynode)
+[![MyNode](https://docs.mynodebtc.com/images/logo.png)](https://github.com/mynodebtc/mynode)
 
 [![Version](https://img.shields.io/github/v/tag/mynodebtc/mynode?label=version&color=green)](https://github.com/mynodebtc/mynode/tag)
 [![Community Chat](https://img.shields.io/badge/community%20chat-telegram-blue)](https://t.me/mynode_btc)
@@ -92,7 +92,7 @@ We currently have images for the following devices available for download.
  - Virtual Machine Support (VirtualBox, VMWare)
 
 ## Upgrading your MyNode
-Once you are running MyNode, you can easily [update the software](https://mynodebtc.github.io/device/upgrading-device.html) yourself!
+Once you are running MyNode, you can easily [update the software](https://docs.mynodebtc.com/device/upgrading-device.html) yourself!
 
 
 ## Developing for MyNode

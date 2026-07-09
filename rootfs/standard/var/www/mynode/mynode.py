@@ -573,6 +573,8 @@ def index():
             "show_32_bit_warning": show_32_bit_warning(),
             "show_old_debian_warning": show_old_debian_warning(),
             "debian_version": get_debian_version(),
+            "show_old_tor_warning": show_old_tor_warning(),
+            "tor_version": get_tor_version(),
             "is_quicksync_disabled": not is_quicksync_enabled(),
             "usb_extras": get_usb_extras(),
             "cpu_usage": get_cpu_usage(),
@@ -688,6 +690,12 @@ def page_clear_32_bit_warning():
 def page_clear_old_debian_warning():
     check_logged_in()
     hide_old_debian_warning()
+    return redirect("/")
+
+@app.route("/clear-old-tor-warning")
+def page_clear_old_tor_warning():
+    check_logged_in()
+    hide_old_tor_warning()
     return redirect("/")
 
 @app.route("/dismiss-expiration-warning")
