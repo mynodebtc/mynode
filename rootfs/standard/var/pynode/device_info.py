@@ -334,6 +334,17 @@ def get_debian_version():
     cached_data["debian_version"] = debian_version
     return debian_version
 
+def get_tor_version():
+    global cached_data
+    if "tor_version" in cached_data:
+        return cached_data["tor_version"]
+
+    tor_version = to_string(subprocess.check_output("tor --version | head -n 1", shell=True).decode("utf-8").strip())
+    tor_version = tor_version.replace("Tor version ", "")
+    tor_version = tor_version.strip(".")
+    cached_data["tor_version"] = tor_version
+    return tor_version
+
 def get_device_ram():
     global cached_data
     if "ram" in cached_data:
@@ -695,6 +706,14 @@ def show_old_debian_warning():
     return False
 def hide_old_debian_warning():
     touch("/tmp/hide_old_debian_warning")
+
+def show_old_tor_warning():
+    if not os.path.isfile("/tmp/hide_old_tor_warning"):
+        if get_tor_version().startswith("0.4.8"):
+            return True
+    return False
+def hide_old_tor_warning():
+    touch("/tmp/hide_old_tor_warning")
 
 
 #==================================
