@@ -1183,14 +1183,15 @@ if [ "$DEBIAN_VERSION" -lt "12" ]; then
         echo "Upgrading Tor..."
         set +e
 
-        # cd /tmp
-        # rm -rf tor-0.4.9.11.tar.gz tor-0.4.9.11
-        # wget https://dist.torproject.org/tor-0.4.9.11.tar.gz
-        # tar xzf tor-0.4.9.11.tar.gz
-        # cd tor-0.4.9.11
+        cd /tmp
+        rm -rf tor.tar.gz tor_src
+        wget https://dist.torproject.org/tor-0.4.9.11.tar.gz -O tor.tar.gz
+        tar xzf tor.tar.gz
+        mv tor-* tor_src
+        cd tor_src
 
-        # ./configure --disable-unittests --prefix=/usr && make -j2
-        # make install
+        ./configure --disable-unittests --prefix=/usr && make -j2
+        make install
 
         set -e
     fi
