@@ -67,16 +67,22 @@ if ! skip_base_upgrades ; then
         grep -qxF "deb https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" /etc/apt/sources.list  || echo "deb https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list
         grep -qxF "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" /etc/apt/sources.list  || echo "deb-src https://deb.torproject.org/torproject.org ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list
     fi
-    if [ "$DEBIAN_CODENAME" = "buster" ]; then
-        # Disable tor repo on buster
-        sed -i '/^deb https:\/\/deb.torproject.org/d' /etc/apt/sources.list
-        sed -i '/^deb-src https:\/\/deb.torproject.org/d' /etc/apt/sources.list
-    fi
+    # Add I2P Repo
+    /bin/bash /usr/share/mynode/scripts/add_i2p_repo.sh
+
+    # Remove or update old repos
     if [ -f /mnt/hdd/mynode/settings/tor_repo_disabled ]; then
         sed -i '/^deb https:\/\/deb.torproject.org/d' /etc/apt/sources.list
         sed -i '/^deb-src https:\/\/deb.torproject.org/d' /etc/apt/sources.list
     fi
     if [ "$DEBIAN_CODENAME" = "buster" ]; then
+        # Disable tor repo on buster
+        sed -i '/^deb https:\/\/deb.torproject.org/d' /etc/apt/sources.list
+        sed -i '/^deb-src https:\/\/deb.torproject.org/d' /etc/apt/sources.list
+
+        # Disable i2pd repo on buster
+        sed -i 's|^deb|#deb|g' /etc/apt/sources.list.d/i2pd.list
+
         # Migrate buster repos to archive
         sed -i 's|deb.debian.org/debian|archive.debian.org/debian|g' /etc/apt/sources.list
 
@@ -88,8 +94,6 @@ if ! skip_base_upgrades ; then
         # Comment out nodesource repo for buster (doesn't work anymore)
         sed -i 's|^deb|#deb|' /etc/apt/sources.list.d/nodesource.list
     fi
-    # Add I2P Repo
-    /bin/bash /usr/share/mynode/scripts/add_i2p_repo.sh
 
     # Raspbian mirrors
     #if [ $IS_RASPI = 1 ]; then
