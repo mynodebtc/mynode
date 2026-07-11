@@ -1,3 +1,13 @@
+=== v0.3.45 ===
+- Released 07/11/26
+- Upgrade BTCPay Server to v1.13.6
+- Upgrade Canary to v1.5.2
+- Upgrade Tor to at least 0.4.9.x to keep Tor working past Sept.
+- Add warning if using old Tor version (0.4.8.x)
+- Fix issue with BTCPay Server not seeing blocks
+- Fix issue issue with some apps starting too early
+- Fix issue with old repos on Debian 10 systems
+
 === v0.3.44 ===
 - Released 05/25/26
 - Add Canary wallet monitor application
