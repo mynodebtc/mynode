@@ -498,6 +498,11 @@ _OVERLAY_JS = r"""
       act("/dev/lnd?wallet=" + (st.lnd_wallet ? "0" : "1"));
     });
 
+    // Edition
+    var se = section("Edition");
+    button(se, "premium", function () { act("/dev/edition?premium=1"); }, st.premium);
+    button(se, "community", function () { act("/dev/edition?premium=0"); }, !st.premium);
+
     // Warnings
     var s4 = section("Warnings");
     ["undervoltage", "throttled", "capped", "fsck", "usb"].forEach(function (w) {
@@ -513,9 +518,6 @@ _OVERLAY_JS = r"""
     button(s5, "upgrade banner " + (st.upgrade_available ? "off" : "on"), function () {
       act("/dev/upgrade_available?value=" + (st.upgrade_available ? "0" : "1"));
     }, st.upgrade_available);
-    button(s5, st.premium ? "community edition" : "premium edition", function () {
-      act("/dev/edition?premium=" + (st.premium ? "0" : "1"));
-    }, st.premium);
     button(s5, "reboot", function () { act("/dev/reboot"); });
     button(s5, "shutdown", function () { act("/dev/shutdown"); });
     button(s5, "RESET ALL", function () {
