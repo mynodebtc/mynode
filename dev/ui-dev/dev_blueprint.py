@@ -122,6 +122,7 @@ def dev_status():
         "warning": _current_warning_file(),
         "autologin": os.environ.get("DEV_AUTOLOGIN") == "1",
         "premium": not device_info.is_community_edition(),
+        "premium_plus_warning": _premium_plus_warning_state(),
     })
 
 
@@ -135,6 +136,29 @@ def _current_warning_file():
     except Exception:
         pass
     return "none"
+
+
+CHECK_IN_FILE = "/tmp/check_in_response.json"
+
+
+def _load_check_in():
+    try:
+        with open(CHECK_IN_FILE) as f:
+            return json.load(f)
+    except Exception:
+        return {"status": "OK", "support": {"active": True, "days_remaining": 300}}
+
+
+def _premium_plus_warning_state():
+    pp = _load_check_in().get("premium_plus")
+    if isinstance(pp, dict) and "active" in pp and "days_remaining" in pp:
+        try:
+            days = int(pp["days_remaining"])
+        except (TypeError, ValueError):
+            return "off"
+        if -45 <= days <= 45:
+            return "expiring" if pp["active"] else "expired"
+    return "off"
 
 
 @mynode_dev.route("/dev/state")
@@ -299,6 +323,29 @@ def dev_edition():
     device_info.delete_product_key_error()
     seed_fixture_fs.seed_edition(premium=premium, force=True)
     return _ok(premium=premium)
+
+
+@mynode_dev.route("/dev/premium_plus_warning")
+def dev_premium_plus_warning():
+    """Show/hide the homepage Premium+ subscription warning by setting the
+    premium_plus days_remaining in the mocked check-in data.
+      state=expiring -> active, 10 days left ('will expire in 10 days')
+      state=expired  -> inactive, 5 days ago ('expired 5 days ago')
+      state=off      -> remove the premium_plus block (no warning)"""
+    state = request.args.get("state", "off")
+    data = _load_check_in()
+    if state == "expiring":
+        data["premium_plus"] = {"active": True, "days_remaining": 10}
+    elif state == "expired":
+        data["premium_plus"] = {"active": False, "days_remaining": -5}
+    else:
+        state = "off"
+        data.pop("premium_plus", None)
+    with open(CHECK_IN_FILE, "w") as f:
+        json.dump(data, f)
+    # Un-dismiss so the banner is not suppressed by a prior dismissal
+    device_info.delete_file("/tmp/dismiss_expiration_warning")
+    return _ok(premium_plus_warning=state)
 
 
 @mynode_dev.route("/dev/upgrade_available")
@@ -474,6 +521,15 @@ _OVERLAY_JS = r"""
     button(s5, "RESET ALL", function () {
       if (confirm("Restore all mocked state to defaults?")) act("/dev/reset");
     });
+
+    // Premium+ subscription warning
+    var sp = section("Premium+ warning");
+    button(sp, "expiring soon", function () { act("/dev/premium_plus_warning?state=expiring"); },
+           st.premium_plus_warning === "expiring");
+    button(sp, "expired", function () { act("/dev/premium_plus_warning?state=expired"); },
+           st.premium_plus_warning === "expired");
+    button(sp, "none", function () { act("/dev/premium_plus_warning?state=off"); },
+           st.premium_plus_warning === "off");
 
     // Apps
     var s6 = section("Apps (install / uninstall)");
