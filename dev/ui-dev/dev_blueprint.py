@@ -293,23 +293,11 @@ def dev_lnd():
 
 @mynode_dev.route("/dev/edition")
 def dev_edition():
-    """Toggle between community edition (default) and a mocked premium
-    device (product key present + healthy check-in data)."""
+    """Toggle between the premium default (product key present + healthy
+    check-in data) and community edition."""
     premium = request.args.get("premium", "1") == "1"
-    if premium:
-        device_info.unset_skipped_product_key()
-        with open("/home/bitcoin/.mynode/.product_key", "w") as f:
-            f.write("MOCKPRODUCTKEY123456")
-        device_info.delete_product_key_error()
-        with open("/tmp/check_in_response.json", "w") as f:
-            json.dump({"status": "OK",
-                       "support": {"active": True, "days_remaining": 300},
-                       "premium_plus": {"active": False, "days_remaining": 0}}, f)
-    else:
-        device_info.delete_product_key()
-        device_info.set_skipped_product_key()
-        if os.path.exists("/tmp/check_in_response.json"):
-            os.remove("/tmp/check_in_response.json")
+    device_info.delete_product_key_error()
+    seed_fixture_fs.seed_edition(premium=premium, force=True)
     return _ok(premium=premium)
 
 
@@ -337,10 +325,7 @@ def dev_shutdown():
 
 @mynode_dev.route("/dev/reset")
 def dev_reset():
-    device_info.delete_product_key()
-    device_info.set_skipped_product_key()
-    if os.path.exists("/tmp/check_in_response.json"):
-        os.remove("/tmp/check_in_response.json")
+    # ensure(force=True) restores the premium-edition default
     seed_fixture_fs.ensure(force=True)
     set_knob("lnd", {"ready": True})
     set_knob("misc", {"starting": False})
@@ -355,9 +340,9 @@ def dev_reset():
 @mynode_dev.route("/dev/panel")
 def dev_panel():
     return Response(
-        "<!DOCTYPE html><html><head><title>myNode UI Dev Panel</title></head>"
+        "<!DOCTYPE html><html><head><title>MyNode UI Dev Panel</title></head>"
         "<body style='background:#1c1f26;color:#eee;font-family:monospace;'>"
-        "<h2 style='padding:16px;'>myNode UI dev panel</h2>"
+        "<h2 style='padding:16px;'>MyNode UI dev panel</h2>"
         "<p style='padding:0 16px;'>Use the floating DEV button (bottom-right). "
         "It is injected into every page of the UI as well.</p>"
         "<script src='/dev/overlay.js'></script></body></html>",
@@ -366,7 +351,11 @@ def dev_panel():
 
 @mynode_dev.route("/dev/overlay.js")
 def dev_overlay_js():
-    return Response(_OVERLAY_JS, mimetype="application/javascript")
+    resp = Response(_OVERLAY_JS, mimetype="application/javascript")
+    # The app applies a 24h Cache-Control to 200s; override so dev-panel edits
+    # show on the next refresh instead of serving a stale panel.
+    resp.headers["Cache-Control"] = "no-store, must-revalidate"
+    return resp
 
 
 _OVERLAY_JS = r"""
@@ -430,7 +419,7 @@ _OVERLAY_JS = r"""
     panel.innerHTML = "";
 
     var head = document.createElement("div");
-    head.innerHTML = "<b>myNode UI dev panel</b>";
+    head.innerHTML = "<b>MyNode UI dev panel</b>";
     panel.appendChild(head);
 
     // Device state

@@ -7,14 +7,14 @@ changes (templates, CSS, JS, Flask routes) with instant hot reload.
 ## Quick start
 
 ```bash
-make ui-dev          # from the repo root; builds + starts the container
+make dev-ui          # from the repo root; builds + starts the container
 ```
 
 Open **http://localhost:8888** and log in with password **`bolt`**
 (configurable via `DEV_PASSWORD` in docker-compose.yml; set `DEV_AUTOLOGIN=1`
 to skip login entirely).
 
-Other targets: `make ui-dev-build`, `make ui-dev-shell`, `make ui-dev-clean`.
+Other targets: `make dev-ui-build`, `make dev-ui-shell`, `make dev-ui-clean`.
 
 Edit any file under `rootfs/standard/var/www/mynode/` (templates, static
 assets, python) or `rootfs/standard/var/pynode/` on the host — templates apply
