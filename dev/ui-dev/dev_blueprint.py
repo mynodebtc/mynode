@@ -447,12 +447,46 @@ _OVERLAY_JS = r"""
   panel.id = "mnDevPanel";
   document.body.appendChild(panel);
 
+  // Panel actions reload the page to re-render server-side content, which
+  // would normally close the panel. We persist the open/scroll state in
+  // sessionStorage (per-tab) and restore it on load so the panel appears to
+  // stay open across changes.
+  var PANEL_KEY = "mnDevPanelOpen";
+  var SCROLL_KEY = "mnDevPanelScroll";
+
+  panel.addEventListener("scroll", function () {
+    sessionStorage.setItem(SCROLL_KEY, panel.scrollTop);
+  });
+
+  function restoreScroll() {
+    var s = sessionStorage.getItem(SCROLL_KEY);
+    if (s !== null) panel.scrollTop = parseInt(s, 10) || 0;
+  }
+
   function call(url) {
     // no-store also bypasses any entry cached before the server sent no-store
     return fetch(url, { cache: "no-store" }).then(function (r) { return r.json(); });
   }
   function act(url) {
     call(url).then(function () { location.reload(); });
+  }
+
+  function openPanel() {
+    panel.style.display = "block";
+    sessionStorage.setItem(PANEL_KEY, "1");
+    panel.innerHTML = "loading...";
+    call("/dev/status").then(function (st) {
+      build(st);
+      restoreScroll();
+    }).catch(function (e) {
+      panel.textContent = "failed to load /dev/status: " + e;
+    });
+  }
+
+  function closePanel() {
+    panel.style.display = "none";
+    sessionStorage.removeItem(PANEL_KEY);
+    sessionStorage.removeItem(SCROLL_KEY);
   }
 
   function section(title) {
@@ -565,19 +599,17 @@ _OVERLAY_JS = r"""
         row.appendChild(b);
         appsDiv.appendChild(row);
       });
+      // Apps load asynchronously and grow the panel; re-apply saved scroll
+      restoreScroll();
     }).catch(function () { appsDiv.textContent = "failed to load apps"; });
   }
 
   btn.onclick = function () {
-    if (panel.style.display === "block") {
-      panel.style.display = "none";
-      return;
-    }
-    panel.style.display = "block";
-    panel.innerHTML = "loading...";
-    call("/dev/status").then(build).catch(function (e) {
-      panel.textContent = "failed to load /dev/status: " + e;
-    });
+    if (panel.style.display === "block") closePanel();
+    else openPanel();
   };
+
+  // Re-open automatically after an action-triggered reload
+  if (sessionStorage.getItem(PANEL_KEY) === "1") openPanel();
 })();
 """
