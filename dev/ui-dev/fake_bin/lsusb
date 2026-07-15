@@ -1,0 +1,12 @@
+#!/bin/bash
+if [ "$1" = "-t" ]; then
+    cat << 'EOF'
+/:  Bus 02.Port 1: Dev 1, Class=root_hub, Driver=xhci_hcd/4p, 5000M (mock)
+    |__ Port 1: Dev 2, If 0, Class=Mass Storage, Driver=uas, 5000M (mock)
+EOF
+else
+    cat << 'EOF'
+Bus 002 Device 002: ID 174c:55aa ASMedia Technology Inc. SATA 6Gb/s bridge (mock)
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub (mock)
+EOF
+fi

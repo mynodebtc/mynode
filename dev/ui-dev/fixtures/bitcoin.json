@@ -1,0 +1,93 @@
+{
+    "blockchain_info": {
+        "chain": "main",
+        "blocks": 905123,
+        "headers": 905123,
+        "bestblockhash": "00000000000000000001a7c1mockmockmockmockmockmockmockmockmock01",
+        "difficulty": 126411437451912.23,
+        "time": 1752470000,
+        "mediantime": 1752468000,
+        "verificationprogress": 0.9999999,
+        "initialblockdownload": false,
+        "chainwork": "00000000000000000000000000000000000000009ae4d6mockmockmockmock",
+        "size_on_disk": 689194767360,
+        "pruned": false,
+        "warnings": ""
+    },
+    "peers": [
+        {"id": 1, "addr": "84.112.33.7:8333", "network": "ipv4", "relaytxes": true, "conntime": 1752200000, "timeoffset": 0, "pingtime": 0.042, "minping": 0.038, "bytessent": 123456789, "bytesrecv": 987654321, "version": 70016, "subver": "/Satoshi:29.0.0/", "inbound": false, "startingheight": 904800, "synced_headers": 905123, "synced_blocks": 905123, "minfeefilter": 0.00001, "pingwait": 0},
+        {"id": 2, "addr": "5.9.150.112:8333", "network": "ipv4", "relaytxes": true, "conntime": 1752260000, "timeoffset": -1, "pingtime": 0.087, "minping": 0.081, "bytessent": 23456789, "bytesrecv": 87654321, "version": 70016, "subver": "/Satoshi:28.1.0/", "inbound": false, "startingheight": 904900, "synced_headers": 905123, "synced_blocks": 905123, "minfeefilter": 0.00001, "pingwait": 0},
+        {"id": 3, "addr": "kx4mock5onionpeeraddressxyzmockmock.onion:8333", "network": "onion", "relaytxes": true, "conntime": 1752300000, "timeoffset": 0, "pingtime": 0.412, "minping": 0.377, "bytessent": 3456789, "bytesrecv": 7654321, "version": 70016, "subver": "/Satoshi:27.0.0/", "inbound": false, "startingheight": 905000, "synced_headers": 905123, "synced_blocks": 905123, "minfeefilter": 0.00001, "pingwait": 0},
+        {"id": 4, "addr": "203.0.113.45:52108", "network": "ipv4", "relaytxes": true, "conntime": 1752330000, "timeoffset": 2, "pingtime": 0.121, "minping": 0.101, "bytessent": 456789, "bytesrecv": 654321, "version": 70016, "subver": "/Satoshi:26.0.0/", "inbound": true, "startingheight": 905050, "synced_headers": 905123, "synced_blocks": 905123, "minfeefilter": 0.00001, "pingwait": 0},
+        {"id": 5, "addr": "198.51.100.23:8333", "network": "ipv4", "relaytxes": true, "conntime": 1752400000, "timeoffset": 0, "pingtime": 0.064, "minping": 0.06, "bytessent": 56789, "bytesrecv": 54321, "version": 70016, "subver": "/Satoshi:29.0.0/", "inbound": false, "startingheight": 905100, "synced_headers": 905123, "synced_blocks": 905123, "minfeefilter": 0.00001, "pingwait": 0},
+        {"id": 6, "addr": "mock7hz2onionpeeraddressabcmockmock.onion:8333", "network": "onion", "relaytxes": true, "conntime": 1752410000, "timeoffset": 0, "pingtime": 0.533, "minping": 0.49, "bytessent": 6789, "bytesrecv": 4321, "version": 70016, "subver": "/Satoshi:28.0.0/", "inbound": true, "startingheight": 905110, "synced_headers": 905123, "synced_blocks": 905123, "minfeefilter": 0.00001, "pingwait": 0}
+    ],
+    "network_info": {
+        "version": 290300,
+        "subversion": "/Satoshi:29.3.0/",
+        "protocolversion": 70016,
+        "localservices": "0000000000000409",
+        "localservicesnames": ["NETWORK", "WITNESS", "NETWORK_LIMITED"],
+        "localrelay": true,
+        "timeoffset": 0,
+        "networkactive": true,
+        "connections": 6,
+        "connections_in": 2,
+        "connections_out": 4,
+        "networks": [],
+        "relayfee": 0.00001,
+        "incrementalfee": 0.00001,
+        "localaddresses": [],
+        "warnings": ""
+    },
+    "mempool_info": {
+        "loaded": true,
+        "size": 41372,
+        "bytes": 38123456,
+        "usage": 152345678,
+        "total_fee": 1.23456789,
+        "maxmempool": 300000000,
+        "mempoolminfee": 0.00001,
+        "minrelaytxfee": 0.00001,
+        "unbroadcastcount": 0
+    },
+    "wallets": {
+        "wallet.dat": {
+            "walletname": "wallet.dat",
+            "walletversion": 169900,
+            "format": "bdb",
+            "balance": 0.01523419,
+            "unconfirmed_balance": 0.0,
+            "immature_balance": 0.0,
+            "txcount": 14,
+            "keypoolsize": 1000,
+            "paytxfee": 0.0,
+            "private_keys_enabled": true,
+            "avoid_reuse": false,
+            "scanning": false,
+            "descriptors": false
+        },
+        "joinmarket_wallet.dat": {
+            "walletname": "joinmarket_wallet.dat",
+            "walletversion": 169900,
+            "format": "bdb",
+            "balance": 0.0,
+            "unconfirmed_balance": 0.0,
+            "immature_balance": 0.0,
+            "txcount": 0,
+            "keypoolsize": 1000,
+            "paytxfee": 0.0,
+            "private_keys_enabled": true,
+            "avoid_reuse": false,
+            "scanning": false,
+            "descriptors": false
+        }
+    },
+    "recommended_fees": {
+        "fastestFee": 12,
+        "halfHourFee": 8,
+        "hourFee": 5,
+        "economyFee": 3,
+        "minimumFee": 2
+    }
+}
