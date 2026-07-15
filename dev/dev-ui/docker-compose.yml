@@ -1,7 +1,7 @@
 services:
-  ui-dev:
+  dev-ui:
     build: .
-    container_name: mynode-ui-dev
+    container_name: mynode-dev-ui
     ports:
       # 8888 on the host: the repo's release file server uses 8000
       - "127.0.0.1:8888:8000"
