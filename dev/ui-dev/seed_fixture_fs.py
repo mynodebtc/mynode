@@ -169,15 +169,48 @@ def seed_home_dirs():
     os.makedirs("/home/admin/upgrade_logs", exist_ok=True)
     os.makedirs("/home/bitcoin/lnd_backup", exist_ok=True)
 
-    # Community edition: skips the product-key page
-    _touch(os.path.join(home, ".product_key_skipped"))
-    _touch("/mnt/hdd/mynode/settings/.product_key_skipped")
-
     # Non-default hash so the "please change your password" warning is hidden
     _write(os.path.join(home, ".hashedpw"), "mocked_password_hash_not_default", overwrite=False)
 
     # Channel backup exists (LND page)
     _touch("/home/bitcoin/lnd_backup/channel.backup")
+
+
+def seed_edition(premium=True, force=False):
+    """Set the device edition. The container defaults to premium (product key
+    present + healthy check-in) so premium-only UI (onion URLs, support status)
+    renders. On a warm restart the current edition is preserved unless force is
+    set; the dev panel toggles it at runtime via /dev/edition."""
+    home = "/home/bitcoin/.mynode"
+    settings = "/mnt/hdd/mynode/settings"
+    pk_files = [os.path.join(home, ".product_key"), os.path.join(settings, ".product_key")]
+    skip_files = [os.path.join(home, ".product_key_skipped"),
+                  os.path.join(settings, ".product_key_skipped")]
+    checkin = "/tmp/check_in_response.json"
+
+    # Preserve a session's edition choice across warm restarts
+    already_set = any(os.path.exists(p) for p in pk_files + skip_files)
+    if already_set and not force:
+        return
+
+    if premium:
+        for p in skip_files:
+            if os.path.exists(p):
+                os.remove(p)
+        for p in pk_files:
+            _write(p, "MOCKPRODUCTKEY123456")
+        _write(checkin, json.dumps({
+            "status": "OK",
+            "support": {"active": True, "days_remaining": 300},
+        }))
+    else:
+        for p in pk_files:
+            if os.path.exists(p):
+                os.remove(p)
+        for p in skip_files:
+            _touch(p)
+        if os.path.exists(checkin):
+            os.remove(checkin)
 
 
 def seed_installed_apps(force=False):
@@ -288,6 +321,7 @@ def ensure(force=False):
     seed_share_dir()
     seed_data_drive()
     seed_home_dirs()
+    seed_edition(premium=True, force=force)
     seed_onion_hostnames()
     seed_services(force=force)
     seed_installed_apps(force=force)

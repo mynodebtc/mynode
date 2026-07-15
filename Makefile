@@ -113,18 +113,18 @@ clean: stop_file_server
 
 # Run the web UI locally with a fully mocked backend (for UI development).
 # See dev/ui-dev/README.md. UI available at http://localhost:8888 (pw: bolt).
-.PHONY: ui-dev
-ui-dev:
+.PHONY: dev-ui
+dev-ui:
 	@cd dev/ui-dev && docker compose up --build
 
-.PHONY: ui-dev-build
-ui-dev-build:
+.PHONY: dev-ui-build
+dev-ui-build:
 	@cd dev/ui-dev && docker compose build
 
-.PHONY: ui-dev-shell
-ui-dev-shell:
+.PHONY: dev-ui-shell
+dev-ui-shell:
 	@cd dev/ui-dev && docker compose exec ui-dev bash
 
-.PHONY: ui-dev-clean
-ui-dev-clean:
+.PHONY: dev-ui-clean
+dev-ui-clean:
 	@cd dev/ui-dev && docker compose down -v --rmi local

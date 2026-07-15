@@ -98,12 +98,13 @@ def get_firewall_rules():
 # it sees uptime DECREASE. Resetting the fake boot time reproduces the whole
 # reboot UX without touching the container.
 
-# Uptime the device "comes back" with after a simulated reboot. It must be:
-#   - LESS than the pre-reboot uptime, so reboot.html (which redirects home
-#     when it sees uptime decrease) detects the reboot, and
-#   - MORE than 180s, so the homepage's "just booted" gate (uptime < 180 ->
-#     "Starting..." page) is already satisfied and we land straight on stable.
-POST_REBOOT_UPTIME = 300
+# Uptime the device "comes back" with after a simulated reboot. It must be
+# LESS than the pre-reboot uptime so reboot.html (which redirects home when it
+# sees uptime decrease) detects the reboot. At 170s we land just under the
+# homepage's "just booted" gate (uptime < 180 -> "Starting..." page), so the
+# real Starting screen shows briefly (~10s) before the page auto-refreshes into
+# the stable homepage.
+POST_REBOOT_UPTIME = 170
 
 
 def _simulate_power_cycle(downtime=6):
