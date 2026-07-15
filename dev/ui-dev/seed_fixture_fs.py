@@ -131,8 +131,8 @@ def seed_data_drive():
         json.dumps({
             "darkmode": False,
             "price_ticker": True,
-            "pinned_bitcoin_details": True,
-            "pinned_lightning_details": True,
+            "pinned_bitcoin_details": False,
+            "pinned_lightning_details": False,
             "background": "digital",
         }),
         overwrite=False,
