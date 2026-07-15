@@ -98,6 +98,14 @@ def get_firewall_rules():
 # it sees uptime DECREASE. Resetting the fake boot time reproduces the whole
 # reboot UX without touching the container.
 
+# Uptime the device "comes back" with after a simulated reboot. It must be:
+#   - LESS than the pre-reboot uptime, so reboot.html (which redirects home
+#     when it sees uptime decrease) detects the reboot, and
+#   - MORE than 180s, so the homepage's "just booted" gate (uptime < 180 ->
+#     "Starting..." page) is already satisfied and we land straight on stable.
+POST_REBOOT_UPTIME = 300
+
+
 def _simulate_power_cycle(downtime=6):
     def _do():
         _real.touch("/tmp/shutting_down")
@@ -113,7 +121,7 @@ def _simulate_power_cycle(downtime=6):
         for f in ["/tmp/upgrade_started", "/tmp/shutting_down", "/tmp/skip_base_upgrades"]:
             if os.path.exists(f):
                 os.remove(f)
-        _set_fake_boot_time(time.time())
+        _set_fake_boot_time(time.time() - POST_REBOOT_UPTIME)
         with open("/tmp/.mynode_status", "w") as f:
             f.write("stable")
 

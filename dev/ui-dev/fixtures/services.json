@@ -8,7 +8,7 @@
     "mempool": "running",
     "rtl": "running",
     "thunderhub": "running",
-    "lndhub": "stopped",
+    "lndhub": "running",
     "tor@default": "running",
     "nginx": "running",
     "www": "running",
