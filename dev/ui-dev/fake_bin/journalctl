@@ -1,0 +1,38 @@
+#!/bin/bash
+# Fake journalctl: emits a plausible canned log so log pages have content.
+# Usage seen in the code: journalctl -r --unit=<name> --no-pager | head -n 300
+UNIT="mock"
+for arg in "$@"; do
+    case "$arg" in
+        --unit=*) UNIT="${arg#--unit=}" ;;
+    esac
+done
+
+NOW=$(date "+%b %d %H:%M:%S")
+HOST="mynode"
+
+case "$UNIT" in
+    electrs)
+        cat << EOF
+$NOW $HOST electrs[512]: [mock] serving Electrum RPC on 0.0.0.0:50001
+$NOW $HOST electrs[512]: [mock] indexing 1 blocks
+$NOW $HOST electrs[512]: [mock] chain updated: tip=00000000000000000001mock
+$NOW $HOST systemd[1]: Started Electrum Rust Server.
+EOF
+        ;;
+    lnd)
+        cat << EOF
+$NOW $HOST lnd[433]: [mock] [INF] LTND: Waiting for wallet encryption password.
+$NOW $HOST lnd[433]: [mock] [INF] LTND: Version: 0.18.3-beta
+$NOW $HOST systemd[1]: Started LND Lightning Daemon.
+EOF
+        ;;
+    *)
+        cat << EOF
+$NOW $HOST $UNIT[321]: [mock] Service '$UNIT' log line 3 - everything is fine
+$NOW $HOST $UNIT[321]: [mock] Service '$UNIT' log line 2 - initialization complete
+$NOW $HOST $UNIT[321]: [mock] Service '$UNIT' log line 1 - starting up
+$NOW $HOST systemd[1]: Started mock service $UNIT.
+EOF
+        ;;
+esac

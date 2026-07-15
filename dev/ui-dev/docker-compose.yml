@@ -1,0 +1,30 @@
+services:
+  ui-dev:
+    build: .
+    container_name: mynode-ui-dev
+    ports:
+      # 8888 on the host: the repo's release file server uses 8000
+      - "127.0.0.1:8888:8000"
+    volumes:
+      # Real app source, mounted read-only at the same paths as on a device.
+      # Read-only guarantees the mock layer can never modify real code, and
+      # host edits hot-reload in the container.
+      - ../../rootfs/standard/var/www/mynode:/var/www/mynode:ro
+      - ../../rootfs/standard/var/pynode:/var/pynode:ro
+      # Source for /usr/share/mynode fixture content (application_info.json,
+      # bitcoin.conf, version, ...). Copied into place by seed_fixture_fs.py.
+      - ../../rootfs/standard/usr/share/mynode:/opt/mynode/share:ro
+      # The dev harness itself (mocks, fixtures, fake bins, dev server).
+      - .:/opt/mynode/dev
+    tmpfs:
+      # /mnt/hdd must be a real mount: drive_info.is_mynode_drive_mounted()
+      # greps /proc/mounts for it, and df is used for drive size.
+      - /mnt/hdd:mode=0777
+    environment:
+      # Password accepted by the mocked PAM login (myNode default).
+      - DEV_PASSWORD=bolt
+      # Set to 1 to skip the login page entirely.
+      - DEV_AUTOLOGIN=0
+      # Set to 1 to run the app's real background threads instead of the
+      # lightweight dev refresher (all thread bodies are mock-safe).
+      - DEV_REAL_THREADS=0
