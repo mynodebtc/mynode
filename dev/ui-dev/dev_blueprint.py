@@ -25,6 +25,18 @@ import systemctl_info
 
 mynode_dev = Blueprint("mynode_dev", __name__)
 
+
+@mynode_dev.after_request
+def _dev_no_cache(resp):
+    # The app applies a 24h Cache-Control to 200 responses (mynode.py); that
+    # would make the browser serve /dev/status, /dev/apps and the action
+    # endpoints from cache, so the panel would read stale state. Force
+    # no-store on every /dev/* response. This runs before the app-level
+    # header hook, which only sets a cache header when one isn't already set.
+    resp.headers["Cache-Control"] = "no-store, must-revalidate"
+    return resp
+
+
 BITCOIN_SYNCED_FILE = "/mnt/hdd/mynode/.mynode_bitcoin_synced"
 
 DEVICE_STATES = [
@@ -398,11 +410,8 @@ def dev_panel():
 
 @mynode_dev.route("/dev/overlay.js")
 def dev_overlay_js():
-    resp = Response(_OVERLAY_JS, mimetype="application/javascript")
-    # The app applies a 24h Cache-Control to 200s; override so dev-panel edits
-    # show on the next refresh instead of serving a stale panel.
-    resp.headers["Cache-Control"] = "no-store, must-revalidate"
-    return resp
+    # Cache-Control: no-store is applied by the blueprint after_request hook.
+    return Response(_OVERLAY_JS, mimetype="application/javascript")
 
 
 _OVERLAY_JS = r"""
@@ -439,7 +448,8 @@ _OVERLAY_JS = r"""
   document.body.appendChild(panel);
 
   function call(url) {
-    return fetch(url).then(function (r) { return r.json(); });
+    // no-store also bypasses any entry cached before the server sent no-store
+    return fetch(url, { cache: "no-store" }).then(function (r) { return r.json(); });
   }
   function act(url) {
     call(url).then(function () { location.reload(); });
