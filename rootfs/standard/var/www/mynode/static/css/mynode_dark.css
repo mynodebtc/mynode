@@ -115,6 +115,12 @@ table.bitcoin_table tbody tr:nth-child(even) td{
     border-bottom: 1px solid #ffb7001c;
 }
 
+.custom_version_notice {
+    color: #ddd;
+    background-color: #ffb70014;
+    border-left: 4px solid orange;
+}
+
 th td {
     border-top: #323640 1px solid;
 }

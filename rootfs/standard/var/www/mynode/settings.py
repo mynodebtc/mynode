@@ -1,7 +1,7 @@
 from config import *
 from flask import Blueprint, render_template, session, abort, Markup, request, redirect, url_for, flash
 from bitcoin import is_bitcoin_synced
-from bitcoin_info import using_bitcoin_custom_config
+from bitcoin_info import using_bitcoin_custom_config, get_custom_bitcoin_version
 from lightning_info import using_lnd_custom_config, restart_lnd
 from pprint import pprint, pformat
 from threading import Timer
@@ -79,6 +79,7 @@ def page_settings():
         "logout_time_days": logout_time_days,
         "logout_time_hours": logout_time_hours,
         "using_bitcoin_custom_config": using_bitcoin_custom_config(),
+        "custom_bitcoin_version": get_custom_bitcoin_version(),
         "using_lnd_custom_config": using_lnd_custom_config(),
         "is_bitcoin_synced": is_bitcoin_synced(),
         "is_installing_docker_images": is_installing_docker_images(),

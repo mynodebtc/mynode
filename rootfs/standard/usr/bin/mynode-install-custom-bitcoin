@@ -7,6 +7,8 @@ source /usr/share/mynode/mynode_config.sh
 source /usr/share/mynode/mynode_app_versions.sh
 
 CUSTOM_BITCOIN_AUTOUPDATE_VERSION_FILE="/home/bitcoin/.mynode/custom_bitcoin_autoupdate_version"
+CUSTOM_BITCOIN_SELECTION_FILE="/home/bitcoin/.mynode/custom_bitcoin_selection"
+CUSTOM_BITCOIN_SELECTION_FILE_HDD="/mnt/hdd/mynode/settings/custom_bitcoin_selection"
 
 # Make sure we have an app argument
 if [ "$#" -lt 1 ]; then
@@ -62,7 +64,37 @@ if [[ "$APP" != *"autoupdate"* ]]; then
 fi
 
 # Custom re-install steps
-if [ "$APP" = "bip110_autoupdate" ]; then
+if [ "$APP" = "core29x_autoupdate" ]; then
+    # Stays on the latest Bitcoin Core 29.x release, even after MyNode moves to a newer major version
+    CORE_29X_LATEST_VERSION="29.3" # Must be unique each version (only used to track trigger upgrade)
+    BTC_UPGRADE_URL=https://bitcoincore.org/bin/bitcoin-core-29.3/bitcoin-29.3-$ARCH.tar.gz
+    BTC_SHASUM=https://bitcoincore.org/bin/bitcoin-core-29.3/SHA256SUMS
+    BTC_ASC=https://bitcoincore.org/bin/bitcoin-core-29.3/SHA256SUMS.asc
+
+    CURRENT=""
+    if [ -f $CUSTOM_BITCOIN_AUTOUPDATE_VERSION_FILE ]; then
+        CURRENT=$(cat $CUSTOM_BITCOIN_AUTOUPDATE_VERSION_FILE)
+    fi
+    if [ "$CURRENT" != "$CORE_29X_LATEST_VERSION" ]; then
+        rm -rf /opt/download
+        mkdir -p /opt/download
+        cd /opt/download
+
+        # Download, install and verify
+        # Note: Bitcoin Core's SHA256SUMS.asc has many signers, so only require a good signature from a known key
+        wget $BTC_UPGRADE_URL $BTC_SHASUM $BTC_ASC
+        gpg --verify SHA256SUMS.asc SHA256SUMS 2>&1 | grep "Good signature"
+        sha256sum -c SHA256SUMS --ignore-missing
+        tar -xvf bitcoin-29.3-$ARCH.tar.gz
+        mv bitcoin-29.3 bitcoin
+        install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
+    fi
+    echo "core29x_autoupdate" > /home/bitcoin/.mynode/bitcoin_version
+    echo "core29x_autoupdate" > /home/bitcoin/.mynode/bitcoin_version_latest_custom
+    echo "core29x_autoupdate" > /mnt/hdd/mynode/settings/bitcoin_version_latest_custom
+    echo "$CORE_29X_LATEST_VERSION" > $CUSTOM_BITCOIN_AUTOUPDATE_VERSION_FILE
+    cd ~
+elif [ "$APP" = "bip110_autoupdate" ]; then
     BIP110_LATEST_VERSION="29.3.3-knots" # Must be unique each version (only used to track trigger upgrade)
     BTC_UPGRADE_URL=https://bitcoinknots.org/files/29.x/29.3.knots20260508/bitcoin-29.3.knots20260508-$ARCH.tar.gz
     BTC_SHASUM=https://bitcoinknots.org/files/29.x/29.3.knots20260508/SHA256SUMS
@@ -349,6 +381,15 @@ elif [ "$APP" = "default" ]; then
 else
     echo "Dont know what to do for app: $APP"
     exit
+fi
+
+# Save the version the user selected so the UI can show the current override
+if [ "$APP" = "default" ]; then
+    rm -f $CUSTOM_BITCOIN_SELECTION_FILE
+    rm -f $CUSTOM_BITCOIN_SELECTION_FILE_HDD
+else
+    echo "$APP" > $CUSTOM_BITCOIN_SELECTION_FILE
+    echo "$APP" > $CUSTOM_BITCOIN_SELECTION_FILE_HDD
 fi
 
 sync

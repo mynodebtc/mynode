@@ -395,6 +395,21 @@ def using_bitcoin_custom_config():
 def delete_bitcoin_custom_config():
     os.system("rm -f /mnt/hdd/mynode/settings/bitcoin_custom.conf")
 
+def get_custom_bitcoin_version():
+    # Returns the custom Bitcoin version the user selected (ex: knots_autoupdate)
+    # or an empty string when the default version of Bitcoin is being used.
+    files = ["/home/bitcoin/.mynode/custom_bitcoin_selection",
+             "/mnt/hdd/mynode/settings/custom_bitcoin_selection",
+             # Older installs may not have a selection file, so fall back to the installed custom version
+             "/home/bitcoin/.mynode/bitcoin_version_latest_custom",
+             "/mnt/hdd/mynode/settings/bitcoin_version_latest_custom"]
+    for filename in files:
+        if os.path.isfile(filename):
+            version = to_string(get_file_contents(filename))
+            if version != "" and version != "ERROR":
+                return version
+    return ""
+
 def restart_bitcoin_actual():
     os.system("systemctl restart bitcoin")
 

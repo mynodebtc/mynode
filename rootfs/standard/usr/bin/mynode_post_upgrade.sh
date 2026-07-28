@@ -107,8 +107,8 @@ if ! skip_base_upgrades ; then
     curl https://keybase.io/bitconner/pgp_keys.asc | gpg --import
     curl https://keybase.io/guggero/pgp_keys.asc | gpg --import # Pool
     curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/refs/heads/master/pubkeys/AdamGibson-LOST-Aug-2024.asc | gpg --import # JoinMarket
-    gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
-    gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys E777299FC265DD04793070EB944D35F9AC3DB76A # Bitcoin - Michael Ford (fanquake)
+    gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964 # Bitcoin Core - Wladimir van der Laan
+    gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys E777299FC265DD04793070EB944D35F9AC3DB76A # Bitcoin Core - Michael Ford (fanquake)
     curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
     curl https://samouraiwallet.com/pgp.txt | gpg --import # two keys from Samourai team
     gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E # Loop (abosworth)
@@ -400,9 +400,11 @@ if [ "$CURRENT" != "$BTC_VERSION" ]; then
     # Fixes issue if SD card was reflashed, but custom bitcoin version had been installed prior
     # and we still have custom marker files on the data drive. This install may fail, but subsequent
     # attempts will succeed.
-    if [[ "$BTC_VERSION" = *"knots"* ]] || [[ "$BTC_VERSION" = *"bip110"* ]] || [[ "$BTC_VERSION" = *"ordisrespector"* ]]; then
+    if [[ "$BTC_VERSION" = *"knots"* ]] || [[ "$BTC_VERSION" = *"bip110"* ]] || [[ "$BTC_VERSION" = *"ordisrespector"* ]] || [[ "$BTC_VERSION" = *"core29x"* ]]; then
         rm -f /home/bitcoin/.mynode/bitcoin_version_latest_custom
         rm -f /mnt/hdd/mynode/settings/bitcoin_version_latest_custom
+        rm -f /home/bitcoin/.mynode/custom_bitcoin_selection
+        rm -f /mnt/hdd/mynode/settings/custom_bitcoin_selection
     fi
 
     # Download and install Bitcoin
