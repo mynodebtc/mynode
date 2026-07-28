@@ -171,7 +171,7 @@ def index():
         templateData = {
             "title": "Error",
             "header_text": "OS Drive Error",
-            "subheader_text": "The root filesystem is read only. Your SD card or USB thumdrive may be corrupt.",
+            "subheader_text": "The root filesystem is read only. Your SD card or USB thumbdrive may be corrupt.",
             "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
