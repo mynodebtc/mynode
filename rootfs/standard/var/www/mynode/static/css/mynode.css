@@ -692,6 +692,17 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     margin-top: 5px !important;
     margin-bottom: 15px !important;
 }
+.custom_version_notice {
+    color: #444444;
+    font-size: 13px;
+    text-align: left;
+    line-height: 1.5;
+    padding: 10px;
+    margin-bottom: 12px;
+    background-color: #ffb70021;
+    border-left: 4px solid #f19c00;
+    border-radius: 4px;
+}
 .settings_button {
     font-size: 14px;
     margin-top: 15px;

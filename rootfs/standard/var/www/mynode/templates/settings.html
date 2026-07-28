@@ -495,7 +495,8 @@
                     window.location.href='/settings/reinstall-app?app='+reinstall_app_choice
                 });
 
-                var custom_bitcoin_choice="";
+                // Starts as the currently installed custom version (if any), otherwise "none"
+                var custom_bitcoin_choice=$("#custom_bitcoin_select").val();
                 $("#custom_bitcoin_select").selectmenu( {
                     change: function( event, data ) {
                         custom_bitcoin_choice = data.item.value;
@@ -510,7 +511,7 @@
                     }
                 });
                 $("#custom_bitcoin_install_button").button({
-                    disabled: true
+                    disabled: custom_bitcoin_choice == "none"
                 });
                 $("#custom_bitcoin_install_button").on("click", function() {
                     bip110_confirmation_versions = ["knots_29_3_3", "bip110_autoupdate"]
@@ -1121,6 +1122,8 @@
             MyNode is not responsible for any issues or lost funds resulting from using custom Bitcoin versions.
             <br/><br/>
             Version Info<br/>
+            - Bitcoin Core 29.x: Auto-updates only within the Bitcoin Core 29.x release series. Your node will stay on 29.x even after MyNode starts using a newer major version of Bitcoin Core.
+            <br/>
             - BIP-110: Will activate after block 965,664, even without network consensus. After activation, running an out-of-consensus software version will leave your node vulnerable to missing blocks or accepting invalid blocks, which could result in lost funds.
             <br/><br/>
             
@@ -1131,23 +1134,52 @@
             {% endif %}
             </small>
 
+            {# Custom Bitcoin versions - (value, name, requires debian 12+). A value of "none" is a separator. #}
+            {% set custom_bitcoin_versions = [
+                ("none",                "--- Recommended ---",                  False),
+                ("default",             "Bitcoin Core (default)",               False),
+                ("core29x_autoupdate",  "Bitcoin Core 29.x (autoupdate)",       True),
+                ("knots_autoupdate",    "Bitcoin Knots (autoupdate)",           True),
+                ("bip110_autoupdate",   "Bitcoin Knots + BIP-110 (autoupdate)", True),
+                ("none",                "--- Specific Versions ---",            False),
+                ("knots_29_3_2",        "Bitcoin Knots (v29.3.knots20260507)",  True),
+                ("knots_29_3_3",        "Bitcoin Knots + BIP-110 (v29.3.knots20260508)", True),
+                ("none",                "--- Old / Not Recommended ---",        False),
+                ("knots_29_3",          "Bitcoin Knots (v29.3)",                True),
+                ("knots_29_2_2",        "Bitcoin Knots (v29.2.2)",              True),
+                ("knots_29_1",          "Bitcoin Knots (v29.1)",                True),
+                ("knots_28_1",          "Bitcoin Knots (v28.1)",                True),
+                ("knots_27_1",          "Bitcoin Knots (v27.1)",                False),
+                ("knots_26_1",          "Bitcoin Knots (v26.1)",                False),
+                ("ordisrespector",      "Ordisrespector (v24.0.1)",             False)
+            ] %}
+            {% set custom_bitcoin_version_name = namespace(value="") %}
+            {% for value, name, requires_deb12 in custom_bitcoin_versions %}
+                {% if value != "none" and value == custom_bitcoin_version %}
+                    {% set custom_bitcoin_version_name.value = name %}
+                {% endif %}
+            {% endfor %}
+
+            {% if custom_bitcoin_version %}
+            <div class="custom_version_notice">
+                <b>Custom Bitcoin version currently selected:</b>
+                {% if custom_bitcoin_version_name.value != "" %}{{ custom_bitcoin_version_name.value }}{% else %}{{ custom_bitcoin_version }}{% endif %}
+                <br/>
+                This overrides the default version of Bitcoin. Select "Bitcoin Core (default)" below to undo this change.
+            </div>
+            {% endif %}
+
             <select name="custom_bitcoin_select" id="custom_bitcoin_select">
+                {% if not custom_bitcoin_version %}
                 <option value="none" selected="selected">Choose...</option>
-                <option value="none">--- Recommended ---</option>
-                <option value="default">Bitcoin Core (default)</option>
-                <option value="knots_autoupdate" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (autoupdate)</option>
-                <option value="bip110_autoupdate" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots + BIP-110 (autoupdate)</option>
-                <option value="none">--- Specific Versions ---</option>
-                <option value="knots_29_3_2" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v29.3.knots20260507)</option>
-                <option value="knots_29_3_3" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots + BIP-110 (v29.3.knots20260508)</option>
-                <option value="none">--- Old / Not Recommended ---</option>
-                <option value="knots_29_3" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v29.3)</option>
-                <option value="knots_29_2_2" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v29.2.2)</option>
-                <option value="knots_29_1" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v29.1)</option>
-                <option value="knots_28_1" {% if debian_version < 12 %}disabled{% endif %}>Bitcoin Knots (v28.1)</option>
-                <option value="knots_27_1">Bitcoin Knots (v27.1)</option>
-                <option value="knots_26_1">Bitcoin Knots (v26.1)</option>
-                <option value="ordisrespector">Ordisrespector (v24.0.1)</option>
+                {% else %}
+                <option value="none">Choose...</option>
+                {% endif %}
+                {% for value, name, requires_deb12 in custom_bitcoin_versions %}
+                <option value="{{ value }}"
+                        {% if value != "none" and value == custom_bitcoin_version %}selected="selected"{% endif %}
+                        {% if requires_deb12 and debian_version < 12 %}disabled{% endif %}>{{ name }}</option>
+                {% endfor %}
             </select>
             <button id="custom_bitcoin_install_button">Install</button>
         </div>
