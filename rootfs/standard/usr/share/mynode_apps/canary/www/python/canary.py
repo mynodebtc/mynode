@@ -26,7 +26,7 @@ def canary_page():
     app_status_color = get_application_status_color("canary")
 
     template_data = {
-        "title": "myNode - " + app["name"],
+        "title": "MyNode - " + app["name"],
         "ui_settings": read_ui_settings(),
         "app_status": app_status,
         "app_status_color": app_status_color,
