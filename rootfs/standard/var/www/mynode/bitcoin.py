@@ -224,6 +224,8 @@ def runcmd_page():
 
 @mynode_bitcoin.route("/bitcoin/toggle_bip37")
 def bitcoin_toggle_bip37():
+    check_logged_in()
+
     if request.args.get("enabled") and request.args.get("enabled") == "1":
         enable_bip37()
     else:
@@ -244,6 +246,8 @@ def bitcoin_toggle_bip37():
 
 @mynode_bitcoin.route("/bitcoin/toggle_bip157")
 def bitcoin_toggle_bip157():
+    check_logged_in()
+    
     if request.args.get("enabled") and request.args.get("enabled") == "1":
         enable_bip157()
     else:
