@@ -8,6 +8,7 @@ from systemctl_info import *
 import time
 import json
 import os
+import secrets
 import subprocess
 import random
 import string
@@ -646,8 +647,7 @@ def get_flask_secret_key():
     if os.path.isfile("/home/bitcoin/.mynode/flask_secret_key"):
         key = to_string( get_file_contents("/home/bitcoin/.mynode/flask_secret_key") )
     else:
-        letters = string.ascii_letters
-        key = ''.join(random.choice(letters) for i in range(32))
+        key = secrets.token_hex()
         set_file_contents("/home/bitcoin/.mynode/flask_secret_key", key)
     return key
 
