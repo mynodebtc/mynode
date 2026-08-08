@@ -1,3 +1,12 @@
+=== v0.3.46 ===
+- Released 08/07/26
+- Upgrade BTCPay to v2.4.2
+- Upgrade Specter to v2.1.10
+- Add Custom Bitcoin Version for Core 29.x
+- Add explicit datacarrier=83 size config to default bitcoin.conf
+- Improve log consistency by preventing /var/log from filling up
+- Bug Fixes
+
 === v0.3.45 ===
 - Released 07/11/26
 - Upgrade BTCPay Server to v1.13.6
