@@ -313,7 +313,6 @@ def create_default_wallets():
         for new_wallet in default_wallets:
             found = False
             for w in wallets:
-                log_message("{} comparing to {}".format(new_wallet, w["walletname"]))
                 if new_wallet == w["walletname"]:
                     found = True
                     break
