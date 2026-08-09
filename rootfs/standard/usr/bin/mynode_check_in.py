@@ -64,11 +64,21 @@ def check_for_new_mynode_version():
     latest_version_check_count = latest_version_check_count + 1
 
 def on_check_in_error(msg):
+    # Preserve any previously-received warnings so a transient check-in
+    # failure doesn't hide them until the next successful check-in
+    previous_warnings = []
+    try:
+        with open("/tmp/check_in_response.json", "r") as file:
+            previous_warnings = json.load(file).get("warnings", [])
+    except Exception:
+        pass
+
     clear_response_data()
     log_message(msg)
     data = {}
     data["status"] = "ERROR"
     data["message"] = msg
+    data["warnings"] = previous_warnings
     save_response_data(data)
 
 # Checkin every 24 hours

@@ -104,6 +104,20 @@
 </div>
 {% endif %}
 
+{% if dynamic_warnings %}
+    {% for warning in dynamic_warnings %}
+    <div class="main_page_{{ warning.css_class }}">
+        <p style="text-align: center;"><b>{{ warning.title }}</b></p>
+        <p style="text-align: center;">{{ warning.message }}</p>
+        <p style="text-align: center;">
+            {% if warning.url %}
+            <a href="{{ warning.url }}" target="_blank" style="margin: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Learn More</a>
+            {% endif %}
+            <a href="/dismiss-dynamic-warning?id={{ warning.id }}&version={{ warning.version }}" style="margin: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Dismiss</a>
+        </p>
+    </div>
+    {% endfor %}
+{% endif %}
 
 
 {% if not has_changed_password and not hide_password_warning %}
