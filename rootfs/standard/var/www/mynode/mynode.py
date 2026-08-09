@@ -1,4 +1,5 @@
 
+import urllib.parse
 from config import *
 from flask import Flask, render_template, Markup, redirect, request, url_for
 from user_management import *
@@ -127,6 +128,99 @@ class ServiceExit(Exception):
 def on_shutdown(signum, frame):
     app.logger.info('Caught signal %d' % signum)
     raise ServiceExit
+
+
+### Server-Pushed Warnings (from check-in response)
+# Domains allowed for a warning's "Learn More" link, so a compromised or
+# buggy check-in backend can't turn a warning into a phishing link.
+DYNAMIC_WARNING_URL_ALLOWED_HOSTS = ["mynodebtc.com", "www.mynodebtc.com"]
+
+DYNAMIC_WARNING_SEVERITY_CSS_CLASS = {
+    "critical": "error_block",
+    "warning": "warning_block",
+    "info": "warning_block",
+}
+
+DYNAMIC_WARNING_MAX_COUNT = 5
+DYNAMIC_WARNING_MAX_TITLE_LENGTH = 100
+DYNAMIC_WARNING_MAX_MESSAGE_LENGTH = 500
+
+def _dynamic_warning_version_tuple(version_string):
+    try:
+        return tuple(int(part) for part in str(version_string).split("."))
+    except (ValueError, AttributeError):
+        return None
+
+def _dynamic_warning_url_allowed(url):
+    try:
+        parsed = urllib.parse.urlparse(url)
+    except ValueError:
+        return False
+    return parsed.scheme == "https" and parsed.hostname in DYNAMIC_WARNING_URL_ALLOWED_HOSTS
+
+def _dynamic_warning_conditions_met(conditions):
+    if not isinstance(conditions, dict):
+        return True
+
+    device_types = conditions.get("device_types")
+    if device_types and get_device_type() not in device_types:
+        return False
+
+    current_version = _dynamic_warning_version_tuple(get_current_version())
+    min_version = _dynamic_warning_version_tuple(conditions.get("min_mynode_version"))
+    max_version = _dynamic_warning_version_tuple(conditions.get("max_mynode_version"))
+    if min_version is not None and (current_version is None or current_version < min_version):
+        return False
+    if max_version is not None and (current_version is None or current_version > max_version):
+        return False
+
+    debian_version = get_debian_version()
+    if conditions.get("min_debian_version") is not None and debian_version < conditions["min_debian_version"]:
+        return False
+    if conditions.get("max_debian_version") is not None and debian_version > conditions["max_debian_version"]:
+        return False
+
+    installed_apps = conditions.get("installed_apps")
+    if installed_apps:
+        for short_name in installed_apps:
+            if not is_installed(short_name):
+                return False
+
+    return True
+
+def get_active_dynamic_warnings():
+    check_in_data = get_check_in_data()
+    if not check_in_data:
+        return []
+
+    active_warnings = []
+    for warning in check_in_data.get("warnings", []):
+        if len(active_warnings) >= DYNAMIC_WARNING_MAX_COUNT:
+            break
+
+        warning_id = warning.get("id", "")
+        version = warning.get("version", "")
+        if not DYNAMIC_WARNING_ID_REGEX.match(str(warning_id)) or not str(version).isdigit():
+            continue
+        if is_dynamic_warning_dismissed(warning_id, version):
+            continue
+        if not _dynamic_warning_conditions_met(warning.get("conditions")):
+            continue
+
+        url = warning.get("url")
+        if url and not _dynamic_warning_url_allowed(url):
+            url = None
+
+        active_warnings.append({
+            "id": warning_id,
+            "version": version,
+            "title": str(warning.get("title", ""))[:DYNAMIC_WARNING_MAX_TITLE_LENGTH],
+            "message": str(warning.get("message", ""))[:DYNAMIC_WARNING_MAX_MESSAGE_LENGTH],
+            "css_class": DYNAMIC_WARNING_SEVERITY_CSS_CLASS.get(warning.get("severity"), "warning_block"),
+            "url": url,
+        })
+
+    return active_warnings
 
 
 ### Flask Page Processing
@@ -575,6 +669,7 @@ def index():
             "debian_version": get_debian_version(),
             "show_old_tor_warning": show_old_tor_warning(),
             "tor_version": get_tor_version(),
+            "dynamic_warnings": get_active_dynamic_warnings(),
             "is_quicksync_disabled": not is_quicksync_enabled(),
             "usb_extras": get_usb_extras(),
             "cpu_usage": get_cpu_usage(),
@@ -702,6 +797,14 @@ def page_clear_old_tor_warning():
 def page_dismiss_expiration_warning():
     check_logged_in()
     dismiss_expiration_warning()
+    return redirect("/")
+
+@app.route("/dismiss-dynamic-warning")
+def page_dismiss_dynamic_warning():
+    check_logged_in()
+    warning_id = request.args.get("id", "")
+    version = request.args.get("version", "")
+    dismiss_dynamic_warning(warning_id, version)
     return redirect("/")
 
 @app.route("/login", methods=["GET","POST"])
