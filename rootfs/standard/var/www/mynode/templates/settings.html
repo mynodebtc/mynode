@@ -514,7 +514,7 @@
                     disabled: custom_bitcoin_choice == "none"
                 });
                 $("#custom_bitcoin_install_button").on("click", function() {
-                    bip110_confirmation_versions = ["knots_29_3_3", "bip110_autoupdate"]
+                    bip110_confirmation_versions = ["knots_29_4", "knots_29_3_3", "bip110_autoupdate"]
                     if (bip110_confirmation_versions.includes(custom_bitcoin_choice)) {
                         var okFunction = function() {
                             window.location.href='/settings/install-custom-bitcoin?version='+custom_bitcoin_choice
@@ -1143,8 +1143,9 @@
                 ("bip110_autoupdate",   "Bitcoin Knots + BIP-110 (autoupdate)", True),
                 ("none",                "--- Specific Versions ---",            False),
                 ("knots_29_3_2",        "Bitcoin Knots (v29.3.knots20260507)",  True),
-                ("knots_29_3_3",        "Bitcoin Knots + BIP-110 (v29.3.knots20260508)", True),
+                ("knots_29_4",          "Bitcoin Knots + BIP-110 (v29.4.knots20260508)", True),
                 ("none",                "--- Old / Not Recommended ---",        False),
+                ("knots_29_3_3",        "Bitcoin Knots + BIP-110 (v29.3.knots20260508)", True),
                 ("knots_29_3",          "Bitcoin Knots (v29.3)",                True),
                 ("knots_29_2_2",        "Bitcoin Knots (v29.2.2)",              True),
                 ("knots_29_1",          "Bitcoin Knots (v29.1)",                True),

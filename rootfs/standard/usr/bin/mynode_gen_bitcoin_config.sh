@@ -149,7 +149,8 @@ else
 
     # append BIP-110 / RDTS settings if needed
     CHECK_CONSENSUS=$(cat /home/bitcoin/.mynode/bitcoin_version | head -n 1)
-    if [ "$CHECK_CONSENSUS" == "29.3.3-knots" ] || [ "$CHECK_CONSENSUS" == "bip110_autoupdate" ]; then
+    BIP110_VERSIONS=("29.4-knots" "29.3.3-knots" "bip110_autoupdate")
+    if [[ " ${BIP110_VERSIONS[*]} " == *" $CHECK_CONSENSUS "* ]]; then
         echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
         echo "# BIP-110 / RDTS Settings (BIP 110 version of Bitcoin detected - $CHECK_CONSENSUS)" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
         echo "consensusrules=rdts" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
