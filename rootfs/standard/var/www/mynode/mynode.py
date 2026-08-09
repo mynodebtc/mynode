@@ -141,7 +141,6 @@ DYNAMIC_WARNING_SEVERITY_CSS_CLASS = {
     "info": "warning_block",
 }
 
-DYNAMIC_WARNING_MAX_COUNT = 5
 DYNAMIC_WARNING_MAX_TITLE_LENGTH = 100
 DYNAMIC_WARNING_MAX_MESSAGE_LENGTH = 500
 
@@ -180,11 +179,9 @@ def _dynamic_warning_conditions_met(conditions):
     if conditions.get("max_debian_version") is not None and debian_version > conditions["max_debian_version"]:
         return False
 
-    installed_apps = conditions.get("installed_apps")
-    if installed_apps:
-        for short_name in installed_apps:
-            if not is_installed(short_name):
-                return False
+    affected_app = conditions.get("affected_app")
+    if affected_app and not is_installed(affected_app):
+        return False
 
     return True
 
@@ -195,9 +192,6 @@ def get_active_dynamic_warnings():
 
     active_warnings = []
     for warning in check_in_data.get("warnings", []):
-        if len(active_warnings) >= DYNAMIC_WARNING_MAX_COUNT:
-            break
-
         warning_id = warning.get("id", "")
         version = warning.get("version", "")
         if not DYNAMIC_WARNING_ID_REGEX.match(str(warning_id)) or not str(version).isdigit():
