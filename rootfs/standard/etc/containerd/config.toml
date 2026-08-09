@@ -1,0 +1,3 @@
+version = 2
+root = "/mnt/hdd/mynode/containerd"
+state = "/run/containerd"

@@ -210,6 +210,7 @@ if [ -f /home/bitcoin/reset_docker ]; then
 
     # Delete docker data
     rm -rf /mnt/hdd/mynode/docker
+    rm -rf /mnt/hdd/mynode/containerd
     rm /home/bitcoin/reset_docker
     sync
     reboot
@@ -242,6 +243,7 @@ mkdir -p /mnt/hdd/mynode/redis
 mkdir -p /mnt/hdd/mynode/mongodb
 mkdir -p /mnt/hdd/mynode/electrs
 mkdir -p /mnt/hdd/mynode/docker
+mkdir -p /mnt/hdd/mynode/containerd
 mkdir -p /mnt/hdd/mynode/rtl
 mkdir -p /mnt/hdd/mynode/rtl_backup
 mkdir -p /mnt/hdd/mynode/whirlpool
@@ -253,6 +255,15 @@ mkdir -p /mnt/hdd/mynode/joinmarket
 mkdir -p /mnt/hdd/mynode/mempool
 mkdir -p /mnt/hdd/mynode/tor_backup
 mkdir -p /tmp/flask_uploads
+
+# Migrate any containerd data left on the OS drive to the external drive
+# (config.toml now points containerd's root at /mnt/hdd/mynode/containerd, but
+# older installs may still have data sitting at the default /var/lib/containerd)
+if [ -d /var/lib/containerd ] && [ ! -L /var/lib/containerd ] && [ -n "$(ls -A /var/lib/containerd 2>/dev/null)" ]; then
+    rsync -a --remove-source-files /var/lib/containerd/ /mnt/hdd/mynode/containerd/ || true
+    find /var/lib/containerd -depth -type d -empty -delete 2>/dev/null || true
+fi
+
 echo "drive_mounted" > $MYNODE_STATUS_FILE
 chmod 777 $MYNODE_STATUS_FILE
 rm -rf $MYNODE_DIR/.mynode_bitcoin_synced
