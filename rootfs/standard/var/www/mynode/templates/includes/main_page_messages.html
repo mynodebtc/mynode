@@ -108,7 +108,7 @@
     {% for warning in dynamic_warnings %}
     <div class="main_page_{{ warning.css_class }}">
         <p style="text-align: center;"><b>{{ warning.title }}</b></p>
-        <p style="text-align: center;">{{ warning.message }}</p>
+        <p style="text-align: center; white-space: pre-line;">{{ warning.message }}</p>
         <p style="text-align: center;">
             {% if warning.url %}
             <a href="{{ warning.url }}" target="_blank" style="margin: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Learn More</a>
