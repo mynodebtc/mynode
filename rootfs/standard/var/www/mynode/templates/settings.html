@@ -514,7 +514,8 @@
                     disabled: custom_bitcoin_choice == "none"
                 });
                 $("#custom_bitcoin_install_button").on("click", function() {
-                    bip110_confirmation_versions = ["knots_29_3_3", "bip110_autoupdate"]
+                    // Add explicit confirmation for certain versions
+                    bip110_confirmation_versions = ["bip110_autoupdate"]
                     if (bip110_confirmation_versions.includes(custom_bitcoin_choice)) {
                         var okFunction = function() {
                             window.location.href='/settings/install-custom-bitcoin?version='+custom_bitcoin_choice
@@ -1123,8 +1124,6 @@
             <br/><br/>
             Version Info<br/>
             - Bitcoin Core 29.x: Auto-updates only within the Bitcoin Core 29.x release series. Your node will stay on 29.x even after MyNode starts using a newer major version of Bitcoin Core.
-            <br/>
-            - BIP-110: Will activate after block 965,664, even without network consensus. After activation, running an out-of-consensus software version will leave your node vulnerable to missing blocks or accepting invalid blocks, which could result in lost funds.
             <br/><br/>
             
             {% if debian_version < 12 %}
@@ -1140,18 +1139,10 @@
                 ("default",             "Bitcoin Core (default)",               False),
                 ("core29x_autoupdate",  "Bitcoin Core 29.x (autoupdate)",       True),
                 ("knots_autoupdate",    "Bitcoin Knots (autoupdate)",           True),
-                ("bip110_autoupdate",   "Bitcoin Knots + BIP-110 (autoupdate)", True),
                 ("none",                "--- Specific Versions ---",            False),
                 ("knots_29_3_2",        "Bitcoin Knots (v29.3.knots20260507)",  True),
-                ("knots_29_3_3",        "Bitcoin Knots + BIP-110 (v29.3.knots20260508)", True),
                 ("none",                "--- Old / Not Recommended ---",        False),
-                ("knots_29_3",          "Bitcoin Knots (v29.3)",                True),
-                ("knots_29_2_2",        "Bitcoin Knots (v29.2.2)",              True),
-                ("knots_29_1",          "Bitcoin Knots (v29.1)",                True),
-                ("knots_28_1",          "Bitcoin Knots (v28.1)",                True),
-                ("knots_27_1",          "Bitcoin Knots (v27.1)",                False),
-                ("knots_26_1",          "Bitcoin Knots (v26.1)",                False),
-                ("ordisrespector",      "Ordisrespector (v24.0.1)",             False)
+                ("knots_29_2_2",        "Bitcoin Knots (v29.2.2)",              True)
             ] %}
             {% set custom_bitcoin_version_name = namespace(value="") %}
             {% for value, name, requires_deb12 in custom_bitcoin_versions %}
