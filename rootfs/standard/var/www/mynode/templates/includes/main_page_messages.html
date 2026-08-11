@@ -104,16 +104,16 @@
 </div>
 {% endif %}
 
-{% if dynamic_warnings %}
-    {% for warning in dynamic_warnings %}
-    <div class="main_page_{{ warning.css_class }}">
-        <p style="text-align: center;"><b>{{ warning.title }}</b></p>
-        <p style="text-align: center; white-space: pre-line;">{{ warning.message }}</p>
+{% if notifications %}
+    {% for notification in notifications %}
+    <div class="main_page_{{ notification.css_class }}">
+        <p style="text-align: center;"><b>{{ notification.title }}</b></p>
+        <p style="text-align: center; white-space: pre-line;">{{ notification.message }}</p>
         <p style="text-align: center;">
-            {% if warning.url %}
-            <a href="{{ warning.url }}" target="_blank" style="margin: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Learn More</a>
+            {% if notification.url %}
+            <a href="{{ notification.url }}" target="_blank" style="margin: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Learn More</a>
             {% endif %}
-            <a href="/dismiss-dynamic-warning?id={{ warning.id }}&version={{ warning.version }}" style="margin: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Dismiss</a>
+            <a href="/dismiss-notification?id={{ notification.id }}&version={{ notification.version }}" style="margin: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Dismiss</a>
         </p>
     </div>
     {% endfor %}

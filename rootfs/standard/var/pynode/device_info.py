@@ -841,20 +841,20 @@ def dismiss_expiration_warning():
 def is_expiration_warning_dismissed():
     return os.path.isfile("/tmp/dismiss_expiration_warning")
 
-# Generic dismiss-by-id mechanism for server-pushed check-in warnings
-# (see get_active_dynamic_warnings() in mynode.py). Keyed by id+version so the
-# server can force a warning to reappear by bumping its version.
-DYNAMIC_WARNING_ID_REGEX = re.compile(r"^[a-zA-Z0-9_-]+$")
+# Generic dismiss-by-id mechanism for server-pushed check-in notifications
+# (see get_active_notifications() in mynode.py). Keyed by id+version so the
+# server can force a notification to reappear by bumping its version.
+NOTIFICATION_ID_REGEX = re.compile(r"^[a-zA-Z0-9_-]+$")
 
-def dismiss_dynamic_warning(warning_id, version):
-    if not DYNAMIC_WARNING_ID_REGEX.match(str(warning_id)) or not str(version).isdigit():
+def dismiss_notification(notification_id, version):
+    if not NOTIFICATION_ID_REGEX.match(str(notification_id)) or not str(version).isdigit():
         return
-    touch("/tmp/dismiss_dynamic_warning_{}_v{}".format(warning_id, version))
+    touch("/tmp/dismiss_notification_{}_v{}".format(notification_id, version))
 
-def is_dynamic_warning_dismissed(warning_id, version):
-    if not DYNAMIC_WARNING_ID_REGEX.match(str(warning_id)) or not str(version).isdigit():
+def is_notification_dismissed(notification_id, version):
+    if not NOTIFICATION_ID_REGEX.match(str(notification_id)) or not str(version).isdigit():
         return True
-    return os.path.isfile("/tmp/dismiss_dynamic_warning_{}_v{}".format(warning_id, version))
+    return os.path.isfile("/tmp/dismiss_notification_{}_v{}".format(notification_id, version))
 
 def is_support_near_expiration():
     data = get_check_in_data()
