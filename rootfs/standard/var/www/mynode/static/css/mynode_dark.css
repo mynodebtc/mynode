@@ -158,6 +158,12 @@ th td {
     background-color: #3a4750;
 }
 
+.main_page_info_block {
+    color: #ddd;
+    border: 2px solid #3399ff;
+    background-color: #3a4750;
+}
+
 .main_page_error_block a {
     color: black;
     text-decoration: underline dashed black;

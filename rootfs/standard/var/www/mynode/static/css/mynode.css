@@ -796,6 +796,21 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     margin-bottom: 20px;
 }
 
+.main_page_info_block {
+    color: #333333;
+    border: 2px solid #3399ff;
+    background-color: rgb(235, 245, 255);
+    width: 810px;
+    border-radius: 10px;
+    text-align: justify;
+    display: block;
+    font-size: 12px;
+    padding: 5px;
+    padding-left: 12px;
+    margin: auto;
+    margin-bottom: 20px;
+}
+
 .bottom_center_alert_popup {
     display: none;
     position: fixed;

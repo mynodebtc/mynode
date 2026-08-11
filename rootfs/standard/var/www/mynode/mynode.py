@@ -130,34 +130,34 @@ def on_shutdown(signum, frame):
     raise ServiceExit
 
 
-### Server-Pushed Warnings (from check-in response)
-# Domains allowed for a warning's "Learn More" link, so a compromised or
-# buggy check-in backend can't turn a warning into a phishing link.
-DYNAMIC_WARNING_URL_ALLOWED_HOSTS = ["mynodebtc.com", "www.mynodebtc.com"]
+### Server-Pushed Notifications (from check-in response)
+# Domains allowed for a notification's "Learn More" link, so a compromised or
+# buggy check-in backend can't turn a notification into a phishing link.
+NOTIFICATION_URL_ALLOWED_HOSTS = ["mynodebtc.com", "www.mynodebtc.com"]
 
-DYNAMIC_WARNING_SEVERITY_CSS_CLASS = {
+NOTIFICATION_SEVERITY_CSS_CLASS = {
     "critical": "error_block",
     "warning": "warning_block",
-    "info": "warning_block",
+    "info": "info_block",
 }
 
-DYNAMIC_WARNING_MAX_TITLE_LENGTH = 100
-DYNAMIC_WARNING_MAX_MESSAGE_LENGTH = 500
+NOTIFICATION_MAX_TITLE_LENGTH = 100
+NOTIFICATION_MAX_MESSAGE_LENGTH = 500
 
-def _dynamic_warning_version_tuple(version_string):
+def _notification_version_tuple(version_string):
     try:
         return tuple(int(part) for part in str(version_string).split("."))
     except (ValueError, AttributeError):
         return None
 
-def _dynamic_warning_url_allowed(url):
+def _notification_url_allowed(url):
     try:
         parsed = urllib.parse.urlparse(url)
     except ValueError:
         return False
-    return parsed.scheme == "https" and parsed.hostname in DYNAMIC_WARNING_URL_ALLOWED_HOSTS
+    return parsed.scheme == "https" and parsed.hostname in NOTIFICATION_URL_ALLOWED_HOSTS
 
-def _dynamic_warning_conditions_met(conditions):
+def _notification_conditions_met(conditions):
     if not isinstance(conditions, dict):
         return True
 
@@ -165,9 +165,9 @@ def _dynamic_warning_conditions_met(conditions):
     if device_types and get_device_type() not in device_types:
         return False
 
-    current_version = _dynamic_warning_version_tuple(get_current_version())
-    min_version = _dynamic_warning_version_tuple(conditions.get("min_mynode_version"))
-    max_version = _dynamic_warning_version_tuple(conditions.get("max_mynode_version"))
+    current_version = _notification_version_tuple(get_current_version())
+    min_version = _notification_version_tuple(conditions.get("min_mynode_version"))
+    max_version = _notification_version_tuple(conditions.get("max_mynode_version"))
     if min_version is not None and (current_version is None or current_version < min_version):
         return False
     if max_version is not None and (current_version is None or current_version > max_version):
@@ -185,36 +185,36 @@ def _dynamic_warning_conditions_met(conditions):
 
     return True
 
-def get_active_dynamic_warnings():
+def get_active_notifications():
     check_in_data = get_check_in_data()
     if not check_in_data:
         return []
 
-    active_warnings = []
-    for warning in check_in_data.get("warnings", []):
-        warning_id = warning.get("id", "")
-        version = warning.get("version", "")
-        if not DYNAMIC_WARNING_ID_REGEX.match(str(warning_id)) or not str(version).isdigit():
+    active_notifications = []
+    for notification in check_in_data.get("notifications", []):
+        notification_id = notification.get("id", "")
+        version = notification.get("version", "")
+        if not NOTIFICATION_ID_REGEX.match(str(notification_id)) or not str(version).isdigit():
             continue
-        if is_dynamic_warning_dismissed(warning_id, version):
+        if is_notification_dismissed(notification_id, version):
             continue
-        if not _dynamic_warning_conditions_met(warning.get("conditions")):
+        if not _notification_conditions_met(notification.get("conditions")):
             continue
 
-        url = warning.get("url")
-        if url and not _dynamic_warning_url_allowed(url):
+        url = notification.get("url")
+        if url and not _notification_url_allowed(url):
             url = None
 
-        active_warnings.append({
-            "id": warning_id,
+        active_notifications.append({
+            "id": notification_id,
             "version": version,
-            "title": str(warning.get("title", ""))[:DYNAMIC_WARNING_MAX_TITLE_LENGTH],
-            "message": str(warning.get("message", ""))[:DYNAMIC_WARNING_MAX_MESSAGE_LENGTH],
-            "css_class": DYNAMIC_WARNING_SEVERITY_CSS_CLASS.get(warning.get("severity"), "warning_block"),
+            "title": str(notification.get("title", ""))[:NOTIFICATION_MAX_TITLE_LENGTH],
+            "message": str(notification.get("message", ""))[:NOTIFICATION_MAX_MESSAGE_LENGTH],
+            "css_class": NOTIFICATION_SEVERITY_CSS_CLASS.get(notification.get("severity"), "warning_block"),
             "url": url,
         })
 
-    return active_warnings
+    return active_notifications
 
 
 ### Flask Page Processing
@@ -663,7 +663,7 @@ def index():
             "debian_version": get_debian_version(),
             "show_old_tor_warning": show_old_tor_warning(),
             "tor_version": get_tor_version(),
-            "dynamic_warnings": get_active_dynamic_warnings(),
+            "notifications": get_active_notifications(),
             "is_quicksync_disabled": not is_quicksync_enabled(),
             "usb_extras": get_usb_extras(),
             "cpu_usage": get_cpu_usage(),
@@ -793,12 +793,12 @@ def page_dismiss_expiration_warning():
     dismiss_expiration_warning()
     return redirect("/")
 
-@app.route("/dismiss-dynamic-warning")
-def page_dismiss_dynamic_warning():
+@app.route("/dismiss-notification")
+def page_dismiss_notification():
     check_logged_in()
-    warning_id = request.args.get("id", "")
+    notification_id = request.args.get("id", "")
     version = request.args.get("version", "")
-    dismiss_dynamic_warning(warning_id, version)
+    dismiss_notification(notification_id, version)
     return redirect("/")
 
 @app.route("/login", methods=["GET","POST"])
