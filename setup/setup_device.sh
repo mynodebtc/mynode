@@ -801,48 +801,8 @@ if [ "$CURRENT" != "$SECP256K1_VERSION" ]; then
     echo $SECP256K1_VERSION > $SECP256K1_VERSION_FILE
 fi
 
-echo "Installing JoinInBox..."
-if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
-    JOININBOX_UPGRADE_URL=https://github.com/openoms/joininbox/archive/$JOININBOX_VERSION.tar.gz
-    CURRENT=""
-    if [ -f $JOININBOX_VERSION_FILE ]; then
-        CURRENT=$(cat $JOININBOX_VERSION_FILE)
-    fi
-    if [ "$CURRENT" != "$JOININBOX_VERSION" ]; then
-        # Download and build JoinInBox
-        cd /home/joinmarket
-        
-        # Delete all non-hidden files
-        rm -rf *
-        rm -rf joininbox-*
-
-        sudo -u joinmarket wget $JOININBOX_UPGRADE_URL -O joininbox.tar.gz
-        sudo -u joinmarket tar -xvf joininbox.tar.gz
-        sudo -u joinmarket rm joininbox.tar.gz
-        mv joininbox-* joininbox
-
-        chmod -R +x ./joininbox/
-        sudo -u joinmarket cp -rf ./joininbox/scripts/* .
-
-        # Use Python3.7 on RP4 32-bit
-        JM_ENV_VARS=""
-        if [ $IS_32_BIT = 1 ]; then
-            JM_ENV_VARS="export JM_PYTHON=python3.7; "
-        fi
-
-        # Install
-        sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket.sh --install install" || true
-        sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket-api.sh on" || true
-
-        # Cleanup apt-get cache to save some space
-        apt-get clean
-            
-        # Enable obwatcher at the end of setup_device.sh
-
-        echo $JOININBOX_VERSION > $JOININBOX_VERSION_FILE
-    fi
-fi
-
+#echo "Installing JoinInBox..."
+# No longer a default app
 
 # Install RTL
 RTL_UPGRADE_URL=https://github.com/Ride-The-Lightning/RTL/archive/$RTL_VERSION.tar.gz
@@ -890,7 +850,7 @@ if [ "$CURRENT" != "$BTCRPCEXPLORER_VERSION" ]; then
 fi
 
 
-# Upgrade Thunderhub
+# Install Thunderhub
 THUNDERHUB_UPGRADE_URL=https://github.com/apotdevin/thunderhub/archive/$THUNDERHUB_VERSION.tar.gz
 CURRENT=""
 if [ -f $THUNDERHUB_VERSION_FILE ]; then
