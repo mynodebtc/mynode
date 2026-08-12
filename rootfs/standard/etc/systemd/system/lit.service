@@ -12,6 +12,7 @@ ExecStartPre=/usr/bin/service_scripts/pre_lit.sh
 ExecStartPre=/usr/bin/wait_on_bitcoin.sh
 ExecStartPre=/usr/bin/wait_on_lnd.sh
 ExecStartPre=+/usr/bin/mynode_gen_lit_config.sh
+Environment="LIT_AUTO_MIGRATE_TO_SQL=true"
 ExecStart=/usr/local/bin/litd --lit-dir=/mnt/hdd/mynode/lit
 
 User=bitcoin
