@@ -701,7 +701,7 @@ if should_install_app "caravan" ; then
 fi
 
 
-# Install cors proxy (my fork)
+# Install cors proxy (mynode fork)
 CORSPROXY_UPGRADE_URL=https://github.com/mynodebtc/CORS-Proxy/archive/$CORSPROXY_VERSION.tar.gz
 CURRENT=""
 if [ -f $CORSPROXY_VERSION_FILE ]; then

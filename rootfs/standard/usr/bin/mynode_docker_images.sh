@@ -149,7 +149,6 @@ while true; do
 
             # Clone this repository
             git clone https://github.com/btcpayserver/btcpayserver-docker
-            #git clone https://github.com/mynodebtc/btcpayserver-docker.git
             cd btcpayserver-docker
 
             # Run btcpay-setup.sh with the right parameters
