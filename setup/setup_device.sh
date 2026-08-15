@@ -753,8 +753,8 @@ chown -R bitcoin:bitcoin /opt/mynode
 # Skip - no longer default app
 
 
-# Install cors proxy (my fork)
-CORSPROXY_UPGRADE_URL=https://github.com/tehelsper/CORS-Proxy/archive/$CORSPROXY_VERSION.tar.gz
+# Install cors proxy (mynode fork)
+CORSPROXY_UPGRADE_URL=https://github.com/mynodebtc/CORS-Proxy/archive/$CORSPROXY_VERSION.tar.gz
 CURRENT=""
 if [ -f $CORSPROXY_VERSION_FILE ]; then
     CURRENT=$(cat $CORSPROXY_VERSION_FILE)
