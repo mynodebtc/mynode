@@ -142,7 +142,7 @@ NOTIFICATION_SEVERITY_CSS_CLASS = {
 }
 
 NOTIFICATION_MAX_TITLE_LENGTH = 100
-NOTIFICATION_MAX_MESSAGE_LENGTH = 500
+NOTIFICATION_MAX_MESSAGE_LENGTH = 1024
 
 def _notification_version_tuple(version_string):
     try:
@@ -164,6 +164,15 @@ def _notification_conditions_met(conditions):
     device_types = conditions.get("device_types")
     if device_types and get_device_type() not in device_types:
         return False
+
+    # Accepts ints or strings ("64" / 64) and a bare value instead of a list.
+    # Fails closed if the device's architecture isn't recognized.
+    device_bits = conditions.get("device_bits")
+    if device_bits:
+        if not isinstance(device_bits, list):
+            device_bits = [device_bits]
+        if str(get_device_bits()) not in [str(bits) for bits in device_bits]:
+            return False
 
     current_version = _notification_version_tuple(get_current_version())
     min_version = _notification_version_tuple(conditions.get("min_mynode_version"))
