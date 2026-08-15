@@ -56,7 +56,7 @@ def check_for_new_mynode_version():
     #  3 day(s): 87%             3 day(s): 90%             3 day(s): 93%             3 day(s): 95%
     #  5 day(s): 96%             5 day(s): 98%             5 day(s): 99%             5 day(s): 99%
     #  7 day(s): 99.2%           7 day(s): 99.6%           7 day(s): 99.8%           7 day(s): 99.9%
-    if latest_version_check_count % 5 == 0 or random.randint(1, 100) <= 40:
+    if latest_version_check_count % 5 == 0 or random.randint(1, 100) <= 65:
         log_message("Version Check Count ({}) - Checking for new version!".format(latest_version_check_count))
         os.system("/usr/bin/mynode_get_latest_version.sh &")
     else:
@@ -99,11 +99,11 @@ def check_in(check_for_updates):
     check_in_success = False
     while not check_in_success:
         try:
-            repeat_delay = 2*60
+            repeat_delay = 1*60
             if fail_count <= 5:
-                repeat_delay = 2*60
+                repeat_delay = 1*60
             elif fail_count <= 10:
-                repeat_delay = 5*60
+                repeat_delay = 2*60
             elif fail_count <= 20:
                 repeat_delay = 60*60
             else:

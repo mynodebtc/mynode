@@ -317,6 +317,24 @@ def get_device_arch():
     cached_data["device_arch"] = arch
     return arch
 
+# Bit width of each architecture "uname -m" may report
+DEVICE_ARCH_BITS = {
+    "armv6l": 32,
+    "armv7l": 32,
+    "armv8l": 32,   # 64-bit CPU running a 32-bit userland
+    "i386": 32,
+    "i686": 32,
+    "aarch64": 64,
+    "arm64": 64,
+    "x86_64": 64,
+    "amd64": 64,
+    "riscv64": 64,
+}
+
+def get_device_bits():
+    # Returns 32 or 64, or None if the architecture isn't recognized
+    return DEVICE_ARCH_BITS.get(get_device_arch(), None)
+
 def get_debian_codename():
     global cached_data
     if "debian_codename" in cached_data:
