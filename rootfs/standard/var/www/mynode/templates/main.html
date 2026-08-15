@@ -18,6 +18,7 @@
             var electrs_active = {% if electrs_active %}1{% else %}0{% endif %};
             var lnd_ready = {% if lnd_ready %}true{% else %}false{% endif %};
             var is_installing_docker_images = {% if is_installing_docker_images %}true{% else %}false{% endif %};
+            var homepage_refresh_id = "{{homepage_refresh_id}}";
             var lnd_last_btc_tx = "";
             var lnd_last_ln_tx = "";
             var price_data = {};
@@ -415,10 +416,10 @@
                     }
                 });
 
-                // Check if we need a full page refresh (errors, status changes, etc...)
-                $.getJSON("/api/homepage_needs_refresh", function( data ) {
-                    if ("needs_refresh" in data && data["needs_refresh"] != null) {
-                        if (data["needs_refresh"] == "yes") {
+                // Check if we need a full page refresh (new notifications, errors, status changes, etc...)
+                $.getJSON("/api/get_homepage_refresh_id", function( data ) {
+                    if ("refresh_id" in data && data["refresh_id"] != null) {
+                        if (homepage_refresh_id != data["refresh_id"]) {
                             refresh_page()
                         }
                     }

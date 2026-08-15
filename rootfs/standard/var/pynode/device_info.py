@@ -895,6 +895,29 @@ def is_premium_plus_near_expiration():
     return False
 
 #==================================
+# Homepage Refresh Functions
+#==================================
+# ID that tells open home pages they need a full page reload. Each page renders
+# the current ID and its ajax updates ask if it changed, so every open client reloads.
+HOMEPAGE_REFRESH_ID_FILE = "/tmp/homepage_refresh_id"
+
+def get_homepage_refresh_id():
+    try:
+        with open(HOMEPAGE_REFRESH_ID_FILE, "r") as f:
+            return int(f.read().strip())
+    except:
+        return 0
+
+def trigger_homepage_refresh():
+    # Read the ID first - opening the file for writing truncates it
+    next_refresh_id = get_homepage_refresh_id() + 1
+    try:
+        with open(HOMEPAGE_REFRESH_ID_FILE, "w") as f:
+            f.write(str( next_refresh_id ))
+    except Exception as e:
+        log_message("trigger_homepage_refresh exception: {}".format(str(e)))
+
+#==================================
 # Premium+ Token Functions
 #==================================
 def delete_premium_plus_token():
