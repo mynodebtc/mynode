@@ -203,26 +203,22 @@ def api_get_device_info():
 
     return generate_api_json_response(data)
 
-@mynode_api.route("/api/homepage_needs_refresh")
-def api_homepage_needs_refresh():
+@mynode_api.route("/api/get_homepage_refresh_id")
+def api_get_homepage_refresh_id():
     check_logged_in()
 
-    data = {}
-    data["needs_refresh"] = "no"
-
+    # Check for various states that would require a homepage reload
     if get_mynode_status() != STATE_STABLE:
-        data["needs_refresh"] = "yes"
+        trigger_homepage_refresh()
     if not has_product_key() and not skipped_product_key():
-        data["needs_refresh"] = "yes"
+        trigger_homepage_refresh()
     if not get_has_updated_btc_info():
-        data["needs_refresh"] = "yes"
+        trigger_homepage_refresh()
     if not is_bitcoin_synced():
-        data["needs_refresh"] = "yes"
+        trigger_homepage_refresh()
 
-    # If file indicating refresh was made, refresh and remove file
-    if os.path.isfile("/tmp/homepage_needs_refresh"):
-        data["needs_refresh"] = "yes"
-        os.system("rm /tmp/homepage_needs_refresh")
+    data = {}
+    data["refresh_id"] = str(get_homepage_refresh_id())
 
     return generate_api_json_response(data)
 

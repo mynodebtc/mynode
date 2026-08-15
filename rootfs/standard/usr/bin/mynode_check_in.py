@@ -30,6 +30,13 @@ def save_response_data(data):
             json.dump(data, file, indent=4, sort_keys=True)
     except Exception as e:
         log_message("save_response_data exception: failed to save response - {}".format(str(e)))
+def get_saved_notifications():
+    # Notifications from the previously saved check-in response
+    try:
+        with open("/tmp/check_in_response.json", "r") as file:
+            return json.load(file).get("notifications", [])
+    except Exception:
+        return []
 
 def get_quicksync_enabled():
     enabled = 1
@@ -66,12 +73,7 @@ def check_for_new_mynode_version():
 def on_check_in_error(msg):
     # Preserve any previously-received notifications so a transient check-in
     # failure doesn't hide them until the next successful check-in
-    previous_notifications = []
-    try:
-        with open("/tmp/check_in_response.json", "r") as file:
-            previous_notifications = json.load(file).get("notifications", [])
-    except Exception:
-        pass
+    previous_notifications = get_saved_notifications()
 
     clear_response_data()
     log_message(msg)
@@ -138,8 +140,14 @@ def check_in(check_for_updates):
             elif r.status_code == 200:
                 try:
                     info = json.loads(r.text)
+
+                    # Reload open home pages when the notifications change so
+                    # they are displayed without the user reloading the page
+                    if info.get("notifications", []) != get_saved_notifications():
+                        trigger_homepage_refresh()
+
                     save_response_data(info)
-                
+
                     try:
                         if info["status"] == "OK":
                             # Check in was successful!

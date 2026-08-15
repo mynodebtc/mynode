@@ -673,6 +673,7 @@ def index():
             "show_old_tor_warning": show_old_tor_warning(),
             "tor_version": get_tor_version(),
             "notifications": get_active_notifications(),
+            "homepage_refresh_id": get_homepage_refresh_id(),
             "is_quicksync_disabled": not is_quicksync_enabled(),
             "usb_extras": get_usb_extras(),
             "cpu_usage": get_cpu_usage(),

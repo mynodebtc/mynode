@@ -16,6 +16,9 @@ instance/
 # vscode
 .vscode/
 
+# Local-only plans
+plans_local
+
 .DS_Store
 
 # Output (rootfs, etc...)

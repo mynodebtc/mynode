@@ -11,6 +11,7 @@ from systemd import journal
 from threading import Thread
 from utilities import *
 from drive_info import *
+from device_info import *
 
 log = logging.getLogger('mynode')
 log.addHandler(journal.JournaldLogHandler())
@@ -230,7 +231,7 @@ def check_usb_devices():
                     log_message(f"{num_partitions} partitions found. Not sure what to do.")
 
         # Successful scan post init or usb action detected, mark homepage refresh
-        os.system("touch /tmp/homepage_needs_refresh")
+        trigger_homepage_refresh()
             
     except Exception as e:
         log_message("Exception: {}".format(str(e)))
