@@ -125,6 +125,7 @@
         ],
         "category": "bitcoin_app",
         "short_description": "Merchant Tool",
+        "minimum_debian_version": 11,
         "can_uninstall": true,
         "requires_lightning": false,
         "requires_docker_image_installation": true,
