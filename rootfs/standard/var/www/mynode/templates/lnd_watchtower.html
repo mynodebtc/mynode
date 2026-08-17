@@ -10,7 +10,7 @@
         <script>
             function remove_tower(tower) {
                 if ( confirm("Are you sure you want to remove tower "+tower+"?") ) {
-                    window.location = location.protocol+'//'+location.hostname+"/lnd/watchtower/remove_tower?tower="+tower
+                    window.location = "/lnd/watchtower/remove_tower?tower="+tower
                 }
             }
 

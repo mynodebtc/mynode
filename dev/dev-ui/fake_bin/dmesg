@@ -1,0 +1,14 @@
+#!/bin/bash
+# Fake dmesg (also handles "dmesg --follow" by blocking forever).
+for arg in "$@"; do
+    if [ "$arg" = "--follow" ] || [ "$arg" = "-w" ]; then
+        echo "[    0.000000] mock kernel log follow mode (myNode UI dev container)"
+        exec sleep infinity
+    fi
+done
+cat << 'EOF'
+[    0.000000] Booting mock kernel for myNode UI dev container
+[    1.234567] usb 1-1: new high-speed USB device number 2
+[    2.345678] EXT4-fs (sda1): mounted filesystem with ordered data mode
+[    5.678901] mynode: all systems nominal (this log is mocked)
+EOF

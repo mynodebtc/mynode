@@ -1,0 +1,98 @@
+{
+    "/v1/getinfo": {
+        "version": "0.20.1-beta commit=v0.20.1-beta",
+        "commit_hash": "mock0000000000000000000000000000000000000000",
+        "identity_pubkey": "03aa434mock11pubkey000000000000000000000000000000000000000000000f1",
+        "alias": "mynode_mock",
+        "color": "#68f442",
+        "num_pending_channels": 0,
+        "num_active_channels": 4,
+        "num_inactive_channels": 1,
+        "num_peers": 5,
+        "block_height": 905123,
+        "block_hash": "00000000000000000001a7c1mockmockmockmockmockmockmockmockmock01",
+        "best_header_timestamp": -120,
+        "synced_to_chain": true,
+        "synced_to_graph": true,
+        "chains": [{"chain": "bitcoin", "network": "mainnet"}],
+        "uris": ["03aa434mock11pubkey000000000000000000000000000000000000000000000f1@mocklnd2addrxyzmockmock.onion:9735"],
+        "features": {}
+    },
+    "/v1/peers": {
+        "peers": [
+            {"pub_key": "02aaaa1111mockpeer0000000000000000000000000000000000000000000000a1", "address": "84.112.33.7:9735", "bytes_sent": 5234123, "bytes_recv": 6234123, "sat_sent": "150000", "sat_recv": "230000", "inbound": false, "ping_time": "112000", "sync_type": "ACTIVE_SYNC"},
+            {"pub_key": "02bbbb2222mockpeer0000000000000000000000000000000000000000000000b2", "address": "peermock2xyzonionaddr.onion:9735", "bytes_sent": 1234123, "bytes_recv": 2234123, "sat_sent": "50000", "sat_recv": "70000", "inbound": false, "ping_time": "420000", "sync_type": "PASSIVE_SYNC"},
+            {"pub_key": "02cccc3333mockpeer0000000000000000000000000000000000000000000000c3", "address": "198.51.100.99:9735", "bytes_sent": 434123, "bytes_recv": 534123, "sat_sent": "12000", "sat_recv": "9000", "inbound": true, "ping_time": "88000", "sync_type": "ACTIVE_SYNC"},
+            {"pub_key": "02dddd4444mockpeer0000000000000000000000000000000000000000000000d4", "address": "peermock4abconionaddr.onion:9735", "bytes_sent": 34123, "bytes_recv": 44123, "sat_sent": "3000", "sat_recv": "1000", "inbound": true, "ping_time": "512000", "sync_type": "PASSIVE_SYNC"},
+            {"pub_key": "02eeee5555mockpeer0000000000000000000000000000000000000000000000e5", "address": "203.0.113.7:9735", "bytes_sent": 9123, "bytes_recv": 8123, "sat_sent": "500", "sat_recv": "800", "inbound": false, "ping_time": "97000", "sync_type": "ACTIVE_SYNC"}
+        ]
+    },
+    "/v1/channels": {
+        "channels": [
+            {"active": true, "remote_pubkey": "02aaaa1111mockpeer0000000000000000000000000000000000000000000000a1", "channel_point": "mocktxid01:0", "chan_id": "995123000000000001", "capacity": "2000000", "local_balance": "1200000", "remote_balance": "780000", "commit_fee": "2810", "commit_weight": "772", "fee_per_kw": "2500", "num_updates": "8211", "csv_delay": 144, "private": false, "lifetime": "5184000", "uptime": "5100000"},
+            {"active": true, "remote_pubkey": "02bbbb2222mockpeer0000000000000000000000000000000000000000000000b2", "channel_point": "mocktxid02:1", "chan_id": "995123000000000002", "capacity": "1000000", "local_balance": "150000", "remote_balance": "830000", "commit_fee": "2810", "commit_weight": "772", "fee_per_kw": "2500", "num_updates": "912", "csv_delay": 144, "private": false, "lifetime": "2592000", "uptime": "2500000"},
+            {"active": true, "remote_pubkey": "02cccc3333mockpeer0000000000000000000000000000000000000000000000c3", "channel_point": "mocktxid03:0", "chan_id": "995123000000000003", "capacity": "5000000", "local_balance": "2500000", "remote_balance": "2480000", "commit_fee": "3320", "commit_weight": "772", "fee_per_kw": "2500", "num_updates": "44120", "csv_delay": 432, "private": false, "lifetime": "10368000", "uptime": "10300000"},
+            {"active": true, "remote_pubkey": "02dddd4444mockpeer0000000000000000000000000000000000000000000000d4", "channel_point": "mocktxid04:0", "chan_id": "995123000000000004", "capacity": "500000", "local_balance": "480000", "remote_balance": "3000", "commit_fee": "1900", "commit_weight": "724", "fee_per_kw": "2500", "num_updates": "72", "csv_delay": 144, "private": true, "lifetime": "864000", "uptime": "850000"},
+            {"active": false, "remote_pubkey": "02eeee5555mockpeer0000000000000000000000000000000000000000000000e5", "channel_point": "mocktxid05:1", "chan_id": "995123000000000005", "capacity": "800000", "local_balance": "400000", "remote_balance": "380000", "commit_fee": "2100", "commit_weight": "772", "fee_per_kw": "2500", "num_updates": "3311", "csv_delay": 144, "private": false, "lifetime": "1728000", "uptime": "1500000"}
+        ]
+    },
+    "/v1/balance/channels": {
+        "balance": "4730000",
+        "pending_open_balance": "0",
+        "local_balance": {"sat": "4730000", "msat": "4730000000"},
+        "remote_balance": {"sat": "4473000", "msat": "4473000000"}
+    },
+    "/v1/balance/blockchain": {
+        "total_balance": "1523419",
+        "confirmed_balance": "1523419",
+        "unconfirmed_balance": "0"
+    },
+    "/v1/transactions": {
+        "transactions": [
+            {"tx_hash": "mockchainmocktx0000000000000000000000000000000000000000000000001", "amount": "500000", "num_confirmations": 4402, "block_height": 900721, "time_stamp": -2592000, "total_fees": "312", "label": ""},
+            {"tx_hash": "mockchainmocktx0000000000000000000000000000000000000000000000002", "amount": "1200000", "num_confirmations": 2519, "block_height": 902604, "time_stamp": -1512000, "total_fees": "254", "label": ""},
+            {"tx_hash": "mockchainmocktx0000000000000000000000000000000000000000000000003", "amount": "-180000", "num_confirmations": 913, "block_height": 904210, "time_stamp": -604800, "total_fees": "188", "label": ""},
+            {"tx_hash": "mockchainmocktx0000000000000000000000000000000000000000000000004", "amount": "3419", "num_confirmations": 121, "block_height": 905002, "time_stamp": -86400, "total_fees": "0", "label": ""}
+        ]
+    },
+    "/v1/payments": {
+        "payments": [
+            {"payment_hash": "mockpayhash000000000000000000000000000000000000000000000000000001", "value_sat": "21000", "fee": "3", "creation_date": -1900800, "status": "SUCCEEDED", "payment_preimage": "00", "path": []},
+            {"payment_hash": "mockpayhash000000000000000000000000000000000000000000000000000002", "value_sat": "4500", "fee": "1", "creation_date": -950400, "status": "SUCCEEDED", "payment_preimage": "00", "path": []},
+            {"payment_hash": "mockpayhash000000000000000000000000000000000000000000000000000003", "value_sat": "150000", "fee": "42", "creation_date": -432000, "status": "SUCCEEDED", "payment_preimage": "00", "path": []},
+            {"payment_hash": "mockpayhash000000000000000000000000000000000000000000000000000004", "value_sat": "820", "fee": "0", "creation_date": -172800, "status": "SUCCEEDED", "payment_preimage": "00", "path": []},
+            {"payment_hash": "mockpayhash000000000000000000000000000000000000000000000000000005", "value_sat": "33000", "fee": "7", "creation_date": -21600, "status": "SUCCEEDED", "payment_preimage": "00", "path": []}
+        ]
+    },
+    "/v1/invoices": {
+        "invoices": [
+            {"r_hash": "mockinvhash00000000000000000000000000000000000000000000000000001", "memo": "Coffee%20fund", "value": "10000", "settled": true, "creation_date": -2160000, "settle_date": -2159000, "state": "SETTLED"},
+            {"r_hash": "mockinvhash00000000000000000000000000000000000000000000000000002", "memo": "Podcast%20boost", "value": "2500", "settled": true, "creation_date": -1209600, "settle_date": -1209000, "state": "SETTLED"},
+            {"r_hash": "mockinvhash00000000000000000000000000000000000000000000000000003", "memo": "Invoice%20for%20design%20work", "value": "250000", "settled": true, "creation_date": -518400, "settle_date": -518000, "state": "SETTLED"},
+            {"r_hash": "mockinvhash00000000000000000000000000000000000000000000000000004", "memo": "Lunch", "value": "18000", "settled": true, "creation_date": -259200, "settle_date": -258000, "state": "SETTLED"},
+            {"r_hash": "mockinvhash00000000000000000000000000000000000000000000000000005", "memo": "Unpaid%20test%20invoice", "value": "5000", "settled": false, "creation_date": -3600, "state": "OPEN"}
+        ]
+    },
+    "/v1/newaddress": {
+        "address": "bc1qmockdepositaddressxxxxxxxxxxxxxxxxxxxxx"
+    },
+    "/v2/watchtower/server": {
+        "pubkey": "A6o0NDNtb2NrdG93ZXJwdWJrZXk=",
+        "listeners": ["[::]:9911"],
+        "uris": ["03aa34mocktowerpubkey@mocktowerxyzonionaddr.onion:9911"]
+    },
+    "/v2/watchtower/client": {
+        "towers": []
+    },
+    "/v2/watchtower/client/stats": {
+        "num_backups": 812,
+        "num_pending_backups": 0,
+        "num_failed_backups": 0,
+        "num_sessions_acquired": 4,
+        "num_sessions_exhausted": 1
+    },
+    "/v2/watchtower/client/policy": {
+        "max_updates": 1024,
+        "sweep_sat_per_vbyte": 10
+    }
+}

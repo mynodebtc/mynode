@@ -1,0 +1,35 @@
+#!/bin/bash
+# Fake bitcoin-cli: returns canned responses for the bitcoin-cli page.
+CMD=""
+for arg in "$@"; do
+    case "$arg" in
+        -*|--*) ;;
+        *) CMD="$arg"; break ;;
+    esac
+done
+
+case "$CMD" in
+    getblockcount)
+        echo "905123"
+        ;;
+    getblockchaininfo)
+        cat << 'EOF'
+{
+  "chain": "main",
+  "blocks": 905123,
+  "headers": 905123,
+  "bestblockhash": "00000000000000000000mockmockmockmockmockmockmockmockmockmock01",
+  "difficulty": 126411437451912.23,
+  "verificationprogress": 0.9999,
+  "pruned": false,
+  "warnings": "(mocked bitcoin-cli output from myNode UI dev mode)"
+}
+EOF
+        ;;
+    help|"")
+        echo "(mock bitcoin-cli) Try: getblockcount, getblockchaininfo"
+        ;;
+    *)
+        echo "(mock bitcoin-cli) command '$CMD' is not mocked - this is the myNode UI dev container"
+        ;;
+esac

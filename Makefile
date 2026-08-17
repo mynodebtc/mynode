@@ -110,3 +110,21 @@ beta: clean_rootfs rootfs release.sh
 clean: stop_file_server
 	@rm -rf out/
 	@rm -rf release.sh
+
+# Run the web UI locally with a fully mocked backend (for UI development).
+# See dev/dev-ui/README.md. UI available at http://localhost:8888 (pw: bolt).
+.PHONY: dev-ui
+dev-ui:
+	@cd dev/dev-ui && docker compose up --build
+
+.PHONY: dev-ui-build
+dev-ui-build:
+	@cd dev/dev-ui && docker compose build
+
+.PHONY: dev-ui-shell
+dev-ui-shell:
+	@cd dev/dev-ui && docker compose exec dev-ui bash
+
+.PHONY: dev-ui-clean
+dev-ui-clean:
+	@cd dev/dev-ui && docker compose down -v --rmi local
