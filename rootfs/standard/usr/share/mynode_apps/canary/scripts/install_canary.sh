@@ -11,6 +11,7 @@ echo "==================== INSTALLING APP ===================="
 
 mkdir -p /opt/mynode/canary || true
 mkdir -p /mnt/hdd/mynode/canary || true
+chmod 700 /mnt/hdd/mynode/canary
 
 cp -f app_data/docker-compose.yml docker-compose.yml
 
@@ -27,6 +28,6 @@ pull_app_docker_image schjonhaug/canary-frontend "$VERSION" canary "$FRONTEND_IM
 docker tag schjonhaug/canary-backend:$VERSION canary-backend:latest
 docker tag schjonhaug/canary-frontend:$VERSION canary-frontend:latest
 
-chown -R bitcoin:bitcoin /mnt/hdd/mynode/canary
+chown bitcoin:bitcoin /mnt/hdd/mynode/canary
 
 echo "================== DONE INSTALLING APP ================="

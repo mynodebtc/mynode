@@ -24,7 +24,7 @@
             });
 
             $("#copy_canary_password").on("click", function() {
-                var password = "{{canary_password}}";
+                var password = $("#canary_password").text();
                 function showCopied() {
                     showAlertPopup("alert_popup", "<b>Password copied!</b>");
                 }
@@ -160,6 +160,10 @@
                     </div>
                     <div class="app_page_block_contents_text">
                         <table class="info_table" style="font-size: 12px; margin-left: 10px">
+                            <tr>
+                                <th>Username</th>
+                                <td><span class="canary_credentials_value">{{canary_username}}</span></td>
+                            </tr>
                             <tr>
                                 <th>Password</th>
                                 <td>
