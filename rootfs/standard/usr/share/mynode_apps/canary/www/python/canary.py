@@ -9,7 +9,6 @@ import stat
 mynode_canary = Blueprint("mynode_canary", __name__)
 
 CANARY_PASSWORD_FILE = "/mnt/hdd/mynode/canary/admin_password"
-CANARY_USERNAME = "admin@local"
 MAX_CANARY_PASSWORD_LENGTH = 1024
 
 
@@ -48,7 +47,6 @@ def canary_page():
         "app_status": app_status,
         "app_status_color": app_status_color,
         "app": app,
-        "canary_username": CANARY_USERNAME,
         "canary_password": get_canary_password(),
     }
     return render_template("/app/canary/canary.html", **template_data)
