@@ -3,18 +3,35 @@ from user_management import check_logged_in
 from application_info import get_application, get_application_status, get_application_status_color
 from device_info import read_ui_settings
 import os
+import stat
 
 
 mynode_canary = Blueprint("mynode_canary", __name__)
 
 CANARY_PASSWORD_FILE = "/mnt/hdd/mynode/canary/admin_password"
+CANARY_USERNAME = "admin@local"
+MAX_CANARY_PASSWORD_LENGTH = 1024
 
 
 def get_canary_password():
-    if not os.path.isfile(CANARY_PASSWORD_FILE):
+    password_fd = None
+    try:
+        password_fd = os.open(CANARY_PASSWORD_FILE, os.O_RDONLY | os.O_NOFOLLOW)
+        if not stat.S_ISREG(os.fstat(password_fd).st_mode):
+            return ""
+
+        with os.fdopen(password_fd, "r", encoding="ascii") as password_file:
+            password_fd = None
+            password = password_file.read(MAX_CANARY_PASSWORD_LENGTH + 1).strip()
+    except (OSError, UnicodeError):
         return ""
-    with open(CANARY_PASSWORD_FILE, "r") as password_file:
-        return password_file.read().strip()
+    finally:
+        if password_fd is not None:
+            os.close(password_fd)
+
+    if len(password) > MAX_CANARY_PASSWORD_LENGTH:
+        return ""
+    return password
 
 
 @mynode_canary.route("/info")
@@ -31,6 +48,7 @@ def canary_page():
         "app_status": app_status,
         "app_status_color": app_status_color,
         "app": app,
+        "canary_username": CANARY_USERNAME,
         "canary_password": get_canary_password(),
     }
     return render_template("/app/canary/canary.html", **template_data)
