@@ -16,6 +16,7 @@ services:
       CANARY_NETWORK: mainnet
       CANARY_MODE: self-hosted
       CANARY_BIND_ADDRESS: 127.0.0.1:3004
+      FRONTEND_URL: http://mynode.local:3005
 
   frontend:
     image: canary-frontend:latest
