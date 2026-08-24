@@ -121,6 +121,7 @@ if ! skip_base_upgrades ; then
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E98404D386FA1D9   # Debian Backports
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 74A941BA219EC810   # Tor
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 66F6C87B98EBCFE2   # I2P (R4SAS)
+    gpg --no-default-keyring --keyring /usr/share/keyrings/nodesource.gpg --keyserver keyserver.ubuntu.com --recv-keys 2F59B5F99B1BE0B4 # NodeJS
     set -e
 
     # Check for updates (might auto-install all updates later)
@@ -331,6 +332,10 @@ if ! skip_base_upgrades ; then
             rm -f /home/bitcoin/.mynode/caravan_version
             rm -f /home/bitcoin/.mynode/btcrpcexplorer_version
             rm -f /home/bitcoin/.mynode/bos_version
+        elif [[ "$CURRENT_NODE_VERSION" != *"nodistro"* ]]; then
+            # Same major version, but we need to handle nodesource's migration from codename -> nodistro
+            echo "Repairing stale NodeSource apt repo entry (codename -> nodistro)"
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODE_JS_VERSION} nodistro main" > /etc/apt/sources.list.d/nodesource.list
         else
             echo "Node version match"
         fi
