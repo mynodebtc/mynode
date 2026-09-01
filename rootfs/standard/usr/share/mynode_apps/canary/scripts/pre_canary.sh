@@ -8,9 +8,11 @@ umask 077
 source /usr/share/mynode/mynode_functions.sh
 
 DATA_DIR="/mnt/hdd/mynode/canary"
+INSTALL_DIR="/opt/mynode/canary"
 ADMIN_PASSWORD_FILE="$DATA_DIR/admin_password"
 JWT_SECRET_FILE="$DATA_DIR/jwt_secret"
 ENV_FILE="$DATA_DIR/canary.env"
+COMPOSE_ENV_FILE="$INSTALL_DIR/.env"
 
 generate_secret() {
     local byte_count="$1"
@@ -108,11 +110,40 @@ write_env_file() {
     fi
 }
 
+write_compose_env_file() {
+    local temp_file
+
+    if [ -L "$COMPOSE_ENV_FILE" ] || { [ -e "$COMPOSE_ENV_FILE" ] && [ ! -f "$COMPOSE_ENV_FILE" ]; }; then
+        echo "Refusing to replace non-regular Canary Compose environment file: $COMPOSE_ENV_FILE" >&2
+        return 1
+    fi
+
+    if ! temp_file=$(mktemp "$INSTALL_DIR/.canary-compose-env.XXXXXX"); then
+        echo "Failed to create a temporary Canary Compose environment file" >&2
+        return 1
+    fi
+
+    if ! printf 'CANARY_HOST_UID=%s\nCANARY_HOST_GID=%s\n' \
+        "$(id -u bitcoin)" "$(id -g bitcoin)" > "$temp_file" ||
+       ! chmod 600 "$temp_file" ||
+       ! chown bitcoin:bitcoin "$temp_file" ||
+       ! mv -f "$temp_file" "$COMPOSE_ENV_FILE"; then
+        rm -f "$temp_file"
+        return 1
+    fi
+}
+
 cp -f app_data/docker-compose.yml docker-compose.yml
 
 # Ensure data directory exists before starting.
+mkdir -p "$INSTALL_DIR"
 mkdir -p "$DATA_DIR"
 chmod 700 "$DATA_DIR"
+
+if ! write_compose_env_file; then
+    echo "Failed to write Canary Compose environment file" >&2
+    exit 1
+fi
 
 ensure_secret "$ADMIN_PASSWORD_FILE" 24
 ensure_secret "$JWT_SECRET_FILE" 32
