@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   backend:
-    image: canary-backend:latest
+    image: schjonhaug/canary-backend:v1.6.0
     network_mode: host
     restart: unless-stopped
     stop_grace_period: 30s
@@ -19,7 +19,7 @@ services:
       FRONTEND_URL: http://mynode.local:3005
 
   frontend:
-    image: canary-frontend:latest
+    image: schjonhaug/canary-frontend:v1.6.0
     network_mode: host
     restart: unless-stopped
     stop_grace_period: 30s
