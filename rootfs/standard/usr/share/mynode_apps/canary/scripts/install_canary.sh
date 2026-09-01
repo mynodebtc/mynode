@@ -9,6 +9,25 @@ set -e
 
 echo "==================== INSTALLING APP ===================="
 
+pull_image() {
+    local image="$1"
+    local attempt
+
+    for attempt in 1 2 3 4 5; do
+        if docker pull "$image"; then
+            return 0
+        fi
+
+        if [ "$attempt" -lt 5 ]; then
+            echo "Docker pull failed for $image (attempt $attempt/5); retrying..."
+            sleep $((attempt * 5))
+        fi
+    done
+
+    echo "ERROR: Docker pull failed for $image after 5 attempts" >&2
+    return 1
+}
+
 mkdir -p /opt/mynode/canary || true
 mkdir -p /mnt/hdd/mynode/canary || true
 chmod 700 /mnt/hdd/mynode/canary
@@ -20,8 +39,8 @@ cp -f app_data/docker-compose.yml docker-compose.yml
 remove_docker_images_by_name "canary-backend"
 remove_docker_images_by_name "canary-frontend"
 
-docker pull schjonhaug/canary-backend:$VERSION
-docker pull schjonhaug/canary-frontend:$VERSION
+pull_image "schjonhaug/canary-backend:$VERSION"
+pull_image "schjonhaug/canary-frontend:$VERSION"
 
 docker tag schjonhaug/canary-backend:$VERSION canary-backend:latest
 docker tag schjonhaug/canary-frontend:$VERSION canary-frontend:latest
