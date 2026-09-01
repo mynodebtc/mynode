@@ -585,6 +585,13 @@ if [ -f $LIT_VERSION_FILE ]; then
     CURRENT=$(cat $LIT_VERSION_FILE)
 fi
 if [ "$CURRENT" != "$LIT_VERSION" ]; then
+    # App-only reinstall flows skip the base-upgrade block above, including its
+    # signing-key imports. Ensure the release key is present before verifying
+    # Lightning Terminal so reinstalling an unrelated app cannot fail here.
+    if ! gpg --list-keys C20A78516A0944900EBFCA29961CC8259AE675D4 >/dev/null 2>&1; then
+        gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys C20A78516A0944900EBFCA29961CC8259AE675D4
+    fi
+
     # Download and install lit
     rm -rf /opt/download
     mkdir -p /opt/download
