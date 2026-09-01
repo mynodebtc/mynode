@@ -28,11 +28,31 @@ pull_image() {
     return 1
 }
 
+write_compose_identity() {
+    local compose_env=".env"
+    local temp_file
+
+    if [ -L "$compose_env" ] || { [ -e "$compose_env" ] && [ ! -f "$compose_env" ]; }; then
+        echo "Refusing to replace non-regular Canary Compose environment file: $compose_env" >&2
+        return 1
+    fi
+
+    temp_file=$(mktemp .canary-compose-env.XXXXXX)
+    if ! printf 'CANARY_HOST_UID=%s\nCANARY_HOST_GID=%s\n' \
+        "$(id -u bitcoin)" "$(id -g bitcoin)" > "$temp_file" ||
+       ! chmod 600 "$temp_file" ||
+       ! mv -f "$temp_file" "$compose_env"; then
+        rm -f "$temp_file"
+        return 1
+    fi
+}
+
 mkdir -p /opt/mynode/canary || true
 mkdir -p /mnt/hdd/mynode/canary || true
 chmod 700 /mnt/hdd/mynode/canary
 
 cp -f app_data/docker-compose.yml docker-compose.yml
+write_compose_identity
 
 /usr/local/bin/docker-compose down --remove-orphans 2>/dev/null || true
 
