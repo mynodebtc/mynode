@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   backend:
-    image: schjonhaug/canary-backend:v1.6.0
+    image: schjonhaug/canary-backend:v1.6.1
     user: "${CANARY_HOST_UID}:${CANARY_HOST_GID}"
     network_mode: host
     restart: unless-stopped
@@ -20,7 +20,7 @@ services:
       FRONTEND_URL: http://mynode.local:3005
 
   frontend:
-    image: schjonhaug/canary-frontend:v1.6.0
+    image: schjonhaug/canary-frontend:v1.6.1
     network_mode: host
     restart: unless-stopped
     stop_grace_period: 30s
