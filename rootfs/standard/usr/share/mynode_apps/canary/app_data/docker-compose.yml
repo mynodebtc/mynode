@@ -2,7 +2,8 @@ version: "3.8"
 
 services:
   backend:
-    image: canary-backend:latest
+    image: schjonhaug/canary-backend:v1.6.2
+    user: "${CANARY_HOST_UID}:${CANARY_HOST_GID}"
     network_mode: host
     restart: unless-stopped
     stop_grace_period: 30s
@@ -16,9 +17,10 @@ services:
       CANARY_NETWORK: mainnet
       CANARY_MODE: self-hosted
       CANARY_BIND_ADDRESS: 127.0.0.1:3004
+      FRONTEND_URL: http://mynode.local:3005
 
   frontend:
-    image: canary-frontend:latest
+    image: schjonhaug/canary-frontend:v1.6.2
     network_mode: host
     restart: unless-stopped
     stop_grace_period: 30s

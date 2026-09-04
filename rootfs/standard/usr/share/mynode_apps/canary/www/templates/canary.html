@@ -24,7 +24,7 @@
             });
 
             $("#copy_canary_password").on("click", function() {
-                var password = "{{canary_password}}";
+                var password = $("#canary_password").text();
                 function showCopied() {
                     showAlertPopup("alert_popup", "<b>Password copied!</b>");
                 }
