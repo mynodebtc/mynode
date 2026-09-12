@@ -94,7 +94,10 @@ CORSPROXY_VERSION=$(get_app_version "$CORSPROXY_VERSION" "corsproxy")
 CORSPROXY_VERSION_FILE=/home/bitcoin/.mynode/corsproxy_version
 CORSPROXY_LATEST_VERSION_FILE=/home/bitcoin/.mynode/corsproxy_version_latest
 
-JOININBOX_VERSION="v0.8.4"
+JOININBOX_VERSION="v0.9.0"
+if [ "$DEBIAN_VERSION" -lt "12" ]; then
+    JOININBOX_VERSION="v0.8.4"
+fi
 JOININBOX_VERSION=$(get_app_version "$JOININBOX_VERSION" "joininbox")
 JOININBOX_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version
 JOININBOX_LATEST_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version_latest

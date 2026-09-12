@@ -784,10 +784,16 @@ if should_install_app "joininbox" ; then
             chmod -R +x ./joininbox/
             sudo -u joinmarket cp -rf ./joininbox/scripts/* .
 
-            # Use Python3.7 on RP4 32-bit
+            # Ensure config file exists
+            sudo -u joinmarket touch /home/joinmarket/joinin.conf
+
             JM_ENV_VARS=""
             if [ $IS_32_BIT = 1 ]; then
+                # Use Python3.7 on RP4 32-bit
                 JM_ENV_VARS="export JM_PYTHON=python3.7; "
+            elif [ "$DEBIAN_VERSION" -ge "12" ]; then
+                # Use newer python on Deb 12+ (required)
+                JM_ENV_VARS="export JM_PYTHON=python3.11; "
             fi
 
             # Patch JoininBox
