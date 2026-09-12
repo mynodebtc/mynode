@@ -24,13 +24,15 @@ BTC_VERSION=$(get_app_version "$BTC_VERSION" "bitcoin")
 BTC_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version
 BTC_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version_latest
 
-LND_VERSION="v0.21.1-beta"
+LND_VERSION="v0.21.3-beta"
 LND_VERSION=$(get_app_version "$LND_VERSION" "lnd")
 LND_VERSION_FILE=/home/bitcoin/.mynode/lnd_version
 LND_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnd_version_latest
 LND_UPGRADE_MANIFEST_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
 LND_UPGRADE_MANIFEST_ROASBEEF_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-roasbeef-$LND_VERSION.sig
 LND_UPGRADE_MANIFEST_GUGGERO_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-guggero-$LND_VERSION.sig
+LND_UPGRADE_MANIFEST_SUHEB_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-suheb-$LND_VERSION.sig
+LND_UPGRADE_MANIFEST_VICTORT_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-VictorT-11-$LND_VERSION.sig
 
 LOOP_VERSION="v0.35.0-beta"
 LOOP_VERSION=$(get_app_version "$LOOP_VERSION" "loop")
