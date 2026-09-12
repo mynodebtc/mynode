@@ -1,3 +1,17 @@
+=== v0.3.47 ===
+- Released 09/12/26
+- Upgrade LND to v0.21.3
+- Upgrade Mempool to v3.3.1
+- Upgrade Thunderhub to v0.14.6
+- Upgrade Lightning Terminal to v0.17.4
+- Upgrade BTCPay to 2.4.4
+- Upgrade BTC RPC Explorer to v3.5.1
+- Upgrade AlbyHub to 1.24.0
+- Upgrade Joininbox to v0.9.0
+- Upgrade Jam to v0.4.1
+- Upgrade Loop to v0.35.0
+- Bug Fixes
+
 === v0.3.46 ===
 - Released 08/07/26
 - Upgrade BTCPay to v2.4.2
