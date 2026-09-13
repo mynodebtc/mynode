@@ -2,19 +2,29 @@
 
 # mynode-local-upgrade
 # This script needs to be run with sudo
-# It reqeusts an IP, downloads the latest rootfs, installs it, and reboots the device
+# It requests an IP, downloads the latest rootfs, installs it, and reboots the device
+# The first argument may instead be the path to a local rootfs tarball, in which
+# case nothing is downloaded and that file is installed directly.
+#
+# Usage: mynode-local-upgrade [IP_ADDRESS|ROOTFS_TAR_GZ] [SERVICE] [PORT]
 
 set -e
 
 source /usr/share/mynode/mynode_config.sh
 
-# Prompt for IP
-echo "Make sure your PC is running 'make start_file_server'..."
+tarball="/tmp/mynode_rootfs_${DEVICE_TYPE}.tar.gz"
+local_file=""
+
+# Prompt for IP (or use a local rootfs tarball if given one)
 ip_address="error"
 if [ "$#" -lt 1 ]; then
+    echo "Make sure your PC is running 'make start_file_server'..."
     echo -n "Dev PC IP Address: "
     read ip_address
+elif [ -f "$1" ]; then
+    local_file="$1"
 else
+    echo "Make sure your PC is running 'make start_file_server'..."
     ip_address="$1"
 fi
 
@@ -25,19 +35,39 @@ port="${3:-${MYNODE_FILE_SERVER_PORT:-8000}}"
 rm -rf /var/log/*
 mkdir -p /var/log/nginx
 
-# Delete any existing rootfs tarball and download new one
-rm -f mynode_rootfs_${DEVICE_TYPE}.tar.gz
-wget http://${ip_address}:${port}/mynode_rootfs_${DEVICE_TYPE}.tar.gz -O /tmp/mynode_rootfs_${DEVICE_TYPE}.tar.gz --progress=bar
+if [ -n "$local_file" ]; then
+    # Use the provided local rootfs tarball
+    echo "Installing rootfs from ${local_file}..."
+    tarball="$local_file"
+else
+    # Delete any existing rootfs tarball and download new one
+    rm -f mynode_rootfs_${DEVICE_TYPE}.tar.gz
+    rm -f "${tarball}"
+    wget http://${ip_address}:${port}/mynode_rootfs_${DEVICE_TYPE}.tar.gz -O "${tarball}" --progress=bar
+fi
 
 # Extract to temp location
 echo -n "Extracting rootfs TAR for ${DEVICE_TYPE}... "
 start_time=$(date +%s)
 rm -rf /tmp/rootfs/
 mkdir -p /tmp/rootfs/
-tar --warning=no-unknown-keyword -xf /tmp/mynode_rootfs_${DEVICE_TYPE}.tar.gz -C /tmp/rootfs/
+tar --warning=no-unknown-keyword -xf "${tarball}" -C /tmp/rootfs/
 end_time=$(date +%s)
 diff_time=$((end_time - start_time))
 echo "Done in ${diff_time}s!"
+
+# Make sure the tarball actually contains a rootfs for this device
+if [ ! -d "/tmp/rootfs/out/rootfs_${DEVICE_TYPE}" ]; then
+    echo "ERROR: Tarball does not contain a rootfs for this device (${DEVICE_TYPE})!"
+    found=$(ls -1d /tmp/rootfs/out/rootfs_* 2>/dev/null | sed 's|.*/rootfs_||' | tr '\n' ' ')
+    if [ -n "${found}" ]; then
+        echo "       Tarball contains: ${found}"
+    else
+        echo "       Tarball does not look like a MyNode rootfs build."
+    fi
+    rm -rf /tmp/rootfs/
+    exit 1
+fi
 
 # Clear files before installing/overwriting new ones
 echo -n "Clearing old rootfs files... "
