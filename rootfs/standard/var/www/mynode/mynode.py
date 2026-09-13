@@ -258,8 +258,8 @@ def page_change_default_password():
         return redirect("/")
 
     templateData = {
-        "title": "Change Password",
-        "header_text": "Change Password",
+        "title": "Set Password",
+        "header_text": "Set Your Password",
         "password_requirements": PASSWORD_REQUIREMENTS_TEXT,
         "ui_settings": read_ui_settings()
     }
@@ -883,8 +883,6 @@ def set_response_headers(response):
     else:
         # Prevents 301 from saving forever
         response.headers['Cache-Control'] = 'no-store'
-
-    response.headers["Access-Control-Allow-Private-Network"] = "true"
 
     # No Caching
     #response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
