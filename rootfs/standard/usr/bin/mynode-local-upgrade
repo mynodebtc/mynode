@@ -18,13 +18,16 @@ else
     ip_address="$1"
 fi
 
+# Optional file server port (3rd arg or env var, default 8000)
+port="${3:-${MYNODE_FILE_SERVER_PORT:-8000}}"
+
 # Clear /var/log tmpfs (remake necessary folders)
 rm -rf /var/log/*
 mkdir -p /var/log/nginx
 
 # Delete any existing rootfs tarball and download new one
 rm -f mynode_rootfs_${DEVICE_TYPE}.tar.gz
-wget http://${ip_address}:8000/mynode_rootfs_${DEVICE_TYPE}.tar.gz -O /tmp/mynode_rootfs_${DEVICE_TYPE}.tar.gz --progress=bar
+wget http://${ip_address}:${port}/mynode_rootfs_${DEVICE_TYPE}.tar.gz -O /tmp/mynode_rootfs_${DEVICE_TYPE}.tar.gz --progress=bar
 
 # Extract to temp location
 echo -n "Extracting rootfs TAR for ${DEVICE_TYPE}... "

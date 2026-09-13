@@ -1,9 +1,11 @@
 #!/bin/bash
 
+PORT="${1:-${MYNODE_FILE_SERVER_PORT:-8000}}"
+
 start_server () {
-    echo "Starting HTTP Server on port 8000..."
-    cd out
-    python3 -m http.server > /dev/null &
+    echo "Starting HTTP Server on port ${PORT}..."
+    cd out || { echo "ERROR: out/ directory not found"; exit 1; }
+    python3 -m http.server "$PORT" > /dev/null &
     PID=$!
     cd ../
     echo $PID > ./out/file_server_pid

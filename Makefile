@@ -15,9 +15,10 @@ clean_rootfs:
 	@rm -rf out/rootfs_*
 
 # Start file server to allow downloads to devices
+FILE_SERVER_PORT ?= 8000
 .PHONY: start_file_server
 start_file_server:
-	@/bin/bash scripts/start_http_server.sh
+	@/bin/bash scripts/start_http_server.sh $(FILE_SERVER_PORT)
 .PHONY: stop_file_server
 stop_file_server:
 	@/bin/bash scripts/stop_http_server.sh
