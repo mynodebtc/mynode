@@ -27,7 +27,7 @@ fi
 
 # Stop core services
 date
-systemctl stop electrs loop pool lnd quicksync
+systemctl stop electrs loop pool lnd
 date
 killall bitcoind || true
 systemctl stop bitcoin

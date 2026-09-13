@@ -8,7 +8,6 @@ rm -rf /tmp/mynode_info/
 mkdir -p /tmp/mynode_info/
 
 # Save helpful info
-mynode-get-quicksync-status > /tmp/mynode_info/quicksync_state.txt
 cp /usr/share/mynode/version /tmp/mynode_info/version
 cp -rf /home/admin/upgrade_logs /tmp/mynode_info/
 cp /mnt/hdd/mynode/bitcoin/debug.log /tmp/mynode_info/bitcoin_debug.log

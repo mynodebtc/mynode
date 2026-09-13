@@ -238,7 +238,6 @@ mkdir -p /mnt/hdd/mynode/loop
 mkdir -p /mnt/hdd/mynode/pool
 mkdir -p /mnt/hdd/mynode/faraday
 mkdir -p /mnt/hdd/mynode/lit
-mkdir -p /mnt/hdd/mynode/quicksync
 mkdir -p /mnt/hdd/mynode/redis
 mkdir -p /mnt/hdd/mynode/mongodb
 mkdir -p /mnt/hdd/mynode/electrs
@@ -319,14 +318,6 @@ do
     chown bitcoin:bitcoin /mnt/hdd/mynode/settings/.btcrpcpw
     chmod 600 /mnt/hdd/mynode/settings/.btcrpcpw
 done
-
-# Default QuickSync
-if [ ! -f /mnt/hdd/mynode/settings/.setquicksyncdefault ]; then
-    # QuickSync defaults to disabled, needs to be manually enabled if wanted
-    touch /mnt/hdd/mynode/settings/quicksync_disabled
-    
-    touch /mnt/hdd/mynode/settings/.setquicksyncdefault
-fi
 
 
 # Migrate from version file to version+install combo
@@ -552,10 +543,6 @@ echo "BTCARGS=" > /mnt/hdd/mynode/bitcoin/env
 
 
 # Set proper permissions on drive
-USER=$(stat -c '%U' /mnt/hdd/mynode/quicksync)
-if [ "$USER" != "bitcoin" ]; then
-    chown -R bitcoin:bitcoin /mnt/hdd/mynode/quicksync
-fi
 USER=$(stat -c '%U' /mnt/hdd/mynode/settings)
 if [ "$USER" != "bitcoin" ]; then
     chown -R bitcoin:bitcoin /mnt/hdd/mynode/settings
@@ -724,6 +711,26 @@ systemctl enable premium_plus_connect || true
 systemctl enable bitcoin || true                # Make sure new bitcoin service is used
 systemctl disable bitcoind || true              # Make sure new bitcoin service is used
 rm /etc/systemd/system/bitcoind.service || true # Make sure new bitcoin service is used
+# QuickSync has been removed - stop seeding / downloading and clean up its data
+for QS_SERVICE in quicksync bandwidth torrent_check; do
+    systemctl stop $QS_SERVICE || true
+    systemctl disable $QS_SERVICE || true
+    rm -f /etc/systemd/system/$QS_SERVICE.service || true
+done
+rm -rf /mnt/hdd/mynode/quicksync || true
+rm -rf /mnt/hdd/mynode/.config/transmission || true
+rm -rf /home/bitcoin/.config/transmission || true
+rm -f /mnt/hdd/mynode/settings/uploader || true
+rm -f /mnt/hdd/mynode/settings/quicksync_disabled || true
+rm -f /mnt/hdd/mynode/settings/.setquicksyncdefault || true
+rm -f /mnt/hdd/mynode/settings/quicksync_upload_rate || true
+rm -f /mnt/hdd/mynode/settings/quicksync_background_download_rate || true
+rm -f /etc/rsyslog.d/mynode_quicksync.conf || true
+rm -f /var/log/mynode_quicksync.log || true
+rm -rf /usr/share/quicksync || true
+rm -f /usr/bin/mynode_quicksync.sh /usr/bin/mynode_quicksync_complete.sh || true
+rm -f /usr/bin/mynode-get-quicksync-status /usr/bin/mynode_torrent_check.sh || true
+rm -f /usr/bin/mynode_bandwidth.sh /usr/bin/wait_on_uploader.sh || true
 systemctl daemon-reload || true
 if [ -f /usr/share/joininbox/menu.update.sh ] && [ -f /home/joinmarket/menu.update.sh ]; then
     sudo -u joinmarket cp -f /usr/share/joininbox/menu.update.sh /home/joinmarket/menu.update.sh
@@ -736,6 +743,4 @@ if [ -f /usr/local/bin/mynode_hook_post_startup.sh ]; then
 fi
 
 # Update current state
-if [ -f $QUICKSYNC_DIR/.quicksync_complete ]; then
-    echo "stable" > $MYNODE_STATUS_FILE
-fi
+echo "stable" > $MYNODE_STATUS_FILE

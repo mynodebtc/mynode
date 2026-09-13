@@ -257,7 +257,7 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get -y install apt-transport-https lsb-release
 apt-get -y install htop git curl bash-completion jq dphys-swapfile lsof libzmq3-dev
 apt-get -y install build-essential python3-dev python3-pip python3-grpcio
-apt-get -y install transmission-cli fail2ban ufw tclsh redis-server
+apt-get -y install fail2ban ufw tclsh redis-server
 apt-get -y install clang hitch zlib1g-dev libffi-dev file toilet ncdu
 apt-get -y install toilet-fonts avahi-daemon figlet libsecp256k1-dev
 apt-get -y install inotify-tools libssl-dev tor tmux screen fonts-dejavu
@@ -975,10 +975,7 @@ systemctl enable premium_plus_connect
 systemctl enable background
 systemctl enable docker
 systemctl enable mynode
-systemctl enable quicksync
-systemctl enable torrent_check
 systemctl enable firewall
-systemctl enable bandwidth
 systemctl enable www
 systemctl enable drive_check
 systemctl enable bitcoin
@@ -1016,6 +1013,14 @@ systemctl disable hitch || true
 systemctl disable mongodb || true
 systemctl disable dhcpcd || true
 systemctl disable dphys-swapfile || true
+
+# QuickSync has been removed - stop seeding / downloading and remove its services
+for QS_SERVICE in quicksync bandwidth torrent_check; do
+    systemctl stop $QS_SERVICE || true
+    systemctl disable $QS_SERVICE || true
+    rm -f /etc/systemd/system/$QS_SERVICE.service || true
+done
+apt-get -y purge transmission-cli || true
 
 
 # Delete junk

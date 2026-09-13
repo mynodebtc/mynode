@@ -27,9 +27,6 @@
 <div class="main_page_error_block">
     <p style="text-align: center;"><b>Warning!</b></p>
     <p style="text-align: center;">Your drive is {{data_drive_usage}} full and free space is running very low. You may need to upgrade to a larger drive.</p>
-    {% if not is_quicksync_disabled %}
-    <p style="text-align: center;">QuickSync is enabled! Disable <a href="/settings#quicksync">QuickSync</a> to save significant disk space.</p>
-    {% endif %}
     <p style="text-align: center;">To migrate to a larger drive, try the <a href="/settings#clone_tool">Clone Tool</a>.</p>
 </div>
 {% endif %}

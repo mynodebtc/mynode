@@ -3,7 +3,7 @@
 
 [Unit]
 Description=MyNode Electrum Server
-Wants=bitcoin.service quicksync.service
+Wants=bitcoin.service
 After=bitcoin.service
 
 [Service]

@@ -7,15 +7,8 @@ MYNODE_DIR=/mnt/hdd/mynode
 MYNODE_STATUS_FILE=/tmp/.mynode_status
 DEVICE_ARCHITECTURE_FILE="/mnt/hdd/mynode/settings/.device_arch"
 VPN_BACKUP_DIR=/mnt/hdd/mynode/vpn
-QUICKSYNC_DIR=/mnt/hdd/mynode/quicksync
-QUICKSYNC_CONFIG_DIR=/mnt/hdd/mynode/.config/transmission
-QUICKSYNC_TORRENT_URL="https://mynodebtc.com/device/blockchain.tar.gz.torrent"
-QUICKSYNC_TORRENT_BETA_URL="https://mynodebtc.com/device/blockchain_beta.tar.gz.torrent"
-QUICKSYNC_UPLOAD_RATE_FILE="/mnt/hdd/mynode/settings/quicksync_upload_rate"
-QUICKSYNC_BACKGROUND_DOWNLOAD_RATE_FILE="/mnt/hdd/mynode/settings/quicksync_background_download_rate"
 LATEST_VERSION_URL="https://www.mynodebtc.com/device_api/get_latest_version.php?type=${DEVICE_TYPE}"
 LATEST_BETA_VERSION_URL="https://www.mynodebtc.com/device_api/get_latest_version.php?type=${DEVICE_TYPE}&beta=1"
-UPLOADER_FILE="/mnt/hdd/mynode/settings/uploader"
 UPGRADE_ERROR_FILE="/mnt/hdd/mynode/settings/upgrade_error"
 LND_BACKUP_FOLDER="/home/bitcoin/lnd_backup/"
 LND_TLS_CERT_FILE="/mnt/hdd/mynode/lnd/tls.cert"
@@ -35,7 +28,6 @@ fi
 
 BITCOIN_SYNCED_FILE="/mnt/hdd/mynode/.mynode_bitcoin_synced"
 BITCOIN_SYNCED_AT_LEAST_ONCE="/mnt/hdd/mynode/.mynode_bitcoin_synced_at_least_once"
-QUICKSYNC_COMPLETE_FILE="$QUICKSYNC_DIR/.quicksync_complete"
 
 IS_PREMIUM=0
 PRODUCT_KEY="not_found"

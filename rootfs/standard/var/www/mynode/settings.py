@@ -39,16 +39,6 @@ def page_settings():
     date = get_system_date()
     local_ip = get_local_ip()
 
-    # Get QuickSync Rates
-    upload_rate = 100
-    download_rate = 100
-    try:
-        upload_rate = to_string(subprocess.check_output(["cat","/mnt/hdd/mynode/settings/quicksync_upload_rate"]))
-        download_rate = to_string(subprocess.check_output(["cat","/mnt/hdd/mynode/settings/quicksync_background_download_rate"]))
-    except:
-        upload_rate = 100
-        download_rate = 100
-
     logout_time_days, logout_time_hours = get_flask_session_timeout()
 
     templateData = {
@@ -87,15 +77,11 @@ def page_settings():
         "is_local_traffic_allowed": settings_file_exists("local_traffic_allowed"),
         "skip_backup_dns_servers": settings_file_exists("skip_backup_dns_servers"),
         "is_testnet_enabled": is_testnet_enabled(),
-        "is_quicksync_disabled": not is_quicksync_enabled(),
         "netdata_enabled": is_service_enabled("netdata"),
         "uas_usb": is_uas_usb_enabled(),
         "randomize_balances": settings_file_exists("randomize_balances"),
         "hide_password_warning": settings_file_exists("hide_password_warning"),
         "keep_bitcoin_debug_log": settings_file_exists("keep_bitcoin_debug_log"),
-        "is_uploader_device": is_uploader(),
-        "download_rate": download_rate,
-        "upload_rate": upload_rate,
         "electrs_tx_lookup_limit": get_electrs_index_lookup_limit(),
         "btcrpcexplorer_token_enabled": is_btcrpcexplorer_token_enabled(),
         "is_i2p_enabled": is_service_enabled("i2pd"),
@@ -148,15 +134,6 @@ def page_status():
 
     # Get Startup Status
     #startup_status_log = get_journalctl_log("mynode")
-
-    # Get QuickSync Status
-    quicksync_enabled = is_quicksync_enabled()
-    quicksync_status = "Disabled"
-    quicksync_status_color = "gray"
-    quicksync_status_log = get_quicksync_log()
-    if quicksync_enabled:
-        quicksync_status = get_service_status_basic_text("quicksync")
-        quicksync_status_color = get_service_status_color("quicksync")
 
     # Get Bitcoin Status
     # bitcoin_status_log = get_file_log( get_bitcoin_log_file() )
@@ -212,10 +189,6 @@ def page_status():
         #"startup_status_log": startup_status_log,
         "startup_status": get_service_status_basic_text("mynode"),
         "startup_status_color": get_service_status_color("mynode"),
-        "is_quicksync_enabled": is_quicksync_enabled(),
-        #"quicksync_status_log": quicksync_status_log,
-        "quicksync_status": quicksync_status,
-        "quicksync_status_color": quicksync_status_color,
         "is_bitcoin_synced": is_bitcoin_synced(),
         "is_premium_plus_token_set": has_premium_plus_token(),
         "is_premium_plus_active": is_premium_plus_active(),
@@ -323,7 +296,6 @@ def page_status():
         "linux_status_color": "green",
         "dynamic_app_names": get_dynamic_app_names(),
         "firewall_rules": get_firewall_rules(),
-        "is_quicksync_disabled": not quicksync_enabled,
         "netdata_enabled": is_service_enabled("netdata"),
         "uptime": uptime,
         "date": date,
@@ -451,17 +423,6 @@ def reset_bitcoin_peers_page():
     t = Timer(1.0, reset_bitcoin_peers)
     t.start()
     
-    return redirect("/rebooting")
-
-@mynode_settings.route("/settings/restart-quicksync")
-def restart_quicksync_page():
-    check_logged_in()
-
-    check_and_mark_reboot_action("restart_quicksync")
-
-    t = Timer(1.0, restart_quicksync)
-    t.start()
-
     return redirect("/rebooting")
 
 @mynode_settings.route("/settings/reboot-device")
@@ -728,24 +689,6 @@ def change_password_page():
         subprocess.call(['/usr/bin/mynode_chpasswd.sh', p1])
 
     flash("Password Updated!", category="message")
-    return redirect(url_for(".page_settings"))
-
-
-@mynode_settings.route("/settings/quicksync_rates", methods=['POST'])
-def change_quicksync_rates_page():
-    check_logged_in()
-    if not request:
-        return redirect("/settings")
-
-    downloadRate = request.form.get('download-rate')
-    uploadRate = request.form.get('upload-rate')
-
-    os.system("echo {} > /mnt/hdd/mynode/settings/quicksync_upload_rate".format(uploadRate))
-    os.system("echo {} > /mnt/hdd/mynode/settings/quicksync_background_download_rate".format(downloadRate))
-    os.system("sync")
-    os.system("systemctl restart bandwidth")
-
-    flash("QuickSync Rates Updated!", category="message")
     return redirect(url_for(".page_settings"))
 
 
@@ -1080,40 +1023,6 @@ def install_custom_bitcoin_page():
         "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
-
-@mynode_settings.route("/settings/toggle-uploader")
-def toggle_uploader_page():
-    check_logged_in()
-
-    check_and_mark_reboot_action("toggle_uploader")
-
-    # Toggle uploader
-    if is_uploader():
-        unset_uploader()
-    else:
-        set_uploader()
-
-    # Trigger reboot
-    t = Timer(1.0, reboot_device)
-    t.start()
-
-    return redirect("/rebooting")
-
-@mynode_settings.route("/settings/toggle-quicksync")
-def toggle_quicksync_page():
-    check_logged_in()
-
-    check_and_mark_reboot_action("toggle_quicksync")
-
-    # Toggle uploader
-    if is_quicksync_enabled():
-        t = Timer(1.0, settings_disable_quicksync)
-        t.start()
-    else:
-        t = Timer(1.0, settings_enable_quicksync)
-        t.start()
-
-    return redirect("/rebooting")
 
 @mynode_settings.route("/settings/toggle-testnet")
 def toggle_testnet_page():

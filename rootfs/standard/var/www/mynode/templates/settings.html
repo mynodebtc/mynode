@@ -152,23 +152,6 @@
                                       okFunction)
                 });
 
-                $("#restart-quicksync").on("click", function() {
-                    var okFunction = function() {
-                        window.location.href="/settings/restart-quicksync"
-                    }
-                    openConfirmDialog("confirm-dialog",
-                                      "Reset QuickSync",
-                                      "<p>Restarting QuickSync will delete all current bitcoin blockchain data and redownload " +
-                                      "the pre-synced blockchain. This will take a while.</p>"+
-                                      "<p>Would you still like to restart QuickSync?</p>",
-                                      okFunction)
-                });
-                $("#show_quicksync").on("click", function() {
-                    $("#show_quicksync").hide(0);
-                    $("#show_quicksync_message").hide(0);
-                    $("#quicksync_container").show();
-                });
-
                 $("#reboot-device").on("click", function() {
                     // Enable electrs
                     var okFunction = function() {
@@ -426,47 +409,6 @@
                     url = location.protocol+'//'+location.hostname+':'+port+'/ssh/host/'+"{{local_ip}}";
                     window.open(url,'_blank');
                 })
-
-                $( function() {
-                    var downloadHandle = $( "#download-handle" );
-                    var uploadHandle = $( "#upload-handle" );
-                    $( "#download-slider" ).slider({
-                        value: {{download_rate}} / 100,
-                        orientation: "horizontal",
-                        range: "min",
-                        animate: true,
-                        create: function() {
-                            rate = parseInt($( this ).slider( "value" ) * 100)
-                            text = rate + " kbps"
-                            downloadHandle.text(text);
-                            $('#download-rate').val(rate);
-                        },
-                        slide: function( event, ui ) {
-                            rate = parseInt(ui.value * 100)
-                            text = rate + " kbps"
-                            downloadHandle.text( text );
-                            $('#download-rate').val(rate);
-                        }
-                    });
-                    $( "#upload-slider" ).slider({
-                        value: {{upload_rate}} / 100,
-                        orientation: "horizontal",
-                        range: "min",
-                        animate: true,
-                        create: function() {
-                            rate = parseInt($( this ).slider( "value" ) * 100)
-                            text = rate + " kbps"
-                            uploadHandle.text(text);
-                            $('#upload-rate').val(rate);
-                        },
-                        slide: function( event, ui ) {
-                            rate = parseInt(ui.value * 100)
-                            text = rate + " kbps"
-                            uploadHandle.text( text );
-                            $('#upload-rate').val(rate);
-                        }
-                    });
-                } );
 
                 {% if product_key_skipped %}
                 $( "#upgrade" ).button({
@@ -1457,61 +1399,6 @@
 
 
         <div class="settings_block">
-            <a id="quicksync"></a>
-            <div class="settings_block_header">QuickSync</div>
-
-            {% if is_quicksync_disabled %}
-            <p id="show_quicksync_message">QuickSync is no longer recommended.</p>
-            <button id="show_quicksync" class="ui-button ui-widget ui-corner-all settings_button">Show QuickSync Settings</button>
-            {% endif %}
-            <div id="quicksync_container" {% if is_quicksync_disabled %}style="display: none;"{%endif%}>
-                <div class="settings_block_subheader">Toggle QuickSync</div>
-                {% if is_quicksync_disabled %}
-                    Enabling QuickSync will help speed up syncing only during the initial block download period by downloading a pre-validated copy of the blockchain. It is no longer recommended.
-                    <br/>
-                    <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Enable QuickSync</a>
-                {% else %}
-                    Disabling QuickSync will remove the QuickSync files and stop the process. This may save significant disk space.
-                    <br/>
-                    <a href="/settings/toggle-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Disable QuickSync</a>
-                {% endif %}
-
-                {% if not is_quicksync_disabled %}
-                <div class="divider"></div>
-
-                <div class="settings_block_subheader">Restart QuickSync</div>
-                This will reset Bitcoin and redownload the blockchain via QuickSync.
-                <br/>
-                <button id="restart-quicksync" class="ui-button ui-widget ui-corner-all settings_button">Restart QuickSync</button>
-
-                <div class="divider"></div>
-
-                <div class="settings_block_subheader">QuickSync Rates</div>
-                You can control the background upload and download rates for QuickSync. This helps the MyNode network.
-                <br/>
-
-                <form action="/settings/quicksync_rates" method="POST">
-                    <p><b>Download Rate</b></p>
-                    <div id="download-slider">
-                        <div id="download-handle" class="quicksync-handle ui-slider-handle "></div>
-                    </div>
-                    <input type="hidden" id="download-rate" name="download-rate"/>
-
-                    <p><b>Upload Rate</b></p>
-                    <div id="upload-slider">
-                        <div id="upload-handle" class="quicksync-handle ui-slider-handle"></div>
-                    </div>
-                    <input type="hidden" id="upload-rate" name="upload-rate"/>
-                    
-                    <br/>
-                    <input type="submit" id="quicksync_rates_submit" value="Save" class="ui-button ui-widget ui-corner-all settings_button"/>
-                </form>
-                {% endif %}
-            </div>
-        </div>
-
-
-        <div class="settings_block">
             <a id="clone_tool"></a>
             <div class="settings_block_header">Clone Tool</div>
             
@@ -1737,17 +1624,6 @@
             </label>
             <br/><br/>
             <button id="keep_bitcoin_debug_log_button" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Uploader Device</div>
-            This disables most features and prioritize sharing QuickSync files. It can be reversed later.
-            <br/>
-            {% if is_uploader_device %}
-            <a href="/settings/toggle-uploader" class="ui-button ui-widget ui-corner-all settings_button">Disable Uploader Device</a>
-            {% else %}
-            <a href="/settings/toggle-uploader" class="ui-button ui-widget ui-corner-all settings_button">Enable Uploader Device</a>
-            {% endif %}
         </div>
 
 

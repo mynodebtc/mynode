@@ -62,7 +62,6 @@ Each MyNode device comes with a number of wonderful features.
 - Virtual Machine support (OVA file: VirtualBox, VMWare)
 - VPN for Remote Access
 - Bitcoin CLI
-- QuickSync - Quickly sync Bitcoin blockchain
 - LN Channel Backup
 - Docker support (containers inside: Netdata Monitor, Glances, WebSSH2 (Linux Terminal), BTCPay Server)
 - Simple UI / Web Interface

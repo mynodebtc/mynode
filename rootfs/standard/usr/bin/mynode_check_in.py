@@ -38,14 +38,6 @@ def get_saved_notifications():
     except Exception:
         return []
 
-def get_quicksync_enabled():
-    enabled = 1
-    if not is_mynode_drive_mounted():
-        return -3
-    if os.path.isfile("/mnt/hdd/mynode/settings/quicksync_disabled"):
-        enabled = 0
-    return enabled
-
 def check_for_new_mynode_version():
     global latest_version_check_count
     # Chances of refreshing version
@@ -122,7 +114,6 @@ def check_in(check_for_updates):
                 "version": get_current_version(),
                 "product_key": product_key,
                 "drive_size": get_mynode_drive_size(),
-                "quicksync_enabled": get_quicksync_enabled(),
                 "api_version": 2,
             }
             

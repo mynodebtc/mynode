@@ -937,23 +937,6 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     margin-right: auto;
 }
 
-#download-handle {
-    width: 6em;
-    height: 1.6em;
-    top: 50%;
-    margin-top: -.8em;
-    text-align: center;
-    line-height: 1.6em;
-}
-#upload-handle {
-    width: 6em;
-    height: 1.6em;
-    top: 50%;
-    margin-top: -.8em;
-    text-align: center;
-    line-height: 1.6em;
-}
-
 .centered_text_div {
     width: 800px;
     margin: auto;

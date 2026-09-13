@@ -49,7 +49,6 @@ import logging.handlers
 import requests
 import threading
 import signal
-import transmissionrpc
 import subprocess
 import os.path
 import psutil
@@ -238,24 +237,6 @@ def index():
     product_key_skipped = skipped_product_key()
     product_key_error = not is_valid_product_key()
 
-    # Show uploader page if we are marked as an uploader
-    if is_uploader():
-        status=""
-        try:
-            status = to_string(subprocess.check_output(["mynode-get-quicksync-status"]))
-        except:
-            status = "Waiting on quicksync to start..."
-
-        status = status.decode("utf8")
-        status = Markup("<div style='text-align: left; font-size: 12px; width: 800px;'><pre>"+status+"</pre></div>")
-        templateData = {
-            "title": "Uploader",
-            "header_text": "Uploader Device",
-            "quicksync_status": status,
-            "ui_settings": read_ui_settings()
-        }
-        return render_template('uploader.html', **templateData)
-
     if status == STATE_UNKNOWN:
         templateData = {
             "title": "Error",
@@ -356,7 +337,6 @@ def index():
         message += "<p style='font-size: 16px; width: 800px; margin: auto;'>"
         message += "To prevent corrupting any data, your device has stopped running most apps until more free space is available. "
         message += "Please free up some space or attach a larger drive.<br/><br/>"
-        message += "If enabled, disabling <a href='/settings#quicksync'>QuickSync</a> can save a large amount of space.<br/><br/>"
         message += "To move to larger drive, try the <a href='/settings#clone_tool'>Clone Tool</a>."
         message += "</p>"
         templateData = {
@@ -465,63 +445,6 @@ def index():
     elif not has_product_key() and not skipped_product_key():
         # Show product key page if key not set
         return redirect("/product-key")
-    elif status == STATE_QUICKSYNC_COPY:
-        try:
-            current = to_string(subprocess.check_output(["du","-m","--max-depth=0","/mnt/hdd/mynode/bitcoin/"]).split()[0])
-            total = to_string(subprocess.check_output(["du","-m","--max-depth=0","/mnt/hdd/mynode/quicksync/"]).split()[0])
-        except:
-            current = 0.0
-            total = 100.0
-
-        total = float(total) * 1.3
-        percent = (float(current) / float(total)) * 100.0
-        if percent >= 99.99:
-            percent = 99.99
-
-        message = "<div class='small_message'>{}</<div>".format( get_message() )
-
-        subheader_msg = Markup("Copying files... This will take several hours.<br/>{:.2f}%{}".format(percent, message))
-
-        templateData = {
-            "title": "QuickSync",
-            "header_text": "QuickSync",
-            "subheader_text": subheader_msg,
-            "ui_settings": read_ui_settings()
-        }
-        return render_template('state.html', **templateData)
-    elif status == STATE_QUICKSYNC_RESET:
-        templateData = {
-            "title": "QuickSync",
-            "header_text": "QuickSync",
-            "subheader_text": "Restarting QuickSync...",
-            "ui_settings": read_ui_settings()
-        }
-        return render_template('state.html', **templateData)
-    elif status == STATE_QUICKSYNC_DOWNLOAD:
-        subheader = Markup("")
-        try:
-            tc = transmissionrpc.Client('localhost', port=9091)
-            t = tc.get_torrent(1)
-
-            dl_rate = float(t.rateDownload) / 1000 / 1000
-            complete = t.percentDone * 100
-
-            include_funny = False
-            if dl_rate > 3.0:
-                include_funny = True
-            message = "<div class='small_message'>{}</<div>".format( get_message(include_funny) )
-
-            subheader = Markup("Downloading...<br/>{:.2f}%</br>{:.2f} MB/s{}".format(complete, dl_rate, message))
-        except Exception as e:
-            subheader = Markup("Starting<br/>Waiting on download client to start...")
-
-        templateData = {
-            "title": "QuickSync",
-            "header_text": "QuickSync",
-            "subheader_text": subheader,
-            "ui_settings": read_ui_settings()
-        }
-        return render_template('state.html', **templateData)
     elif status == STATE_UPGRADING:
         templateData = {
             "title": "Upgrading",
@@ -674,7 +597,6 @@ def index():
             "tor_version": get_tor_version(),
             "notifications": get_active_notifications(),
             "homepage_refresh_id": get_homepage_refresh_id(),
-            "is_quicksync_disabled": not is_quicksync_enabled(),
             "usb_extras": get_usb_extras(),
             "cpu_usage": get_cpu_usage(),
             "ram_usage": get_ram_usage(),

@@ -425,8 +425,6 @@ def get_application_log(short_name):
         # Log may be custom / non-app service
         if short_name == "startup":
             return get_journalctl_log("mynode")
-        elif short_name == "quicksync":
-            return get_quicksync_log()
         elif short_name == "docker":
             return get_journalctl_log("docker")
         elif short_name == "docker_image_build":

@@ -7,8 +7,6 @@ After=network.target mynode.service
 
 [Service]
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
-ExecStartPre=/usr/bin/wait_on_uploader.sh
-ExecStartPre=/bin/sh -c 'cat /mnt/hdd/mynode/quicksync/.quicksync_complete'
 ExecStartPre=+/usr/bin/mynode_gen_bitcoin_config.sh
 ExecStartPre=+/usr/bin/service_scripts/pre_bitcoin.sh
 EnvironmentFile=/mnt/hdd/mynode/bitcoin/env

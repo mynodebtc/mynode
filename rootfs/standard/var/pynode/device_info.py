@@ -50,9 +50,6 @@ def factory_reset():
     # Try and make sure drive is r/w
     os.system("mount -o remount,rw /mnt/hdd")
 
-    # Reset subsystems that have local data
-    delete_quicksync_data()
-
     # Delete LND data
     delete_lnd_data()
 
@@ -478,9 +475,6 @@ STATE_DRIVE_FULL =            "drive_full"
 STATE_DOCKER_RESET =          "docker_reset"
 STATE_GEN_DHPARAM =           "gen_dhparam"
 STATE_CHOOSE_NETWORK =        "choose_network"
-STATE_QUICKSYNC_DOWNLOAD =    "quicksync_download"
-STATE_QUICKSYNC_COPY =        "quicksync_copy"
-STATE_QUICKSYNC_RESET =       "quicksync_reset"
 STATE_STABLE =                "stable"
 STATE_ROOTFS_READ_ONLY =      "rootfs_read_only"
 STATE_HDD_READ_ONLY =         "hdd_read_only"
@@ -696,17 +690,6 @@ def restart_flask():
 
 
 #==================================
-# Uploader Functions
-#==================================
-def is_uploader():
-    return os.path.isfile("/mnt/hdd/mynode/settings/uploader")
-def set_uploader():
-    touch("/mnt/hdd/mynode/settings/uploader")
-def unset_uploader():
-    delete_file("/mnt/hdd/mynode/settings/uploader")
-
-
-#==================================
 # Warning Message Functions
 #==================================
 def show_32_bit_warning():
@@ -732,60 +715,6 @@ def show_old_tor_warning():
     return False
 def hide_old_tor_warning():
     touch("/tmp/hide_old_tor_warning")
-
-
-#==================================
-# QuickSync Functions
-#==================================
-def is_quicksync_enabled():
-    return not os.path.isfile("/mnt/hdd/mynode/settings/quicksync_disabled")
-def disable_quicksync():
-    touch("/mnt/hdd/mynode/settings/quicksync_disabled")
-def enable_quicksync():
-    delete_file("/mnt/hdd/mynode/settings/quicksync_disabled")
-
-def settings_disable_quicksync():
-    disable_quicksync()
-    stop_bitcoin()
-    stop_quicksync()
-    disable_quicksync() # Try disable again (some users had disable fail)
-    delete_quicksync_data()
-    reboot_device()
-
-def settings_enable_quicksync():
-    stop_bitcoin()
-    stop_quicksync()
-    enable_quicksync()
-    delete_quicksync_data()
-    reboot_device()
-
-def delete_quicksync_data():
-    os.system("rm -rf /mnt/hdd/mynode/quicksync")
-    os.system("rm -rf /home/bitcoin/.config/transmission") # Old dir
-    os.system("rm -rf /mnt/hdd/mynode/.config/transmission")
-
-def stop_quicksync():
-    os.system("systemctl stop quicksync")
-
-def restart_quicksync():
-    os.system('echo "quicksync_reset" > /tmp/.mynode_status')
-    stop_bitcoin()
-    stop_quicksync()
-    delete_bitcoin_data()
-    delete_quicksync_data()
-    enable_quicksync()
-    reboot_device()
-
-def get_quicksync_log():
-    log = "UNKNOWN"
-    if is_quicksync_enabled():
-        try:
-            log = to_string(subprocess.check_output(["mynode-get-quicksync-status"]).decode("utf8"))
-        except:
-            log = "ERROR"
-    else:
-        log = "Disabled"
-    return log
 
 
 #==================================
@@ -1170,7 +1099,6 @@ def delete_bitcoin_peer_database():
 
 def delete_bitcoin_data():
     os.system("rm -rf /mnt/hdd/mynode/bitcoin")
-    os.system("rm -rf /mnt/hdd/mynode/quicksync/.quicksync_complete")
     os.system("rm -rf /mnt/hdd/mynode/.mynode_bitcoin_synced_at_least_once")
     #os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpc_environment")
     #os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpcpw")

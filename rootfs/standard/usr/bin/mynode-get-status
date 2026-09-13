@@ -27,7 +27,7 @@ printStatus bitcoin electrs lnd tor vpn | column -t
 
 echo -e "\n::::::Other-Apps:::::::"
 printStatus btcrpcexplorer btcpayserver dojo firewall https glances \
-	    lndconnect lndhub mempool netdata quicksync rtl webssh2 whirlpool www | column -t
+	    lndconnect lndhub mempool netdata rtl webssh2 whirlpool www | column -t
 
 echo -e "\n:::::::Beta-Apps:::::::"
 printStatus caravan lnbits specter thunderhub | column -t
@@ -35,6 +35,6 @@ printStatus caravan lnbits specter thunderhub | column -t
 # Remaining services are listed here
 
 echo -e "\n::Background-Services::"
-printStatus bandwidth check_in corsproxy_btcrpc docker_images drive_check \
+printStatus check_in corsproxy_btcrpc docker_images drive_check \
 			invalid_block_check lnd_admin_files lnd_backup loop pool lit \
-			mynode rotate_logs tls_proxy torrent_check usb_driver_check | column -t
+			mynode rotate_logs tls_proxy usb_driver_check | column -t

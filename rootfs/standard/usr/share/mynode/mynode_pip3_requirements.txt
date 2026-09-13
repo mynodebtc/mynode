@@ -16,7 +16,6 @@ packaging>=22.0
 python-bitcoinrpc
 prometheus_client
 psutil
-transmissionrpc
 qrcode
 image
 pyudev
