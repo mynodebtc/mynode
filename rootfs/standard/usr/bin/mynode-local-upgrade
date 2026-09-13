@@ -31,7 +31,7 @@ echo -n "Extracting rootfs TAR for ${DEVICE_TYPE}... "
 start_time=$(date +%s)
 rm -rf /tmp/rootfs/
 mkdir -p /tmp/rootfs/
-tar -xf /tmp/mynode_rootfs_${DEVICE_TYPE}.tar.gz -C /tmp/rootfs/
+tar --warning=no-unknown-keyword -xf /tmp/mynode_rootfs_${DEVICE_TYPE}.tar.gz -C /tmp/rootfs/
 end_time=$(date +%s)
 diff_time=$((end_time - start_time))
 echo "Done in ${diff_time}s!"
