@@ -3,7 +3,15 @@
 PASSWORD=$1
 
 HASH_SHA256=$(echo -n "$PASSWORD" | sha256sum | awk '{print $1}')
-HASH_BCRYPT=$(/usr/local/bin/python3 -c "import bcrypt; print(bcrypt.hashpw(b\"$PASSWORD\", bcrypt.gensalt()).decode(\"ascii\"))")
+# Pass the password via the environment so special characters are hashed correctly
+HASH_BCRYPT=$(MYNODE_NEW_PASSWORD="$PASSWORD" /usr/local/bin/python3 -c 'import bcrypt, os; print(bcrypt.hashpw(os.environ["MYNODE_NEW_PASSWORD"].encode("utf-8"), bcrypt.gensalt()).decode("ascii"))')
+
+# Never continue with a bad bcrypt hash, or the device would be left with a
+# changed login password but stale/empty hash files for the apps
+if [ -z "$HASH_BCRYPT" ]; then
+    echo "ERROR: Failed to hash password. Password not changed."
+    exit 1
+fi
 
 # If pass did not change and all hash files exist, exit success
 if [ -f /home/bitcoin/.mynode/.hashedpw ]; then

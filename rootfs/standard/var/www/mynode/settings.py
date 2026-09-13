@@ -45,6 +45,7 @@ def page_settings():
         "title": "Settings",
         "apps": get_all_applications(order_by="alphabetic"),
         "password_message": "",
+        "password_requirements": PASSWORD_REQUIREMENTS_TEXT,
         "current_version": current_version,
         "latest_version": latest_version,
         "current_beta_version": current_beta_version,
@@ -684,9 +685,14 @@ def change_password_page():
     if p1 == None or p2 == None or p1 == "" or p2 == "" or p1 != p2:
         flash("Passwords did not match or were empty!", category="error")
         return redirect(url_for(".page_settings"))
-    else:
-        # Change password
-        subprocess.call(['/usr/bin/mynode_chpasswd.sh', p1])
+
+    is_valid, error_message = is_password_complex_enough(p1)
+    if not is_valid:
+        flash(error_message, category="error")
+        return redirect(url_for(".page_settings"))
+
+    # Change password
+    subprocess.call(['/usr/bin/mynode_chpasswd.sh', p1])
 
     flash("Password Updated!", category="message")
     return redirect(url_for(".page_settings"))

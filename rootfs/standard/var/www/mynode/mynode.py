@@ -1,7 +1,7 @@
 
 import urllib.parse
 from config import *
-from flask import Flask, render_template, Markup, redirect, request, url_for
+from flask import Flask, render_template, Markup, redirect, request, url_for, flash
 from user_management import *
 from api import mynode_api
 from bitcoin import mynode_bitcoin
@@ -223,6 +223,66 @@ def get_active_notifications():
         })
 
     return active_notifications
+
+
+### Force Default Password Change
+# Endpoints that stay reachable while the device is still using the default
+# password. Everything else redirects to the change password page.
+DEFAULT_PASSWORD_ALLOWED_ENDPOINTS = [
+    "static",
+    "page_login",
+    "page_logout",
+    "page_change_default_password",
+]
+
+@app.before_request
+def block_default_password():
+    # Users who are not logged in can only reach the login page anyway
+    if not is_logged_in():
+        return None
+
+    if request.endpoint in DEFAULT_PASSWORD_ALLOWED_ENDPOINTS:
+        return None
+
+    if not is_using_default_password():
+        return None
+
+    return redirect("/change-default-password")
+
+@app.route("/change-default-password", methods=["GET","POST"])
+def page_change_default_password():
+    check_logged_in()
+
+    # Nothing to do if the default password is no longer in use
+    if not is_using_default_password():
+        return redirect("/")
+
+    templateData = {
+        "title": "Change Password",
+        "header_text": "Change Password",
+        "password_requirements": PASSWORD_REQUIREMENTS_TEXT,
+        "ui_settings": read_ui_settings()
+    }
+
+    if request.method == 'GET':
+        return render_template('change_default_password.html', **templateData)
+
+    p1 = request.form.get('password1')
+    p2 = request.form.get('password2')
+    if p1 == None or p2 == None or p1 != p2:
+        flash("Passwords did not match!", category="error")
+        return redirect("/change-default-password")
+
+    is_valid, error_message = is_password_complex_enough(p1)
+    if not is_valid:
+        flash(error_message, category="error")
+        return redirect("/change-default-password")
+
+    # Change password
+    subprocess.call(['/usr/bin/mynode_chpasswd.sh', p1])
+
+    flash("Password Updated!", category="message")
+    return redirect("/")
 
 
 ### Flask Page Processing

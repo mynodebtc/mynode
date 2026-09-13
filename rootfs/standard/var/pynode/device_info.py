@@ -24,6 +24,14 @@ try:
 except:
     pass
 
+# Password settings
+DEFAULT_PASSWORD = "bolt"
+DEFAULT_PASSWORD_HASH = "d0b3cba71f725563d316ea3516099328042095d10f4571be25c07f9ce31985a5"
+PASSWORD_MIN_LENGTH = 8
+# bcrypt (used to hash the password for Thunderhub) rejects anything longer
+PASSWORD_MAX_LENGTH = 72
+PASSWORD_REQUIREMENTS_TEXT = "Passwords must be at least {} characters long and must contain at least two of the following: a capital letter, a number, or a special character.".format(PASSWORD_MIN_LENGTH)
+
 # Globals
 local_ip = "unknown"
 cached_data = {}
@@ -74,7 +82,7 @@ def factory_reset():
     os.system("rm -f /home/bitcoin/.mynode/ui.json")
 
     # Reset password
-    os.system("/usr/bin/mynode_chpasswd.sh bolt")
+    os.system("/usr/bin/mynode_chpasswd.sh {}".format(DEFAULT_PASSWORD))
 
     # Reboot
     reboot_device()
@@ -435,11 +443,41 @@ def has_changed_password():
     try:
         with open("/home/bitcoin/.mynode/.hashedpw", "r") as f:
             hashedpw = f.read().strip()
-            if hashedpw != "d0b3cba71f725563d316ea3516099328042095d10f4571be25c07f9ce31985a5":
+            if hashedpw != DEFAULT_PASSWORD_HASH:
                 return True
     except:
         return False
     return False
+
+def is_using_default_password():
+    # Only report the default password if we can actually confirm it. If the
+    # hash file is missing or unreadable, assume the password was changed so
+    # users are never locked out of their device.
+    try:
+        with open("/home/bitcoin/.mynode/.hashedpw", "r") as f:
+            hashedpw = f.read().strip()
+            return hashedpw == DEFAULT_PASSWORD_HASH
+    except:
+        return False
+
+def is_password_complex_enough(password):
+    # Returns (True, "") if the password meets the minimum requirements,
+    # otherwise (False, "reason the password was rejected")
+    if password == None or password == "":
+        return (False, "Password cannot be empty")
+    if len(password) < PASSWORD_MIN_LENGTH:
+        return (False, "Password must be at least {} characters long".format(PASSWORD_MIN_LENGTH))
+    if len(password.encode("utf-8")) > PASSWORD_MAX_LENGTH:
+        return (False, "Password must be at most {} characters long".format(PASSWORD_MAX_LENGTH))
+
+    has_capital = any(c.isupper() for c in password)
+    has_number = any(c.isdigit() for c in password)
+    has_special = any((not c.isalnum()) for c in password)
+
+    if sum([has_capital, has_number, has_special]) < 2:
+        return (False, "Password must contain at least two of the following: a capital letter, a number, or a special character")
+
+    return (True, "")
 
 def hide_password_warning():
     if os.path.isfile("/mnt/hdd/mynode/settings/hide_password_warning"):
