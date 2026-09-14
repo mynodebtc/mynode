@@ -63,6 +63,7 @@ elif [ "$APP" = "tor" ]; then
 elif [ "$APP" = "nodejs" ]; then
     # This will force a re-install of node + node based apps in the post upgrade script
     echo "" > /etc/apt/sources.list.d/nodesource.list
+    rm -f /etc/apt/sources.list.d/nodesource.sources
 elif [ "$APP" = "ufw" ]; then
     apt-get purge -y ufw
     apt-get install -y ufw

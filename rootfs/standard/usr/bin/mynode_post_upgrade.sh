@@ -170,6 +170,13 @@ if ! skip_base_upgrades ; then
         echo "========================================="
     fi
 
+    # Use journald for the fail2ban sshd jail (no auth.log without rsyslog on Debian 12+)
+    if [ "$DEBIAN_VERSION" -ge "12" ]; then
+        $TORIFY apt-get -y install python3-systemd
+        mkdir -p /etc/fail2ban/jail.d
+        printf "[sshd]\nbackend = systemd\n" > /etc/fail2ban/jail.d/mynode_sshd.conf
+    fi
+
     # Install Openbox GUI
     if [ $IS_X86 = 1 ]; then
         $TORIFY apt-get -y install xorg chromium openbox lightdm
@@ -317,8 +324,9 @@ if ! skip_base_upgrades ; then
     fi
 
     # Update Node
-    if [ -f /etc/apt/sources.list.d/nodesource.list ]; then
-        CURRENT_NODE_VERSION=$(cat /etc/apt/sources.list.d/nodesource.list)
+    if [ -f /etc/apt/sources.list.d/nodesource.list ] || [ -f /etc/apt/sources.list.d/nodesource.sources ]; then
+        # Newer nodesource setup scripts replace nodesource.list with nodesource.sources
+        CURRENT_NODE_VERSION=$(cat /etc/apt/sources.list.d/nodesource.list /etc/apt/sources.list.d/nodesource.sources 2>/dev/null || true)
         if [[ "$CURRENT_NODE_VERSION" != *"node_${NODE_JS_VERSION}"* ]]; then
             # Upgrade node
             curl -sL https://deb.nodesource.com/setup_${NODE_JS_VERSION} | bash -
@@ -333,6 +341,14 @@ if ! skip_base_upgrades ; then
             rm -f /home/bitcoin/.mynode/caravan_version
             rm -f /home/bitcoin/.mynode/btcrpcexplorer_version
             rm -f /home/bitcoin/.mynode/bos_version
+            rm -f /home/bitcoin/.mynode/astral_version
+            rm -f /home/bitcoin/.mynode/publicpool_version
+            rm -f /home/bitcoin/.mynode/publicpoolui_version
+            rm -f /home/bitcoin/.mynode/wetty_version
+
+            # Remove global and cached packages built against the old version
+            npm uninstall -g balanceofsatoshis || true
+            npm cache clean --force || true
         elif [[ "$CURRENT_NODE_VERSION" != *"nodistro"* ]]; then
             # Same major version, but we need to handle nodesource's migration from codename -> nodistro
             echo "Repairing stale NodeSource apt repo entry (codename -> nodistro)"
@@ -344,9 +360,9 @@ if ! skip_base_upgrades ; then
         echo "No node apt sources file?"
     fi
 
-    # Update NPM (Node Package Manager)
-    #npm install -g npm@$NODE_NPM_VERSION
-    npm install -g yarn @quasar/cli @angular/cli
+    # Update global node packages
+    npm uninstall -g @angular/cli || true
+    npm install -g yarn @quasar/cli
     
     # Install Docker
     mkdir -p /etc/apt/keyrings
@@ -670,11 +686,14 @@ if should_install_app "lndhub" ; then
         chown -R bitcoin:bitcoin LndHub
 
         cd LndHub
-        sudo -u bitcoin npm install --only=production
-        sudo -u bitcoin ln -s /home/bitcoin/.lnd/tls.cert tls.cert
-        sudo -u bitcoin ln -s /home/bitcoin/.lnd/data/chain/bitcoin/mainnet/admin.macaroon admin.macaroon
+        if sudo -u bitcoin npm install --omit=dev; then
+            sudo -u bitcoin ln -s /home/bitcoin/.lnd/tls.cert tls.cert
+            sudo -u bitcoin ln -s /home/bitcoin/.lnd/data/chain/bitcoin/mainnet/admin.macaroon admin.macaroon
 
-        echo $LNDHUB_VERSION > $LNDHUB_VERSION_FILE
+            echo $LNDHUB_VERSION > $LNDHUB_VERSION_FILE
+        else
+            echo "ERROR: LndHub install failed"
+        fi
     fi
     cd ~
 fi
@@ -704,10 +723,12 @@ if should_install_app "caravan" ; then
         # Change path to / from /caravan
         sed -i 's|/caravan/#|/#|' vite.config.js
 
-        sudo -u bitcoin npm install
-        sudo -u bitcoin npm run build
-        echo $CARAVAN_VERSION > $CARAVAN_VERSION_FILE
-        touch $CARAVAN_SETTINGS_UPDATE_FILE
+        if sudo -u bitcoin npm install && sudo -u bitcoin npm run build; then
+            echo $CARAVAN_VERSION > $CARAVAN_VERSION_FILE
+            touch $CARAVAN_SETTINGS_UPDATE_FILE
+        else
+            echo "ERROR: Caravan build failed"
+        fi
     fi
     cd ~
 fi
@@ -731,8 +752,11 @@ if [ "$CURRENT" != "$CORSPROXY_VERSION" ]; then
     mv CORS-* corsproxy
 
     cd corsproxy
-    npm install
-    echo $CORSPROXY_VERSION > $CORSPROXY_VERSION_FILE
+    if npm install; then
+        echo $CORSPROXY_VERSION > $CORSPROXY_VERSION_FILE
+    else
+        echo "ERROR: CORS Proxy install failed"
+    fi
 fi
 cd ~
 
@@ -871,9 +895,11 @@ if should_install_app "rtl" ; then
             sudo -u bitcoin rm RTL.tar.gz RTL.tar.gz.asc
             sudo -u bitcoin mv RTL-* RTL
             cd RTL
-            sudo -u bitcoin NG_CLI_ANALYTICS=false npm install --only=production --legacy-peer-deps
-
-            echo $RTL_VERSION > $RTL_VERSION_FILE
+            if sudo -u bitcoin NG_CLI_ANALYTICS=false npm install --omit=dev --legacy-peer-deps; then
+                echo $RTL_VERSION > $RTL_VERSION_FILE
+            else
+                echo "ERROR: RTL install failed"
+            fi
         else
             echo "ERROR UPGRADING RTL - GPG FAILED"
         fi
@@ -896,9 +922,11 @@ if should_install_app "btcrpcexplorer" ; then
         sudo -u bitcoin rm btc-rpc-explorer.tar.gz
         sudo -u bitcoin mv btc-rpc-* btc-rpc-explorer
         cd btc-rpc-explorer
-        sudo -u bitcoin npm install --only=production
-
-        echo $BTCRPCEXPLORER_VERSION > $BTCRPCEXPLORER_VERSION_FILE
+        if sudo -u bitcoin npm install --omit=dev; then
+            echo $BTCRPCEXPLORER_VERSION > $BTCRPCEXPLORER_VERSION_FILE
+        else
+            echo "ERROR: BTC RPC Explorer install failed"
+        fi
     fi
 fi
 
@@ -956,16 +984,20 @@ if should_install_app "thunderhub" ; then
 
         # Patch versions
         #sed -i 's/\^5.3.5/5.3.3/g' package.json || true     # Fixes segfault with 5.3.5 on x86
+        sudo -u bitcoin sed -i 's|"@nestjs/schedule": "^4.0.0"|"@nestjs/schedule": "4.1.2"|' package.json     # 4.0.0 fails on NodeJS 23+
 
-        sudo -u bitcoin npm install # --only=production # (can't build with only production)
-        sudo -u bitcoin npm run build
-        sudo -u bitcoin npx next telemetry disable
+        # npm install --omit=dev can't be used (dev dependencies needed to build)
+        if sudo -u bitcoin npm install && sudo -u bitcoin npm run build; then
+            sudo -u bitcoin npx next telemetry disable || true
 
-        # Setup symlink to service files
-        rm -f /opt/mynode/thunderhub/.env.local
-        sudo ln -s /mnt/hdd/mynode/thunderhub/.env.local /opt/mynode/thunderhub/.env.local
+            # Setup symlink to service files
+            rm -f /opt/mynode/thunderhub/.env.local
+            sudo ln -s /mnt/hdd/mynode/thunderhub/.env.local /opt/mynode/thunderhub/.env.local
 
-        echo $THUNDERHUB_VERSION > $THUNDERHUB_VERSION_FILE
+            echo $THUNDERHUB_VERSION > $THUNDERHUB_VERSION_FILE
+        else
+            echo "ERROR: Thunderhub build failed"
+        fi
     fi
 fi
 
@@ -1048,9 +1080,11 @@ if should_install_app "sphinxrelay" ; then
         sudo -u bitcoin mv sphinx-relay-* sphinxrelay
         cd sphinxrelay
 
-        sudo -u bitcoin npm install
-
-        echo $SPHINXRELAY_VERSION > $SPHINXRELAY_VERSION_FILE
+        if sudo -u bitcoin npm install; then
+            echo $SPHINXRELAY_VERSION > $SPHINXRELAY_VERSION_FILE
+        else
+            echo "ERROR: Sphinx Relay build failed"
+        fi
     fi
 fi
 
@@ -1130,9 +1164,11 @@ if should_install_app "bos" ; then
         CURRENT=$(cat $BOS_VERSION_FILE)
     fi
     if [ "$CURRENT" != "$BOS_VERSION" ]; then
-        npm install -g balanceofsatoshis@$BOS_VERSION
-
-        echo $BOS_VERSION > $BOS_VERSION_FILE
+        if npm install -g balanceofsatoshis@$BOS_VERSION; then
+            echo $BOS_VERSION > $BOS_VERSION_FILE
+        else
+            echo "ERROR: Balance of Satoshis install failed"
+        fi
     fi
 fi
 
@@ -1232,6 +1268,9 @@ cp -f /usr/share/mynode/nginx.conf /etc/nginx/nginx.conf
 # Remove password hash files that are no longer used
 rm -f /home/bitcoin/.mynode/.hashedpw || true
 rm -f /home/bitcoin/.mynode/.hashedpw_bcrypt || true
+
+# Remove global node packages that are no longer used
+npm uninstall -g pug-cli browserify uglify-js babel-cli || true
 
 # Cleanup MOTD
 rm -f /etc/update-motd.d/10-armbian-header || true

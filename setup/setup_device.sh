@@ -259,6 +259,12 @@ apt-get -y install apt-transport-https lsb-release
 apt-get -y install htop git curl bash-completion jq dphys-swapfile lsof libzmq3-dev
 apt-get -y install build-essential python3-dev python3-pip python3-grpcio
 apt-get -y install fail2ban ufw tclsh redis-server
+# Use journald for the fail2ban sshd jail (no auth.log without rsyslog on Debian 12+)
+if [ "$DEBIAN_VERSION" -ge "12" ]; then
+    apt-get -y install python3-systemd
+    mkdir -p /etc/fail2ban/jail.d
+    printf "[sshd]\nbackend = systemd\n" > /etc/fail2ban/jail.d/mynode_sshd.conf
+fi
 apt-get -y install clang hitch zlib1g-dev libffi-dev file toilet ncdu
 apt-get -y install toilet-fonts avahi-daemon figlet libsecp256k1-dev
 apt-get -y install inotify-tools libssl-dev tor tmux screen fonts-dejavu
@@ -462,9 +468,7 @@ usermod -aG docker bitcoin
 usermod -aG docker root
 
 # Install node packages
-npm install -g pug-cli browserify uglify-js babel-cli
-npm install -g npm@$NODE_NPM_VERSION
-npm install -g yarn @quasar/cli @angular/cli
+npm install -g yarn @quasar/cli
 
 # Install Log2Ram
 if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
@@ -829,7 +833,7 @@ if [ "$CURRENT" != "$RTL_VERSION" ]; then
     sudo -u bitcoin rm RTL.tar.gz RTL.tar.gz.asc
     sudo -u bitcoin mv RTL-* RTL
     cd RTL
-    sudo -u bitcoin NG_CLI_ANALYTICS=false npm install --only=production --legacy-peer-deps
+    sudo -u bitcoin NG_CLI_ANALYTICS=false npm install --omit=dev --legacy-peer-deps
 
     echo $RTL_VERSION > $RTL_VERSION_FILE
 fi
@@ -850,7 +854,7 @@ if [ "$CURRENT" != "$BTCRPCEXPLORER_VERSION" ]; then
     sudo -u bitcoin rm btc-rpc-explorer.tar.gz
     sudo -u bitcoin mv btc-rpc-* btc-rpc-explorer
     cd btc-rpc-explorer
-    sudo -u bitcoin npm install --only=production
+    sudo -u bitcoin npm install --omit=dev
 
     echo $BTCRPCEXPLORER_VERSION > $BTCRPCEXPLORER_VERSION_FILE
 fi
@@ -874,8 +878,9 @@ if [ "$CURRENT" != "$THUNDERHUB_VERSION" ]; then
 
     # Patch versions
     #sed -i 's/\^5.3.5/5.3.3/g' package.json || true     # Fixes segfault with 5.3.5 on x86
+    sudo -u bitcoin sed -i 's|"@nestjs/schedule": "^4.0.0"|"@nestjs/schedule": "4.1.2"|' package.json     # 4.0.0 fails on NodeJS 23+
 
-    sudo -u bitcoin npm install # --only=production # (can't build with only production)
+    sudo -u bitcoin npm install # --omit=dev # (can't build without dev dependencies)
     sudo -u bitcoin npm run build
     sudo -u bitcoin npx next telemetry disable
 

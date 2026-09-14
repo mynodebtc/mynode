@@ -266,8 +266,14 @@ fi
 
 PYTHON_ARM32_GRPCIO_VERSION="1.40.0"
 
-NODE_JS_VERSION="18.x"
-NODE_NPM_VERSION="^8.1.0"
+NODE_JS_VERSION="24.x"
+if [ "$IS_32_BIT" = "1" ]; then
+    NODE_JS_VERSION="18.x"
+fi
+if [ "$DEBIAN_VERSION" -lt "11" ]; then
+    NODE_JS_VERSION="18.x"
+fi
+NODE_JS_VERSION=$(get_app_version "$NODE_JS_VERSION" "nodejs")
 
 RUST_VERSION="1.86.0"
 

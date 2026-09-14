@@ -11,7 +11,7 @@ WorkingDirectory=/opt/mynode/publicpoolui
 
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_publicpoolui.sh ]; then /bin/bash /usr/bin/service_scripts/pre_publicpoolui.sh; fi'
-ExecStart=ng serve --host 0.0.0.0
+ExecStart=npx --no ng serve --host 0.0.0.0
 ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_publicpoolui.sh ]; then /bin/bash /usr/bin/service_scripts/post_publicpoolui.sh; fi'
 #ExecStop=FILL_IN_EXECSTOP_AND_UNCOMMENT_IF_NEEDED
 
