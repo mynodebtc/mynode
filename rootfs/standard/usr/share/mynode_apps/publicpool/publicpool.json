@@ -20,6 +20,7 @@
     "download_skip": false,
     "download_type": "source",
     "download_source_url": "https://github.com/benjamin-wilson/public-pool/archive/{VERSION}.tar.gz",
+    "download_source_sha256": "b971e9ce4ccd23ae 6dc0c63884bce4ea92c3b486368ea77c069c4fce11eacfc1bea941629f52577f",
     "download_binary_url": {
         "aarch64": "download_url",
         "x86_64": "download_url"

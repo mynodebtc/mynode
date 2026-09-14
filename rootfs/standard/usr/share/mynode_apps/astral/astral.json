@@ -19,6 +19,7 @@
     "download_skip": false,
     "download_type": "source",
     "download_source_url": "https://github.com/monlovesmango/astral/archive/13048e19067d997c17b5f8f2fcbaa48bb58bb3a7.tar.gz",
+    "download_source_sha256": "0e8eefd19c35ce62 280b4634e5a4b459b5150f53faf96d5ab57ae33a95fe0985e75b0eedc7e0d891",
     "download_binary_url": {
         "aarch64": "download_url",
         "x86_64": "download_url"

@@ -16,6 +16,36 @@ function get_app_version()
     echo "$version"
 }
 
+function is_custom_app_version()
+{
+    local short_name=$1
+    [ -f "/home/bitcoin/.mynode/${short_name}_version_latest_custom" ] || \
+    [ -f "/mnt/hdd/mynode/settings/${short_name}_version_latest_custom" ]
+}
+
+# Check a download against a pinned "<version> <sha256>" value (see
+# scripts/print_app_download_hashes.sh). Versions chosen by the user have no
+# pinned hash and are not checked.
+function check_app_download()
+{
+    local file=$1
+    local short_name=$2
+    local version=$3
+    local pinned=$4
+    local pinned_version=${pinned%% *}
+    local pinned_hash=${pinned##* }
+
+    if [ "$version" != "$pinned_version" ]; then
+        if is_custom_app_version "$short_name"; then
+            echo "Custom $short_name version $version, skipping download hash check"
+            return 0
+        fi
+        echo "ERROR: no download hash for $short_name $version"
+        return 1
+    fi
+    echo "$pinned_hash  $file" | sha256sum --check -
+}
+
 BTC_VERSION="29.3"
 if [ "$DEBIAN_VERSION" -lt "12" ]; then
     BTC_VERSION="27.2"
@@ -79,24 +109,29 @@ MEMPOOL_VERSION_FILE=/mnt/hdd/mynode/settings/mempool_version
 MEMPOOL_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/mempool_version_latest
 
 LNDHUB_VERSION="v1.4.1"
+LNDHUB_SHA256="v1.4.1 913ab417607cffdadcf33eed41171036bf63e6aac2f26c54ad19e35b2cfce0dc"
 LNDHUB_VERSION=$(get_app_version "$LNDHUB_VERSION" "lndhub")
 LNDHUB_VERSION_FILE=/home/bitcoin/.mynode/lndhub_version
 LNDHUB_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lndhub_version_latest
 
 CARAVAN_VERSION="v0.6.2"
+CARAVAN_SHA256="v0.6.2 07e955175403f2a3eac9ef02c4d88200265ee2d47b946023a659e5c92ab237d3"
 CARAVAN_VERSION=$(get_app_version "$CARAVAN_VERSION" "caravan")
 CARAVAN_SETTINGS_UPDATE_FILE=/home/bitcoin/.mynode/caravan_settings_1
 CARAVAN_VERSION_FILE=/home/bitcoin/.mynode/caravan_version
 CARAVAN_LATEST_VERSION_FILE=/home/bitcoin/.mynode/caravan_version_latest
 
 CORSPROXY_VERSION="v1.7.0"
+CORSPROXY_SHA256="v1.7.0 984f2f95297b4b098614b32712c359fb6de753ba51cba592560b7ecdd607bafd"
 CORSPROXY_VERSION=$(get_app_version "$CORSPROXY_VERSION" "corsproxy")
 CORSPROXY_VERSION_FILE=/home/bitcoin/.mynode/corsproxy_version
 CORSPROXY_LATEST_VERSION_FILE=/home/bitcoin/.mynode/corsproxy_version_latest
 
 JOININBOX_VERSION="v0.9.0"
+JOININBOX_SHA256="v0.9.0 78a43ed498e656ccea7ca044df71445f12023642625db9865fc3cde182058c6a"
 if [ "$DEBIAN_VERSION" -lt "12" ]; then
     JOININBOX_VERSION="v0.8.4"
+    JOININBOX_SHA256="v0.8.4 151a786cee6bd6da22ca7bf8ab82beb7e27db301c5c810223538233121eacbc6"
 fi
 JOININBOX_VERSION=$(get_app_version "$JOININBOX_VERSION" "joininbox")
 JOININBOX_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version
@@ -139,6 +174,7 @@ BTCPAYSERVER_VERSION_FILE=/home/bitcoin/.mynode/btcpayserver_version
 BTCPAYSERVER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/btcpayserver_version_latest
 
 BTCRPCEXPLORER_VERSION="v3.5.1"
+BTCRPCEXPLORER_SHA256="v3.5.1 731aa12573d541f00a27117784c86307c4c3833d27d2cf33565f71a34b3aa38f"
 BTCRPCEXPLORER_VERSION=$(get_app_version "$BTCRPCEXPLORER_VERSION" "btcrpcexplorer")
 BTCRPCEXPLORER_VERSION_FILE=/home/bitcoin/.mynode/btcrpcexplorer_version
 BTCRPCEXPLORER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/btcrpcexplorer_version_latest
@@ -157,6 +193,7 @@ SPECTER_VERSION_FILE=/home/bitcoin/.mynode/specter_version
 SPECTER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/specter_version_latest
 
 THUNDERHUB_VERSION="v0.14.6"
+THUNDERHUB_SHA256="v0.14.6 3506bbc78b7fa1239e345fb5310722b868b8af0d9055b10a14710cbe3fd8953e"
 THUNDERHUB_VERSION=$(get_app_version "$THUNDERHUB_VERSION" "thunderhub")
 THUNDERHUB_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version
 THUNDERHUB_LATEST_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version_latest
@@ -173,6 +210,7 @@ LNDCONNECT_VERSION_FILE=/home/bitcoin/.mynode/lndconnect_version
 LNDCONNECT_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lndconnect_version_latest
 
 CKBUNKER_VERSION="v0.9.mynode1"
+CKBUNKER_SHA256="v0.9.mynode1 aeafbda6f9b6abb8f08fe48dbc0b0b83c110714413dfe51ff83b47e80578cc72"
 CKBUNKER_VERSION=$(get_app_version "$CKBUNKER_VERSION" "ckbunker")
 CKBUNKER_VERSION_FILE=/home/bitcoin/.mynode/ckbunker_version
 CKBUNKER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/ckbunker_version_latest
@@ -184,19 +222,25 @@ BOS_VERSION_FILE=/home/bitcoin/.mynode/bos_version
 BOS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bos_version_latest
 
 SPHINXRELAY_VERSION="v2.2.12"
+SPHINXRELAY_SHA256="v2.2.12 f2469b62bfa6e2910093be8075f15bfecd3ec53e6e1e467c76340a6b7357ce02"
 SPHINXRELAY_VERSION=$(get_app_version "$SPHINXRELAY_VERSION" "sphinxrelay")
 SPHINXRELAY_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version
 SPHINXRELAY_LATEST_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version_latest
 
 PYBLOCK_VERSION="v1.1.9"
+PYBLOCK_SHA256="v1.1.9 f4dcfc632f248109b5dd0cee03ca37e46ad273ec75a08aff16cde21d9e68df93"
 PYBLOCK_VERSION=$(get_app_version "$PYBLOCK_VERSION" "pyblock")
 PYBLOCK_VERSION_FILE=/home/bitcoin/.mynode/pyblock_version
 PYBLOCK_LATEST_VERSION_FILE=/home/bitcoin/.mynode/pyblock_version_latest
 
 WARDENTERMINAL_VERSION="869bb48453e9444691c27d2c8908abf2694094ea"
+WARDENTERMINAL_SHA256="869bb48453e9444691c27d2c8908abf2694094ea 009050f5f34b1a1f4d95acb3cd439deb9ea67075c4636a4cf6602fc0644894d3"
 WARDENTERMINAL_VERSION=$(get_app_version "$WARDENTERMINAL_VERSION" "wardenterminal")
 WARDENTERMINAL_VERSION_FILE=/home/bitcoin/.mynode/wardenterminal_version
 WARDENTERMINAL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/wardenterminal_version_latest
+
+LOG2RAM_VERSION="v1.2.2"
+LOG2RAM_SHA256="v1.2.2 60423549533fc6eb1bc02743cbeda300eb0666b30e782d5701834c8e04324299"
 
 NETDATA_VERSION="v1.32.1"
 NETDATA_VERSION=$(get_app_version "$NETDATA_VERSION" "netdata")

@@ -21,6 +21,7 @@
     "download_skip": false,
     "download_type": "source",
     "download_source_url": "https://github.com/scsibug/nostr-rs-relay/archive/refs/tags/{VERSION}.tar.gz",
+    "download_source_sha256": "0.8.8 ae75136386ded334b33a2a7ed23d31b5a98dd9be02a28aeabaa36259033f58f1",
     "download_binary_url": {
         "aarch64": "download_url",
         "x86_64": "download_url"

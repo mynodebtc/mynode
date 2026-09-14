@@ -11,6 +11,7 @@
     "latest_version": "v1.10.1",
     "linux_user": "lndg",
     "download_source_url": "https://github.com/cryptosharks131/lndg/archive/refs/tags/{VERSION}.tar.gz",
+    "download_source_sha256": "v1.10.1 1989d33f688a8e01beea9e2d93fa1fa9271395102b1b376139f026d8353098a0",
     "install_env_vars": {"var1":"val2", "var2": "val2"},
     "http_port": "8889",
     "https_port": "8890",

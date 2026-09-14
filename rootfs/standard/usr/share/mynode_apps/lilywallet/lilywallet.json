@@ -20,6 +20,7 @@
     "download_skip": false,
     "download_type": "source",
     "download_source_url": "https://github.com/Lily-Technologies/lily-wallet/archive/refs/tags/lily-wallet-{VERSION}.tar.gz",
+    "download_source_sha256": "v1.3.0 add298bf141a3d4ee81d6b4d4c8869442ad664b1bf4289201e0bdb64c5c5c4bd",
     "download_binary_url": {
         "aarch64": "download_url",
         "x86_64": "download_url"

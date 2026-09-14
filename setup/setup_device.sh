@@ -233,6 +233,7 @@ gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 9FC6B0BFD597A94DBF0970828
 gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 26984CB69EB8C4A26196F7A4D7D916376026F177 # Lightning Terminal
 gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 187F6ADD93AE3B0CF335AA6AB984570980684DCC # Lightning Terminal
 gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys C20A78516A0944900EBFCA29961CC8259AE675D4 # Lightning Terminal (Viktor)
+gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 3E9BD4436C288039CA827A9200C9E2BC2E45666F # RTL (Suheb)
 wget -q https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc -O- | apt-key add - # Tor
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 648ACFD622F3D138     # Debian Backports
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 0E98404D386FA1D9     # Debian Backports
@@ -470,7 +471,9 @@ if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
     if [ ! -f /usr/local/bin/log2ram ]; then
         cd /tmp
         rm -rf log2ram* || true
-        wget https://github.com/azlux/log2ram/archive/v1.2.2.tar.gz -O log2ram.tar.gz
+        LOG2RAM_UPGRADE_URL=https://github.com/azlux/log2ram/archive/$LOG2RAM_VERSION.tar.gz
+        wget $LOG2RAM_UPGRADE_URL -O log2ram.tar.gz
+        check_app_download log2ram.tar.gz log2ram $LOG2RAM_VERSION "$LOG2RAM_SHA256"
         tar -xvf log2ram.tar.gz
         mv log2ram-* log2ram
         cd log2ram
@@ -765,6 +768,7 @@ if [ "$CURRENT" != "$CORSPROXY_VERSION" ]; then
 
     rm -f corsproxy.tar.gz
     wget $CORSPROXY_UPGRADE_URL -O corsproxy.tar.gz
+    check_app_download corsproxy.tar.gz corsproxy $CORSPROXY_VERSION "$CORSPROXY_SHA256"
     tar -xzf corsproxy.tar.gz
     rm -f corsproxy.tar.gz
     mv CORS-* corsproxy
@@ -817,12 +821,12 @@ if [ "$CURRENT" != "$RTL_VERSION" ]; then
     rm -rf RTL
 
     sudo -u bitcoin wget $RTL_UPGRADE_URL -O RTL.tar.gz
-    #sudo -u bitcoin wget $RTL_UPGRADE_ASC_URL -O RTL.tar.gz.asc
+    sudo -u bitcoin wget $RTL_UPGRADE_ASC_URL -O RTL.tar.gz.asc
 
-    #gpg --verify RTL.tar.gz.asc RTL.tar.gz
+    gpg --verify RTL.tar.gz.asc RTL.tar.gz
 
     sudo -u bitcoin tar -xvf RTL.tar.gz
-    sudo -u bitcoin rm RTL.tar.gz
+    sudo -u bitcoin rm RTL.tar.gz RTL.tar.gz.asc
     sudo -u bitcoin mv RTL-* RTL
     cd RTL
     sudo -u bitcoin NG_CLI_ANALYTICS=false npm install --only=production --legacy-peer-deps
@@ -841,6 +845,7 @@ if [ "$CURRENT" != "$BTCRPCEXPLORER_VERSION" ]; then
     cd /opt/mynode
     rm -rf btc-rpc-explorer
     sudo -u bitcoin wget $BTCRPCEXPLORER_UPGRADE_URL -O btc-rpc-explorer.tar.gz
+    check_app_download btc-rpc-explorer.tar.gz btcrpcexplorer $BTCRPCEXPLORER_VERSION "$BTCRPCEXPLORER_SHA256"
     sudo -u bitcoin tar -xvf btc-rpc-explorer.tar.gz
     sudo -u bitcoin rm btc-rpc-explorer.tar.gz
     sudo -u bitcoin mv btc-rpc-* btc-rpc-explorer
@@ -861,6 +866,7 @@ if [ "$CURRENT" != "$THUNDERHUB_VERSION" ]; then
     cd /opt/mynode
     rm -rf thunderhub
     sudo -u bitcoin wget $THUNDERHUB_UPGRADE_URL -O thunderhub.tar.gz
+    check_app_download thunderhub.tar.gz thunderhub $THUNDERHUB_VERSION "$THUNDERHUB_SHA256"
     sudo -u bitcoin tar -xvf thunderhub.tar.gz
     sudo -u bitcoin rm thunderhub.tar.gz
     sudo -u bitcoin mv thunderhub-* thunderhub
@@ -904,18 +910,6 @@ if [ "$CURRENT" != "$LNDCONNECT_VERSION" ]; then
     echo $LNDCONNECT_VERSION > $LNDCONNECT_VERSION_FILE
 fi
 
-
-# Install ngrok for debugging
-if [ ! -f /usr/bin/ngrok  ]; then
-    cd /tmp
-    NGROK_URL=https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip
-    if [ $IS_X86 = 1 ]; then
-        NGROK_URL=https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-386.zip
-    fi
-    wget $NGROK_URL
-    unzip ngrok-*.zip
-    cp ngrok /usr/bin/
-fi
 
 # Make sure "Remote Access" apps are marked installed
 touch /home/bitcoin/.mynode/install_tor

@@ -20,6 +20,7 @@
     "download_skip": false,
     "download_type": "source",
     "download_source_url": "https://github.com/benjamin-wilson/public-pool-ui/archive/{VERSION}.tar.gz",
+    "download_source_sha256": "1c0b2d93e3ce0a81 46981cf7174efc26baf720045f38afeeb363242eb57e3b5185e385d4f1054f0a",
     "download_binary_url": {
         "aarch64": "download_url",
         "x86_64": "download_url"

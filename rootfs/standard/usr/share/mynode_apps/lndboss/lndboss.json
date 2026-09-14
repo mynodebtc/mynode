@@ -19,6 +19,7 @@
     "download_skip": false,
     "download_type": "source",
     "download_source_url": "https://github.com/niteshbalusu11/lndboss/archive/refs/tags/{VERSION}.tar.gz",
+    "download_source_sha256": "v2.16.0 5c462151777db3dc38075f5144c58103d3e9f0d50ea472183377a2732250e741",
     "download_binary_url": {
         "aarch64": "download_url",
         "x86_64": "download_url"

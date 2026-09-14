@@ -749,6 +749,35 @@ def create_application_tor_service(app_data):
         with open(torrc_file, "w") as f:
             f.write(contents)
 
+# Check a downloaded source tarball against the app's pinned "<version> <sha256>" value
+# (download_source_sha256, see scripts/print_app_download_hashes.sh). Apps without a pin
+# and versions chosen by the user are not checked.
+def check_app_download_hash(app_data, path):
+    import hashlib
+
+    pinned = app_data.get("download_source_sha256")
+    if not pinned or app_data["download_type"] != "source":
+        return
+    parts = pinned.split()
+    if len(parts) != 2:
+        raise ValueError("Invalid download_source_sha256 for {}".format(app_data["short_name"]))
+    pinned_version, pinned_hash = parts
+
+    version = app_data["latest_version"]
+    if version != pinned_version:
+        if app_data["has_custom_version"]:
+            log_message("  Custom {} version {}, skipping download hash check".format(app_data["short_name"], version))
+            return
+        raise ValueError("No download hash for {} {}".format(app_data["short_name"], version))
+
+    sha256 = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            sha256.update(chunk)
+    if sha256.hexdigest() != pinned_hash.lower():
+        raise ValueError("Download hash mismatch for {} {}".format(app_data["short_name"], version))
+    log_message("  Download hash OK for {} {}".format(app_data["short_name"], version))
+
 def install_application_tarball(app_data):
     log_message("  Running install_application_tarball...")
 
@@ -789,6 +818,7 @@ def install_application_tarball(app_data):
 
         time.sleep(1)
         run_linux_cmd("sync")
+        check_app_download_hash(app_data, "/tmp/mynode_dynamic_app_download/app.tar.gz")
         run_linux_cmd("sudo -u {} tar -xvf /tmp/mynode_dynamic_app_download/app.tar.gz -C /tmp/mynode_dynamic_app_extract/".format(app_data["linux_user"]))
         run_linux_cmd("mv /tmp/mynode_dynamic_app_extract/* /tmp/mynode_dynamic_app_extract/app")
 
