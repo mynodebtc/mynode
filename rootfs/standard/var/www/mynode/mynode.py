@@ -73,6 +73,7 @@ app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024     # 32 MB upload file max
 app.config['UPLOAD_FOLDER'] = "/tmp/flask_uploads"
 app.config['SESSION_PERMANENT'] = True
 app.config["SESSION_COOKIE_NAME"] = "mynode_session_id"
+app.config["SESSION_COOKIE_SAMESITE"] = "Strict"
 app.secret_key = get_flask_secret_key()
 timeout_days, timeout_hours = get_flask_session_timeout()
 app.permanent_session_lifetime = timedelta(days=timeout_days, hours=timeout_hours)
