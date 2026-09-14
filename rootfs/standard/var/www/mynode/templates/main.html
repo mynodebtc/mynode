@@ -451,16 +451,6 @@
                     window.open(url,'_blank');
                 })
 
-                $("#rtl").on("click", function() {
-                    hostname=location.hostname
-                    port="3010"
-                    if (location.protocol == "https:") {
-                        port="3011"
-                    }
-                    url = location.protocol+'//'+hostname+':'+port
-                    window.open(url,'_blank');
-                })
-
                 $("#lnbits").on("click", function() {
                     hostname=location.hostname
                     port_string=""
@@ -477,27 +467,6 @@
                     window.open(url,'_blank');
                 })
 
-                $("#thunderhub").on("click", function() {
-                    hostname=location.hostname
-                    port="3030"
-                    if (location.protocol == "https:") {
-                        port="3031"
-                    }
-                    // Swap to use SSO (make optional? - needing password is safer)
-                    url = location.protocol+'//'+hostname+':'+port
-                    //url = location.protocol+'//'+hostname+':'+port+'/sso?'+'token='+application_data["thunderhub"]["sso_token"]
-                    window.open(url,'_blank');
-                })
-
-                $("#ckbunker").on("click", function() {
-                    hostname=location.hostname
-                    port="9823"
-                    if (location.protocol == "https:") {
-                        port="9824"
-                    }
-                    url = location.protocol+'//'+hostname+':'+port
-                    window.open(url,'_blank');
-                })
 
                 $("#btcrpcexplorer").on("click", function() {
                     hostname=location.hostname
@@ -510,12 +479,6 @@
                         token_string='?'+'token='+application_data["btcrpcexplorer"]["sso_token"]
                     }
                     url = location.protocol+'//'+hostname+':'+port+'/'+token_string
-                    window.open(url,'_blank');
-                })
-
-                $("#specter").on("click", function() {
-                    hostname=location.hostname
-                    url = 'https://'+hostname+':25441'
                     window.open(url,'_blank');
                 })
 

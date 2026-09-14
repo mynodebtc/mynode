@@ -42,12 +42,13 @@
     "app_tile_button_text": "Info",
     "app_tile_button_href": "/app/datum/info",
     "app_page_show_open_button": true,
+    "login_username": "admin",
     "app_page_content": [
         {
             "heading": "Instructions",
             "content": [
                 "⚠️ Dont forget to add your Bitcoin address in the GUI otherwise DATUM won't start.",
-        		"The user is \"admin\" and the password is \"bolt\"",
+                "The username and password are shown in the App Credentials section on this page.",
                 "If you want to mine with OCEAN then enter this information into your miners:",
                 "Stratum URL: <Your node IP>:23334",
                 "User: <Your Bitcoin address>",

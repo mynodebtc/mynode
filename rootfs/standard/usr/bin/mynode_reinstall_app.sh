@@ -21,6 +21,9 @@ APP="$1"
 rm -f /home/bitcoin/.mynode/${APP}_version || true
 rm -f /mnt/hdd/mynode/settings/${APP}_version || true
 
+# A reinstalled app gets a new generated login password on its next start
+rm -f /mnt/hdd/mynode/${APP}/.app_password || true
+
 # Make sure app is marked for install
 if [ -f /home/bitcoin/.mynode/${APP}_version_latest ]; then
     touch /home/bitcoin/.mynode/install_${APP} || true

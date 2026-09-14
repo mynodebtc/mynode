@@ -692,7 +692,7 @@ def change_password_page():
         return redirect(url_for(".page_settings"))
 
     # Change password
-    subprocess.call(['/usr/bin/mynode_chpasswd.sh', p1])
+    subprocess.run(['/usr/bin/mynode_chpasswd.sh'], input=p1 + "\n", universal_newlines=True)
 
     flash("Password Updated!", category="message")
     return redirect(url_for(".page_settings"))

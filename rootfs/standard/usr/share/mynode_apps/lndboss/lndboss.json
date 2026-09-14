@@ -41,12 +41,13 @@
     "app_tile_button_text": "Info",
     "app_tile_button_href": "/app/lndboss/info",
     "app_page_show_open_button": true,
+    "login_username": "admin",
     "app_page_content": [
         {
             "heading": "Instructions",
             "content": [
                 "A GUI For BalanceOfSatoshis. You can open the app with the Open button on the left.",
-                "The username is 'admin' and the password is the same as your MyNode password.",
+                "The username and password are shown in the App Credentials section on this page.",
                 "Enjoy!"
             ]
         }

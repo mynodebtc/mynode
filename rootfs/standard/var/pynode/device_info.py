@@ -26,7 +26,6 @@ except:
 
 # Password settings
 DEFAULT_PASSWORD = "bolt"
-DEFAULT_PASSWORD_HASH = "d0b3cba71f725563d316ea3516099328042095d10f4571be25c07f9ce31985a5"
 PASSWORD_MIN_LENGTH = 8
 # bcrypt (used to hash the password for Thunderhub) rejects anything longer
 PASSWORD_MAX_LENGTH = 72
@@ -82,7 +81,7 @@ def factory_reset():
     os.system("rm -f /home/bitcoin/.mynode/ui.json")
 
     # Reset password
-    os.system("/usr/bin/mynode_chpasswd.sh {}".format(DEFAULT_PASSWORD))
+    subprocess.run(["/usr/bin/mynode_chpasswd.sh"], input=DEFAULT_PASSWORD + "\n", universal_newlines=True)
 
     # Reboot
     reboot_device()
@@ -439,26 +438,35 @@ def get_device_changelog():
         changelog = "ERROR"
     return changelog
 
-def has_changed_password():
+def is_default_password_hash(password_hash):
+    # True if a crypt(3) hash from /etc/shadow is a hash of the default password
+    import crypt
     try:
-        with open("/home/bitcoin/.mynode/.hashedpw", "r") as f:
-            hashedpw = f.read().strip()
-            if hashedpw != DEFAULT_PASSWORD_HASH:
-                return True
-    except:
+        return crypt.crypt(DEFAULT_PASSWORD, password_hash) == password_hash
+    except Exception:
         return False
-    return False
+
+# crypt is slow by design, so only check again when the admin password hash changes
+default_password_check = {"hash": None, "is_default": False}
+def is_admin_password_default():
+    # True or False, or None if /etc/shadow cannot be read
+    import spwd
+    try:
+        password_hash = spwd.getspnam("admin").sp_pwdp
+    except Exception:
+        return None
+    if password_hash != default_password_check["hash"]:
+        default_password_check["is_default"] = is_default_password_hash(password_hash)
+        default_password_check["hash"] = password_hash
+    return default_password_check["is_default"]
+
+def has_changed_password():
+    return is_admin_password_default() == False
 
 def is_using_default_password():
-    # Only report the default password if we can actually confirm it. If the
-    # hash file is missing or unreadable, assume the password was changed so
-    # users are never locked out of their device.
-    try:
-        with open("/home/bitcoin/.mynode/.hashedpw", "r") as f:
-            hashedpw = f.read().strip()
-            return hashedpw == DEFAULT_PASSWORD_HASH
-    except:
-        return False
+    # Only report the default password if we can actually confirm it, so users
+    # are never locked out of their device
+    return is_admin_password_default() == True
 
 def is_password_complex_enough(password):
     # Returns (True, "") if the password meets the minimum requirements,

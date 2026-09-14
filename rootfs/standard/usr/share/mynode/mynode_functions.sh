@@ -31,6 +31,21 @@ function skip_base_upgrades {
     return 1
 }
 
+function generate_app_password() {
+    # Letters and digits only, so the password copies with a double-click
+    /usr/local/bin/python3 -c 'import secrets, string; a = string.ascii_letters + string.digits; print("".join(secrets.choice(a) for i in range(24)))'
+}
+
+function has_app_password() {
+    [ -s "/mnt/hdd/mynode/${1}/.app_password" ]
+}
+
+function save_app_password() {
+    # Record the login password MyNode set for an app, so the app page can show it.
+    # Stored in the app's storage folder, which is owned by the app's user.
+    (umask 077; printf '%s\n' "$2" > "/mnt/hdd/mynode/${1}/.app_password")
+}
+
 function remove_docker_images_by_name() {
     local name="$1"
     local images

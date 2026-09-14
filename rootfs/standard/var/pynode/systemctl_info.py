@@ -14,8 +14,10 @@ def clear_service_enabled_cache():
 def is_service_enabled(service_name, force_refresh=False):
     global service_enabled_cache
 
-    if service_name in service_enabled_cache and force_refresh == False:
-        return service_enabled_cache[service_name]
+    # Look up once - another thread can replace the cache with an empty one at any time
+    cached = service_enabled_cache.get(service_name)
+    if cached is not None and force_refresh == False:
+        return cached
 
     code = os.system("systemctl is-enabled {} > /dev/null 2>&1".format(service_name))
     if code == 0:

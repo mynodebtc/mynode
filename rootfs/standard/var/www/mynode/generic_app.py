@@ -29,6 +29,7 @@ def app_generic_info_page(name):
         "ui_settings": read_ui_settings(),
         "app_status": app_status,
         "app_status_color": app_status_color,
+        "app_password": get_application_password(name),
         "app": app
     }
     return render_template('/app/generic_app.html', **templateData)

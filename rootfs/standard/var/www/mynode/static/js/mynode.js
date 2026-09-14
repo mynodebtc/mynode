@@ -104,8 +104,14 @@ function open_app_in_new_tab(http_port, https_port="NA", requires_https=false, c
             protocol = "http:"
             port_string = ":"+http_port
         }
+
+        // If app is HTTPS only
+        if (http_port == "NA" || http_port == "None") {
+            protocol = "https:"
+            port_string = ":"+https_port
+        }
     }
-    
+
     url = protocol+'//'+hostname+port_string
     window.open(url,'_blank');
 }

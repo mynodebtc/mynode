@@ -90,7 +90,20 @@
         "show_on_homepage": true,
         "requires_lightning": true,
         "supports_testnet": true,
-        "homepage_order": 11
+        "homepage_order": 11,
+        "http_port": 3010,
+        "https_port": 3011,
+        "app_tile_button_text": "Info",
+        "app_tile_button_href": "/app/rtl/info",
+        "app_page_content": [
+            {
+                "heading": "Instructions",
+                "content": [
+                    "Ride the Lightning is a web interface for managing your Lightning node. You can open the app with the Open button on the left.",
+                    "RTL asks only for a password. It is shown in the App Credentials section on this page."
+                ]
+            }
+        ]
     },
     {
         "name": "Electrum Server",
@@ -115,6 +128,7 @@
     {
         "name": "BTCPay Server",
         "short_name": "btcpayserver",
+        "app_tile_button_text": "Open",
         "author": {"name": "BTC Pay Server", "link":"https://btcpayserver.org/"},
         "website": {"name": "GitHub", "link": "https://github.com/btcpayserver/btcpayserver"},
         "description": [
@@ -135,6 +149,7 @@
     {
         "name": "Mempool",
         "short_name": "mempool",
+        "app_tile_button_text": "Open",
         "author": {"name": "Mempool", "link":"https://mempool.space/"},
         "website": {"name": "GitHub", "link": "https://github.com/mempool/mempool"},
         "description": "Our mempool and blockchain explorer for the Bitcoin community, focusing on the transaction fee market and multi-layer ecosystem, completely self-hosted without any trusted third-parties.",
@@ -149,6 +164,7 @@
     {
         "name": "LND Hub",
         "short_name": "lndhub",
+        "app_tile_button_text": "Open",
         "author": {"name": "BlueWallet", "link":"https://bluewallet.io/"},
         "website": {"name": "GitHub", "link": "https://github.com/BlueWallet/LndHub"},
         "description": [
@@ -199,6 +215,7 @@
     {
         "name": "BTC RPC Explorer",
         "short_name": "btcrpcexplorer",
+        "app_tile_button_text": "Open",
         "author": {"name": "janoside", "link":""},
         "website": {"name": "GitHub", "link": "https://github.com/janoside/btc-rpc-explorer"},
         "description": [
@@ -315,7 +332,20 @@
         "show_on_status_page": true,
         "show_on_homepage": true,
         "homepage_order": 25,
-        "is_premium": true
+        "is_premium": true,
+        "http_port": 3030,
+        "https_port": 3031,
+        "app_tile_button_text": "Info",
+        "app_tile_button_href": "/app/thunderhub/info",
+        "app_page_content": [
+            {
+                "heading": "Instructions",
+                "content": [
+                    "Thunderhub is a web interface for managing your Lightning node. You can open the app with the Open button on the left.",
+                    "Thunderhub asks for a master password. It is shown in the App Credentials section on this page."
+                ]
+            }
+        ]
     },
     {
         "name": "Caravan",
@@ -354,7 +384,19 @@
         "show_on_homepage": true,
         "homepage_order": 32,
         "supports_testnet": true,
-        "is_premium": true
+        "is_premium": true,
+        "https_port": 25441,
+        "app_tile_button_text": "Info",
+        "app_tile_button_href": "/app/specter/info",
+        "app_page_content": [
+            {
+                "heading": "Instructions",
+                "content": [
+                    "Specter is a wallet coordinator for multisig and hardware wallets that uses your Bitcoin node. You can open the app with the Open button on the left.",
+                    "Specter asks for a password. It is shown in the App Credentials section on this page. If you had already set your own Specter password, it is kept and nothing is shown here."
+                ]
+            }
+        ]
     },
     {
         "name": "CKBunker",
@@ -377,7 +419,20 @@
         "show_on_homepage": true,
         "homepage_order": 33,
         "supports_testnet": true,
-        "is_premium": true
+        "is_premium": true,
+        "http_port": 9823,
+        "https_port": 9824,
+        "app_tile_button_text": "Info",
+        "app_tile_button_href": "/app/ckbunker/info",
+        "app_page_content": [
+            {
+                "heading": "Instructions",
+                "content": [
+                    "CKBunker runs a Coldcard in HSM mode so it can sign transactions within the spending rules you set. You can open the app with the Open button on the left.",
+                    "CKBunker asks for a master login password. It is shown in the App Credentials section on this page. A password saved in the CKBunker Bunker Setup tab replaces it."
+                ]
+            }
+        ]
     },
     {
         "name": "Sphinx Relay",
@@ -400,6 +455,7 @@
     {
         "name": "LNbits",
         "short_name": "lnbits",
+        "app_tile_button_text": "Open",
         "short_description": "Lightning Wallet",
         "author": {"name": "LNbits", "link": "https://lnbits.com"},
         "website": {"name": "GitHub", "link": "https://github.com/lnbits/lnbits-legend"},

@@ -255,6 +255,12 @@ def initialize_application_defaults(app):
     if not "app_page_additional_buttons" in app: app["app_page_additional_buttons"] = []
     if not "app_page_content" in app: app["app_page_content"] = []
     if not "data_manageable" in app: app["data_manageable"] = False
+    if not "login_username" in app: app["login_username"] = ""     # Shown with the generated app password, if the app has a username
+
+    # Apps with their own info page get separate Open and Info buttons on their home page tile
+    app["has_info_page"] = app["app_tile_button_href"] == "/app/{}/info".format(app["short_name"])
+    app["tile_shows_open_and_info"] = app["has_info_page"] and app["app_page_show_open_button"] and \
+        (app["http_port"] not in [None, ""] or app["https_port"] not in [None, ""])
 
     # Update fields that may use variables that need replacing, like {VERSION}, {SHORT_NAME}, etc...
     app["download_source_url"] = replace_app_info_variables(app, app["download_source_url"])
@@ -593,6 +599,25 @@ def get_application_sso_token_enabled(short_name):
     if not is_application_valid(short_name):
         return "APP_NOT_FOUND"
     return get_sso_token_enabled(short_name)
+
+def clear_application_password(short_name):
+    # A reinstalled app gets a new generated login password on its next start
+    if not is_application_valid(short_name):
+        return
+    try:
+        os.remove("/mnt/hdd/mynode/{}/.app_password".format(short_name))
+    except FileNotFoundError:
+        pass
+
+def get_application_password(short_name):
+    # Login password MyNode set for the app (see save_app_password in mynode_functions.sh)
+    if not is_application_valid(short_name):
+        return ""
+    try:
+        with open("/mnt/hdd/mynode/{}/.app_password".format(short_name), "r") as f:
+            return f.read().strip()
+    except:
+        return ""
 
 
 ######################################################################################
@@ -1089,5 +1114,6 @@ def uninstall_dynamic_app(short_name):
     # Delete SD card folder
     run_linux_cmd("rm -rf {}".format(app_data["install_folder"]))
 
-    # Clear app data
+    # Clear app data, including in the web UI if this is running from another process
     clear_application_cache()
+    trigger_application_refresh()

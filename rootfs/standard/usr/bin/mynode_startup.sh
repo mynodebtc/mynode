@@ -412,6 +412,7 @@ CKBUNKER_CONFIG_UPDATE_NUM=1
 if [ ! -f /mnt/hdd/mynode/ckbunker/update_settings_$CKBUNKER_CONFIG_UPDATE_NUM ]; then
     cp -f /usr/share/mynode/ckbunker_settings.yaml /mnt/hdd/mynode/ckbunker/settings.yaml
     chown -R bitcoin:bitcoin /mnt/hdd/mynode/ckbunker/settings.yaml
+    rm -f /mnt/hdd/mynode/ckbunker/.app_password
 
     touch /mnt/hdd/mynode/ckbunker/update_settings_$CKBUNKER_CONFIG_UPDATE_NUM
 fi

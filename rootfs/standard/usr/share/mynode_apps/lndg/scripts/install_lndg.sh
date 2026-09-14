@@ -27,8 +27,9 @@ virtualenv -p python3 .venv
 sed -i 's|/usr/local/supervisord.conf|/opt/mynode/lndg/.venv/supervisord.conf|g' initialize.py
 #sed -i 's|lndg-admin|admin|g' initialize.py
 
-# Init LNDg
-.venv/bin/python initialize.py --lnddir=/mnt/hdd/mynode/lnd --adminuser=admin --adminpw=bolt -wn -dx -sd --sduser=lndg
+# Init LNDg (the admin password is set by pre_lndg.sh, so drop the one LNDg generates)
+.venv/bin/python initialize.py --lnddir=/mnt/hdd/mynode/lnd --adminuser=admin -wn -dx -sd --sduser=lndg
+rm -f data/lndg-admin.txt
 
 # Patch supervisord config
 mkdir -p logs

@@ -44,9 +44,6 @@ def login(password):
         session["logged_in"] = True
         session.permanent = True
 
-        # Call change password to ensure hash files are up to date
-        subprocess.call(['/usr/bin/mynode_chpasswd.sh', password])
-
         return True
 
 def logout():

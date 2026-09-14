@@ -38,7 +38,7 @@ echo "{
   \"api\": {
     \"listen_port\": 21000,
     \"modify_conf\": true,
-    \"admin_password\": \"bolt\"
+    \"admin_password\": \"\"
   },
   \"mining\": {
     \"pool_address\": \"enter_your_bitcoin_address\",
@@ -62,5 +62,8 @@ echo "{
 jq --arg BTCPSW "$BTCPSW" '.bitcoind.rpcpassword = $BTCPSW' datum_config.json > datum_config.json.tmp && mv datum_config.json.tmp datum_config.json
 
 cp datum_config.json /mnt/hdd/mynode/datum
+
+# The fresh config has no admin password, so let pre_datum.sh set a new one
+rm -f /mnt/hdd/mynode/datum/.app_password
 
 echo \"================== DONE INSTALLING APP =================\"

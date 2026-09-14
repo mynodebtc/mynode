@@ -1226,6 +1226,10 @@ fi
 cp -f /usr/share/mynode/nginx.conf /etc/nginx/nginx.conf
 
 
+# Remove password hash files that are no longer used
+rm -f /home/bitcoin/.mynode/.hashedpw || true
+rm -f /home/bitcoin/.mynode/.hashedpw_bcrypt || true
+
 # Cleanup MOTD
 rm -f /etc/update-motd.d/10-armbian-header || true
 rm -f /etc/update-motd.d/30-armbian-sysinfo || true

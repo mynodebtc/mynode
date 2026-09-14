@@ -32,6 +32,8 @@
 
         <script>
         $(document).ready(function() {
+            $( document ).tooltip();
+
             HesGallery.init({
                 disableScrolling: false,
                 wrapAround: true,
@@ -151,6 +153,28 @@
                             {% endif %}
                         </table>
                     </div>
+
+                    {% if app_password %}
+                    <div class="app_page_block_contents_heading">
+                        <div class="info-page-block">App Credentials
+                            <img style="width: 16px; margin-left: 8px; vertical-align: middle; cursor: help;" src="{{ url_for('static', filename="images/tooltip_icon.png")}}" title="These are the default credentials for this application. Within the app, these may be changed or updated, which would make the default credentials no longer work. After re-installing an application, it will get a new set of credentials."/>
+                        </div>
+                    </div>
+                    <div class="app_page_block_contents_text">
+                        <table class="info_table" style="font-size: 12px; margin-left: 10px">
+                            {% if app.login_username %}
+                            <tr>
+                                <th>Username</th>
+                                <td>{{app.login_username}}</td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                <th>Password</th>
+                                <td>{{app_password}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    {% endif %}
 
                     {% if app.app_page_content is defined and app.app_page_content|length > 0 %}
                         {% for section in app.app_page_content %}

@@ -3,7 +3,7 @@
 -->
 <br/>
 
-<div class="app_tile_grid_container">    
+<div class="app_tile_grid_container">
     <!-- Dynamic App Display -->
     {% for app in apps %}
         {% if app.is_installed and app.show_on_homepage and app.homepage_section == "apps" %}
@@ -24,14 +24,22 @@
                         {% if electrs_active or ( not electrs_active and not app.requires_electrs ) %}
                         {% if not is_installing_docker_images or ( is_installing_docker_images and not app.requires_docker_image_installation ) %}
                             {% if app.is_enabled or not app.can_enable_disable %}
-                                {% if app.app_tile_button_open_app_directly and (app.http_port is not none or app.https_port is not none) %}
+                                {% if app.tile_shows_open_and_info %}
+                                    <a class="ui-button ui-widget ui-corner-all mynode_button"
+                                        onclick="open_app_in_new_tab('{{app.http_port}}', '{{app.https_port}}', false, '{{app.tor_address}}'); return false;"
+                                        href="#"
+                                        id="{{app.short_name}}">Open</a>
+                                    <a class="ui-button ui-widget ui-corner-all mynode_button"
+                                        href="{{app.app_tile_button_href}}"
+                                        id="{{app.short_name}}_info">{{app.app_tile_button_text}}</a>
+                                {% elif app.app_tile_button_open_app_directly and (app.http_port is not none or app.https_port is not none) %}
                                     <a class="ui-button ui-widget ui-corner-all mynode_button"
                                         onclick="open_app_in_new_tab('{{app.http_port}}', '{{app.https_port}}', false, '{{app.tor_address}}'); return false;"
                                         href="#"
                                         id="{{app.short_name}}">{{app.app_tile_button_text}}</a>
                                 {% else %}
                                     <a class="ui-button ui-widget ui-corner-all mynode_button"
-                                        {% if app.app_tile_button_onclick != "" %} onclick="{{app.app_tile_button_onclick|safe}}" {% endif %} 
+                                        {% if app.app_tile_button_onclick != "" %} onclick="{{app.app_tile_button_onclick|safe}}" {% endif %}
                                         href="{{app.app_tile_button_href}}"
                                         id="{{app.short_name}}">{{app.app_tile_button_text}}</a>
                                 {% endif %}
@@ -86,7 +94,15 @@
                                     {% if electrs_active or ( not electrs_active and not app.requires_electrs ) %}
                                     {% if not is_installing_docker_images or ( is_installing_docker_images and not app.requires_docker_image_installation ) %}
                                         {% if app.is_enabled or not app.can_enable_disable %}
-                                            {% if app.app_tile_button_open_app_directly and (app.http_port is not none or app.https_port is not none) %}
+                                            {% if app.tile_shows_open_and_info %}
+                                                <a class="ui-button ui-widget ui-corner-all mynode_button"
+                                                    onclick="open_app_in_new_tab('{{app.http_port}}', '{{app.https_port}}', false, '{{app.tor_address}}'); return false;"
+                                                    href="#"
+                                                    id="{{app.short_name}}">Open</a>
+                                                <a class="ui-button ui-widget ui-corner-all mynode_button"
+                                                    href="{{app.app_tile_button_href}}"
+                                                    id="{{app.short_name}}_info">{{app.app_tile_button_text}}</a>
+                                            {% elif app.app_tile_button_open_app_directly and (app.http_port is not none or app.https_port is not none) %}
                                                 <a class="ui-button ui-widget ui-corner-all mynode_button"
                                                     onclick="open_app_in_new_tab('{{app.http_port}}', '{{app.https_port}}', false, '{{app.tor_address}}'); return false;"
                                                     href="#"

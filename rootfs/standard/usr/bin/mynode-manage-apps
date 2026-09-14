@@ -70,9 +70,12 @@ def main():
         for app_name in app_names:
             if args.command == "reinstall":
                 clear_installed_version(app_name)
+                clear_application_password(app_name)
             if app_name != "all" and is_application_valid(app_name):
                 mark_app_installed(app_name)
             upgrade_dynamic_apps(app_name)
+        # Let the web UI know its app data is out of date
+        trigger_application_refresh()
     elif args.command == "uninstall":
         # Requires specified application
         app_names = args.app
