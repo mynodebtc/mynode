@@ -1063,6 +1063,14 @@ def upgrade_dynamic_apps(short_name="all"):
                             continue
 
                         log_message("  Upgrading {} ({} vs {})...".format(app_name, app_data["current_version"], app_data["latest_version"]))
+
+                        # Stop the app so its files and docker images are not in use, and
+                        # start it again afterwards unless the device is shutting down
+                        restart_app = False
+                        if app_data["can_enable_disable"]:
+                            restart_app = is_service_enabled(app_name, force_refresh=True) and not is_shutting_down()
+                            stop_service(app_name)
+
                         try:
                             # Make app linux user
                             create_application_user(app_data)
@@ -1094,6 +1102,9 @@ def upgrade_dynamic_apps(short_name="all"):
                             # Write error to version file
                             log_message("  Upgrade FAILED! ({})".format(str(e)))
                             set_file_contents("/home/bitcoin/.mynode/{}_version".format(app_name), "error")
+
+                        if restart_app:
+                            start_service(app_name)
             except Exception as e:
                 log_message("  ERROR: Error checking app {} for upgrade ({})".format(app_name, str(e)))
 
