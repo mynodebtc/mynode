@@ -24,7 +24,8 @@ remove_docker_images_by_name 'jam-'
 remove_docker_images_by_name 'jam:latest'
 
 # Pull latest image
-docker pull ghcr.io/joinmarket-webui/$DOCKER_IMAGE_NAME
+IMAGE_DIGEST="v0.4.1-clientserver-v0.9.11 sha256:03fa5d0cd577d999bf78d94be18b2f36e8fc2524b069c44bcbf045f41b2aa646"
+pull_app_docker_image ghcr.io/joinmarket-webui/${DOCKER_IMAGE_NAME%%:*} "${DOCKER_IMAGE_NAME#*:}" jam "$IMAGE_DIGEST"
 
 # Tag latest as "jam:latest"
 docker tag ghcr.io/joinmarket-webui/$DOCKER_IMAGE_NAME jam-orig:latest

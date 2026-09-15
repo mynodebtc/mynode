@@ -46,6 +46,30 @@ function check_app_download()
     echo "$pinned_hash  $file" | sha256sum --check -
 }
 
+# Pull a Docker image by a pinned "<tag> <digest>" value (see
+# scripts/print_app_download_hashes.sh) and tag it as <image>:<tag>. Versions
+# chosen by the user have no pinned digest and are pulled by tag.
+function pull_app_docker_image()
+{
+    local image=$1
+    local tag=$2
+    local short_name=$3
+    local pinned=$4
+    local pinned_tag=${pinned%% *}
+    local pinned_digest=${pinned##* }
+
+    if [ "$tag" != "$pinned_tag" ]; then
+        if is_custom_app_version "$short_name"; then
+            echo "Custom $short_name version, pulling $image:$tag by tag"
+            docker pull "$image:$tag"
+            return
+        fi
+        echo "ERROR: no image digest for $image:$tag"
+        return 1
+    fi
+    docker pull "$image@$pinned_digest" && docker tag "$image@$pinned_digest" "$image:$tag"
+}
+
 BTC_VERSION="29.3"
 if [ "$DEBIAN_VERSION" -lt "12" ]; then
     BTC_VERSION="27.2"
@@ -101,9 +125,14 @@ ELECTRS_VERSION_FILE=/home/bitcoin/.mynode/electrs_version
 ELECTRS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/electrs_version_latest
 
 MEMPOOL_VERSION="v3.3.1"
+MEMPOOL_FRONTEND_DIGEST="v3.3.1 sha256:0a162e7e0d26a01e9686ddf69c96c4beae5fe10b0daa1020f3d392e033c058f1"
+MEMPOOL_BACKEND_DIGEST="v3.3.1 sha256:358c0a517c8dcf26e7f5c02447de5bab33ec7e3fa6318685cf8012ce36098e3a"
 if [ "$IS_32_BIT" = "1" ]; then
     MEMPOOL_VERSION="v2.3.1"
+    MEMPOOL_FRONTEND_DIGEST="v2.3.1 sha256:38c955caeb58014b266904b059bfabbdab8321d20b11e7cccb139be6dfc8e36e"
+    MEMPOOL_BACKEND_DIGEST="v2.3.1 sha256:f7b16a6b00ea8aabf3b71a34ec05bb373fa0b6f1d31c7981b767edb2d1b7cf89"
 fi
+MARIADB_DIGEST="10.9.3 sha256:bb39098029f443e8b02a1736c3cb4be1c5d6663a8355d4f9eb0b05693df4b9a0"
 MEMPOOL_VERSION=$(get_app_version "$MEMPOOL_VERSION" "mempool")
 MEMPOOL_VERSION_FILE=/mnt/hdd/mynode/settings/mempool_version
 MEMPOOL_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/mempool_version_latest
@@ -171,6 +200,7 @@ BTCPAYSERVER_VERSION="2.4.4"
 if [ "$IS_32_BIT" = "1" ]; then
     BTCPAYSERVER_VERSION="1.3.6"
 fi
+BTCPAYSERVER_DOCKER_COMMIT="6b2b270f7318af19c4e32e92cfc070722165e911"
 BTCPAYSERVER_VERSION=$(get_app_version "$BTCPAYSERVER_VERSION" "btcpayserver")
 BTCPAYSERVER_VERSION_FILE=/home/bitcoin/.mynode/btcpayserver_version
 BTCPAYSERVER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/btcpayserver_version_latest
@@ -182,6 +212,7 @@ BTCRPCEXPLORER_VERSION_FILE=/home/bitcoin/.mynode/btcrpcexplorer_version
 BTCRPCEXPLORER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/btcrpcexplorer_version_latest
 
 LNBITS_VERSION="v1.2.1"
+LNBITS_DIGEST="v1.2.1 sha256:a896cf5c95e775d95aca3bedf498714380ca2ebccd51bf6c041c97820cd7928d"
 LNBITS_VERSION=$(get_app_version "$LNBITS_VERSION" "lnbits")
 LNBITS_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version
 LNBITS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version_latest
@@ -248,11 +279,13 @@ LOG2RAM_VERSION="v1.2.2"
 LOG2RAM_SHA256="v1.2.2 60423549533fc6eb1bc02743cbeda300eb0666b30e782d5701834c8e04324299"
 
 NETDATA_VERSION="v1.32.1"
+NETDATA_DIGEST="v1.32.1 sha256:1bbb572e57c5b0838bc4b1f7cdf0a220a962cf4cee83094fb4c1abac62fa82de"
 NETDATA_VERSION=$(get_app_version "$NETDATA_VERSION" "netdata")
 NETDATA_VERSION_FILE=/mnt/hdd/mynode/settings/netdata_version
 NETDATA_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/netdata_version_latest
 
 WEBSSH2_VERSION="v0.2.10-0"
+WEBSSH2_SHA256="v0.2.10-0 f587b2609da639138c8fcd728b665122ac6fa23ea55185250e93b2fe80b8382b"
 WEBSSH2_VERSION=$(get_app_version "$WEBSSH2_VERSION" "webssh2")
 WEBSSH2_VERSION_FILE=/mnt/hdd/mynode/settings/webssh2_version
 WEBSSH2_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/webssh2_version_latest

@@ -19,8 +19,10 @@ cp -f app_data/docker-compose.yml docker-compose.yml
 remove_docker_images_by_name "canary-backend"
 remove_docker_images_by_name "canary-frontend"
 
-docker pull schjonhaug/canary-backend:$VERSION
-docker pull schjonhaug/canary-frontend:$VERSION
+BACKEND_IMAGE_DIGEST="v1.5.2 sha256:a927448e881d6e1060736a844439dd57b84e4e3f8b89aeaf3dea48367c40fa55"
+FRONTEND_IMAGE_DIGEST="v1.5.2 sha256:72ecf65fcdc80613974c2ea603524b2edc053026fc9f93ba3198be9f89711a6c"
+pull_app_docker_image schjonhaug/canary-backend "$VERSION" canary "$BACKEND_IMAGE_DIGEST"
+pull_app_docker_image schjonhaug/canary-frontend "$VERSION" canary "$FRONTEND_IMAGE_DIGEST"
 
 docker tag schjonhaug/canary-backend:$VERSION canary-backend:latest
 docker tag schjonhaug/canary-frontend:$VERSION canary-frontend:latest

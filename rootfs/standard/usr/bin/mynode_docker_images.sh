@@ -63,9 +63,9 @@ while true; do
         if [ "$CURRENT" != "$NETDATA_VERSION" ]; then
             remove_docker_images_by_name 'netdata'
 
-            docker pull netdata/netdata:${NETDATA_VERSION}
-
-            echo $NETDATA_VERSION > $NETDATA_VERSION_FILE
+            if pull_app_docker_image netdata/netdata "$NETDATA_VERSION" netdata "$NETDATA_DIGEST"; then
+                echo $NETDATA_VERSION > $NETDATA_VERSION_FILE
+            fi
         fi
         touch /tmp/need_application_refresh
     fi
@@ -84,13 +84,15 @@ while true; do
         cd /tmp/
         rm -rf webssh2
         wget $WEBSSH2_UPGRADE_URL -O webssh2.tar.gz
-        tar -xvf webssh2.tar.gz
-        rm webssh2.tar.gz
-        mv webssh2-* webssh2
-        cd webssh2
-        docker build -t webssh2 .
-        if [ $? == 0 ]; then
-            echo $WEBSSH2_VERSION > $WEBSSH2_VERSION_FILE
+        if check_app_download webssh2.tar.gz webssh2 "$WEBSSH2_VERSION" "$WEBSSH2_SHA256"; then
+            tar -xvf webssh2.tar.gz
+            rm webssh2.tar.gz
+            mv webssh2-* webssh2
+            cd webssh2
+            docker build -t webssh2 .
+            if [ $? == 0 ]; then
+                echo $WEBSSH2_VERSION > $WEBSSH2_VERSION_FILE
+            fi
         fi
     fi
     touch /tmp/need_application_refresh
@@ -121,15 +123,21 @@ while true; do
             rm mempool.tar.gz
             mv mempool-* mempool
 
-            docker pull mempool/frontend:${MEMPOOL_VERSION}
-            docker pull mempool/backend:${MEMPOOL_VERSION}
-
-            enabled=$(systemctl is-enabled mempool)
-            if [ "$enabled" = "enabled" ]; then
-                systemctl restart mempool &
+            MEMPOOL_PULLED=1
+            pull_app_docker_image mempool/frontend "$MEMPOOL_VERSION" mempool "$MEMPOOL_FRONTEND_DIGEST" || MEMPOOL_PULLED=0
+            pull_app_docker_image mempool/backend "$MEMPOOL_VERSION" mempool "$MEMPOOL_BACKEND_DIGEST" || MEMPOOL_PULLED=0
+            if [ $IS_RASPI -eq 0 ] || [ $IS_ARM64 -eq 1 ]; then
+                pull_app_docker_image mariadb 10.9.3 mariadb "$MARIADB_DIGEST" || MEMPOOL_PULLED=0
             fi
 
-            echo $MEMPOOL_VERSION > $MEMPOOL_VERSION_FILE
+            if [ $MEMPOOL_PULLED = 1 ]; then
+                enabled=$(systemctl is-enabled mempool)
+                if [ "$enabled" = "enabled" ]; then
+                    systemctl restart mempool &
+                fi
+
+                echo $MEMPOOL_VERSION > $MEMPOOL_VERSION_FILE
+            fi
         fi
     fi
     touch /tmp/need_application_refresh
@@ -150,41 +158,42 @@ while true; do
             # Clone this repository
             git clone https://github.com/btcpayserver/btcpayserver-docker
             cd btcpayserver-docker
+            if git -c advice.detachedHead=false checkout "$BTCPAYSERVER_DOCKER_COMMIT"; then
+                # Run btcpay-setup.sh with the right parameters
+                export BTCPAY_HOST="mynode.local"
+                export NBITCOIN_NETWORK="mainnet"
+                export BTCPAYGEN_CRYPTO1="btc"
+                export BTCPAYGEN_ADDITIONAL_FRAGMENTS="btcpayserver-noreverseproxy;bitcoin.custom;lnd.custom;nbxplorer"
+                export BTCPAYGEN_EXCLUDE_FRAGMENTS="opt-add-tor;bitcoin;bitcoin-lnd;"
+                export BTCPAYGEN_REVERSEPROXY="none"
+                export NOREVERSEPROXY_HTTP_PORT=49392
+                export REVERSEPROXY_HTTP_PORT=49392
+                export REMOTE_BTC_RPC_USERNAME="mynode"
+                BTCRPCPW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
+                export REMOTE_BTC_RPC_PASSWORD="$BTCRPCPW"
+                export BTCPAYGEN_LIGHTNING="lnd"
+                export BTCPAY_ENABLE_SSH=false
+                export BTCPAY_IMAGE=btcpayserver/btcpayserver:$BTCPAYSERVER_VERSION
 
-            # Run btcpay-setup.sh with the right parameters
-            export BTCPAY_HOST="mynode.local"
-            export NBITCOIN_NETWORK="mainnet"
-            export BTCPAYGEN_CRYPTO1="btc"
-            export BTCPAYGEN_ADDITIONAL_FRAGMENTS="btcpayserver-noreverseproxy;bitcoin.custom;lnd.custom;nbxplorer"
-            export BTCPAYGEN_EXCLUDE_FRAGMENTS="opt-add-tor;bitcoin;bitcoin-lnd;"
-            export BTCPAYGEN_REVERSEPROXY="none"
-            export NOREVERSEPROXY_HTTP_PORT=49392
-            export REVERSEPROXY_HTTP_PORT=49392
-            export REMOTE_BTC_RPC_USERNAME="mynode"
-            BTCRPCPW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
-            export REMOTE_BTC_RPC_PASSWORD="$BTCRPCPW"
-            export BTCPAYGEN_LIGHTNING="lnd"
-            export BTCPAY_ENABLE_SSH=false
-            export BTCPAY_IMAGE=btcpayserver/btcpayserver:$BTCPAYSERVER_VERSION
+                cp -f /usr/share/btcpayserver/bitcoin.custom.yml /mnt/hdd/mynode/btcpayserver/btcpayserver-docker/docker-compose-generator/docker-fragments/bitcoin.custom.yml
+                cp -f /usr/share/btcpayserver/lnd.custom.yml /mnt/hdd/mynode/btcpayserver/btcpayserver-docker/docker-compose-generator/docker-fragments/lnd.custom.yml
 
-            cp -f /usr/share/btcpayserver/bitcoin.custom.yml /mnt/hdd/mynode/btcpayserver/btcpayserver-docker/docker-compose-generator/docker-fragments/bitcoin.custom.yml
-            cp -f /usr/share/btcpayserver/lnd.custom.yml /mnt/hdd/mynode/btcpayserver/btcpayserver-docker/docker-compose-generator/docker-fragments/lnd.custom.yml
+                rm -rf /usr/local/bin/btcpay-*
+                rm -rf /usr/local/bin/changedomain.sh
 
-            rm -rf /usr/local/bin/btcpay-*
-            rm -rf /usr/local/bin/changedomain.sh
+                #. ./btcpay-setup.sh # Install and run
+                bash -c ". ./btcpay-setup.sh --install-only --no-startup-register --no-systemd-reload"
 
-            #. ./btcpay-setup.sh # Install and run
-            bash -c ". ./btcpay-setup.sh --install-only --no-startup-register --no-systemd-reload"
+                # Update NBXplorer variables (needed to pull containers)
+                NBXPLORER_VARIABLES_FILE=/mnt/hdd/mynode/btcpayserver/btcpayserver-docker/Generated/nbxplorer-variables.env
+                echo "NBXPLORER_BTCRPCUSER=mynode"            > $NBXPLORER_VARIABLES_FILE
+                echo "NBXPLORER_BTCRPCPASSWORD=$BTCRPCPW"    >> $NBXPLORER_VARIABLES_FILE
 
-            # Update NBXplorer variables (needed to pull containers)
-            NBXPLORER_VARIABLES_FILE=/mnt/hdd/mynode/btcpayserver/btcpayserver-docker/Generated/nbxplorer-variables.env
-            echo "NBXPLORER_BTCRPCUSER=mynode"            > $NBXPLORER_VARIABLES_FILE
-            echo "NBXPLORER_BTCRPCPASSWORD=$BTCRPCPW"    >> $NBXPLORER_VARIABLES_FILE
+                # Pull latest containers
+                /bin/bash -c  '. "/etc/profile.d/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY/btcpayserver-docker" && . helpers.sh && btcpay_pull'
 
-            # Pull latest containers
-            /bin/bash -c  '. "/etc/profile.d/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY/btcpayserver-docker" && . helpers.sh && btcpay_pull'
-            
-            echo $BTCPAYSERVER_VERSION > $BTCPAYSERVER_VERSION_FILE
+                echo $BTCPAYSERVER_VERSION > $BTCPAYSERVER_VERSION_FILE
+            fi
         fi
     else
         # BTC Pay Not Installed, make sure old images are gone to prevent docker compose from running
@@ -220,10 +229,10 @@ while true; do
             # Handled in pre_lnbits.sh
 
             # Pull lnbits docker container
-             docker pull lnbits/lnbits:$LNBITS_VERSION
-             docker tag lnbits/lnbits:$LNBITS_VERSION lnbits
-
-            echo $LNBITS_VERSION > $LNBITS_VERSION_FILE
+            if pull_app_docker_image lnbits/lnbits "$LNBITS_VERSION" lnbits "$LNBITS_DIGEST"; then
+                docker tag lnbits/lnbits:$LNBITS_VERSION lnbits
+                echo $LNBITS_VERSION > $LNBITS_VERSION_FILE
+            fi
         fi
     fi
 

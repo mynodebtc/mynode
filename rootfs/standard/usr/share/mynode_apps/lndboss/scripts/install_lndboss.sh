@@ -18,7 +18,8 @@ remove_docker_images_by_name 'lndboss'
 remove_docker_images_by_name 'lndboss:latest'
 
 # Pull latest image and tag latest
-docker pull niteshbalusu/lndboss:v2.16.0
+IMAGE_DIGEST="v2.16.0 sha256:5bd633f932484fbfd8737a9827f32b4c5d70d1bd04b49c11af2af5ba62e205b7"
+pull_app_docker_image niteshbalusu/lndboss v2.16.0 lndboss "$IMAGE_DIGEST"
 docker tag niteshbalusu/lndboss:v2.16.0 lndboss
 
 # Build docker container

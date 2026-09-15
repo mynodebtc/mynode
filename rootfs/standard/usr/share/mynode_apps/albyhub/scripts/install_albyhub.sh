@@ -27,7 +27,8 @@ remove_docker_images_by_name 'albyhub'
 remove_docker_images_by_name 'ghcr.io/getalby/hub'
 
 # Pull ready dockers, instead of source
-docker pull ghcr.io/getalby/hub:$VERSION
+IMAGE_DIGEST="v1.24.0 sha256:0227bdc79afd20eb689c922c96cf0546576b608c5cbb07b13658956d54e8133d"
+pull_app_docker_image ghcr.io/getalby/hub "$VERSION" albyhub "$IMAGE_DIGEST"
 docker tag ghcr.io/getalby/hub:$VERSION albyhub
 
 echo "================== DONE INSTALLING APP ================="
