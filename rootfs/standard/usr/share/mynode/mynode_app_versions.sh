@@ -218,7 +218,10 @@ CKBUNKER_VERSION_FILE=/home/bitcoin/.mynode/ckbunker_version
 CKBUNKER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/ckbunker_version_latest
 CKBUNKER_UPGRADE_URL=https://github.com/Coldcard/ckbunker/archive/ae87d17bdaa049e9ca85e706f1facf46a1552448.tar.gz
 
-BOS_VERSION="13.31.5"
+BOS_VERSION="23.1.12"
+if [ "$IS_32_BIT" = "1" ] || [ "$DEBIAN_VERSION" -lt "11" ]; then
+    BOS_VERSION="13.31.5"   # Newer versions require NodeJS 22+ (these devices stay on NodeJS 18)
+fi
 BOS_VERSION=$(get_app_version "$BOS_VERSION" "bos")
 BOS_VERSION_FILE=/home/bitcoin/.mynode/bos_version
 BOS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bos_version_latest
