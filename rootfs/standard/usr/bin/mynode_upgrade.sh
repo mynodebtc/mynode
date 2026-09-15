@@ -38,11 +38,15 @@ else
     torify wget $UPGRADE_BETA_DOWNLOAD_SIGNATURE_URL -O /opt/mynode_release_latest.sha256 || \
            wget $UPGRADE_BETA_DOWNLOAD_SIGNATURE_URL -O /opt/mynode_release_latest.sha256
 fi
-torify wget $UPGRADE_PUBKEY_URL -O /opt/mynode_release.pub || \
-       wget $UPGRADE_PUBKEY_URL -O /opt/mynode_release.pub
 
-openssl dgst -sha256 -verify /opt/mynode_release.pub -signature /opt/mynode_release_latest.sha256 /opt/mynode_release_latest.tar.gz
-if [ $? -ne 0 ]; then
+VERIFIED=0
+for KEY in /usr/share/mynode/mynode_release.pub /usr/share/mynode/mynode_release_backup.pub; do
+    if openssl dgst -sha256 -verify $KEY -signature /opt/mynode_release_latest.sha256 /opt/mynode_release_latest.tar.gz; then
+        VERIFIED=1
+        break
+    fi
+done
+if [ $VERIFIED -ne 1 ]; then
     echo "UPGRADE FAILED! Hash did not match!" >> /var/log/upgrade.log
     exit 1
 fi
