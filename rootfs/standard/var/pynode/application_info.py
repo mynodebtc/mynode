@@ -1057,6 +1057,11 @@ def upgrade_dynamic_apps(short_name="all"):
                     #log_message("{} vs {}".format(app_data["current_version"], app_data["latest_version"]))
 
                     if app_data["current_version"] != app_data["latest_version"]:
+                        # Keep the installed version if the app no longer supports this device
+                        if not is_app_supported(app_data):
+                            log_message("  Skipping upgrade of {} ({})".format(app_name, get_app_not_supported_reason(app_data)))
+                            continue
+
                         log_message("  Upgrading {} ({} vs {})...".format(app_name, app_data["current_version"], app_data["latest_version"]))
                         try:
                             # Make app linux user

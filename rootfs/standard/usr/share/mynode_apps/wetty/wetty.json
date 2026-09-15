@@ -15,6 +15,7 @@
         "Terminal over HTTP and HTTPS. WeTTY is an alternative to ajaxterm and anyterm but much better than them because WeTTY uses xterm.js which is a full fledged implementation of terminal emulation written entirely in JavaScript. WeTTY uses websockets rather than Ajax and hence better response time."
     ],
     "linux_user": "wetty",
+    "minimum_debian_version": 12,
     "latest_version": "v3.2.1",
     "download_type": "source",
     "download_source_url": "https://github.com/butlerx/wetty/archive/refs/tags/{VERSION}.tar.gz",

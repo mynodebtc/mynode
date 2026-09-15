@@ -17,6 +17,7 @@
     ],
     "latest_version": "96a9202c11de2c6fc8d41155e2e779912a476dc7",
     "supported_archs": null,
+    "minimum_debian_version": 12,
     "download_skip": false,
     "download_type": "source",
     "download_source_url": "https://github.com/benjamin-wilson/public-pool/archive/{VERSION}.tar.gz",
