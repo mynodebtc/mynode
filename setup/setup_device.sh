@@ -873,13 +873,9 @@ if [ "$CURRENT" != "$THUNDERHUB_VERSION" ]; then
     sudo -u bitcoin mv thunderhub-* thunderhub
     cd thunderhub
 
-    # Patch versions
-    #sed -i 's/\^5.3.5/5.3.3/g' package.json || true     # Fixes segfault with 5.3.5 on x86
-    sudo -u bitcoin sed -i 's|"@nestjs/schedule": "^4.0.0"|"@nestjs/schedule": "4.1.2"|' package.json     # 4.0.0 fails on NodeJS 23+
-
     sudo -u bitcoin npm install # --omit=dev # (can't build without dev dependencies)
     sudo -u bitcoin npm run build
-    sudo -u bitcoin npx next telemetry disable
+    sudo -u bitcoin npx next telemetry disable || true
 
     # Setup symlink to service files
     rm -f /opt/mynode/thunderhub/.env.local

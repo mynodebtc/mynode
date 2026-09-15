@@ -225,8 +225,12 @@ SPECTER_VERSION=$(get_app_version "$SPECTER_VERSION" "specter")
 SPECTER_VERSION_FILE=/home/bitcoin/.mynode/specter_version
 SPECTER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/specter_version_latest
 
-THUNDERHUB_VERSION="v0.14.6"
-THUNDERHUB_SHA256="v0.14.6 3506bbc78b7fa1239e345fb5310722b868b8af0d9055b10a14710cbe3fd8953e"
+THUNDERHUB_VERSION="v0.19.0"
+THUNDERHUB_SHA256="v0.19.0 d646c89f89a6a275c7cd8b418965e4ddfe72d0172170bc7a4ce18cb09b7ea735"
+if [ "$IS_32_BIT" = "1" ] || [ "$DEBIAN_VERSION" -lt "11" ]; then
+    THUNDERHUB_VERSION="v0.14.6"   # Newer versions require NodeJS 24+ (these devices stay on NodeJS 18)
+    THUNDERHUB_SHA256="v0.14.6 3506bbc78b7fa1239e345fb5310722b868b8af0d9055b10a14710cbe3fd8953e"
+fi
 THUNDERHUB_VERSION=$(get_app_version "$THUNDERHUB_VERSION" "thunderhub")
 THUNDERHUB_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version
 THUNDERHUB_LATEST_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version_latest

@@ -980,10 +980,6 @@ if should_install_app "thunderhub" ; then
         sudo -u bitcoin mv thunderhub-* thunderhub
         cd thunderhub
 
-        # Patch versions
-        #sed -i 's/\^5.3.5/5.3.3/g' package.json || true     # Fixes segfault with 5.3.5 on x86
-        sudo -u bitcoin sed -i 's|"@nestjs/schedule": "^4.0.0"|"@nestjs/schedule": "4.1.2"|' package.json     # 4.0.0 fails on NodeJS 23+
-
         # npm install --omit=dev can't be used (dev dependencies needed to build)
         if sudo -u bitcoin npm install && sudo -u bitcoin npm run build; then
             sudo -u bitcoin npx next telemetry disable || true
