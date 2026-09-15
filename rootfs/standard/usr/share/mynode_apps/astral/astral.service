@@ -7,11 +7,12 @@ Wants=www.service docker_images.service
 After=www.service docker_images.service
 
 [Service]
-WorkingDirectory=/opt/mynode/astral/dist/pwa
+WorkingDirectory=/opt/mynode/astral
 
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_astral.sh ]; then /bin/bash /usr/bin/service_scripts/pre_astral.sh; fi'
-ExecStart=/usr/bin/quasar serve -p 5040
+# Static files are served by nginx (see https_astral.conf)
+ExecStart=/usr/bin/sleep 365d
 ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_astral.sh ]; then /bin/bash /usr/bin/service_scripts/post_astral.sh; fi'
 #ExecStop=FILL_IN_EXECSTOP_AND_UNCOMMENT_IF_NEEDED
 

@@ -12,7 +12,11 @@ echo "==================== INSTALLING APP ===================="
 # has already been downloaded and extracted. Any additional env variables specified
 # in the JSON file are also present.
 
-npm install
-npm run build:pwa
+# Install the locked dependencies with yarn (via corepack) and build with the project's own
+# quasar CLI. nginx serves the build from dist/pwa.
+export COREPACK_HOME="$(pwd)/.corepack"
+export COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+corepack yarn install --frozen-lockfile
+npx --no quasar build -m pwa
 
 echo "================== DONE INSTALLING APP ================="
