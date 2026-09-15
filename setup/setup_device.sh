@@ -467,9 +467,6 @@ usermod -aG docker admin
 usermod -aG docker bitcoin
 usermod -aG docker root
 
-# Install node packages
-npm install -g yarn @quasar/cli
-
 # Install Log2Ram
 if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
     if [ ! -f /usr/local/bin/log2ram ]; then

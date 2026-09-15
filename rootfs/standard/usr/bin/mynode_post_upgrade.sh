@@ -360,9 +360,8 @@ if ! skip_base_upgrades ; then
         echo "No node apt sources file?"
     fi
 
-    # Update global node packages
-    npm uninstall -g @angular/cli || true
-    npm install -g yarn @quasar/cli
+    # Remove global node packages that are no longer used
+    npm uninstall -g @angular/cli @quasar/cli yarn || true
     
     # Install Docker
     mkdir -p /etc/apt/keyrings
