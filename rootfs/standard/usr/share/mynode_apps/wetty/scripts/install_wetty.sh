@@ -12,8 +12,15 @@ echo "==================== INSTALLING APP ===================="
 # has already been downloaded and extracted. Any additional env variables specified
 # in the JSON file are also present.
 
-yarn
-yarn build
-# yarn global add wetty@$VERSION
+# Build with the pnpm version pinned by the project (via corepack). The wetty user has no
+# home folder, so corepack and the pnpm store are kept in the install folder.
+export COREPACK_HOME="$(pwd)/.corepack"
+export COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+mkdir -p .corepack/bin
+corepack enable --install-directory "$(pwd)/.corepack/bin" pnpm
+export PATH="$(pwd)/.corepack/bin:$PATH"
+
+pnpm install --frozen-lockfile --store-dir "$(pwd)/.pnpm-store"
+pnpm build
 
 echo "================== DONE INSTALLING APP ================="

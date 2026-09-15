@@ -11,7 +11,8 @@ WorkingDirectory=/opt/mynode/wetty
 
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_wetty.sh ]; then /bin/bash /usr/bin/service_scripts/pre_wetty.sh; fi'
-ExecStart=/usr/bin/yarn run start -p 2224 --host 0.0.0.0 -b /
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/node build/main.js -p 2224 --host 0.0.0.0 -b /
 ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_wetty.sh ]; then /bin/bash /usr/bin/service_scripts/post_wetty.sh; fi'
 #ExecStop=TODO
 
