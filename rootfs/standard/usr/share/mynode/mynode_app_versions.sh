@@ -221,8 +221,8 @@ BOS_VERSION=$(get_app_version "$BOS_VERSION" "bos")
 BOS_VERSION_FILE=/home/bitcoin/.mynode/bos_version
 BOS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bos_version_latest
 
-SPHINXRELAY_VERSION="v2.2.12"
-SPHINXRELAY_SHA256="v2.2.12 f2469b62bfa6e2910093be8075f15bfecd3ec53e6e1e467c76340a6b7357ce02"
+SPHINXRELAY_VERSION="v2.5.3"
+SPHINXRELAY_SHA256="v2.5.3 264fe2fd6b734a5744d3cdab22afe3858a88b798e3de9a94a8bb20bb0777e354"
 SPHINXRELAY_VERSION=$(get_app_version "$SPHINXRELAY_VERSION" "sphinxrelay")
 SPHINXRELAY_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version
 SPHINXRELAY_LATEST_VERSION_FILE=/home/bitcoin/.mynode/sphinxrelay_version_latest
