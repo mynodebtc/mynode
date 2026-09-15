@@ -888,8 +888,7 @@ if should_install_app "rtl" ; then
         sudo -u bitcoin wget $RTL_UPGRADE_URL -O RTL.tar.gz
         sudo -u bitcoin wget $RTL_UPGRADE_ASC_URL -O RTL.tar.gz.asc
 
-        gpg --verify RTL.tar.gz.asc RTL.tar.gz
-        if [ $? == 0 ]; then
+        if gpg --verify RTL.tar.gz.asc RTL.tar.gz; then
             sudo -u bitcoin tar -xvf RTL.tar.gz
             sudo -u bitcoin rm RTL.tar.gz RTL.tar.gz.asc
             sudo -u bitcoin mv RTL-* RTL

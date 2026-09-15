@@ -159,8 +159,10 @@ fi
 DOJO_VERSION_FILE=/mnt/hdd/mynode/settings/dojo_version
 DOJO_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/dojo_version_latest
 
-# Requies NodeJS at v18.19.0+ to go past v0.15.0
-RTL_VERSION="v0.15.0"
+RTL_VERSION="v0.15.12"
+if [ "$IS_32_BIT" = "1" ] || [ "$DEBIAN_VERSION" -lt "11" ]; then
+    RTL_VERSION="v0.15.0"   # Newer versions require NodeJS 20.19+ (these devices stay on NodeJS 18)
+fi
 RTL_VERSION=$(get_app_version "$RTL_VERSION" "rtl")
 RTL_VERSION_FILE=/home/bitcoin/.mynode/rtl_version
 RTL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/rtl_version_latest
