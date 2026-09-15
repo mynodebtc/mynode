@@ -44,7 +44,6 @@ UPGRADE_DOWNLOAD_URL="https://www.mynodebtc.com/device_api/download_latest_stand
 UPGRADE_DOWNLOAD_SIGNATURE_URL="https://www.mynodebtc.com/device_api/download_latest_standard.php?type=${DEVICE_TYPE}&product_key=${PRODUCT_KEY}&hash=1"
 UPGRADE_BETA_DOWNLOAD_URL="https://www.mynodebtc.com/device_api/download_latest_standard.php?type=${DEVICE_TYPE}&product_key=${PRODUCT_KEY}&beta=1"
 UPGRADE_BETA_DOWNLOAD_SIGNATURE_URL="https://www.mynodebtc.com/device_api/download_latest_standard.php?type=${DEVICE_TYPE}&product_key=${PRODUCT_KEY}&beta=1&hash=1"
-UPGRADE_PUBKEY_URL="https://raw.githubusercontent.com/mynodebtc/pubkey/master/mynode_release.pub"
 
 # Update settings for other devices
 if [ -f /usr/share/mynode/mynode_config_raspi.sh ]; then
