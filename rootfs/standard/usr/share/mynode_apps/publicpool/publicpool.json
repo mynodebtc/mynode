@@ -15,12 +15,12 @@
         "Public Pool is an open source, self-hosted Stratum server that allows you to solo mine Bitcoin.",
         "This application provides the backend Stratum server. To monitor and manage your mining pool, please install the separate Public Pool UI application from the MyNode Marketplace."
     ],
-    "latest_version": "b971e9ce4ccd23ae98536d57dcf63657ade7919f",
+    "latest_version": "96a9202c11de2c6fc8d41155e2e779912a476dc7",
     "supported_archs": null,
     "download_skip": false,
     "download_type": "source",
     "download_source_url": "https://github.com/benjamin-wilson/public-pool/archive/{VERSION}.tar.gz",
-    "download_source_sha256": "b971e9ce4ccd23ae 6dc0c63884bce4ea92c3b486368ea77c069c4fce11eacfc1bea941629f52577f",
+    "download_source_sha256": "96a9202c11de2c6f 48c0f1f22000fc8ebd9b2fec057e4dcbf244e7dff0d22245f4914eb771abbcc9",
     "download_binary_url": {
         "aarch64": "download_url",
         "x86_64": "download_url"
