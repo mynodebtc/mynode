@@ -147,7 +147,7 @@ def get_quirks_from_uas_devices():
         for line in lsusb_lines:
             try:
                 if "SATA 6Gb/s bridge" in line or "NVME" in line:
-                    m = re.search("Bus ([0-9]+) Device ([0-9]+): ID (\S+)", line)
+                    m = re.search(r"Bus ([0-9]+) Device ([0-9]+): ID (\S+)", line)
                     bus = m.group(1)
                     dev = m.group(2)
                     id = m.group(3)
