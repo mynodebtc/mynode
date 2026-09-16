@@ -1,3 +1,20 @@
+=== v0.3.48 ===
+- Released 09/15/26
+- Upgrade to NodeJS 24
+- Upgrade Thunderhub to v0.19.0
+- Upgrade Balance of Satoshis to 23.1.12
+- Upgrade Sphinx Relay to v2.5.3
+- Upgrade WeTTY to v3.2.1
+- Upgrade RTL to v0.15.12
+- Upgrade Public Pool
+- Upgrade Astral to v0.0.24
+- Add per-app credentials
+- Improve Change Password UI
+- Remove QuickSync entirely
+- Verify downloads and Docker images against pinned hashes
+- Warn and skip app upgrades on unsupported Debian versions
+- Bug Fixes
+
 === v0.3.47 ===
 - Released 09/12/26
 - Upgrade LND to v0.21.3
