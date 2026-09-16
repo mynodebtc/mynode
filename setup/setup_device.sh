@@ -875,7 +875,7 @@ if [ "$CURRENT" != "$THUNDERHUB_VERSION" ]; then
 
     sudo -u bitcoin npm install # --omit=dev # (can't build without dev dependencies)
     sudo -u bitcoin npm run build
-    sudo -u bitcoin npx next telemetry disable || true
+    sudo -u bitcoin npx --yes next telemetry disable || true
 
     # Setup symlink to service files
     rm -f /opt/mynode/thunderhub/.env.local

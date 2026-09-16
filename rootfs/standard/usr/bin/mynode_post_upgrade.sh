@@ -982,7 +982,7 @@ if should_install_app "thunderhub" ; then
 
         # npm install --omit=dev can't be used (dev dependencies needed to build)
         if sudo -u bitcoin npm install && sudo -u bitcoin npm run build; then
-            sudo -u bitcoin npx next telemetry disable || true
+            sudo -u bitcoin npx --yes next telemetry disable || true
 
             # Setup symlink to service files
             rm -f /opt/mynode/thunderhub/.env.local
