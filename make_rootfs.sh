@@ -2,6 +2,9 @@
 
 # DEPRECATED DEVICES: raspi3 rock64 rockpi4
 
+# Keep macOS tar from adding AppleDouble (._*) entries for files with extended attributes
+export COPYFILE_DISABLE=1
+
 # Make each device
 for i in 'raspi4' 'raspi5' 'debian' 'rockpro64' ; do
 	echo "Creating root file system for $i"
@@ -22,6 +25,9 @@ for i in 'raspi4' 'raspi5' 'debian' 'rockpro64' ; do
 	rsync -r -u CHANGELOG out/rootfs_$i/usr/share/mynode/changelog
 	cp -f setup/setup_device.sh out/setup_device.sh
     #cp -f rootfs/standard/usr/share/mynode/mynode_app_versions.sh out/mynode_app_versions.sh
+
+    # Remove Python caches and macOS metadata files
+    find out/rootfs_$i \( -name __pycache__ -o -name .DS_Store -o -name '._*' \) -prune -exec rm -rf {} +
 
 	rm -f out/mynode_rootfs_$i.tar.gz
 	tar -zcf out/mynode_rootfs_$i.tar.gz out/rootfs_$i/*
