@@ -14,12 +14,12 @@
     "description": [
         "Astral is a web client for interacting with Nostr, a protocol that attempts to make decentralized social media a reality. astral began as a fork of Branle."
     ],
-    "latest_version": "921657849f70db783bc2ae50f01c8b9aa4567e7f",
+    "latest_version": "v0.0.24",
     "supported_archs": null,
     "download_skip": false,
     "download_type": "source",
     "download_source_url": "https://github.com/monlovesmango/astral/archive/{VERSION}.tar.gz",
-    "download_source_sha256": "921657849f70db78 d4bc6695617f24eea5809af0fd631e7959f163c2d0349bb781aa3a65c7dfd4c3",
+    "download_source_sha256": "v0.0.24 7373b5c780b1a190c075f3d01b5cf5bc913c19edb29d129f33f1e8f1441db6ba",
     "download_binary_url": {
         "aarch64": "download_url",
         "x86_64": "download_url"
