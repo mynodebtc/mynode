@@ -159,7 +159,7 @@ def get_app_screenshots(short_name):
     screenshot_folder = "/var/www/mynode/static/images/screenshots/{}/".format(short_name)
     if os.path.isdir(screenshot_folder):
         for s in os.listdir(screenshot_folder):
-            if s.endswith(".png"):
+            if s.endswith(".png") and not s.startswith("."):
                 screenshots.append(s)
         return sorted(screenshots)
     return screenshots
@@ -952,7 +952,7 @@ def init_dynamic_app(app_info):
     os.system("mkdir -p /var/www/mynode/static/images/screenshots/{}".format(app_name))
     if os.path.isdir(app_dir+"/screenshots/"):
         for s in os.listdir(app_dir+"/screenshots/"):
-            if s.endswith(".png"):
+            if s.endswith(".png") and not s.startswith("."):
                 src=app_dir+"/screenshots/{}".format(s)
                 dst="/var/www/mynode/static/images/screenshots/{}/{}".format(app_name, s)
                 os.system("cp -f {} {}".format(src, dst))
