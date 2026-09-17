@@ -199,6 +199,7 @@ sed -i 's/rock64/mynode/g' /etc/hosts
 sed -i 's/rockpi4-b/mynode/g' /etc/hosts
 
 # Update sources
+export DEBIAN_FRONTEND=noninteractive
 apt-get -y update --allow-releaseinfo-change
 
 # Add sources
@@ -251,10 +252,11 @@ fi
 #apt-mark hold redis-server
 
 # Upgrade packages
-apt-get -y upgrade
+# full-upgrade (not plain upgrade like mynode_post_upgrade.sh) since this only
+# runs once at image-build time and we want the image to ship with a new kernel
+apt-get -y full-upgrade
 
 # Install other tools (run section multiple times to make sure success)
-export DEBIAN_FRONTEND=noninteractive
 apt-get -y install apt-transport-https lsb-release
 apt-get -y install htop git curl bash-completion jq dphys-swapfile lsof libzmq3-dev
 apt-get -y install build-essential python3-dev python3-pip python3-grpcio
@@ -330,7 +332,9 @@ rm -f /etc/nginx/modules-enabled/50-mod-* || true
 echo "" > /etc/nginx/sites-available/default
 dpkg --configure -a
 
-# Cleanup apt-get cache to save some space
+# Cleanup - Do another upgrade to pick up on anything added above, then cleanup
+apt-get -y full-upgrade
+apt-get -y autoremove
 apt-get clean
 
 # Update users
