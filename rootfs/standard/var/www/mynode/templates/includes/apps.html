@@ -39,7 +39,6 @@
                                         id="{{app.short_name}}">{{app.app_tile_button_text}}</a>
                                 {% else %}
                                     <a class="ui-button ui-widget ui-corner-all mynode_button"
-                                        {% if app.app_tile_button_onclick != "" %} onclick="{{app.app_tile_button_onclick|safe}}" {% endif %}
                                         href="{{app.app_tile_button_href}}"
                                         id="{{app.short_name}}">{{app.app_tile_button_text}}</a>
                                 {% endif %}
@@ -109,7 +108,6 @@
                                                     id="{{app.short_name}}">{{app.app_tile_button_text}}</a>
                                             {% else %}
                                                 <a class="ui-button ui-widget ui-corner-all mynode_button"
-                                                    {% if app.app_tile_button_onclick != "" %} onclick="{{app.app_tile_button_onclick|safe}}" {% endif %}
                                                     href="{{app.app_tile_button_href}}"
                                                     id="{{app.short_name}}">{{app.app_tile_button_text}}</a>
                                             {% endif %}

@@ -250,7 +250,6 @@ def initialize_application_defaults(app):
     if not "app_tile_button_text" in app: app["app_tile_button_text"] = app["app_tile_name"]
     if not "app_tile_running_status_text" in app: app["app_tile_running_status_text"] = app["short_description"]
     if not "app_tile_button_href" in app: app["app_tile_button_href"] = "#"
-    if not "app_tile_button_onclick" in app: app["app_tile_button_onclick"] = ""
     if not "app_tile_button_open_app_directly" in app: app["app_tile_button_open_app_directly"] = False
     if not "app_page_show_open_button" in app: app["app_page_show_open_button"] = True
     if not "app_page_additional_buttons" in app: app["app_page_additional_buttons"] = []
@@ -267,10 +266,6 @@ def initialize_application_defaults(app):
     app["download_source_url"] = replace_app_info_variables(app, app["download_source_url"])
     for arch in app["download_binary_url"]:
         app["download_binary_url"][arch] = replace_app_info_variables(app, app["download_binary_url"][arch])
-    app["app_tile_button_onclick"] = replace_app_info_variables(app, app["app_tile_button_onclick"])
-    for btn in app["app_page_additional_buttons"]:
-        if "onclick" in btn:
-            btn["onclick"] = replace_app_info_variables(app, btn["onclick"])
     for key in app["install_env_vars"]:
         app["install_env_vars"][key] = replace_app_info_variables(app, app["install_env_vars"][key])
     for i,section in enumerate(app["app_page_content"]):

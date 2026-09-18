@@ -93,9 +93,7 @@
                             {% for btn in app.app_page_additional_buttons %}
                                 <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button"
                                     {% if btn.href is defined and btn.href != "" %}
-                                        onclick="window.location='{{btn.href}}'"
-                                    {% elif btn.onclick is defined and btn.onclick != "" %}
-                                        onclick="{{btn.onclick|safe}}"
+                                        onclick='window.location={{btn.href|tojson}}'
                                     {% endif %}
                                         >{{btn.title}}</button>
                             {% endfor %}
