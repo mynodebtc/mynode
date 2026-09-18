@@ -1,3 +1,10 @@
+=== v0.3.48-2 ===
+- Released 09/18/26
+- Rework per-app credentials
+- Minor CSS improvements
+- Remove manual tarball upload for app installation
+- Bug Fixes
+
 === v0.3.48 ===
 - Released 09/15/26
 - Upgrade to NodeJS 24
