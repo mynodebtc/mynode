@@ -1269,3 +1269,17 @@ input:checked + .slider:before {
 .grayscale_image {
     filter: grayscale(100%);
 }
+/* jQuery UI tooltips - body prefix outranks jquery-ui.min.css, which loads later */
+body .ui-tooltip.ui-widget {
+    max-width: 320px;
+    padding: 8px 12px;
+    font-family: "Inter", "Source Sans Pro", Helvetica, sans-serif;
+    font-size: 13px;
+    line-height: 1.45;
+    text-align: left;
+    color: #333;
+    background: #fff;
+    border: 1px solid #d8d8d8;
+    border-radius: 6px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+}

@@ -241,3 +241,9 @@ input:focus + .slider {
 .mynode_nav_icon_NOT_USED:hover {
     filter: brightness(125%);
 }
+body .ui-tooltip.ui-widget {
+    color: #ddd;
+    background: #20242B;
+    border-color: #3a4750;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+}
