@@ -1046,6 +1046,11 @@ def upgrade_dynamic_apps(short_name="all"):
 
     # Loop over each app
     app_names = get_dynamic_app_names()
+
+    if short_name != "all" and short_name not in app_names:
+        print("  Not a dynamic app: {}".format(short_name))
+        return
+
     for app_name in app_names:
         if short_name == "all" or short_name == app_name:
             try:
