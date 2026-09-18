@@ -146,7 +146,8 @@ NOTIFICATION_MAX_MESSAGE_LENGTH = 1024
 
 def _notification_version_tuple(version_string):
     try:
-        return tuple(int(part) for part in str(version_string).split("."))
+        base_version = str(version_string).split("-")[0]
+        return tuple(int(part) for part in base_version.split("."))
     except (ValueError, AttributeError):
         return None
 
