@@ -7,7 +7,16 @@ set -e
 # Set the master login password the first time CKBunker starts with MyNode's settings file.
 # A password saved in the CKBunker Bunker Setup tab takes precedence over this one.
 SETTINGS_FILE=/mnt/hdd/mynode/ckbunker/settings.yaml
-if [ -f $SETTINGS_FILE ] && ! has_app_password ckbunker; then
+
+# Once a Coldcard has been set up, CKBunker keeps its own copy of the password it had then, in
+# bunker settings encrypted with a key from the Coldcard (bp-*.dat), and uses that copy instead.
+# MyNode can't read or change it, so stop managing the password. A saved password is still the
+# one CKBunker copied, unless the user changed it in the Bunker Setup tab, so keep showing it.
+if ls /mnt/hdd/mynode/ckbunker/bp-*.dat >/dev/null 2>&1; then
+    if ! has_app_password ckbunker; then
+        save_app_password_user_set ckbunker
+    fi
+elif [ -f $SETTINGS_FILE ] && ! has_app_password ckbunker; then
     CKBUNKER_PASSWORD=$(generate_app_password)
     export CKBUNKER_PASSWORD
     /usr/local/bin/python3 - <<'EOF'
@@ -23,6 +32,6 @@ with open(path, "w") as f:
 EOF
     chown bitcoin:bitcoin $SETTINGS_FILE
     chmod 600 $SETTINGS_FILE
-    save_app_password ckbunker "$CKBUNKER_PASSWORD"
+    save_app_default_password ckbunker "$CKBUNKER_PASSWORD"
     unset CKBUNKER_PASSWORD
 fi

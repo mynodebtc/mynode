@@ -8,6 +8,7 @@ from systemctl_info import *
 from utilities import *
 from enable_disable_functions import * 
 import copy
+import glob
 import json
 import time
 import subprocess
@@ -609,8 +610,34 @@ def clear_application_password(short_name):
     except FileNotFoundError:
         pass
 
+# Apps that use the generate_app_password/has_app_password/save_app_default_password
+# mechanism (see mynode_functions.sh) to set a random default login password
+APPS_WITH_GENERATED_PASSWORD = ["thunderhub", "specter", "rtl", "ckbunker", "datum", "lndg", "lndboss"]
+
+# Saved in place of the password once the user has set their own (see mynode_functions.sh)
+APP_PASSWORD_USER_SET = "User configured (not managed by MyNode)"
+
+def reset_app_password(short_name):
+    # Clear the app's saved password, then restart it (if running) so its
+    # pre-start script generates and saves a brand new one. A password the
+    # user set themselves is left alone.
+    if short_name not in APPS_WITH_GENERATED_PASSWORD:
+        return
+    if get_application_password(short_name) == APP_PASSWORD_USER_SET:
+        return
+    # CKBunker uses its own copy of the password once a Coldcard is set up (see pre_ckbunker.sh)
+    if short_name == "ckbunker" and glob.glob("/mnt/hdd/mynode/ckbunker/bp-*.dat"):
+        return
+    clear_application_password(short_name)
+    if is_service_enabled(short_name):
+        restart_service(short_name)
+
+def reset_all_app_passwords():
+    for short_name in APPS_WITH_GENERATED_PASSWORD:
+        reset_app_password(short_name)
+
 def get_application_password(short_name):
-    # Login password MyNode set for the app (see save_app_password in mynode_functions.sh)
+    # Login password MyNode set for the app (see save_app_default_password in mynode_functions.sh)
     if not is_application_valid(short_name):
         return ""
     try:

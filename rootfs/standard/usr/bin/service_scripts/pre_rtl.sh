@@ -18,24 +18,26 @@ if [ ! -L /opt/mynode/RTL/RTL-Config.json ]; then
     sudo -u bitcoin ln -s /mnt/hdd/mynode/rtl/RTL-Config.json /opt/mynode/RTL/RTL-Config.json
 fi
 
+RTL_CONFIG=/mnt/hdd/mynode/rtl/RTL-Config.json
+# Hash of the last password MyNode set, so it can be told apart from one the user chose
+SET_HASH_FILE=/mnt/hdd/mynode/rtl/.app_password_hash
+APP_PASSWORD_FILE=/mnt/hdd/mynode/rtl/.app_password
+# RTL's hash of "bolt", the password in MyNode's config template and the old MyNode default
+BOLT_HASH="d0b3cba71f725563d316ea3516099328042095d10f4571be25c07f9ce31985a5"
+
 # If config file on HDD does not exist, create it
-if [ ! -f /mnt/hdd/mynode/rtl/RTL-Config.json ]; then
-    cp -f /usr/share/mynode/RTL-Config.json /mnt/hdd/mynode/rtl/RTL-Config.json
-    rm -f /mnt/hdd/mynode/rtl/.app_password
+if [ ! -f $RTL_CONFIG ]; then
+    cp -f /usr/share/mynode/RTL-Config.json $RTL_CONFIG
 fi
 
 # Force update of RTL config file (increment to force new update)
 RTL_CONFIG_UPDATE_NUM=1
 if [ ! -f /mnt/hdd/mynode/rtl/update_settings_$RTL_CONFIG_UPDATE_NUM ]; then
-    cp -f /usr/share/mynode/RTL-Config.json /mnt/hdd/mynode/rtl/RTL-Config.json
-    rm -f /mnt/hdd/mynode/rtl/.app_password
+    cp -f /usr/share/mynode/RTL-Config.json $RTL_CONFIG
     touch /mnt/hdd/mynode/rtl/update_settings_$RTL_CONFIG_UPDATE_NUM
 fi
 
-# Set the login password the first time RTL starts with a fresh config.
-# After that the user may change it inside RTL.
-set +x
-if ! has_app_password rtl; then
+function set_generated_rtl_password() {
     RTL_PASSWORD=$(generate_app_password)
     export RTL_PASSWORD
     /usr/local/bin/python3 - <<'EOF'
@@ -49,9 +51,35 @@ if count == 0:
     raise SystemExit("multiPassHashed not found in " + path)
 with open(path, "w") as f:
     f.write(text)
+with open("/mnt/hdd/mynode/rtl/.app_password_hash", "w") as f:
+    f.write(digest)
 EOF
-    save_app_password rtl "$RTL_PASSWORD"
+    save_app_default_password rtl "$RTL_PASSWORD"
     unset RTL_PASSWORD
+}
+
+set +x
+CONFIG_HASH=$(sed -n 's/.*"multiPassHashed": *"\([^"]*\)".*/\1/p' $RTL_CONFIG)
+
+# A password saved before the hash file existed was set by MyNode if it still matches the config
+if [ ! -f $SET_HASH_FILE ] && has_app_password rtl && ! is_app_password_user_set rtl; then
+    SAVED_HASH=$(printf '%s' "$(cat $APP_PASSWORD_FILE)" | sha256sum | cut -d' ' -f1)
+    if [ "$SAVED_HASH" = "$CONFIG_HASH" ]; then
+        printf '%s' "$CONFIG_HASH" > $SET_HASH_FILE
+    fi
+fi
+
+if [ -z "$CONFIG_HASH" ] || [ "$CONFIG_HASH" = "$BOLT_HASH" ]; then
+    # Fresh config, or still using the old default password
+    set_generated_rtl_password
+elif [ -f $SET_HASH_FILE ] && [ "$(cat $SET_HASH_FILE)" = "$CONFIG_HASH" ]; then
+    # MyNode's own password, so replace it if it was cleared by a reinstall or reset
+    if ! has_app_password rtl; then
+        set_generated_rtl_password
+    fi
+else
+    # The user changed the password inside RTL (or before MyNode generated passwords)
+    save_app_password_user_set rtl
 fi
 set -x
 

@@ -265,6 +265,54 @@
                     }
                 });
 
+                $("#reset_app_passwords_button").button();
+                $("#reset_app_passwords_button").on("click", function() {
+                    if (confirm("Are you sure you want to reset all app passwords?")) {
+                        window.location.href='/settings/reset-app-passwords';
+                    }
+                });
+
+                function setAppPassword() {
+                    $("#set_app_password_form").submit();
+                }
+                // Runs for both the dialog button and the Enter key
+                $("#set_app_password_form").on("submit", function() {
+                    if ($("#set_app_password1").val() == "") {
+                        alert("Password cannot be empty");
+                        return false;
+                    }
+                    if ($("#set_app_password1").val() != $("#set_app_password2").val()) {
+                        alert("Passwords do not match");
+                        return false;
+                    }
+                    set_app_password_dialog.dialog( "close" );
+                    return true;
+                });
+                set_app_password_dialog = $( "#set-app-password-dialog" ).dialog({
+                    autoOpen: false,
+                    resizable: false,
+                    height: "auto",
+                    width: 600,
+                    modal: true,
+                    position: { my: "center top", at: "center top", of: window, collision: "none" },
+                    buttons: {
+                        "Set Password": setAppPassword,
+                        Cancel: function() {
+                            set_app_password_dialog.dialog( "close" );
+                        }
+                    },
+                    open: function() {
+                        $("#set_app_password1").val("");
+                        $("#set_app_password2").val("");
+                    }
+                });
+                $(".set_app_password_button").on("click", function() {
+                    $("#set_app_password_app").val($(this).data("app"));
+                    $("#set_app_password_name").text($(this).data("name"));
+                    set_app_password_dialog.dialog("option", "title", "Set " + $(this).data("name") + " Password");
+                    set_app_password_dialog.dialog( "open" );
+                });
+
                 $("#show_firewall_rules").on("click", function() {
                     $("#show_firewall_rules").hide(0);
                     $("#firewall_rules").show();
@@ -823,6 +871,24 @@
             <a href="/apps/customize-app-versions" class="ui-button ui-widget ui-corner-all settings_button">Customize Application Versions</a>
             <a href="/settings/refresh-app-database" class="ui-button ui-widget ui-corner-all settings_button">Refresh Application Database</a>
 
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Reset App Default Passwords</div>
+            This will reset apps that are still using default passwords to new values. Those apps will be set to the new defaults and restarted.
+            <br/>
+            <button id="reset_app_passwords_button" class="ui-button ui-widget ui-corner-all settings_button">Reset Passwords</button>
+
+            {% if settable_password_apps %}
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Set App Passwords</div>
+            Some apps have no way to set their own login password. Click a button below and enter a new password to set it directly.
+            <br/>
+            {% for app, name in settable_password_apps.items() %}
+            <button class="set_app_password_button ui-button ui-widget ui-corner-all settings_button" data-app="{{app}}" data-name="{{name}}">Set {{name}} Password</button>
+            {% endfor %}
+            {% endif %}
+
         </div>
 
 
@@ -1218,7 +1284,7 @@
         <div class="settings_block">
             <a id="thunderhub"></a>
             <div class="settings_block_header">Thunderhub</div>
-            
+
             <div class="settings_block_subheader">Reset Thunderhub Configuration</div>
             This will delete your Thunderhub configuration and restart the application.
             <br/>
@@ -1658,6 +1724,23 @@
                 <br/>
                 <input type="password" name="password_reset_tor" id="password_reset_tor" value="" class="text ui-widget-content ui-corner-all">
             
+                <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </form>
+        </div>
+
+        <div id="set-app-password-dialog" title="Set App Password" style="display:none;">
+            <form id="set_app_password_form" name="set_app_password_form" action="/settings/set-app-password" method="POST">
+                <p>This will set the <span id="set_app_password_name"></span> login password directly, since it has no way to change it from its own UI.</p>
+                <input type="hidden" name="app" id="set_app_password_app" value="">
+                <b>New Password:</b>
+                <br/>
+                <input type="password" name="password1" id="set_app_password1" value="" class="text ui-widget-content ui-corner-all">
+                <br/>
+                <b>Repeat Password:</b>
+                <br/>
+                <input type="password" name="password2" id="set_app_password2" value="" class="text ui-widget-content ui-corner-all">
+
                 <!-- Allow form submission with keyboard without duplicating the dialog button -->
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
             </form>

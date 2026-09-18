@@ -100,7 +100,7 @@
                 "heading": "Instructions",
                 "content": [
                     "Ride the Lightning is a web interface for managing your Lightning node. You can open the app with the Open button on the left.",
-                    "RTL asks only for a password. It is shown in the App Credentials section on this page."
+                    "RTL asks only for a password. It is shown in the App Default Credentials section on this page."
                 ]
             }
         ]
@@ -342,7 +342,7 @@
                 "heading": "Instructions",
                 "content": [
                     "Thunderhub is a web interface for managing your Lightning node. You can open the app with the Open button on the left.",
-                    "Thunderhub asks for a master password. It is shown in the App Credentials section on this page."
+                    "Thunderhub asks for a master password. It is shown in the App Default Credentials section on this page."
                 ]
             }
         ]
@@ -393,7 +393,7 @@
                 "heading": "Instructions",
                 "content": [
                     "Specter is a wallet coordinator for multisig and hardware wallets that uses your Bitcoin node. You can open the app with the Open button on the left.",
-                    "Specter asks for a password. It is shown in the App Credentials section on this page. If you had already set your own Specter password, it is kept and nothing is shown here."
+                    "Specter asks for a password. It is shown in the App Default Credentials section on this page. If you had already set your own Specter password, it is kept and shown here as user configured."
                 ]
             }
         ]
@@ -429,7 +429,9 @@
                 "heading": "Instructions",
                 "content": [
                     "CKBunker runs a Coldcard in HSM mode so it can sign transactions within the spending rules you set. You can open the app with the Open button on the left.",
-                    "CKBunker asks for a master login password. It is shown in the App Credentials section on this page. A password saved in the CKBunker Bunker Setup tab replaces it."
+                    "CKBunker asks for a master login password. It is shown in the App Default Credentials section on this page.",
+                    "Once a Coldcard has been set up, CKBunker keeps its own copy of the password it had at that time, stored encrypted with a key held on the Coldcard. MyNode cannot read or change that copy, so a password changed later in the CKBunker Bunker Setup tab is not shown here.",
+                    "If your Coldcard was set up in CKBunker before MyNode v0.3.48, its password is probably still the old default, bolt. Change it in the CKBunker Bunker Setup tab."
                 ]
             }
         ]

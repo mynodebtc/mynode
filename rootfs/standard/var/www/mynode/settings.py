@@ -67,6 +67,7 @@ def page_settings():
         "product_key_error": product_key_error,
         "changelog": changelog,
         "is_https_forced": is_https_forced(),
+        "settable_password_apps": {app: name for app, name in APPS_WITH_SETTABLE_PASSWORD.items() if is_installed(app)},
         "logout_time_days": logout_time_days,
         "logout_time_hours": logout_time_hours,
         "using_bitcoin_custom_config": using_bitcoin_custom_config(),
@@ -474,6 +475,17 @@ def reindex_blockchain_page():
     t.start()
     return redirect("/settings")
 
+@mynode_settings.route("/settings/reset-app-passwords")
+def reset_app_passwords_page():
+    check_logged_in()
+
+    # Restarting the apps can take a while, so don't hold up the page
+    t = Timer(1.0, reset_all_app_passwords)
+    t.start()
+
+    flash("Passwords Reset", category="message")
+    return redirect("/settings")
+
 @mynode_settings.route("/settings/reset-docker")
 def reset_docker_page():
     check_logged_in()
@@ -559,6 +571,31 @@ def reset_thunderhub_config_page():
     t.start()
 
     flash("Thunderhub Configuration Reset", category="message")
+    return redirect("/settings")
+
+# Apps with no way to change their own login password, so it can be set from Settings
+APPS_WITH_SETTABLE_PASSWORD = {"thunderhub": "Thunderhub", "lndg": "LNDg", "lndboss": "LndBoss"}
+
+@mynode_settings.route("/settings/set-app-password", methods=["POST"])
+def set_app_password_page():
+    check_logged_in()
+    app = request.form.get("app", "")
+    if app not in APPS_WITH_SETTABLE_PASSWORD or not is_installed(app):
+        flash("Invalid application", category="error")
+        return redirect("/settings")
+    app_name = APPS_WITH_SETTABLE_PASSWORD[app]
+
+    p1 = request.form.get("password1", "")
+    p2 = request.form.get("password2", "")
+    if p1 == "" or p1 != p2:
+        flash("Passwords did not match or were empty!", category="error")
+        return redirect("/settings")
+
+    result = subprocess.run(['/usr/bin/mynode_set_app_password.sh', app], input=p1 + "\n", universal_newlines=True)
+    if result.returncode != 0:
+        flash("Error setting {} password".format(app_name), category="error")
+        return redirect("/settings")
+    flash("{} Password Set".format(app_name), category="message")
     return redirect("/settings")
 
 @mynode_settings.route("/settings/reset-lnbits-super_user-pwd")

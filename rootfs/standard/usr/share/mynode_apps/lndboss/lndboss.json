@@ -48,7 +48,7 @@
             "heading": "Instructions",
             "content": [
                 "A GUI For BalanceOfSatoshis. You can open the app with the Open button on the left.",
-                "The username and password are shown in the App Credentials section on this page.",
+                "The username and password are shown in the App Default Credentials section on this page.",
                 "Enjoy!"
             ]
         }

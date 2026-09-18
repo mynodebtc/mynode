@@ -40,10 +40,26 @@ function has_app_password() {
     [ -s "/mnt/hdd/mynode/${1}/.app_password" ]
 }
 
-function save_app_password() {
+function save_app_default_password() {
     # Record the login password MyNode set for an app, so the app page can show it.
     # Stored in the app's storage folder, which is owned by the app's user.
     (umask 077; printf '%s\n' "$2" > "/mnt/hdd/mynode/${1}/.app_password")
+    # When written as root, keep it readable by pre-start scripts that run as the app's user
+    if [ "$(id -u)" = "0" ]; then
+        chown --reference="/mnt/hdd/mynode/${1}" "/mnt/hdd/mynode/${1}/.app_password"
+    fi
+}
+
+# Saved in place of the password once the user has set their own, so MyNode stops managing
+# it. Must match APP_PASSWORD_USER_SET in application_info.py.
+APP_PASSWORD_USER_SET="User configured (not managed by MyNode)"
+
+function save_app_password_user_set() {
+    save_app_default_password "$1" "$APP_PASSWORD_USER_SET"
+}
+
+function is_app_password_user_set() {
+    [ "$(cat "/mnt/hdd/mynode/${1}/.app_password" 2>/dev/null)" = "$APP_PASSWORD_USER_SET" ]
 }
 
 function remove_docker_images_by_name() {
