@@ -28,8 +28,13 @@ BTCPSW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
 cmake . && make
 
 # install datum
-touch datum_config.json
-echo "{
+# This script is also used to upgrade an already-installed app, and the storage folder
+# (config + admin password) is preserved across upgrades. Only write a fresh config and
+# reset the admin password on a true first-time install, or the user's mining pool
+# settings and login would be wiped on every version bump.
+if [ ! -f /mnt/hdd/mynode/datum/datum_config.json ]; then
+    touch datum_config.json
+    echo "{
   \"bitcoind\": {
     \"rpcuser\": \"mynode\",
     \"rpcpassword\": \"auto-config\",
@@ -59,11 +64,12 @@ echo "{
 }
 " > datum_config.json
 
-jq --arg BTCPSW "$BTCPSW" '.bitcoind.rpcpassword = $BTCPSW' datum_config.json > datum_config.json.tmp && mv datum_config.json.tmp datum_config.json
+    jq --arg BTCPSW "$BTCPSW" '.bitcoind.rpcpassword = $BTCPSW' datum_config.json > datum_config.json.tmp && mv datum_config.json.tmp datum_config.json
 
-cp datum_config.json /mnt/hdd/mynode/datum
+    cp datum_config.json /mnt/hdd/mynode/datum
 
-# The fresh config has no admin password, so let pre_datum.sh set a new one
-rm -f /mnt/hdd/mynode/datum/.app_password
+    # The fresh config has no admin password, so let pre_datum.sh set a new one
+    rm -f /mnt/hdd/mynode/datum/.app_password
+fi
 
 echo \"================== DONE INSTALLING APP =================\"
