@@ -42,8 +42,9 @@ def read(path):
         return None
 
 def master_password(path):
-    m = re.search(r"^masterPassword: *(['\"])(.*?)\1", read(path) or "", re.MULTILINE)
-    return m.group(2) if m else ""
+    # Thunderhub writes it unquoted when it saves the config itself (e.g. enabling 2FA)
+    m = re.search(r"^masterPassword:\s*(?:'([^']*)'|\"([^\"]*)\"|([^\s#]+))", read(path) or "", re.MULTILINE)
+    return (m.group(1) or m.group(2) or m.group(3) or "") if m else ""
 
 def verifies(password, value):
     if not value.startswith(PREFIX):
