@@ -1,0 +1,33 @@
+# sampleapp service
+# /etc/systemd/system/sampleapp.service
+
+[Unit]
+Description=sampleapp
+Wants=www.service docker_images.service
+After=www.service docker_images.service
+
+[Service]
+WorkingDirectory=/opt/mynode/sampleapp
+
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+#ExecStartPre=/usr/bin/wait_on_bitcoin.sh
+#ExecStartPre=/usr/bin/wait_on_lnd.sh
+#ExecStartPre=/usr/bin/wait_on_electrs.sh
+#ExecStartPre=/usr/bin/wait_on_docker_image_install.sh
+ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_sampleapp.sh ]; then /bin/bash /usr/bin/service_scripts/pre_sampleapp.sh; fi'
+ExecStart=FILL_IN_EXECSTART
+ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_sampleapp.sh ]; then /bin/bash /usr/bin/service_scripts/post_sampleapp.sh; fi'
+#ExecStop=FILL_IN_EXECSTOP_AND_UNCOMMENT_IF_NEEDED
+
+User=sampleapp
+Group=sampleapp
+Type=simple
+TimeoutSec=120
+Restart=always
+RestartSec=60
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=sampleapp
+
+[Install]
+WantedBy=multi-user.target

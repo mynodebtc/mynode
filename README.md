@@ -100,7 +100,7 @@ Once you are running MyNode, you can easily [update the software](https://docs.m
 See the [development guide](https://github.com/mynodebtc/mynode/blob/master/doc/development.md).
 
 ### Adding new Applications to MyNode
-To develop and add new applications to MyNode, check out the [Software Development Kit (SDK)](https://github.com/mynodebtc/mynode_sdk).
+To create and add new applications to MyNode, see the [application guide](https://github.com/mynodebtc/mynode/blob/master/doc/applications.md).
 
 
 ## Install on Existing System (beta)
