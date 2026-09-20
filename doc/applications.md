@@ -103,6 +103,8 @@ This file is optional and will be present if your app has a web interface and ca
 
 All application data is managed via a JSON file stored in the main application folder. A variety of settings allow control of the application, its dependencies, and how it appears within MyNode. Below is a table of the available settings and a description. Defaults for settings that are left out are set in `rootfs/standard/var/pynode/application_info.py`.
 
+After changing which settings MyNode reads, run `app_sdk/create.py check_doc` to confirm the table below still matches `application_info.py`.
+
 | Setting                    | Type / Default         | Description                                                               |
 | -------------------------- | ---------------------- | ------------------------------------------------------------------------- |
 | <sub>name                               | <sub>Sample App | <sub>This is the display name of the application. Shown on the Marketplace and Manage Apps pages. |
@@ -137,12 +139,16 @@ All application data is managed via a JSON file stored in the main application f
 | <sub>show_on_homepage                   | <sub>true | <sub>This toggles whether or not the app is displayed as a tile on the homepage. |
 | <sub>show_on_status_page                | <sub>true | <sub>This toggles whether or not the app is shown on the status page. All apps that have a log available should have this set to true. |
 | <sub>hide_status_icon                   | <sub>false | <sub>This toggles whether or not the status icon (color dot) is displayed for the application. This should be false for all applications that run as a service. |
+| <sub>log_file                          | <sub>App log | <sub>The log file shown on the status and app pages. Defaults to the app's log file if one exists. |
+| <sub>journalctl_log_name               | <sub>null | <sub>The systemd unit to read logs from with journalctl, used when the app has no log file. |
 | <sub>app_tile_name                      | <sub>"Sample Application" | <sub>This defines the display name of the application on the app tile on the home page. Some apps require a shorter name to fit on the app tile. |
 | <sub>app_tile_running_status_text       | <sub>"Running" | <sub>This defines the status text of an application when it has been enabled and is running properly according to systemd. |
 | <sub>app_tile_button_text               | <sub>"Info" | <sub>This defines the text of the link displayed in the application tile on the home page. |
 | <sub>app_tile_button_href               | <sub>"/app/sampleapp/info" | <sub>This defines the destination of the link displayed on the application tile on the home page. |
+| <sub>app_tile_button_open_app_directly | <sub>false | <sub>Makes the app tile button open the app itself instead of app_tile_button_href. Requires a port to be set. |
 | <sub>app_page_show_open_button          | <sub>true | <sub>This toggles whether or not the Open button is displayed on the application page. It should be true for web-based applications. |
 | <sub>app_page_content                   | <sub>Sample Data | <sub>This defines the application page content if using the generic application page (ex. /app/[app]/info). It is a list of dictionaries with two items - heading and content. Content can be a list of string to be displayed as paragraphs. |
+| <sub>app_page_additional_buttons       | <sub>[] | <sub>Extra buttons on the app page. A list of dictionaries with a title and an href. |
 | <sub>login_username                     | <sub>"" | <sub>The username shown on the app page next to the app password, for apps whose pre script sets a password with save_app_default_password (see mynode_functions.sh). |
 | <sub>can_uninstall                      | <sub>true | <sub>Indicates if the application can be uninstalled. |
 | <sub>can_reinstall                      | <sub>true | <sub>Indicates if the application can be re-installed. |

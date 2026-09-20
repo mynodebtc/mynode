@@ -16,7 +16,8 @@ instance/
 # vscode
 .vscode/
 
-# Local-only plans
+# Local-only notes and plans
+CLAUDE.md
 plans_local
 
 .DS_Store

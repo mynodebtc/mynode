@@ -3,6 +3,7 @@
 #
 #   app_sdk/create.py              Create a new app
 #   app_sdk/create.py check <app>  Check an app for missing files and placeholders
+#   app_sdk/create.py check_doc    Check the settings table in doc/applications.md
 #
 # The new app is written to rootfs/standard/usr/share/mynode_apps/<short_name>.
 # See doc/applications.md for the app layout and all JSON settings.
@@ -18,6 +19,15 @@ REPO_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATE_DIR = os.path.join(REPO_DIR, "app_sdk/sampleapp")
 APPS_DIR = os.path.join(REPO_DIR, "rootfs/standard/usr/share/mynode_apps")
 HASHES_SCRIPT = "scripts/print_app_download_hashes.sh"
+APP_INFO_FILE = "rootfs/standard/var/pynode/application_info.py"
+APP_DOC_FILE = "doc/applications.md"
+
+# Fields MyNode fills in itself. An app can set them, but they are not settings and are
+# left out of the documented table.
+RUNTIME_FIELDS = ["current_version", "has_custom_version", "is_enabled", "screenshots", "tor_address"]
+
+# Documented fields that application_info.py never reads
+DOC_ONLY_FIELDS = ["sdk_version", "supports_app_page"]
 
 
 ######################################################################################
@@ -151,6 +161,37 @@ def check_app(short_name):
 
 def app_downloads_source(app_data):
     return not app_data.get("download_skip", False) and app_data.get("download_type", "source") == "source"
+
+def check_doc():
+    # Every setting an app can put in its JSON file should be in the doc's settings table.
+    # Settings are the fields application_info.py defaults with 'if not "x" in app', plus any
+    # it reads with app_data.get(). Fields it always overwrites are not settings.
+    with open(os.path.join(REPO_DIR, APP_INFO_FILE)) as f:
+        app_info_src = f.read()
+    with open(os.path.join(REPO_DIR, APP_DOC_FILE)) as f:
+        doc_src = f.read()
+
+    code_fields = set(re.findall(r'if not "([a-z_0-9]+)" in app', app_info_src))
+    code_fields |= set(re.findall(r'app_data\.get\("([a-z_0-9]+)"', app_info_src))
+    code_fields -= set(RUNTIME_FIELDS)
+    doc_fields = set(re.findall(r'^\| <sub>([a-z_0-9]+)\s', doc_src, re.M))
+
+    errors = []
+    for field in sorted(code_fields - doc_fields):
+        errors.append("{} is used by {} but is not in the {} settings table".format(field, APP_INFO_FILE, APP_DOC_FILE))
+    for field in sorted(doc_fields - code_fields - set(DOC_ONLY_FIELDS)):
+        # Documented settings that are read somewhere else in application_info.py are fine
+        if '"{}"'.format(field) not in app_info_src:
+            errors.append("{} is in the {} settings table but is not used by {}".format(field, APP_DOC_FILE, APP_INFO_FILE))
+
+    for e in errors:
+        print("Error: " + e)
+    if errors:
+        print("")
+        print("Update the settings table in {}, or add the field to RUNTIME_FIELDS".format(APP_DOC_FILE))
+        print("or DOC_ONLY_FIELDS in {} if it is not an app setting.".format(os.path.relpath(os.path.abspath(__file__), REPO_DIR)))
+        exit(1)
+    print("{} documents all {} app settings.".format(APP_DOC_FILE, len(doc_fields)))
 
 def print_check_results(errors, warnings):
     for w in warnings:
@@ -326,10 +367,13 @@ def main():
     subparsers.add_parser("create", help="Create new application (default)")
     parser_check = subparsers.add_parser("check", help="Check an application")
     parser_check.add_argument("app", help="App to check")
+    subparsers.add_parser("check_doc", help="Check the settings table in doc/applications.md")
     args = parser.parse_args()
 
     if args.command == "check":
         check(args.app)
+    elif args.command == "check_doc":
+        check_doc()
     else:
         create()
 
