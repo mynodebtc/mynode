@@ -5,8 +5,27 @@
 # Keep macOS tar from adding AppleDouble (._*) entries for files with extended attributes
 export COPYFILE_DISABLE=1
 
+# Build all devices by default, or only those named on the command line
+ALL_DEVICES=('raspi4' 'raspi5' 'debian' 'rockpro64')
+if [ "$#" -gt 0 ]; then
+    DEVICES=("$@")
+    for d in "${DEVICES[@]}"; do
+        found=0
+        for a in "${ALL_DEVICES[@]}"; do
+            if [ "$d" = "$a" ]; then found=1; fi
+        done
+        if [ $found -eq 0 ]; then
+            echo "ERROR: Unknown device '$d'"
+            echo "       Known devices: ${ALL_DEVICES[*]}"
+            exit 1
+        fi
+    done
+else
+    DEVICES=("${ALL_DEVICES[@]}")
+fi
+
 # Make each device
-for i in 'raspi4' 'raspi5' 'debian' 'rockpro64' ; do
+for i in "${DEVICES[@]}" ; do
 	echo "Creating root file system for $i"
 	mkdir -p out/rootfs_$i/
 

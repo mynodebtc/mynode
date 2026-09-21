@@ -1,9 +1,10 @@
 # Makefile
 
-# Build rootfs
+# Build rootfs (all devices, or DEVICES="raspi5" for just one)
+DEVICES ?=
 .PHONY: rootfs
 rootfs:
-	@./make_rootfs.sh
+	@./make_rootfs.sh $(DEVICES)
 
 .PHONY: rootfs_auto
 rootfs_auto: start_file_server
