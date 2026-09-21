@@ -451,23 +451,6 @@
                     window.open(url,'_blank');
                 })
 
-                $("#lnbits").on("click", function() {
-                    hostname=location.hostname
-                    port_string=""
-                    if (is_using_tor()) {
-                        hostname="{{lnbits_onion}}"
-                        // Use "default" port - either 80 or 443 for HTTP/HTTPS
-                    } else {
-                        port_string=":5000"
-                        if (location.protocol == "https:") {
-                            port_string=":5001"
-                        }
-                    }
-                    url = location.protocol+'//'+hostname+port_string
-                    window.open(url,'_blank');
-                })
-
-
                 $("#btcrpcexplorer").on("click", function() {
                     hostname=location.hostname
                     port="3002"
@@ -489,22 +472,6 @@
                         port="4081"
                     }
                     url = location.protocol+'//'+hostname+':'+port
-                    window.open(url,'_blank');
-                })
-
-                $("#btcpayserver").on("click", function() {
-                    protocol=location.protocol
-                    hostname=location.hostname
-                    port_string=""
-                    if (is_using_tor()) {
-                        hostname="{{btcpayserver_onion}}"
-                        // Use "default" port - either 80 or 443 for HTTP/HTTPS
-                    } else {
-                        // When not using tor, BTCPayServer needs HTTPS to login
-                        protocol="https:"
-                        port_string=":49393"
-                    }
-                    url = protocol+'//'+hostname+port_string
                     window.open(url,'_blank');
                 })
 

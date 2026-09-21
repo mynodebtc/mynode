@@ -128,7 +128,20 @@
     {
         "name": "BTCPay Server",
         "short_name": "btcpayserver",
-        "app_tile_button_text": "Open",
+        "https_port": 49393,
+        "app_page_content": [
+            {
+                "heading": "Instructions",
+                "content": [
+                    "BTCPay Server asks for an email and password. MyNode created the administrator account shown in the App Default Credentials section on this page, so that nobody else could claim it first.",
+                    "You can change the email and password inside BTCPay, under My Settings. MyNode notices when the password is no longer the one it set and stops showing it here. If you lose it, Reset Passwords in Settings sets a new one."
+                ]
+            }
+        ],
+        "tor_service_name": "btcpay",
+        "app_tile_button_text": "Info",
+        "app_tile_button_href": "/app/btcpayserver/info",
+        "login_username": "admin@mynode.local",
         "author": {"name": "BTC Pay Server", "link":"https://btcpayserver.org/"},
         "website": {"name": "GitHub", "link": "https://github.com/btcpayserver/btcpayserver"},
         "description": [
@@ -457,7 +470,11 @@
     {
         "name": "LNbits",
         "short_name": "lnbits",
-        "app_tile_button_text": "Open",
+        "http_port": 5000,
+        "https_port": 5001,
+        "app_tile_button_text": "Info",
+        "app_tile_button_href": "/app/lnbits/info",
+        "login_username": "admin",
         "short_description": "Lightning Wallet",
         "author": {"name": "LNbits", "link": "https://lnbits.com"},
         "website": {"name": "GitHub", "link": "https://github.com/lnbits/lnbits-legend"},

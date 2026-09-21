@@ -130,6 +130,7 @@ After changing which settings MyNode reads, run `app_sdk/create.py check_doc` to
 | <sub>http_port                          | <sub>8000 | <sub>Indicates the HTTP port to be used by the application. This should be set for all web apps. The port will be automatically opened. |
 | <sub>https_port                         | <sub>8001 | <sub>Indicates the HTTPS port to be used by the application. Typically, the HTTP port plus one. |
 | <sub>extra_ports                        | <sub>[] | <sub>A list of additional ports to open in the firewall. |
+| <sub>tor_service_name                  | <sub>myapp | <sub>The name of the app's Tor hidden service folder under /var/lib/tor, without the "mynode_" prefix. Only needed when it differs from the app's short name. |
 | <sub>requires_bitcoin                   | <sub>true | <sub>This indicates a dependency on Bitcoin. If true, Bitcoin must be running before the application will start. This should be true for most apps. Some device management apps may set this to false. |
 | <sub>requires_docker_image_installation | <sub>false | <sub>This indicates a dependency on Docker. If true, the app runs as a Docker container and is installed by the docker image install script. |
 | <sub>requires_electrs                   | <sub>false | <sub>This indicates a dependency on Electrum Server. If true, Electrum Server must be enabled and running before the app can be enabled and started. |
