@@ -217,7 +217,10 @@ def initialize_application_defaults(app):
     if not "http_port" in app: app["http_port"] = None
     if not "https_port" in app: app["https_port"] = None
     if not "extra_ports" in app: app["extra_ports"] = []
-    if not "tor_address" in app: app["tor_address"] = get_onion_url_for_service( app["short_name"] )
+    # A few apps' hidden service folders are not named after the app (BTCPay Server is
+    # /var/lib/tor/mynode_btcpay), so the name can be given in the app JSON
+    if not "tor_service_name" in app: app["tor_service_name"] = app["short_name"]
+    if not "tor_address" in app: app["tor_address"] = get_onion_url_for_service( app["tor_service_name"] )
     if not "is_premium" in app: app["is_premium"] = False
     if not "current_version" in app: app["current_version"] = get_app_current_version_from_file( app["short_name"] )
     app["latest_version"] = get_app_latest_version_from_file( app )
@@ -607,7 +610,7 @@ def clear_application_password(short_name):
 
 # Apps that use the generate_app_password/has_app_password/save_app_default_password
 # mechanism (see mynode_functions.sh) to set a random default login password
-APPS_WITH_GENERATED_PASSWORD = ["thunderhub", "specter", "rtl", "ckbunker", "datum", "lndg", "lndboss"]
+APPS_WITH_GENERATED_PASSWORD = ["thunderhub", "specter", "rtl", "ckbunker", "datum", "lndg", "lndboss", "lnbits", "btcpayserver"]
 
 # Saved in place of the password once the user has set their own (see mynode_functions.sh)
 APP_PASSWORD_USER_SET = "User configured (not managed by MyNode)"
@@ -622,6 +625,23 @@ def reset_app_password(short_name):
         return
     # CKBunker uses its own copy of the password once a Coldcard is set up (see pre_ckbunker.sh)
     if short_name == "ckbunker" and glob.glob("/mnt/hdd/mynode/ckbunker/bp-*.dat"):
+        return
+    # LNbits keeps the password in its own database, so clearing the saved copy is not enough.
+    # This clears both and restarts LNbits, which generates a new one in pre_lnbits.sh.
+    if short_name == "lnbits":
+        if os.path.isfile("/mnt/hdd/mynode/lnbits/database.sqlite3"):
+            try:
+                reset_lnbits_super_user_pwd()
+            except Exception as e:
+                print("Error resetting lnbits password: {}".format(e))
+        return
+    # BTCPay changes its own password over its API, using the saved one to authenticate, so
+    # there is nothing to regenerate at start-up and no restart needed
+    if short_name == "btcpayserver":
+        try:
+            change_btcpay_password()
+        except Exception as e:
+            print("Error resetting btcpayserver password: {}".format(e))
         return
     clear_application_password(short_name)
     if is_service_enabled(short_name):

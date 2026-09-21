@@ -26,6 +26,10 @@ def is_service_enabled(service_name, force_refresh=False):
     service_enabled_cache[service_name] = False
     return False
 
+def is_service_active(service_name):
+    # Running right now, whether or not it is enabled at boot
+    return os.system("systemctl is-active {} > /dev/null 2>&1".format(service_name)) == 0
+
 def get_service_status_code(service_name):
     code = os.system("systemctl status {} --no-pager > /dev/null 2>&1".format(service_name))
     return code

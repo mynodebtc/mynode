@@ -601,27 +601,23 @@ def set_app_password_page():
 @mynode_settings.route("/settings/reset-lnbits-super_user-pwd")
 def reset_lnbits_super_user_pwd_page():
     check_logged_in()
-    if is_service_enabled("lnbits"):
-        def reset_password():
-            try:
-                reset_lnbits_super_user_pwd()
-            except Exception as err:
-                flash(f"Error resetting LNbits super_user password: {err}", category="error")
 
-        # Start Timer for delayed execution
-        t = Timer(1.0, reset_password)
-        t.start()
+    # The account only exists once LNbits has run
+    if not os.path.isfile("/mnt/hdd/mynode/lnbits/database.sqlite3"):
+        flash("Start LNbits before resetting its super_user password.", category="error")
+        return redirect("/settings")
 
-        # Fetch user information using the new helper function
+    def reset_password():
         try:
-            super_user_id, super_user_username = fetch_super_user_info()
-            flash(f'LNbits super_user "{super_user_username}" password set to "securebolt"', category="message")
+            reset_lnbits_super_user_pwd()
         except Exception as err:
-            flash(f"Error fetching LNbits super_user info: {err}", category="error")
+            log_message(f"Error resetting LNbits super_user password: {err}")
 
-    else:
-        flash(f"LNbits super_user changes are possible only when service is active.", category="message")
+    # Start Timer for delayed execution
+    t = Timer(1.0, reset_password)
+    t.start()
 
+    flash("LNbits super_user password is being reset - see the LNbits app page for the new password", category="message")
     return redirect("/settings")
 
 @mynode_settings.route("/settings/reset-lnbits-data")

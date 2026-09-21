@@ -20,6 +20,7 @@ ExecStartPre=/usr/bin/wait_on_docker_image_install.sh
 ExecStartPre=+/usr/bin/service_scripts/pre_btcpayserver.sh
 
 ExecStart=/bin/bash -c  '. "/etc/profile.d/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY/btcpayserver-docker" && . helpers.sh && btcpay_up'
+ExecStartPost=+/usr/bin/service_scripts/post_btcpayserver.sh
 ExecStop=/bin/bash -c   '. "/etc/profile.d/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY/btcpayserver-docker" && . helpers.sh && btcpay_down'
 ExecReload=/bin/bash -c '. "/etc/profile.d/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY/btcpayserver-docker" && . helpers.sh && btcpay_restart'
 
