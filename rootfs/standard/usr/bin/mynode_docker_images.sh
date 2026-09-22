@@ -10,6 +10,20 @@ source /usr/share/mynode/mynode_app_versions.sh
 echo "Starting mynode_docker_images.sh ..."
 touch /tmp/installing_docker_images
 
+# Wait for name resolution before downloading anything. This can run seconds after boot, before
+# DNS is usable, and a download that fails then is not retried until the next pass.
+wait_on_dns() {
+    for _ in $(seq 1 60); do
+        if getent hosts github.com > /dev/null 2>&1 ; then
+            return 0
+        fi
+        echo "Waiting on DNS..."
+        sleep 5s
+    done
+    echo "WARNING: DNS is still not working, downloads will likely fail"
+    return 1
+}
+
 # Drive should be mounted, let's still wait a bit
 sleep 10s
 
@@ -19,6 +33,12 @@ echo "Waiting on bitcoin to sync so drive usage is lower..."
 while true; do
     echo "Checking for building new docker images..."
     touch /tmp/installing_docker_images
+
+    # Set to 1 by any install that failed for a reason worth retrying soon, rather than waiting
+    # a full day with the app enabled and not installed
+    INSTALL_FAILED=0
+
+    wait_on_dns || INSTALL_FAILED=1
 
     # Check if we happened to change architectures (move from 32-bit to 64-bit Raspi4 image)
     CURRENT_ARCH=$(uname -m)
@@ -151,14 +171,19 @@ while true; do
         fi
         if [ "$CURRENT" != "$BTCPAYSERVER_VERSION" ]; then
             # Create a folder for BTCPay
-            rm -rf sudo /mnt/hdd/mynode/btcpayserver
+            rm -rf /mnt/hdd/mynode/btcpayserver
             mkdir -p /mnt/hdd/mynode/btcpayserver
             cd /mnt/hdd/mynode/btcpayserver
 
-            # Clone this repository
-            git clone https://github.com/btcpayserver/btcpayserver-docker
-            cd btcpayserver-docker
-            if git -c advice.detachedHead=false checkout "$BTCPAYSERVER_DOCKER_COMMIT"; then
+            # Clone this repository. A failure here leaves btcpayserver enabled with an empty
+            # folder, so mark the pass failed and let the loop come back to it.
+            CLONED=1
+            git clone https://github.com/btcpayserver/btcpayserver-docker || CLONED=0
+            if [ $CLONED = 0 ]; then
+                INSTALL_FAILED=1
+            fi
+
+            if [ $CLONED = 1 ] && cd btcpayserver-docker && git -c advice.detachedHead=false checkout "$BTCPAYSERVER_DOCKER_COMMIT"; then
                 # Run btcpay-setup.sh with the right parameters
                 export BTCPAY_HOST="mynode.local"
                 export NBITCOIN_NETWORK="mainnet"
@@ -235,91 +260,19 @@ while true; do
             fi
         fi
     fi
-
-
-    # Install Dojo
-    DOJO_UPGRADE_URL=https://code.samourai.io/dojo/samourai-dojo/-/archive/$DOJO_VERSION/samourai-dojo-$DOJO_VERSION.tar.gz
-    DOJO_UPGRADE_URL_FILE=/mnt/hdd/mynode/settings/dojo_url
-    CURRENT=""
-    INSTALL=true
-    # If Upgrade file existed, mark "install" choice for legacy devices
-    if [ -f /mnt/hdd/mynode/settings/dojo_url ] || [ -f /mnt/hdd/mynode/settings/mynode_dojo_install ]; then
-        touch /mnt/hdd/mynode/settings/install_dojo
-        sync
-        sleep 3s
-    fi
-    # Only install Dojo if marked for installation and testnet not enabled
-    if should_install_app "dojo" ; then
-        if [ ! -f $IS_TESTNET_ENABLED_FILE ]; then
-            if [ -f $DOJO_UPGRADE_URL_FILE ] && [ ! -f $DOJO_VERSION_FILE ]; then
-                echo $DOJO_VERSION > $DOJO_VERSION_FILE
-                sync
-            fi
-            if [ -f $DOJO_VERSION_FILE ]; then
-                INSTALL=false
-                CURRENT=$(cat $DOJO_VERSION_FILE)
-            fi
-            if [ "$CURRENT" != "$DOJO_VERSION" ]; then
-                MARK_DOJO_COMPLETE=1
-                sudo mkdir -p /opt/download/dojo
-                sudo mkdir -p /mnt/hdd/mynode/dojo
-                sudo rm -rf /opt/download/dojo/*
-                cd /opt/download/dojo
-                sudo wget -O dojo.tar.gz $DOJO_UPGRADE_URL
-
-                # verify tar file
-                echo "$DOJO_TAR_HASH  dojo.tar.gz" > /tmp/dojo_hash
-                sha256sum --check /tmp/dojo_hash
-
-                sudo tar -zxvf dojo.tar.gz
-                sudo cp -r samourai-dojo*/* /mnt/hdd/mynode/dojo
-                sudo rm -rf /opt/download/dojo/*
-
-                # Configure Dojo for MyNode
-                sudo /usr/bin/mynode_gen_dojo_config.sh || MARK_DOJO_COMPLETE=0
-
-                # Fix for v1.12.1 (may need to remove later)
-                remove_docker_images_by_name 'node:14-alpine'
-                if [ "$IS_32_BIT" = "1" ]; then
-                    sed -i "s/node:14-alpine.*/node:14-alpine3.12/g" /mnt/hdd/mynode/dojo/docker/my-dojo/node/Dockerfile
-                fi
-
-                # Run Dojo Install or Upgrade
-                cd /mnt/hdd/mynode/dojo/docker/my-dojo
-                INSTALL_PID=0
-                if [ "$INSTALL" = "true" ]; then
-                    yes | sudo ./dojo.sh install &
-                    INSTALL_PID=$!
-                else
-                    yes | sudo ./dojo.sh upgrade &
-                    INSTALL_PID=$!
-                fi
-
-                #Check for install/upgrade to finish to initialize Dojo mysql db
-                sudo /usr/bin/service_scripts/post_dojo.sh
-
-                # Wait for install script to finish
-                wait $INSTALL_PID || MARK_DOJO_COMPLETE=0
-
-
-                # Try and start dojo (if upgraded and already enabled)
-                systemctl enable dojo &
-                systemctl restart dojo &
-
-                # Mark dojo install complete
-                if [ $MARK_DOJO_COMPLETE = 1 ]; then
-                    echo $DOJO_VERSION > $DOJO_VERSION_FILE
-                fi
-            fi
-        fi
-    fi
     touch /tmp/need_application_refresh
 
     rm -f /tmp/installing_docker_images
     touch /tmp/installing_docker_images_completed_once
 
-    # Wait a day
-    sleep 1d
+    if [ $INSTALL_FAILED = 1 ]; then
+        # Something transient - come back in five minutes instead of a day
+        echo "An install did not complete, retrying shortly..."
+        sleep 5m
+    else
+        # Wait a day
+        sleep 1d
+    fi
 done
 
 # We should not exit
