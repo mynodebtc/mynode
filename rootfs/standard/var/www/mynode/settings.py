@@ -68,6 +68,8 @@ def page_settings():
         "changelog": changelog,
         "is_https_forced": is_https_forced(),
         "settable_password_apps": {app: name for app, name in APPS_WITH_SETTABLE_PASSWORD.items() if is_installed(app)},
+        # Asks BTCPay who its administrators are, so the reset button below names the real account
+        "btcpay_admins": get_btcpay_admins() if is_installed("btcpayserver") and is_service_active("btcpayserver") else [],
         "logout_time_days": logout_time_days,
         "logout_time_hours": logout_time_hours,
         "using_bitcoin_custom_config": using_bitcoin_custom_config(),
@@ -618,6 +620,33 @@ def reset_lnbits_super_user_pwd_page():
     t.start()
 
     flash("LNbits super_user password is being reset - see the LNbits app page for the new password", category="message")
+    return redirect("/settings")
+
+@mynode_settings.route("/settings/reset-btcpay-admin-pwd")
+def reset_btcpay_admin_pwd_page():
+    check_logged_in()
+
+    # The account is chosen by its position in the list the settings page rendered, so no email
+    # address ends up in a URL or in the access log
+    admins = get_btcpay_admins()
+    if not admins:
+        flash("Start BTCPay Server before resetting its administrator password.", category="error")
+        return redirect("/settings")
+    try:
+        email = admins[int(request.args.get("admin", 0))]
+    except (IndexError, ValueError):
+        flash("That BTCPay Server administrator no longer exists.", category="error")
+        return redirect("/settings")
+
+    try:
+        account = change_btcpay_password(email)
+    except Exception as err:
+        log_message(f"Error resetting BTCPay administrator password: {err}")
+        flash("Error resetting the BTCPay Server administrator password", category="error")
+        return redirect("/settings")
+
+    flash("New password set for {} - see the BTCPay Server app page".format(account),
+          category="message")
     return redirect("/settings")
 
 @mynode_settings.route("/settings/reset-lnbits-data")

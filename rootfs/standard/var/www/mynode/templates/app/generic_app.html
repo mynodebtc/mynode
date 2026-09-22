@@ -152,7 +152,7 @@
                         </table>
                     </div>
 
-                    {% if app_password %}
+                    {% if app_password or login_username_live %}
                     <div class="app_page_block_contents_heading">
                         <div class="info-page-block">App Default Credentials
                             <img style="width: 16px; margin-left: 8px; vertical-align: middle; cursor: help;" src="{{ url_for('static', filename="images/tooltip_icon.png")}}" title="These are the default credentials MyNode set for this application. If the password is changed within the app or from Settings, MyNode stops managing it and no longer shows it here. Re-installing an application gives it new default credentials, unless its password was changed."/>
@@ -160,16 +160,18 @@
                     </div>
                     <div class="app_page_block_contents_text">
                         <table class="info_table" style="font-size: 12px; margin-left: 10px">
-                            {% if app.login_username %}
+                            {% if app.login_username and (login_username_live or not app_password_user_set) %}
                             <tr>
                                 <th>Username</th>
                                 <td>{{app.login_username}}</td>
                             </tr>
                             {% endif %}
+                            {% if app_password %}
                             <tr>
                                 <th>Password</th>
                                 <td>{{app_password}}</td>
                             </tr>
+                            {% endif %}
                         </table>
                     </div>
                     {% endif %}

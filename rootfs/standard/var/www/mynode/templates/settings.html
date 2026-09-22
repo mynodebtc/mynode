@@ -1337,6 +1337,22 @@
         </div>
 
 
+        {% if btcpay_admins %}
+        <div class="settings_block">
+            <a id="btcpayserver"></a>
+            <div class="settings_block_header">BTCPay Server</div>
+
+            <div class="settings_block_subheader">Recover Administrator Access</div>
+            This will give a BTCPay Server administrator a new password, shown on the
+            <a href="/app/btcpayserver/info">BTCPay Server app page</a>. Use this if you lost the
+            password to your BTCPay account. There will be a reset password button for each admin account detected.</br>
+            {% for admin in btcpay_admins %}
+            <a href="/settings/reset-btcpay-admin-pwd?admin={{loop.index0}}" class="ui-button ui-widget ui-corner-all settings_button">Reset password for {{admin}}</a></br>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+
         <div class="settings_block">
             <a id="specter"></a>
             <div class="settings_block_header">Specter</div>
