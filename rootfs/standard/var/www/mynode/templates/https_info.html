@@ -1,0 +1,116 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>Using HTTPS</title>
+        {% include 'includes/head.html' %}
+     </head>
+
+    <body>
+        {% include 'includes/logo_header.html' %}
+
+        <div class="mynode_top_left_div">
+            <a href="/"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/home.png")}}"/></a>
+        </div>
+
+        <div class="main_header">Using HTTPS</div>
+
+        <br/>
+        {% if is_https %}
+        <div class="settings_block">
+            <div class="settings_block_header">You Are Using HTTPS</div>
+            <p>
+                This page was loaded over HTTPS, so traffic between your browser and your MyNode is encrypted.
+                {% if not is_https_forced %}
+                    To make HTTPS permanent, enable Force HTTPS on the <a href="/settings#ui">settings</a> page.
+                {% endif %}
+            </p>
+        </div>
+        {% else %}
+        <div class="main_page_warning_block">
+            <p style="text-align: center;">This page was loaded over an unencrypted HTTP connection. Anyone on your
+                network can read the pages you load and the password you type in. Use the button below to switch to
+                HTTPS.</p>
+            <p style="text-align: center;">
+                <a href="#" id="use_https_button" class="ui-button ui-widget ui-corner-all settings_button_small">Use HTTPS</a>
+            </p>
+        </div>
+        {% endif %}
+
+        <p class="warning_icon_row">
+            <img class="warning_triangle_icon" src="{{ url_for('static', filename="images/warning_triangle.svg")}}"/>
+            HTTPS may be required in a future release of MyNode.
+            <img class="warning_triangle_icon" src="{{ url_for('static', filename="images/warning_triangle.svg")}}"/>
+        </p>
+
+
+        <div class="settings_block">
+            <div class="settings_block_header">Why Your Browser Shows a Warning</div>
+            <p>
+                The first time you connect over HTTPS, your browser will say the connection is not private. Chrome
+                shows "Your connection is not private", Firefox shows "Warning: Potential Security Risk Ahead" and
+                Safari shows "This Connection Is Not Private".
+                <br/><br/>
+                This is expected and it does not mean something is broken. HTTPS certificates are normally issued by
+                a certificate authority that verifies you own a public domain name. Your MyNode runs on your own
+                network and has no public domain name, so it generates its own certificate instead. Your browser has
+                no way to check who created that certificate, so it warns you rather than showing a padlock.
+                <br/><br/>
+                The connection is still encrypted. The warning is about identity, not about encryption.
+            </p>
+        </div>
+
+        <div class="settings_block">
+            <div class="settings_block_header">Continuing to Your Node</div>
+            <p>
+                You only need to accept the certificate once per browser and device.
+                <br/><br/>
+                <b>Chrome, Edge and Brave</b> &mdash; click "Advanced", then "Proceed to ... (unsafe)".
+                <br/><br/>
+                <b>Firefox</b> &mdash; click "Advanced", then "Accept the Risk and Continue".
+                <br/><br/>
+                <b>Safari</b> &mdash; click "Show Details", then "visit this website", and confirm.
+                <br/><br/>
+                <b>iOS and Android</b> &mdash; tap the advanced or details option on the warning page, then continue
+                to the site.
+                <br/><br/>
+                If your browser refuses to continue at all, it is usually because the address does not match the
+                certificate. Try reaching your node at <a href="https://myNode.local">https://myNode.local</a>, or
+                regenerate your certificates on the <a href="/settings#advanced">settings</a> page if your node's IP
+                address has changed.
+            </p>
+        </div>
+
+        <div class="settings_block">
+            <div class="settings_block_header">Removing the Warning</div>
+            <p>
+                To stop the warning entirely, install your node's certificate on the devices you use. Download it
+                from the <a href="/settings#advanced">settings</a> page under HTTPS Certificates, then mark it as
+                trusted using your operating system's certificate or keychain settings. After that your browser
+                treats your node like any other HTTPS site.
+                <br/><br/>
+                Your certificate is unique to your device and is generated on your node. Only install certificates
+                you downloaded from your own MyNode.
+            </p>
+        </div>
+
+        <div class="settings_block">
+            <div class="settings_block_header">Making HTTPS Permanent</div>
+            <p>
+                Once HTTPS is working, turn on Force HTTPS so your node always redirects HTTP requests to HTTPS and
+                your password is never sent unencrypted.
+                <br/><br/>
+                <a href="/settings#ui" class="ui-button ui-widget ui-corner-all settings_button">Settings</a>
+            </p>
+        </div>
+
+        <script>
+            $(document).ready(function() {
+                $("#use_https_button").on("click", function() {
+                    location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
+                    return false;
+                });
+            });
+        </script>
+
+        {% include 'includes/footer.html' %}
+     </body>
+</html>

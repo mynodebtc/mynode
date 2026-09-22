@@ -235,6 +235,7 @@ DEFAULT_PASSWORD_ALLOWED_ENDPOINTS = [
     "page_login",
     "page_logout",
     "page_change_default_password",
+    "page_https_info",
 ]
 
 @app.before_request
@@ -665,6 +666,7 @@ def index():
             "swap_usage": get_swap_usage(),
             "device_temp": get_device_temp(),
             "upgrade_available": upgrade_available,
+            "show_https_warning": not request.is_secure and not is_https_warning_hidden(),
             "hide_password_warning": settings_file_exists("hide_password_warning"),
             "has_changed_password": has_changed_password(),
             "ui_settings": read_ui_settings()
@@ -775,6 +777,12 @@ def page_clear_old_debian_warning():
     hide_old_debian_warning()
     return redirect("/")
 
+@app.route("/clear-https-warning")
+def page_clear_https_warning():
+    check_logged_in()
+    hide_https_warning()
+    return redirect("/")
+
 @app.route("/clear-old-tor-warning")
 def page_clear_old_tor_warning():
     check_logged_in()
@@ -828,6 +836,17 @@ def page_help():
     templateData = {"ui_settings": read_ui_settings()}
     return render_template('help.html', **templateData)
 
+@app.route("/https-info")
+def page_https_info():
+    # No login check - this page explains how to reach the node over HTTPS and
+    # must work before a user is able to log in
+    templateData = {
+        "is_https": request.is_secure,
+        "is_https_forced": is_https_forced(),
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('https_info.html', **templateData)
+
 @app.route("/rebooting")
 def page_rebooting():
     check_logged_in()
@@ -868,6 +887,8 @@ def before_request():
     # Check for HTTPS forced (only enforce once drive mounted and stable state)
     # Otherwise, web GUI may be inaccessible if error occurs (NGINX needs drive for cert)
     if is_https_forced() and get_mynode_status() == STATE_STABLE:
+        if request.endpoint == "page_https_info":
+            return None
         if request.url and request.url.startswith('http://'):
             app.logger.info("REDIRECTING")
             url = request.url.replace('http://', 'https://', 1)

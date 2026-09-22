@@ -753,6 +753,11 @@ def show_32_bit_warning():
 def hide_32_bit_warning():
     touch("/tmp/hide_32_bit_warning")
 
+def is_https_warning_hidden():
+    return os.path.isfile("/tmp/hide_https_warning")
+def hide_https_warning():
+    touch("/tmp/hide_https_warning")
+
 def show_old_debian_warning():
     if not os.path.isfile("/tmp/hide_old_debian_warning"):
         if get_debian_version() < 12:
@@ -1413,16 +1418,39 @@ def reset_lnbits_super_user_pwd():
 #==================================
 BTCPAY_PASSWORD_FILE = "/mnt/hdd/mynode/btcpayserver/.app_password"
 
-def change_btcpay_password():
+BTCPAY_PASSWORD_TOOL = ["/usr/local/bin/python3", "/usr/share/mynode/btcpay_password.py"]
+
+def get_btcpay_admins():
     """
-    Gives the BTCPay administrator a new password.
+    Every BTCPay server administrator, by the email it logs in with. The account may be one the
+    user registered themselves rather than the one MyNode creates, so this asks BTCPay instead of
+    assuming a name. Returns an empty list when BTCPay is not running or has no administrator.
+    """
+    try:
+        result = subprocess.run(
+            BTCPAY_PASSWORD_TOOL + ["admins"],
+            capture_output=True,
+            universal_newlines=True,
+            timeout=20,
+        )
+    except Exception:
+        return []
+    if result.returncode != 0:
+        return []
+    return [line.strip() for line in result.stdout.splitlines() if line.strip()]
+
+def change_btcpay_password(email=None):
+    """
+    Gives a BTCPay administrator a new password, and returns the account it changed.
 
     Written straight into BTCPay's database, so this also recovers an account whose password
-    nobody knows any more. The new password is shown on the BTCPay app page.
+    nobody knows any more. With no email it picks the account MyNode created, or the only
+    administrator there is; it will not choose between several. The new password is shown on the
+    BTCPay app page.
     """
     new_password = generate_app_password()
     result = subprocess.run(
-        ["/usr/local/bin/python3", "/usr/share/mynode/btcpay_password.py", "reset"],
+        BTCPAY_PASSWORD_TOOL + ["reset"] + ([email] if email else []),
         input=new_password + "\n",
         capture_output=True,
         universal_newlines=True,
@@ -1432,6 +1460,7 @@ def change_btcpay_password():
 
     set_file_contents(BTCPAY_PASSWORD_FILE, new_password + "\n")
     os.chmod(BTCPAY_PASSWORD_FILE, 0o600)
+    return result.stdout.strip()
 
 #==================================
 # Specter Functions

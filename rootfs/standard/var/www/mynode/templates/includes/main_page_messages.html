@@ -5,6 +5,18 @@
 </div>
 {% endif %}
 
+{% if show_https_warning %}
+<div class="main_page_warning_block">
+    <p style="text-align: center;"><b>You are not using HTTPS</b></p>
+    <p style="text-align: center;">This page was loaded over an unencrypted HTTP connection. Switch to HTTPS so web traffic to and from your node is encrypted.</p>
+    <p style="text-align: center;">
+        <a href="/https-info" style="margin: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Learn More</a>
+        <a href="#" onclick="location.href = 'https:' + window.location.href.substring(window.location.protocol.length); return false;" style="margin: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Use HTTPS</a>
+        <a href="/clear-https-warning" style="margin: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Dismiss</a>
+    </p>
+</div>
+{% endif %}
+
 {% if fsck_error %}
 <div class="main_page_error_block">
     <p style="text-align: center;"><b>Warning!</b></p>

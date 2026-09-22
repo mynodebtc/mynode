@@ -1002,6 +1002,18 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
 .halving_image {
     width: 86px;
 }
+.warning_triangle_icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    margin: 0px 6px;
+}
+.warning_icon_row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
 
 /* The switch - the box around the slider */
 .switch {
