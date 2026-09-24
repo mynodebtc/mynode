@@ -20,6 +20,7 @@
     "download_skip": false,
     "download_type": "source",
     "download_source_url": "https://github.com/OCEAN-xyz/datum_gateway/archive/refs/tags/{VERSION}.tar.gz",
+    "download_source_sha256": "v0.4.1beta 728641bff6a63270199eea2e68f565a4cf182e85f8dd44cc2a458b4e86f89cd0",
     "download_binary_url": {
         "aarch64": "",
         "x86_64": ""

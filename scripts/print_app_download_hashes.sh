@@ -19,7 +19,7 @@ MARKETPLACE_DIR=rootfs/standard/usr/share/mynode_apps
 APPS="LNDHUB THUNDERHUB CARAVAN CORSPROXY JOININBOX BTCRPCEXPLORER CKBUNKER SPHINXRELAY PYBLOCK WARDENTERMINAL LOG2RAM WEBSSH2"
 
 # Marketplace app short names, using latest_version and download_source_url from their JSON
-MARKETPLACE_APPS="astral lilywallet lndboss lndg nostrrsrelay publicpool publicpoolui wetty"
+MARKETPLACE_APPS="astral datum lilywallet lndboss lndg nostrrsrelay publicpool publicpoolui wetty"
 
 # Docker images pulled by mynode_docker_images.sh: <pin variable> <image> <version variable, or a fixed tag>
 DOCKER_IMAGES="
