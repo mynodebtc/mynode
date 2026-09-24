@@ -1503,8 +1503,24 @@ def reset_tor_connections():
     os.system("rm -rf /var/lib/tor/*")
     start_service("tor@default")
 
+def is_tor_remote_access_enabled():
+    return not settings_file_exists("tor_remote_access_disabled")
+
+def apply_tor_remote_access_setting():
+    from application_info import trigger_application_refresh
+
+    os.system("/usr/bin/mynode_gen_tor_config.sh")
+    os.system("systemctl reload tor@default")
+
+    # Regenerate the lndconnect pairing codes with or without the tor address
+    os.system("systemctl try-restart lndconnect")
+
+    # App data holds each app's tor address
+    trigger_application_refresh()
+
 def get_onion_url_ssh():
     if is_community_edition(): return "not_available"
+    if not is_tor_remote_access_enabled(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode_ssh/hostname"):
             with open("/var/lib/tor/mynode_ssh/hostname") as f:
@@ -1515,6 +1531,7 @@ def get_onion_url_ssh():
 
 def get_onion_url_general():
     if is_community_edition(): return "not_available"
+    if not is_tor_remote_access_enabled(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode/hostname"):
             with open("/var/lib/tor/mynode/hostname") as f:
@@ -1525,6 +1542,7 @@ def get_onion_url_general():
 
 def get_onion_url_btc():
     if is_community_edition(): return "not_available"
+    if not is_tor_remote_access_enabled(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode_btc/hostname"):
             with open("/var/lib/tor/mynode_btc/hostname") as f:
@@ -1535,6 +1553,7 @@ def get_onion_url_btc():
 
 def get_onion_url_lnd():
     if is_community_edition(): return "not_available"
+    if not is_tor_remote_access_enabled(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode_lnd/hostname"):
             with open("/var/lib/tor/mynode_lnd/hostname") as f:
@@ -1545,6 +1564,7 @@ def get_onion_url_lnd():
 
 def get_onion_url_electrs():
     if is_community_edition(): return "not_available"
+    if not is_tor_remote_access_enabled(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode_electrs/hostname"):
             with open("/var/lib/tor/mynode_electrs/hostname") as f:
@@ -1555,6 +1575,7 @@ def get_onion_url_electrs():
 
 def get_onion_url_lndhub():
     if is_community_edition(): return "not_available"
+    if not is_tor_remote_access_enabled(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode_lndhub/hostname"):
             with open("/var/lib/tor/mynode_lndhub/hostname") as f:
@@ -1565,6 +1586,7 @@ def get_onion_url_lndhub():
 
 def get_onion_url_lnbits():
     if is_community_edition(): return "not_available"
+    if not is_tor_remote_access_enabled(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode_lnbits/hostname"):
             with open("/var/lib/tor/mynode_lnbits/hostname") as f:
@@ -1575,6 +1597,7 @@ def get_onion_url_lnbits():
 
 def get_onion_url_btcpay():
     if is_community_edition(): return "not_available"
+    if not is_tor_remote_access_enabled(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode_btcpay/hostname"):
             with open("/var/lib/tor/mynode_btcpay/hostname") as f:
@@ -1585,6 +1608,7 @@ def get_onion_url_btcpay():
 
 def get_onion_url_sphinxrelay():
     if is_community_edition(): return "not_available"
+    if not is_tor_remote_access_enabled(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode_sphinx/hostname"):
             with open("/var/lib/tor/mynode_sphinx/hostname") as f:
@@ -1595,6 +1619,7 @@ def get_onion_url_sphinxrelay():
 
 def get_onion_url_for_service(short_name):
     if is_community_edition(): return "not_available"
+    if not is_tor_remote_access_enabled(): return "not_available"
     try:
         if os.path.isfile("/var/lib/tor/mynode_{}/hostname".format(short_name)):
             with open("/var/lib/tor/mynode_{}/hostname".format(short_name)) as f:
@@ -1692,5 +1717,7 @@ def custom_settings_file_handler(name, enabled):
         else:
             os.system("rm -f /etc/sysctl.d/10-disableipv6.conf")
             os.system("sync")
+    elif name == "tor_remote_access_disabled":
+        apply_tor_remote_access_setting()
     else:
         log_message("No custom setting handler for: "+name)

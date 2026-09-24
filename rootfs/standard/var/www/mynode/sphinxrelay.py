@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, flash
 from user_management import check_logged_in
-from device_info import read_ui_settings, reset_sphinxrelay, get_onion_url_sphinxrelay
+from device_info import read_ui_settings, reset_sphinxrelay, get_onion_url_sphinxrelay, is_tor_remote_access_enabled
 from utilities import *
 from systemctl_info import *
 import subprocess
@@ -12,6 +12,8 @@ mynode_sphinxrelay = Blueprint('mynode_sphinxrelay',__name__)
 ### Functions
 def get_connection_string():
     s = to_string( get_file_contents("/opt/mynode/sphinxrelay/connection_string.txt") )
+    if ".onion" in s and not is_tor_remote_access_enabled():
+        return "Not available - Tor Remote Access is disabled"
     return s
 
 
@@ -30,6 +32,7 @@ def sphinxrelay_page():
         "ui_settings": read_ui_settings(),
         "sphinxrelay_status": sphinxrelay_status,
         "sphinxrelay_connection_string": get_connection_string(),
+        "is_tor_remote_access_enabled": is_tor_remote_access_enabled(),
         "sphinxrelay_onion_url": get_onion_url_sphinxrelay(),
     }
     return render_template('sphinxrelay.html', **templateData)

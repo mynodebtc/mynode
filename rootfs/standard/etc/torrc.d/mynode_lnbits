@@ -1,0 +1,7 @@
+# Hidden Service for MyNode (LNBits)
+HiddenServiceDir /var/lib/tor/mynode_lnbits/
+HiddenServiceVersion 3
+HiddenServicePort 80 127.0.0.1:5000
+HiddenServicePort 443 127.0.0.1:5001
+HiddenServicePort 5000 127.0.0.1:5000
+HiddenServicePort 5001 127.0.0.1:5001

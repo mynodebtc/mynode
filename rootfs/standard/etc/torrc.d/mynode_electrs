@@ -1,0 +1,5 @@
+# Hidden Service for MyNode (Electrum Server)
+HiddenServiceDir /var/lib/tor/mynode_electrs/
+HiddenServiceVersion 3
+HiddenServicePort 50001 127.0.0.1:50001
+HiddenServicePort 50002 127.0.0.1:50002

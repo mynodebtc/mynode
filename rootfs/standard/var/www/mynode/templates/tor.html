@@ -24,22 +24,26 @@
                     }
                 });
 
-                fully_noded_qr_dialog = $( "#fully-noded-qr-dialog" ).dialog({
-                    autoOpen: false,
-                    resizable: false,
-                    height: "auto",
-                    width: 600,
-                    modal: true,
-                    position: { my: "center top", at: "center top", of: window, collision: "none" },
-                });
-                $("#fully_noded_show_qr_button").on("click", function() {
-                    fully_noded_qr_dialog.dialog( "open" );
-                });
-
-
+                {% if is_tor_remote_access_enabled %}
                 {% for service in v3_services %}
                 $("#{{ service.id }}").tooltip({ content: "<img style='width: 300px; height: 300px;' src='/api/get_qr_code_image?url={{ service.link }}'/>" });
                 {% endfor %}
+                {% endif %}
+
+                $('#tor_remote_access_checkbox').change(function () {
+                    $("#tor_remote_access").show();
+                });
+                $("#tor_remote_access").on("click", function() {
+                    // This setting is inverted (uses disable flag)
+                    checked=$('#tor_remote_access_checkbox').is(":checked")
+                    val = "1"
+                    if (checked)
+                    {
+                        val = "0"
+                    }
+                    $('#loading_spinner_overlay').fadeIn();
+                    window.location.href='/settings/toggle_setting?name=tor_remote_access_disabled&redirect_page=/tor&enable='+val
+                });
             });
         </script>
         <style>
@@ -48,6 +52,94 @@
             }
             .onion_password {
                 display: none;
+            }
+            .tor_status_pill {
+                display: inline-block;
+                font-size: 11px;
+                font-weight: bold;
+                letter-spacing: 0.05em;
+                text-transform: uppercase;
+                padding: 2px 9px;
+                border-radius: 10px;
+                vertical-align: middle;
+            }
+            .tor_status_pill.enabled {
+                color: #2e9e4f;
+                background-color: #2e9e4f1f;
+                border: 1px solid #2e9e4f;
+            }
+            .tor_status_pill.disabled {
+                color: #888888;
+                background-color: #8888881f;
+                border: 1px solid #888888;
+            }
+            .tor_card {
+                padding: 18px 22px;
+                text-align: left;
+            }
+            .tor_card_header {
+                display: flex;
+                align-items: center;
+            }
+            .tor_card_text {
+                flex: 1;
+                line-height: 1.5;
+            }
+            .tor_card_title {
+                font-size: 18px;
+                font-weight: 500;
+                color: #f19c00;
+                margin-bottom: 6px;
+            }
+            .tor_card_title .tor_status_pill {
+                margin-left: 8px;
+            }
+            .tor_card_control {
+                text-align: center;
+                margin-left: 25px;
+                min-width: 70px;
+            }
+            .tor_card_control .settings_button_small {
+                margin-top: 8px;
+            }
+            .tor_card .custom_version_notice {
+                margin: 12px 0 0 0;
+            }
+            .tor_card table.bitcoin_table {
+                width: 100%;
+                margin-top: 18px;
+                font-size: 13px;
+                background-color: transparent;
+            }
+            .tor_card .bitcoin_table_header td {
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+                color: #888888;
+                padding-bottom: 8px;
+                border-bottom: 1px solid #ffb70054;
+            }
+            .tor_card table.bitcoin_table td {
+                padding-left: 6px;
+                padding-right: 6px;
+            }
+            .tor_card table.bitcoin_table td:first-child {
+                text-align: left;
+                padding-left: 10px;
+            }
+            .tor_onion_address {
+                font-family: Menlo, Consolas, monospace;
+                font-size: 11px;
+            }
+            .tor_onion_address.onion_url_placeholder {
+                letter-spacing: 0.15em;
+                color: #999999;
+            }
+            .tor_services_disabled tbody td {
+                opacity: 0.45;
+            }
+            .onion_not_published {
+                font-style: italic;
             }
         </style>
     </head>
@@ -73,91 +165,117 @@
                 <div class="info_tile_contents">{% if is_lnd_tor_enabled %}Tor Enabled{% else %}Tor Disabled{%endif%}</div>
             </div>
             <div class="info_tile">
+                <div class="info_tile_header">Remote Access</div>
+                <div class="info_tile_contents">{% if is_tor_remote_access_enabled %}Enabled{% else %}Disabled{%endif%}</div>
+            </div>
+            <div class="info_tile">
                 <div class="info_tile_header">Version</div>
                 <div class="info_tile_contents">{{version}}</div>
             </div>
         </div>
 
         <br/>
-        <div class="main_header">Tor Onion Addresses</div>
-        <div class="main_header_sub_text">
-            Sharing these Onion URLs will allow others to access your device. Keep them private unless there is someone you specifically want to share access with.
-            <br/><br/>
-            <button id="show_onion_urls" class="ui-button ui-widget ui-corner-all">Show Onion URLs</button>
-        </div>
-        <br/>
-
-        <div class="sub_header">Tor Services</div>
-        <table class="bitcoin_table">
-            <thead class="bitcoin_table_header">
-                <td>Service</td>
-                <td>Address</td>
-                <td>Port</td>
-                <td>Link</td>
-                <td></td>
-                <td>Guide</td>
-            </thead>
-            <tbody>
-                {% for service in v3_services %}
-                    <tr>
-                        <td><b>{{ service.service }}</b></td>
-                        <td>
-                            <span class="onion_url">{{ service.url }}</span>
-                            <span class="onion_url_placeholder">..................................................</span>
-                        </td>
-                        <td>{{ service.port }}</td>
-                        <td>
-                            {% if service.show_link %}
-                                <a href="{{ service.link }}" target="_blank">Link</a>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if service.show_link %}
-                                <img id="{{ service.id }}" style="width: 18px;" title="" src="{{ url_for('static', filename="images/qr_code.png") }}"/>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if service.guide|length %}
-                                <a href="{{ service.guide }}" target="_blank">Guide</a>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <br/>
-
-        <br/>
-        <div class="main_header">Tor Connected Apps</div>
-        <div class="app_tile_row">
-            <div class="app_tile_short">
-                <div class="app_status_icon"></div>
-                <div class="app_logo"><img class="app_logo_icon" src="{{ url_for('static', filename="images/app_icons/fully_noded.png")}}"/></div>
-                <div class="app_title">Fully Noded</div>
-                <div class="app_status"></div>
-                <div class="app_contents">
-                    <button id="fully_noded_show_qr_button" class="ui-button ui-widget ui-corner-all mynode_button">Show QR</button>
+        <div class="settings_block tor_card tor_card_header">
+            <div class="tor_card_text">
+                <div class="tor_card_title">
+                    Tor Remote Access
+                    {% if is_tor_remote_access_enabled %}
+                        <span class="tor_status_pill enabled">Enabled</span>
+                    {% else %}
+                        <span class="tor_status_pill disabled">Disabled</span>
+                    {% endif %}
                 </div>
+                {% if is_tor_remote_access_enabled %}
+                    Your apps, web interface, and SSH are published as Tor hidden services, so you can reach your device from anywhere using the onion addresses below.
+                {% else %}
+                    Your apps, web interface, and SSH are not published over Tor. Enable this to reach your device from anywhere using onion addresses.
+                    <div class="custom_version_notice">
+                        Tor is still running. Bitcoin and Lightning continue to use it for their own connections, and your onion addresses are kept, so they will be the same if you enable this again.
+                    </div>
+                {% endif %}
+            </div>
+            <div class="tor_card_control">
+                <label class="switch">
+                    <input type="checkbox" id="tor_remote_access_checkbox" {% if is_tor_remote_access_enabled %}checked{% endif %}>
+                    <span class="slider round"></span>
+                </label>
+                <br/>
+                <button id="tor_remote_access" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
             </div>
         </div>
 
+        <br/>
+        <div class="settings_block tor_card">
+            <div class="tor_card_header">
+                <div class="tor_card_text">
+                    <div class="tor_card_title">
+                        Tor Onion Addresses
+                        {% if is_tor_remote_access_enabled %}
+                            <span class="tor_status_pill enabled">Published</span>
+                        {% else %}
+                            <span class="tor_status_pill disabled">Not Published</span>
+                        {% endif %}
+                    </div>
+                    {% if is_tor_remote_access_enabled %}
+                        Anyone with one of these addresses can reach that service on your device. Keep them private unless there is someone you specifically want to share access with.
+                    {% else %}
+                        These services are not reachable over Tor while Tor Remote Access is disabled.
+                    {% endif %}
+                </div>
+                {% if is_tor_remote_access_enabled %}
+                <div class="tor_card_control">
+                    <button id="show_onion_urls" class="ui-button ui-widget ui-corner-all settings_button_small">Show Onion URLs</button>
+                </div>
+                {% endif %}
+            </div>
 
-        <div id="fully-noded-qr-dialog" title="Fully Noded QR Code" style="display:none; width: 600px;">
-            <p>Scan this QR code in Fully Noded to pair your MyNode.</p>
-            <center>
-            <img style="height:400px; width: 400px; margin: auto;" src="/api/get_qr_code_image?url={{ fully_noded_link|urlencode }}"/>
-
-            <br/><br/>
-            
-            <span style="font-size: 8px;">{{fully_noded_link}}</span>
-            <br/><br/>
-            <a class="ui-button ui-widget ui-corner-all mynode_button" style="margin:auto;" href="{{ fully_noded_link }}" target="_blank">Link</a>
-            <br/>
-            </center>
+            <table class="bitcoin_table {% if not is_tor_remote_access_enabled %}tor_services_disabled{% endif %}">
+                <thead class="bitcoin_table_header">
+                    <td>Service</td>
+                    <td>Address</td>
+                    <td>Port</td>
+                    {% if is_tor_remote_access_enabled %}
+                    <td>Link</td>
+                    <td>QR</td>
+                    {% endif %}
+                    <td>Guide</td>
+                </thead>
+                <tbody>
+                    {% for service in v3_services %}
+                        <tr>
+                            <td><b>{{ service.service }}</b></td>
+                            <td>
+                                {% if is_tor_remote_access_enabled %}
+                                    <span class="tor_onion_address onion_url">{{ service.url }}</span>
+                                    <span class="tor_onion_address onion_url_placeholder">&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;.onion</span>
+                                {% else %}
+                                    <span class="onion_not_published">Not published</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ service.port }}</td>
+                            {% if is_tor_remote_access_enabled %}
+                            <td>
+                                {% if service.show_link %}
+                                    <a href="{{ service.link }}" target="_blank">Link</a>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if service.show_link %}
+                                    <img id="{{ service.id }}" style="width: 18px;" title="" src="{{ url_for('static', filename="images/qr_code.png") }}"/>
+                                {% endif %}
+                            </td>
+                            {% endif %}
+                            <td>
+                                {% if service.guide|length %}
+                                    <a href="{{ service.guide }}" target="_blank">Guide</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-    </div>
-
-        </div>
+        <br/>
 
 
         {% include 'includes/footer.html' %}

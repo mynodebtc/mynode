@@ -1,0 +1,5 @@
+# Hidden Service for MyNode (LND)
+HiddenServiceDir /var/lib/tor/mynode_lnd/
+HiddenServiceVersion 3
+HiddenServicePort 10009 127.0.0.1:10009
+HiddenServicePort 10080 127.0.0.1:10080

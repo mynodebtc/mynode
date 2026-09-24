@@ -28,7 +28,13 @@ while true; do
     done
 
     # Find URLs
-    LND_TOR_ADDR=$(cat /var/lib/tor/mynode_lnd/hostname)
+    LND_TOR_ADDR=""
+    if [ -f /var/lib/tor/mynode_lnd/hostname ]; then
+        LND_TOR_ADDR=$(cat /var/lib/tor/mynode_lnd/hostname)
+    fi
+    if [ -f /mnt/hdd/mynode/settings/tor_remote_access_disabled ] || [ -f /home/bitcoin/.mynode/tor_remote_access_disabled ]; then
+        LND_TOR_ADDR=""
+    fi
     LOCAL_IP_ADDR=$(hostname -I | head -n 1 | cut -d' ' -f1)
 
     net="--bitcoin.mainnet"
@@ -41,20 +47,24 @@ while true; do
     cp -f lndconnect-qr.png lndconnect_local_grpc.png
     lndconnect --lnddir=/mnt/hdd/mynode/lnd -o $net --host=$LOCAL_IP_ADDR -p 10080
     cp -f lndconnect-qr.png lndconnect_local_rest.png
-    lndconnect --lnddir=/mnt/hdd/mynode/lnd -o $net --host=$LND_TOR_ADDR
-    cp -f lndconnect-qr.png lndconnect_tor_grpc.png
-    lndconnect --lnddir=/mnt/hdd/mynode/lnd -o $net --host=$LND_TOR_ADDR -p 10080
-    cp -f lndconnect-qr.png lndconnect_tor_rest.png
-    lndconnect --lnddir=/mnt/hdd/mynode/lnd -o $net --host=$LND_TOR_ADDR --nocert
-    cp -f lndconnect-qr.png zap_tor.png
+    if [ "$LND_TOR_ADDR" != "" ]; then
+        lndconnect --lnddir=/mnt/hdd/mynode/lnd -o $net --host=$LND_TOR_ADDR
+        cp -f lndconnect-qr.png lndconnect_tor_grpc.png
+        lndconnect --lnddir=/mnt/hdd/mynode/lnd -o $net --host=$LND_TOR_ADDR -p 10080
+        cp -f lndconnect-qr.png lndconnect_tor_rest.png
+        lndconnect --lnddir=/mnt/hdd/mynode/lnd -o $net --host=$LND_TOR_ADDR --nocert
+        cp -f lndconnect-qr.png zap_tor.png
+    fi
 
 
     # Generate Text Files
     lndconnect --lnddir=/mnt/hdd/mynode/lnd -j $net --host=$LOCAL_IP_ADDR | grep lndconnect > lndconnect_local_grpc.txt
     lndconnect --lnddir=/mnt/hdd/mynode/lnd -j $net --host=$LOCAL_IP_ADDR -p 10080 | grep lndconnect > lndconnect_local_rest.txt
-    lndconnect --lnddir=/mnt/hdd/mynode/lnd -j $net --host=$LND_TOR_ADDR | grep lndconnect > lndconnect_tor_grpc.txt
-    lndconnect --lnddir=/mnt/hdd/mynode/lnd -j $net --host=$LND_TOR_ADDR -p 10080 | grep lndconnect > lndconnect_tor_rest.txt
-    lndconnect --lnddir=/mnt/hdd/mynode/lnd -j $net --host=$LND_TOR_ADDR --nocert | grep lndconnect > zap_tor.txt
+    if [ "$LND_TOR_ADDR" != "" ]; then
+        lndconnect --lnddir=/mnt/hdd/mynode/lnd -j $net --host=$LND_TOR_ADDR | grep lndconnect > lndconnect_tor_grpc.txt
+        lndconnect --lnddir=/mnt/hdd/mynode/lnd -j $net --host=$LND_TOR_ADDR -p 10080 | grep lndconnect > lndconnect_tor_rest.txt
+        lndconnect --lnddir=/mnt/hdd/mynode/lnd -j $net --host=$LND_TOR_ADDR --nocert | grep lndconnect > zap_tor.txt
+    fi
 
     echo "Done! Waiting until LND changes, then regen lndconnect codes! (or 24 hours)"
     inotifywait -t 86400 -e modify -e create -e delete $LND_TLS_CERT_FILE $LND_ADMIN_MACAROON_FILE

@@ -1,0 +1,4 @@
+# Hidden Service for MyNode (BTC)
+HiddenServiceDir /var/lib/tor/mynode_btc/
+HiddenServiceVersion 3
+HiddenServicePort 8332 127.0.0.1:8332

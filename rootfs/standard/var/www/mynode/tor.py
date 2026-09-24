@@ -10,8 +10,11 @@ import subprocess
 
 mynode_tor = Blueprint('mynode_tor',__name__)
 
-def create_v3_service(name, url, port, show_link, guide, force_https=False):
+# app is the short name of the app the service belongs to, if any. Its row is only shown
+# while that app is installed.
+def create_v3_service(name, url, port, show_link, guide, force_https=False, app=None):
     service = {}
+    service["app"] = app
     service["service"] = name
     service["id"] = name.replace(" ","").replace("(","").replace(")","").lower()
     service["url"] = url
@@ -65,47 +68,43 @@ def page_tor():
     electrs_onion_url = get_onion_url_electrs()
     btcpay_onion_url = get_onion_url_btcpay()
     sphinxrelay_onion_url = get_onion_url_sphinxrelay()
-    whirlpool_onion_url = get_onion_url_for_service("whirlpool")
 
     # v3 Services
     v3_services = []
     v3_services.append(create_v3_service("MyNode Web", general_onion_url, "80", True, ""))
-    v3_services.append(create_v3_service("WebSSH", general_onion_url, "2222 / 2223", True, ""))
-    v3_services.append(create_v3_service("LND Hub", lndhub_onion_url, "80 / 443", True, ""))
-    v3_services.append(create_v3_service("BTC RPC Explorer", general_onion_url, "3002 / 3003", False, ""))
-    v3_services.append(create_v3_service("Ride the Lightning", general_onion_url, "3010 / 3011", True, ""))
-    v3_services.append(create_v3_service("Caravan", general_onion_url, "3020 / 3021", True, ""))
-    v3_services.append(create_v3_service("Thunderhub", general_onion_url, "3030 / 3031", True, ""))
-    v3_services.append(create_v3_service("Mempool", general_onion_url, "4080 / 4081", True, ""))
-    v3_services.append(create_v3_service("LNbits", lnbits_onion_url, "80 / 443", True, ""))
-    v3_services.append(create_v3_service("Lightning Terminal", general_onion_url, "8443", True, ""))
-    v3_services.append(create_v3_service("Whirlpool", whirlpool_onion_url, "8899", False, ""))
-    v3_services.append(create_v3_service("Netdata", general_onion_url, "19999 / 20000", True, ""))
-    v3_services.append(create_v3_service("Specter Desktop", general_onion_url, "25441", True, "", force_https=True))
+    v3_services.append(create_v3_service("WebSSH", general_onion_url, "2222 / 2223", True, "", app="webssh2"))
+    v3_services.append(create_v3_service("LND Hub", lndhub_onion_url, "80 / 443", True, "", app="lndhub"))
+    v3_services.append(create_v3_service("BTC RPC Explorer", general_onion_url, "3002 / 3003", False, "", app="btcrpcexplorer"))
+    v3_services.append(create_v3_service("Ride the Lightning", general_onion_url, "3010 / 3011", True, "", app="rtl"))
+    v3_services.append(create_v3_service("Caravan", general_onion_url, "3020 / 3021", True, "", app="caravan"))
+    v3_services.append(create_v3_service("Thunderhub", general_onion_url, "3030 / 3031", True, "", app="thunderhub"))
+    v3_services.append(create_v3_service("Mempool", general_onion_url, "4080 / 4081", True, "", app="mempool"))
+    v3_services.append(create_v3_service("LNbits", lnbits_onion_url, "80 / 443", True, "", app="lnbits"))
+    v3_services.append(create_v3_service("Lightning Terminal", general_onion_url, "8443", True, "", app="lit"))
+    v3_services.append(create_v3_service("Netdata", general_onion_url, "19999 / 20000", True, "", app="netdata"))
+    v3_services.append(create_v3_service("Specter Desktop", general_onion_url, "25441", True, "", force_https=True, app="specter"))
     v3_services.append(create_v3_service("Glances", general_onion_url, "61208 / 61209", True, ""))
-    v3_services.append(create_v3_service("BTCPay Server", btcpay_onion_url, "80 / 443", True, ""))
+    v3_services.append(create_v3_service("BTCPay Server", btcpay_onion_url, "80 / 443", True, "", app="btcpayserver"))
     v3_services.append(create_v3_service("Bitcoin API (REST)", btc_onion_url, "8332", False, ""))
     v3_services.append(create_v3_service("LND API (gRPC)", lnd_onion_url, "10009", False, ""))
     v3_services.append(create_v3_service("LND API (REST)", lnd_onion_url, "10080", False, ""))
     v3_services.append(create_v3_service("SSH", ssh_onion_url, "22022", False, ""))
-    v3_services.append(create_v3_service("Electrum Server", electrs_onion_url, "50001", False, "https://docs.mynodebtc.com/tor/electrum.html"))
-    v3_services.append(create_v3_service("Electrum Server", electrs_onion_url, "50002", False, "https://docs.mynodebtc.com/tor/electrum.html"))
-    v3_services.append(create_v3_service("Sphinx Relay", sphinxrelay_onion_url, "53001", True, ""))
+    v3_services.append(create_v3_service("Electrum Server", electrs_onion_url, "50001", False, "https://docs.mynodebtc.com/tor/electrum.html", app="electrs"))
+    v3_services.append(create_v3_service("Electrum Server", electrs_onion_url, "50002", False, "https://docs.mynodebtc.com/tor/electrum.html", app="electrs"))
+    v3_services.append(create_v3_service("Sphinx Relay", sphinxrelay_onion_url, "53001", True, "", app="sphinxrelay"))
+
+    v3_services = [s for s in v3_services if s["app"] == None or is_installed(s["app"])]
 
     add_dynamic_app_v3_services(v3_services)
-    
-    # App links
-    rpc_password = get_bitcoin_rpc_password()
-    fully_noded_link = "btcstandup://mynode:{}@{}:8332?label=MyNode%20Tor".format(rpc_password, btc_onion_url)
 
     # Load page
     templateData = {
         "title": "Tor Services",
         "version": get_tor_version(),
+        "is_tor_remote_access_enabled": is_tor_remote_access_enabled(),
         "is_btc_tor_enabled": settings_file_exists("btc_tor_enabled"),
         "is_lnd_tor_enabled": settings_file_exists("lnd_tor_enabled"),
         "v3_services": v3_services,
-        "fully_noded_link": fully_noded_link,
         "ui_settings": read_ui_settings()
     }
     return render_template('tor.html', **templateData)

@@ -20,6 +20,9 @@ import subprocess
 
 mynode_settings = Blueprint('mynode_settings',__name__)
 
+# Pages that can host a setting toggle and be returned to afterwards
+TOGGLE_SETTING_REDIRECT_PAGES = ["/settings", "/tor"]
+
 # Flask Pages
 @mynode_settings.route("/settings")
 def page_settings():
@@ -95,6 +98,7 @@ def page_settings():
         "is_btc_i2p_enabled": settings_file_exists("btc_i2p_enabled"),
         "is_lnd_ipv4_enabled": settings_file_exists("lnd_ipv4_enabled"),
         "is_lnd_tor_enabled": settings_file_exists("lnd_tor_enabled"),
+        "is_tor_remote_access_enabled": is_tor_remote_access_enabled(),
         "is_tor_repo_enabled": not settings_file_exists("tor_repo_disabled"),
         "is_aptget_tor_enabled": settings_file_exists("torify_apt_get"),
         "is_streamisolation_tor_enabled": not settings_file_exists("streamisolation_tor_disabled"),
@@ -1205,13 +1209,16 @@ def page_toggle_setting():
     
     name = request.args.get('name')
     enable = request.args.get('enable')
+    redirect_page = request.args.get('redirect_page', "/settings")
+    if redirect_page not in TOGGLE_SETTING_REDIRECT_PAGES:
+        redirect_page = "/settings"
     if enable == "1":
         create_settings_file(name)
     elif enable == "0":
         delete_settings_file(name)
     else:
         flash("Error Updating Setting", category="error")
-        return redirect("/settings")
+        return redirect(redirect_page)
     
     custom_settings_file_handler(name, (enable == "1"))
 
@@ -1232,4 +1239,4 @@ def page_toggle_setting():
         return redirect("/rebooting")
 
     flash("Setting Updated", category="message")
-    return redirect("/settings")
+    return redirect(redirect_page)

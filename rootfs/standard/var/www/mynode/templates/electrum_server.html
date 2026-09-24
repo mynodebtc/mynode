@@ -78,6 +78,8 @@
                 <div class="info_tile_contents">
                     {% if product_key_skipped %}
                         Premium Feature
+                    {% elif not is_tor_remote_access_enabled %}
+                        Tor Remote Access Disabled
                     {% else %}
                     <table class="info_table">
                         <tr>

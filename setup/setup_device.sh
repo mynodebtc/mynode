@@ -913,6 +913,9 @@ if [ "$CURRENT" != "$LNDCONNECT_VERSION" ]; then
 fi
 
 
+# Tor remote access is off by default on new installs
+touch /home/bitcoin/.mynode/tor_remote_access_disabled
+
 # Make sure "Remote Access" apps are marked installed
 touch /home/bitcoin/.mynode/install_tor
 touch /home/bitcoin/.mynode/install_premium_plus

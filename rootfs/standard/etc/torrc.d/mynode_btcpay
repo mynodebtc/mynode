@@ -1,0 +1,7 @@
+# Hidden Service for BTCPay Server
+HiddenServiceDir /var/lib/tor/mynode_btcpay/
+HiddenServiceVersion 3
+HiddenServicePort 80 127.0.0.1:49392
+HiddenServicePort 443 127.0.0.1:49393
+HiddenServicePort 49392 127.0.0.1:49392
+HiddenServicePort 49393 127.0.0.1:49393

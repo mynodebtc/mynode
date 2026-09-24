@@ -43,10 +43,12 @@
                             <th>Connection String</th>
                             <td style="font-size: 10px;">{{sphinxrelay_connection_string}}</td>
                         </tr>
+                        {% if is_tor_remote_access_enabled %}
                         <tr>
                             <th>Onion URL</th>
                             <td style="font-size: 12px;">{{sphinxrelay_onion_url}}</td>
                         </tr>
+                        {% endif %}
                         <tr>
                             <th>Sphinx Relay Interface</th>
                             <td><button id="sphinxrelay_ui" target="_blank" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;">Open</button></td>

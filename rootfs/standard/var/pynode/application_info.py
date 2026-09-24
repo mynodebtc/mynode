@@ -172,7 +172,8 @@ def replace_app_info_variables(app_data, text):
         text = text.replace("{HTTP_PORT}", str(app_data["http_port"]))
     if app_data["https_port"] != None:
         text = text.replace("{HTTPS_PORT}", str(app_data["https_port"]))
-    text = text.replace("{APP_TOR_ADDRESS}", get_onion_url_for_service(app_data["short_name"]))
+    app_tor_address = get_onion_url_for_service(app_data["short_name"]) if is_tor_remote_access_enabled() else ""
+    text = text.replace("{APP_TOR_ADDRESS}", app_tor_address)
     text = text.replace("{LOCAL_IP_ADDRESS}", get_local_ip())
     return text
 
@@ -220,7 +221,7 @@ def initialize_application_defaults(app):
     # A few apps' hidden service folders are not named after the app (BTCPay Server is
     # /var/lib/tor/mynode_btcpay), so the name can be given in the app JSON
     if not "tor_service_name" in app: app["tor_service_name"] = app["short_name"]
-    if not "tor_address" in app: app["tor_address"] = get_onion_url_for_service( app["tor_service_name"] )
+    if not "tor_address" in app: app["tor_address"] = get_onion_url_for_service( app["tor_service_name"] ) if is_tor_remote_access_enabled() else "NA"
     if not "is_premium" in app: app["is_premium"] = False
     if not "current_version" in app: app["current_version"] = get_app_current_version_from_file( app["short_name"] )
     app["latest_version"] = get_app_latest_version_from_file( app )
@@ -790,6 +791,7 @@ def create_application_tor_service(app_data):
     if has_ports:
         with open(torrc_file, "w") as f:
             f.write(contents)
+        run_linux_cmd("/usr/bin/mynode_gen_tor_config.sh {}".format(app_data["short_name"]))
 
 # Check a downloaded source tarball against the app's pinned "<version> <sha256>" value
 # (download_source_sha256, see scripts/print_app_download_hashes.sh). Apps without a pin
@@ -1075,6 +1077,9 @@ def init_dynamic_apps(short_name="all"):
 
     # Reload systemctl files
     os.system("systemctl daemon-reload")
+
+    # Enable or disable tor hidden services (upgrades restore the default files)
+    os.system("/usr/bin/mynode_gen_tor_config.sh")
 
     # Mark app db for needing reload
     clear_application_cache()

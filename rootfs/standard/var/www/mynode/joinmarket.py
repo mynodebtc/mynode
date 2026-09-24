@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, request, flash
 from user_management import check_logged_in
-from device_info import read_ui_settings, get_onion_url_for_service
+from device_info import read_ui_settings, get_onion_url_for_service, is_tor_remote_access_enabled
 from application_info import *
 from systemctl_info import *
 from utilities import *
@@ -68,10 +68,10 @@ def joininbox_page():
         "jam_version": jam_version,
         "jam_http_port": 5020,
         "jam_https_port": 5021,
-        "jam_tor_address": get_onion_url_for_service("jam"),
+        "jam_tor_address": get_onion_url_for_service("jam") if is_tor_remote_access_enabled() else "NA",
         "ob_http_port": 62601,
         "ob_https_port": 62602,
-        "ob_tor_address": get_onion_url_for_service("obwatcher"),
+        "ob_tor_address": get_onion_url_for_service("obwatcher") if is_tor_remote_access_enabled() else "NA",
         "wallets": get_jm_wallets(),
         "ui_settings": read_ui_settings(),
     }

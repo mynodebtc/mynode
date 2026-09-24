@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, session, abort, Markup, request, redirect, flash
 from pprint import pprint, pformat
 from bitcoin_info import *
-from device_info import get_local_ip, skipped_product_key, get_onion_url_electrs, read_ui_settings, restart_electrs, is_testnet_enabled
+from device_info import get_local_ip, skipped_product_key, get_onion_url_electrs, read_ui_settings, restart_electrs, is_testnet_enabled, is_tor_remote_access_enabled
 from user_management import check_logged_in
 from electrum_info import *
 import json
@@ -52,6 +52,7 @@ def electrum_server_page():
         "server_secure_port": server_secure_port,
         "electrs_version": get_electrs_version(),
         "electrs_command": electrs_command,
+        "is_tor_remote_access_enabled": is_tor_remote_access_enabled(),
         "electrs_onion_hostname": electrs_onion_hostname,
         "electrs_onion_command": electrs_onion_command,
         "ui_settings": read_ui_settings()

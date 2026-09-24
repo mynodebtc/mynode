@@ -1,0 +1,4 @@
+# Hidden Service for Sphinx Relay
+HiddenServiceDir /var/lib/tor/mynode_sphinx/
+HiddenServiceVersion 3
+HiddenServicePort 53001 127.0.0.1:53001

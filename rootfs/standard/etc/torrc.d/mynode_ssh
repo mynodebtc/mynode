@@ -1,0 +1,4 @@
+# Hidden Service for MyNode (SSH)
+HiddenServiceDir /var/lib/tor/mynode_ssh/
+HiddenServiceVersion 3
+HiddenServicePort 22022 127.0.0.1:22

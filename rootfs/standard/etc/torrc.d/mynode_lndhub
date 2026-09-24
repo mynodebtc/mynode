@@ -1,0 +1,7 @@
+# Hidden Service for MyNode (LNDHub)
+HiddenServiceDir /var/lib/tor/mynode_lndhub/
+HiddenServiceVersion 3
+HiddenServicePort 80 127.0.0.1:3000
+HiddenServicePort 443 127.0.0.1:3001
+HiddenServicePort 3000 127.0.0.1:3000
+HiddenServicePort 3001 127.0.0.1:3001

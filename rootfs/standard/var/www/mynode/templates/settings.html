@@ -542,6 +542,21 @@
                     window.location.href='/settings/modify-swap?size='+swap_choice
                 });
 
+                $('#tor_remote_access_checkbox').change(function () {
+                    $("#tor_remote_access").show();
+                });
+                $("#tor_remote_access").on("click", function() {
+                    // This setting is inverted (uses disable flag)
+                    checked=$('#tor_remote_access_checkbox').is(":checked")
+                    val = "1"
+                    if (checked)
+                    {
+                        val = "0"
+                    }
+                    $('#loading_spinner_overlay').fadeIn();
+                    window.location.href='/settings/toggle_setting?name=tor_remote_access_disabled&enable='+val
+                });
+
                 $('#streamisolation_tor_checkbox').change(function () {
                     $("#streamisolation_tor").show();
                 });
@@ -1412,6 +1427,20 @@
         <div class="settings_block">
             <a id="tor"></a>
             <div class="settings_block_header">Tor</div>
+
+            <div class="settings_block_subheader">Tor Remote Access</div>
+            Publish your apps, web UI, and SSH as tor hidden services so you can reach your device from anywhere.
+            <br/><br/>
+            Disabling this does not turn off tor. Bitcoin and Lightning continue to use tor for their own connections, and your tor addresses are kept so they are the same if you enable this again.
+            <br/><br/>
+            <label class="switch">
+                <input type="checkbox" id="tor_remote_access_checkbox" {% if is_tor_remote_access_enabled %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <br/><br/>
+            <button id="tor_remote_access" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+
+            <div class="divider"></div>
 
             <div class="settings_block_subheader">Reset Tor Connections</div>
             If your Tor performance is poor, you can reset your tor connections. Tor will be restarted with new connections.
