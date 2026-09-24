@@ -208,14 +208,7 @@
         <div class="settings_block tor_card">
             <div class="tor_card_header">
                 <div class="tor_card_text">
-                    <div class="tor_card_title">
-                        Tor Onion Addresses
-                        {% if is_tor_remote_access_enabled %}
-                            <span class="tor_status_pill enabled">Published</span>
-                        {% else %}
-                            <span class="tor_status_pill disabled">Not Published</span>
-                        {% endif %}
-                    </div>
+                    <div class="tor_card_title">Tor Onion Addresses</div>
                     {% if is_tor_remote_access_enabled %}
                         Anyone with one of these addresses can reach that service on your device. Keep them private unless there is someone you specifically want to share access with.
                     {% else %}
@@ -249,7 +242,7 @@
                                     <span class="tor_onion_address onion_url">{{ service.url }}</span>
                                     <span class="tor_onion_address onion_url_placeholder">&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;.onion</span>
                                 {% else %}
-                                    <span class="onion_not_published">Not published</span>
+                                    <span class="onion_not_published">Disabled</span>
                                 {% endif %}
                             </td>
                             <td>{{ service.port }}</td>
@@ -277,6 +270,12 @@
         </div>
         <br/>
 
+
+        <div id="loading_spinner_overlay" class="loading_spinner_overlay" style="display:none;">
+            <img id="loading_spinner" class="loading_image" src="{{ url_for('static', filename="images/loading.gif")}}"/>
+            <br/>
+            <span id="loading_spinner_message">Saving...</span>
+        </div>
 
         {% include 'includes/footer.html' %}
      </body>
