@@ -4,3 +4,6 @@ Dpkg::Options {
 }
 
 Acquire::ForceIPv4 "true";
+
+// Wait for another apt process (such as apt-daily) to release the lock instead of failing
+DPkg::Lock::Timeout "600";
