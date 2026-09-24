@@ -11,10 +11,10 @@ sleep 1m
 
 # Check if btc has peers
 while true; do
-    echo "Checking Bitcoin peer count..."
-    PEER_COUNT=$(bitcoin-cli getpeerinfo | jq '. | length')
-    if [ "$PEER_COUNT" -lt "6" ]; then
-        echo "$PEER_COUNT peers. Try adding one."
+    echo "Checking Bitcoin outbound peer count..."
+    PEER_COUNT=$(bitcoin-cli getpeerinfo | jq '[.[] | select(.inbound == false)] | length')
+    if [ "$PEER_COUNT" -lt "8" ]; then
+        echo "$PEER_COUNT outbound peers. Try adding one."
 
         echo -n "" > /tmp/new_peer
         if [ -f /mnt/hdd/mynode/settings/btc_ipv4_enabled ] || [ -f /home/bitcoin/.mynode/btc_ipv4_enabled ]; then
@@ -36,7 +36,7 @@ while true; do
 
         sleep 10s
     else
-        echo "We have $PEER_COUNT peers!"
-        sleep 60m
+        echo "We have $PEER_COUNT outbound peers!"
+        sleep 10m
     fi
 done
