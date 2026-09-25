@@ -1,3 +1,16 @@
+=== v0.3.49 ===
+- Released 09/25/26
+- Upgrade LNbits to v1.6.1
+- Issue HTTPS certificates from a local CA
+- Suggest HTTPS from home page
+- Add option to disable Tor remote access
+- Improve Tor and VPN page layout
+- Manage LNbits and BTCPay Server admin logins
+- Add BTCPay password recovery button
+- Update Bitcoin seed peers
+- Migrate app SDK into the MyNode repo
+- Bug Fixes
+
 === v0.3.48-2 ===
 - Released 09/18/26
 - Rework per-app credentials
