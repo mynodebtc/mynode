@@ -2,6 +2,21 @@
     <head>
         <title>Using HTTPS</title>
         {% include 'includes/head.html' %}
+        <style>
+            .https_status_pill {
+                display: table;
+                margin: 10px auto 0 auto;
+                font-size: 12px;
+                font-weight: bold;
+                letter-spacing: 0.05em;
+                text-transform: uppercase;
+                padding: 3px 11px;
+                border-radius: 11px;
+                color: #2e9e4f;
+                background-color: #2e9e4f1f;
+                border: 1px solid #2e9e4f;
+            }
+        </style>
      </head>
 
     <body>
@@ -12,6 +27,9 @@
         </div>
 
         <div class="main_header">Using HTTPS</div>
+        {% if is_https %}
+        <div class="https_status_pill"><i class="fas fa-lock"></i> Connected with HTTPS</div>
+        {% endif %}
 
         <br/>
         {% if is_https %}
@@ -22,6 +40,8 @@
                 {% if not is_https_forced %}
                     To make HTTPS permanent, enable Force HTTPS on the <a href="/settings#ui">settings</a> page.
                 {% endif %}
+                <br/><br/>
+                <a href="/" class="ui-button ui-widget ui-corner-all settings_button">Back to Home</a>
             </p>
         </div>
         {% else %}
@@ -35,13 +55,16 @@
         </div>
         {% endif %}
 
+        {% if not is_https %}
         <p class="warning_icon_row">
             <img class="warning_triangle_icon" src="{{ url_for('static', filename="images/warning_triangle.svg")}}"/>
             HTTPS may be required in a future release of MyNode.
             <img class="warning_triangle_icon" src="{{ url_for('static', filename="images/warning_triangle.svg")}}"/>
         </p>
+        {% endif %}
 
 
+        {% if not is_https %}
         <div class="settings_block">
             <div class="settings_block_header">Why Your Browser Shows a Warning</div>
             <p>
@@ -73,11 +96,12 @@
                 to the site.
                 <br/><br/>
                 If your browser refuses to continue at all, it is usually because the address does not match the
-                certificate. Try reaching your node at <a href="https://myNode.local">https://myNode.local</a>, or
+                certificate. Try reaching your node at <a href="https://mynode.local">https://mynode.local</a>, or
                 regenerate your certificates on the <a href="/settings#advanced">settings</a> page if your node's IP
                 address has changed.
             </p>
         </div>
+        {% endif %}
 
         <div class="settings_block">
             <div class="settings_block_header">Removing the Warning</div>
