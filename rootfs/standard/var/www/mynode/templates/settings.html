@@ -1552,9 +1552,22 @@
             <div class="divider"></div>
 
             <div class="settings_block_subheader">HTTPS Certificates</div>
-            This will download or regenerate your HTTPS certificates for the MyNode web interface.
+            {% if https_ca_info %}
+            Your MyNode is its own certificate authority. Download it and install it on your computers and
+            phones, and your browser trusts MyNode's HTTPS pages without a warning, including every
+            certificate MyNode renews later. <a href="/https-info#trust">Using HTTPS</a> has the steps for each system.
+            <br/><br/>
+            Name: {{ https_ca_info.name }}<br/>
+            SHA-256: <span style="word-break: break-all;">{{ https_ca_info.fingerprint }}</span>
+            <br/><br/>
+            Regenerate issues a new HTTPS certificate from the same authority, so there is nothing to reinstall.
             <br/>
             <a href="/settings/mynode_web.cert" class="ui-button ui-widget ui-corner-all settings_button">Download</a>
+            {% else %}
+            Your MyNode's certificate authority is created once the drive is set up. Until then, HTTPS uses a
+            temporary certificate that should not be installed.
+            <br/>
+            {% endif %}
             <a href="/settings/regen-https-certs" class="ui-button ui-widget ui-corner-all settings_button">Regenerate</a>
 
             <div class="divider"></div>

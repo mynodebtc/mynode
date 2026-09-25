@@ -70,6 +70,7 @@ def page_settings():
         "product_key_error": product_key_error,
         "changelog": changelog,
         "is_https_forced": is_https_forced(),
+        "https_ca_info": get_https_ca_info(),
         "settable_password_apps": {app: name for app, name in APPS_WITH_SETTABLE_PASSWORD.items() if is_installed(app)},
         # Asks BTCPay who its administrators are, so the reset button below names the real account
         "btcpay_admins": get_btcpay_admins() if is_installed("btcpayserver") and is_service_active("btcpayserver") else [],
@@ -948,11 +949,12 @@ def download_logs_page():
 def download_https_cert_page():
     check_logged_in()
 
-    if os.path.isfile("/mnt/hdd/mynode/settings/https/myNode.local.crt"):
-        return download_file(directory="/mnt/hdd/mynode/settings/https/", filename="myNode.local.crt")
-    if os.path.isfile("/home/bitcoin/.mynode/https/myNode.local.crt"):
-        return download_file(directory="/home/bitcoin/.mynode/https/", filename="myNode.local.crt")
-    return "error_missing_file"
+    # Only the CA is offered. The certificate it signs is reissued regularly, and without the drive
+    # the certificate in use is a temporary one, so neither should be installed.
+    if os.path.isfile("/mnt/hdd/mynode/https_ca/mynode_ca.crt"):
+        return download_file(directory="/mnt/hdd/mynode/https_ca/", filename="mynode_ca.crt")
+    flash("The certificate authority is not available until the drive is set up", category="error")
+    return redirect("/settings")
 
 @mynode_settings.route("/settings/regen-https-certs")
 def regen_https_certs_page():
@@ -985,9 +987,12 @@ def regen_electrs_certs_page():
     os.system("rm -rf /home/bitcoin/.mynode/electrs")
     os.system("rm -rf /mnt/hdd/mynode/settings/electrs")
     os.system("sync")
-    os.system("systemctl restart tls_proxy")
-    
-    flash("Electrum Server Service Restarted", category="message")
+
+    # Regenerate certs and reload nginx, which serves them
+    os.system("/usr/bin/mynode_gen_cert_electrs.sh")
+    os.system("systemctl reload nginx")
+
+    flash("Electrum Server Certs Regenerated", category="message")
     return redirect(url_for(".page_settings"))
 
 @mynode_settings.route("/settings/reinstall-app")

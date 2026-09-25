@@ -74,8 +74,9 @@
                 <br/><br/>
                 This is expected and it does not mean something is broken. HTTPS certificates are normally issued by
                 a certificate authority that verifies you own a public domain name. Your MyNode runs on your own
-                network and has no public domain name, so it generates its own certificate instead. Your browser has
-                no way to check who created that certificate, so it warns you rather than showing a padlock.
+                network and has no public domain name, so it acts as its own certificate authority instead. Your
+                browser does not know that authority until you install it, so it warns you rather than showing a
+                padlock.
                 <br/><br/>
                 The connection is still encrypted. The warning is about identity, not about encryption.
             </p>
@@ -84,7 +85,9 @@
         <div class="settings_block">
             <div class="settings_block_header">Continuing to Your Node</div>
             <p>
-                You only need to accept the certificate once per browser and device.
+                You need to accept the certificate once per browser and device, and again whenever your node
+                renews it, which happens about every two years and whenever its IP address changes.
+                {% if ca_info %}<a href="#trust">Trusting your node</a>, below, stops the warning for good.{% endif %}
                 <br/><br/>
                 <b>Chrome, Edge and Brave</b> &mdash; click "Advanced", then "Proceed to ... (unsafe)".
                 <br/><br/>
@@ -95,26 +98,65 @@
                 <b>iOS and Android</b> &mdash; tap the advanced or details option on the warning page, then continue
                 to the site.
                 <br/><br/>
-                If your browser refuses to continue at all, it is usually because the address does not match the
-                certificate. Try reaching your node at <a href="https://mynode.local">https://mynode.local</a>, or
-                regenerate your certificates on the <a href="/settings#advanced">settings</a> page if your node's IP
-                address has changed.
+                If the warning has no option to continue, your browser remembers trusting an earlier certificate for
+                that address and now refuses to accept any other.
+                {% if ca_info %}Install the certificate authority below, or reach{% else %}Reach{% endif %}
+                your node by its IP address instead, which is never blocked this way.
             </p>
         </div>
         {% endif %}
 
+        {% if ca_info %}
         <div class="settings_block">
-            <div class="settings_block_header">Removing the Warning</div>
+            <a id="trust"></a>
+            <div class="settings_block_header">Trusting Your Node</div>
             <p>
-                To stop the warning entirely, install your node's certificate on the devices you use. Download it
-                from the <a href="/settings#advanced">settings</a> page under HTTPS Certificates, then mark it as
-                trusted using your operating system's certificate or keychain settings. After that your browser
-                treats your node like any other HTTPS site.
+                Your MyNode is its own certificate authority. Install it on a computer or phone and that device
+                trusts your node's HTTPS pages from then on, with a padlock and no warning. You only do this once
+                per device: your node renews its certificate automatically, and every renewal is trusted without
+                reinstalling anything.
                 <br/><br/>
-                Your certificate is unique to your device and is generated on your node. Only install certificates
-                you downloaded from your own MyNode.
+                <b>1. Download it.</b> You may be asked to log in first. It is also on the
+                <a href="/settings#advanced">settings</a> page under HTTPS Certificates.
+                <br/><br/>
+                <a href="/settings/mynode_web.cert" class="ui-button ui-widget ui-corner-all settings_button">Download Certificate Authority</a>
+                <br/><br/>
+                <b>2. Check it is yours.</b> Once installed, your system shows the certificate's name and SHA-256
+                fingerprint. They should match these. If you have more than one MyNode, the name tells their
+                authorities apart.
+                <br/>
+                Name: {{ ca_info.name }}<br/>
+                SHA-256: <span style="word-break: break-all;">{{ ca_info.fingerprint }}</span>
+                <br/><br/>
+                <b>3. Install it.</b>
+                <br/><br/>
+                <b>macOS</b> &mdash; open the downloaded file to add it to Keychain Access, then double-click
+                "{{ ca_info.name }}", open Trust and set "When using this certificate" to "Always Trust".
+                <br/><br/>
+                <b>Windows</b> &mdash; open the downloaded file, click "Install Certificate", choose "Current User",
+                then place it in "Trusted Root Certification Authorities".
+                <br/><br/>
+                <b>Firefox</b> (on any system) &mdash; open Settings, then Privacy &amp; Security, View Certificates,
+                Authorities, Import, and tick "Trust this CA to identify websites".
+                <br/><br/>
+                <b>iOS</b> &mdash; open the file in Safari and allow the profile download, install it from Settings
+                under "Profile Downloaded", then turn it on under Settings, General, About, Certificate Trust
+                Settings. The certificate is not trusted until that last step.
+                <br/><br/>
+                <b>Android</b> &mdash; open Settings, then Security, Encryption &amp; credentials, Install a
+                certificate, CA certificate. The exact menu names vary by phone.
+                <br/><br/>
+                Your certificate authority is generated on your node and is unique to it. It can only vouch for local
+                network names and addresses, so it cannot be used to impersonate other websites. Only install one you
+                downloaded from your own MyNode.
+                <br/><br/>
+                The certificate authority is kept on your node's drive, so reflashing the OS drive keeps it.
+                Reformatting the drive or setting up a new node creates a new one: remove the old one from your
+                devices and install the new one. Until you do, your browser warns again, and for up to an hour it
+                may refuse to open your node's name at all. Its IP address always works.
             </p>
         </div>
+        {% endif %}
 
         <div class="settings_block">
             <div class="settings_block_header">Making HTTPS Permanent</div>

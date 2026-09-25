@@ -702,11 +702,28 @@ def is_https_forced():
 
 # Regen cert
 def regen_https_cert():
-    os.system("rm -rf /home/bitcoin/.mynode/https/myNode.local*")
-    os.system("rm -rf /mnt/hdd/mynode/settings/https/myNode.local*")
-    os.system("/usr/bin/mynode_gen_cert.sh https 825")
+    # Issues a new certificate from the existing CA, so devices that trust the CA keep trusting it
+    os.system("rm -rf /home/bitcoin/.mynode/https/mynode.local* /home/bitcoin/.mynode/https/myNode.local*")
+    os.system("rm -rf /mnt/hdd/mynode/settings/https/mynode.local* /mnt/hdd/mynode/settings/https/myNode.local*")
+    os.system("/usr/bin/mynode_gen_cert.sh https")
     os.system("sync")
     os.system("systemctl restart nginx")
+
+# Name and SHA-256 fingerprint of the CA users install, or None until the drive is set up and the
+# CA exists. The name has a random suffix, so users can tell apart the CAs of several devices.
+def get_https_ca_info():
+    ca_file = "/mnt/hdd/mynode/https_ca/mynode_ca.crt"
+    if not os.path.isfile(ca_file):
+        return None
+    try:
+        output = subprocess.check_output(["openssl", "x509", "-in", ca_file, "-noout", "-subject", "-fingerprint", "-sha256"]).decode("utf8")
+    except Exception:
+        return None
+    name = re.search(r"CN\s*=\s*([^,\n]+)", output)
+    fingerprint = re.search(r"Fingerprint=([0-9A-Fa-f:]+)", output)
+    if not name or not fingerprint:
+        return None
+    return {"name": name.group(1).strip(), "fingerprint": fingerprint.group(1).upper()}
 
 def get_flask_secret_key():
     if os.path.isfile("/home/bitcoin/.mynode/flask_secret_key"):

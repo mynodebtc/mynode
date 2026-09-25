@@ -671,15 +671,15 @@ fi
 
 # Generate certificates
 echo "Generating certificates..."
-/usr/bin/mynode_gen_cert.sh https 825
+/usr/bin/mynode_gen_cert.sh https
 /usr/bin/mynode_gen_cert_electrs.sh
 
 # Ensure copy has been made for public_apps certificate (overwritten by premium+, but needed to start nginx)
 if [ ! -f /home/bitcoin/.mynode/https/public_apps.crt ]; then
-    cp -f /home/bitcoin/.mynode/https/myNode.local.crt /home/bitcoin/.mynode/https/public_apps.crt
+    cp -f /home/bitcoin/.mynode/https/mynode.local.crt /home/bitcoin/.mynode/https/public_apps.crt
 fi
 if [ ! -f /home/bitcoin/.mynode/https/public_apps.key ]; then
-    cp -f /home/bitcoin/.mynode/https/myNode.local.key /home/bitcoin/.mynode/https/public_apps.key
+    cp -f /home/bitcoin/.mynode/https/mynode.local.key /home/bitcoin/.mynode/https/public_apps.key
 fi
 
 # Setup nginx HTTPS proxy

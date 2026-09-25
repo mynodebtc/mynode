@@ -843,6 +843,7 @@ def page_https_info():
     templateData = {
         "is_https": request.is_secure,
         "is_https_forced": is_https_forced(),
+        "ca_info": get_https_ca_info(),
         "ui_settings": read_ui_settings()
     }
     return render_template('https_info.html', **templateData)

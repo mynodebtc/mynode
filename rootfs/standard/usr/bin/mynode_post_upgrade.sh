@@ -1258,6 +1258,11 @@ fi
 # Update nginx conf file
 cp -f /usr/share/mynode/nginx.conf /etc/nginx/nginx.conf
 
+# Make the certificates the nginx config expects before rebooting, so nginx can start right away
+# instead of failing until startup makes them
+/usr/bin/mynode_gen_cert.sh https || true
+/usr/bin/mynode_gen_cert_electrs.sh || true
+
 
 # Remove password hash files that are no longer used
 rm -f /home/bitcoin/.mynode/.hashedpw || true
