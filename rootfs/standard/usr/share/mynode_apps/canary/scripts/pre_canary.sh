@@ -158,5 +158,7 @@ if ! write_env_file; then
     exit 1
 fi
 
-chown bitcoin:bitcoin "$DATA_DIR" "$ADMIN_PASSWORD_FILE" "$JWT_SECRET_FILE" "$ENV_FILE"
+# Canary v1.5.2 and earlier ran as root, so files it wrote can still be owned by
+# root. -h changes symlinks themselves instead of following them.
+chown -R -h bitcoin:bitcoin "$DATA_DIR"
 chmod 600 "$ADMIN_PASSWORD_FILE" "$JWT_SECRET_FILE" "$ENV_FILE"
