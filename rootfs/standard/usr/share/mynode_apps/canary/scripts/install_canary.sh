@@ -9,12 +9,12 @@ set -e
 
 echo "==================== INSTALLING APP ===================="
 
-pull_image() {
+pull_image_with_retries() {
     local image="$1"
     local attempt
 
     for attempt in 1 2 3 4 5; do
-        if docker pull "$image"; then
+        if pull_app_docker_image "$@"; then
             return 0
         fi
 
@@ -59,8 +59,10 @@ write_compose_identity
 remove_docker_images_by_name "canary-backend"
 remove_docker_images_by_name "canary-frontend"
 
-pull_image "schjonhaug/canary-backend:$VERSION"
-pull_image "schjonhaug/canary-frontend:$VERSION"
+BACKEND_IMAGE_DIGEST="v1.7.0 sha256:d5025d4be7af7c0b2a53086fd587375d54d4455da1de2cdfed7bdc47b5e1cc27"
+FRONTEND_IMAGE_DIGEST="v1.7.0 sha256:f4c5d5f8d3409ff3bc270356dfd3446e16cdd87a6ae48cddfac658631a76227b"
+pull_image_with_retries schjonhaug/canary-backend "$VERSION" canary "$BACKEND_IMAGE_DIGEST"
+pull_image_with_retries schjonhaug/canary-frontend "$VERSION" canary "$FRONTEND_IMAGE_DIGEST"
 
 docker tag schjonhaug/canary-backend:$VERSION canary-backend:latest
 docker tag schjonhaug/canary-frontend:$VERSION canary-frontend:latest
