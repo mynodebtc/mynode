@@ -437,10 +437,8 @@ if [ "$CURRENT" != "$BTC_VERSION" ]; then
     wget $BTC_UPGRADE_SHA256SUM_URL -O SHA256SUMS
     wget $BTC_UPGRADE_SHA256SUM_ASC_URL -O SHA256SUMS.asc
 
-    sha256sum --ignore-missing --check SHA256SUMS
-    if [ $? == 0 ]; then
-        gpg --verify SHA256SUMS.asc SHA256SUMS |& grep "gpg: Good signature"
-        if [ $? == 0 ]; then
+    if sha256sum --ignore-missing --check SHA256SUMS; then
+        if gpg --verify SHA256SUMS.asc SHA256SUMS |& grep "gpg: Good signature"; then
             # Install Bitcoin
             tar -xvf bitcoin-$BTC_VERSION-$ARCH.tar.gz
             mv bitcoin-$BTC_VERSION bitcoin
@@ -492,11 +490,10 @@ if [ "$CURRENT" != "$LND_VERSION" ]; then
     wget $LND_UPGRADE_MANIFEST_SUHEB_SIG_URL -O manifest_suheb.txt.sig || true
     wget $LND_UPGRADE_MANIFEST_VICTORT_SIG_URL -O manifest_victort.txt.sig || true
 
-    gpg --verify manifest_roasbeef.txt.sig manifest.txt || \
-    gpg --verify manifest_guggero.txt.sig manifest.txt || \
-    gpg --verify manifest_suheb.txt.sig manifest.txt || \
-    gpg --verify manifest_victort.txt.sig manifest.txt
-    if [ $? == 0 ]; then
+    if gpg --verify manifest_roasbeef.txt.sig manifest.txt || \
+       gpg --verify manifest_guggero.txt.sig manifest.txt || \
+       gpg --verify manifest_suheb.txt.sig manifest.txt || \
+       gpg --verify manifest_victort.txt.sig manifest.txt; then
         # Install LND
         tar -xzf lnd-*.tar.gz
         mv $LND_ARCH-$LND_VERSION lnd
@@ -537,8 +534,7 @@ if [ "$CURRENT" != "$LOOP_VERSION" ]; then
     wget $LOOP_UPGRADE_MANIFEST_URL -O manifest.txt
     wget $LOOP_UPGRADE_MANIFEST_SIG_URL -O manifest.txt.sig
 
-    gpg --verify manifest.txt.sig manifest.txt
-    if [ $? == 0 ]; then
+    if gpg --verify manifest.txt.sig manifest.txt; then
         # Install Loop
         tar -xzf loop-*.tar.gz
         mv $LOOP_ARCH-$LOOP_VERSION loop
@@ -575,8 +571,7 @@ if [ "$CURRENT" != "$POOL_VERSION" ]; then
     wget $POOL_UPGRADE_MANIFEST_URL -O manifest.txt
     wget $POOL_UPGRADE_MANIFEST_SIG_URL -O manifest.txt.sig
 
-    gpg --verify manifest.txt.sig manifest.txt
-    if [ $? == 0 ]; then
+    if gpg --verify manifest.txt.sig manifest.txt; then
         # Install Pool
         tar -xzf pool-*.tar.gz
         mv $POOL_ARCH-$POOL_VERSION pool
@@ -604,13 +599,6 @@ if [ -f $LIT_VERSION_FILE ]; then
     CURRENT=$(cat $LIT_VERSION_FILE)
 fi
 if [ "$CURRENT" != "$LIT_VERSION" ]; then
-    # App-only reinstall flows skip the base-upgrade block above, including its
-    # signing-key imports. Ensure the release key is present before verifying
-    # Lightning Terminal so reinstalling an unrelated app cannot fail here.
-    if ! gpg --list-keys C20A78516A0944900EBFCA29961CC8259AE675D4 >/dev/null 2>&1; then
-        gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys C20A78516A0944900EBFCA29961CC8259AE675D4
-    fi
-
     # Download and install lit
     rm -rf /opt/download
     mkdir -p /opt/download
@@ -620,8 +608,7 @@ if [ "$CURRENT" != "$LIT_VERSION" ]; then
     wget $LIT_UPGRADE_MANIFEST_URL -O manifest.txt
     wget $LIT_UPGRADE_MANIFEST_SIG_URL  -O manifest.txt.sig
 
-    gpg --verify manifest.txt.sig manifest.txt
-    if [ $? == 0 ]; then
+    if gpg --verify manifest.txt.sig manifest.txt; then
         # Install lit
         tar -xzf lightning-terminal-*.tar.gz
         mv $LIT_ARCH-$LIT_VERSION lightning-terminal
@@ -658,8 +645,7 @@ if [ "$CURRENT" != "$CHANTOOLS_VERSION" ]; then
     wget $CHANTOOLS_UPGRADE_MANIFEST_URL -O manifest.txt
     wget $CHANTOOLS_UPGRADE_MANIFEST_SIG_URL  -O manifest.txt.sig
 
-    gpg --verify manifest.txt.sig manifest.txt
-    if [ $? == 0 ]; then
+    if gpg --verify manifest.txt.sig manifest.txt; then
         # Install lit
         tar -xzf chantools-*.tar.gz
         mv $CHANTOOLS_ARCH-$CHANTOOLS_VERSION chantools
