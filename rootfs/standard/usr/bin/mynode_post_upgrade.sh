@@ -119,7 +119,6 @@ if ! skip_base_upgrades ; then
     $TORIFY wget -q https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc -O- | apt-key add - # Tor
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 648ACFD622F3D138   # Debian Backports
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E98404D386FA1D9   # Debian Backports
-    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 74A941BA219EC810   # Tor
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 66F6C87B98EBCFE2   # I2P (R4SAS)
     gpg --no-default-keyring --keyring /usr/share/keyrings/nodesource.gpg --keyserver keyserver.ubuntu.com --recv-keys 2F59B5F99B1BE0B4 # NodeJS
     set -e
