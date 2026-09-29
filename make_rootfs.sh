@@ -2,7 +2,8 @@
 
 # DEPRECATED DEVICES: raspi3 rock64 rockpi4
 
-# Keep macOS tar from adding AppleDouble (._*) entries for files with extended attributes
+# Keep macOS tar from adding AppleDouble (._*) entries for files with extended attributes. Extended
+# attributes are also left out with --no-xattrs, since GNU tar warns about macOS's for every file.
 export COPYFILE_DISABLE=1
 
 # Build all devices by default, or only those named on the command line
@@ -49,6 +50,6 @@ for i in "${DEVICES[@]}" ; do
     find out/rootfs_$i \( -name __pycache__ -o -name .DS_Store -o -name '._*' \) -prune -exec rm -rf {} +
 
 	rm -f out/mynode_rootfs_$i.tar.gz
-	tar -zcf out/mynode_rootfs_$i.tar.gz out/rootfs_$i/*
+	tar --no-xattrs -zcf out/mynode_rootfs_$i.tar.gz out/rootfs_$i/*
 done
 echo Done!
