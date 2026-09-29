@@ -1,0 +1,8 @@
+#!/bin/bash
+cat << 'EOF'
+(mock) QuickSync Status
+Torrent: mynode_quicksync
+Progress: 100%
+Peers: 12
+Upload rate: 2.4 MB/s
+EOF

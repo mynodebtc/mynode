@@ -148,10 +148,10 @@
             var pinned_bitcoin_details = {% if ui_settings['pinned_bitcoin_details'] %}true{% else %}false{% endif %};
             function togglePinnedBitcoinDetails() {
                 if (pinned_bitcoin_details) {
-                    $('#pin_bitcoin_details_icon').attr('src', location.protocol+'//'+location.hostname+'/static/images/pin.png');
+                    $('#pin_bitcoin_details_icon').attr('src', '/static/images/pin.png');
                     $.get("/api/toggle_setting?setting=pinned_bitcoin_details");
                 } else {
-                    $('#pin_bitcoin_details_icon').attr('src', location.protocol+'//'+location.hostname+'/static/images/unpin.png');
+                    $('#pin_bitcoin_details_icon').attr('src', '/static/images/unpin.png');
                     $.get("/api/toggle_setting?setting=pinned_bitcoin_details");
                 }
                 pinned_bitcoin_details = !pinned_bitcoin_details;
@@ -161,10 +161,10 @@
             function toggleBitcoinDetails() {
                 if (showing_bitcoin_details) {
                     $("#bitcoin_details").slideUp(400);
-                    $('#show_bitcoin_details').attr('src', location.protocol+'//'+location.hostname+'/static/images/expand_down.png');
+                    $('#show_bitcoin_details').attr('src', '/static/images/expand_down.png');
                 } else {
                     $("#bitcoin_details").slideDown(400);
-                    $('#show_bitcoin_details').attr('src', location.protocol+'//'+location.hostname+'/static/images/expand_up.png');
+                    $('#show_bitcoin_details').attr('src', '/static/images/expand_up.png');
                 }
                 showing_bitcoin_details = !showing_bitcoin_details;
             }
@@ -172,10 +172,10 @@
             var pinned_lightning_details = {% if ui_settings['pinned_lightning_details'] %}true{% else %}false{% endif %};
             function togglePinnedLightningDetails() {
                 if (pinned_lightning_details) {
-                    $('#pin_lightning_details_icon').attr('src', location.protocol+'//'+location.hostname+'/static/images/pin.png');
+                    $('#pin_lightning_details_icon').attr('src', '/static/images/pin.png');
                     $.get("/api/toggle_setting?setting=pinned_lightning_details");
                 } else {
-                    $('#pin_lightning_details_icon').attr('src', location.protocol+'//'+location.hostname+'/static/images/unpin.png');
+                    $('#pin_lightning_details_icon').attr('src', '/static/images/unpin.png');
                     $.get("/api/toggle_setting?setting=pinned_lightning_details");
                 }
                 pinned_lightning_details = !pinned_lightning_details;
@@ -185,10 +185,10 @@
             function toggleLightningDetails() {
                 if (showing_lightning_details) {
                     $("#lightning_details").slideUp(400);
-                    $('#show_lightning_details').attr('src', location.protocol+'//'+location.hostname+'/static/images/expand_down.png');
+                    $('#show_lightning_details').attr('src', '/static/images/expand_down.png');
                 } else {
                     $("#lightning_details").slideDown(400);
-                    $('#show_lightning_details').attr('src', location.protocol+'//'+location.hostname+'/static/images/expand_up.png');
+                    $('#show_lightning_details').attr('src', '/static/images/expand_up.png');
                     {% for c in lnd_channels %}
                         // Initialize channel balance bars
                         $( "#channel_bar_{{ c.chan_id }}" ).progressbar({

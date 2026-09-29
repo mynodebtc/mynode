@@ -1,0 +1,18 @@
+{
+    "serial": "MOCKDEV1234567890",
+    "device_type": "raspi4",
+    "arch": "aarch64",
+    "ram": "4",
+    "debian_codename": "bookworm",
+    "debian_version": 12,
+    "tor_version": "0.4.9.2",
+    "temp": "44.2",
+    "local_ip": "192.168.1.100",
+    "public_ip": "203.0.113.99",
+    "bitcoin_version": "v29.3",
+    "lnd_version": "0.20.1-beta",
+    "loop_version": "0.31.1-beta",
+    "pool_version": "0.6.5-beta",
+    "lit_version": "0.14.1-alpha",
+    "electrs_version": "v0.10.9"
+}

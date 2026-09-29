@@ -1,0 +1,3 @@
+#!/bin/bash
+# Fake torify: just run the wrapped command directly (no tor in the container).
+exec "$@"
