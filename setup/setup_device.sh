@@ -460,6 +460,16 @@ echo \
 apt-get update --allow-releaseinfo-change
 apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin || true
 
+# docker-compose is Compose v2 from docker-compose-plugin. The old pip Compose v1 fails to
+# recreate containers on current Docker. BTCPay's installer may already have put its own v2
+# binary there and pointed the plugin at it, so leave any v2 in place.
+COMPOSE_PLUGIN=/usr/libexec/docker/cli-plugins/docker-compose
+if [ -f $COMPOSE_PLUGIN ] && [ ! -L $COMPOSE_PLUGIN ] && \
+   ! /usr/local/bin/docker-compose version --short 2>/dev/null | grep -qE '^v?[2-9]'; then
+    pip3 uninstall -y docker-compose || true
+    ln -sf $COMPOSE_PLUGIN /usr/local/bin/docker-compose
+fi
+
 # Use systemd for managing docker
 rm -f /etc/init.d/docker
 rm -f /etc/systemd/system/multi-user.target.wants/docker.service

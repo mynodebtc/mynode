@@ -36,7 +36,7 @@ elif [ "$APP" = "btcpayserver" ]; then
     # Remove files and data
     source /etc/profile.d/btcpay-env.sh
     cd "$(dirname "$BTCPAY_ENV_FILE")"
-    docker-compose -f $BTCPAY_DOCKER_COMPOSE down --v # Remove volumes (uninstall only, not reinstall)
+    docker-compose -f $BTCPAY_DOCKER_COMPOSE down -v # Remove volumes (uninstall only, not reinstall)
     cd ~
     rm -f /etc/profile.d/btcpay-env.sh
     rm -rf /usr/local/bin/btcpay-*
