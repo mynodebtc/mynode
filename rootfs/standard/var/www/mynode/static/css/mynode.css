@@ -732,6 +732,68 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     margin: auto;
 }
 
+.sync_status {
+    width: 500px;
+    max-width: 100%;
+    margin: auto;
+    color: #555555;
+}
+.sync_status .small_message {
+    width: auto;
+}
+.sync_status_row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 15px;
+}
+.sync_stage_text {
+    font-size: 24px;
+}
+.sync_peers {
+    font-size: 16px;
+    white-space: nowrap;
+    padding-left: 15px;
+}
+.sync_peers_warning {
+    color: #e08a00;
+    font-weight: bold;
+}
+.sync_no_peers_note {
+    font-size: 12px;
+    text-align: right;
+    margin-top: -10px;
+    margin-bottom: 15px;
+    color: #e08a00;
+}
+.sync_step {
+    border: 3px solid orange;
+    border-radius: 15px;
+    background-color: #fff6e5;
+    padding: 15px 20px;
+}
+.sync_step_name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.sync_step_bar {
+    height: 12px;
+    border-radius: 6px;
+    background-color: #EEEEEE;
+    overflow: hidden;
+}
+.sync_step_bar_fill {
+    height: 100%;
+    border-radius: 6px;
+    background-color: orange;
+    transition: width 1s ease;
+}
+.sync_step_detail {
+    font-size: 14px;
+    margin-top: 8px;
+}
+
 .pair_wallet_text {
     margin: auto;
     margin-top: 15px;

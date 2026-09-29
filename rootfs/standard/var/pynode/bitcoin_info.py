@@ -9,6 +9,7 @@ import subprocess
 import copy
 import time
 import os
+import re
 
 # Variables
 bitcoin_block_height = 570000
@@ -22,7 +23,16 @@ bitcoin_wallets = None
 bitcoin_mempool = None
 bitcoin_recommended_fees = None
 bitcoin_version = None
+bitcoin_connection_count = None
+bitcoin_sync_status = None
+header_tip_time_cache = {"height": None, "time": None}
 BITCOIN_CACHE_FILE = "/tmp/bitcoin_info.json"
+
+# Header sync progress lines written to debug.log by bitcoind (pre-sync was added in Bitcoin Core v24)
+HEADER_PRESYNC_REGEX = re.compile(r"Pre-synchronizing blockheaders, height: (\d+) \(~([\d.]+)%\)")
+HEADER_SYNC_REGEX = re.compile(r"Synchronizing blockheaders, height: (\d+) \(~([\d.]+)%\)")
+BITCOIN_STARTUP_REGEX = re.compile(r"Bitcoin \w+ version v")
+LOG_TAIL_BYTES = 256 * 1024
 
 # Functions
 def get_bitcoin_rpc_username():
@@ -58,11 +68,115 @@ def run_bitcoincli_command(cmd):
         results = str(e)
     return results
 
+def get_bitcoin_debug_log_file():
+    if os.path.isfile("/mnt/hdd/mynode/settings/.testnet_enabled"):
+        return "/mnt/hdd/mynode/bitcoin/testnet3/debug.log"
+    return "/mnt/hdd/mynode/bitcoin/debug.log"
+
+def read_header_sync_from_log():
+    # Find the most recent header sync line logged since bitcoind last started
+    try:
+        with open(get_bitcoin_debug_log_file(), "rb") as f:
+            f.seek(0, os.SEEK_END)
+            size = f.tell()
+            f.seek(max(0, size - LOG_TAIL_BYTES))
+            data = f.read().decode("utf-8", "ignore")
+    except Exception:
+        return None
+    for line in reversed(data.splitlines()):
+        m = HEADER_PRESYNC_REGEX.search(line)
+        if m:
+            return {"presync": True, "height": int(m.group(1)), "percent": float(m.group(2))}
+        m = HEADER_SYNC_REGEX.search(line)
+        if m:
+            return {"presync": False, "height": int(m.group(1)), "percent": float(m.group(2))}
+        if BITCOIN_STARTUP_REGEX.search(line):
+            break
+    return None
+
+def get_header_tip_time(rpc_connection, header_height):
+    # Block time of the best header, cached by height so it is only looked up when the header tip moves
+    global header_tip_time_cache
+    if header_tip_time_cache["height"] == header_height:
+        return header_tip_time_cache["time"]
+    for tip in rpc_connection.getchaintips():
+        if tip["height"] == header_height and tip["status"] in ["active", "valid-fork", "valid-headers", "headers-only"]:
+            header = rpc_connection.getblockheader(tip["hash"])
+            header_tip_time_cache = {"height": header_height, "time": int(header["time"])}
+            return header_tip_time_cache["time"]
+    return None
+
+def calculate_bitcoin_sync_status(info, peer_count, header_tip_time, log_status):
+    status = {}
+    status["running"] = info != None
+    status["peers"] = peer_count
+    status["blocks"] = 0
+    status["headers"] = 0
+    status["block_percent"] = 0.0
+    status["header_percent"] = None
+    status["presync_active"] = False
+    status["presync_height"] = 0
+    status["presync_percent"] = 0.0
+    status["headers_synced"] = False
+    status["blocks_synced"] = False
+    status["stage"] = "starting"
+    if info == None:
+        return status
+
+    status["blocks"] = info["blocks"]
+    status["headers"] = info["headers"]
+    status["block_percent"] = float(info.get("verificationprogress", 0)) * 100
+    in_ibd = info.get("initialblockdownload", True)
+
+    # Headers are not stored during pre-sync, so the header count stays behind the pre-sync height
+    if in_ibd and log_status != None and log_status["presync"] and log_status["height"] > status["headers"]:
+        status["presync_active"] = True
+        status["presync_height"] = log_status["height"]
+        status["presync_percent"] = log_status["percent"]
+
+    # Headers are caught up once the header tip is within a day of now (same estimate bitcoind uses)
+    if not in_ibd:
+        status["headers_synced"] = True
+    elif status["presync_active"]:
+        status["headers_synced"] = False
+    elif header_tip_time != None:
+        blocks_left = max(0, int(time.time()) - header_tip_time) / 600.0
+        total = status["headers"] + blocks_left
+        if total > 0:
+            status["header_percent"] = 100.0 * status["headers"] / total
+        status["headers_synced"] = blocks_left < 144
+    elif log_status != None and not log_status["presync"] and log_status["height"] >= status["headers"]:
+        status["header_percent"] = log_status["percent"]
+        status["headers_synced"] = log_status["percent"] >= 99.9
+    else:
+        status["headers_synced"] = status["headers"] > 0 and status["blocks"] > 0
+    if status["headers_synced"]:
+        status["header_percent"] = 100.0
+
+    status["blocks_synced"] = status["headers_synced"] and status["blocks"] >= status["headers"]
+    if status["blocks_synced"]:
+        status["block_percent"] = 100.0
+
+    if status["presync_active"]:
+        status["stage"] = "presync_headers"
+    elif status["headers"] == 0 and not status["headers_synced"]:
+        status["stage"] = "starting"
+    elif not status["headers_synced"]:
+        status["stage"] = "sync_headers"
+    elif not status["blocks_synced"]:
+        status["stage"] = "sync_blocks"
+    else:
+        status["stage"] = "synced"
+    return status
+
 def update_bitcoin_main_info():
     global bitcoin_block_height
     global mynode_block_height
     global bitcoin_blockchain_info
+    global bitcoin_connection_count
+    global bitcoin_sync_status
 
+    info = None
     try:
         rpc_user = get_bitcoin_rpc_username()
         rpc_pass = get_bitcoin_rpc_password()
@@ -71,6 +185,24 @@ def update_bitcoin_main_info():
 
         # Basic Info
         info = rpc_connection.getblockchaininfo()
+
+        # Sync progress info (uses the raw info, before the data cleanup below)
+        try:
+            bitcoin_connection_count = rpc_connection.getconnectioncount()
+        except Exception:
+            bitcoin_connection_count = None
+        header_tip_time = None
+        log_status = None
+        if info != None and info.get("initialblockdownload", True):
+            try:
+                header_tip_time = get_header_tip_time(rpc_connection, info["headers"])
+            except Exception:
+                header_tip_time = None
+            # The log is only needed while headers are behind (pre-sync, or no header tip time)
+            if header_tip_time == None or int(time.time()) - header_tip_time > 600 * 144:
+                log_status = read_header_sync_from_log()
+        bitcoin_sync_status = calculate_bitcoin_sync_status(info, bitcoin_connection_count, header_tip_time, log_status)
+
         if info != None:
             # Save specific data
             bitcoin_block_height = info['headers']
@@ -87,6 +219,7 @@ def update_bitcoin_main_info():
 
     except Exception as e:
         log_message("ERROR: In update_bitcoin_info - {} DATA: {}".format( str(e), str(info) ))
+        bitcoin_sync_status = calculate_bitcoin_sync_status(None, None, None, None)
         return False
 
     update_bitcoin_json_cache()
@@ -247,6 +380,52 @@ def get_bitcoin_sync_progress():
         if "verificationprogress" in info:
             return info["verificationprogress"]
     return progress
+
+def get_bitcoin_sync_status():
+    global bitcoin_sync_status
+    return copy.deepcopy(bitcoin_sync_status)
+
+def get_bitcoin_sync_display():
+    # Text and the current stage (if any) for the sync page
+    status = get_bitcoin_sync_status()
+    if status == None:
+        status = calculate_bitcoin_sync_status(None, None, None, None)
+
+    display = {}
+    display["stage"] = status["stage"]
+    display["peers"] = "{:,}".format(status["peers"]) if status["peers"] != None else "..."
+    display["no_peers"] = status["peers"] == 0
+    display["marked_synced"] = is_bitcoin_synced()
+    display["step"] = None
+
+    if not status["running"]:
+        display["stage_text"] = "Waiting for Bitcoin to start..."
+    elif status["stage"] == "starting":
+        display["stage_text"] = "Connecting to peers..." if display["no_peers"] else "Waiting for block headers..."
+    elif status["stage"] == "synced":
+        display["stage_text"] = "Synchronized! Starting services..."
+    else:
+        display["stage_text"] = "Syncing..."
+
+    step = None
+    if status["stage"] == "presync_headers":
+        step = {"number": 1, "name": "Pre-synchronizing Headers", "percent": status["presync_percent"]}
+        step["detail"] = "Height {:,} (~{:.2f}%)".format(status["presync_height"], step["percent"])
+    elif status["stage"] == "sync_headers":
+        step = {"number": 2, "name": "Synchronizing Headers", "percent": status["header_percent"]}
+        if step["percent"] != None:
+            step["detail"] = "Height {:,} (~{:.2f}%)".format(status["headers"], step["percent"])
+        else:
+            step["detail"] = "Height {:,}".format(status["headers"])
+    elif status["stage"] == "sync_blocks":
+        step = {"number": 3, "name": "Synchronizing Blocks", "percent": status["block_percent"]}
+        step["detail"] = "Block {:,} of {:,} (~{:.2f}%)".format(status["blocks"], status["headers"], step["percent"])
+    if step != None:
+        step["count"] = 3
+        step["percent"] = min(100.0, max(0.0, step["percent"] or 0.0))
+        step["percent_str"] = "{:.2f}".format(step["percent"])
+        display["step"] = step
+    return display
 
 def get_bitcoin_recent_blocks():
     global bitcoin_recent_blocks

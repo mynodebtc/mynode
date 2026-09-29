@@ -5,38 +5,32 @@
 
         <script>
         $(document).ready(function() {
-            current_block = {{mynode_block_height}};
-            block_height = {{bitcoin_block_height}};
-            progress = "{{progress}}";
+
+            function update_sync(sync) {
+                $("#sync_stage_text").text(sync["stage_text"]);
+                $("#sync_peers").text(sync["peers"]);
+                $("#sync_peers_row").toggleClass("sync_peers_warning", sync["no_peers"]);
+                $("#sync_no_peers_note").toggle(sync["no_peers"]);
+
+                var step = sync["step"];
+                if (step != null) {
+                    $("#sync_step_name").text("Stage " + step["number"] + " of " + step["count"] + ": " + step["name"]);
+                    $("#sync_step_bar_fill").css("width", step["percent_str"] + "%");
+                    $("#sync_step_detail").text(step["detail"]);
+                    $("#sync_step").show();
+                } else {
+                    $("#sync_step").hide();
+                }
+            }
 
             function update_counts() {
                 // Update Bitcoin Info
                 $.getJSON("/api/get_bitcoin_info", function( data ) {
-                    //console.log("Bitcoin Data: " + JSON.stringify(data));
-                    if ("current_block" in data && data["current_block"] != null && 
-                        "block_height" in data && data["block_height"] != null && 
-                        "progress" in data && data["progress"] != null) {
-                        if (current_block != parseInt(data["current_block"])) {
-                            $("#current_block").fadeOut(250, function() {
-                                $(this).text(data["current_block"]);
-                            }).fadeIn(250);
-                            current_block = parseInt(data["current_block"]);
-                        }
-                        if (block_height != parseInt(data["block_height"])) {
-                            $("#block_height").fadeOut(250, function() {
-                                $(this).text(data["block_height"]);
-                            }).fadeIn(250);
-                            block_height = parseInt(data["block_height"]);
-                        }
-                        if (progress != data['progress']) {
-                            $("#progress").fadeOut(250, function() {
-                                $(this).text(data["progress"]);
-                            }).fadeIn(250);
-                            progress = data["progress"];
-                        }
+                    if ("sync" in data && data["sync"] != null) {
+                        update_sync(data["sync"]);
 
-                        // We're close, so do a full refresh to get to home page faster
-                        if (current_block > (block_height - 5)) {
+                        // Bitcoin is marked synced, so do a full refresh to get to the home page
+                        if (data["sync"]["marked_synced"]) {
                             location.reload();
                         }
                     }
@@ -45,15 +39,13 @@
 
             function update_message() {
                 // Update message
-                if (update_count % 12 == 0) {
-                    $.getJSON("/api/get_message", function( data ) {
-                        if ("message" in data && data["message"] != null) {
-                            $("#message").fadeOut(250, function() {
-                                $(this).text(data["message"]);
-                            }).fadeIn(250);
-                        }
-                    });
-                }
+                $.getJSON("/api/get_message?funny=1", function( data ) {
+                    if ("message" in data && data["message"] != null) {
+                        $("#message").fadeOut(250, function() {
+                            $(this).text(data["message"]);
+                        }).fadeIn(250);
+                    }
+                });
             }
 
             // Update info
@@ -68,19 +60,30 @@
 
     <body>
         {% include 'includes/logo_header.html' %}
-        
+
         <div class="state_header">{{ header_text }}</div>
 
-        <div class="state_subheader">
-            Syncing... <br/>
-            
-            <div style="margin-top: 20px;">
-                <span id="current_block">{{mynode_block_height}}</span> of <span id="block_height">{{bitcoin_block_height}}</span>
+        <div class="sync_status">
+            <div class="sync_status_row">
+                <div id="sync_stage_text" class="sync_stage_text">{{ sync.stage_text }}</div>
+                <div id="sync_peers_row" class="sync_peers {% if sync.no_peers %}sync_peers_warning{% endif %}">
+                    Peers: <span id="sync_peers">{{ sync.peers }}</span>
+                </div>
+            </div>
+            <div id="sync_no_peers_note" class="sync_no_peers_note" {% if not sync.no_peers %}style="display: none;"{% endif %}>
+                No peers connected. Check that the device is connected to the internet.
             </div>
 
-            <div id="progress" style='margin-top: 10px; font-size: 14px;'>{{progress}}</div>
+            <div id="sync_step" class="sync_step" {% if not sync.step %}style="display: none;"{% endif %}>
+                <div id="sync_step_name" class="sync_step_name">
+                    {% if sync.step %}Stage {{ sync.step.number }} of {{ sync.step.count }}: {{ sync.step.name }}{% endif %}
+                </div>
+                <div class="sync_step_bar">
+                    <div id="sync_step_bar_fill" class="sync_step_bar_fill" style="width: {% if sync.step %}{{ sync.step.percent_str }}{% else %}0{% endif %}%;"></div>
+                </div>
+                <div id="sync_step_detail" class="sync_step_detail">{% if sync.step %}{{ sync.step.detail }}{% endif %}</div>
+            </div>
 
-            <br/>
             <div id="message" class='small_message'>{{ message }}</div>
         </div>
 

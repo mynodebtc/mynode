@@ -54,6 +54,16 @@ table,
     color: #ddd;
 }
 
+.sync_status {
+    color: #ddd;
+}
+.sync_step {
+    background-color: #121c21;
+}
+.sync_step_bar {
+    background-color: #3a4750;
+}
+
 .app_tile,
 .app_tile_short,
 .app_tile_wide,

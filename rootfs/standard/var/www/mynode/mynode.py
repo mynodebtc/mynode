@@ -294,8 +294,6 @@ def index():
     check_logged_in()
     status = get_mynode_status()
 
-    bitcoin_block_height = get_bitcoin_block_height()
-    mynode_block_height = get_mynode_block_height()
     uptime_in_seconds = get_system_uptime_in_seconds()
     product_key_skipped = skipped_product_key()
     product_key_error = not is_valid_product_key()
@@ -555,17 +553,10 @@ def index():
 
         # Display sync info if not synced
         if not is_bitcoin_synced():
-            subheader = Markup("Syncing...")
-            if bitcoin_block_height == None:
-                bitcoin_block_height = 0
-            if mynode_block_height == None:
-                mynode_block_height = 0
             templateData = {
                 "title": "Sync",
                 "header_text": "Bitcoin Blockchain",
-                "bitcoin_block_height": bitcoin_block_height,
-                "mynode_block_height": mynode_block_height,
-                "progress": get_bitcoin_sync_progress(),
+                "sync": get_bitcoin_sync_display(),
                 "message": get_message(include_funny=True),
                 "ui_settings": read_ui_settings()
             }
