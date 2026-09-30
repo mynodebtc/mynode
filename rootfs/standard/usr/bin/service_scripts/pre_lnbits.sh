@@ -25,10 +25,29 @@ if [ ! -d "$LNBITS_DIR/extensions" ]; then
     mkdir -p "$LNBITS_DIR/extensions"
 fi
 
-# Generate hex macaroons
-#macaroonAdminHex=$(xxd -ps -u -c 1000 /mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon)
+# Bake a macaroon limited to the LND calls LNbits makes. Baked on every start, so it always
+# matches the current wallet and this permission list.
+LNBITS_MACAROON=/mnt/hdd/mynode/lnd/lnbits.macaroon
+rm -f $LNBITS_MACAROON.tmp
+lncli --network=mainnet --lnddir /mnt/hdd/mynode/lnd bakemacaroon --save_to $LNBITS_MACAROON.tmp \
+    uri:/lnrpc.Lightning/ChannelBalance \
+    uri:/lnrpc.Lightning/AddInvoice \
+    uri:/lnrpc.Lightning/LookupInvoice \
+    uri:/lnrpc.Lightning/SubscribeInvoices \
+    uri:/routerrpc.Router/SendPaymentV2 \
+    uri:/routerrpc.Router/TrackPaymentV2 \
+    uri:/invoicesrpc.Invoices/AddHoldInvoice \
+    uri:/invoicesrpc.Invoices/SettleInvoice \
+    uri:/invoicesrpc.Invoices/CancelInvoice
+if [ ! -s $LNBITS_MACAROON.tmp ]; then
+    echo "Failed to create LNbits macaroon"
+    exit 1
+fi
+chmod 600 $LNBITS_MACAROON.tmp
+mv -f $LNBITS_MACAROON.tmp $LNBITS_MACAROON
 
-# Update env file
+# Update env file. The container path stays /app/admin.macaroon because LNbits also saves it
+# in its own settings, which take precedence over the env file.
 sed -i "s|^LND_REST_MACAROON=.*|LND_REST_MACAROON=\"/app/admin.macaroon\"|g" $LNBITS_DIR/.env
 
 # Give the super user account a login before LNbits starts listening. Until the account has a
@@ -72,7 +91,7 @@ else
             --volume $LNBITS_DIR/.env:/app/.env \
             --volume $LNBITS_DIR/:/app/data \
             --mount type=bind,src=/mnt/hdd/mynode/lnd/tls.cert,target=/app/tls.cert,readonly \
-            --mount type=bind,src=/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon,target=/app/admin.macaroon,readonly \
+            --mount type=bind,src=/mnt/hdd/mynode/lnd/lnbits.macaroon,target=/app/admin.macaroon,readonly \
             --add-host=host.docker.internal:host-gateway \
             lnbits
         for _ in $(seq 1 120); do
