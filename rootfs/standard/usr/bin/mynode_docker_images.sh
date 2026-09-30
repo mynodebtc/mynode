@@ -24,8 +24,23 @@ wait_on_dns() {
     return 1
 }
 
+# Stop containers of disabled apps. Docker restarts containers with a restart policy by itself,
+# so ones left running when the SD card was replaced keep coming back.
+stop_disabled_app_containers() {
+    for c in $(docker ps -q --filter label=com.docker.compose.project.working_dir); do
+        # Apps run compose from /mnt/hdd/mynode/<app>/... or /opt/mynode/<app>/...
+        app=$(docker inspect -f '{{index .Config.Labels "com.docker.compose.project.working_dir"}}' $c | \
+              sed -nE 's#^(/mnt/hdd|/opt)/mynode/([^/]+).*#\2#p')
+        if [ -n "$app" ] && [ "$(systemctl is-enabled "$app" 2>/dev/null)" = "disabled" ]; then
+            docker stop $c
+        fi
+    done
+}
+
 # Drive should be mounted, let's still wait a bit
 sleep 10s
+
+(sleep 5m; stop_disabled_app_containers) &
 
 echo "Waiting on bitcoin to sync so drive usage is lower..."
 /usr/bin/wait_on_bitcoin.sh
