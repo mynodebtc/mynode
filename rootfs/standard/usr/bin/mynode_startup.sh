@@ -258,7 +258,10 @@ mkdir -p /tmp/flask_uploads
 # Migrate any containerd data left on the OS drive to the external drive
 # (config.toml now points containerd's root at /mnt/hdd/mynode/containerd, but
 # older installs may still have data sitting at the default /var/lib/containerd)
-if [ -d /var/lib/containerd ] && [ ! -L /var/lib/containerd ] && [ -n "$(ls -A /var/lib/containerd 2>/dev/null)" ]; then
+# A drive that already has a containerd store keeps it: a newly flashed OS drive
+# carries an empty one that would replace the drive's image database.
+if [ -d /var/lib/containerd ] && [ ! -L /var/lib/containerd ] && [ -n "$(ls -A /var/lib/containerd 2>/dev/null)" ] &&
+   [ ! -f /mnt/hdd/mynode/containerd/io.containerd.metadata.v1.bolt/meta.db ]; then
     rsync -a --remove-source-files /var/lib/containerd/ /mnt/hdd/mynode/containerd/ || true
     find /var/lib/containerd -depth -type d -empty -delete 2>/dev/null || true
 fi
