@@ -24,6 +24,7 @@ remove_docker_images_by_name 'nostrrsrelay'
 
 # Build docker container
 # The HOME=. is a hack to use the current folder since nostrrsrelay user doesn't have a home holder which causes failure
-HOME=. docker build -t nostrrsrelay .
+# A build cache that points at missing layers fails every build: clear it and retry
+HOME=. docker build -t nostrrsrelay . || { HOME=. docker builder prune -af; HOME=. docker build -t nostrrsrelay .; }
 
 echo "================== DONE INSTALLING APP ================="

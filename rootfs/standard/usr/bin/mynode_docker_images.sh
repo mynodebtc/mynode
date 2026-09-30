@@ -124,7 +124,8 @@ while true; do
             rm webssh2.tar.gz
             mv webssh2-* webssh2
             cd webssh2
-            docker build -t webssh2 .
+            # A build cache that points at missing layers fails every build: clear it and retry
+            docker build -t webssh2 . || { docker builder prune -af; docker build -t webssh2 .; }
             if [ $? == 0 ]; then
                 echo $WEBSSH2_VERSION > $WEBSSH2_VERSION_FILE
             fi
