@@ -39,6 +39,10 @@ if [ "$APP" = "bos" ]; then
     npm uninstall -g balanceofsatoshis
 elif [ "$APP" = "netdata" ]; then
     systemctl stop netdata
+    # Remove leftover containers, which can point at a deleted Docker network
+    if [ -f /opt/mynode/netdata/netdata-compose.yml ]; then
+        docker-compose -f /opt/mynode/netdata/netdata-compose.yml down --remove-orphans
+    fi
     remove_docker_images_by_name 'netdata'
 elif [ "$APP" = "btcpayserver" ]; then
     # Stop and clean images
@@ -92,7 +96,8 @@ elif [ "$APP" = "lndmanage" ]; then
     pip3 uninstall -y lndmanage
 elif [ "$APP" = "mempool" ]; then
     cd /mnt/hdd/mynode/mempool
-    docker-compose rm
+    # Remove leftover containers, which can point at a deleted Docker network
+    docker-compose down --remove-orphans
     rm -rf data
     rm -rf mysql/data
     cd ~
