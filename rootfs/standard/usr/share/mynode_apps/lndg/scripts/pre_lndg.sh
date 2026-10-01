@@ -21,7 +21,9 @@ def read(path):
     except FileNotFoundError:
         return None
 
-db = sqlite3.connect("file:" + DIR + "data/db.sqlite3?mode=ro", uri=True)
+# rw, not ro: reading has to roll back a journal left by an interrupted write.
+# Unlike a plain connect, it never creates a missing database.
+db = sqlite3.connect("file:" + DIR + "data/db.sqlite3?mode=rw", uri=True)
 row = db.execute("SELECT password FROM auth_user WHERE username = 'admin'").fetchone()
 value = row[0] if row else ""
 

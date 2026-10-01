@@ -48,7 +48,9 @@ def read_super_user_id():
 
 def read_password_hash(super_user_id, read_only=True):
     if read_only:
-        db = sqlite3.connect("file:" + DATABASE + "?mode=ro", uri=True)
+        # rw, not ro: reading has to roll back a journal left by an interrupted write.
+        # Unlike a plain connect, it never creates a missing database.
+        db = sqlite3.connect("file:" + DATABASE + "?mode=rw", uri=True)
     else:
         db = sqlite3.connect(DATABASE)
     row = db.execute(
