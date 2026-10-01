@@ -1532,6 +1532,9 @@ def apply_tor_remote_access_setting():
     # Regenerate the lndconnect pairing codes with or without the tor address
     os.system("systemctl try-restart lndconnect")
 
+    # Regenerate the Sphinx Relay connection string with the tor or local address
+    os.system("systemctl try-restart sphinxrelay")
+
     # App data holds each app's tor address
     trigger_application_refresh()
 

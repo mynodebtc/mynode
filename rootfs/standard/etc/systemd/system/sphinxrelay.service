@@ -9,8 +9,10 @@ After=lnd.service
 [Service]
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_lnd.sh
+ExecStartPre=+/usr/bin/mynode_bake_app_macaroon.sh sphinxrelay
 ExecStartPre=+/usr/bin/service_scripts/pre_sphinxrelay.sh
 WorkingDirectory=/opt/mynode/sphinxrelay
+Environment=USE_PASSWORD=true
 ExecStart=npm run prod
 
 User=bitcoin
