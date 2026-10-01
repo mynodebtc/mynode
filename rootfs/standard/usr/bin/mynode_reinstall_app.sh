@@ -21,8 +21,11 @@ APP="$1"
 rm -f /home/bitcoin/.mynode/${APP}_version || true
 rm -f /mnt/hdd/mynode/settings/${APP}_version || true
 
-# A reinstalled app gets a new generated login password on its next start
-rm -f /mnt/hdd/mynode/${APP}/.app_password || true
+# A reinstalled app gets a new generated login password on its next start. Alby Hub keeps its
+# data across a reinstall, and its password with it.
+if [ "$APP" != "albyhub" ]; then
+    rm -f /mnt/hdd/mynode/${APP}/.app_password || true
+fi
 
 # Make sure app is marked for install
 if [ -f /home/bitcoin/.mynode/${APP}_version_latest ]; then

@@ -604,6 +604,9 @@ def clear_application_password(short_name):
     # A reinstalled app gets a new generated login password on its next start
     if not is_application_valid(short_name):
         return
+    # Alby Hub keeps its data across a reinstall, and its password with it
+    if short_name == "albyhub":
+        return
     try:
         os.remove("/mnt/hdd/mynode/{}/.app_password".format(short_name))
     except FileNotFoundError:

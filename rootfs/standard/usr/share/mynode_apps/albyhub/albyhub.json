@@ -52,7 +52,7 @@
             "heading": "Instructions",
             "content": [
                 "Alby Hub - Your Own Center for Internet Money",
-                "On first login non-recoverable password will be created.",
+                "MyNode sets up Alby Hub with the unlock password shown in the App Default Credentials section on this page. You can change it in Alby Hub's settings.",
                 "Configuration with LDK will create non-custodial Lightning Node.",
                 "Lightning node uses external services for Bitcoin Blockchain data and indexes. So disk space usage of Alby Hub is minimal.",
                 "Make sure you have backups https://guides.getalby.com/user-guide/alby-account-and-browser-extension/alby-hub/backups-and-recover",
