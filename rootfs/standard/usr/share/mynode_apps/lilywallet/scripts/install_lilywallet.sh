@@ -8,12 +8,16 @@ set -e
 
 echo "==================== INSTALLING APP ===================="
 
-# Copy over custom compose file for mynode
-cp -f app_data/docker-compose.yml docker-compose.yml
+# APP REMOVED - Lily Wallet can no longer be installed
+echo "Lily Wallet is no longer available to install"
+exit 1
 
-sed -i "s/RUN yarn/RUN yarn --network-timeout 120000/g" Dockerfile
+# Copy over custom compose file for mynode
+#cp -f app_data/docker-compose.yml docker-compose.yml
+
+#sed -i "s/RUN yarn/RUN yarn --network-timeout 120000/g" Dockerfile
 
 # Build images
-docker-compose build --no-cache
+#docker-compose build --no-cache
 
 echo "================== DONE INSTALLING APP ================="

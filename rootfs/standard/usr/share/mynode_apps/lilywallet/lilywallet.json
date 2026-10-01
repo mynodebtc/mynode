@@ -34,6 +34,7 @@
     "requires_docker_image_installation": true,
     "requires_electrs": true,
     "requires_lightning": false,
+    "show_on_marketplace_page": false,
     "show_on_application_page": true,
     "show_on_homepage": true,
     "show_on_status_page": true,
@@ -48,13 +49,13 @@
             "heading": "Instructions",
             "content": [
                 "Open Lilywallet by clicking the button on the left. Once open, setup a fresh password for the Lilywallet application. You will need this password each time you login.",
-                "On initial setup, your local Lightning wallet will already be listed. You can add additional hardware wallets and create multisig wallets as well.",
+                "You can add hardware wallets and create multisig wallets. To use your local Lightning wallet, add it in Lily Wallet with a connection string from the Lightning page.",
                 "Enjoy!"
             ]
         }
     ],
     "can_uninstall": true,
-    "can_reinstall": true,
+    "can_reinstall": false,
     "can_enable_disable": true,
     "is_beta": false,
     "is_premium": true,

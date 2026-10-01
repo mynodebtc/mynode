@@ -1343,6 +1343,14 @@ rm -f /etc/systemd/system/mempoolspace.service
 rm -f /etc/systemd/system/poold.service
 rm -f /etc/systemd/system/loopd.service
 
+# Lily Wallet has been removed - stop it once (it can be started again from its app page)
+if [ ! -f /home/bitcoin/.mynode/.lilywallet_stopped ]; then
+    systemctl stop lilywallet > /dev/null 2>&1 || true
+    systemctl disable lilywallet > /dev/null 2>&1 || true
+    rm -f /mnt/hdd/mynode/settings/lilywallet_enabled
+    touch /home/bitcoin/.mynode/.lilywallet_stopped
+fi
+
 # Reload service settings
 systemctl daemon-reload
 
