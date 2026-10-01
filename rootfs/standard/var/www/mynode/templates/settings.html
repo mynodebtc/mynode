@@ -265,6 +265,13 @@
                     }
                 });
 
+                $("#reset_albyhub_password_button").button();
+                $("#reset_albyhub_password_button").on("click", function() {
+                    if (confirm("Are you sure you want to delete Alby Hub's data and reset its password?")) {
+                        window.location.href='/settings/reset-albyhub-password';
+                    }
+                });
+
                 $("#reset_app_passwords_button").button();
                 $("#reset_app_passwords_button").on("click", function() {
                     if (confirm("Are you sure you want to reset all app passwords?")) {
@@ -1377,6 +1384,21 @@
             <br/>
             <a href="/settings/reset-specter-config" class="ui-button ui-widget ui-corner-all settings_button">Reset Configuration</a>
         </div>
+
+
+        {% if albyhub_installed %}
+        <div class="settings_block">
+            <a id="albyhub"></a>
+            <div class="settings_block_header">Alby Hub</div>
+
+            <div class="settings_block_subheader">Reset Password</div>
+            Alby Hub's password cannot be recovered. If the <a href="/app/albyhub/info">Alby Hub app page</a> still shows it, use that one.
+            Otherwise this deletes Alby Hub's data and sets it up again with a new password, shown on the app page. Funds in LND are not affected,
+            but Alby Hub's app connections, settings and Alby Account link are lost, and so are refunds of any unfinished swaps.
+            <br/>
+            <button id="reset_albyhub_password_button" class="ui-button ui-widget ui-corner-all settings_button">Reset password</button>
+        </div>
+        {% endif %}
 
 
         <div class="settings_block">

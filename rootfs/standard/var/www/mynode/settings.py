@@ -74,6 +74,7 @@ def page_settings():
         "settable_password_apps": {app: name for app, name in APPS_WITH_SETTABLE_PASSWORD.items() if is_installed(app)},
         # Asks BTCPay who its administrators are, so the reset button below names the real account
         "btcpay_admins": get_btcpay_admins() if is_installed("btcpayserver") and is_service_active("btcpayserver") else [],
+        "albyhub_installed": is_installed("albyhub"),
         "logout_time_days": logout_time_days,
         "logout_time_hours": logout_time_hours,
         "using_bitcoin_custom_config": using_bitcoin_custom_config(),
@@ -672,6 +673,22 @@ def reset_specter_config_page():
     t.start()
 
     flash("Specter Configuration Reset", category="message")
+    return redirect("/settings")
+
+@mynode_settings.route("/settings/reset-albyhub-password")
+def reset_albyhub_password_page():
+    check_logged_in()
+
+    if not is_installed("albyhub"):
+        flash("Alby Hub is not installed", category="error")
+        return redirect("/settings")
+
+    # Alby Hub's password cannot be changed without the current one, so this deletes the hub's
+    # data. pre_albyhub.sh then sets it up again with a new password.
+    t = Timer(1.0, reset_data_folder, ["albyhub"])
+    t.start()
+
+    flash("Alby Hub is being reset - its new password will be shown on the Alby Hub app page", category="message")
     return redirect("/settings")
 
 @mynode_settings.route("/settings/reset-firewall")
