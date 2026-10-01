@@ -12,6 +12,7 @@ ExecStartPre=/usr/bin/is_mainnet.sh
 ExecStartPre=/usr/bin/wait_on_bitcoin.sh
 ExecStartPre=/usr/bin/wait_on_lnd.sh
 ExecStartPre=/usr/bin/wait_on_docker_image_install.sh
+ExecStartPre=+/usr/bin/mynode_bake_app_macaroon.sh lnbits
 ExecStartPre=/usr/bin/service_scripts/pre_lnbits.sh
 WorkingDirectory=/opt/mynode/lnbits
 

@@ -25,27 +25,6 @@ if [ ! -d "$LNBITS_DIR/extensions" ]; then
     mkdir -p "$LNBITS_DIR/extensions"
 fi
 
-# Bake a macaroon limited to the LND calls LNbits makes. Baked on every start, so it always
-# matches the current wallet and this permission list.
-LNBITS_MACAROON=/mnt/hdd/mynode/lnd/lnbits.macaroon
-rm -f $LNBITS_MACAROON.tmp
-lncli --network=mainnet --lnddir /mnt/hdd/mynode/lnd bakemacaroon --save_to $LNBITS_MACAROON.tmp \
-    uri:/lnrpc.Lightning/ChannelBalance \
-    uri:/lnrpc.Lightning/AddInvoice \
-    uri:/lnrpc.Lightning/LookupInvoice \
-    uri:/lnrpc.Lightning/SubscribeInvoices \
-    uri:/routerrpc.Router/SendPaymentV2 \
-    uri:/routerrpc.Router/TrackPaymentV2 \
-    uri:/invoicesrpc.Invoices/AddHoldInvoice \
-    uri:/invoicesrpc.Invoices/SettleInvoice \
-    uri:/invoicesrpc.Invoices/CancelInvoice
-if [ ! -s $LNBITS_MACAROON.tmp ]; then
-    echo "Failed to create LNbits macaroon"
-    exit 1
-fi
-chmod 600 $LNBITS_MACAROON.tmp
-mv -f $LNBITS_MACAROON.tmp $LNBITS_MACAROON
-
 # Update env file. The container path stays /app/admin.macaroon because LNbits also saves it
 # in its own settings, which take precedence over the env file.
 sed -i "s|^LND_REST_MACAROON=.*|LND_REST_MACAROON=\"/app/admin.macaroon\"|g" $LNBITS_DIR/.env
