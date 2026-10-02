@@ -4,28 +4,30 @@ services:
   backend:
     image: canary-backend:latest
     user: "${CANARY_HOST_UID}:${CANARY_HOST_GID}"
-    network_mode: host
     restart: unless-stopped
     stop_grace_period: 30s
+    extra_hosts:
+      - host.docker.internal:host-gateway
     volumes:
       - /mnt/hdd/mynode/canary:/app/data
     env_file:
       - /mnt/hdd/mynode/canary/canary.env
     environment:
       CANARY_DATA_DIR: /app/data
-      CANARY_ELECTRUM_URL: tcp://127.0.0.1:50001
+      CANARY_ELECTRUM_URL: tcp://host.docker.internal:50001
       CANARY_NETWORK: mainnet
       CANARY_MODE: self-hosted
-      CANARY_BIND_ADDRESS: 127.0.0.1:3004
+      CANARY_BIND_ADDRESS: 0.0.0.0:3004
       FRONTEND_URL: http://mynode.local:3005
 
   frontend:
     image: canary-frontend:latest
-    network_mode: host
     restart: unless-stopped
     stop_grace_period: 30s
     depends_on:
       - backend
+    ports:
+      - "3005:3005"
     environment:
-      API_URL: http://127.0.0.1:3004
+      API_URL: http://backend:3004
       PORT: "3005"
