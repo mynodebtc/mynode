@@ -6,7 +6,7 @@
 #   - built-in apps: <APP>_SHA256 / <APP>_DIGEST in rootfs/standard/usr/share/mynode/mynode_app_versions.sh
 #   - marketplace apps: "download_source_sha256" in rootfs/standard/usr/share/mynode_apps/<app>/<app>.json,
 #     image digests in rootfs/standard/usr/share/mynode_apps/<app>/scripts/install_<app>.sh
-# Pass app names (e.g. THUNDERHUB lndg) to check only those. Image digests need docker buildx.
+# Pass app names (e.g. THUNDERHUB lndg GO) to check only those. Image digests need docker buildx.
 
 set -e
 
@@ -37,6 +37,18 @@ canary BACKEND_IMAGE_DIGEST schjonhaug/canary-backend {VERSION}
 canary FRONTEND_IMAGE_DIGEST schjonhaug/canary-frontend {VERSION}
 jam IMAGE_DIGEST ghcr.io/joinmarket-webui/jam-ui-only {VERSION}-clientserver-v0.9.11
 lndboss IMAGE_DIGEST niteshbalusu/lndboss {VERSION}
+"
+
+# Toolchains and binaries installed as root by mynode_post_upgrade.sh and setup_device.sh, one pin
+# per architecture where the download differs: <pin variable> <version variable> <URL, with {VERSION}>
+TOOL_DOWNLOADS="
+GO_ARMV6L_SHA256 GO_VERSION https://go.dev/dl/go{VERSION}.linux-armv6l.tar.gz
+GO_ARM64_SHA256 GO_VERSION https://go.dev/dl/go{VERSION}.linux-arm64.tar.gz
+GO_AMD64_SHA256 GO_VERSION https://go.dev/dl/go{VERSION}.linux-amd64.tar.gz
+PYTHON_SHA256 PYTHON_VERSION https://www.python.org/ftp/python/{VERSION}/Python-{VERSION}.tar.xz
+LNDCONNECT_ARMV7_SHA256 LNDCONNECT_VERSION https://github.com/LN-Zap/lndconnect/releases/download/{VERSION}/lndconnect-linux-armv7-{VERSION}.tar.gz
+LNDCONNECT_AMD64_SHA256 LNDCONNECT_VERSION https://github.com/LN-Zap/lndconnect/releases/download/{VERSION}/lndconnect-linux-amd64-{VERSION}.tar.gz
+TOR_SOURCE_SHA256 TOR_SOURCE_VERSION https://dist.torproject.org/tor-{VERSION}.tar.gz
 "
 
 SELECTED=("$@")
@@ -155,6 +167,22 @@ while read -r APP VAR IMAGE TAG_TEMPLATE; do
     CURRENT=$(grep -E "^[[:space:]]*${VAR}=\"" "$MARKETPLACE_DIR/$APP/scripts/install_$APP.sh" | head -1 | cut -d'"' -f2)
     echo "$APP: ${VAR}=\"$PINNED\"    # $(status_of "$CURRENT" "$PINNED")"
 done <<< "$MARKETPLACE_DOCKER_IMAGES"
+
+while read -r VAR VERSION_VAR URL_TEMPLATE; do
+    [ -n "$VAR" ] || continue
+    wanted "${VAR%%_*}" || continue
+    VERSIONS=$(grep -E "^[[:space:]]*${VERSION_VAR}=\"[^\$\"]+\"" $VERSIONS_FILE | cut -d'"' -f2 | sort -u)
+    if [ -z "$VERSIONS" ]; then
+        echo "ERROR: could not determine version for $VAR" >&2
+        exit 1
+    fi
+    for VERSION in $VERSIONS; do
+        curl -fsSL "${URL_TEMPLATE//\{VERSION\}/$VERSION}" -o "$TMP_DIR/download" < /dev/null
+        PINNED="$VERSION $(sha256_of "$TMP_DIR/download")"
+        CURRENT=$(grep -E "^[[:space:]]*${VAR}=\"" $VERSIONS_FILE | grep -F "\"$VERSION " | head -1 | cut -d'"' -f2)
+        echo "${VAR}=\"$PINNED\"    # $(status_of "$CURRENT" "$PINNED")"
+    done
+done <<< "$TOOL_DOWNLOADS"
 
 # btcpayserver-docker has no releases; its setup script runs from a pinned commit
 if wanted BTCPAYSERVER; then

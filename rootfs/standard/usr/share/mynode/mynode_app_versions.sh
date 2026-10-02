@@ -166,7 +166,7 @@ JOININBOX_VERSION=$(get_app_version "$JOININBOX_VERSION" "joininbox")
 JOININBOX_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version
 JOININBOX_LATEST_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version_latest
 
-SECP256K1_VERSION=486205aa68b7f1d4291f78fa20bc4485fd843e1c
+SECP256K1_VERSION=6e2c8bc4ecdc6e71dbe7a368f360d8d453ce435d
 SECP256K1_VERSION_FILE=/home/bitcoin/.mynode/secp256k1_version
 SECP256K1_LATEST_VERSION_FILE=/home/bitcoin/.mynode/secp256k1_version_latest
 
@@ -242,6 +242,8 @@ LNDMANAGE_VERSION_FILE=/home/bitcoin/.mynode/lndmanage_version
 LNDMANAGE_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lndmanage_version_latest
 
 LNDCONNECT_VERSION="v0.2.0"
+LNDCONNECT_ARMV7_SHA256="v0.2.0 5fe4eb6ab64f18cd962f379a3537b2cc876d9094358424fd46d23ce3929405e4"
+LNDCONNECT_AMD64_SHA256="v0.2.0 0c60eaa86de22bcfe5be232f82d4d38690d6f9922a30a7d1754b2352885da6fe"
 LNDCONNECT_VERSION=$(get_app_version "$LNDCONNECT_VERSION" "lndconnect")
 LNDCONNECT_VERSION_FILE=/home/bitcoin/.mynode/lndconnect_version
 LNDCONNECT_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lndconnect_version_latest
@@ -305,6 +307,7 @@ PYTHON_VERSION="3.8.9"
 if [ "$DEBIAN_VERSION" -lt "12" ]; then
     PYTHON_VERSION="3.8.9"
 fi
+PYTHON_SHA256="3.8.9 5e391f3ec45da2954419cab0beaefd8be38895ea5ce33577c3ec14940c4b9572"
 
 PYTHON_ARM32_GRPCIO_VERSION="1.40.0"
 
@@ -321,6 +324,13 @@ RUST_VERSION="1.86.0"
 
 GO_VERSION="1.19.4"
 GO_VERSION_FILE=/home/bitcoin/.mynode/go_version
+GO_ARMV6L_SHA256="1.19.4 7a51dae4f3a52d2dfeaf59367cc0b8a296deddc87e95aa619bf87d24661d2370"
+GO_ARM64_SHA256="1.19.4 9df122d6baf6f2275270306b92af3b09d7973fb1259257e284dba33c0db14f1b"
+GO_AMD64_SHA256="1.19.4 c9c08f783325c4cf840a94333159cc937f05f75d36a8b307951d5bd959cf2ab8"
+
+# Built from source on Debian 10 only
+TOR_SOURCE_VERSION="0.4.9.11"
+TOR_SOURCE_SHA256="0.4.9.11 2e6c1720118c812acf0079fd47cf91b6bfaba5d766c321c4d3d2a28d6a11a8ed"
 
 # Check for override files
 if [ -f /usr/share/mynode/mynode_app_versions_custom.sh ]; then

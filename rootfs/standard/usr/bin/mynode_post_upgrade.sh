@@ -207,12 +207,16 @@ if ! skip_base_upgrades ; then
 
     # Install Go
     GO_ARCH="unknown"
+    GO_SHA256=""
     if [ "$DEVICE_ARCH" == "armv7l" ]; then
         GO_ARCH="armv6l"
+        GO_SHA256="$GO_ARMV6L_SHA256"
     elif [ "$DEVICE_ARCH" == "aarch64" ]; then
         GO_ARCH="arm64"
+        GO_SHA256="$GO_ARM64_SHA256"
     elif [ "$DEVICE_ARCH" == "x86_64" ]; then
         GO_ARCH="amd64"
+        GO_SHA256="$GO_AMD64_SHA256"
     fi
     GO_UPGRADE_URL=https://go.dev/dl/go$GO_VERSION.linux-$GO_ARCH.tar.gz
     CURRENT=""
@@ -225,6 +229,7 @@ if ! skip_base_upgrades ; then
         cd /opt/download
 
         wget $GO_UPGRADE_URL -O go.tar.gz
+        check_app_download go.tar.gz go $GO_VERSION "$GO_SHA256"
         rm -rf /usr/local/go && tar -C /usr/local -xzf go.tar.gz
 
         # Mark current version
@@ -267,6 +272,7 @@ if ! skip_base_upgrades ; then
         rm -rf Python-*
 
         wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz -O python.tar.xz
+        check_app_download python.tar.xz python $PYTHON_VERSION "$PYTHON_SHA256"
         tar xf python.tar.xz
 
         # Build and install python
@@ -783,6 +789,7 @@ if [ "$CURRENT" != "$SECP256K1_VERSION" ]; then
     cd /tmp/
     git clone https://github.com/bitcoin-core/secp256k1.git
     cd secp256k1
+    git -c advice.detachedHead=false checkout $SECP256K1_VERSION
 
     ./autogen.sh
     ./configure --enable-module-recovery --disable-jni --enable-experimental --enable-module-ecdh --enable-benchmark=no
@@ -1005,8 +1012,10 @@ fi
 
 # Install LND Connect
 LNDCONNECTARCH="lndconnect-linux-armv7"
+LNDCONNECT_SHA256="$LNDCONNECT_ARMV7_SHA256"
 if [ $IS_X86 = 1 ]; then
     LNDCONNECTARCH="lndconnect-linux-amd64"
+    LNDCONNECT_SHA256="$LNDCONNECT_AMD64_SHA256"
 fi
 LNDCONNECT_UPGRADE_URL=https://github.com/LN-Zap/lndconnect/releases/download/$LNDCONNECT_VERSION/$LNDCONNECTARCH-$LNDCONNECT_VERSION.tar.gz
 CURRENT=""
@@ -1018,6 +1027,7 @@ if [ "$CURRENT" != "$LNDCONNECT_VERSION" ]; then
     mkdir -p /opt/download
     cd /opt/download
     wget $LNDCONNECT_UPGRADE_URL -O lndconnect.tar.gz
+    check_app_download lndconnect.tar.gz lndconnect $LNDCONNECT_VERSION "$LNDCONNECT_SHA256"
     tar -xvf lndconnect.tar.gz
     rm lndconnect.tar.gz
     mv lndconnect-* lndconnect
@@ -1243,13 +1253,15 @@ if [ "$DEBIAN_VERSION" -lt "12" ]; then
 
         cd /tmp
         rm -rf tor.tar.gz tor_src
-        wget https://dist.torproject.org/tor-0.4.9.11.tar.gz -O tor.tar.gz
-        tar xzf tor.tar.gz
-        mv tor-* tor_src
-        cd tor_src
+        wget https://dist.torproject.org/tor-$TOR_SOURCE_VERSION.tar.gz -O tor.tar.gz
+        if check_app_download tor.tar.gz tor $TOR_SOURCE_VERSION "$TOR_SOURCE_SHA256"; then
+            tar xzf tor.tar.gz
+            mv tor-* tor_src
+            cd tor_src
 
-        ./configure --disable-unittests --prefix=/usr && make -j2
-        make install
+            ./configure --disable-unittests --prefix=/usr && make -j2
+            make install
+        fi
 
         set -e
     fi
