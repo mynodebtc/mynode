@@ -210,8 +210,10 @@ while true; do
                 export NOREVERSEPROXY_HTTP_PORT=49392
                 export REVERSEPROXY_HTTP_PORT=49392
                 export REMOTE_BTC_RPC_USERNAME="mynode"
+                set +x
                 BTCRPCPW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
                 export REMOTE_BTC_RPC_PASSWORD="$BTCRPCPW"
+                set -x
                 export BTCPAYGEN_LIGHTNING="lnd"
                 export BTCPAY_ENABLE_SSH=false
                 export BTCPAY_IMAGE=btcpayserver/btcpayserver:$BTCPAYSERVER_VERSION
@@ -228,7 +230,9 @@ while true; do
                 # Update NBXplorer variables (needed to pull containers)
                 NBXPLORER_VARIABLES_FILE=/mnt/hdd/mynode/btcpayserver/btcpayserver-docker/Generated/nbxplorer-variables.env
                 echo "NBXPLORER_BTCRPCUSER=mynode"            > $NBXPLORER_VARIABLES_FILE
+                set +x
                 echo "NBXPLORER_BTCRPCPASSWORD=$BTCRPCPW"    >> $NBXPLORER_VARIABLES_FILE
+                set -x
 
                 # Pull latest containers
                 /bin/bash -c  '. "/etc/profile.d/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY/btcpayserver-docker" && . helpers.sh && btcpay_pull'

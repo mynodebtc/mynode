@@ -10,10 +10,12 @@ cp /usr/share/mynode/btcrpcexplorer_env /opt/mynode/btc-rpc-explorer/.env
 chown -R bitcoin:bitcoin /opt/mynode/btc-rpc-explorer
 
 # Update Bitcoin RPC Password
+set +x
 BTCRPCPW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
 if [ -f /opt/mynode/btc-rpc-explorer/.env ]; then
     sed -i "s/BTCEXP_BITCOIND_PASS=.*/BTCEXP_BITCOIND_PASS=$BTCRPCPW/g" /opt/mynode/btc-rpc-explorer/.env
 fi
+set -x
 
 # Enable / disable token requirement
 if [ -f /mnt/hdd/mynode/settings/.btcrpcexplorer_disable_token ]; then

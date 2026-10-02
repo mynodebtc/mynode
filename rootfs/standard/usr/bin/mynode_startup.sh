@@ -508,7 +508,12 @@ cp -f /usr/share/mynode/netdata.conf /opt/mynode/netdata/netdata.conf
 
 # Setup webssh2
 mkdir -p /opt/mynode/webssh2
-cp -f /usr/share/mynode/webssh2_config.json /opt/mynode/webssh2/config.json
+touch /opt/mynode/webssh2/config.json
+chmod 600 /opt/mynode/webssh2/config.json
+set +x
+WEBSSH2_SESSION_SECRET=$(openssl rand -hex 32)
+sed "s/\"secret\": \"mysecret\"/\"secret\": \"$WEBSSH2_SESSION_SECRET\"/" /usr/share/mynode/webssh2_config.json > /opt/mynode/webssh2/config.json
+set -x
 
 # Setup lnbits
 mkdir -p /opt/mynode/lnbits
@@ -534,6 +539,7 @@ groupadd plugdev || true
 sudo usermod -aG plugdev bitcoin
 
 # Update other files that need RPC password (needed if upgrades overwrite files)
+set +x
 BTCRPCPW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
 if [ -f /opt/mynode/LndHub/config.js ]; then
     cp -f /usr/share/mynode/lndhub-config.js /opt/mynode/LndHub/config.js
@@ -560,6 +566,7 @@ fi
 if [ -f /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-bitcoind.conf.tpl ]; then
     sed -i "s/BITCOIND_RPC_PASSWORD=.*/BITCOIND_RPC_PASSWORD=$BTCRPCPW/g" /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-bitcoind.conf.tpl
 fi
+set -x
 
 
 # Append bitcoin UID and GID to btcrpc_environment
