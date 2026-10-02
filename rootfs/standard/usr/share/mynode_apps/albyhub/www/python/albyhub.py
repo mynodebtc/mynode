@@ -19,6 +19,7 @@ def albyhub_page():
     app = get_application("albyhub")
     app_status = get_application_status("albyhub")
     app_status_color = get_application_status_color("albyhub")
+    app_password = get_application_password("albyhub")
 
     # Load page
     templateData = {
@@ -26,6 +27,8 @@ def albyhub_page():
         "ui_settings": read_ui_settings(),
         "app_status": app_status,
         "app_status_color": app_status_color,
+        "app_password": app_password,
+        "app_password_user_set": app_password == APP_PASSWORD_USER_SET,
         "app": app
     }
     return render_template('/app/generic_app.html', **templateData)
