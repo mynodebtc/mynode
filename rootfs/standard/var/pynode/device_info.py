@@ -1338,16 +1338,20 @@ def reset_lnbits_data():
     if is_service_enabled("lnbits"):
         restart_service("lnbits")
 
-def is_lnbits_10():
+LNBITS_DATABASE = "/mnt/hdd/mynode/lnbits/database.sqlite3"
+
+def open_lnbits_database_readonly():
+    return sqlite3.connect(f"file:{LNBITS_DATABASE}?mode=ro", uri=True)
+
+def is_lnbits_10(db):
     """
     Returns True if the LNbits database is version 1.0.x
     (i.e., the "system_settings" table exists), otherwise False.
     """
-    cmd = (
-        "sqlite3 /mnt/hdd/mynode/lnbits/database.sqlite3 "
-        "'SELECT name FROM sqlite_master WHERE type=\"table\" AND name=\"system_settings\";'"
-    )
-    return os.popen(cmd).read().strip() == "system_settings"
+    row = db.execute(
+        "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'system_settings'"
+    ).fetchone()
+    return row is not None
 
 def fetch_super_user_info():
     """
@@ -1364,28 +1368,28 @@ def fetch_super_user_info():
     In both cases, the account is then retrieved from the accounts table by its id.
     """
     try:
-        if is_lnbits_10():
-            super_user_id_cmd = (
-                "sqlite3 /mnt/hdd/mynode/lnbits/database.sqlite3 "
-                "'SELECT value FROM system_settings WHERE id=\"super_user\";' | sed 's/\"//g'"
-            )
-            super_user_id = os.popen(super_user_id_cmd).read().strip()
-        else:
-            super_user_id_cmd = (
-                "sqlite3 /mnt/hdd/mynode/lnbits/database.sqlite3 "
-                "'SELECT super_user FROM settings;'"
-            )
-            super_user_id = os.popen(super_user_id_cmd).read().strip()
+        db = open_lnbits_database_readonly()
+        try:
+            if is_lnbits_10(db):
+                row = db.execute(
+                    "SELECT value FROM system_settings WHERE id = 'super_user'"
+                ).fetchone()
+            else:
+                row = db.execute("SELECT super_user FROM settings").fetchone()
+            # 1.0.x stores the id JSON-encoded, with surrounding quotes
+            super_user_id = str(row[0]).replace('"', '').strip() if row and row[0] else ""
 
-        if not super_user_id:
-            raise ValueError("Super_user ID not found in the database.")
+            if not super_user_id:
+                raise ValueError("Super_user ID not found in the database.")
 
-        # Use the super_user id to retrieve the username from the accounts table.
-        super_user_username_cmd = (
-            f"sqlite3 /mnt/hdd/mynode/lnbits/database.sqlite3 "
-            f"'SELECT username FROM accounts WHERE id=\"{super_user_id}\";'"
-        )
-        super_user_username = os.popen(super_user_username_cmd).read().strip()
+            # Use the super_user id to retrieve the username from the accounts table.
+            row = db.execute(
+                "SELECT username FROM accounts WHERE id = ?", (super_user_id,)
+            ).fetchone()
+            super_user_username = str(row[0]).strip() if row and row[0] else ""
+        finally:
+            db.close()
+
         if not super_user_username:
             raise ValueError(f"Username for super_user id {super_user_id} not found.")
         return super_user_id, super_user_username
