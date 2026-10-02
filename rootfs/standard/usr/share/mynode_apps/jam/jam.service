@@ -15,6 +15,7 @@ ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_bitcoin.sh
 ExecStartPre=/usr/bin/wait_on_docker_image_install.sh
 ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_jam.sh ]; then /bin/bash /usr/bin/service_scripts/pre_jam.sh; fi'
+ExecStartPre=-/usr/bin/docker rm -f jam
 ExecStart=/usr/bin/docker run --rm \
         --name jam \
         --env JAM_JMWALLETD_HOST="host.docker.internal" \

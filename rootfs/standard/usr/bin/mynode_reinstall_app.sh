@@ -37,6 +37,9 @@ else
     touch /home/bitcoin/.mynode/install_${APP} || true
 fi
 
+# Remove a leftover container named after the app, which blocks the next start and image removal
+docker rm -f "$APP" 2>/dev/null || true
+
 # Custom re-install steps
 if [ "$APP" = "bos" ]; then
     npm uninstall -g balanceofsatoshis

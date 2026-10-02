@@ -14,6 +14,7 @@ ExecStartPre=/usr/bin/wait_on_lnd.sh
 ExecStartPre=/usr/bin/wait_on_docker_image_install.sh
 ExecStartPre=+/usr/bin/mynode_bake_app_macaroon.sh lnbits
 ExecStartPre=/usr/bin/service_scripts/pre_lnbits.sh
+ExecStartPre=-/usr/bin/docker rm -f lnbits
 WorkingDirectory=/opt/mynode/lnbits
 
 ExecStart=/usr/bin/docker run --rm \

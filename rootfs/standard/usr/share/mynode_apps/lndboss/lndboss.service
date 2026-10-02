@@ -13,6 +13,7 @@ EnvironmentFile=-/mnt/hdd/mynode/lndboss/env
 
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_lndboss.sh ]; then /bin/bash /usr/bin/service_scripts/pre_lndboss.sh; fi'
+ExecStartPre=-/usr/bin/docker rm -f lndboss
 ExecStart=/usr/bin/docker run --rm \
   --name lndboss \
   --publish 8055:8055 \
