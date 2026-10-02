@@ -320,6 +320,7 @@ apt-get -y purge chrony # (conflicts with systemd-timedatectl)
 
 # Install other things without recommendation
 apt-get -y install --no-install-recommends expect
+apt-get -y install --no-install-recommends smartmontools
 
 
 # Install nginx

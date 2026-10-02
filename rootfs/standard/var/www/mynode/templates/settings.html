@@ -214,6 +214,72 @@
                     );
                 });
 
+                var smartTestEnd = null;
+                var smartTestPercent = null;
+                var smartTestTicker = null;
+                function updateSmartTestStatusText() {
+                    var text = "Running SMART short test...";
+                    if (smartTestEnd != null) {
+                        var s = Math.max(0, Math.round((smartTestEnd - Date.now()) / 1000));
+                        if (s > 0) {
+                            text += " about " + Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2) + " remaining";
+                        } else {
+                            text += " finishing up";
+                        }
+                    }
+                    if (smartTestPercent != null) {
+                        text += " (" + (100 - smartTestPercent) + "% done)";
+                    }
+                    $("#smart-test-status-text").text(text);
+                }
+                function pollSmartTest(showResults) {
+                    $.get("/api/get_smart_test_status")
+                        .done(function( data ) {
+                            if (data["running"]) {
+                                $("#run-smart-test").prop("disabled",true);
+                                $("#smart-test-summary").text("");
+                                $("#smart-test-results").text("");
+                                if (data["seconds_remaining"] != null) {
+                                    smartTestEnd = Date.now() + data["seconds_remaining"] * 1000;
+                                }
+                                smartTestPercent = data["percent_remaining"];
+                                updateSmartTestStatusText();
+                                $("#smart-test-status").show();
+                                if (smartTestTicker == null) {
+                                    smartTestTicker = setInterval(updateSmartTestStatusText, 1000);
+                                }
+                                setTimeout(function() { pollSmartTest(true); }, 5000);
+                            } else {
+                                clearInterval(smartTestTicker);
+                                smartTestTicker = null;
+                                smartTestEnd = null;
+                                smartTestPercent = null;
+                                $("#smart-test-status").hide();
+                                $("#run-smart-test").prop("disabled",false);
+                                if (showResults && data["summary"] != null) {
+                                    $("#smart-test-summary").text(data["summary"]["text"]);
+                                    $("#smart-test-summary").css("color", data["summary"]["error"] ? "red" : "");
+                                    $("#smart-test-results").text(data["results"]);
+                                }
+                            }
+                        }
+                    );
+                }
+                $("#run-smart-test").on("click", function() {
+                    $("#run-smart-test").prop("disabled",true);
+                    $("#smart-test-summary").text("");
+                    $("#smart-test-results").text("");
+                    $("#smart-test-status-text").text("Starting SMART short test...");
+                    $("#smart-test-status").show();
+                    $.get("/api/start_smart_test")
+                        .done(function( data ) {
+                            pollSmartTest(true);
+                        }
+                    );
+                });
+                // Resume the status display if a test is already running
+                pollSmartTest(false);
+
                 $("#view-usb-info").on("click", function() {
                     $("#view-usb-info").prop("disabled",true);
                     $("#view-usb-info-results").html("Loading...");
@@ -1705,6 +1771,19 @@
 {% endif %}{{ full_fsck_summary.text }}{% if full_fsck_results %}
 
 {{ full_fsck_results }}{% endif %}</pre></div>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Drive Health Test</div>
+            Run a SMART short self-test on the external drive and see its health data below. The test takes about 2 minutes, and MyNode keeps running while it does.
+            <br/>
+            <button id="run-smart-test" class="ui-button ui-widget ui-corner-all settings_button">Run SMART Short Test</button>
+            <div id="smart-test-status" style="display: none;">
+                <img src="{{ url_for('static', filename="images/loading.gif")}}" style="width: 32px; vertical-align: middle;"/>
+                <span id="smart-test-status-text"></span>
+            </div>
+            <p id="smart-test-summary" style="font-weight: bold;"></p>
+            <pre id="smart-test-results" style="text-align: left; font-size: 12px;"></pre>
 
 
             <div class="divider"></div>

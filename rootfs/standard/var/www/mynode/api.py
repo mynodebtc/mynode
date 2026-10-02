@@ -333,6 +333,29 @@ def api_get_drive_benchmark():
         data["data"] = str(e)
     return generate_api_json_response(data)
 
+@mynode_api.route("/api/start_smart_test")
+def api_start_smart_test():
+    check_logged_in()
+
+    start_smart_test()
+    data = {}
+    data["status"] = "success"
+    return generate_api_json_response(data)
+
+@mynode_api.route("/api/get_smart_test_status")
+def api_get_smart_test_status():
+    check_logged_in()
+
+    results = get_smart_test_results()
+    data = {}
+    data["status"] = "success"
+    data["running"] = is_smart_test_running()
+    data["seconds_remaining"] = get_smart_test_seconds_remaining()
+    data["percent_remaining"] = get_smart_test_percent_remaining()
+    data["results"] = results
+    data["summary"] = get_smart_test_summary(results)
+    return generate_api_json_response(data)
+
 @mynode_api.route("/api/get_usb_info")
 def api_get_usb_info():
     check_logged_in()

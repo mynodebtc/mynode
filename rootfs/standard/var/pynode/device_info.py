@@ -1072,6 +1072,58 @@ def get_full_fsck_summary():
         return {"error": True, "text": "The drive check could not be run."}
     return {"error": True, "text": "Errors were found that could not be repaired. Back up your data and consider replacing the drive."}
 
+#==================================
+# Drive Health (SMART) Functions
+#==================================
+def is_smart_test_running():
+    # The test script normally gives up within ~10 minutes, so an older marker was left behind
+    try:
+        return time.time() - os.path.getmtime("/tmp/smart_test_running") < 20 * 60
+    except:
+        return False
+def start_smart_test():
+    if is_smart_test_running():
+        return
+    delete_file("/tmp/smart_test_results")
+    touch("/tmp/smart_test_running")
+    os.system("/usr/bin/mynode_smart_test.sh > /dev/null 2>&1 &")
+def get_smart_test_seconds_remaining():
+    try:
+        end_time = int(get_file_contents("/tmp/smart_test_running"))
+        return max(0, end_time - int(time.time()))
+    except:
+        return None
+def get_smart_test_percent_remaining():
+    try:
+        return int(get_file_contents("/tmp/smart_test_remaining"))
+    except:
+        return None
+def get_smart_test_results():
+    try:
+        with open("/tmp/smart_test_results", "r") as f:
+            return f.read()
+    except:
+        return None
+def get_smart_test_summary(results):
+    if results == None:
+        return None
+    if results.startswith("MyNode drive not found") or results.startswith("smartmontools is not installed"):
+        return {"error": True, "text": results.splitlines()[0]}
+    if re.search(r"self-assessment test result: FAILED", results):
+        return {"error": True, "text": "The drive reports that it is failing. Back up your data and replace the drive."}
+    passed = re.search(r"self-assessment test result: PASSED", results) != None
+    if results.startswith("The short self-test could not be started") or results.startswith("The drive did not finish"):
+        if passed:
+            return {"error": False, "text": "A self-test could not be completed on this drive, but it reports its health as PASSED."}
+        return {"error": True, "text": "SMART data could not be read from this drive. Some USB adapters do not support SMART."}
+    # Latest self-test log entry: "# 1  Short offline ..." (ATA) or " 0   Short ..." (NVMe)
+    latest = re.search(r"^(# ?1\s+Short.*|\s*0\s+Short.*)$", results, re.MULTILINE)
+    if latest == None:
+        return {"error": True, "text": "The test finished, but the drive did not record a result."}
+    if "Completed without error" in latest.group(1):
+        return {"error": False, "text": "The drive passed the SMART short test."}
+    return {"error": True, "text": "The SMART short test reported a problem. Back up your data and consider replacing the drive."}
+
 def has_sd_rw_error():
     return os.path.isfile("/tmp/sd_rw_error")
 
