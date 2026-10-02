@@ -331,12 +331,17 @@ if [ ! -f /home/admin/.ssh/id_rsa ]; then
     sudo -u admin ssh-keygen -t rsa -f /home/admin/.ssh/id_rsa -N ""
 fi
 sudo -u admin touch /home/admin/.ssh/authorized_keys || true
-if [ ! -f /root/.ssh/id_rsa_btcpay ]; then
-    sudo rm -rf /root/.ssh/id_rsa_btcpay
-    ssh-keygen -t rsa -f /root/.ssh/id_rsa_btcpay -q -P "" -m PEM
-    echo "# Key used by BTCPay Server" >> /root/.ssh/authorized_keys
-    cat /root/.ssh/id_rsa_btcpay.pub >> /root/.ssh/authorized_keys
+# Remove old BTCPay Server SSH key (no longer used)
+if [ -f /root/.ssh/id_rsa_btcpay.pub ] && [ -f /root/.ssh/authorized_keys ]; then
+    BTCPAY_KEY=$(awk '{print $2}' /root/.ssh/id_rsa_btcpay.pub)
+    if [ -n "$BTCPAY_KEY" ]; then
+        KEYS_TMP=$(mktemp /root/.ssh/authorized_keys.XXXXXX)
+        grep -vF -e "$BTCPAY_KEY" -e "# Key used by BTCPay Server" /root/.ssh/authorized_keys > $KEYS_TMP || true
+        cat $KEYS_TMP > /root/.ssh/authorized_keys
+        rm -f $KEYS_TMP
+    fi
 fi
+rm -f /root/.ssh/id_rsa_btcpay /root/.ssh/id_rsa_btcpay.pub
 
 
 # Randomize RPC password
