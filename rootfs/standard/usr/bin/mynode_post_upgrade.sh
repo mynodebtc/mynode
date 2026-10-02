@@ -793,7 +793,7 @@ if [ "$CURRENT" != "$SECP256K1_VERSION" ]; then
 
     ./autogen.sh
     ./configure --enable-module-recovery --disable-jni --enable-experimental --enable-module-ecdh --enable-benchmark=no
-    make
+    make -j2
     make install
     cp -f include/* /usr/include/
 
@@ -1253,7 +1253,7 @@ if [ "$DEBIAN_VERSION" -lt "12" ]; then
 
         cd /tmp
         rm -rf tor.tar.gz tor_src
-        wget https://dist.torproject.org/tor-$TOR_SOURCE_VERSION.tar.gz -O tor.tar.gz
+        wget https://archive.torproject.org/tor-package-archive/tor-$TOR_SOURCE_VERSION.tar.gz -O tor.tar.gz
         if check_app_download tor.tar.gz tor $TOR_SOURCE_VERSION "$TOR_SOURCE_SHA256"; then
             tar xzf tor.tar.gz
             mv tor-* tor_src

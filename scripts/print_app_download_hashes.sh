@@ -48,7 +48,7 @@ GO_AMD64_SHA256 GO_VERSION https://go.dev/dl/go{VERSION}.linux-amd64.tar.gz
 PYTHON_SHA256 PYTHON_VERSION https://www.python.org/ftp/python/{VERSION}/Python-{VERSION}.tar.xz
 LNDCONNECT_ARMV7_SHA256 LNDCONNECT_VERSION https://github.com/LN-Zap/lndconnect/releases/download/{VERSION}/lndconnect-linux-armv7-{VERSION}.tar.gz
 LNDCONNECT_AMD64_SHA256 LNDCONNECT_VERSION https://github.com/LN-Zap/lndconnect/releases/download/{VERSION}/lndconnect-linux-amd64-{VERSION}.tar.gz
-TOR_SOURCE_SHA256 TOR_SOURCE_VERSION https://dist.torproject.org/tor-{VERSION}.tar.gz
+TOR_SOURCE_SHA256 TOR_SOURCE_VERSION https://archive.torproject.org/tor-package-archive/tor-{VERSION}.tar.gz
 "
 
 SELECTED=("$@")

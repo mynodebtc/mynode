@@ -826,7 +826,7 @@ if [ "$CURRENT" != "$SECP256K1_VERSION" ]; then
 
     ./autogen.sh
     ./configure --enable-module-recovery --disable-jni --enable-experimental --enable-module-ecdh --enable-benchmark=no
-    make
+    make -j2
     make install
     cp -f include/* /usr/include/
 
