@@ -132,7 +132,7 @@ else
             echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
             echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
             echo "# Dynamic Assume Valid Setting for Faster Initial Sync" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
-            if [ "${#assumevalid_hash}" = "64" ]; then
+            if [[ "$assumevalid_hash" =~ ^[0-9a-fA-F]{64}$ ]]; then
                 echo "assumevalid=$assumevalid_hash" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
             else
                 echo "# BAD HASH" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
