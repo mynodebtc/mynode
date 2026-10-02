@@ -105,6 +105,9 @@ def page_settings():
         "is_aptget_tor_enabled": settings_file_exists("torify_apt_get"),
         "is_streamisolation_tor_enabled": not settings_file_exists("streamisolation_tor_disabled"),
         "skip_fsck": skip_fsck(),
+        "full_fsck_results": get_full_fsck_results(),
+        "full_fsck_time": get_full_fsck_time(),
+        "full_fsck_summary": get_full_fsck_summary(),
         "uptime": uptime,
         "date": date,
         "local_ip": local_ip,
@@ -1194,6 +1197,18 @@ def toggle_check_external_drive_page():
         set_skip_fsck(True)
     flash("Check External Drive Updated", category="message")
     return redirect("/settings")
+
+@mynode_settings.route("/settings/run-full-drive-check")
+def run_full_drive_check_page():
+    check_logged_in()
+
+    check_and_mark_reboot_action("full_drive_check")
+
+    request_full_fsck()
+    t = Timer(1.0, reboot_device)
+    t.start()
+
+    return redirect("/rebooting")
 
 @mynode_settings.route("/settings/modify-swap")
 def modify_swap_page():

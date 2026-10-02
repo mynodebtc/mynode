@@ -638,6 +638,9 @@ def index():
             "premium_plus_is_connected": get_premium_plus_is_connected(),
             "fsck_error": has_fsck_error(),
             "fsck_results": get_fsck_results(),
+            "full_fsck_notice": has_full_fsck_notice(),
+            "full_fsck_results": get_full_fsck_results(),
+            "full_fsck_summary": get_full_fsck_summary(),
             "sd_rw_error": has_sd_rw_error(),
             "data_drive_usage": data_drive_usage,
             "os_drive_usage": os_drive_usage,
@@ -753,6 +756,13 @@ def page_toggle_app():
 @app.route("/clear-fsck-error")
 def page_clear_fsck_error():
     check_logged_in()
+    clear_fsck_error()
+    return redirect("/")
+
+@app.route("/clear-full-fsck-notice")
+def page_clear_full_fsck_notice():
+    check_logged_in()
+    clear_full_fsck_notice()
     clear_fsck_error()
     return redirect("/")
 

@@ -152,6 +152,23 @@
                                       okFunction)
                 });
 
+                $("#run-full-drive-check").on("click", function() {
+                    var okFunction = function() {
+                        window.location.href="/settings/run-full-drive-check"
+                    }
+                    openConfirmDialog("confirm-dialog",
+                                      "Run Full Drive Filesystem Check",
+                                      "Your device will reboot and check the external drive for filesystem errors. MyNode will be " +
+                                      "unavailable until the check finishes. This usually takes a few minutes, but can take " +
+                                      "up to a couple of hours on a damaged drive. Would you like to run the check?",
+                                      okFunction)
+                });
+
+                $("#show_full_fsck_results").on("click", function() {
+                    $("#show_full_fsck_results").hide(0);
+                    $("#full_fsck_results").show();
+                });
+
                 $("#reboot-device").on("click", function() {
                     // Enable electrs
                     var okFunction = function() {
@@ -1675,6 +1692,19 @@
             The external drive will be checked for errors automatically on each boot. This can be disabled, but is not recommended.
             <br/>
             <a href="/settings/toggle-check-external-drive" class="ui-button ui-widget ui-corner-all settings_button">{% if skip_fsck %}Enable{% else %}Disable{% endif %}</a>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Full Drive Filesystem Check</div>
+            Run a full check of the external drive for filesystem errors and repair any that are found. Your device will reboot to run the check, and MyNode will be unavailable until it finishes. This usually takes a few minutes, but can take up to a couple of hours on a damaged drive. Results are shown on the home page when it is done.
+            <br/>
+            <button id="run-full-drive-check" class="ui-button ui-widget ui-corner-all settings_button">Run Full Check</button>
+            <button id="show_full_fsck_results" class="ui-button ui-widget ui-corner-all settings_button">View Last Results</button>
+            <div id="full_fsck_results" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{% if full_fsck_time %}Last full check: {{ full_fsck_time }}
+
+{% endif %}{{ full_fsck_summary.text }}{% if full_fsck_results %}
+
+{{ full_fsck_results }}{% endif %}</pre></div>
 
 
             <div class="divider"></div>

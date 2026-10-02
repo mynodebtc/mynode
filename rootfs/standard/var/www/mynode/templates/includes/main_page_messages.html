@@ -17,7 +17,18 @@
 </div>
 {% endif %}
 
-{% if fsck_error %}
+{% if full_fsck_notice %}
+<div class="{% if full_fsck_summary.error %}main_page_error_block{% else %}main_page_warning_block{% endif %}">
+    <p style="text-align: center;"><b>Drive Filesystem Check Complete</b></p>
+    <p style="text-align: center;">{{ full_fsck_summary.text }}</p>
+    <pre style="text-align: left; font-size: 12px; white-space: pre-wrap;">{{ full_fsck_results }}</pre>
+    <p style="text-align: center;">
+        <a href="/clear-full-fsck-notice" class="ui-button ui-widget ui-corner-all settings_button_small">OK</a>
+    </p>
+</div>
+{% endif %}
+
+{% if fsck_error and not full_fsck_notice %}
 <div class="main_page_error_block">
     <p style="text-align: center;"><b>Warning!</b></p>
     <p style="text-align: center;">There may be an error with the filesystem on your drive.</p>

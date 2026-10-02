@@ -1038,6 +1038,40 @@ def set_skip_fsck(skip):
 def skip_fsck():
     return os.path.isfile("/home/bitcoin/.mynode/skip_fsck")
 
+def request_full_fsck():
+    touch("/home/bitcoin/.mynode/full_fsck")
+def has_full_fsck_notice():
+    return os.path.isfile("/home/bitcoin/.mynode/full_fsck_notice")
+def clear_full_fsck_notice():
+    delete_file("/home/bitcoin/.mynode/full_fsck_notice")
+def get_full_fsck_results():
+    try:
+        with open("/home/bitcoin/.mynode/full_fsck_results", "r") as f:
+            return f.read()
+    except:
+        return None
+def get_full_fsck_time():
+    try:
+        mtime = os.path.getmtime("/home/bitcoin/.mynode/full_fsck_results")
+        return time.strftime("%Y-%m-%d %H:%M", time.localtime(mtime))
+    except:
+        return None
+def get_full_fsck_summary():
+    results = get_full_fsck_results()
+    if results == None:
+        return {"error": False, "text": "No full drive filesystem check has been run."}
+    codes = [int(c) for c in re.findall(r"^Code: (\d+)$", results, re.MULTILINE)]
+    if len(codes) == 0:
+        return {"error": True, "text": "No MyNode drive was found to check."}
+    code = max(codes)
+    if code == 0:
+        return {"error": False, "text": "No errors were found."}
+    if code < 4:
+        return {"error": True, "text": "Errors were found and repaired."}
+    if code == 8:
+        return {"error": True, "text": "The drive check could not be run."}
+    return {"error": True, "text": "Errors were found that could not be repaired. Back up your data and consider replacing the drive."}
+
 def has_sd_rw_error():
     return os.path.isfile("/tmp/sd_rw_error")
 

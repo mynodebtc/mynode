@@ -162,21 +162,48 @@ if [ -f /home/bitcoin/open_clone_tool ]; then
 fi
 
 
-# Check drive (only if exactly 1 is found)
+# Check data drive (only unmounted partitions labeled MyNode, so OS and other drives are left alone)
 set +e
-if [ $IS_X86 = 0 ]; then
-    if [ ! -f /home/bitcoin/.mynode/skip_fsck ]; then
-        touch /tmp/repairing_drive
-        for d in /dev/sd*1 /dev/hd*1 /dev/vd*1 /dev/nvme*p1; do
-            echo "Repairing drive $d ...";
-            fsck -y $d > /tmp/fsck_results 2>&1
-            RC=$?
-            echo "" >> /tmp/fsck_results
-            echo "Code: $RC" >> /tmp/fsck_results
-            if [ "$RC" -ne 0 ] && [ "$RC" -ne 8 ] ; then
-                touch /tmp/fsck_error
-            fi
-        done
+FULL_FSCK=0
+if [ -f /home/bitcoin/.mynode/full_fsck ]; then
+    # Requested from settings - clear first so an interrupted check doesn't repeat every boot
+    FULL_FSCK=1
+    rm -f /home/bitcoin/.mynode/full_fsck
+    sync
+fi
+if [ ! -f /home/bitcoin/.mynode/skip_fsck ] || [ $FULL_FSCK = 1 ]; then
+    touch /tmp/repairing_drive
+    rm -f /tmp/fsck_results
+    FSCK_ARGS="-y"
+    if [ $FULL_FSCK = 1 ]; then
+        FSCK_ARGS="-f -y"
+    fi
+    for d in /dev/sd*1 /dev/hd*1 /dev/vd*1 /dev/nvme*p1; do
+        label=$(blkid -o value -s LABEL $d)
+        if [ "${label,,}" != "mynode" ]; then
+            continue
+        fi
+        if findmnt -rn -S $d > /dev/null; then
+            echo "Skipping drive $d - mounted"
+            continue
+        fi
+        echo "Repairing drive $d ...";
+        echo "Drive: $d" >> /tmp/fsck_results
+        fsck $FSCK_ARGS $d >> /tmp/fsck_results 2>&1
+        RC=$?
+        echo "" >> /tmp/fsck_results
+        echo "Code: $RC" >> /tmp/fsck_results
+        if [ "$RC" -ne 0 ] && [ "$RC" -ne 8 ] ; then
+            touch /tmp/fsck_error
+        fi
+    done
+    if [ $FULL_FSCK = 1 ]; then
+        if [ ! -f /tmp/fsck_results ]; then
+            echo "No unmounted MyNode drive was found to check." > /tmp/fsck_results
+        fi
+        cp -f /tmp/fsck_results /home/bitcoin/.mynode/full_fsck_results
+        touch /home/bitcoin/.mynode/full_fsck_notice
+        sync
     fi
 fi
 rm -f /tmp/repairing_drive
