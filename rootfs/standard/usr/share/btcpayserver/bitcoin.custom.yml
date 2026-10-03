@@ -12,7 +12,5 @@ services:
       NBXPLORER_CHAINS: "btc"
       NBXPLORER_BTCRPCURL: http://host.docker.internal:8332/
       NBXPLORER_BTCNODEENDPOINT: host.docker.internal:8333
-    volumes:
-      - "/mnt/hdd/mynode/bitcoin:/root/.bitcoin"
     extra_hosts:
       - "host.docker.internal:172.17.0.1"

@@ -8,6 +8,6 @@ services:
       BTCPAY_BTCEXTERNALLNDREST: "server=/lnd-rest/btc/;macaroonfilepath=/etc/lnd_bitcoin/data/chain/bitcoin/mainnet/admin.macaroon;macaroondirectorypath=/etc/lnd_bitcoin/data/chain/bitcoin/mainnet"
       BTCPAY_BTCEXTERNALLNDSEEDBACKUP: "/etc/lnd_bitcoin/data/chain/bitcoin/${NBITCOIN_NETWORK:-regtest}/walletunlock.json"
     volumes:
-      - "/mnt/hdd/mynode/lnd:/etc/lnd_bitcoin"
+      - "/mnt/hdd/mynode/btcpayserver/lnd:/etc/lnd_bitcoin:ro"
     extra_hosts:
       - "host.docker.internal:172.17.0.1"
