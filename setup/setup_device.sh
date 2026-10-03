@@ -321,6 +321,8 @@ apt-get -y purge chrony # (conflicts with systemd-timedatectl)
 # Install other things without recommendation
 apt-get -y install --no-install-recommends expect
 apt-get -y install --no-install-recommends smartmontools nvme-cli
+# nvme-cli enables NVMe over Fabrics units MyNode doesn't use (they fail on kernels without nvme-fabrics)
+systemctl mask nvmf-autoconnect.service nvmf-connect@.service nvmefc-boot-connections.service > /dev/null 2>&1 || true
 
 
 # Install nginx

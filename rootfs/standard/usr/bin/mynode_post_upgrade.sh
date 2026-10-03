@@ -151,6 +151,8 @@ if ! skip_base_upgrades ; then
     $TORIFY apt-get -y install libpq-dev socat btrfs-progs i2pd apparmor pass gdisk xxd
     $TORIFY apt-get -y install cmake pkgconf libcurl4-openssl-dev libjansson-dev libmicrohttpd-dev libsodium-dev
     $TORIFY apt-get -y install --no-install-recommends smartmontools nvme-cli
+    # nvme-cli enables NVMe over Fabrics units MyNode doesn't use (they fail on kernels without nvme-fabrics)
+    systemctl mask nvmf-autoconnect.service nvmf-connect@.service nvmefc-boot-connections.service > /dev/null 2>&1 || true
 
     # Install Java
     $TORIFY apt-get -y install default-jre
