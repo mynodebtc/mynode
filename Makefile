@@ -91,20 +91,24 @@ setup_new_debian: start_file_server out/base_images/debian_base.ova rootfs
 	@/bin/bash scripts/setup_new_debian.sh
 
 
-# Clone repo to get release tools
+# Clone repo to get release tools, kept outside the repo tree
+RELEASE_TOOL_DIR ?= $(HOME)/.mynode_release_tool
 release.sh:
-	@rm -rf out/mynode_release_tool
-	@git clone git@github.com:mynodebtc/mynode_release_tool.git out/mynode_release_tool
-	@cp out/mynode_release_tool/release.sh ./release.sh
+	@if [ -d "$(RELEASE_TOOL_DIR)/.git" ]; then \
+		git -C "$(RELEASE_TOOL_DIR)" pull --ff-only; \
+	else \
+		git clone git@github.com:mynodebtc/mynode_release_tool.git "$(RELEASE_TOOL_DIR)"; \
+	fi
+	@cp "$(RELEASE_TOOL_DIR)/release.sh" ./release.sh
 
 # Release package to server
 .PHONY: release
 release: clean_rootfs rootfs release.sh
-	@sh release.sh
+	@MYNODE_RELEASE_TOOL_DIR="$(RELEASE_TOOL_DIR)" sh release.sh
 
 .PHONY: beta
 beta: clean_rootfs rootfs release.sh
-	@sh release.sh beta
+	@MYNODE_RELEASE_TOOL_DIR="$(RELEASE_TOOL_DIR)" sh release.sh beta
 
 
 # Clean build files
