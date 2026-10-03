@@ -1,7 +1,7 @@
 #!/usr/bin/tclsh
 
 proc checkPartitionForExistingMyNodeFs {partition} {
-    if [catch {runCommand mount /dev/$partition /mnt/hdd}] {
+    if [catch {runCommand mount -o nosuid,nodev /dev/$partition /mnt/hdd}] {
         puts "Cannot mount partition ${partition}"
         return 0
     }
@@ -106,7 +106,7 @@ proc createMyNodeFsOnBlockDevice {blockDevice} {
         }
 
         #runCommand mount /dev/${blockPartition} /mnt/hdd -o errors=continue
-        runCommand mount /dev/${blockPartition} /mnt/hdd
+        runCommand mount -o nosuid,nodev /dev/${blockPartition} /mnt/hdd
         runCommand date >/mnt/hdd/.mynode
         runCommand echo /dev/${blockPartition} > /tmp/.mynode_drive
     }] {

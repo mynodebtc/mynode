@@ -80,7 +80,7 @@ def get_os_drive_usage():
 def check_partition_for_mynode(partition):
     is_mynode = False
     try:
-        subprocess.check_output("mount -o ro /dev/{} /mnt/hdd".format(partition), shell=True)
+        subprocess.check_output("mount -o ro,nosuid,nodev /dev/{} /mnt/hdd".format(partition), shell=True)
         if os.path.isfile("/mnt/hdd/.mynode"):
             is_mynode = True
     except Exception as e:
