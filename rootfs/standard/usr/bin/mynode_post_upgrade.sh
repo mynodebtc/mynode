@@ -803,9 +803,90 @@ if [ "$CURRENT" != "$SECP256K1_VERSION" ]; then
     echo $SECP256K1_VERSION > $SECP256K1_VERSION_FILE
 fi
 
-# Upgrade JoininBox
+# Install JoinMarket and the MyNode version of JoinInBox (Debian 12+). Runs in
+# /home/joinmarket after the JoinInBox archive is extracted to ./joininbox.
+function install_joininbox_mynode() {
+    local jm_dir=/home/joinmarket/joinmarket-clientserver
+
+    # Remove the parts of JoinInBox MyNode does not use, then apply the MyNode patch
+    for f in info.importwallet.sh info.qtgui.sh install.bitcoincore.sh install.hiddenservice.sh \
+             install.joinmarket-api.sh install.joinmarket.sh jam-remote menu.bitcoinrpc.sh \
+             menu.jam.sh menu.orderbook.sh menu.update.advanced.sh menu.update.sh \
+             set.bitcoinrpc.py set.password.sh set.ssh.sh standalone start.service.sh tor.newnym.py; do
+        rm -rf "/home/joinmarket/joininbox/scripts/$f"
+    done
+    (cd /home/joinmarket/joininbox && git apply --check $JOININBOX_PATCH) || return 1
+    (cd /home/joinmarket/joininbox && git apply $JOININBOX_PATCH) || return 1
+    chown -R joinmarket:joinmarket /home/joinmarket/joininbox || return 1
+    chmod -R +x /home/joinmarket/joininbox/ || return 1
+    sudo -u joinmarket cp -rf /home/joinmarket/joininbox/scripts/* /home/joinmarket/ || return 1
+    sudo -u joinmarket touch /home/joinmarket/joinin.conf || return 1
+
+    # Build and runtime packages
+    apt-get install -y --no-install-recommends build-essential automake autoconf pkg-config libtool \
+        libltdl-dev libffi-dev python3-dev python3-venv dialog qrencode jq \
+        gfortran libopenblas-dev liblapack-dev || return 1
+
+    # JoinMarket, from its signed release tag
+    sudo -u joinmarket git clone https://github.com/JoinMarket-Org/joinmarket-clientserver $jm_dir || return 1
+    (cd $jm_dir && sudo -u joinmarket git reset --hard $JOINMARKET_VERSION) || return 1
+    (cd $jm_dir && sudo -u joinmarket bash /home/joinmarket/joininbox/scripts/verify.git.sh \
+        "AdamISZ" "https://github.com/AdamISZ.gpg" "$JOINMARKET_SIGNER_FINGERPRINT" "$JOINMARKET_VERSION") || return 1
+    (cd $jm_dir && sudo -u joinmarket ./install.sh --without-qt --disable-os-deps-check --python=python3.11) || return 1
+    sudo -u joinmarket bash -c "source $jm_dir/jmvenv/bin/activate && pip install matplotlib && TMPDIR=/var/tmp pip install scipy" || return 1
+
+    # API certificate and services
+    sudo -u joinmarket /home/joinmarket/install.selfsignedcert.sh || return 1
+    systemctl enable joinmarket-api || return 1
+    systemctl enable ob-watcher || return 1
+
+    # The old Yield Generator service can no longer start (it read the wallet password from a
+    # file in /dev/shm that only the removed menu option created)
+    if [ -f /etc/systemd/system/yg-privacyenhanced.service ]; then
+        systemctl disable yg-privacyenhanced || true
+        rm -f /etc/systemd/system/yg-privacyenhanced.service
+        systemctl daemon-reload
+    fi
+    return 0
+}
+
+# Upgrade JoininBox (Debian 12+)
+if should_install_app "joininbox" && [ "$DEBIAN_VERSION" -ge "12" ]; then
+    if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
+        CURRENT=""
+        if [ -f $JOININBOX_VERSION_FILE ]; then
+            CURRENT=$(cat $JOININBOX_VERSION_FILE)
+        fi
+        CURRENT_PATCH_REVISION=""
+        if [ -f $JOININBOX_PATCH_REVISION_FILE ]; then
+            CURRENT_PATCH_REVISION=$(cat $JOININBOX_PATCH_REVISION_FILE)
+        fi
+        if [ "$CURRENT" != "$JOININBOX_VERSION" ] || [ "$CURRENT_PATCH_REVISION" != "$JOININBOX_PATCH_REVISION" ]; then
+            cd /home/joinmarket
+
+            # Delete all non-hidden files
+            rm -rf *
+            rm -rf joininbox-*
+
+            sudo -u joinmarket wget https://github.com/openoms/joininbox/archive/$JOININBOX_VERSION.tar.gz -O joininbox.tar.gz
+            check_app_download joininbox.tar.gz joininbox $JOININBOX_VERSION "$JOININBOX_SHA256"
+            sudo -u joinmarket tar -xvf joininbox.tar.gz
+            sudo -u joinmarket rm joininbox.tar.gz
+            mv joininbox-* joininbox
+
+            if install_joininbox_mynode; then
+                echo $JOININBOX_PATCH_REVISION > $JOININBOX_PATCH_REVISION_FILE
+                echo $JOININBOX_VERSION > $JOININBOX_VERSION_FILE
+            else
+                echo "ERROR: JoinInBox install failed"
+            fi
+        fi
+    fi
+fi
+
+# Upgrade JoininBox (Debian 10)
 echo "Upgrading JoinInBox..."
-if should_install_app "joininbox" ; then
+if should_install_app "joininbox" && [ "$DEBIAN_VERSION" -lt "12" ]; then
     if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
         JOININBOX_UPGRADE_URL=https://github.com/openoms/joininbox/archive/$JOININBOX_VERSION.tar.gz
         CURRENT=""

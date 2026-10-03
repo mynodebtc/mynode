@@ -63,6 +63,8 @@ elif [ "$APP" = "dojo" ]; then
     rm -rf /opt/download/dojo
     rm -rf /mnt/hdd/mynode/dojo
 elif [ "$APP" = "joininbox" ]; then
+    systemctl disable --now joinmarket-api ob-watcher || true
+    rm -f /home/bitcoin/.mynode/joininbox_patch_revision
     rm -rf /home/joinmarket/*
     rm -rf /home/joinmarket/joininbox-*
     rm -rf /home/joinmarket/.cache

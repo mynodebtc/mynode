@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source /usr/share/mynode/mynode_device_info.sh
+
 # Create any necessary users
 useradd -m -s /bin/bash bitcoin || true
 useradd -m -s /bin/bash pivpn || true
@@ -29,5 +31,14 @@ for tor_user in $tor_users; do
 done
 
 # User updates and settings
-grep "joinmarket" /etc/sudoers || (echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo)
+if [ "$DEBIAN_VERSION" -lt "12" ]; then
+    grep "joinmarket" /etc/sudoers || (echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo)
+elif grep -q "^joinmarket ALL=(ALL) NOPASSWD:ALL$" /etc/sudoers; then
+    SUDOERS_TMP=$(mktemp)
+    sed '/^joinmarket ALL=(ALL) NOPASSWD:ALL$/d' /etc/sudoers > $SUDOERS_TMP
+    if visudo -c -f $SUDOERS_TMP; then
+        install -m 0440 -o root -g root $SUDOERS_TMP /etc/sudoers
+    fi
+    rm -f $SUDOERS_TMP
+fi
 passwd -l root

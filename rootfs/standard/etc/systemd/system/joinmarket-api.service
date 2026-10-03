@@ -1,0 +1,21 @@
+# joinmarket-api.service
+[Unit]
+Description=JoinMarket API daemon
+
+[Service]
+WorkingDirectory=/home/joinmarket/joinmarket-clientserver/scripts/
+ExecStart=/bin/sh -c '. /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate && python jmwalletd.py'
+User=joinmarket
+Group=joinmarket
+Restart=always
+TimeoutSec=120
+RestartSec=60
+# Hardening measures
+PrivateTmp=true
+ProtectSystem=full
+NoNewPrivileges=true
+PrivateDevices=true
+
+[Install]
+WantedBy=multi-user.target
+

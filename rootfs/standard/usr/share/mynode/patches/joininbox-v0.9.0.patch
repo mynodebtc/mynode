@@ -1,0 +1,1574 @@
+diff --git a/scripts/_commands.sh b/scripts/_commands.sh
+index 116a9a3..2e91ab7 100755
+--- a/scripts/_commands.sh
++++ b/scripts/_commands.sh
+@@ -13,54 +13,6 @@ function menu() {
+   /home/joinmarket/menu.sh
+ }
+ 
+-# command: newnym
+-function newnym() {
+-  if [ "$(cat /home/joinmarket/joinin.conf 2>/dev/null | grep -c "runBehindTor=on")" -eq 1 ]; then
+-    echo "# Changing Tor circuits..."
+-    echo "# Savind old ID..."
+-    oldID=$(curl --connect-timeout 15 --socks5-hostname 127.0.0.1:9050 ifconfig.me 2>/dev/null)
+-    echo "# Requesting new identity ..."
+-    sudo -u debian-tor python3 /home/joinmarket/tor.newnym.py
+-    sleep 3
+-    echo "# Savind new ID..."
+-    newID=$(curl --connect-timeout 15 --socks5-hostname 127.0.0.1:9050 ifconfig.me 2>/dev/null)
+-    echo
+-    if [ ${oldID} = ${newID} ]; then
+-      echo "# FAIL: Identity did not change. Read error message above."
+-      echo "# Exiting for precaution."
+-      exit 0
+-    else
+-      echo "# SUCCESS"
+-      echo "# Old id: " ${oldID}
+-      echo "# New id: " ${newID}
+-    fi
+-  else
+-    echo "# Not running behind Tor"
+-  fi
+-}
+-
+-# command: torthistx
+-function torthistx() {
+-  if [ "$(cat /home/joinmarket/joinin.conf 2>/dev/null | grep -c "runBehindTor=on")" -eq 1 ]; then
+-    echo
+-    if [ "$(cat /home/joinmarket/joinin.conf 2>/dev/null | grep -c "network=signet")" -eq 1 ]; then
+-      newnym
+-      echo
+-      echo "# Broadcasts a transaction through Tor to Blockstream's API and into the network..."
+-      echo
+-      echo "# Transaction ID:"
+-      curl --socks5-hostname localhost:9050 -d "$1" -X POST https://mempool.space/signet/api/tx
+-    else
+-      echo "# Broadcasts a transaction through Tor to Blockstream's API and into the network..."
+-      echo
+-      echo "# Transaction ID:"
+-      curl --socks5-hostname localhost:9050 -d "$1" -X POST http://explorerzydxu5ecjrkwceayqybizmpjjznk5izmitf2modhcusuqlid.onion/api/tx
+-    fi
+-  else
+-    echo "# Not running behind Tor"
+-  fi
+-}
+-
+ # command: stats
+ # shows the uptime and the fees earned as a Maker
+ function stats() {
+diff --git a/scripts/_functions.bitcoincore.sh b/scripts/_functions.bitcoincore.sh
+index d2393bb..fe3cec3 100755
+--- a/scripts/_functions.bitcoincore.sh
++++ b/scripts/_functions.bitcoincore.sh
+@@ -11,310 +11,6 @@ if ! declare -F sourceConf >/dev/null 2>&1; then
+   source /home/joinmarket/_functions.sh
+ fi
+ 
+-# downloadBitcoinCore
+-function downloadBitcoinCore() {
+-  # set version
+-  # https://bitcoincore.org/en/download/
+-  bitcoinVersion="31.1"
+-
+-  if bitcoin-cli --version | grep $bitcoinVersion >/dev/null; then
+-    echo "# Bitcoin Core $bitcoinVersion is already installed"
+-    return 0
+-  fi
+-
+-  echo
+-  echo "# *** PREPARING BITCOIN ***"
+-  # prepare directories
+-  sudo -u joinmarket mkdir /home/joinmarket/download 2>/dev/null
+-  cd /home/joinmarket/download || exit 1
+-
+-  echo "# Receive signer keys"
+-  curl -s "https://api.github.com/repos/bitcoin-core/guix.sigs/contents/builder-keys" |
+-    jq -r '.[].download_url' | while read url; do curl -s "$url" | gpg --import; done
+-
+-  # download signed binary sha256 hash sum file
+-  sudo -u joinmarket wget --prefer-family=ipv4 --progress=bar:force -O SHA256SUMS https://bitcoincore.org/bin/bitcoin-core-${bitcoinVersion}/SHA256SUMS
+-  # download the signed binary sha256 hash sum file and check
+-  sudo -u joinmarket wget --prefer-family=ipv4 --progress=bar:force -O SHA256SUMS.asc https://bitcoincore.org/bin/bitcoin-core-${bitcoinVersion}/SHA256SUMS.asc
+-
+-  if gpg --verify SHA256SUMS.asc; then
+-    echo
+-    echo "****************************************"
+-    echo "OK --> BITCOIN MANIFEST IS CORRECT"
+-    echo "****************************************"
+-    echo
+-  else
+-    echo
+-    echo "# BUILD FAILED --> the PGP verification failed"
+-    exit 1
+-  fi
+-
+-  # detect CPU architecture & fitting download link
+-  if [ $(uname -m | grep -c 'arm') -eq 1 ]; then
+-    bitcoinOSversion="arm-linux-gnueabihf"
+-  fi
+-  if [ $(uname -m | grep -c 'aarch64') -eq 1 ]; then
+-    bitcoinOSversion="aarch64-linux-gnu"
+-  fi
+-  if [ $(uname -m | grep -c 'x86_64') -eq 1 ]; then
+-    bitcoinOSversion="x86_64-linux-gnu"
+-  fi
+-
+-  echo
+-  echo "*** BITCOIN CORE v${bitcoinVersion} for ${bitcoinOSversion} ***"
+-
+-  # download resources
+-  binaryName="bitcoin-${bitcoinVersion}-${bitcoinOSversion}.tar.gz"
+-  if [ ! -f "./${binaryName}" ]; then
+-    sudo -u joinmarket wget --prefer-family=ipv4 --progress=bar:force https://bitcoincore.org/bin/bitcoin-core-${bitcoinVersion}/${binaryName}
+-  fi
+-  if [ ! -f "./${binaryName}" ]; then
+-    echo "# FAIL - Could not download the BITCOIN BINARY"
+-    exit 1
+-  else
+-    # check binary checksum test
+-    echo "- checksum test"
+-    # get the sha256 value for the corresponding platform from signed hash sum file
+-    bitcoinSHA256=$(awk -v name="${binaryName}" '$2 == name {print $1; exit}' SHA256SUMS)
+-    binaryChecksum=$(sha256sum "${binaryName}" | cut -d " " -f1)
+-    echo "Valid SHA256 checksum should be: ${bitcoinSHA256}"
+-    echo "Downloaded binary SHA256 checksum: ${binaryChecksum}"
+-    if [ "${binaryChecksum}" != "${bitcoinSHA256}" ]; then
+-      echo "# FAIL - Downloaded BITCOIN BINARY does not match SHA256 checksum: ${bitcoinSHA256}"
+-      rm -v ./${binaryName}
+-      exit 1
+-    else
+-      echo
+-      echo "********************************************"
+-      echo "OK --> VERIFIED BITCOIN CORE BINARY CHECKSUM"
+-      echo "********************************************"
+-      echo
+-    fi
+-    echo
+-    echo "# Extracting to /home/joinmarket/download/bitcoin-${bitcoinVersion}"
+-    sudo -u joinmarket tar -xvf ${binaryName}
+-    echo
+-  fi
+-}
+-
+-function installBitcoinCore() {
+-  if [ ${runningEnv} != "raspiblitz" ]; then
+-    downloadBitcoinCore
+-
+-    echo "# Installing Bitcoin Core v${bitcoinVersion}"
+-    sudo -u joinmarket mkdir -p /home/joinmarket/bitcoin
+-    cd /home/joinmarket/download/bitcoin-${bitcoinVersion}/bin/ || exit 1
+-    sudo install -m 0755 -o root -g root -t /home/joinmarket/bitcoin ./*
+-
+-    if [ "$(grep -c "/home/joinmarket/bitcoin" </home/joinmarket/.profile)" -eq 0 ]; then
+-      echo "# Add /home/joinmarket/bitcoin to the local PATH"
+-      echo "PATH=/home/joinmarket/bitcoin:$PATH" | sudo tee -a /home/joinmarket/.profile
+-    fi
+-    installed=$(/home/joinmarket/bitcoin/bitcoind --version | \
+-      grep -Fc "Bitcoin Core version v${bitcoinVersion}")
+-    if [ ${installed} -lt 1 ]; then
+-      echo
+-      echo "# BUILD FAILED --> Was not able to install Bitcoin Core"
+-      exit 1
+-    fi
+-
+-    # bitcoin.conf
+-    if [ ! -f /home/joinmarket/.bitcoin/bitcoin.conf ]; then
+-      mkdir -p /home/joinmarket/.bitcoin
+-      randomRPCpass=$(tr </dev/urandom -dc _A-Z-a-z-0-9 | head -c8)
+-      cat >/home/joinmarket/.bitcoin/bitcoin.conf <<EOF
+-# bitcoind configuration for signet
+-
+-# Connection settings
+-rpcuser=joinmarket
+-rpcpassword=$randomRPCpass
+-
+-onlynet=onion
+-proxy=127.0.0.1:9050
+-EOF
+-    else
+-      echo "# /home/joinmarket/.bitcoin/bitcoin.conf is present"
+-    fi
+-  fi
+-}
+-
+-function removeSignetdService() {
+-  if [ -f "/etc/systemd/system/signetd.service" ]; then
+-    sudo systemctl stop signetd
+-    sudo systemctl disable signetd
+-    sudo rm -f /etc/systemd/system/signetd.service
+-    echo "# The signetd service is stopped and removed"
+-    echo
+-  fi
+-}
+-
+-function installSignet() {
+-  if [ "${runningEnv}" = "raspiblitz" ]; then
+-    sudo -u admin /home/admin/config.scripts/bitcoin.install.sh on signet
+-  else
+-    # fix permissions
+-    sudo chown -R joinmarket:joinmarket /home/joinmarket/.bitcoin/
+-    removeSignetdService
+-
+-    # /etc/systemd/system/signetd.service
+-    echo "
+-[Unit]
+-Description=Bitcoin daemon on signet
+-
+-[Service]
+-Environment='MALLOC_ARENA_MAX=1'
+-PIDFile=/home/joinmarket/bitcoin/bitcoind.pid
+-ExecStart=/home/joinmarket/bitcoin/bitcoind -signet -daemon \\
+-            -datadir=/home/joinmarket/.bitcoin \\
+-            -conf=/home/joinmarket/.bitcoin/bitcoin.conf \\
+-            -pid=/home/joinmarket/bitcoin/bitcoind.pid
+-PermissionsStartOnly=true
+-
+-# Process management
+-####################
+-Type=forking
+-Restart=on-failure
+-TimeoutStartSec=infinity
+-TimeoutStopSec=600
+-
+-# Directory creation and permissions
+-####################################
+-# Run as joinmarket:joinmarket
+-User=joinmarket
+-Group=joinmarket
+-
+-StandardOutput=null
+-StandardError=journal
+-
+-# Hardening measures
+-####################
+-# Provide a private /tmp and /var/tmp.
+-PrivateTmp=true
+-# Mount /usr, /boot/ and /etc read-only for the process.
+-ProtectSystem=full
+-# Disallow the process and all of its children to gain
+-# new privileges through execve().
+-NoNewPrivileges=true
+-# Use a new /dev namespace only populated with API pseudo devices
+-# such as /dev/null, /dev/zero and /dev/random.
+-PrivateDevices=true
+-# Deny the creation of writable and executable memory mappings.
+-MemoryDenyWriteExecute=true
+-
+-[Install]
+-WantedBy=multi-user.target
+-" | sudo tee /etc/systemd/system/signetd.service
+-    sudo systemctl enable signetd
+-    echo "# OK - the bitcoin daemon on signet service is now enabled"
+-
+-    if [ $(sudo cat /home/joinmarket/.bitcoin/bitcoin.conf | grep -c "signet.addnode") -eq 0 ]; then
+-      echo "\
+-signet.addnode=s7fcvn5rblem7tiquhhr7acjdhu7wsawcph7ck44uxyd6sismumemcyd.onion:38333
+-signet.addnode=6megrst422lxzsqvshkqkg6z2zhunywhyrhy3ltezaeyfspfyjdzr3qd.onion:38333
+-signet.addnode=jahtu4veqnvjldtbyxjiibdrltqiiighauai7hmvknwxhptsb4xat4qd.onion:38333
+-signet.addnode=f4kwoin7kk5a5kqpni7yqe25z66ckqu6bv37sqeluon24yne5rodzkqd.onion:38333
+-signet.addnode=nsgyo7begau4yecc46ljfecaykyzszcseapxmtu6adrfagfrrzrlngyd.onion:38333" |
+-        sudo tee -a /home/joinmarket/.bitcoin/bitcoin.conf
+-    fi
+-
+-    # add to path
+-    if [ $(sudo cat /etc/profile | grep -c "/home/joinmarket/bitcoin/") -eq 0 ]; then
+-      echo "PATH=\$PATH:/home/joinmarket/bitcoin/" | sudo tee -a /etc/profile
+-    fi
+-
+-    # add aliases
+-    if [ $(alias | grep -c signet) -eq 0 ]; then
+-      sudo bash -c "echo 'alias signet-cli=\"/home/joinmarket/bitcoin/bitcoin-cli -signet\"' >> /home/joinmarket/_aliases.sh"
+-      sudo bash -c "echo 'alias signetd=\"/home/joinmarket/bitcoin/bitcoind -signet\"' >> /home/joinmarket/_aliases.sh"
+-    fi
+-
+-    sudo systemctl start signetd
+-
+-    echo
+-    echo "# Installed $(/home/joinmarket/bitcoin/bitcoind --version | grep version)"
+-    echo
+-    echo "# Monitor the signet bitcoind with: tail -f ~/.bitcoin/signet/debug.log"
+-    echo
+-  fi
+-}
+-
+-setJMconfigToSignet() {
+-  echo "## editing the joinmarket.cfg with signet values."
+-  if [ ${#network} -eq 0 ] || [ "${network}" = "mainnet" ] || [ "${runningEnv}" = "raspiblitz" ]; then
+-    bitcoinUser="bitcoin"
+-  elif [ "${network}" = "signet" ]; then
+-    bitcoinUser="joinmarket"
+-  fi
+-  # rpc_user
+-  RPCUSERSIGNET=$(sudo cat /home/${bitcoinUser}/.bitcoin/bitcoin.conf | grep rpcuser | cut -c 9-)
+-  sed -i "s/^rpc_user =.*/rpc_user = $RPCUSERSIGNET/g" $JMcfgPath
+-  echo "# rpc_user = $RPCUSERSIGNET"
+-  # rpc_password
+-  RPCPWSIGNET=$(sudo cat /home/${bitcoinUser}/.bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
+-  sed -i "s/^rpc_password =.*/rpc_password = $RPCPWSIGNET/g" $JMcfgPath
+-  echo "# rpc_password = $RPCPWSIGNET"
+-  # rpc_wallet_file
+-  sed -i "s/^rpc_wallet_file =.*/rpc_wallet_file = watch-only-descriptor-wallet/g" $JMcfgPath
+-  echo "# using the bitcoind watch-only-descriptor-wallet"
+-  # rpc_host
+-  sed -i "s/^rpc_host =.*/rpc_host = 127.0.0.1/g" $JMcfgPath
+-  echo "# rpc_host = 127.0.0.1"
+-  # rpc_port
+-  sed -i "s/^rpc_port =.*/rpc_port = 38332/g" $JMcfgPath
+-  echo "# rpc_port = 38332"
+-  # network
+-  sed -i "s/^network =.*/network = signet/g" $JMcfgPath
+-  echo "# network = signet "
+-  # minimum_makers
+-  sed -i "s/^minimum_makers =.*/minimum_makers = 1/g" $JMcfgPath
+-  echo "# minimum_makers = 1"
+-
+-  echo "# Set signet directory nodes"
+-  # comment mainnet
+-  sed -i \
+-    "s/^directory_nodes = 3kxw6lf5vf6y26emzwgibzhrzhmhqiw6ekrek3nqfjjmhwznb2moonad.onion:5222,jmdirjmioywe2s5jad7ts6kgcqg66rj6wujj6q77n6wbdrgocqwexzid.onion:5222,bqlpq6ak24mwvuixixitift4yu42nxchlilrcqwk2ugn45tdclg42qid.onion:5222/\
+-#directory_nodes = 3kxw6lf5vf6y26emzwgibzhrzhmhqiw6ekrek3nqfjjmhwznb2moonad.onion:5222,jmdirjmioywe2s5jad7ts6kgcqg66rj6wujj6q77n6wbdrgocqwexzid.onion:5222,bqlpq6ak24mwvuixixitift4yu42nxchlilrcqwk2ugn45tdclg42qid.onion:5222/g" \
+-    $JMcfgPath
+-  # uncomment signet
+-  sed -i \
+-    "s/^# directory_nodes = rr6f6qtleiiwic45bby4zwmiwjrj3jsbmcvutwpqxjziaydjydkk5iad.onion:5222,k74oyetjqgcamsyhlym2vgbjtvhcrbxr4iowd4nv4zk5sehw4v665jad.onion:5222,y2ruswmdbsfl4hhwwiqz4m3sx6si5fr6l3pf62d4pms2b53wmagq3eqd.onion:5222/\
+-directory_nodes = rr6f6qtleiiwic45bby4zwmiwjrj3jsbmcvutwpqxjziaydjydkk5iad.onion:5222,k74oyetjqgcamsyhlym2vgbjtvhcrbxr4iowd4nv4zk5sehw4v665jad.onion:5222,y2ruswmdbsfl4hhwwiqz4m3sx6si5fr6l3pf62d4pms2b53wmagq3eqd.onion:5222/g" \
+-    $JMcfgPath
+-
+-  # set joinin.conf value
+-  /home/joinmarket/set.value.sh set network signet ${joininConfPath}
+-}
+-
+-function showBitcoinLogs() {
+-  if [ $# -eq 0 ]; then
+-    lines=""
+-    echo "# Show the default number of lines"
+-  else
+-    lines="-n $1"
+-    echo "# Show $lines number of lines"
+-  fi
+-  sourceConf ${joininConfPath}
+-  if [ ${#network} -eq 0 ] || [ "${network}" = "mainnet" ] || [ "${runningEnv}" = "raspiblitz" ]; then
+-    bitcoinUser="bitcoin"
+-  elif [ "${network}" = "signet" ]; then
+-    bitcoinUser="joinmarket"
+-  fi
+-  if [ "${network}" = mainnet ]; then
+-    logFilePath="/home/${bitcoinUser}/.bitcoin/debug.log"
+-  elif [ "${network}" = signet ]; then
+-    logFilePath="/home/${bitcoinUser}/.bitcoin/signet/debug.log"
+-  fi
+-  dialog \
+-    --title "Monitoring the ${network} logs" \
+-    --msgbox "
+-Will tail the bitcoin ${network} logfile from:
+-
+-$logFilePath
+-
+-Press CTRL+C to exit and type 'menu' for the GUI." 10 54
+-  sudo tail -f $lines $logFilePath
+-}
+-
+ # getRPC - reads the RPC settings from the joinmarket.cfg
+ function getRPC {
+   echo "# Reading the bitcoind RPC settings from the joinmarket.cfg"
+@@ -536,44 +232,3 @@ function customRPC {
+       http://$rpc_user:$rpc_pass@$rpc_host:$rpc_port/wallet/$rpc_wallet | jq .
+   fi
+ }
+-
+-function connectLocalNode() {
+-  if [ ${#1} -gt 0 ]; then
+-    network=$1
+-  else
+-    sourceConf ${joininConfPath}
+-  fi
+-  echo "# Setting connection to the local Bitcoin node on ${network}"
+-  rpc_host="127.0.0.1"
+-  if [ "${network}" = mainnet ]; then
+-    rpc_port="8332"
+-  elif [ "${network}" = signet ]; then
+-    rpc_port="38332"
+-  elif [ "${network}" = testnet ]; then
+-    rpc_port="18332"
+-  fi
+-  rpc_wallet="watch-only-descriptor-wallet"
+-  if [ $runningEnv = raspiblitz ]; then
+-    if [ -f "/mnt/hdd/raspiblitz.conf" ]; then
+-      rpc_user=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcuser | cut -c 9-)
+-      rpc_pass=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
+-    else
+-      rpc_user=$(sudo cat /mnt/hdd/app-data/bitcoin/bitcoin.conf | grep rpcuser | cut -c 9-)
+-      rpc_pass=$(sudo cat /mnt/hdd/app-data/bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
+-    fi
+-
+-  elif [ $runningEnv = mynode ]; then
+-    rpc_user=mynode
+-    rpc_pass=$(sudo cat /mnt/hdd/mynode/settings/.btcrpcpw)
+-  elif [ $runningEnv = standalone ]; then
+-    rpc_user=$(sudo cat /home/bitcoin/.bitcoin/bitcoin.conf | grep rpcuser | cut -c 9-)
+-    rpc_pass=$(sudo cat /home/bitcoin/.bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
+-  fi
+-  # set.bitcoinrpc.py
+-  python /home/joinmarket/set.bitcoinrpc.py --network=${network} \
+-    --rpc_user="$rpc_user" --rpc_pass="$rpc_pass" --rpc_host=$rpc_host \
+-    --rpc_port=$rpc_port --rpc_wallet=$rpc_wallet
+-
+-  # set joinin.conf value
+-  /home/joinmarket/set.value.sh set network ${network} ${joininConfPath}
+-}
+diff --git a/scripts/_functions.menu.sh b/scripts/_functions.menu.sh
+index f76fcf8..9ac8447 100644
+--- a/scripts/_functions.menu.sh
++++ b/scripts/_functions.menu.sh
+@@ -21,50 +21,6 @@ function menu_GEN() {
+   read key
+ }
+ 
+-function menu_MAKER() {
+-  # wallet
+-  chooseWallet noLockFileCheck
+-  # save wallet in conf
+-  sudo sed -i "s#^YGwallet=.*#YGwallet=$(cat $wallet)#g" $joininConfPath
+-  # validate the service inputs BEFORE creating the password file
+-  walletInput=$(cat $wallet)
+-  if ! walletCanonical=$(validateServiceArgs yg-privacyenhanced "$walletInput"); then
+-    echo
+-    echo "# ERROR: the wallet input was rejected - the Yield Generator was not started"
+-    echo "# Press ENTER to return to the menu."
+-    read key
+-    /home/joinmarket/menu.yg.sh
+-    return 1
+-  fi
+-  # get password (creates the mktemp'd wallet password file)
+-  passwordToFile
+-  echo "# Using the wallet: $walletCanonical"
+-  if /home/joinmarket/start.service.sh yg-privacyenhanced "$walletCanonical" "$walletPasswordFile"; then
+-    echo
+-    echo "# started the Yield Generator in the background"
+-    echo
+-    echo "# showing the systemd status ..."
+-    sleep 3
+-    dialog \
+-    --title "Monitoring the Yield Generator - press CTRL+C to exit"  \
+-    --prgbox "sudo journalctl -fn100 -u yg-privacyenhanced" -1 -1
+-  else
+-    startStatus=$?
+-    echo
+-    echo "# ERROR: the Yield Generator failed to start (exit code $startStatus)"
+-    # remove the password temp file left behind by the failed start
+-    if [ -f "$walletPasswordFile" ]; then
+-      shred -uvz "$walletPasswordFile"
+-      echo "# Removed the password temp file $walletPasswordFile"
+-    fi
+-    echo "# Press ENTER to return to the menu."
+-    read key
+-  fi
+-  echo "# returning to the menu..."
+-  sleep 1
+-  /home/joinmarket/menu.yg.sh
+-}
+-
+ function menu_DISPLAY() {
+   checkRPCwallet
+   # wallet
+@@ -103,24 +59,3 @@ Do you want to reset the joinmarket.cfg to the defaults now?
+       exit 1;;
+   esac
+ }
+-
+-function menu_connectLocalCore {
+-dialog --backtitle "Connect to the local Bitcoin Core" \
+---title "Connect to the local Bitcoin Core" \
+---yesno "
+-Do you want to connect to the local Bitcoin Core on mainnet now?" 7 55
+-  # make decision
+-  pressed=$?
+-  case $pressed in
+-    0)
+-      connectLocalNode mainnet
+-      sudo systemctl start bitcoind
+-      showBitcoinLogs;;
+-    1)
+-      echo "Cancelled"
+-      exit 1;;
+-    255)
+-      echo "ESC pressed."
+-      exit 1;;
+-  esac
+-}
+diff --git a/scripts/_functions.sh b/scripts/_functions.sh
+index 0a59d7a..bd992f7 100755
+--- a/scripts/_functions.sh
++++ b/scripts/_functions.sh
+@@ -70,9 +70,6 @@ export NCURSES_NO_UTF8_ACS=1
+ # functions
+ source /home/joinmarket/_functions.menu.sh
+ source /home/joinmarket/_functions.bitcoincore.sh
+-if [ "${runningEnv}" = standalone ]; then
+-  source /home/joinmarket/standalone/_functions.standalone.sh
+-fi
+ 
+ function activateJMvenv() {
+   . /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate || exit 1
+@@ -178,10 +175,10 @@ function chooseWallet() {
+       echo
+       echo "# A wallet lockfile is found: /home/joinmarket/.joinmarket/wallets/.${walletFileName}.lock"
+       echo
+-      echo "# Press ENTER to make sure the Yield Generator is stopped and the lockfile is deleted (or use CTRL+C to abort)"
++      echo "# The wallet is open in Jam or another JoinMarket process."
++      echo "# Lock it in Jam (or stop the other process) and try again."
+       echo
+-      read key
+-      stopYG $(cat $wallet)
++      exit 1
+     else
+       echo "# OK - no .${walletFileName}.lock file is present"
+     fi
+@@ -227,31 +224,16 @@ function validateServiceArgs() {
+   echo "$wallet"
+ }
+ 
+-# stopYG <wallet>
+-function stopYG() {
+-  if [ $# -eq 1 ]; then
+-    local stopWallet=$1
+-  else
+-    local stopWallet=$YGwallet
+-  fi
+-  # stop the background process (equivalent to CTRL+C)
+-  # use the YGwallet from joinin.conf
+-  pkill -sigint -f "python yg-privacyenhanced.py $stopWallet --wallet-password-stdin"
+-  # pgrep python | xargs kill -sigint
+-  # remove the service
+-  sudo systemctl stop yg-privacyenhanced
+-  sudo systemctl disable yg-privacyenhanced
+-  # check for failed services
+-  # sudo systemctl list-units --type=service
+-  sudo systemctl reset-failed
+-  echo "# Stopped the Yield Generator background service"
+-  # make sure the lock file is deleted
+-  local walletFileName=$(echo $stopWallet | cut -d/ -f6)
+-  if rm /home/joinmarket/.joinmarket/wallets/.${walletFileName}.lock 2>/dev/null; then
+-    echo "# The file .$walletFileName.lock is removed"
+-  else
+-    echo "# The file .$walletFileName.lock is not present"
+-  fi
++# showJamMessage
++function showJamMessage() {
++  dialog \
++    --title "Use Jam for the Yield Generator" \
++    --msgbox "
++On MyNode the Yield Generator is started and stopped in Jam (the Earn page).
++
++Install Jam from the MyNode Marketplace if it is not installed yet.
++
++The activity, earnings and log options in this menu show the Yield Generator run by Jam as well." 14 60
+ }
+ 
+ function YGnickname() {
+@@ -268,118 +250,6 @@ function YGnickname() {
+   echo "$name"
+ }
+ 
+-# copyJoininboxScripts
+-function copyJoininboxScripts() {
+-  echo "# Copying the scripts in place"
+-  sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/*.* /home/joinmarket/
+-  sudo -u joinmarket cp /home/joinmarket/joininbox/scripts/.* /home/joinmarket/ 2>/dev/null
+-  sudo -u joinmarket chmod +x /home/joinmarket/*.sh
+-  if [ $runningEnv = "standalone" ];then
+-    sudo -u joinmarket cp -r /home/joinmarket/joininbox/scripts/standalone /home/joinmarket/
+-    sudo -u joinmarket chmod +x /home/joinmarket/standalone/*.sh
+-  fi
+-}
+-
+-# Accept only a decimal GitHub pull-request number. This is checked before any
+-# repository removal and before constructing the fetch refspec.
+-function validatePRNumber() {
+-  case "$1" in
+-    ''|*[!0-9]*)
+-      echo "# Invalid pull-request number: $1" >&2
+-      return 1
+-      ;;
+-  esac
+-}
+-
+-# updateJoininBox <reset|commit|pr[PRnumber]>
+-function verifyJoininBoxRef() {
+-  local ref="$1"
+-  local kind="$2"
+-  local signer keyUrl fingerprint signature
+-
+-  if [ "$kind" = "tag" ]; then
+-    signer="openoms"
+-    keyUrl="https://github.com/openoms.gpg"
+-    fingerprint="13C688DB5B9C745DE4D2E4545BFB77609B081B65"
+-    /home/joinmarket/verify.git.sh "$signer" "$keyUrl" "$fingerprint" "$ref"
+-    return
+-  fi
+-
+-  signature=$(git log -1 --show-signature --format=oneline "$ref" 2>&1)
+-  if echo "$signature" | grep -q '13C688DB5B9C745DE4D2E4545BFB77609B081B65'; then
+-    signer="openoms"
+-    keyUrl="https://github.com/openoms.gpg"
+-    fingerprint="13C688DB5B9C745DE4D2E4545BFB77609B081B65"
+-  elif echo "$signature" | grep -q 'B5690EEEBB952194'; then
+-    signer="web-flow"
+-    keyUrl="https://github.com/web-flow.gpg"
+-    fingerprint="968479A1AFF927E37D1A566BB5690EEEBB952194"
+-  else
+-    echo "# Refusing an update without a recognized signing key" >&2
+-    return 1
+-  fi
+-  /home/joinmarket/verify.git.sh "$signer" "$keyUrl" "$fingerprint"
+-}
+-
+-function updateJoininBox() {
+-  if [ "$1" = "pr" ]; then
+-    validatePRNumber "$2" || return 1
+-  fi
+-  cd /home/joinmarket || exit 1
+-  if [ "$1" = "reset" ] ||  [ "$1" = "pr" ];then
+-    echo "# Removing the joininbox source code"
+-    sudo rm -rf /home/joinmarket/joininbox
+-    echo "# Downloading the latest joininbox source code"
+-  fi
+-  # clone repo in case it is not present
+-  sudo -u joinmarket git clone https://github.com/openoms/joininbox.git \
+-  /home/joinmarket/joininbox 2>/dev/null
+-  echo "# Checking the updates in https://github.com/openoms/joininbox"
+-  # based on https://github.com/apotdevin/thunderhub/blob/master/scripts/updateToLatest.sh
+-  cd /home/joinmarket/joininbox || exit 1
+-  # fetch latest master
+-  sudo -u joinmarket git fetch
+-  echo "# Pulling latest changes..."
+-  sudo -u joinmarket git pull -p
+-  if [ "$1" = "commit" ]; then
+-    TAG=$(git describe --tags)
+-    echo "# Updating to the latest commit in the default branch"
+-  elif [ "$1" = "pr" ]; then
+-    PRnumber=$2
+-    echo ""
+-    echo "##########################################################" >&2
+-    echo "# WARNING: installing UNVERIFIED pull-request code" >&2
+-    echo "# https://github.com/openoms/joininbox/pull/$PRnumber" >&2
+-    echo "# This code is NOT signed by a maintainer and will run" >&2
+-    echo "# with elevated privileges on this system." >&2
+-    echo "##########################################################" >&2
+-    echo ""
+-    sudo -u joinmarket git fetch origin pull/$PRnumber/head:pr$PRnumber || return 1
+-    sudo -u joinmarket git checkout pr$PRnumber || return 1
+-    TAG=$(git describe --tags)
+-  else
+-    TAG=$(git tag | sort -V | tail -1)
+-    # unset $1
+-    set --
+-    UPSTREAM=${1:-'@{u}'}
+-    LOCAL=$(git rev-parse @)
+-    REMOTE=$(git rev-parse "$UPSTREAM")
+-    if [ $LOCAL = $REMOTE ]; then
+-      echo "# You are up-to-date on version" $TAG
+-    fi
+-    sudo -u joinmarket git reset --hard $TAG
+-  fi
+-  if [ "$1" = "pr" ]; then
+-    echo "# Skipping signature verification for unverified PR code"
+-  elif [ "$1" = "commit" ]; then
+-    verifyJoininBoxRef HEAD commit || return 1
+-  else
+-    verifyJoininBoxRef "$TAG" tag || return 1
+-  fi
+-  echo "# Current version: $TAG"
+-  copyJoininboxScripts
+-}
+-
+ function generateJMconfig() {
+   if [ ! -f "$JMcfgPath" ] ; then
+     echo "# Generating joinmarket.cfg with default settings"
+@@ -393,44 +263,20 @@ function generateJMconfig() {
+   fi
+ 
+   # set strict permission to joinmarket.cfg
+-  sudo chmod 600 $JMcfgPath || exit 1
+-
+-  if [ "${network}" = "signet" ]; then
+-
+-    setJMconfigToSignet
++  chmod 600 $JMcfgPath || exit 1
+ 
+-  elif [ $runningEnv = "raspiblitz" ]; then
+-    echo
+-    echo "## editing the joinmarket.cfg with the local bitcoin RPC settings."
+-    if [ -f "/mnt/hdd/bitcoin/bitcoin.conf" ]; then
+-      RPCUSER=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcuser | cut -c 9-)
+-      sed -i "s/^rpc_user =.*/rpc_user = $RPCUSER/g" $JMcfgPath
+-      echo "# rpc_user = $RPCUSER"
+-      PASSWORD_B=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
+-      sed -i "s/^rpc_password =.*/rpc_password = $PASSWORD_B/g" $JMcfgPath
+-      echo "# rpc_password = $PASSWORD_B"
+-      RPCPORT=$(sudo cat /mnt/hdd/bitcoin/bitcoin.conf | grep main.rpcport | cut -c 14-)
+-    else
+-      RPCUSER=$(sudo cat /mnt/hdd/app-data/bitcoin/bitcoin.conf | grep rpcuser | cut -c 9-)
+-      sed -i "s/^rpc_user =.*/rpc_user = $RPCUSER/g" $JMcfgPath
+-      echo "# rpc_user = $RPCUSER"
+-      PASSWORD_B=$(sudo cat /mnt/hdd/app-data/bitcoin/bitcoin.conf | grep rpcpassword | cut -c 13-)
+-      sed -i "s/^rpc_password =.*/rpc_password = $PASSWORD_B/g" $JMcfgPath
+-      echo "# rpc_password = $PASSWORD_B"
+-      RPCPORT=$(sudo cat /mnt/hdd/app-data/bitcoin/bitcoin.conf | grep main.rpcport | cut -c 14-)
+-    fi
+-    if [ ${#RPCPORT} -eq 0 ]; then
+-      RPCPORT=8332
+-    fi
+-    sed -i "s/^rpc_port =.*/rpc_port = $RPCPORT/g" $JMcfgPath
+-    echo  "# rpc_port = $RPCPORT"
+-    sed -i "s/^rpc_wallet_file =.*/rpc_wallet_file = watch-only-descriptor-wallet/g" $JMcfgPath
+-    echo "# using the bitcoind watch-only-descriptor-wallet"
+-    # set joinin.conf value
+-    /home/joinmarket/set.value.sh set network mainnet ${joininConfPath}
+-  fi
+  }
+ 
++# editJMconfig
++function editJMconfig() {
++  generateJMconfig
++  dialog \
++    --title "Configure JoinMarket" \
++    --exit-label "Continue to edit the joinmarket.cfg" \
++    --textbox "/home/joinmarket/info.conf.txt" 43 108
++  /home/joinmarket/set.conf.sh $JMcfgPath
++}
++
+ #backupJMconf
+ function backupJMconf() {
+   if [ -f "$JMcfgPath" ] ; then
+@@ -445,47 +291,6 @@ function backupJMconf() {
+   fi
+ }
+ 
+-# updateTor
+-function updateTor() {
+-  # as in https://2019.www.torproject.org/docs/debian#source
+-  # https://github.com/rootzoll/raspiblitz/blob/82e0d6c3714ce1b2878780c4bdef72a6417f71c7/home.admin/config.scripts/internet.tor.sh#L493
+-  echo "# Adding tor-nightly-main to /etc/apt/sources.list.d/tor.list"
+-  arch=$(dpkg --print-architecture)
+-  distro=$(lsb_release -sc)
+-  echo "\
+-deb [arch=${arch}] https://deb.torproject.org/torproject.org tor-nightly-main-$distro main
+-deb-src [arch=${arch}] https://deb.torproject.org/torproject.org tor-nightly-main-$distro main" \
+-  | sudo tee /etc/apt/sources.list.d/tor.list
+-  echo "# Running apt-get update"
+-  sudo apt-get update
+-  if [ ${arch} = "amd64" ] || [ ${arch} = "arm64" ]; then
+-    echo "# CPU is ${arch} - updating to the latest alpha binary"
+-    sudo apt-get install -y tor
+-    echo "# Restarting the tor.service "
+-    sudo systemctl restart tor
+-  else
+-    echo "# Install the dependencies for building from source"
+-    sudo apt-get install -y build-essential fakeroot devscripts
+-    sudo apt-get build-dep -y tor deb.torproject.org-keyring
+-    rm -rf $HOME//download/debian-packages
+-    mkdir -p $HOME/download/debian-packages
+-    cd $HOME/download/debian-packages || exit 1
+-    echo "# Building Tor from the source code ..."
+-    apt-get source tor
+-    cd tor-* || exit 1
+-    debuild -rfakeroot -uc -us
+-    cd .. || exit 1
+-    echo "# Stopping the tor.service before updating"
+-    sudo systemctl stop tor
+-    echo "# Update ..."
+-    sudo dpkg -i tor_*.deb
+-    echo "# Starting the tor.service "
+-    sudo systemctl start tor
+-    echo "# Installed $(tor --version)"
+-  fi
+-}
+-
+-# torTest - unused, moved from the build script to not break github actions
+ function torTest() {
+   tries=0
+   while [ "${torTest}" != "Congratulations. This browser is configured to use Tor." ]
+diff --git a/scripts/install.selfsignedcert.sh b/scripts/install.selfsignedcert.sh
+index 4e846dd..87956df 100644
+--- a/scripts/install.selfsignedcert.sh
++++ b/scripts/install.selfsignedcert.sh
+@@ -5,16 +5,14 @@ USERNAME=joinmarket
+ HOME_DIR=/home/$USERNAME
+ 
+ if [ ! -f ${HOME_DIR}/.joinmarket/ssl/cert.pem ] || [ ! -f ${HOME_DIR}/.joinmarket/ssl/key.pem ];then
+-  sudo apt-get install openssl
+-
+   if [ -d $HOME_DIR/.joinmarket/ssl ]; then
+-    sudo -u $USERNAME rm -rf $HOME_DIR/.joinmarket/ssl
++    rm -rf $HOME_DIR/.joinmarket/ssl
+   fi
+ 
+   subj="/C=US/ST=Utah/L=Lehi/O=Your Company, Inc./OU=IT/CN=example.com"
+-  sudo -u $USERNAME mkdir -p $HOME_DIR/.joinmarket/ssl/ \
++  mkdir -p $HOME_DIR/.joinmarket/ssl/ \
+    && pushd "$_" \
+-   && sudo -u $USERNAME openssl req -newkey rsa:4096 -x509 -sha256 -days 3650 -nodes -out cert.pem -keyout key.pem -subj "$subj" \
++   && openssl req -newkey rsa:4096 -x509 -sha256 -days 3650 -nodes -out cert.pem -keyout key.pem -subj "$subj" \
+    && popd || exit 1
+ 
+ else
+diff --git a/scripts/menu.config.sh b/scripts/menu.config.sh
+index 82f674e..5772302 100755
+--- a/scripts/menu.config.sh
++++ b/scripts/menu.config.sh
+@@ -3,94 +3,19 @@
+ source /home/joinmarket/_functions.sh
+ sourceConf /home/joinmarket/joinin.conf
+ 
+-if [ ${#network} -eq 0 ] || [ "${network}" = "unknown" ] ;then
+-  if [ "${runningEnv}" = standalone ]; then
+-    source /home/joinmarket/standalone/_functions.standalone.sh
+-    network=mainnet
+-  elif [ "${runningEnv}" = mynode ];then
+-    network=mainnet
+-  elif [ "${runningEnv}" = raspiblitz ];then
+-    if [ -f "/mnt/hdd/raspiblitz.conf" ]; then
+-      sourceConf /mnt/hdd/raspiblitz.conf
+-    else
+-      sourceConf /mnt/hdd/app-data/raspiblitz.conf
+-    fi
+-    if [ $network = bitcoin ];then
+-      network=${chain}net
+-    else
+-      network=unsupported
+-    fi
+-  fi
+-fi
+-
+-if [ "$runningEnv" = "standalone" ] && [ "$setupStep" -lt 100 ]; then
+-  echo "# Open the startup menu on the first start"
+-  sudo sed -i  "s#setupStep=.*#setupStep=100#g" $joininConfPath
+-
+-  # BASIC MENU INFO
+-  HEIGHT=16
+-  WIDTH=68
+-  CHOICE_HEIGHT=24
+-  TITLE="Startup options"
+-  MENU="
+-  Welcome to JoininBox $currentJBcommit
+-  Choose from the options:"
+-  OPTIONS=()
+-  BACKTITLE="JoininBox GUI"
+-  CANCELLABEL="Main menu"
+-
+-  OPTIONS+=(
+-      CONNECT "Connect to a remote bitcoin node on mainnet"
+-      SIGNET  "Start on signet with a local Bitcoin Core"
+-      PRUNED  "Start a pruned node from pruned.host4coins.net/blocks")
+-  if [ -f /home/bitcoin/.bitcoin/bitcoin.conf ];then
+-    OPTIONS+=(
+-      LOCAL   "Connect to the local Bitcoin Core on mainnet")
+-    HEIGHT=$((HEIGHT+1))
+-    CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
+-  fi
+-  OPTIONS+=(
+-      "" ""
+-      JMCONF  "Edit the joinmarket.cfg manually"
+-      "" ""
+-      UPDATE  "Update JoininBox or JoinMarket")
+-
+-else
+-  # BASIC MENU INFO
+-  HEIGHT=12
+-  WIDTH=68
+-  CHOICE_HEIGHT=20
+-  TITLE="Configuration options"
+-  MENU=""
+-  OPTIONS=()
+-  BACKTITLE="JoininBox GUI"
+-  CANCELLABEL="Back"
+-
+-  # Basic Options
+-  OPTIONS+=(
+-      JMCONF   "Edit the joinmarket.cfg manually"
+-      "" ""
+-      CONNECT  "Connect to a remote bitcoin node on mainnet"
+-      SIGNET   "Switch to signet with a local Bitcoin Core")
+-  if [ "${runningEnv}" = standalone ]; then
+-    OPTIONS+=(
+-      PRUNED   "Start a pruned node from pruned.host4coins.net/blocks")
+-    HEIGHT=$((HEIGHT+1))
+-    CHOICE_HEIGHT=$((CHOICE_HEIGHT+1))
+-  fi
+-  if [ -f /home/bitcoin/.bitcoin/bitcoin.conf ];then
+-    OPTIONS+=(
+-      LOCAL    "Connect to the local Bitcoin Core on mainnet"
+-      "" ""
+-      BTCCONF  "Edit the local bitcoin.conf")
+-    HEIGHT=$((HEIGHT+3))
+-    CHOICE_HEIGHT=$((CHOICE_HEIGHT+3))
+-  fi
+-
+-  OPTIONS+=(
+-      "" ""
+-      RESET    "Reset the joinmarket.cfg to the defaults")
+-fi
++# BASIC MENU INFO
++HEIGHT=8
++WIDTH=68
++CHOICE_HEIGHT=1
++TITLE="Configuration options"
++MENU=""
++OPTIONS=()
++BACKTITLE="JoininBox GUI"
++CANCELLABEL="Back"
++
++# Basic Options
++OPTIONS+=(
++    JMCONF   "Edit the joinmarket.cfg manually")
+ 
+ CHOICE=$(dialog --clear \
+                 --backtitle "$BACKTITLE" \
+@@ -104,62 +29,8 @@ CHOICE=$(dialog --clear \
+ 
+ case $CHOICE in
+   JMCONF)
+-    /home/joinmarket/install.joinmarket.sh -i config
++    editJMconfig
+     echo "Returning to the menu..."
+     sleep 1
+     /home/joinmarket/menu.sh;;
+-  RESET)
+-    echo "# Removing the joinmarket.cfg"
+-    rm -f $JMcfgPath
+-    generateJMconfig
+-    echo
+-    echo "Press ENTER to return to the menu..."
+-    read key;;
+-  CONNECT)
+-    /home/joinmarket/install.bitcoincore.sh signetOff
+-    /home/joinmarket/menu.bitcoinrpc.sh
+-    # set joinin.conf value
+-    /home/joinmarket/set.value.sh set network mainnet ${joininConfPath}
+-    echo
+-    echo "Press ENTER to return to the menu..."
+-    read key;;
+-  SIGNET)
+-    /home/joinmarket/install.bitcoincore.sh signetOn
+-    echo
+-    echo "Press ENTER to return to the menu..."
+-    read key;;
+-  PRUNED)
+-    installBitcoinCoreStandalone
+-    echo
+-    downloadSnapShot
+-    installMainnet
+-    connectLocalNode
+-    showBitcoinLogs
+-    echo
+-    echo "Press ENTER to return to the menu..."
+-    read key;;
+-  LOCAL)
+-    connectLocalNode mainnet
+-    sudo systemctl start bitcoind
+-    showBitcoinLogs
+-    echo
+-    echo "Press ENTER to return to the menu..."
+-    read key;;
+-  BTCCONF)
+-    if [ ${#network} -eq 0 ] || [ ${network} = "mainnet" ] || [ "${runningEnv}" = "raspiblitz" ]; then
+-      bitcoinUser="bitcoin"
+-    elif [ ${network} = "signet" ]; then
+-      bitcoinUser="joinmarket"
+-    fi
+-    if /home/joinmarket/set.conf.sh "/home/${bitcoinUser}/.bitcoin/bitcoin.conf" "${bitcoinUser}"
+-    then
+-      echo "# Restarting bitcoind"
+-      sudo systemctl restart bitcoind
+-      showBitcoinLogs
+-    else
+-      echo "# No change made"
+-    fi;;
+-  UPDATE)
+-      /home/joinmarket/menu.update.sh
+-      /home/joinmarket/menu.sh;;
+-esac
+\ No newline at end of file
++esac
+diff --git a/scripts/menu.quickstart.sh b/scripts/menu.quickstart.sh
+index 5311e7a..230bd1b 100755
+--- a/scripts/menu.quickstart.sh
++++ b/scripts/menu.quickstart.sh
+@@ -56,7 +56,7 @@ OPTIONS+=(
+   GEN "Generate a new wallet"
+   m0 "Show the first mixdepth to deposit to"
+   DISPLAY "Show the contents of all mixdepths"
+-  MAKER "Run the Yield Generator"
++  MAKER "Run the Yield Generator (in Jam)"
+   DOCS "Link to the documentation"
+ )
+ 
+@@ -85,7 +85,7 @@ case $CHOICE in
+   DISPLAY)
+     menu_DISPLAY;;
+   MAKER)
+-    menu_MAKER;;
++    showJamMessage;;
+   DOCS)
+     datastring="https://github.com/openoms/joininbox#more-info"
+     clear
+diff --git a/scripts/menu.sh b/scripts/menu.sh
+index 40d544b..98d0cc6 100755
+--- a/scripts/menu.sh
++++ b/scripts/menu.sh
+@@ -5,9 +5,9 @@ source /home/joinmarket/_functions.sh
+ sourceConf /home/joinmarket/joinin.conf
+ 
+ # BASIC MENU INFO
+-HEIGHT=21
++HEIGHT=19
+ WIDTH=57
+-CHOICE_HEIGHT=13
++CHOICE_HEIGHT=11
+ BACKTITLE="JoininBox GUI $currentJBtag network:$network IP:$localip"
+ TITLE="JoininBox $currentJBtag $network"
+ MENU="
+@@ -26,15 +26,6 @@ OPTIONS=()
+ 
+ # Basic Options
+ OPTIONS+=(START "Quickstart with JoinMarket")
+-if [ "${runningEnv}" = raspiblitz ] && [ $(lsb_release -sc) = bullseye ]; then
+-  OPTIONS+=(JAM "JoinMarket Web UI options")
+-  HEIGHT=$((HEIGHT + 1))
+-  CHOICE_HEIGHT=$((CHOICE_HEIGHT + 1))
+-elif [ "${qtgui}" = "true" ]; then
+-  OPTIONS+=(QTGUI "Show how to open the JoinMarketQT GUI")
+-  HEIGHT=$((HEIGHT + 1))
+-  CHOICE_HEIGHT=$((CHOICE_HEIGHT + 1))
+-fi
+ OPTIONS+=("" ""
+   WALLET "Wallet management options"
+   MAKER "Yield Generator options"
+@@ -43,24 +34,8 @@ OPTIONS+=("" ""
+   FREEZE "Exercise coin control within a mixdepth"
+   PAYJOIN "Send/Receive between JoinMarket wallets"
+   "" ""
+-  OFFERS "Watch the Order Book locally"
+-  "" ""
+-  CONFIG "Connection and joinmarket.cfg settings"
++  CONFIG "Edit the joinmarket.cfg settings"
+   TOOLS "Extra helper functions and services")
+-if [ "${runningEnv}" != mynode ]; then
+-  OPTIONS+=(UPDATE "Update JoininBox or JoinMarket")
+-  OPTIONS+=("" "")
+-  if [ "${runningEnv}" = raspiblitz ]; then
+-    OPTIONS+=(BLITZ "Switch to the RaspiBlitz menu")
+-    HEIGHT=$((HEIGHT + 1))
+-    CHOICE_HEIGHT=$((CHOICE_HEIGHT + 1))
+-  fi
+-  OPTIONS+=(REBOOT "Restart the computer")
+-  OPTIONS+=(SHUTDOWN "Switch off the computer")
+-  HEIGHT=$((HEIGHT + 4))
+-  CHOICE_HEIGHT=$((CHOICE_HEIGHT + 4))
+-fi
+-
+ CHOICE=$(dialog \
+   --clear \
+   --backtitle "$BACKTITLE" \
+@@ -83,14 +58,6 @@ WALLET)
+   waitKeyOnExit1 $?
+   /home/joinmarket/menu.sh
+   ;;
+-QTGUI)
+-  /home/joinmarket/info.qtgui.sh
+-  /home/joinmarket/menu.sh
+-  ;;
+-JAM)
+-  /home/joinmarket/menu.jam.sh
+-  /home/joinmarket/menu.sh
+-  ;;
+ MAKER)
+   /home/joinmarket/menu.yg.sh
+   waitKeyOnExit1 $?
+@@ -115,10 +82,6 @@ PAYJOIN)
+   waitKeyOnExit1 $?
+   /home/joinmarket/menu.sh
+   ;;
+-OFFERS)
+-  /home/joinmarket/menu.orderbook.sh
+-  /home/joinmarket/menu.sh
+-  ;;
+ CONFIG)
+   /home/joinmarket/menu.config.sh
+   echo "Returning to the menu..."
+@@ -129,49 +92,6 @@ TOOLS)
+   /home/joinmarket/menu.tools.sh
+   /home/joinmarket/menu.sh
+   ;;
+-UPDATE)
+-  /home/joinmarket/menu.update.sh
+-  /home/joinmarket/menu.sh
+-  ;;
+-REBOOT)
+-  clear
+-  confirmation "Are you sure?" "Reboot" "Cancel" true 7 40
+-  confirmationReboot=$?
+-  if [ $confirmationReboot -eq 0 ]; then
+-    clear
+-    stopYG
+-    echo
+-    if [ "${runningEnv}" = raspiblitz ]; then
+-      sudo /home/admin/config.scripts/blitz.shutdown.sh reboot
+-      exit 0
+-    else
+-      echo "# Reboot"
+-      sudo shutdown now -r
+-    fi
+-  fi
+-  /home/joinmarket/menu.sh
+-  ;;
+-SHUTDOWN)
+-  clear
+-  confirmation "Are you sure?" "Shutdown" "Cancel" true 7 40
+-  confirmationShutdown=$?
+-  if [ $confirmationShutdown -eq 0 ]; then
+-    clear
+-    stopYG
+-    echo
+-    if [ "${runningEnv}" = raspiblitz ]; then
+-      sudo /home/admin/config.scripts/blitz.shutdown.sh
+-      exit 0
+-    else
+-      echo "# Shutdown"
+-      sudo shutdown now
+-    fi
+-  fi
+-  /home/joinmarket/menu.sh
+-  ;;
+-BLITZ)
+-  sudo su - admin
+-  ;;
+ *)
+   clear
+   echo "
+diff --git a/scripts/menu.tools.sh b/scripts/menu.tools.sh
+index 793d3c3..08ca540 100755
+--- a/scripts/menu.tools.sh
++++ b/scripts/menu.tools.sh
+@@ -3,29 +3,6 @@
+ source /home/joinmarket/_functions.sh
+ sourceConf /home/joinmarket/joinin.conf
+ 
+-function installBitcoinScripts {
+-  if [ ! -d "/home/bitcoin/bitcoin-scripts" ]; then
+-    cd /home/bitcoin/ || exit 1
+-    sudo -u bitcoin git clone https://github.com/kristapsk/bitcoin-scripts.git
+-    cd bitcoin-scripts || exit 1
+-    # from https://github.com/kristapsk/bitcoin-scripts/commits/master
+-    sudo -u bitcoin git checkout 435dc29f377f0563c3b94390fcfe3ba5df3b6f11
+-    sudo -u bitcoin chmod +x ./*.sh
+-  fi
+-}
+-
+-function listCJcandidateTXNs {
+-  clear
+-  cjTXNs=$(grep "Found Joinmarket coinjoin transaction" < \
+-    /home/joinmarket/.joinmarket/candidates.txt | awk '{print $5}')
+-  installBitcoinScripts
+-  getRPC
+-  for i in $cjTXNs; do
+-    sudo -u bitcoin /home/bitcoin/bitcoin-scripts/checktransaction.sh \
+-      -rpcwallet=$rpc_wallet $i
+-  done
+-}
+-
+ function dialog_inputbox {
+   local title=$1
+   local text=$2
+@@ -51,62 +28,20 @@ function getQRstring {
+   openMenuIfCancelled $?
+ }
+ 
+-isLocalBitcoinCLI=$(sudo -u bitcoin bitcoin-cli -version | grep -c "Bitcoin Core RPC client")
+-isTxindex=$(sudo -u bitcoin cat /home/bitcoin/.bitcoin/bitcoin.conf | grep -c "txindex=1")
+-
+ # BASIC MENU INFO
+-HEIGHT=12
++HEIGHT=10
+ WIDTH=61
+-CHOICE_HEIGHT=7
++CHOICE_HEIGHT=3
+ TITLE="Tools"
+ MENU=""
+ OPTIONS=()
+ BACKTITLE="JoininBox GUI"
+ 
+ # Basic Options
+-if [ "${runningEnv}" = standalone ]; then
+-  OPTIONS+=(
+-    SPECTER "Specter Desktop options")
+-  HEIGHT=$((HEIGHT + 1))
+-  CHOICE_HEIGHT=$((CHOICE_HEIGHT + 1))
+-fi
+ OPTIONS+=(
+   QR "Display a QR code from any text"
+   CUSTOMRPC "Run a custom bitcoin RPC with curl"
+   CJFINDER "Scan blocks for JoinMarket coinjoins")
+-if [ "$isLocalBitcoinCLI" -gt 0 ] && [ "$isTxindex" -gt 0 ]; then
+-  OPTIONS+=(
+-    CHECKTXN "CLI transaction explorer")
+-  HEIGHT=$((HEIGHT + 1))
+-  CHOICE_HEIGHT=$((CHOICE_HEIGHT + 1))
+-  if [ -f /home/joinmarket/.joinmarket/candidates.txt ]; then
+-    OPTIONS+=(
+-      LISTCJS "List filtered coinjoin transactions")
+-    HEIGHT=$((HEIGHT + 1))
+-    CHOICE_HEIGHT=$((CHOICE_HEIGHT + 1))
+-  fi
+-fi
+-if [ "${runningEnv}" != mynode ]; then
+-  OPTIONS+=(
+-    PASSWORD "Change the ssh password")
+-  HEIGHT=$((HEIGHT + 1))
+-  CHOICE_HEIGHT=$((CHOICE_HEIGHT + 1))
+-fi
+-if [ "${runningEnv}" != standalone ]; then
+-  if grep -Eq "^joinmarketSSH=off" /home/joinmarket/joinin.conf; then
+-    sshAction="Enable"
+-  else
+-    sshAction="Disable"
+-  fi
+-  OPTIONS+=(
+-    SSH "$sshAction ssh access with the joinmarket user")
+-  HEIGHT=$((HEIGHT + 1))
+-  CHOICE_HEIGHT=$((CHOICE_HEIGHT + 1))
+-fi
+-OPTIONS+=(
+-  LOGS "Show the bitcoind logs on $network"
+-  API "Start the jmwalletd.py as a systemd service"
+-  FULLYNODED "Connect Fully Noded with a QRcode")
+ 
+ CHOICE=$(dialog \
+   --clear \
+@@ -150,29 +85,6 @@ CUSTOMRPC)
+   echo "Press ENTER to return to the menu..."
+   read key
+   ;;
+-SPECTER)
+-  /home/joinmarket/standalone/menu.specter.sh
+-  ;;
+-PASSWORD)
+-  sudo /home/joinmarket/set.password.sh
+-  ;;
+-LOGS)
+-  showBitcoinLogs
+-  ;;
+-CHECKTXN)
+-  dialog_inputbox "CLI transaction explorer" "\nUsing: https://github.com/kristapsk/bitcoin-scripts\n\nPaste a TXID to check" 11 71
+-  clear
+-  installBitcoinScripts
+-  getRPC
+-  echo
+-  echo "# Running the command:"
+-  echo "sudo -u bitcoin /home/bitcoin/bitcoin-scripts/checktransaction.sh -rpcwallet=$rpc_wallet $dialog_output"
+-  echo
+-  sudo -u bitcoin /home/bitcoin/bitcoin-scripts/checktransaction.sh -rpcwallet=$rpc_wallet $dialog_output
+-  echo
+-  echo "Press ENTER to return to the menu..."
+-  read key
+-  ;;
+ CJFINDER)
+   BLOCKHEIGHT=$(customRPC "" "getblockchaininfo" "" |
+     grep blocks | awk '{print $2}' | cut -d, -f1)
+@@ -193,41 +105,6 @@ Input how many previous blocks from the tip you want to scan" 14 108
+   echo "The transaction details are saved in /home/joinmarket/.joinmarket/candidates.txt"
+   echo "To display the file in the terminal use:"
+   echo "'cat /home/joinmarket/.joinmarket/candidates.txt'"
+-  if [ $isLocalBitcoinCLI -gt 0 ]; then
+-    echo "or menu -> TOOLS -> CHECKTXN for a CLI transaction explorer"
+-    echo
+-    echo "Press ENTER for an overview of the JoinMarket coinjoins found with CHECKTXN"
+-    read key
+-    listCJcandidateTXNs
+-  fi
+-  echo "Press ENTER to return to the menu..."
+-  read key
+-  ;;
+-LISTCJS)
+-  listCJcandidateTXNs
+-  echo "Press ENTER to return to the menu..."
+-  read key
+-  ;;
+-SSH)
+-  if [ $sshAction = "Disable" ]; then
+-    sudo /home/joinmarket/set.ssh.sh off
+-  elif [ $sshAction = "Enable" ]; then
+-    sudo /home/joinmarket/set.ssh.sh on
+-  fi
+-  echo
+-  echo "Press ENTER to return to the menu..."
+-  read key
+-  ;;
+-API)
+-  clear
+-  echo
+-  /home/joinmarket/install.joinmarket-api.sh on
+-  echo "Press ENTER to return to the menu..."
+-  read key
+-  ;;
+-FULLYNODED)
+-  clear
+-  /home/joinmarket/install.joinmarket-api.sh connect
+   echo "Press ENTER to return to the menu..."
+   read key
+   ;;
+diff --git a/scripts/menu.wallet.sh b/scripts/menu.wallet.sh
+index bbe294d..c5fd34e 100755
+--- a/scripts/menu.wallet.sh
++++ b/scripts/menu.wallet.sh
+@@ -14,9 +14,9 @@ fi
+ checkRPCwallet
+ 
+ # BASIC MENU INFO
+-HEIGHT=19
++HEIGHT=17
+ WIDTH=53
+-CHOICE_HEIGHT=13
++CHOICE_HEIGHT=11
+ TITLE="Wallet management options"
+ BACKTITLE="Wallet management options"
+ MENU=""
+@@ -31,12 +31,10 @@ OPTIONS+=(
+   XPUBS "Show the master public keys"
+   PSBT "Sign a Base64 format PSBT"
+   GEN "Generate a new wallet"
+-  IMPORT "Copy wallet(s) from a remote node"
+   SHOWSEED "Shows the wallet recovery seed"
+   RECOVER "Restore a wallet from the seed"
+   INCREASEGAP "Increase the gap limit"
+   RESCAN "Rescan the Bitcoin Core wallet"
+-  UNLOCK "Remove the lockfiles"
+   )
+ 
+ CHOICE=$(dialog \
+@@ -95,22 +93,12 @@ $(cat "$wallet") setlabel $(cat "$address") $(cat "$label")
+     echo "Press ENTER to return to the menu"
+     read key;;
+   HISTORY)
+-    activateJMvenv
+-    if [ "$(pip list | grep -c scipy)" -eq 0 ];then
+-      echo "# Installing optional dependencies"
+-      pip install scipy
+-    fi
+     # wallet
+     chooseWallet noLockFileCheck
+     /home/joinmarket/start.script.sh wallet-tool $(cat $wallet) "history -v 4"
+     echo
+     echo "Press ENTER to return to the menu"
+     read key;;
+-  IMPORT)
+-    /home/joinmarket/info.importwallet.sh
+-    echo "Returning to the menu..."
+-    sleep 1
+-    /home/joinmarket/menu.sh;;
+   SHOWSEED)
+     # wallet
+     chooseWallet noLockFileCheck
+@@ -155,15 +143,6 @@ Enter the new gap limit to be used" 16 60 2> "$gaplimit"
+     echo
+     echo "Press ENTER to return to the menu"
+     read key;;
+-  UNLOCK)
+-    echo "Removing the wallet lockfiles with the command:"
+-    echo "rm ~/.joinmarket/wallets/.*.lock"
+-    rm ~/.joinmarket/wallets/.*.lock
+-    # for old version <v0.6.3
+-    rm ~/.joinmarket/wallets/*.lock 2>/dev/null
+-    echo
+-    echo "Press ENTER to return to the menu"
+-    read key;;
+   RESCAN)
+     checkRPCwallet
+     echo
+diff --git a/scripts/menu.yg.sh b/scripts/menu.yg.sh
+index 52cc395..0e89f91 100755
+--- a/scripts/menu.yg.sh
++++ b/scripts/menu.yg.sh
+@@ -28,14 +28,12 @@ BACKTITLE="JoininBox GUI"
+ 
+ # Basic Options
+ OPTIONS+=(
+-  MAKER "Run the Yield Generator"
++  MAKER "Start or stop the YG (in Jam)"
+   JMCONF "YG settings in the joinmarket.cfg"
+   YGLIST "List the past YG activity"
+   STATS "Show the sats earned as a Maker"
+   NICKNAME "Show the last used counterparty name"
+-  SERVICE "Monitor the YG service (INFO)"
+   LOGS "View the last YG logfile (DEBUG)"
+-  STOP "Stop the YG service"
+   TIMELOCK "Create a Fidelity Bond address"
+ )
+ 
+@@ -53,9 +51,10 @@ CHOICE=$(dialog \
+ case $CHOICE in
+ 
+   MAKER)
+-    menu_MAKER;;
++    showJamMessage
++    /home/joinmarket/menu.yg.sh;;
+   JMCONF)
+-    /home/joinmarket/install.joinmarket.sh -i config
++    editJMconfig
+     echo "Returning to the menu..."
+     sleep 1
+     /home/joinmarket/menu.yg.sh;;
+@@ -73,7 +72,7 @@ case $CHOICE in
+     --msgbox "
+ There are no stats because the Yield Generator was never run.
+ 
+-Start with the menu option: MAKER" 10 50
++Start the Yield Generator in Jam (the Earn page)." 10 50
+     else
+       dialog --prgbox "/home/joinmarket/info.stats.sh showAllEarned" 9 67
+     fi;;
+@@ -88,17 +87,6 @@ or use the local Order Book" 12 55
+     echo "Returning to the menu..."
+     sleep 1
+     /home/joinmarket/menu.yg.sh;;
+-  SERVICE)
+-      dialog \
+-        --title "Monitoring the Yield Generator"  \
+-        --msgbox "
+-Shows the service status with INFO logs using:
+-
+-sudo systemctl status yg-privacyenhanced
+-
+-Press CTRL+C to exit to the command line.
+-Use: 'menu' for the JoininBox options." 11 50
+-    sudo systemctl status yg-privacyenhanced;;
+   LOGS)
+     dialog \
+     --title "Monitoring the Yield Generator"  \
+@@ -115,11 +103,6 @@ Press CTRL+C to exit and return to the menu." 10 50
+     read key
+     cd /home/joinmarket/joinmarket-clientserver/scripts/ || exit 1
+     /home/joinmarket/menu.yg.sh;;
+-  STOP)
+-    stopYG
+-    echo
+-    echo "Press ENTER to return to the menu..."
+-    read key;;
+   TIMELOCK)
+     # wallet
+     chooseWallet noLockFileCheck
+diff --git a/scripts/set.conf.sh b/scripts/set.conf.sh
+index a72a43b..a12cad8 100755
+--- a/scripts/set.conf.sh
++++ b/scripts/set.conf.sh
+@@ -1,10 +1,6 @@
+ #!/bin/bash
+ 
+ EDITFILE="$1"
+-USER="$2"
+-if [ ${#USER} -eq 0 ];then
+-  USER=joinmarket
+-fi
+ if [ ${#EDITFILE} -eq 0 ]; then
+   echo "# Please specify a file to edit"
+ else
+@@ -27,7 +23,7 @@ case $pressed in
+     --msgbox "
+ Saving to:
+ $EDITFILE" 7 56
+-    sudo -u $USER tee "$EDITFILE" 1>/dev/null < "$conf"
++    tee "$EDITFILE" 1>/dev/null < "$conf"
+     shred "$conf"
+     exit 0;;
+   1)
+diff --git a/scripts/set.value.sh b/scripts/set.value.sh
+index 4c28aaf..3d29358 100644
+--- a/scripts/set.value.sh
++++ b/scripts/set.value.sh
+@@ -38,7 +38,7 @@ if [ "$1" = "set" ]; then
+   # check if key needs to be added (prepare new entry)
+   entryExists=$(grep -c "^${keystr}=" ${configFile})
+   if [ ${entryExists} -eq 0 ]; then
+-    echo "${keystr}=" | sudo tee -a ${configFile} 1>/dev/null
++    echo "${keystr}=" | tee -a ${configFile} 1>/dev/null
+   fi
+ 
+   # add valuestr in quotes if not standard values and "$5" != "noquotes"
+@@ -46,8 +46,8 @@ if [ "$1" = "set" ]; then
+     valuestr="'${valuestr}'"
+   fi
+ 
+-  # set value (sed needs sudo to operate when user is not root)
+-  sudo sed -i "s/^${keystr}=.*/${keystr}=${valuestr}/g" ${configFile}
++  # set value
++  sed -i "s/^${keystr}=.*/${keystr}=${valuestr}/g" ${configFile}
+ 
+ 
+ elif [ "$1" = "delete" ]; then
+@@ -62,7 +62,7 @@ elif [ "$1" = "delete" ]; then
+   fi
+ 
+   # delete value
+-  sudo sed -i "/^${keystr}=/d" ${configFile} 2>/dev/null
++  sed -i "/^${keystr}=/d" ${configFile} 2>/dev/null
+ 
+ else
+   echo "# FAIL: parameter not known - run with -h for help"
+diff --git a/scripts/start.joininbox.sh b/scripts/start.joininbox.sh
+index 251e92b..e247988 100755
+--- a/scripts/start.joininbox.sh
++++ b/scripts/start.joininbox.sh
+@@ -74,41 +74,10 @@ if [ "$setupStep" -lt 100 ]; then
+       sed -i "s#setupStep=.*#setupStep=3#g" $joininConfPath
+     fi
+ 
+-    # check for dialog
+-    if [ "$(dialog | grep -c "ComeOn Dialog!")" -eq 0 ]; then
+-      sudo apt-get install -y dialog
+-    fi
+-    # check for qrencode
+-    if [ "$(qrencode -V 2>&1 | grep -c "not found")" -gt 0 ]; then
+-      sudo apt-get install -y qrencode
+-    fi
+-    sed -i "s#setupStep=.*#setupStep=4#g" $joininConfPath
+-
+-    # check if JoinMarket is installed
+-    if [ "${cpu}" = x86_64 ]; then
+-      /home/joinmarket/install.joinmarket.sh -i install
+-    else
+-      # no qtgui on arm
+-      /home/joinmarket/install.joinmarket.sh -i install -q 0
+-    fi
+     sed -i "s#setupStep=.*#setupStep=5#g" $joininConfPath
+   fi
+-  # change the ssh password if standalone
+-  if [ "$runningEnv" = "standalone" ]; then
+-    sourceConf /home/joinmarket/joinin.conf
+-    if [ "$setupStep" -lt 6 ]; then
+-      # set ssh passwords on the first run
+-      sudo /home/joinmarket/set.password.sh
+-      sed -i "s#setupStep=.*#setupStep=6#g" $joininConfPath
+-    fi
+-    sourceConf /home/joinmarket/joinin.conf
+-    if [ "$setupStep" -lt 7 ] && [ ${cpu} != "x86_64" ]; then
+-      # expand SDcard partition on ARM
+-      sudo /home/joinmarket/standalone/expand.rootfs.sh
+-    fi
+-  fi
+   generateJMconfig
+-  sudo sed -i "s#setupStep=.*#setupStep=10#g" $joininConfPath
++  sed -i "s#setupStep=.*#setupStep=10#g" $joininConfPath
+   sourceConf /home/joinmarket/joinin.conf
+   if [ "$setupStep" -lt 11 ]; then
+     if [ "$runningEnv" = "standalone" ]; then
+@@ -116,7 +85,7 @@ if [ "$setupStep" -lt 100 ]; then
+       /home/joinmarket/menu.config.sh
+     else
+       # setup finished
+-      sudo sed -i "s#setupStep=.*#setupStep=100#g" $joininConfPath
++      sed -i "s#setupStep=.*#setupStep=100#g" $joininConfPath
+     fi
+   fi
+ fi

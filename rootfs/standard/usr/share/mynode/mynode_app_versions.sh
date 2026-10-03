@@ -165,6 +165,12 @@ fi
 JOININBOX_VERSION=$(get_app_version "$JOININBOX_VERSION" "joininbox")
 JOININBOX_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version
 JOININBOX_LATEST_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version_latest
+# Debian 12+: JoinInBox gets the MyNode patch and JoinMarket is installed by MyNode
+JOININBOX_PATCH=/usr/share/mynode/patches/joininbox-v0.9.0.patch
+JOININBOX_PATCH_REVISION="1"
+JOININBOX_PATCH_REVISION_FILE=/home/bitcoin/.mynode/joininbox_patch_revision
+JOINMARKET_VERSION="v0.9.12"
+JOINMARKET_SIGNER_FINGERPRINT="0F1C7345D9193D1C8E3F21810C44134F93234873"
 
 SECP256K1_VERSION=6e2c8bc4ecdc6e71dbe7a368f360d8d453ce435d
 SECP256K1_VERSION_FILE=/home/bitcoin/.mynode/secp256k1_version

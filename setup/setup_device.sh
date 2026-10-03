@@ -347,7 +347,9 @@ usermod -a -G debian-tor admin
 # Make admin a member of bitcoin
 adduser admin bitcoin
 adduser joinmarket bitcoin
-grep "joinmarket" /etc/sudoers || (echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo)
+if [ "$DEBIAN_VERSION" -lt "12" ]; then
+    grep "joinmarket" /etc/sudoers || (echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo)
+fi
 
 
 # Install Go
