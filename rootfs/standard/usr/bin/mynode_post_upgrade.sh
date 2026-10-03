@@ -150,7 +150,7 @@ if ! skip_base_upgrades ; then
     $TORIFY apt-get -y install hexyl libbz2-dev liblzma-dev netcat-openbsd hdparm iotop nut obfs4proxy
     $TORIFY apt-get -y install libpq-dev socat btrfs-progs i2pd apparmor pass gdisk xxd
     $TORIFY apt-get -y install cmake pkgconf libcurl4-openssl-dev libjansson-dev libmicrohttpd-dev libsodium-dev
-    $TORIFY apt-get -y install --no-install-recommends smartmontools
+    $TORIFY apt-get -y install --no-install-recommends smartmontools nvme-cli
 
     # Install Java
     $TORIFY apt-get -y install default-jre
