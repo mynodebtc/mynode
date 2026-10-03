@@ -1195,7 +1195,7 @@ def toggle_check_external_drive_page():
         set_skip_fsck(False)
     else:
         set_skip_fsck(True)
-    flash("Check External Drive Updated", category="message")
+    flash("Automatic Data Drive Check Updated", category="message")
     return redirect("/settings")
 
 @mynode_settings.route("/settings/run-full-drive-check")

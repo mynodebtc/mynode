@@ -1617,13 +1617,83 @@
 
 
         <div class="settings_block">
-            <a id="clone_tool"></a>
-            <div class="settings_block_header">Clone Tool</div>
+            <a id="data_drive"></a>
+            <div class="settings_block_header">Data Drive</div>
+
+            <div class="settings_block_subheader">Benchmark Data Drive</div>
+            Run a disk benchmark on the data drive and see results below.
+            <br/>
+            <button id="run-disk-benchmark" class="ui-button ui-widget ui-corner-all settings_button">Run Disk Benchmark</button>
+            <pre id="run-disk-benchmark-results"></pre>
             
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Enable UAS USB Driver</div>
+            This will allow the device to use the UAS USB driver for data storage, which may change performance. Only affects Raspberry Pi 4. This will reboot your device.
+            <br/><br/>
+            <label class="switch">
+                <input type="checkbox" id="uas_usb_checkbox" {% if uas_usb %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <br/><br/>
+            <button id="uas_usb_button" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Remount Data Drive</div>
+            This will attempt to remount your data drive as read/write if it is read-only.
+            <br/>
+            <a href="/settings/remount-external-drive" class="ui-button ui-widget ui-corner-all settings_button">Remount Drive</a>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Automatically Check Data Drive</div>
+            The data drive will be checked for errors automatically on each boot. This can be disabled, but is not recommended.
+            <br/>
+            <a href="/settings/toggle-check-external-drive" class="ui-button ui-widget ui-corner-all settings_button">{% if skip_fsck %}Enable{% else %}Disable{% endif %}</a>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Full Data Drive Filesystem Check</div>
+            Run a full check of the data drive for filesystem errors and repair any that are found. Your device will reboot to run the check, and MyNode will be unavailable until it finishes. This usually takes a few minutes, but can take up to a couple of hours on a damaged drive. Results are shown on the home page when it is done.
+            <br/>
+            <button id="run-full-drive-check" class="ui-button ui-widget ui-corner-all settings_button">Run Full Check</button>
+            <button id="show_full_fsck_results" class="ui-button ui-widget ui-corner-all settings_button">View Last Results</button>
+            <div id="full_fsck_results" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{% if full_fsck_time %}Last full check: {{ full_fsck_time }}
+
+{% endif %}{{ full_fsck_summary.text }}{% if full_fsck_results %}
+
+{{ full_fsck_results }}{% endif %}</pre></div>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Data Drive Health Test</div>
+            Run a SMART short self-test on the data drive and see its health data below. The test takes about 2 minutes, and MyNode keeps running while it does.
+            <br/>
+            <button id="run-smart-test" class="ui-button ui-widget ui-corner-all settings_button">Run SMART Short Test</button>
+            <div id="smart-test-status" style="display: none;">
+                <img src="{{ url_for('static', filename="images/loading.gif")}}" style="width: 32px; vertical-align: middle;"/>
+                <span id="smart-test-status-text"></span>
+            </div>
+            <p id="smart-test-summary" style="font-weight: bold;"></p>
+            <pre id="smart-test-results" style="text-align: left; font-size: 12px;"></pre>
+
+
+            <div class="divider"></div>
+
+            <a id="clone_tool"></a>
             <div class="settings_block_subheader">Clone Tool</div>
-            This will reboot your device and open the clone tool. It can be used to migrate to a larger external drive.
+            The Clone Tool helps you migrate to a new data drive by copying your files from your current drive to a newly attached one. It's especially helpful when wanting to migrate data to a larger drive if you are running out of space. Opening the Clone Tool will reboot your device.
             <br/>
             <a href="/settings/open-clone-tool" class="ui-button ui-widget ui-corner-all settings_button">Open Clone Tool</a>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Format Data Drive</div>
+            This will reboot your device and re-prompt for formatting the drive. If your data drive has been corrupted, this 
+            may help and will be slightly less destructive than a factory reset. Make sure you have backed up all your keys and wallets!
+            <br/>
+            <button id="format-external-drive" class="ui-button ui-widget ui-corner-all settings_button">Format Drive</button>
         </div>
 
 
@@ -1702,7 +1772,7 @@
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Swap</div>
-            Devices can use space on the external drive as additional RAM. The default is to use 2GB of space on the drive as additional memory, but this can be changed.
+            Devices can use space on the data drive as additional RAM. The default is to use 2GB of space on the drive as additional memory, but this can be changed.
             <br/><br/>
             Modifying the amount of swap can affect overall performance. Saving will reboot the device.
             
@@ -1719,80 +1789,11 @@
 
             <div class="divider"></div>
 
-            <div class="settings_block_subheader">Benchmark External Drive</div>
-            Run a disk benchmark on the external storage and see results below.
-            <br/>
-            <button id="run-disk-benchmark" class="ui-button ui-widget ui-corner-all settings_button">Run Disk Benchmark</button>
-            <pre id="run-disk-benchmark-results"></pre>
-            
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Enable UAS USB Driver</div>
-            This will allow the device to use the UAS USB driver, which may change performance. Only affects Raspberry Pi 4. This will reboot your device.
-            <br/><br/>
-            <label class="switch">
-                <input type="checkbox" id="uas_usb_checkbox" {% if uas_usb %}checked{% endif %}>
-                <span class="slider round"></span>
-            </label>
-            <br/><br/>
-            <button id="uas_usb_button" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
-
-            <div class="divider"></div>
-
             <div class="settings_block_subheader">View USB Information</div>
             View information about the current USB devices.
             <br/>
             <button id="view-usb-info" class="ui-button ui-widget ui-corner-all settings_button">Show USB Info</button>
             <pre id="view-usb-info-results"></pre>
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Remount External Drive</div>
-            This will attempt to remount your external drive as read/write if it is read-only.
-            <br/>
-            <a href="/settings/remount-external-drive" class="ui-button ui-widget ui-corner-all settings_button">Remount Drive</a>
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Check External Drive</div>
-            The external drive will be checked for errors automatically on each boot. This can be disabled, but is not recommended.
-            <br/>
-            <a href="/settings/toggle-check-external-drive" class="ui-button ui-widget ui-corner-all settings_button">{% if skip_fsck %}Enable{% else %}Disable{% endif %}</a>
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Full Drive Filesystem Check</div>
-            Run a full check of the external drive for filesystem errors and repair any that are found. Your device will reboot to run the check, and MyNode will be unavailable until it finishes. This usually takes a few minutes, but can take up to a couple of hours on a damaged drive. Results are shown on the home page when it is done.
-            <br/>
-            <button id="run-full-drive-check" class="ui-button ui-widget ui-corner-all settings_button">Run Full Check</button>
-            <button id="show_full_fsck_results" class="ui-button ui-widget ui-corner-all settings_button">View Last Results</button>
-            <div id="full_fsck_results" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{% if full_fsck_time %}Last full check: {{ full_fsck_time }}
-
-{% endif %}{{ full_fsck_summary.text }}{% if full_fsck_results %}
-
-{{ full_fsck_results }}{% endif %}</pre></div>
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Drive Health Test</div>
-            Run a SMART short self-test on the external drive and see its health data below. The test takes about 2 minutes, and MyNode keeps running while it does.
-            <br/>
-            <button id="run-smart-test" class="ui-button ui-widget ui-corner-all settings_button">Run SMART Short Test</button>
-            <div id="smart-test-status" style="display: none;">
-                <img src="{{ url_for('static', filename="images/loading.gif")}}" style="width: 32px; vertical-align: middle;"/>
-                <span id="smart-test-status-text"></span>
-            </div>
-            <p id="smart-test-summary" style="font-weight: bold;"></p>
-            <pre id="smart-test-results" style="text-align: left; font-size: 12px;"></pre>
-
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Format External Drive</div>
-            This will reboot your device and re-prompt for formatting the drive. If your external drive has been corrupted, this 
-            may help and will be slightly less destructive than a factory reset. Make sure you have backed up all your keys and wallets!
-            <br/>
-            <button id="format-external-drive" class="ui-button ui-widget ui-corner-all settings_button">Format Drive</button>
 
             <div class="divider"></div>
 
