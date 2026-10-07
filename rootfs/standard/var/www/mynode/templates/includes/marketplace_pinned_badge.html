@@ -1,0 +1,8 @@
+<span class="marketplace_badge marketplace_badge_pinned{% if app.pinned_update_available %} marketplace_badge_pinned_behind{% endif %}"
+      title="Pinned to {{app.latest_version}}{% if app.release_version and app.release_version != app.latest_version %}. This MyNode release ships {{app.release_version}}{% endif %}. Pinned apps don't update with MyNode.">
+    {%- if app.pinned_update_available -%}
+        Pinned · {{app.release_version}} available
+    {%- else -%}
+        Pinned
+    {%- endif -%}
+</span>

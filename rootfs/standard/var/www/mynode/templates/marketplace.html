@@ -13,6 +13,109 @@
                         window.location = "/marketplace/" + shortname;
                     }
                 });
+
+                // Search and filters
+                function apply_filters() {
+                    var words = $("#marketplace_search").val().toLowerCase().split(/\s+/).filter(function(w) { return w != ""; });
+                    var filter = $(".marketplace_filter_chip.selected").attr("data-filter");
+                    var category = $("#marketplace_category").val();
+                    var total_shown = 0;
+
+                    $(".marketplace_category").each(function() {
+                        var category_div = $(this);
+                        var shown = 0;
+                        category_div.find(".marketplace_app_tile").each(function() {
+                            var tile = $(this);
+                            var text = tile.attr("data-search");
+                            var show = (category == "all" || category_div.attr("data-category") == category);
+                            for (var i = 0; show && i < words.length; i++) {
+                                show = text.indexOf(words[i]) >= 0;
+                            }
+                            if (show && filter == "installed") { show = tile.attr("data-installed") == "1"; }
+                            if (show && filter == "not_installed") { show = tile.attr("data-installed") == "0"; }
+                            if (show && filter == "pinned") { show = tile.attr("data-pinned") == "1"; }
+                            if (show && filter == "beta") { show = tile.attr("data-beta") == "1"; }
+                            tile.toggle(show);
+                            if (show) { shown++; }
+                        });
+                        category_div.toggle(shown > 0);
+                        total_shown += shown;
+                    });
+                    $("#marketplace_no_results").toggle(total_shown == 0);
+
+                    // Keep the search in the URL, so a filtered view can be linked to
+                    var params = new URLSearchParams();
+                    if (words.length > 0) { params.set("q", $("#marketplace_search").val().trim()); }
+                    if (filter != "all") { params.set("filter", filter); }
+                    if (category != "all") { params.set("category", category); }
+                    var query = params.toString();
+                    history.replaceState(null, "", window.location.pathname + (query ? "?" + query : ""));
+                }
+
+                function select_filter(filter) {
+                    var chip = $(".marketplace_filter_chip").filter(function() { return $(this).attr("data-filter") == filter; });
+                    if (chip.length == 0) {
+                        chip = $(".marketplace_filter_chip[data-filter='all']");
+                    }
+                    $(".marketplace_filter_chip").removeClass("selected");
+                    chip.addClass("selected");
+                }
+
+                $("#marketplace_search").on("input", apply_filters);
+                $("#marketplace_category").on("change", apply_filters);
+                $(".marketplace_filter_chip").on("click", function() {
+                    select_filter($(this).attr("data-filter"));
+                    apply_filters();
+                });
+                $("#marketplace_clear_filters").on("click", function(e) {
+                    e.preventDefault();
+                    $("#marketplace_search").val("");
+                    $("#marketplace_category").val("all");
+                    select_filter("all");
+                    apply_filters();
+                });
+
+                // Press / to search
+                $(document).on("keydown", function(e) {
+                    if (e.key == "/" && !$(e.target).is("input, textarea, select")) {
+                        e.preventDefault();
+                        $("#marketplace_search").focus();
+                    }
+                });
+
+                // Load the search from the URL
+                var params = new URLSearchParams(window.location.search);
+                $("#marketplace_search").val(params.get("q") || "");
+                var category_option = $("#marketplace_category option").filter(function() { return this.value == params.get("category"); });
+                if (category_option.length > 0) {
+                    $("#marketplace_category").val(params.get("category"));
+                }
+                select_filter(params.get("filter") || "all");
+                apply_filters();
+
+                // Status badges for installed apps
+                function update_status_badge(badge, data) {
+                    var labels = {"green": "Running", "blue": "Running", "yellow": "Waiting", "red": "Error", "gray": "Stopped"};
+                    var color = data["color"];
+                    if (!(color in labels)) {
+                        badge.hide();
+                        return;
+                    }
+                    var label = labels[color];
+                    if (color == "gray" && data["status_basic"] == "Disabled") {
+                        label = "Disabled";
+                    }
+                    badge.text(label);
+                    badge.attr("title", data["status"]);
+                    badge.removeClass("marketplace_badge_status_green marketplace_badge_status_blue marketplace_badge_status_yellow marketplace_badge_status_red marketplace_badge_status_gray");
+                    badge.addClass("marketplace_badge_status_" + color);
+                }
+                $(".marketplace_badge_status").each(function() {
+                    var badge = $(this);
+                    $.getJSON("/api/get_service_status?service=" + encodeURIComponent(badge.attr("data-shortname")), function(data) {
+                        update_status_badge(badge, data);
+                    });
+                });
             });
         </script>
 
@@ -27,24 +130,50 @@
 
         {% include 'includes/message_display.html' %}
 
-        </br><br/>
+        </br>
         <!-- <br/>{{ load_time }} ms -->
 
-        {% for category in categories %}
-            {% set category_count = namespace(value=0) %}
-            {% for app in apps %}
-                {% if app.show_on_application_page and app.category == category.name %}
-                    {% set category_count.value = category_count.value + 1 %}
+        <div class="marketplace_toolbar">
+            <input type="search" id="marketplace_search" class="ui-corner-all marketplace_search" placeholder="Search apps  ( / )" aria-label="Search apps" autocomplete="off"/>
+            <select id="marketplace_category" class="ui-corner-all marketplace_category_select" aria-label="Category">
+                <option value="all">All Categories</option>
+                {% for category in categories %}
+                    {% if filter_counts.categories[category.name] > 0 %}
+                        <option value="{{category.name}}">{{category.title}}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <div class="marketplace_filters">
+                <button type="button" class="marketplace_filter_chip selected" data-filter="all">All ({{filter_counts.all}})</button>
+                <button type="button" class="marketplace_filter_chip" data-filter="installed">Installed ({{filter_counts.installed}})</button>
+                <button type="button" class="marketplace_filter_chip" data-filter="not_installed">Not Installed ({{filter_counts.not_installed}})</button>
+                {% if filter_counts.pinned > 0 %}
+                    <button type="button" class="marketplace_filter_chip" data-filter="pinned" title="Apps set to a custom version, which don't update with MyNode">Pinned ({{filter_counts.pinned}})</button>
                 {% endif %}
-            {% endfor %}
+                {% if filter_counts.beta > 0 %}
+                    <button type="button" class="marketplace_filter_chip" data-filter="beta">Beta ({{filter_counts.beta}})</button>
+                {% endif %}
+            </div>
+        </div>
 
-            {% if category_count.value > 0 %}
+        <div id="marketplace_no_results" class="marketplace_no_results" style="display: none;">
+            No apps match. <a href="#" id="marketplace_clear_filters">Clear search and filters</a>
+        </div>
+
+        {% for category in categories %}
+            {% if filter_counts.categories[category.name] > 0 %}
+            <div class="marketplace_category" data-category="{{category.name}}">
                 <div class="marketplace_category_header">{{category.title}}</div>
 
                 <div class="marketplace_category_container">
                     {% for app in apps %}
                         {% if app.show_on_marketplace_page and app.category == category.name %}
-                            <div class="marketplace_app_tile" data-shortname="{{app.short_name}}">
+                            {% set description = app.description if app.description is string else app.description|join(" ") %}
+                            <div class="marketplace_app_tile" data-shortname="{{app.short_name}}"
+                                 data-search="{{ [app.name, app.short_name, app.short_description, description, app.author.name]|join(' ')|lower }}"
+                                 data-installed="{{ '1' if app.is_installed else '0' }}"
+                                 data-pinned="{{ '1' if app.has_custom_version else '0' }}"
+                                 data-beta="{{ '1' if app.is_beta else '0' }}">
                                 <div class="marketplace_app_tile_left">
                                     <img class="marketplace_app_tile_icon" width="60" height="60" alt="{{app.name}} icon" src="{{ url_for('static', filename="images/app_icons/")}}{{app.short_name}}.png"/>
                                 </div>
@@ -58,6 +187,23 @@
                                         <div class="marketplace_app_tile_version"><i>Premium Feature</i></div>
                                     {% endif %}
 
+                                    {% if app.is_installed or app.is_deprecated or app.has_custom_version or app.is_beta %}
+                                        <div class="marketplace_app_tile_badges">
+                                            {% if app.is_installed and not app.hide_status_icon %}
+                                                <span class="marketplace_badge marketplace_badge_status" data-shortname="{{app.short_name}}">Installed</span>
+                                            {% endif %}
+                                            {% if app.is_deprecated %}
+                                                <span class="marketplace_badge marketplace_badge_deprecated" title="{{app.deprecated_reason}}">Deprecated</span>
+                                            {% endif %}
+                                            {% if app.has_custom_version %}
+                                                {% include 'includes/marketplace_pinned_badge.html' %}
+                                            {% endif %}
+                                            {% if app.is_beta %}
+                                                <span class="marketplace_badge marketplace_badge_beta">Beta</span>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+
                                     <div class="marketplace_app_tile_top_right">
                                         {% if app.is_manually_added %}
                                             <img class="marketplace_app_tile_top_right_icon" title="Manually Added" src="{{ url_for('static', filename="images/")}}app_manually_added.png"/>
@@ -67,11 +213,12 @@
                                         {% endif %}
                                     </div>
                                 </div>
-                                
+
                             </div>
                         {% endif %}
                     {% endfor %}
                 </div>
+            </div>
             {% endif %}
         {% endfor %}
 

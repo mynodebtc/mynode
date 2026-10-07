@@ -52,6 +52,13 @@
 
         {% include 'includes/message_display.html' %}
 
+        {% if app.is_deprecated %}
+            <div class="main_page_warning_block">
+                <b>{{app.name}} is deprecated.</b>
+                {% if app.deprecated_reason %}{{app.deprecated_reason}}{% endif %}
+            </div>
+        {% endif %}
+
         <div class="marketplace_app_page_container">
             <div class="marketplace_app_page_block_header">&nbsp;</div>
             <div class="marketplace_app_page_block_contents">
@@ -59,6 +66,19 @@
                 <div class="marketplace_app_page_block_contents_left">
                     <img class="marketplace_app_page_icon" width="150" height="150" alt="{{app.name}} icon" src="{{ url_for('static', filename="images/app_icons/")}}{{app.short_name}}.png"/>
                     <p style="font-size: 14px; text-align: center;">{{app.short_description}}</p>
+                    {% if app.is_deprecated or app.has_custom_version or app.is_beta %}
+                        <div class="marketplace_app_page_badges">
+                            {% if app.is_deprecated %}
+                                <span class="marketplace_badge marketplace_badge_deprecated">Deprecated</span>
+                            {% endif %}
+                            {% if app.has_custom_version %}
+                                {% include 'includes/marketplace_pinned_badge.html' %}
+                            {% endif %}
+                            {% if app.is_beta %}
+                                <span class="marketplace_badge marketplace_badge_beta">Beta</span>
+                            {% endif %}
+                        </div>
+                    {% endif %}
                     <br/>
 
                     {% if not product_key_skipped or product_key_skipped and not app.is_premium %}
@@ -110,10 +130,23 @@
                                     {% endif %}
                                 </td>
                             </tr>
+                            {% if app.has_custom_version %}
+                            <tr>
+                                <th>Pinned Version</th>
+                                <td>{{app.latest_version}} (<a href="/apps/customize-app-versions">change</a>)</td>
+                            </tr>
+                            {% if app.release_version and app.release_version != app.latest_version %}
+                            <tr>
+                                <th>MyNode Release Version</th>
+                                <td>{{app.release_version}}</td>
+                            </tr>
+                            {% endif %}
+                            {% else %}
                             <tr>
                                 <th>Latest Version</th>
                                 <td>{{app.latest_version}}</td>
                             </tr>
+                            {% endif %}
                             {% if app.author.name is defined and app.author.name != "" %}
                             <tr>
                                 <th>Author</th>

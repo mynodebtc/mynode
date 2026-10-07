@@ -9,6 +9,7 @@ from utilities import *
 from enable_disable_functions import * 
 import copy
 import glob
+import re
 import json
 import time
 import subprocess
@@ -224,9 +225,14 @@ def initialize_application_defaults(app):
     if not "tor_address" in app: app["tor_address"] = get_onion_url_for_service( app["tor_service_name"] ) if is_tor_remote_access_enabled() else "NA"
     if not "is_premium" in app: app["is_premium"] = False
     if not "current_version" in app: app["current_version"] = get_app_current_version_from_file( app["short_name"] )
+    # The version this MyNode release ships, before any version the user pinned. Dynamic apps have it
+    # in their JSON; legacy apps get it from mynode_app_versions.sh in initialize_applications().
+    if not "release_version" in app: app["release_version"] = to_string( app.get("latest_version", "") )[0:16]
     app["latest_version"] = get_app_latest_version_from_file( app )
     if not "has_custom_version" in app: app["has_custom_version"] = has_custom_app_version( app["short_name"] )
     if not "is_beta" in app: app["is_beta"] = False
+    if not "is_deprecated" in app: app["is_deprecated"] = False
+    if not "deprecated_reason" in app: app["deprecated_reason"] = ""
     app["is_installed"] = is_installed( app["short_name"] )
     app["is_manually_added"] = os.path.isfile("/usr/share/mynode_apps/{}/is_manually_added".format(app["short_name"]))
     if not "can_reinstall" in app: app["can_reinstall"] = True
@@ -239,6 +245,9 @@ def initialize_application_defaults(app):
     if not "show_on_homepage" in app: app["show_on_homepage"] = False
     if not "show_on_application_page" in app: app["show_on_application_page"] = True
     if not "show_on_marketplace_page" in app: app["show_on_marketplace_page"] = app["show_on_application_page"]
+    # Deprecated apps stay on the Marketplace only for users who have them, so they can see why and uninstall
+    if app["is_deprecated"] and not app["is_installed"]:
+        app["show_on_marketplace_page"] = False
     if not "show_on_status_page" in app: app["show_on_status_page"] = False             # New apps should set to true
     if not "can_enable_disable" in app: app["can_enable_disable"] = True
     if not "is_enabled" in app: app["is_enabled"] = is_service_enabled( app["short_name"] )
@@ -336,6 +345,17 @@ def initialize_applications():
     # Initialize advanced data that needs all apps loaded
     for app in mynode_applications:
         initialize_application_advanced_data(app)
+
+    # Find the release version of pinned legacy apps, so the Marketplace can show a pin falling behind
+    pinned_apps = [app for app in mynode_applications if app["has_custom_version"]]
+    if len(pinned_apps) > 0:
+        legacy_release_versions = get_legacy_app_release_versions()
+        for app in pinned_apps:
+            if app["short_name"] in legacy_release_versions:
+                app["release_version"] = legacy_release_versions[ app["short_name"] ]
+    for app in mynode_applications:
+        app["pinned_update_available"] = app["has_custom_version"] and \
+            is_newer_app_version(app["release_version"], app["latest_version"])
 
     return
 
@@ -711,6 +731,49 @@ def has_custom_app_version(short_name):
     if os.path.isfile("/mnt/hdd/mynode/settings/"+short_name+"_version_latest_custom"):
         return True
     return False
+
+# Returns {short_name: version} for the legacy apps in mynode_app_versions.sh, as this release
+# ships them. The script applies pinned versions as it sets each variable (X=$(get_app_version "$X" "app")),
+# so it is run with those lines and the custom versions file left out.
+def get_legacy_app_release_versions(versions_file="/usr/share/mynode/mynode_app_versions.sh"):
+    versions = {}
+    try:
+        with open(versions_file, "r") as f:
+            script = f.read()
+
+        pin_line = re.compile(r'^\s*([A-Z0-9_]+)=\$\(get_app_version "\$\1" "([a-z0-9_]+)"\)\s*$', re.M)
+        variables = pin_line.findall(script)
+        script = pin_line.sub("", script)
+        script = re.sub(r'source \S*mynode_app_versions_custom\.sh', ':', script)
+        # Sourcing the script also prints device info, so mark the lines to read back
+        for variable, short_name in variables:
+            script += '\necho "MYNODE_RELEASE_VERSION {} ${}"'.format(short_name, variable)
+
+        output = to_string(subprocess.check_output(["/bin/bash", "-s"], input=to_bytes(script), stderr=subprocess.DEVNULL, timeout=30))
+        for line in output.splitlines():
+            parts = line.split()
+            if len(parts) == 3 and parts[0] == "MYNODE_RELEASE_VERSION":
+                versions[ parts[1] ] = parts[2][0:16]
+    except Exception as e:
+        log_message("get_legacy_app_release_versions exception: {}".format(str(e)))
+    return versions
+
+# True if version is newer than other_version, comparing their numbers (v0.21.3-beta is 0,21,3).
+# Versions without a leading number, like commit hashes, can't be compared and are never newer.
+def is_newer_app_version(version, other_version):
+    def parse(v):
+        v = to_string(v).strip()
+        if re.fullmatch(r'[0-9a-f]{7,}', v):
+            return None
+        m = re.match(r'^v?(\d+(?:\.\d+)*)', v)
+        if not m:
+            return None
+        return [int(n) for n in m.group(1).split(".")]
+    a = parse(version)
+    b = parse(other_version)
+    if a == None or b == None:
+        return False
+    return a > b
 
 def save_custom_app_version(short_name, version):
     set_file_contents("/home/bitcoin/.mynode/"+short_name+"_version_latest_custom", version)

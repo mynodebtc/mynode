@@ -24,7 +24,7 @@ APP_DOC_FILE = "doc/applications.md"
 
 # Fields MyNode fills in itself. An app can set them, but they are not settings and are
 # left out of the documented table.
-RUNTIME_FIELDS = ["current_version", "has_custom_version", "is_enabled", "screenshots", "tor_address"]
+RUNTIME_FIELDS = ["current_version", "has_custom_version", "is_enabled", "release_version", "screenshots", "tor_address"]
 
 # Documented fields that application_info.py never reads
 DOC_ONLY_FIELDS = ["sdk_version", "supports_app_page"]

@@ -229,6 +229,35 @@ input:focus + .slider {
     box-shadow: 0 4px 8px 0 rgba(180, 117, 0, 0.2), 0 6px 20px 0 rgba(180, 117, 0, 0.19);
 }
 
+.marketplace_badge,
+.marketplace_badge_status_gray { background-color: #3a4750; color: #dddddd; }
+.marketplace_badge_status_green,
+.marketplace_badge_status_blue { background-color: #1e4429; color: #9be3ad; }
+.marketplace_badge_status_yellow { background-color: #4a3d10; color: #f3d67a; }
+.marketplace_badge_status_red { background-color: #4d1f1f; color: #f5a3a3; }
+.marketplace_badge_deprecated { background-color: #6b7780; color: #ffffff; }
+.marketplace_badge_pinned { background-color: #1f3554; color: #a9c8f5; }
+.marketplace_badge_pinned_behind { background-color: #4a3d10; color: #f3d67a; }
+.marketplace_badge_beta { background-color: #3a2850; color: #d2b4f0; }
+.marketplace_search,
+.marketplace_category_select,
+.marketplace_filter_chip {
+    background-color: #121C21;
+    border-color: #3a4750;
+    color: #dddddd;
+}
+.marketplace_filter_chip.selected {
+    background-color: #946000;
+    border-color: #946000;
+    color: #ffffff;
+}
+.marketplace_no_results {
+    color: #dddddd;
+}
+.app_deprecated_tag {
+    background-color: #6b7780;
+}
+
 .marketplace_app_page_container {
     color: #ddd;
 }

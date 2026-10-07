@@ -157,6 +157,8 @@ After changing which settings MyNode reads, run `app_sdk/create.py check_doc` to
 | <sub>data_manageable                    | <sub>false | <sub>Shows a Reset Data button on the app page, which deletes the app's data folder (/mnt/hdd/mynode/[app]). |
 | <sub>is_beta                            | <sub>false | <sub>Indicates if an app is "beta" quality. If true, adds a beta icon in the UI. |
 | <sub>is_premium                         | <sub>false | <sub>Indicates if this app is available only for premium users. |
+| <sub>is_deprecated                      | <sub>false | <sub>Marks an app as retired. It is hidden from the Marketplace unless installed, and installed copies show a Deprecated badge and the deprecated_reason. |
+| <sub>deprecated_reason                  | <sub>"" | <sub>Why the app is deprecated and what users should do. Shown on the app's Marketplace page. |
 | <sub>homepage_section                   | <sub>apps | <sub>The homepage section the app tile is shown in. |
 | <sub>homepage_order                     | <sub>91 | <sub>This dictates the order of apps shown on the home page. Should be 91+. |
 | <sub>app_type                           | <sub>custom | <sub>This indicates the type of application. For future use. |
