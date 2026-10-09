@@ -60,7 +60,6 @@
     "can_uninstall": true,
     "can_reinstall": true,
     "can_enable_disable": true,
-    "is_beta": true,
     "is_premium": true,
     "homepage_section": "apps",
     "homepage_order": 91,
