@@ -448,7 +448,7 @@ def page_lnd_change_alias():
     if alias == None or alias == "":
         flash("Empty Alias", category="error")
         return redirect(url_for(".page_lnd"))
-    if len(alias) > 34:
+    if len(alias) > 34 or any(ord(c) < 32 or ord(c) == 127 for c in alias):
         flash("Invalid Alias", category="error")
         return redirect(url_for(".page_lnd"))
     with open("/mnt/hdd/mynode/settings/.lndalias", "w") as f:

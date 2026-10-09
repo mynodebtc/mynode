@@ -107,6 +107,9 @@ if [ -f /var/lib/tor/mynode_lnd/hostname ]; then
 fi
 
 # Set Alias
-ALIAS=$(cat /mnt/hdd/mynode/settings/.lndalias)
-sed -i "s/^alias=.*/alias=$ALIAS/g" /mnt/hdd/mynode/lnd/lnd.conf
+ALIAS=$(head -n 1 /mnt/hdd/mynode/settings/.lndalias | tr -d '\000-\037\177')
+LND_CONF_TMP=$(mktemp)
+ALIAS="$ALIAS" awk '/^alias=/ { print "alias=" ENVIRON["ALIAS"]; next } { print }' /mnt/hdd/mynode/lnd/lnd.conf > $LND_CONF_TMP && \
+    cat $LND_CONF_TMP > /mnt/hdd/mynode/lnd/lnd.conf
+rm -f $LND_CONF_TMP
 chown bitcoin:bitcoin /mnt/hdd/mynode/lnd/lnd.conf
