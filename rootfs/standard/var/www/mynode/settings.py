@@ -535,8 +535,14 @@ def electrs_tx_lookup_limit_page():
     if not request:
         return redirect("/settings")
 
-    limit = request.form.get('electrs_tx_lookup_limit')
-    set_electrs_index_lookup_limit(limit)
+    try:
+        limit = int(request.form.get('electrs_tx_lookup_limit'))
+    except (TypeError, ValueError):
+        limit = 0
+    if limit < 1 or limit > 9999999:
+        flash("Invalid Lookup Limit", category="error")
+        return redirect("/settings")
+    set_electrs_index_lookup_limit(str(limit))
 
     t = Timer(1.0, restart_electrs)
     t.start()

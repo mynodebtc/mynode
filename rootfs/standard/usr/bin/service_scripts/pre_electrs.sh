@@ -21,7 +21,12 @@ if [ $IS_X86 = 1 ]; then
     INDEX_LOOKUP_LIMIT=1000
 fi
 if [ -f /mnt/hdd/mynode/electrs/index_lookup_limit ]; then
-    INDEX_LOOKUP_LIMIT=$(cat /mnt/hdd/mynode/electrs/index_lookup_limit)
+    SAVED_LIMIT=$(cat /mnt/hdd/mynode/electrs/index_lookup_limit)
+    if [[ "$SAVED_LIMIT" =~ ^[0-9]{1,7}$ ]]; then
+        INDEX_LOOKUP_LIMIT=$SAVED_LIMIT
+    else
+        echo "Ignoring invalid index_lookup_limit"
+    fi
 fi
 if [ ! -f /mnt/hdd/mynode/electrs/index_lookup_limit ]; then
     echo "$INDEX_LOOKUP_LIMIT" > /mnt/hdd/mynode/electrs/index_lookup_limit
