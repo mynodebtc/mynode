@@ -344,9 +344,15 @@
 
                 $("#reset_docker_button").button();
                 $("#reset_docker_button").on("click", function() {
-                    if (confirm("Are you sure you want to reset docker?")) {
-                        window.location.href='/settings/reset-docker';
-                    }
+                    openPasswordDialog("Reset Docker",
+                                       "Resetting Docker deletes all Docker data, including BTCPay Server data, and reboots your device. Enter your password to continue.",
+                                       "/settings/reset-docker");
+                });
+
+                $("#reset_lnbits_data_button").on("click", function() {
+                    openPasswordDialog("Reset LNbits Data",
+                                       "This deletes all LNbits users, wallets and extensions. Enter your password to continue.",
+                                       "/settings/reset-lnbits-data");
                 });
 
                 $("#reset_albyhub_password_button").button();
@@ -1439,7 +1445,7 @@
             <div class="settings_block_subheader">Reset LNbits Data</div>
             This will delete your LNbits settings from the database. All users, wallets and extensions will be lost.
             <br/>
-            <a href="/settings/reset-lnbits-data" class="ui-button ui-widget ui-corner-all settings_button">Delete Settings</a>
+            <button id="reset_lnbits_data_button" class="ui-button ui-widget ui-corner-all settings_button">Delete Settings</button>
         </div>
 
 

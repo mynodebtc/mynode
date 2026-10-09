@@ -44,6 +44,43 @@ function openConfirmDialog(divid, title, message, okFunction) {
     });
 }
 
+// Ask for the admin password, then POST it with the given fields to action
+function openPasswordDialog(title, message, action, fields={}, onSubmit=null) {
+    var form = $("<form>", {method: "POST", action: action});
+    form.append($("<p>").text(message));
+    form.append($("<b>").text("Password:"), $("<br>"));
+    form.append($("<input>", {type: "password", name: "password", "class": "text ui-widget-content ui-corner-all"}));
+    $.each(fields, function(name, value) {
+        form.append($("<input>", {type: "hidden", name: name, value: value}));
+    });
+    // Allow form submission with keyboard without duplicating the dialog button
+    form.append($("<input>", {type: "submit", tabindex: -1, style: "position:absolute; top:-1000px"}));
+    form.on("submit", function() {
+        if (onSubmit) {
+            onSubmit();
+        }
+    });
+    $("<div>").append(form).appendTo("body").dialog({
+        title: title,
+        resizable: false,
+        height: "auto",
+        width: 600,
+        modal: true,
+        position: { my: "center top", at: "center top", of: window, collision: "none" },
+        buttons: {
+            "OK": function() {
+                form.trigger("submit");
+            },
+            Cancel: function() {
+                $( this ).dialog( "close" );
+            }
+        },
+        close: function() {
+            $( this ).dialog( "destroy" ).remove();
+        }
+    });
+}
+
 // Show alert popup with contents
 function showAlertPopup(divid, message) {
     $("#"+divid).html(message);

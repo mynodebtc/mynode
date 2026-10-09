@@ -1,5 +1,5 @@
 
-from flask import Blueprint, render_template, redirect, jsonify, request, send_file, make_response
+from flask import Blueprint, render_template, redirect, jsonify, request, send_file, make_response, flash
 from flask import current_app as app
 from user_management import check_logged_in
 from bitcoin_info import *
@@ -9,6 +9,7 @@ from device_info import *
 from thread_functions import *
 from systemctl_info import *
 from application_info import *
+import pam
 from drive_info import *
 from price_info import *
 from messages import *
@@ -176,18 +177,23 @@ def api_restore_data_folder():
         return "ERROR"
     return "OK"
 
-@mynode_api.route("/api/reset_data_folder")
+@mynode_api.route("/api/reset_data_folder", methods=["POST"])
 def api_reset_data_folder():
     check_logged_in()
 
-    app = request.args.get("app")
-    if not app:
-        return "NO_APP_SPECIFIED"
-    if not is_application_valid(app):
-        return "INVALID_APP_NAME"
-    if not reset_data_folder(app):
-        return "ERROR"
-    return "OK"
+    app_name = request.form.get("app")
+    if not is_application_valid(app_name) or not get_application(app_name)["data_manageable"]:
+        flash("Invalid application", category="error")
+        return redirect("/apps")
+    pw = request.form.get("password")
+    if pw == None or pam.pam().authenticate("admin", pw) == False:
+        flash("Invalid Password", category="error")
+        return redirect("/app/{}/info".format(app_name))
+    if not reset_data_folder(app_name):
+        flash("Error resetting app data", category="error")
+    else:
+        flash("App data reset", category="message")
+    return redirect("/app/{}/info".format(app_name))
 
 @mynode_api.route("/api/get_device_info")
 def api_get_device_info():

@@ -497,9 +497,13 @@ def reset_app_passwords_page():
     flash("Passwords Reset", category="message")
     return redirect("/settings")
 
-@mynode_settings.route("/settings/reset-docker")
+@mynode_settings.route("/settings/reset-docker", methods=['POST'])
 def reset_docker_page():
     check_logged_in()
+    pw = request.form.get('password')
+    if pw == None or pam.pam().authenticate("admin", pw) == False:
+        flash("Invalid Password", category="error")
+        return redirect("/settings")
 
     check_and_mark_reboot_action("reset_docker")
 
@@ -664,9 +668,13 @@ def reset_btcpay_admin_pwd_page():
           category="message")
     return redirect("/settings")
 
-@mynode_settings.route("/settings/reset-lnbits-data")
+@mynode_settings.route("/settings/reset-lnbits-data", methods=['POST'])
 def reset_lnbits_data_page():
     check_logged_in()
+    pw = request.form.get('password')
+    if pw == None or pam.pam().authenticate("admin", pw) == False:
+        flash("Invalid Password", category="error")
+        return redirect("/settings")
 
     t = Timer(1.0, reset_lnbits_data)
     t.start()
@@ -1052,17 +1060,22 @@ def reinstall_app_page():
     }
     return render_template('reboot.html', **templateData)
 
-@mynode_settings.route("/settings/uninstall-app")
+@mynode_settings.route("/settings/uninstall-app", methods=['POST'])
 def uninstall_app_page():
     check_logged_in()
 
     # Check application specified
-    if not request.args.get("app"):
+    if not request.form.get("app"):
         flash("No application specified", category="error")
+        return redirect("/apps")
+
+    pw = request.form.get('password')
+    if pw == None or pam.pam().authenticate("admin", pw) == False:
+        flash("Invalid Password", category="error")
         return redirect("/apps")
     
     # Check application name is valid
-    app_name = request.args.get("app")
+    app_name = request.form.get("app")
     if not is_application_valid(app_name):
         flash("Application is invalid", category="error")
         return redirect("/apps")
@@ -1071,7 +1084,7 @@ def uninstall_app_page():
     uninstall_app(app_name)
 
     flash("Application Uninstalled", category="message")
-    r = request.args.get("return_page")
+    r = request.form.get("return_page")
     if r:
         if r == "marketplace_app":
             return redirect("/marketplace/{}".format(app_name))

@@ -56,15 +56,14 @@ function install(name, short_name) {
 }
 
 function uninstall(name, short_name, return_page="") {
-    if ( confirm("Are you sure you want to uninstall "+name+"? ") ) {
-        $('#loading_spinner_message').html("Uninstalling...");
-        $('#loading_spinner_overlay').fadeIn();
-        r = ""
-        if (return_page != "") {
-            r = "&return_page="+return_page
-        }
-        window.location.href='/settings/uninstall-app?app='+short_name+r;
-    }
+    openPasswordDialog("Uninstall "+name,
+                       "Are you sure you want to uninstall "+name+"? Its data may be deleted. Enter your password to continue.",
+                       "/settings/uninstall-app",
+                       {"app": short_name, "return_page": return_page},
+                       function() {
+                           $('#loading_spinner_message').text("Uninstalling...");
+                           $('#loading_spinner_overlay').fadeIn();
+                       });
 }
 
 function remove_from_device(name, short_name) {
@@ -164,16 +163,12 @@ function restore_data_folder_via_api(name, short_name) {
 }
 
 function reset_data_folder_via_api(name, short_name) {
-    if ( confirm("Are you sure you want to reset "+name+"? This will stop app, RESET ALL THE APP DATA and start app.") ) {
-        $('#loading_spinner_message').html("Resetting app...");
-        $('#loading_spinner_overlay').fadeIn();
-        $.get('/api/reset_data_folder?app='+short_name)
-            .done(function( data ) {
-                if (data != "OK") {
-                    alert("Error removing app data: "+data)
-                }
-                $('#loading_spinner_overlay').fadeOut();
-            }
-        );
-    }
+    openPasswordDialog("Reset "+name,
+                       "Are you sure you want to reset "+name+"? This will stop the app, RESET ALL THE APP DATA and start the app. Enter your password to continue.",
+                       "/api/reset_data_folder",
+                       {"app": short_name},
+                       function() {
+                           $('#loading_spinner_message').text("Resetting app...");
+                           $('#loading_spinner_overlay').fadeIn();
+                       });
 }
