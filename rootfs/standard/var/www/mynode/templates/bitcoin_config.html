@@ -18,7 +18,7 @@
             <h3>Additional Bitcoin Config</h3>
             You can add extra config to the top or bottom of the automatically generated Bitcoin config here. Invalid config may have adverse effects and it may confict with other settings and cause issues.
             <br/><br/>
-            Saving will reboot your device.
+            Saving will reboot your device and requires your password.
             <br/><br/>
 
             <form action="/bitcoin/config" method="POST">
@@ -28,6 +28,9 @@
                 <b>Post Bitcoin Config</b>
                 <textarea class="config_textarea_short" name="post_bitcoin_config" id="post_bitcoin_config">{{ post_bitcoin_config }}</textarea>
                 <br/><br/>
+                <b>Password:</b>
+                <input type="password" name="password" value="" class="text ui-widget-content ui-corner-all">
+                <br/><br/>
                 <input class="ui-button ui-widget ui-corner-all" type="submit" value="Save"/>
             </form>
         </div>
@@ -36,7 +39,7 @@
             <h3>Override Bitcoin Config</h3>
             You can fully override the entire the Bitcoin config. However, using your own config will prevent any future automatic updates and may have adverse effects. Many other settings will have no effect.
             <br/><br/>
-            Saving will reboot your device.
+            Saving will reboot your device and requires your password.
             <br/>
             {% if using_bitcoin_custom_config %}
             <br/>
@@ -49,6 +52,9 @@
         <div class="centered_text_div">
             <form action="/bitcoin/config" method="POST">
                 <textarea class="config_textarea" name="custom_config" id="custom_config">{{ bitcoin_config }}</textarea>
+                <br/><br/>
+                <b>Password:</b>
+                <input type="password" name="password" value="" class="text ui-widget-content ui-corner-all">
                 <br/><br/>
                 <input class="ui-button ui-widget ui-corner-all" type="submit" value="Save"/>
                 <a href="/bitcoin/reset_config" class="ui-button ui-widget ui-corner-all">Reset Config</a>

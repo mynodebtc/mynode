@@ -9,6 +9,7 @@ from user_management import check_logged_in
 import socket
 import json
 import time
+import pam
 
 mynode_bitcoin = Blueprint('mynode_bitcoin',__name__)
 
@@ -163,15 +164,19 @@ def bitcoin_reset_config_page():
 def bitcoin_config_page():
     check_logged_in()
 
+    pre_bitcoin_config = request.form.get('pre_bitcoin_config')
+    post_bitcoin_config = request.form.get('post_bitcoin_config')
+    custom_config = request.form.get('custom_config')
+
     # Handle form
-    if request.method == 'POST':
-        pre_bitcoin_config = request.form.get('pre_bitcoin_config')
+    pw = request.form.get('password')
+    if request.method == 'POST' and (pw == None or pam.pam().authenticate("admin", pw) == False):
+        flash("Invalid Password", category="error")
+    elif request.method == 'POST':
         if pre_bitcoin_config != None:
             set_bitcoin_pre_config(pre_bitcoin_config)
-        post_bitcoin_config = request.form.get('post_bitcoin_config')
         if post_bitcoin_config != None:
             set_bitcoin_post_config(post_bitcoin_config)
-        custom_config = request.form.get('custom_config')
         if custom_config != None:
             set_bitcoin_custom_config(custom_config)
         
@@ -188,15 +193,22 @@ def bitcoin_config_page():
         }
         return render_template('reboot.html', **templateData)
 
-    bitcoin_config = get_bitcoin_custom_config()
-    if bitcoin_config == "ERROR":
-        bitcoin_config = get_bitcoin_config()
+    # Keep anything typed before a rejected password
+    bitcoin_config = custom_config
+    if bitcoin_config == None:
+        bitcoin_config = get_bitcoin_custom_config()
+        if bitcoin_config == "ERROR":
+            bitcoin_config = get_bitcoin_config()
+    if pre_bitcoin_config == None:
+        pre_bitcoin_config = get_bitcoin_pre_config()
+    if post_bitcoin_config == None:
+        post_bitcoin_config = get_bitcoin_post_config()
 
     templateData = {
         "title": "Bitcoin Config",
         "using_bitcoin_custom_config": using_bitcoin_custom_config(),
-        "pre_bitcoin_config": get_bitcoin_pre_config(),
-        "post_bitcoin_config": get_bitcoin_post_config(),
+        "pre_bitcoin_config": pre_bitcoin_config,
+        "post_bitcoin_config": post_bitcoin_config,
         "bitcoin_config": bitcoin_config,
         "ui_settings": read_ui_settings()
     }

@@ -486,10 +486,14 @@ def lnd_reset_config_page():
 def lnd_config_page():
     check_logged_in()
 
+    custom_config = request.form.get('custom_config')
+    extra_lnd_config = request.form.get('extra_lnd_config')
+
     # Handle form
-    if request.method == 'POST':
-        custom_config = request.form.get('custom_config')
-        extra_lnd_config = request.form.get('extra_lnd_config')
+    pw = request.form.get('password')
+    if request.method == 'POST' and (pw == None or pam.pam().authenticate("admin", pw) == False):
+        flash("Invalid Password", category="error")
+    elif request.method == 'POST':
         if extra_lnd_config != None:
             set_lnd_extra_config(extra_lnd_config)
         if custom_config != None:
@@ -508,15 +512,20 @@ def lnd_config_page():
         }
         return render_template('reboot.html', **templateData)
 
-    lnd_config = get_lnd_custom_config()
-    if lnd_config == "ERROR":
-        lnd_config = get_lnd_config()
+    # Keep anything typed before a rejected password
+    lnd_config = custom_config
+    if lnd_config == None:
+        lnd_config = get_lnd_custom_config()
+        if lnd_config == "ERROR":
+            lnd_config = get_lnd_config()
+    if extra_lnd_config == None:
+        extra_lnd_config = get_lnd_extra_config()
 
     templateData = {
         "title": "LND Config",
         "using_lnd_custom_config": using_lnd_custom_config(),
         "lnd_config": lnd_config,
-        "extra_lnd_config": get_lnd_extra_config(),
+        "extra_lnd_config": extra_lnd_config,
         "ui_settings": read_ui_settings()
     }
     return render_template('lnd_config.html', **templateData)
