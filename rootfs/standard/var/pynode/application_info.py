@@ -289,6 +289,7 @@ def initialize_application_defaults(app):
     # This data will be initialized once all apps are loaded
     app["is_supported"] = None
     app["not_supported_reason"] = None
+    app["pinned_update_available"] = False
 
     return app
 
