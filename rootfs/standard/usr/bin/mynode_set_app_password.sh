@@ -39,17 +39,16 @@ EOF
         systemctl try-restart --no-block thunderhub
         ;;
     lndg)
-        export LNDG_ADMIN_PASSWORD="$PASSWORD"
+        # Run as LNDg's own user, with the password on stdin
         cd /opt/mynode/lndg
-        .venv/bin/python manage.py shell -c "
-import os
+        printf '%s' "$PASSWORD" | sudo -u lndg .venv/bin/python manage.py shell -c "
+import sys
 from django.contrib.auth import get_user_model
 admin = get_user_model().objects.get(username='admin')
-admin.set_password(os.environ['LNDG_ADMIN_PASSWORD'])
+admin.set_password(sys.stdin.read())
 admin.save()
 "
         save_app_password_user_set lndg
-        unset LNDG_ADMIN_PASSWORD
         ;;
     lndboss)
         # LndBoss reads auth.json at each login, so no restart is needed
