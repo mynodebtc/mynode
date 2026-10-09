@@ -217,6 +217,9 @@ while true; do
                 export BTCPAYGEN_LIGHTNING="lnd"
                 export BTCPAY_ENABLE_SSH=false
                 export BTCPAY_IMAGE=btcpayserver/btcpayserver:$BTCPAYSERVER_VERSION
+                export BTCPAYGEN_DOCKER_IMAGE="btcpayserver/docker-compose-generator@${BTCPAYSERVER_GENERATOR_DIGEST##* }"
+                # Tagged, so build.sh's cleanup of untagged generator images leaves it in place
+                pull_app_docker_image btcpayserver/docker-compose-generator latest btcpayserver "$BTCPAYSERVER_GENERATOR_DIGEST"
 
                 cp -f /usr/share/btcpayserver/bitcoin.custom.yml /mnt/hdd/mynode/btcpayserver/btcpayserver-docker/docker-compose-generator/docker-fragments/bitcoin.custom.yml
                 cp -f /usr/share/btcpayserver/lnd.custom.yml /mnt/hdd/mynode/btcpayserver/btcpayserver-docker/docker-compose-generator/docker-fragments/lnd.custom.yml

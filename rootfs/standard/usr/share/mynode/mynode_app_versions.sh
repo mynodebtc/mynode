@@ -207,6 +207,8 @@ if [ "$IS_32_BIT" = "1" ]; then
     BTCPAYSERVER_VERSION="1.3.6"
 fi
 BTCPAYSERVER_DOCKER_COMMIT="6b2b270f7318af19c4e32e92cfc070722165e911"
+# Image btcpayserver-docker's build.sh runs to generate its compose file
+BTCPAYSERVER_GENERATOR_DIGEST="latest sha256:e92303cc1499331974aeb95099348791e6b944d091a028f0cae40ccee5ecc122"
 BTCPAYSERVER_VERSION=$(get_app_version "$BTCPAYSERVER_VERSION" "btcpayserver")
 BTCPAYSERVER_VERSION_FILE=/home/bitcoin/.mynode/btcpayserver_version
 BTCPAYSERVER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/btcpayserver_version_latest

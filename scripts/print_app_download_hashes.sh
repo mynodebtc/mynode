@@ -28,6 +28,7 @@ MEMPOOL_FRONTEND_DIGEST mempool/frontend MEMPOOL_VERSION
 MEMPOOL_BACKEND_DIGEST mempool/backend MEMPOOL_VERSION
 MARIADB_DIGEST mariadb 10.9.3
 LNBITS_DIGEST lnbits/lnbits LNBITS_VERSION
+BTCPAYSERVER_GENERATOR_DIGEST btcpayserver/docker-compose-generator latest
 "
 
 # Docker images pulled by marketplace install scripts: <app> <pin variable> <image> <tag, with {VERSION} from its JSON>
