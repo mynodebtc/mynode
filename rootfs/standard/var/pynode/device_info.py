@@ -8,6 +8,7 @@ from systemctl_info import *
 import time
 import json
 import os
+import shutil
 import secrets
 import sqlite3
 import subprocess
@@ -1259,7 +1260,15 @@ def delete_bitcoin_peer_database():
     os.system("rm -rf /mnt/hdd/mynode/bitcoin/testnet3/peers.dat")
 
 def delete_bitcoin_data():
-    os.system("rm -rf /mnt/hdd/mynode/bitcoin")
+    # Remove block and chain data so Bitcoin syncs again from the genesis block. Wallets, config,
+    # settings.json and the onion key are kept.
+    for network_folder in ["", "testnet3", "testnet4", "signet", "regtest"]:
+        folder = os.path.join("/mnt/hdd/mynode/bitcoin", network_folder)
+        for name in ["blocks", "chainstate", "indexes"]:
+            shutil.rmtree(os.path.join(folder, name), ignore_errors=True)
+        for name in ["mempool.dat", "fee_estimates.dat", "anchors.dat"]:
+            if os.path.isfile(os.path.join(folder, name)):
+                os.remove(os.path.join(folder, name))
     os.system("rm -rf /mnt/hdd/mynode/.mynode_bitcoin_synced_at_least_once")
     #os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpc_environment")
     #os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpcpw")

@@ -137,7 +137,8 @@
                     openConfirmDialog("confirm-dialog",
                                       "Reset Bitcoin Blockchain",
                                       "Resetting the blockchain will restart bitcoin from scratch. This may take a long " +
-                                      "time. Would you still like to reset the bitcoin blockchain?",
+                                      "time. Bitcoin wallets are kept and catch up as the chain syncs. " +
+                                      "Would you still like to reset the bitcoin blockchain?",
                                       okFunction)
                 });
 
@@ -1210,7 +1211,7 @@
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Reset Blockchain</div>
-            If Bitcoin is having issues, you can reset the blockchain data. This will restart the initial block download and may take a long time.
+            If Bitcoin is having issues, you can reset the blockchain data. This will restart the initial block download and may take a long time. Bitcoin wallets are kept.
             <br/>
             <button id="reset-blockchain" class="ui-button ui-widget ui-corner-all settings_button">Reset Blockchain</button>
 
