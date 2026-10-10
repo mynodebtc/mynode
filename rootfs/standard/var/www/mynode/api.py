@@ -9,6 +9,7 @@ from device_info import *
 from thread_functions import *
 from systemctl_info import *
 from application_info import *
+from sphinxrelay import get_connection_string
 import pam
 from drive_info import *
 from price_info import *
@@ -194,6 +195,30 @@ def api_reset_data_folder():
     else:
         flash("App data reset", category="message")
     return redirect("/app/{}/info".format(app_name))
+
+@mynode_api.route("/api/reveal_secret", methods=["POST"])
+def api_reveal_secret():
+    check_logged_in()
+
+    pw = request.form.get("password")
+    if pw == None or pam.pam().authenticate("admin", pw) == False:
+        return jsonify({"error": "Invalid Password"})
+
+    secret = request.form.get("secret")
+    value = None
+    if secret == "bitcoin_rpc_password":
+        value = get_bitcoin_rpc_password()
+    elif secret == "lit_password":
+        value = get_lnd_lit_password()
+    elif secret == "sphinxrelay_connection_string":
+        value = get_connection_string()
+    elif secret == "app_password":
+        app_name = request.form.get("app")
+        if get_application_password_state(app_name) == "hidden":
+            value = get_application_password(app_name)
+    if not value:
+        return jsonify({"error": "Not available"})
+    return jsonify({"value": value})
 
 @mynode_api.route("/api/get_device_info")
 def api_get_device_info():

@@ -92,21 +92,6 @@
                     window.open(url,'_blank');
                 })
 
-                $("#show_lit_password").on("click", function() {
-                    $("#show_lit_password").hide(0);
-                    $("#lit_password").show();
-                });
-                $("#copy_lit_password").on("click", function() {
-                    navigator.clipboard.writeText("{{lit_password}}").then(function() {
-                        showAlertPopup("alert_popup", "<b>Password copied!</b>");
-                    }, function() {
-                        showAlertPopup("alert_popup", "<b>Password copy failed!</b>");
-                    });
-                });
-                if (location.protocol == 'https:') {
-                    $("#copy_lit_password").show();
-                }
-
                 function show_deposit_address(addr) {
                     $("#lnd_deposit_address_text").html( addr );
                     $("#lnd_deposit_address_qrcode").attr("src", "/api/get_qr_code_image?url="+addr);
@@ -234,9 +219,10 @@
                             <th>Lightning Terminal</th>
                             <td>
                                 <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="lit" style="width: 100px;" href="#">open</a>
-                                <span id="lit_password" style="display: none; margin: 0;">{{lit_password}} <span id="copy_lit_password" class="ui-icon ui-icon-copy" style="cursor: pointer; display: none;" title="Copy Password"></span></span>
-                                
-                                <a id="show_lit_password" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;">show password</a>
+                                <span class="reveal_secret" data-secret="lit_password">
+                                    <span class="reveal_secret_value" style="display: none;"><span class="reveal_secret_text"></span> <span class="reveal_secret_copy ui-icon ui-icon-copy" style="cursor: pointer;" title="Copy Password"></span></span>
+                                    <a class="reveal_secret_button ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;">show password</a>
+                                </span>
                             </td>
                         </tr>
 {% endif %}

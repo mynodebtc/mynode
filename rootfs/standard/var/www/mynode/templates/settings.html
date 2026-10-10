@@ -401,6 +401,7 @@
                     open: function() {
                         $("#set_app_password1").val("");
                         $("#set_app_password2").val("");
+                        $("#set_app_password_mynode").val("");
                     }
                 });
                 $(".set_app_password_button").on("click", function() {
@@ -1937,6 +1938,10 @@
                 <b>Repeat Password:</b>
                 <br/>
                 <input type="password" name="password2" id="set_app_password2" value="" class="text ui-widget-content ui-corner-all">
+                <br/>
+                <b>MyNode Password:</b>
+                <br/>
+                <input type="password" name="password" id="set_app_password_mynode" value="" class="text ui-widget-content ui-corner-all">
 
                 <!-- Allow form submission with keyboard without duplicating the dialog button -->
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">

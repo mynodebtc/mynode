@@ -81,6 +81,89 @@ function openPasswordDialog(title, message, action, fields={}, onSubmit=null) {
     });
 }
 
+// Ask for the admin password, then POST it with the given fields to url and pass the returned
+// value to onValue. The value is never in the page until then.
+function openRevealDialog(url, fields, onValue) {
+    var form = $("<form>");
+    var password = $("<input>", {type: "password", "class": "text ui-widget-content ui-corner-all"});
+    var error = $("<p>", {"class": "red_text"}).hide();
+    form.append($("<p>").text("Please enter your password to show this."));
+    form.append($("<b>").text("Password:"), $("<br>"), password, error);
+    // Allow form submission with keyboard without duplicating the dialog button
+    form.append($("<input>", {type: "submit", tabindex: -1, style: "position:absolute; top:-1000px"}));
+    var dialog = $("<div>").append(form).appendTo("body").dialog({
+        title: "Enter Password",
+        resizable: false,
+        height: "auto",
+        width: 600,
+        modal: true,
+        position: { my: "center top", at: "center top", of: window, collision: "none" },
+        buttons: {
+            "Show": function() {
+                form.trigger("submit");
+            },
+            Cancel: function() {
+                $( this ).dialog( "close" );
+            }
+        },
+        close: function() {
+            $( this ).dialog( "destroy" ).remove();
+        }
+    });
+    form.on("submit", function(event) {
+        event.preventDefault();
+        $.post(url, $.extend({password: password.val()}, fields))
+            .done(function(data) {
+                if (data["value"] == null) {
+                    error.text(data["error"] || "Error").show();
+                    password.val("");
+                    return;
+                }
+                dialog.dialog( "close" );
+                onValue(data["value"]);
+            })
+            .fail(function() {
+                error.text("Request failed").show();
+            });
+    });
+}
+
+// A secret shown on request: <span class="reveal_secret" data-secret="..." [data-app="..."] [data-url="..."]>
+// holding a .reveal_secret_button and a hidden .reveal_secret_value with .reveal_secret_text and
+// an optional .reveal_secret_copy icon
+$(document).on("click", ".reveal_secret_button", function() {
+    var container = $(this).closest(".reveal_secret");
+    var fields = {};
+    if (container.attr("data-secret")) {
+        fields["secret"] = container.attr("data-secret");
+    }
+    if (container.attr("data-app")) {
+        fields["app"] = container.attr("data-app");
+    }
+    openRevealDialog(container.attr("data-url") || "/api/reveal_secret", fields, function(value) {
+        container.find(".reveal_secret_text").text(value);
+        container.find(".reveal_secret_button").hide();
+        container.find(".reveal_secret_copy").toggle(!!(navigator.clipboard && window.isSecureContext));
+        container.find(".reveal_secret_value").show();
+    });
+});
+$(document).on("click", ".reveal_secret_copy", function() {
+    var icon = $(this);
+    var text = icon.closest(".reveal_secret").find(".reveal_secret_text").text();
+    function showResult(message) {
+        if ($("#alert_popup").length) {
+            showAlertPopup("alert_popup", $("<b>").text(message));
+        } else {
+            icon.attr("title", message);
+        }
+    }
+    navigator.clipboard.writeText(text).then(function() {
+        showResult("Copied!");
+    }, function() {
+        showResult("Copy failed!");
+    });
+});
+
 // Show alert popup with contents
 function showAlertPopup(divid, message) {
     $("#"+divid).html(message);

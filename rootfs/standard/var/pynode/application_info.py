@@ -686,6 +686,15 @@ def get_application_password(short_name):
     except:
         return ""
 
+# How the app page shows the login password: "" (none), "user_set", or "hidden" (shown on request)
+def get_application_password_state(short_name):
+    app_password = get_application_password(short_name)
+    if app_password == "":
+        return ""
+    if app_password == APP_PASSWORD_USER_SET:
+        return "user_set"
+    return "hidden"
+
 
 ######################################################################################
 ## Legacy Custom App Versions

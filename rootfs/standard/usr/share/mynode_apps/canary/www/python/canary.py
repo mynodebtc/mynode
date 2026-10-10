@@ -1,9 +1,10 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request, jsonify
 from user_management import check_logged_in
 from application_info import get_application, get_application_status, get_application_status_color
 from device_info import read_ui_settings
 import os
 import stat
+import pam
 
 
 mynode_canary = Blueprint("mynode_canary", __name__)
@@ -47,6 +48,19 @@ def canary_page():
         "app_status": app_status,
         "app_status_color": app_status_color,
         "app": app,
-        "canary_password": get_canary_password(),
+        "has_canary_password": get_canary_password() != "",
     }
     return render_template("/app/canary/canary.html", **template_data)
+
+
+@mynode_canary.route("/password", methods=["POST"])
+def canary_password_page():
+    check_logged_in()
+
+    pw = request.form.get("password")
+    if pw == None or pam.pam().authenticate("admin", pw) == False:
+        return jsonify({"error": "Invalid Password"})
+    password = get_canary_password()
+    if password == "":
+        return jsonify({"error": "Not available"})
+    return jsonify({"value": password})

@@ -19,21 +19,6 @@
 
                 $( document ).tooltip();
 
-                $("#show_rpc_password").on("click", function() {
-                    $("#show_rpc_password").hide(0);
-                    $("#rpc_password").show();
-                });
-                $("#copy_rpc_password").on("click", function() {
-                    navigator.clipboard.writeText("{{rpc_password}}").then(function() {
-                        showAlertPopup("alert_popup", "<b>Password copied!</b>");
-                    }, function() {
-                        showAlertPopup("alert_popup", "<b>Password copy failed!</b>");
-                    });
-                });
-                if (location.protocol == 'https:') {
-                    $("#copy_rpc_password").show();
-                }
-
                 $('#bip37_checkbox').change(function () {
                     $("#bip37_save").show();
                 });
@@ -168,8 +153,10 @@
                         <tr>
                             <th>RPC Password</th>
                             <td>
-                                <p id="rpc_password" style="display: none; margin: 0;">{{rpc_password}} <span id="copy_rpc_password" class="ui-icon ui-icon-copy" style="cursor: pointer; display: none;" title="Copy Password"></span></p>
-                                <a id="show_rpc_password" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;">show</a>
+                                <span class="reveal_secret" data-secret="bitcoin_rpc_password">
+                                    <span class="reveal_secret_value" style="display: none;"><span class="reveal_secret_text"></span> <span class="reveal_secret_copy ui-icon ui-icon-copy" style="cursor: pointer;" title="Copy Password"></span></span>
+                                    <a class="reveal_secret_button ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70%;">show</a>
+                                </span>
                             </td>
                         </tr>
                     </table>

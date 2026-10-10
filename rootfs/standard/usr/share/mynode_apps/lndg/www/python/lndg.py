@@ -26,7 +26,7 @@ def lndg_page():
         "ui_settings": read_ui_settings(),
         "app_status": app_status,
         "app_status_color": app_status_color,
-        "app_password": get_application_password("lndg"),
+        "app_password_state": get_application_password_state("lndg"),
         "app": app
     }
     return render_template('/app/generic_app.html', **templateData)

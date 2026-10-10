@@ -41,7 +41,12 @@
                         </tr>
                         <tr>
                             <th>Connection String</th>
-                            <td style="font-size: 10px;">{{sphinxrelay_connection_string}}</td>
+                            <td style="font-size: 10px;">
+                                <span class="reveal_secret" data-secret="sphinxrelay_connection_string">
+                                    <span class="reveal_secret_value" style="display: none;"><span class="reveal_secret_text"></span> <span class="reveal_secret_copy ui-icon ui-icon-copy" style="cursor: pointer;" title="Copy Connection String"></span></span>
+                                    <a class="reveal_secret_button ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;">show</a>
+                                </span>
+                            </td>
                         </tr>
                         {% if is_tor_remote_access_enabled %}
                         <tr>

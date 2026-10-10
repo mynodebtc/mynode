@@ -15,41 +15,6 @@
             }
         </style>
 
-        <script>
-        $(document).ready(function() {
-            $("#show_canary_password").on("click", function() {
-                $("#show_canary_password").hide(0);
-                $("#canary_password").show();
-                $("#copy_canary_password").show();
-            });
-
-            $("#copy_canary_password").on("click", function() {
-                var password = $("#canary_password").text();
-                function showCopied() {
-                    showAlertPopup("alert_popup", "<b>Password copied!</b>");
-                }
-                function showFailed() {
-                    showAlertPopup("alert_popup", "<b>Password copy failed!</b>");
-                }
-
-                if (navigator.clipboard && window.isSecureContext) {
-                    navigator.clipboard.writeText(password).then(showCopied, showFailed);
-                    return;
-                }
-
-                var input = document.createElement("input");
-                input.value = password;
-                document.body.appendChild(input);
-                input.select();
-                try {
-                    document.execCommand("copy") ? showCopied() : showFailed();
-                } catch (e) {
-                    showFailed();
-                }
-                document.body.removeChild(input);
-            });
-        });
-        </script>
     </head>
     <body>
         {% include 'includes/logo_header.html' %}
@@ -161,10 +126,11 @@
                             <tr>
                                 <th>Password</th>
                                 <td>
-                                    {% if canary_password %}
-                                        <span id="canary_password" class="canary_credentials_value" style="display: none; margin: 0;">{{canary_password}}</span>
-                                        <span id="copy_canary_password" class="ui-icon ui-icon-copy" style="cursor: pointer; display: none;" title="Copy Password"></span>
-                                        <a id="show_canary_password" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;">show password</a>
+                                    {% if has_canary_password %}
+                                        <span class="reveal_secret" data-url="/app/canary/password">
+                                            <span class="reveal_secret_value canary_credentials_value" style="display: none;"><span class="reveal_secret_text"></span> <span class="reveal_secret_copy ui-icon ui-icon-copy" style="cursor: pointer;" title="Copy Password"></span></span>
+                                            <a class="reveal_secret_button ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;">show password</a>
+                                        </span>
                                     {% else %}
                                         <span class="canary_credentials_missing">Not generated yet</span>
                                     {% endif %}

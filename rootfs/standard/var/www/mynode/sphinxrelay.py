@@ -31,7 +31,6 @@ def sphinxrelay_page():
         "title": "Sphinx Relay",
         "ui_settings": read_ui_settings(),
         "sphinxrelay_status": sphinxrelay_status,
-        "sphinxrelay_connection_string": get_connection_string(),
         "is_tor_remote_access_enabled": is_tor_remote_access_enabled(),
         "sphinxrelay_onion_url": get_onion_url_sphinxrelay(),
     }

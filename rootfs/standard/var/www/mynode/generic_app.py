@@ -22,7 +22,7 @@ def app_generic_info_page(name):
 
     app_status = get_application_status(name)
     app_status_color = get_application_status_color(name)
-    app_password = get_application_password(name)
+    app_password_state = get_application_password_state(name)
 
     # BTCPay's administrator is whichever account holds its ServerAdmin role, which may be one the
     # user registered before MyNode could claim one. Ask BTCPay, so the page never shows a login
@@ -40,11 +40,10 @@ def app_generic_info_page(name):
         "ui_settings": read_ui_settings(),
         "app_status": app_status,
         "app_status_color": app_status_color,
-        "app_password": app_password,
         # The username in the app JSON is the one MyNode set. Once the login is the user's own,
         # that no longer describes the account, so the page stops showing it - unless it was read
         # from the app itself, in which case it is the real one either way.
-        "app_password_user_set": app_password == APP_PASSWORD_USER_SET,
+        "app_password_state": app_password_state,
         "login_username_live": login_username_live,
         "app": app
     }

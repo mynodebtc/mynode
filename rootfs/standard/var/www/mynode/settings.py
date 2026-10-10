@@ -606,6 +606,11 @@ def set_app_password_page():
         return redirect("/settings")
     app_name = APPS_WITH_SETTABLE_PASSWORD[app]
 
+    pw = request.form.get("password")
+    if pw == None or pam.pam().authenticate("admin", pw) == False:
+        flash("Invalid Password", category="error")
+        return redirect("/settings")
+
     p1 = request.form.get("password1", "")
     p2 = request.form.get("password2", "")
     if p1 == "" or p1 != p2:

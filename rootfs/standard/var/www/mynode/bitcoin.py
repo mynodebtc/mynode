@@ -30,7 +30,6 @@ def bitcoin_status_page():
         networkdata = get_bitcoin_network_info()
         walletdata = get_bitcoin_wallets()
         version = get_bitcoin_version()
-        rpc_password = get_bitcoin_rpc_password()
 
         # Whitepaper
         bitcoin_whitepaper_exists = False
@@ -83,7 +82,6 @@ def bitcoin_status_page():
         "difficulty": get_bitcoin_difficulty(),
         "block_num": info["blocks"],
         "header_num": info["headers"],
-        "rpc_password": rpc_password,
         "disk_usage": get_bitcoin_disk_usage(),
         "mempool_tx": mempool["count"],
         "mempool_size": mempool["display_bytes"],
