@@ -331,10 +331,19 @@ if ! skip_base_upgrades ; then
     fi
 
     # Update Node
-    if [ -f /etc/apt/sources.list.d/nodesource.list ] || [ -f /etc/apt/sources.list.d/nodesource.sources ]; then
+    # Also check the installed major version, since the apt sources can be missing or
+    # disabled while an old Node is installed (Debian 12+ only, NodeSource no longer serves buster)
+    NODE_JS_MAJOR=${NODE_JS_VERSION%%.*}
+    INSTALLED_NODE_MAJOR=$(node --version 2>/dev/null | sed -n 's/^v\([0-9]*\)\..*/\1/p' || true)
+    NODE_TOO_OLD=0
+    if [ "$DEBIAN_VERSION" -ge "12" ] && [ "${INSTALLED_NODE_MAJOR:-0}" -lt "$NODE_JS_MAJOR" ]; then
+        echo "Installed Node major version '${INSTALLED_NODE_MAJOR}' is older than ${NODE_JS_MAJOR}"
+        NODE_TOO_OLD=1
+    fi
+    if [ $NODE_TOO_OLD = 1 ] || [ -f /etc/apt/sources.list.d/nodesource.list ] || [ -f /etc/apt/sources.list.d/nodesource.sources ]; then
         # Newer nodesource setup scripts replace nodesource.list with nodesource.sources
         CURRENT_NODE_VERSION=$(cat /etc/apt/sources.list.d/nodesource.list /etc/apt/sources.list.d/nodesource.sources 2>/dev/null || true)
-        if [[ "$CURRENT_NODE_VERSION" != *"node_${NODE_JS_VERSION}"* ]]; then
+        if [ $NODE_TOO_OLD = 1 ] || [[ "$CURRENT_NODE_VERSION" != *"node_${NODE_JS_VERSION}"* ]]; then
             # Upgrade node
             curl -sL https://deb.nodesource.com/setup_${NODE_JS_VERSION} | bash -
             apt-get install -y nodejs
