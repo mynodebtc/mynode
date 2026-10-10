@@ -33,6 +33,7 @@ from messages import get_message
 from thread_functions import *
 from datetime import timedelta
 from device_info import *
+from auto_upgrade import *
 from drive_info import *
 from device_warnings import *
 from systemctl_info import *
@@ -660,6 +661,8 @@ def index():
             "swap_usage": get_swap_usage(),
             "device_temp": get_device_temp(),
             "upgrade_available": upgrade_available,
+            "auto_upgrade": get_auto_upgrade_status(),
+            "set_timezone_from_browser": should_set_timezone_from_browser(),
             "show_https_warning": not request.is_secure and not is_https_warning_hidden(),
             "hide_password_warning": settings_file_exists("hide_password_warning"),
             "has_changed_password": has_changed_password(),

@@ -747,8 +747,26 @@ echo "v1.0" > /home/bitcoin/.mynode/premium_plus_version
 # Weird hacks
 chmod +x /usr/bin/electrs || true # Once, a device didn't have the execute bit set for electrs
 timedatectl set-ntp True || true # Make sure NTP is enabled for Tor and Bitcoin
+
+# Timezone: re-apply the one saved in MyNode, or let the next home page load set it from the
+# browser if none was ever chosen
+SAVED_TZ=""
+if [ -f /mnt/hdd/mynode/settings/timezone ]; then
+    SAVED_TZ=$(cat /mnt/hdd/mynode/settings/timezone)
+elif [ -f /home/bitcoin/.mynode/timezone ]; then
+    SAVED_TZ=$(cat /home/bitcoin/.mynode/timezone)
+fi
+if [ "$SAVED_TZ" = "" ]; then
+    touch /tmp/timezone_from_browser
+elif [ "$SAVED_TZ" != "$(timedatectl show -p Timezone --value || echo '')" ]; then
+    if timedatectl list-timezones | grep -qxF "$SAVED_TZ"; then
+        timedatectl set-timezone "$SAVED_TZ" || true
+    fi
+fi
 rm -f /var/swap || true # Remove old swap file to save SD card space
 systemctl enable check_in || true
+systemctl enable mynode_auto_upgrade.timer || true
+systemctl start mynode_auto_upgrade.timer || true
 systemctl enable premium_plus_connect || true
 #systemctl enable rathole || true
 systemctl enable bitcoin || true                # Make sure new bitcoin service is used

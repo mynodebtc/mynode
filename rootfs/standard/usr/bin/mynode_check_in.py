@@ -11,6 +11,7 @@ from systemd import journal
 from utilities import *
 from drive_info import *
 from device_info import *
+from auto_upgrade import is_auto_upgrade_enabled
 
 CHECKIN_URL = "https://www.mynodebtc.com/device_api/check_in.php"
 
@@ -114,6 +115,7 @@ def check_in(check_for_updates):
                 "version": get_current_version(),
                 "product_key": product_key,
                 "drive_size": get_mynode_drive_size(),
+                "auto_upgrade": 1 if is_auto_upgrade_enabled() else 0,
                 "api_version": 2,
             }
             

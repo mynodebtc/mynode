@@ -1,0 +1,13 @@
+# MyNode automatic upgrade check
+# /etc/systemd/system/mynode_auto_upgrade.timer
+
+[Unit]
+Description=Hourly MyNode Automatic Upgrade Check
+
+[Timer]
+OnCalendar=hourly
+RandomizedDelaySec=50min
+Persistent=false
+
+[Install]
+WantedBy=timers.target

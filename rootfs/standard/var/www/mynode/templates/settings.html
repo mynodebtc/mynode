@@ -19,6 +19,16 @@
                                       "<p>Would you still like to upgrade your device?</p>",
                                       okFunction)
                 });
+                $("#enable_auto_upgrade").on("click", function() {
+                    var okFunction = function() {
+                        $("#enable_auto_upgrade_form").submit();
+                    }
+                    openConfirmDialog("confirm-dialog",
+                                      "Enable Automatic Updates",
+                                      "<p>New versions of MyNode will be installed automatically 7 days after they are released, between 3 and 5 AM local time. Your device reboots to finish the upgrade.</p>" +
+                                      "<p>You can turn this off in the Device section.</p>",
+                                      okFunction)
+                });
                 $("#upgrade-beta").on("click", function() {
                     // Enable electrs
                     var okFunction = function() {
@@ -621,6 +631,7 @@
 
                 $("#logout_days").selectmenu({width: 70});
                 $("#logout_hours").selectmenu({width: 70});
+                $("#timezone").selectmenu({width: 260}).selectmenu("menuWidget").css("max-height", "300px");
 
                 $("#background").selectmenu();
 
@@ -724,6 +735,10 @@
                     }
                     $('#loading_spinner_overlay').fadeIn();
                     window.location.href='/settings/toggle_setting?name=keep_bitcoin_debug_log&restart_service=bitcoin&enable='+val
+                });
+
+                $('#auto_upgrade_checkbox').change(function () {
+                    $("#auto_upgrade_save").show();
                 });
 
                 $('#https_forced_checkbox').change(function () {
@@ -886,10 +901,16 @@
                     <td>{{latest_version}}</td>
                     <td>
                         &nbsp;<button id="check_for_updates" class="ui-button ui-widget ui-corner-all settings_button_small">Check for Updates</button>
+                        {% if auto_upgrade.available and not auto_upgrade.enabled %}
+                        &nbsp;<button id="enable_auto_upgrade" class="ui-button ui-widget ui-corner-all settings_button_small">Enable Automatic Updates</button>
+                        {% endif %}
                         &nbsp;<button id="show_upgrade_logs" class="ui-button ui-widget ui-corner-all settings_button_small">Show Upgrade Logs</button>
                     </td>
                 </tr>
             </table>
+            <form id="enable_auto_upgrade_form" action="/settings/auto-upgrade" method="POST" style="display: none;">
+                <input type="hidden" name="enabled" value="1"/>
+            </form>
             {% if current_version != latest_version and latest_version != "" %}
                 <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Upgrade</button>
                 <button id="upgrade_changelog" class="ui-button ui-widget ui-corner-all settings_button">See Changes</button>
@@ -933,6 +954,7 @@
 
             <div class="divider"></div>
 
+
             {% include 'includes/info_table.html' %}
 
             {% include 'includes/status_table.html' %}
@@ -944,7 +966,7 @@
 
             <div class="settings_block_subheader">Change Password</div>
             {{password_message}}
-            This will change the password you use in the MyNode GUI, the password for SSH, and the password for apps like RTL.
+            This will change the password you use in the MyNode GUI and the password for SSH.
             <br/><br/>
             {{password_requirements}}
             <br/><br/>
@@ -973,34 +995,74 @@
 
 
         <div class="settings_block">
-            <a id="applications"></a>
-            <div class="settings_block_header">Applications</div>
+            <a id="device"></a>
+            <div class="settings_block_header">Device</div>
 
-            <div class="settings_block_subheader">Manage Applications</div>
-            You can view application information and manage app upgrades on the Manage page. You can also customize and override the
-            application versions supported by MyNode.
+            <div class="settings_block_subheader">Reboot Device</div>
+            This will reboot or shutdown your device. After a shutown, you will need to power cycle the device to turn it back on.
             <br/>
-            <a href="/apps" class="ui-button ui-widget ui-corner-all settings_button">Manage</a>
-            <a href="/apps/customize-app-versions" class="ui-button ui-widget ui-corner-all settings_button">Customize Application Versions</a>
-            <a href="/settings/refresh-app-database" class="ui-button ui-widget ui-corner-all settings_button">Refresh Application Database</a>
+            <button id="reboot-device" class="ui-button ui-widget ui-corner-all settings_button">Reboot Device</button>
+            <button id="shutdown-device" class="ui-button ui-widget ui-corner-all settings_button">Shutdown Device</button>
 
             <div class="divider"></div>
 
-            <div class="settings_block_subheader">Reset App Default Passwords</div>
-            This will reset apps that are still using default passwords to new values. Those apps will be set to the new defaults and restarted.
-            <br/>
-            <button id="reset_app_passwords_button" class="ui-button ui-widget ui-corner-all settings_button">Reset Passwords</button>
-
-            {% if settable_password_apps %}
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Set App Passwords</div>
-            Some apps have no way to set their own login password. Click a button below and enter a new password to set it directly.
-            <br/>
-            {% for app, name in settable_password_apps.items() %}
-            <button class="set_app_password_button ui-button ui-widget ui-corner-all settings_button" data-app="{{app}}" data-name="{{name}}">Set {{name}} Password</button>
-            {% endfor %}
+            {% if auto_upgrade.available and auto_upgrade.enabled %}
+            <div class="settings_block_subheader">Automatic Updates</div>
+            New versions of MyNode can be installed automatically 7 days after they are released, between 3 and 5 AM local time. Your device reboots to finish the upgrade.
+            <br/><br/>
+            <form action="/settings/auto-upgrade" method="POST">
+                <label class="switch">
+                    <input type="checkbox" id="auto_upgrade_checkbox" name="enabled" value="1" {% if auto_upgrade.enabled %}checked{% endif %}>
+                    <span class="slider round"></span>
+                </label>
+                <br/><br/>
+                <input type="submit" id="auto_upgrade_save" value="Save" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small"/>
+            </form>
+            {% if auto_upgrade.enabled %}
+                {% if auto_upgrade.target and auto_upgrade.skipped %}
+                    <p>Version {{auto_upgrade.target}} is skipped and will not be installed automatically.</p>
+                {% elif auto_upgrade.target %}
+                    {% if auto_upgrade.weekly %}
+                        <p style="color: red;">Automatic upgrade to version {{auto_upgrade.target}} has failed {{auto_upgrade.attempts}} times. It will be retried once a week, next after {{auto_upgrade.scheduled}}.</p>
+                    {% elif auto_upgrade.attempts > 0 %}
+                        <p style="color: red;">Automatic upgrade to version {{auto_upgrade.target}} failed. It will be retried after {{auto_upgrade.scheduled}}.</p>
+                    {% else %}
+                        <p>Version {{auto_upgrade.target}} will be installed automatically after {{auto_upgrade.scheduled}}.</p>
+                    {% endif %}
+                    {% if auto_upgrade.last_result.result in ["failed", "not_installed"] and auto_upgrade.last_result.to == auto_upgrade.target %}
+                        <p>Last attempt: {{auto_upgrade.last_result.detail}} ({{auto_upgrade.last_result_time}}).</p>
+                    {% endif %}
+                {% endif %}
+                {% if auto_upgrade.last_result.result == "ok" %}
+                    <p>Last automatic upgrade: version {{auto_upgrade.last_result['from']}} to {{auto_upgrade.last_result.to}} ({{auto_upgrade.last_result_time}}).</p>
+                {% endif %}
             {% endif %}
+            {% if auto_upgrade.enabled and auto_upgrade.target %}
+                {% if auto_upgrade.skipped %}
+                <form action="/settings/auto-upgrade/unskip" method="POST" style="display: inline;">
+                    <input type="submit" value="Install Version {{auto_upgrade.target}} Automatically" class="ui-button ui-widget ui-corner-all settings_button"/>
+                </form>
+                {% else %}
+                <form action="/settings/auto-upgrade/skip" method="POST" style="display: inline;">
+                    <input type="submit" value="Skip This Version" class="ui-button ui-widget ui-corner-all settings_button"/>
+                </form>
+                {% endif %}
+            {% endif %}
+
+            <div class="divider"></div>
+            {% endif %}
+
+            <div class="settings_block_subheader">Timezone</div>
+            Times shown by MyNode, and the hours automatic upgrades run, use this timezone.
+            <br/><br/>
+            <form action="/settings/timezone" method="POST">
+                <select name="timezone" id="timezone">
+                    {% for z in timezone_list %}
+                    <option value="{{z}}" {% if z == timezone %}selected{% endif %}>{{z}}</option>
+                    {% endfor %}
+                </select>
+                <input type="submit" value="Save" class="ui-button ui-widget ui-corner-all"/>
+            </form>
 
         </div>
 
@@ -1053,11 +1115,10 @@
             <br/><br/>
 
             <form action="/settings/logout_time" method="POST">
-                {% set logoutDays = [0,1,2,3,5,7,10,15,20,30,60,90] %}
                 {% set logoutHours = range(24) %}
                 Days: 
                 <select name="logout_days" id="logout_days">
-                    {% for d in logoutDays %}
+                    {% for d in logout_time_day_options %}
                     <option value="{{d}}" {% if logout_time_days == d %}selected{% endif %}>{{d}}</option>
                     {% endfor %}
                 </select>
@@ -1085,15 +1146,35 @@
 
 
         <div class="settings_block">
-            <a id="device"></a>
-            <div class="settings_block_header">Device</div>
+            <a id="applications"></a>
+            <div class="settings_block_header">Applications</div>
 
-            <div class="settings_block_subheader">Reboot Device</div>
-            This will reboot or shutdown your device. After a shutown, you will need to power cycle the device to turn it back on.
+            <div class="settings_block_subheader">Manage Applications</div>
+            You can view application information and manage app upgrades on the Manage page. You can also customize and override the
+            application versions supported by MyNode.
             <br/>
-            <button id="reboot-device" class="ui-button ui-widget ui-corner-all settings_button">Reboot Device</button>
-            <button id="shutdown-device" class="ui-button ui-widget ui-corner-all settings_button">Shutdown Device</button>
-            
+            <a href="/apps" class="ui-button ui-widget ui-corner-all settings_button">Manage</a>
+            <a href="/apps/customize-app-versions" class="ui-button ui-widget ui-corner-all settings_button">Customize Application Versions</a>
+            <a href="/settings/refresh-app-database" class="ui-button ui-widget ui-corner-all settings_button">Refresh Application Database</a>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Reset App Default Passwords</div>
+            This will reset apps that are still using default passwords to new values. Those apps will be set to the new defaults and restarted.
+            <br/>
+            <button id="reset_app_passwords_button" class="ui-button ui-widget ui-corner-all settings_button">Reset Passwords</button>
+
+            {% if settable_password_apps %}
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Set App Passwords</div>
+            Some apps have no way to set their own login password. Click a button below and enter a new password to set it directly.
+            <br/>
+            {% for app, name in settable_password_apps.items() %}
+            <button class="set_app_password_button ui-button ui-widget ui-corner-all settings_button" data-app="{{app}}" data-name="{{name}}">Set {{name}} Password</button>
+            {% endfor %}
+            {% endif %}
+
         </div>
 
 

@@ -1000,6 +1000,7 @@ apt-get clean
 # Setup MyNode Startup Script
 systemctl daemon-reload
 systemctl enable check_in
+systemctl enable mynode_auto_upgrade.timer
 systemctl enable premium_plus_connect
 systemctl enable background
 systemctl enable docker

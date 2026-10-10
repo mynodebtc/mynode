@@ -1,0 +1,18 @@
+# MyNode automatic upgrade check
+# /etc/systemd/system/mynode_auto_upgrade.service
+
+[Unit]
+Description=MyNode Automatic Upgrade
+Wants=network-online.target
+After=network-online.target mynode.service
+
+[Service]
+Type=oneshot
+# An upgrade can take hours on slower devices; never stop one partway
+TimeoutStartSec=infinity
+ExecStart=/usr/local/bin/python3 /usr/bin/mynode_auto_upgrade.py
+User=root
+Group=root
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mynode

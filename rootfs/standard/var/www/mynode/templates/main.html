@@ -543,6 +543,20 @@
                 {% if ui_settings['pinned_bitcoin_details'] %}
                 setTimeout(toggleBitcoinDetails, 1500);
                 {% endif %}
+
+                {% if set_timezone_from_browser %}
+                // Device is still on UTC: default it to this browser's timezone
+                try {
+                    var browser_timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                    if (browser_timezone) {
+                        $.post("/settings/timezone-from-browser", {timezone: browser_timezone}, function(data) {
+                            if (data.changed) {
+                                location.reload();
+                            }
+                        });
+                    }
+                } catch (e) {}
+                {% endif %}
             });
         </script>
      </head>
@@ -568,7 +582,7 @@
 
         <div class="mynode_top_right_div">
             {% if upgrade_available %}
-                <a href="/settings" title="Upgrade Available"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/upgrade.png")}}"/></a>
+                <a href="/settings" title="Upgrade Available{% if auto_upgrade.enabled and auto_upgrade.target and auto_upgrade.scheduled and not auto_upgrade.skipped %} - installs automatically after {{auto_upgrade.scheduled}}{% endif %}"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/upgrade.png")}}"/></a>
             {% endif %}
 
             {% if ui_settings['darkmode'] %}

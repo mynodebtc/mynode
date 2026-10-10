@@ -1,5 +1,5 @@
 from config import *
-from flask import Blueprint, render_template, session, abort, Markup, request, redirect, url_for, flash
+from flask import Blueprint, render_template, session, abort, Markup, request, redirect, url_for, flash, jsonify
 from bitcoin import is_bitcoin_synced
 from bitcoin_info import using_bitcoin_custom_config, get_custom_bitcoin_version
 from lightning_info import using_lnd_custom_config, restart_lnd
@@ -13,6 +13,7 @@ from utilities import *
 from drive_info import *
 from application_info import *
 from device_info import *
+from auto_upgrade import *
 import pam
 import time
 import os
@@ -57,6 +58,9 @@ def page_settings():
         "upgrade_error": did_upgrade_fail(),
         "upgrade_log": get_recent_upgrade_log(),
         "upgrade_logs": get_all_upgrade_logs(),
+        "auto_upgrade": get_auto_upgrade_status(),
+        "timezone": get_timezone(),
+        "timezone_list": get_timezone_list(),
         "serial_number": get_device_serial(),
         "device_type": get_device_type(),
         "device_arch": get_device_arch(),
@@ -76,6 +80,7 @@ def page_settings():
         "btcpay_admins": get_btcpay_admins() if is_installed("btcpayserver") and is_service_active("btcpayserver") else [],
         "albyhub_installed": is_installed("albyhub"),
         "logout_time_days": logout_time_days,
+        "logout_time_day_options": FLASK_SESSION_TIMEOUT_DAY_OPTIONS,
         "logout_time_hours": logout_time_hours,
         "using_bitcoin_custom_config": using_bitcoin_custom_config(),
         "custom_bitcoin_version": get_custom_bitcoin_version(),
@@ -336,6 +341,9 @@ def upgrade_page():
 
     check_and_mark_reboot_action("upgrade")
 
+    # A manual upgrade or retry starts the automatic retry schedule over
+    reset_auto_upgrade_attempts()
+
     # Upgrade device
     t = Timer(1.0, upgrade_device)
     t.start()
@@ -403,6 +411,56 @@ def upgrade_page_test():
         "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
+
+@mynode_settings.route("/settings/auto-upgrade", methods=['POST'])
+def auto_upgrade_page():
+    check_logged_in()
+    enabled = request.form.get("enabled") == "1"
+    set_auto_upgrade_enabled(enabled)
+    flash("Automatic Updates {}".format("Enabled" if enabled else "Disabled"), category="message")
+    # The full setting is in the Device section while enabled, otherwise a button in MyNode
+    return redirect("/settings#device" if enabled else "/settings#mynode")
+
+@mynode_settings.route("/settings/auto-upgrade/skip", methods=['POST'])
+def auto_upgrade_skip_page():
+    check_logged_in()
+    target = get_auto_upgrade_state()["target"]
+    if target:
+        skip_auto_upgrade_version(target)
+        flash("Version {} will not be installed automatically".format(target), category="message")
+    return redirect("/settings#device")
+
+@mynode_settings.route("/settings/auto-upgrade/unskip", methods=['POST'])
+def auto_upgrade_unskip_page():
+    check_logged_in()
+    unskip_auto_upgrade_version()
+    flash("Automatic Updates Setting Updated", category="message")
+    return redirect("/settings#device")
+
+@mynode_settings.route("/settings/auto-upgrade/dismiss", methods=['POST'])
+def auto_upgrade_dismiss_page():
+    check_logged_in()
+    dismiss_auto_upgrade_result()
+    return redirect("/")
+
+@mynode_settings.route("/settings/timezone", methods=['POST'])
+def timezone_page():
+    check_logged_in()
+    zone = request.form.get("timezone", "")
+    if set_timezone(zone):
+        flash("Timezone set to {}".format(zone), category="message")
+    else:
+        flash("Unknown timezone", category="error")
+    return redirect("/settings#device")
+
+@mynode_settings.route("/settings/timezone-from-browser", methods=['POST'])
+def timezone_from_browser_page():
+    check_logged_in()
+    zone = request.form.get("timezone", "")
+    if set_timezone_from_browser(zone):
+        flash("Timezone set to {} from your browser. You can change it in Settings.".format(zone), category="message")
+        return jsonify({"changed": True})
+    return jsonify({"changed": False})
 
 @mynode_settings.route("/settings/get-latest-version")
 def get_latest_version_page():
@@ -813,6 +871,9 @@ def change_logout_time_page():
     d = request.form.get('logout_days')
     h = request.form.get('logout_hours')
 
+    if d not in [str(x) for x in FLASK_SESSION_TIMEOUT_DAY_OPTIONS] or h not in [str(x) for x in range(24)]:
+        flash("Invalid logout time", category="error")
+        return redirect(url_for(".page_settings"))
     if d == "0" and h == "0":
         flash("Logout time cannot be 0 hours and 0 days", category="error")
         return redirect(url_for(".page_settings"))

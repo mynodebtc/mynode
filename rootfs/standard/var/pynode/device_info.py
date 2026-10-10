@@ -734,19 +734,25 @@ def get_flask_secret_key():
         set_file_contents("/home/bitcoin/.mynode/flask_secret_key", key)
     return key
 
+FLASK_SESSION_TIMEOUT_DAY_OPTIONS = [0,1,2,3,5,10,15,20,30]
+
 def get_flask_session_timeout():
     try:
         if os.path.isfile("/home/bitcoin/.mynode/flask_session_timeout"):
             timeout = to_string( get_file_contents("/home/bitcoin/.mynode/flask_session_timeout") )
             parts = timeout.split(",")
-            d = parts[0]
-            h = parts[1]
-            return int(d),int(h)
+            d = int(parts[0])
+            h = int(parts[1])
+            # 7 days was the old default and is no longer offered; longer times are capped
+            if d == 7:
+                d = 3
+                set_flask_session_timeout(d, h)
+            return min(d, max(FLASK_SESSION_TIMEOUT_DAY_OPTIONS)),h
         else:
-            set_file_contents("/home/bitcoin/.mynode/flask_session_timeout", "7,0")
-            return 7,0
+            set_file_contents("/home/bitcoin/.mynode/flask_session_timeout", "3,0")
+            return 3,0
     except:
-        return 7,0
+        return 3,0
 
 def set_flask_session_timeout(days, hours):
     set_file_contents("/home/bitcoin/.mynode/flask_session_timeout", "{},{}".format(days, hours))
@@ -1840,3 +1846,51 @@ def custom_settings_file_handler(name, enabled):
         apply_tor_remote_access_setting()
     else:
         log_message("No custom setting handler for: "+name)
+#==================================
+# Timezone Functions
+#==================================
+# Zones browsers report when they hide the real one (Tor Browser always reports UTC)
+UTC_TIMEZONES = ["UTC", "Etc/UTC", "Etc/Universal", "Universal", "Etc/Zulu", "Zulu", "GMT", "Etc/GMT",
+                 "Etc/GMT0", "Etc/GMT+0", "Etc/GMT-0", "GMT0", "GMT+0", "GMT-0", "Etc/Greenwich", "Greenwich"]
+
+def get_timezone():
+    try:
+        zone = to_string(subprocess.check_output(["timedatectl", "show", "-p", "Timezone", "--value"])).strip()
+        if zone != "":
+            return zone
+    except Exception:
+        pass
+    return "UTC"
+
+def get_timezone_list():
+    if is_cached("timezone_list"):
+        return get_cached_data("timezone_list")
+    try:
+        zones = to_string(subprocess.check_output(["timedatectl", "list-timezones"])).split()
+        update_cached_data("timezone_list", zones)
+        return zones
+    except Exception:
+        return []
+
+def set_timezone(zone):
+    if zone not in get_timezone_list():
+        return False
+    if subprocess.call(["timedatectl", "set-timezone", zone]) != 0:
+        return False
+    time.tzset()
+
+    # Saved on both drives so startup can re-apply it
+    set_file_contents("/home/bitcoin/.mynode/timezone", zone)
+    if os.path.isdir("/mnt/hdd/mynode/settings"):
+        set_file_contents("/mnt/hdd/mynode/settings/timezone", zone)
+    delete_file("/tmp/timezone_from_browser")
+    return True
+
+def should_set_timezone_from_browser():
+    # Marked at startup when no timezone has been saved in MyNode
+    return os.path.isfile("/tmp/timezone_from_browser")
+
+def set_timezone_from_browser(zone):
+    if not should_set_timezone_from_browser() or zone in UTC_TIMEZONES:
+        return False
+    return set_timezone(zone)

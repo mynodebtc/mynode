@@ -5,6 +5,23 @@
 </div>
 {% endif %}
 
+{% if auto_upgrade.show_result %}
+<div class="main_page_warning_block">
+    <p style="text-align: center;"><b>MyNode Upgraded</b></p>
+    <p style="text-align: center;">MyNode was upgraded automatically from version {{ auto_upgrade.last_result['from'] }} to {{ auto_upgrade.last_result.to }} ({{ auto_upgrade.last_result_time }}).</p>
+    <form action="/settings/auto-upgrade/dismiss" method="POST" style="text-align: center;">
+        <input type="submit" value="OK" class="ui-button ui-widget ui-corner-all settings_button_small"/>
+    </form>
+</div>
+{% endif %}
+
+{% if auto_upgrade.enabled and auto_upgrade.weekly and auto_upgrade.target and not auto_upgrade.skipped %}
+<div class="main_page_error_block">
+    <p style="text-align: center;"><b>Automatic Upgrade Failed</b></p>
+    <p style="text-align: center;">The automatic upgrade to version {{ auto_upgrade.target }} has failed {{ auto_upgrade.attempts }} times. It will be retried once a week. You can retry now or view the upgrade log on the <a href="/settings#mynode">Settings</a> page.</p>
+</div>
+{% endif %}
+
 {% if show_https_warning %}
 <div class="main_page_warning_block">
     <p style="text-align: center;"><b>You are not using HTTPS</b></p>

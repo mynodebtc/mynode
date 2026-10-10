@@ -6,11 +6,16 @@ set -x
 source /usr/share/mynode/mynode_config.sh
 
 BETA=0
+EXPECTED_VERSION=""
 while test $# -gt 0
 do
     case "$1" in
         beta) echo "Installing a beta..."
             BETA=1
+            ;;
+        expect) shift
+            EXPECTED_VERSION="$1"
+            echo "Expecting version ${EXPECTED_VERSION}..."
             ;;
         *) echo "Unknown Argument: $1"
             exit 1
@@ -51,11 +56,21 @@ if [ $VERIFIED -ne 1 ]; then
     exit 1
 fi
 
-# Clear beta install marking
-rm -f /usr/share/mynode/beta_version
-
 # Extract to temp location
 tar -xf /opt/mynode_release_latest.tar.gz -C /opt/upgrade/
+
+# Stop before changing anything if the download is not the expected version (exit 3)
+VERSION=$(cat /opt/upgrade/out/rootfs_${DEVICE_TYPE}/usr/share/mynode/version)
+if [ "$EXPECTED_VERSION" != "" ] && [ "$VERSION" != "$EXPECTED_VERSION" ]; then
+    echo "UPGRADE STOPPED! Downloaded version '${VERSION}' is not ${EXPECTED_VERSION}" >> /var/log/upgrade.log
+    exit 3
+fi
+
+# Marks the upgrade as incomplete until the post upgrade script succeeds
+touch $UPGRADE_ERROR_FILE
+
+# Clear beta install marking
+rm -f /usr/share/mynode/beta_version
 
 # Clear files before installing/overwriting new ones
 rm -rf /var/www/mynode/static/images/screenshots
@@ -64,7 +79,6 @@ for d in /usr/share/mynode_apps/*/screenshots ; do
 done
 
 # Install files (migrate all to rsync?)
-VERSION=$(cat /opt/upgrade/out/rootfs_*/usr/share/mynode/version)
 if [ $IS_X86 = 1 ] || [ $IS_ARM64 = 1 ] || [ $IS_ROCKPI4 = 1 ] || [ $IS_RASPI5 = 1 ]; then
     rsync -r -K /opt/upgrade/out/rootfs_${DEVICE_TYPE}/* / 2>&1
 else
@@ -81,7 +95,6 @@ rm -f /home/admin/upgrade_logs/upgrade_log_${VERSION}_post_*
 rm -f /home/admin/upgrade_logs/upgrade_log_latest_post_*
 
 # Run post upgrade script
-touch $UPGRADE_ERROR_FILE
 for i in {1..5}
 do
     /bin/bash /usr/bin/mynode_post_upgrade.sh 2>&1
