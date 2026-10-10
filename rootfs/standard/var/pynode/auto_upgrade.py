@@ -21,8 +21,7 @@ AUTO_UPGRADE_WINDOW_END_HOUR = 5
 AUTO_UPGRADE_NIGHTLY_ATTEMPTS = 3   # Failed installs retried on consecutive nights...
 AUTO_UPGRADE_WEEKLY_RETRY_DAYS = 7  # ...then once a week
 
-# Results of mynode_upgrade.sh that leave the device unchanged
-UPGRADE_EXIT_NOT_VERIFIED = 1
+# mynode_upgrade.sh exits 3 when the download is not the expected version, before installing anything
 UPGRADE_EXIT_WRONG_VERSION = 3
 
 DAY = 24 * 60 * 60
@@ -238,26 +237,6 @@ def get_auto_upgrade_blocker(ignore_uptime=False):
 #----------------------------------
 # Upgrade
 #----------------------------------
-def run_upgrade_script(expected_version):
-    # Like upgrade_device(), but returns the upgrade script's own exit code
-    os.system("mkdir -p /home/admin/upgrade_logs")
-    os.system("cp -f /usr/bin/mynode_upgrade.sh /usr/bin/mynode_upgrade_running.sh")
-    log_paths = ["/home/admin/upgrade_logs/upgrade_log_from_{}_auto_upgrade.txt".format(get_current_version()),
-                 "/home/admin/upgrade_logs/upgrade_log_latest.txt"]
-    logs = [open(p, "wb") for p in log_paths]
-    try:
-        p = subprocess.Popen(["/usr/bin/mynode_upgrade_running.sh", "expect", expected_version],
-                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        for line in iter(p.stdout.readline, b""):
-            for f in logs:
-                f.write(line)
-                f.flush()
-        return p.wait()
-    finally:
-        for f in logs:
-            f.close()
-        os.system("chown -R admin:admin /home/admin/upgrade_logs")
-
 def auto_upgrade_device(state):
     target = state["target"]
     now = int(time.time())
@@ -266,7 +245,7 @@ def auto_upgrade_device(state):
     mark_upgrade_started()
 
     log_message("Auto Upgrade: upgrading from v{} to v{}".format(state["from_version"], target))
-    rc = run_upgrade_script(target)
+    rc = run_upgrade_script(["expect", target], "auto_upgrade")
     now = int(time.time())
 
     if rc in (UPGRADE_EXIT_NOT_VERIFIED, UPGRADE_EXIT_WRONG_VERSION):

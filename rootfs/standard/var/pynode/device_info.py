@@ -172,49 +172,54 @@ def mark_upgrade_started():
 def is_upgrade_running():
     return os.path.isfile("/tmp/upgrade_started") 
 
-def upgrade_device():
+# mynode_upgrade.sh exits 1 when the download or its signature check fails, before installing anything
+UPGRADE_EXIT_NOT_VERIFIED = 1
+
+def run_upgrade_script(args, log_name, append=False):
+    # Runs the upgrade script and returns its exit code. Output is copied to the upgrade logs as it
+    # arrives, like tee, so the upgrade page can show upgrade_log_latest.txt while it runs.
+    os.system("mkdir -p /home/admin/upgrade_logs")
+    os.system("cp -f /usr/bin/mynode_upgrade.sh /usr/bin/mynode_upgrade_running.sh")
+    log_paths = ["/home/admin/upgrade_logs/upgrade_log_from_{}_{}.txt".format(get_current_version(), log_name),
+                 "/home/admin/upgrade_logs/upgrade_log_latest.txt"]
+    logs = [open(p, "ab" if append else "wb") for p in log_paths]
+    try:
+        p = subprocess.Popen(["/usr/bin/mynode_upgrade_running.sh"] + args,
+                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        while True:
+            data = os.read(p.stdout.fileno(), 4096)
+            if not data:
+                break
+            for f in logs:
+                f.write(data)
+                f.flush()
+        return p.wait()
+    finally:
+        for f in logs:
+            f.close()
+        os.system("chown -R admin:admin /home/admin/upgrade_logs")
+
+def run_manual_upgrade(args):
     if not is_upgrade_running():
         mark_upgrade_started()
 
-        # Upgrade
-        os.system("mkdir -p /home/admin/upgrade_logs")
-        os.system("cp -f /usr/bin/mynode_upgrade.sh /usr/bin/mynode_upgrade_running.sh")
-        file1 = "/home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt".format(get_current_version())
-        file2 = "/home/admin/upgrade_logs/upgrade_log_latest.txt"
-        cmd = "/usr/bin/mynode_upgrade_running.sh 2>&1 | tee {} {}".format(file1, file2)
-        ret = subprocess.call(cmd, shell=True)
-        if ret != 0:
-            # Try one more time....
-            subprocess.call(cmd, shell=True)
-        
+        # Upgrade, trying the download once more if it failed (nothing is installed in that case)
+        ret = run_upgrade_script(args, "upgrade")
+        if ret == UPGRADE_EXIT_NOT_VERIFIED:
+            run_upgrade_script(args, "upgrade", append=True)
+
         # Sync
         os.system("sync")
         time.sleep(1)
 
         # Reboot
         reboot_device()
+
+def upgrade_device():
+    run_manual_upgrade([])
 
 def upgrade_device_beta():
-    if not is_upgrade_running():
-        mark_upgrade_started()
-
-        # Upgrade
-        os.system("mkdir -p /home/admin/upgrade_logs")
-        os.system("cp -f /usr/bin/mynode_upgrade.sh /usr/bin/mynode_upgrade_running.sh")
-        file1 = "/home/admin/upgrade_logs/upgrade_log_from_{}_upgrade.txt".format(get_current_version())
-        file2 = "/home/admin/upgrade_logs/upgrade_log_latest.txt"
-        cmd = "/usr/bin/mynode_upgrade_running.sh beta 2>&1 | tee {} {}".format(file1, file2)
-        ret = subprocess.call(cmd, shell=True)
-        if ret != 0:
-            # Try one more time....
-            subprocess.call(cmd, shell=True)
-        
-        # Sync
-        os.system("sync")
-        time.sleep(1)
-
-        # Reboot
-        reboot_device()
+    run_manual_upgrade(["beta"])
 
 def did_upgrade_fail():
     return os.path.isfile("/mnt/hdd/mynode/settings/upgrade_error")
