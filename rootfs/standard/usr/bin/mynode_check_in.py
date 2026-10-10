@@ -14,6 +14,7 @@ from device_info import *
 from auto_upgrade import is_auto_upgrade_enabled, get_auto_upgrade_state
 
 CHECKIN_URL = "https://www.mynodebtc.com/device_api/check_in.php"
+CHECKIN_FAILURES_BEFORE_ERROR = 5
 
 log = logging.getLogger('check_in')
 log.addHandler(journal.JournaldLogHandler())
@@ -169,8 +170,11 @@ def check_in(check_for_updates):
             on_check_in_error("Check In Failed: (retrying) Exception {}".format(e))
         finally:
             if not check_in_success:
-                # Check in failed, try again later
-                os.system("touch /tmp/check_in_error")
+                # Check in failed, try again later. Only report the error once the
+                # direct (non-tor) attempt has also failed, so the slow network
+                # right after boot doesn't show a transient error.
+                if fail_count + 1 >= CHECKIN_FAILURES_BEFORE_ERROR:
+                    os.system("touch /tmp/check_in_error")
                 time.sleep(repeat_delay)
                 fail_count = fail_count + 1
 
