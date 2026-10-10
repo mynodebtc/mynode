@@ -439,19 +439,19 @@ fi
 
 
 # Install Python3 specific tools
-pip3 install --upgrade pip wheel setuptools
+/usr/local/bin/python3 -m pip install pip==$PYTHON_PIP_VERSION setuptools==$PYTHON_SETUPTOOLS_VERSION wheel==$PYTHON_WHEEL_VERSION
 
 # PyYAML Workaround (maybe only needed for python 3.10+)
 #echo 'Cython < 3.0' > /tmp/constraint.txt
 #PIP_CONSTRAINT=/tmp/constraint.txt pip3 wheel PyYAML==5.4.1
 #pip3 install 'PyYAML==5.4.1'
 
-pip3 install -r $TMP_INSTALL_PATH/usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir || \
-    pip3 install -r $TMP_INSTALL_PATH/usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir --use-deprecated=html5lib
+/usr/local/bin/python3 -m pip install -r $TMP_INSTALL_PATH/usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir || \
+    /usr/local/bin/python3 -m pip install -r $TMP_INSTALL_PATH/usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir --use-deprecated=html5lib
 
 # For RP4 32-bit, install specific grpcio version known to build (uses proper glibc for wheel)
 if [ $IS_32_BIT = 1 ]; then
-    pip3 install grpcio==$PYTHON_ARM32_GRPCIO_VERSION grpcio-tools==$PYTHON_ARM32_GRPCIO_VERSION
+    /usr/local/bin/python3 -m pip install grpcio==$PYTHON_ARM32_GRPCIO_VERSION grpcio-tools==$PYTHON_ARM32_GRPCIO_VERSION
 fi
 
 
@@ -482,7 +482,7 @@ if ! /usr/local/bin/docker-compose version --short 2>/dev/null | grep -qE '^v?[2
         apt-get install -y --reinstall docker-compose-plugin || true
     fi
     if [ -f $COMPOSE_PLUGIN ]; then
-        pip3 uninstall -y docker-compose || true
+        /usr/local/bin/python3 -m pip uninstall -y docker-compose || true
         ln -sf $COMPOSE_PLUGIN /usr/local/bin/docker-compose
     fi
 fi

@@ -1,0 +1,25 @@
+# Python packages for the root interpreter (/usr/local/bin/python3), which runs the web UI.
+# rootfs/standard/usr/share/mynode/mynode_pip3_requirements.txt pins these and all of their
+# dependencies. After changing this file, regenerate it from the repo root with the command at
+# the top of that file. Add -c <a device's pip freeze> to keep a device's current versions.
+gnureadline
+bcrypt
+pysocks
+redis
+requests<=2.31.0
+cysystemd<2.0.0
+systemd
+flask>=2.2.2,<2.4.0
+pam
+packaging>=22.0
+python-bitcoinrpc
+prometheus_client
+psutil
+qrcode
+image
+pyudev
+inotify_simple
+glances
+bottle
+fastapi
+uvicorn

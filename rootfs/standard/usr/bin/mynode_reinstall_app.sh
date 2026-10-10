@@ -99,7 +99,7 @@ elif [ "$APP" = "dojo" ]; then
     rm -rf /opt/download/dojo
     rm -rf /mnt/hdd/mynode/dojo
 elif [ "$APP" = "lndmanage" ]; then
-    pip3 uninstall -y lndmanage
+    /usr/local/bin/python3 -m pip uninstall -y lndmanage
 elif [ "$APP" = "mempool" ]; then
     cd /mnt/hdd/mynode/mempool
     # Remove leftover containers, which can point at a deleted Docker network

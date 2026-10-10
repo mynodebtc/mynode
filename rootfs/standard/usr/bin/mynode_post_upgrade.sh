@@ -315,19 +315,20 @@ if ! skip_base_upgrades ; then
 
 
     # Install any pip3 software
-    pip3 install --upgrade pip setuptools wheel || pip3 install --upgrade pip setuptools wheel --use-deprecated=html5lib
+    PIP_TOOLS="pip==$PYTHON_PIP_VERSION setuptools==$PYTHON_SETUPTOOLS_VERSION wheel==$PYTHON_WHEEL_VERSION"
+    /usr/local/bin/python3 -m pip install $PIP_TOOLS || /usr/local/bin/python3 -m pip install $PIP_TOOLS --use-deprecated=html5lib
     
     # PyYAML Workaround (maybe only needed for python 3.10+)
     #echo 'Cython < 3.0' > /tmp/constraint.txt
     #PIP_CONSTRAINT=/tmp/constraint.txt pip3 wheel PyYAML==5.4.1
     #pip3 install 'PyYAML==5.4.1'
     
-    pip3 install -r /usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir || \
-        pip3 install -r /usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir --use-deprecated=html5lib
+    /usr/local/bin/python3 -m pip install -r /usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir || \
+        /usr/local/bin/python3 -m pip install -r /usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir --use-deprecated=html5lib
 
     # For RP4 32-bit, install specific grpcio version known to build (uses proper glibc for wheel)
     if [ $IS_32_BIT = 1 ]; then
-        pip3 install grpcio==$PYTHON_ARM32_GRPCIO_VERSION grpcio-tools==$PYTHON_ARM32_GRPCIO_VERSION
+        /usr/local/bin/python3 -m pip install grpcio==$PYTHON_ARM32_GRPCIO_VERSION grpcio-tools==$PYTHON_ARM32_GRPCIO_VERSION
     fi
 
     # Update Node
@@ -399,7 +400,7 @@ if ! skip_base_upgrades ; then
             $TORIFY apt-get install -y --reinstall docker-compose-plugin || true
         fi
         if [ -f $COMPOSE_PLUGIN ]; then
-            pip3 uninstall -y docker-compose || true
+            /usr/local/bin/python3 -m pip uninstall -y docker-compose || true
             ln -sf $COMPOSE_PLUGIN /usr/local/bin/docker-compose
         fi
     fi
@@ -421,7 +422,7 @@ fi
 
 # Install LNDManage
 if should_install_app "lndmanage" ; then
-    pip3 install lndmanage==$LNDMANAGE_VERSION --no-cache-dir
+    /usr/local/bin/python3 -m pip install lndmanage==$LNDMANAGE_VERSION --no-cache-dir
     echo $LNDMANAGE_VERSION > $LNDMANAGE_VERSION_FILE
 fi
 

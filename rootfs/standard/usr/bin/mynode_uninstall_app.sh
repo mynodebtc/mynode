@@ -71,7 +71,7 @@ elif [ "$APP" = "joininbox" ]; then
 elif [ "$APP" = "lndhub" ]; then
     rm -rf /opt/mynode/LndHub
 elif [ "$APP" = "lndmanage" ]; then
-    pip3 uninstall -y lndmanage
+    /usr/local/bin/python3 -m pip uninstall -y lndmanage
 elif [ "$APP" = "mempool" ]; then
     cd /mnt/hdd/mynode/mempool
     docker-compose rm
