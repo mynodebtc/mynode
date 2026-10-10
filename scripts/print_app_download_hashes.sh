@@ -50,6 +50,8 @@ PYTHON_SHA256 PYTHON_VERSION https://www.python.org/ftp/python/{VERSION}/Python-
 LNDCONNECT_ARMV7_SHA256 LNDCONNECT_VERSION https://github.com/LN-Zap/lndconnect/releases/download/{VERSION}/lndconnect-linux-armv7-{VERSION}.tar.gz
 LNDCONNECT_AMD64_SHA256 LNDCONNECT_VERSION https://github.com/LN-Zap/lndconnect/releases/download/{VERSION}/lndconnect-linux-amd64-{VERSION}.tar.gz
 TOR_SOURCE_SHA256 TOR_SOURCE_VERSION https://archive.torproject.org/tor-package-archive/tor-{VERSION}.tar.gz
+UV_AARCH64_SHA256 UV_VERSION https://github.com/astral-sh/uv/releases/download/{VERSION}/uv-aarch64-unknown-linux-gnu.tar.gz
+UV_X86_64_SHA256 UV_VERSION https://github.com/astral-sh/uv/releases/download/{VERSION}/uv-x86_64-unknown-linux-gnu.tar.gz
 "
 
 SELECTED=("$@")

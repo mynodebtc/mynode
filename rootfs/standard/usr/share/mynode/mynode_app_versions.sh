@@ -323,6 +323,16 @@ PYTHON_WHEEL_VERSION="0.45.1"
 
 PYTHON_ARM32_GRPCIO_VERSION="1.40.0"
 
+# uv, and the Python it installs for apps that run in their own venv (64-bit only). Apps create
+# venvs with "mynode-uv venv --python $APP_PYTHON_MINOR_VERSION"; a new patch version in
+# APP_PYTHON_VERSION moves those venvs to it without a reinstall.
+UV_VERSION="0.12.18"
+UV_VERSION_FILE=/home/bitcoin/.mynode/uv_version
+UV_AARCH64_SHA256="0.12.18 afb6291f3f0a6b4521fc67b947822506c41dde5b60d2189dd8f3695b2ac8c9e7"
+UV_X86_64_SHA256="0.12.18 89eadd7c76fc063887959510d5ba0ab1264dfd5f1143b925ddb73021a40acf16"
+APP_PYTHON_VERSION="3.11.15"
+APP_PYTHON_MINOR_VERSION="3.11"
+
 NODE_JS_VERSION="24.x"
 if [ "$IS_32_BIT" = "1" ]; then
     NODE_JS_VERSION="18.x"

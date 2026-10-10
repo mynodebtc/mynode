@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Run uv with the Python versions MyNode installs for apps (APP_PYTHON_VERSION in
+# mynode_app_versions.sh). Root installs them; app users only create venvs from them.
+
+export UV_PYTHON_INSTALL_DIR=/usr/local/lib/mynode/python
+export UV_MANAGED_PYTHON=1
+
+if [ "$(id -u)" = "0" ]; then
+    export UV_CACHE_DIR=/root/.cache/uv
+    export UV_PYTHON_DOWNLOADS=manual
+else
+    # App users have no home folder
+    export UV_NO_CACHE=1
+    export UV_PYTHON_DOWNLOADS=never
+fi
+
+exec /usr/local/bin/uv "$@"

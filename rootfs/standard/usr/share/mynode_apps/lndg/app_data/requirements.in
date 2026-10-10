@@ -1,0 +1,17 @@
+# LNDg's requirements.txt (v1.10.1) plus the packages install_lndg.sh used to add. requirements.lock
+# pins these and all of their dependencies with hashes. After changing this file or the LNDg
+# version, regenerate it from the repo root with the command at the top of that file.
+Django
+djangorestframework
+django-filter
+grpcio
+protobuf
+pytz
+pandas
+requests
+asyncio
+bech32
+cryptography
+paramiko
+whitenoise
+supervisor

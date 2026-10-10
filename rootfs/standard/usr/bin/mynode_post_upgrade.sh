@@ -331,6 +331,45 @@ if ! skip_base_upgrades ; then
         /usr/local/bin/python3 -m pip install grpcio==$PYTHON_ARM32_GRPCIO_VERSION grpcio-tools==$PYTHON_ARM32_GRPCIO_VERSION
     fi
 
+    # Install uv and the Python for apps with their own venv (64-bit only)
+    if [ $IS_64_BIT = 1 ]; then
+        UV_ARCH="aarch64-unknown-linux-gnu"
+        UV_SHA256="$UV_AARCH64_SHA256"
+        if [ $IS_X86 = 1 ]; then
+            UV_ARCH="x86_64-unknown-linux-gnu"
+            UV_SHA256="$UV_X86_64_SHA256"
+        fi
+        CURRENT=""
+        if [ -f $UV_VERSION_FILE ]; then
+            CURRENT=$(cat $UV_VERSION_FILE)
+        fi
+        if [ "$CURRENT" != "$UV_VERSION" ] || [ ! -x /usr/local/bin/uv ]; then
+            rm -rf /opt/download
+            mkdir -p /opt/download
+            cd /opt/download
+            wget https://github.com/astral-sh/uv/releases/download/$UV_VERSION/uv-$UV_ARCH.tar.gz -O uv.tar.gz
+            check_app_download uv.tar.gz uv $UV_VERSION "$UV_SHA256"
+            tar -xf uv.tar.gz
+            install -m 0755 -o root -g root uv-$UV_ARCH/uv uv-$UV_ARCH/uvx /usr/local/bin/
+            echo $UV_VERSION > $UV_VERSION_FILE
+            cd ~
+        fi
+
+        # Remove other patch versions, so venvs (which use the minor version) run APP_PYTHON_VERSION
+        install -d -m 0755 -o root -g root /usr/local/lib/mynode
+        if mynode-uv python install $APP_PYTHON_VERSION --no-bin; then
+            for dir in /usr/local/lib/mynode/python/cpython-$APP_PYTHON_MINOR_VERSION.*-linux-*; do
+                [ -d "$dir" ] || continue
+                ver=$(basename $dir | cut -d- -f2)
+                if [ "$ver" != "$APP_PYTHON_VERSION" ]; then
+                    mynode-uv python uninstall $ver || true
+                fi
+            done
+        else
+            echo "WARNING: Failed to install Python $APP_PYTHON_VERSION for apps"
+        fi
+    fi
+
     # Update Node
     # Also check the installed major version, since the apt sources can be missing or
     # disabled while an old Node is installed (Debian 12+ only, NodeSource no longer serves buster)
@@ -1326,6 +1365,13 @@ touch /home/bitcoin/.mynode/install_vpn
 
 # Init dynamic apps, so any new applications are picked up before reboot
 mynode-manage-apps init || true
+
+# Reinstall LNDg once on the Python for apps (its venv was made with virtualenv)
+LNDG_VENV_CFG=/opt/mynode/lndg/.venv/pyvenv.cfg
+if [ -f $LNDG_VENV_CFG ] && ! grep -q "^home = /usr/local/lib/mynode/python/" $LNDG_VENV_CFG && \
+   [ $IS_64_BIT = 1 ] && mynode-uv python find $APP_PYTHON_MINOR_VERSION; then
+    rm -f /home/bitcoin/.mynode/lndg_version /mnt/hdd/mynode/settings/lndg_version
+fi
 
 # Upgrade Dynamic Applications
 mynode-manage-apps upgrade || true
