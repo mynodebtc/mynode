@@ -11,7 +11,7 @@ from systemd import journal
 from utilities import *
 from drive_info import *
 from device_info import *
-from auto_upgrade import is_auto_upgrade_enabled
+from auto_upgrade import is_auto_upgrade_enabled, get_auto_upgrade_state
 
 CHECKIN_URL = "https://www.mynodebtc.com/device_api/check_in.php"
 
@@ -106,6 +106,8 @@ def check_in(check_for_updates):
 
             # Gather check in data
             product_key = get_product_key()
+            auto_upgrade_state = get_auto_upgrade_state()
+            last_result = auto_upgrade_state["last_result"]
             data = {
                 "serial": get_device_serial(),
                 "device_type": get_device_type(),
@@ -116,6 +118,9 @@ def check_in(check_for_updates):
                 "product_key": product_key,
                 "drive_size": get_mynode_drive_size(),
                 "auto_upgrade": 1 if is_auto_upgrade_enabled() else 0,
+                "auto_upgrade_attempts": auto_upgrade_state["attempts"],
+                "auto_upgrade_last_result": last_result.get("result", "") if isinstance(last_result, dict) else "",
+                "upgrade_error": 1 if did_upgrade_fail() else 0,
                 "api_version": 2,
             }
             
