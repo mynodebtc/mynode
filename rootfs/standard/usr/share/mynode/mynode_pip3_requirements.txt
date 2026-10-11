@@ -30,8 +30,6 @@ markupsafe==2.1.5
     # via
     #   jinja2
     #   werkzeug
-packaging==26.2
-    # via -r scripts/mynode_pip3_requirements.in
 pam==0.2.0
     # via -r scripts/mynode_pip3_requirements.in
 pillow==10.4.0

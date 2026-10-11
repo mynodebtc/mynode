@@ -321,8 +321,6 @@ PYTHON_PIP_VERSION="25.0.1"
 PYTHON_SETUPTOOLS_VERSION="75.3.4"
 PYTHON_WHEEL_VERSION="0.45.1"
 
-PYTHON_ARM32_GRPCIO_VERSION="1.40.0"
-
 # uv, and the Python it installs for apps that run in their own venv (64-bit only). Apps create
 # venvs with "mynode-uv venv --python $APP_PYTHON_MINOR_VERSION"; a new patch version in
 # APP_PYTHON_VERSION moves those venvs to it without a reinstall.

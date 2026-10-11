@@ -8,10 +8,11 @@
     "description": [
         "Lite GUI web interface to analyze lnd data and manage your node with automation."
     ],
-    "latest_version": "v1.10.1",
+    "latest_version": "v1.11.1",
+    "supported_archs": ["aarch64", "x86_64"],
     "linux_user": "lndg",
     "download_source_url": "https://github.com/cryptosharks131/lndg/archive/refs/tags/{VERSION}.tar.gz",
-    "download_source_sha256": "v1.10.1 1989d33f688a8e01beea9e2d93fa1fa9271395102b1b376139f026d8353098a0",
+    "download_source_sha256": "v1.11.1 1084e56d0d3325e58bb6eb846c24914d71398796e6043dfe7c4861cf33e99b1d",
     "install_env_vars": {"var1":"val2", "var2": "val2"},
     "http_port": "8889",
     "https_port": "8890",

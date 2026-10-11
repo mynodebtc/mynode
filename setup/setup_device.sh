@@ -449,11 +449,6 @@ fi
 /usr/local/bin/python3 -m pip install -r $TMP_INSTALL_PATH/usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir || \
     /usr/local/bin/python3 -m pip install -r $TMP_INSTALL_PATH/usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir --use-deprecated=html5lib
 
-# For RP4 32-bit, install specific grpcio version known to build (uses proper glibc for wheel)
-if [ $IS_32_BIT = 1 ]; then
-    /usr/local/bin/python3 -m pip install grpcio==$PYTHON_ARM32_GRPCIO_VERSION grpcio-tools==$PYTHON_ARM32_GRPCIO_VERSION
-fi
-
 # Install uv and the Python for apps with their own venv (64-bit only)
 if [ $IS_64_BIT = 1 ]; then
     UV_ARCH="aarch64-unknown-linux-gnu"

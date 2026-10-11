@@ -1,17 +1,17 @@
-# LNDg's requirements.txt (v1.10.1) plus the packages install_lndg.sh used to add. requirements.lock
-# pins these and all of their dependencies with hashes. After changing this file or the LNDg
-# version, regenerate it from the repo root with the command at the top of that file.
-Django
-djangorestframework
-django-filter
-grpcio
-protobuf
-pytz
-pandas
-requests
-asyncio
-bech32
-cryptography
-paramiko
+# LNDg's requirements.txt (v1.11.1) with Django held to 5.2 (LNDg pins 6.1, which needs Python 3.12),
+# plus the packages install_lndg.sh needs. requirements.lock pins these and all of their dependencies
+# with hashes. After changing this file or the LNDg version, regenerate it from the repo root with the
+# command at the top of that file (add --exclude-newer with a date a week back).
+django>=5.2,<5.3
+djangorestframework==3.18.1
+django-filter==26.1
+grpcio==1.84.0
+protobuf==7.36.2
+pandas==3.0.6
+requests==2.34.2
+bech32==1.2.0
+cryptography==50.0.1
+paramiko==5.0.0
+concurrent-log-handler==0.9.29
 whitenoise
 supervisor

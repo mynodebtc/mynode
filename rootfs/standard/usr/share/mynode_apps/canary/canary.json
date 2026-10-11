@@ -17,7 +17,7 @@
         "Features include: transaction monitoring, RBF/CPFP detection, balance alerts, and deep wallet scanning."
     ],
     "latest_version": "v1.7.0",
-    "supported_archs": ["amd64", "arm64"],
+    "supported_archs": ["aarch64", "x86_64"],
     "download_skip": true,
     "requires_docker_image_installation": true,
     "requires_electrs": true,

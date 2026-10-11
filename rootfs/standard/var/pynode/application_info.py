@@ -179,6 +179,12 @@ def replace_app_info_variables(app_data, text):
     return text
 
 def get_app_not_supported_reason(app):
+    # Check device architecture
+    if app["supported_archs"] and get_device_arch() not in app["supported_archs"]:
+        if get_device_bits() == 32:
+            return "Requires a 64-bit device"
+        return "Not supported on " + get_device_arch()
+
     # Check Debian Version
     if get_debian_version() < app["minimum_debian_version"]:
         return "Requires Debian "+str(app["minimum_debian_version"])+"+"

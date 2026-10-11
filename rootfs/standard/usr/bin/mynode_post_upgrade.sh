@@ -326,15 +326,6 @@ if ! skip_base_upgrades ; then
     /usr/local/bin/python3 -m pip install -r /usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir || \
         /usr/local/bin/python3 -m pip install -r /usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir --use-deprecated=html5lib
 
-    # Remove packages dropped from mynode_pip3_requirements.txt (Glances now has its own venv)
-    /usr/local/bin/python3 -m pip uninstall -y glances bottle fastapi starlette uvicorn pydantic pydantic-core \
-        annotated-types annotated-doc image django sqlparse asgiref backports-zoneinfo gnureadline redis async-timeout || true
-
-    # For RP4 32-bit, install specific grpcio version known to build (uses proper glibc for wheel)
-    if [ $IS_32_BIT = 1 ]; then
-        /usr/local/bin/python3 -m pip install grpcio==$PYTHON_ARM32_GRPCIO_VERSION grpcio-tools==$PYTHON_ARM32_GRPCIO_VERSION
-    fi
-
     # Install uv and the Python for apps with their own venv (64-bit only)
     if [ $IS_64_BIT = 1 ]; then
         UV_ARCH="aarch64-unknown-linux-gnu"

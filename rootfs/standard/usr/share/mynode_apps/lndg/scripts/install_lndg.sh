@@ -12,24 +12,9 @@ echo "==================== INSTALLING APP ===================="
 mkdir -p /mnt/hdd/mynode/lndg/data
 ln -s /mnt/hdd/mynode/lndg/data /opt/mynode/lndg/data
 
-# Install deps
-if [ "$IS_64_BIT" = 1 ] && mynode-uv python find $APP_PYTHON_MINOR_VERSION; then
-    echo "Installing LNDg dependencies with uv (Python $APP_PYTHON_MINOR_VERSION)"
-    mynode-uv venv --python $APP_PYTHON_MINOR_VERSION .venv
-    mynode-uv pip install --require-hashes --python .venv/bin/python -r app_data/requirements.lock
-else
-    echo "Installing LNDg dependencies with virtualenv"
-
-    # Update grpcio for last working arm32 version on Buster
-    if [ "$IS_RASPI4" = 1 ] && [ "$IS_32_BIT" = 1 ]; then
-        sed -i "s|grpcio|grpcio==$PYTHON_ARM32_GRPCIO_VERSION|g" requirements.txt
-    fi
-
-    virtualenv -p python3 .venv
-    .venv/bin/pip install -r requirements.txt
-    .venv/bin/pip install whitenoise
-    .venv/bin/pip install supervisor
-fi
+# Install deps (64-bit only, on the Python for apps)
+mynode-uv venv --python $APP_PYTHON_MINOR_VERSION .venv
+mynode-uv pip install --require-hashes --python .venv/bin/python -r app_data/requirements.lock
 
 # Patch to store file locally
 sed -i 's|/usr/local/supervisord.conf|/opt/mynode/lndg/.venv/supervisord.conf|g' initialize.py

@@ -9,8 +9,6 @@ cysystemd<2.0.0
 systemd
 flask>=2.2.2,<2.4.0
 pam
-# Used by virtualenv for LNDg on 32-bit devices
-packaging>=22.0
 python-bitcoinrpc
 prometheus_client
 psutil
