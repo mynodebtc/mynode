@@ -1,0 +1,5 @@
+# Optional JoinMarket packages, installed into jmvenv after JoinMarket's install.sh: matplotlib for
+# ob-watcher's charts, scipy for a calculation in jmclient's wallet_utils.py. joinmarket-addons.lock pins them and their
+# dependencies with hashes, held to the versions JoinMarket v0.9.12 installs (pass -c <jmvenv pip freeze>).
+matplotlib
+scipy

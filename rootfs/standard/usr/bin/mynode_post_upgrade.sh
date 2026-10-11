@@ -871,7 +871,8 @@ function install_joininbox_mynode() {
     (cd $jm_dir && sudo -u joinmarket bash /home/joinmarket/joininbox/scripts/verify.git.sh \
         "AdamISZ" "https://github.com/AdamISZ.gpg" "$JOINMARKET_SIGNER_FINGERPRINT" "$JOINMARKET_VERSION") || return 1
     (cd $jm_dir && sudo -u joinmarket ./install.sh --without-qt --disable-os-deps-check --python=$jm_python) || return 1
-    sudo -u joinmarket bash -c "source $jm_dir/jmvenv/bin/activate && pip install matplotlib && TMPDIR=/var/tmp pip install scipy" || return 1
+    sudo -u joinmarket mynode-uv pip install --require-hashes --python $jm_dir/jmvenv/bin/python \
+        -r /usr/share/mynode/venvs/joinmarket-addons.lock || return 1
 
     # API certificate and services
     sudo -u joinmarket /home/joinmarket/install.selfsignedcert.sh || return 1
