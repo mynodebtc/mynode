@@ -924,6 +924,9 @@ if should_install_app "joininbox"; then
             fi
         fi
     fi
+else
+    # Older images enabled ob-watcher without JoinMarket, so it failed and restarted every minute
+    systemctl disable --now ob-watcher > /dev/null 2>&1 || true
 fi
 
 # Install Whirlpool
