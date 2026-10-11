@@ -31,6 +31,23 @@ function skip_base_upgrades {
     return 1
 }
 
+function has_app_python() {
+    [ "$IS_64_BIT" = "1" ] && mynode-uv python find $APP_PYTHON_MINOR_VERSION > /dev/null 2>&1
+}
+
+function build_root_venv() {
+    # Build /usr/local/lib/mynode/venv/<name> from scratch on the Python for apps, from
+    # /usr/share/mynode/venvs/<name>.lock. Root-owned, for tools that run as root or admin.
+    # On failure the venv is removed, so nothing runs half-installed.
+    local venv="/usr/local/lib/mynode/venv/$1"
+    if mynode-uv venv --clear --python $APP_PYTHON_MINOR_VERSION "$venv" && \
+       mynode-uv pip install --require-hashes --python "$venv/bin/python" -r "/usr/share/mynode/venvs/$1.lock"; then
+        return 0
+    fi
+    rm -rf "$venv"
+    return 1
+}
+
 function generate_app_password() {
     # Letters and digits only, so the password copies with a double-click
     /usr/local/bin/python3 -c 'import secrets, string; a = string.ascii_letters + string.digits; print("".join(secrets.choice(a) for i in range(24)))'

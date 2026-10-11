@@ -488,6 +488,16 @@ if [ $IS_64_BIT = 1 ]; then
                 $TMP_INSTALL_PATH/usr/bin/mynode-uv python uninstall $ver || true
             fi
         done
+
+        # Glances runs from its own venv (glances.service does not start without it)
+        GLANCES_VENV=/usr/local/lib/mynode/venv/glances
+        if ! { $TMP_INSTALL_PATH/usr/bin/mynode-uv venv --clear --python $APP_PYTHON_MINOR_VERSION $GLANCES_VENV && \
+               $TMP_INSTALL_PATH/usr/bin/mynode-uv pip install --require-hashes --python $GLANCES_VENV/bin/python -r $TMP_INSTALL_PATH/usr/share/mynode/venvs/glances.lock; }; then
+            echo "WARNING: Failed to install Glances"
+            rm -rf /usr/local/lib/mynode/venv/glances
+        else
+            ln -sfn $GLANCES_VENV/bin/glances /usr/local/bin/glances
+        fi
     else
         echo "WARNING: Failed to install Python $APP_PYTHON_VERSION for apps"
     fi

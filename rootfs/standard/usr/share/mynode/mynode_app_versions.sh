@@ -244,7 +244,7 @@ THUNDERHUB_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version
 THUNDERHUB_LATEST_VERSION_FILE=/home/bitcoin/.mynode/thunderhub_version_latest
 
 # Note: Newer versions won't be on pypi
-LNDMANAGE_VERSION="0.14.2"
+LNDMANAGE_VERSION="0.16.0"   # 64-bit; must match usr/share/mynode/venvs/lndmanage.in
 LNDMANAGE_VERSION=$(get_app_version "$LNDMANAGE_VERSION" "lndmanage")
 LNDMANAGE_VERSION_FILE=/home/bitcoin/.mynode/lndmanage_version
 LNDMANAGE_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lndmanage_version_latest

@@ -16,7 +16,7 @@ ln -s /mnt/hdd/mynode/lndg/data /opt/mynode/lndg/data
 if [ "$IS_64_BIT" = 1 ] && mynode-uv python find $APP_PYTHON_MINOR_VERSION; then
     echo "Installing LNDg dependencies with uv (Python $APP_PYTHON_MINOR_VERSION)"
     mynode-uv venv --python $APP_PYTHON_MINOR_VERSION .venv
-    mynode-uv pip sync --python .venv/bin/python app_data/requirements.lock
+    mynode-uv pip install --require-hashes --python .venv/bin/python -r app_data/requirements.lock
 else
     echo "Installing LNDg dependencies with virtualenv"
 

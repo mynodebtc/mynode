@@ -326,6 +326,10 @@ if ! skip_base_upgrades ; then
     /usr/local/bin/python3 -m pip install -r /usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir || \
         /usr/local/bin/python3 -m pip install -r /usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir --use-deprecated=html5lib
 
+    # Remove packages dropped from mynode_pip3_requirements.txt (Glances now has its own venv)
+    /usr/local/bin/python3 -m pip uninstall -y glances bottle fastapi starlette uvicorn pydantic pydantic-core \
+        annotated-types annotated-doc image django sqlparse asgiref backports-zoneinfo gnureadline redis async-timeout || true
+
     # For RP4 32-bit, install specific grpcio version known to build (uses proper glibc for wheel)
     if [ $IS_32_BIT = 1 ]; then
         /usr/local/bin/python3 -m pip install grpcio==$PYTHON_ARM32_GRPCIO_VERSION grpcio-tools==$PYTHON_ARM32_GRPCIO_VERSION
@@ -365,6 +369,14 @@ if ! skip_base_upgrades ; then
                     mynode-uv python uninstall $ver || true
                 fi
             done
+
+            # Glances runs from its own venv (glances.service does not start without it)
+            if build_root_venv glances; then
+                ln -sfn /usr/local/lib/mynode/venv/glances/bin/glances /usr/local/bin/glances
+            else
+                echo "WARNING: Failed to install Glances"
+                rm -f /usr/local/bin/glances
+            fi
         else
             echo "WARNING: Failed to install Python $APP_PYTHON_VERSION for apps"
         fi
@@ -461,8 +473,15 @@ fi
 
 # Install LNDManage
 if should_install_app "lndmanage" ; then
-    /usr/local/bin/python3 -m pip install lndmanage==$LNDMANAGE_VERSION --no-cache-dir
-    echo $LNDMANAGE_VERSION > $LNDMANAGE_VERSION_FILE
+    # Remove the copy installed in the web UI's Python before lndmanage had its own venv
+    /usr/local/bin/python3 -m pip uninstall -y lndmanage || true
+    rm -f /usr/local/bin/lndmanage
+    if has_app_python && build_root_venv lndmanage; then
+        ln -s /usr/local/lib/mynode/venv/lndmanage/bin/lndmanage /usr/local/bin/lndmanage
+        echo $LNDMANAGE_VERSION > $LNDMANAGE_VERSION_FILE
+    else
+        echo "WARNING: lndmanage not installed (needs a 64-bit device with the Python for apps)"
+    fi
 fi
 
 # Upgrade BTC

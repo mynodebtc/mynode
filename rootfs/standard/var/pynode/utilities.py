@@ -259,19 +259,6 @@ def get_file_log(file_path):
     return status_log
 
 
-#==================================
-# Data Storage Functions
-#==================================
-def set_data(key, value):
-    r = redis.Redis(host='localhost', port=6379, db=0)
-    mynode_key = "mynode_" + key
-    return r.set(mynode_key, value)
-
-def get_data(key):
-    r = redis.Redis(host='localhost', port=6379, db=0)
-    mynode_key = "mynode_" + key
-    return r.get(mynode_key)
-
 
 #==================================
 # UI Format Functions

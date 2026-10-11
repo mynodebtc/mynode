@@ -4,9 +4,11 @@
 [Unit]
 Description=Glances
 After=network.target
+# Only on 64-bit, where Glances has its own venv
+ConditionPathExists=/usr/local/lib/mynode/venv/glances/bin/glances
 
 [Service]
-ExecStart=/usr/local/bin/glances -w
+ExecStart=/usr/local/lib/mynode/venv/glances/bin/glances -w
 User=root
 Group=root
 TimeoutSec=120

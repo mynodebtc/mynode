@@ -1,0 +1,4 @@
+# lndmanage, run by admin from its own venv (/usr/local/lib/mynode/venv/lndmanage) on 64-bit
+# devices. lndmanage.lock pins it and all of its dependencies with hashes. After changing this file
+# or LNDMANAGE_VERSION, regenerate it from the repo root with the command at the top of that file.
+lndmanage==0.16.0

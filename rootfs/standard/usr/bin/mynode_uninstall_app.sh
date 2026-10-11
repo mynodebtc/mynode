@@ -71,6 +71,8 @@ elif [ "$APP" = "joininbox" ]; then
 elif [ "$APP" = "lndhub" ]; then
     rm -rf /opt/mynode/LndHub
 elif [ "$APP" = "lndmanage" ]; then
+    rm -f /usr/local/bin/lndmanage
+    rm -rf /usr/local/lib/mynode/venv/lndmanage
     /usr/local/bin/python3 -m pip uninstall -y lndmanage
 elif [ "$APP" = "mempool" ]; then
     cd /mnt/hdd/mynode/mempool

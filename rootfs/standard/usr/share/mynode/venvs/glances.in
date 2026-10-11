@@ -1,0 +1,7 @@
+# Glances, run as root from its own venv (/usr/local/lib/mynode/venv/glances) on 64-bit devices.
+# glances.lock pins these and all of their dependencies with hashes. After changing this file,
+# regenerate it from the repo root with the command at the top of that file.
+glances[web]==4.5.6
+# Docker containers panel (Glances' containers extra, without podman and LXD)
+docker
+python-dateutil
