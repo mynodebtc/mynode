@@ -839,29 +839,6 @@ cd ~
 echo $ELECTRS_VERSION > $ELECTRS_VERSION_FILE
 
 
-# Install recent version of secp256k1
-echo "Installing secp256k1..."
-SECP256K1_UPGRADE_URL=https://github.com/bitcoin-core/secp256k1/archive/$SECP256K1_VERSION.tar.gz
-CURRENT=""
-if [ -f $SECP256K1_VERSION_FILE ]; then
-    CURRENT=$(cat $SECP256K1_VERSION_FILE)
-fi
-if [ "$CURRENT" != "$SECP256K1_VERSION" ]; then
-    rm -rf /tmp/secp256k1
-    cd /tmp/
-    git clone https://github.com/bitcoin-core/secp256k1.git
-    cd secp256k1
-    git -c advice.detachedHead=false checkout $SECP256K1_VERSION
-
-    ./autogen.sh
-    ./configure --enable-module-recovery --disable-jni --enable-experimental --enable-module-ecdh --enable-benchmark=no
-    make -j2
-    make install
-    cp -f include/* /usr/include/
-
-    echo $SECP256K1_VERSION > $SECP256K1_VERSION_FILE
-fi
-
 # Install JoinMarket and the MyNode version of JoinInBox (Debian 12+). Runs in
 # /home/joinmarket after the JoinInBox archive is extracted to ./joininbox.
 function install_joininbox_mynode() {

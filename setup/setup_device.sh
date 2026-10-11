@@ -267,7 +267,7 @@ if [ "$DEBIAN_VERSION" -ge "12" ]; then
     printf "[sshd]\nbackend = systemd\n" > /etc/fail2ban/jail.d/mynode_sshd.conf
 fi
 apt-get -y install clang hitch zlib1g-dev libffi-dev file toilet ncdu
-apt-get -y install toilet-fonts avahi-daemon figlet libsecp256k1-dev
+apt-get -y install toilet-fonts avahi-daemon figlet
 apt-get -y install inotify-tools libssl-dev tor tmux screen fonts-dejavu
 apt-get -y install pv sysstat network-manager rsync parted unzip pkg-config
 apt-get -y install libfreetype6-dev libpng-dev libatlas-base-dev libgmp-dev libltdl-dev
@@ -858,29 +858,6 @@ cd ~
 # Install Electrs (just mark version, now included in overlay)
 echo $ELECTRS_VERSION > $ELECTRS_VERSION_FILE
 
-
-# Install recent version of secp256k1
-echo "Installing secp256k1..."
-SECP256K1_UPGRADE_URL=https://github.com/bitcoin-core/secp256k1/archive/$SECP256K1_VERSION.tar.gz
-CURRENT=""
-if [ -f $SECP256K1_VERSION_FILE ]; then
-    CURRENT=$(cat $SECP256K1_VERSION_FILE)
-fi
-if [ "$CURRENT" != "$SECP256K1_VERSION" ]; then
-    rm -rf /tmp/secp256k1
-    cd /tmp/
-    git clone https://github.com/bitcoin-core/secp256k1.git
-    cd secp256k1
-    git -c advice.detachedHead=false checkout $SECP256K1_VERSION
-
-    ./autogen.sh
-    ./configure --enable-module-recovery --disable-jni --enable-experimental --enable-module-ecdh --enable-benchmark=no
-    make -j2
-    make install
-    cp -f include/* /usr/include/
-
-    echo $SECP256K1_VERSION > $SECP256K1_VERSION_FILE
-fi
 
 #echo "Installing JoinInBox..."
 # No longer a default app
