@@ -158,14 +158,10 @@ CORSPROXY_LATEST_VERSION_FILE=/home/bitcoin/.mynode/corsproxy_version_latest
 
 JOININBOX_VERSION="v0.9.0"
 JOININBOX_SHA256="v0.9.0 78a43ed498e656ccea7ca044df71445f12023642625db9865fc3cde182058c6a"
-if [ "$DEBIAN_VERSION" -lt "12" ]; then
-    JOININBOX_VERSION="v0.8.4"
-    JOININBOX_SHA256="v0.8.4 151a786cee6bd6da22ca7bf8ab82beb7e27db301c5c810223538233121eacbc6"
-fi
 JOININBOX_VERSION=$(get_app_version "$JOININBOX_VERSION" "joininbox")
 JOININBOX_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version
 JOININBOX_LATEST_VERSION_FILE=/home/bitcoin/.mynode/joininbox_version_latest
-# Debian 12+: JoinInBox gets the MyNode patch and JoinMarket is installed by MyNode
+# JoinInBox gets the MyNode patch and JoinMarket is installed by MyNode (64-bit only)
 JOININBOX_PATCH=/usr/share/mynode/patches/joininbox-v0.9.0.patch
 JOININBOX_PATCH_REVISION="1"
 JOININBOX_PATCH_REVISION_FILE=/home/bitcoin/.mynode/joininbox_patch_revision
@@ -221,10 +217,7 @@ LNBITS_VERSION=$(get_app_version "$LNBITS_VERSION" "lnbits")
 LNBITS_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version
 LNBITS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version_latest
 
-SPECTER_VERSION="2.1.10"
-if [ "$DEBIAN_VERSION" -lt "12" ]; then
-    SPECTER_VERSION="1.14.1"
-fi
+SPECTER_VERSION="2.1.10"   # Must match usr/share/mynode/venvs/specter.in
 SPECTER_VERSION=$(get_app_version "$SPECTER_VERSION" "specter")
 SPECTER_VERSION_FILE=/home/bitcoin/.mynode/specter_version
 SPECTER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/specter_version_latest

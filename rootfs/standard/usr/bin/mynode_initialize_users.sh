@@ -31,7 +31,8 @@ for tor_user in $tor_users; do
 done
 
 # User updates and settings
-if [ "$DEBIAN_VERSION" -lt "12" ]; then
+# Only old JoinInBox installs (32-bit devices, which MyNode no longer updates) still use it
+if [ "$IS_32_BIT" = "1" ]; then
     grep "joinmarket" /etc/sudoers || (echo 'joinmarket ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo)
 elif grep -q "^joinmarket ALL=(ALL) NOPASSWD:ALL$" /etc/sudoers; then
     SUDOERS_TMP=$(mktemp)

@@ -839,10 +839,12 @@ cd ~
 echo $ELECTRS_VERSION > $ELECTRS_VERSION_FILE
 
 
-# Install JoinMarket and the MyNode version of JoinInBox (Debian 12+). Runs in
-# /home/joinmarket after the JoinInBox archive is extracted to ./joininbox.
+# Install JoinMarket and the MyNode version of JoinInBox (64-bit, on the Python for apps). Runs
+# in /home/joinmarket after the JoinInBox archive is extracted to ./joininbox.
 function install_joininbox_mynode() {
     local jm_dir=/home/joinmarket/joinmarket-clientserver
+    local jm_python
+    jm_python=$(mynode-uv python find $APP_PYTHON_MINOR_VERSION) || return 1
 
     # Remove the parts of JoinInBox MyNode does not use, then apply the MyNode patch
     for f in info.importwallet.sh info.qtgui.sh install.bitcoincore.sh install.hiddenservice.sh \
@@ -868,7 +870,7 @@ function install_joininbox_mynode() {
     (cd $jm_dir && sudo -u joinmarket git reset --hard $JOINMARKET_VERSION) || return 1
     (cd $jm_dir && sudo -u joinmarket bash /home/joinmarket/joininbox/scripts/verify.git.sh \
         "AdamISZ" "https://github.com/AdamISZ.gpg" "$JOINMARKET_SIGNER_FINGERPRINT" "$JOINMARKET_VERSION") || return 1
-    (cd $jm_dir && sudo -u joinmarket ./install.sh --without-qt --disable-os-deps-check --python=python3.11) || return 1
+    (cd $jm_dir && sudo -u joinmarket ./install.sh --without-qt --disable-os-deps-check --python=$jm_python) || return 1
     sudo -u joinmarket bash -c "source $jm_dir/jmvenv/bin/activate && pip install matplotlib && TMPDIR=/var/tmp pip install scipy" || return 1
 
     # API certificate and services
@@ -886,9 +888,12 @@ function install_joininbox_mynode() {
     return 0
 }
 
-# Upgrade JoininBox (Debian 12+)
-if should_install_app "joininbox" && [ "$DEBIAN_VERSION" -ge "12" ]; then
-    if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
+# Upgrade JoininBox
+if should_install_app "joininbox"; then
+    if ! has_app_python; then
+        echo "WARNING: JoinInBox needs a 64-bit device with the Python for apps"
+    elif [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
+        JOININBOX_UPGRADE_URL=https://github.com/openoms/joininbox/archive/$JOININBOX_VERSION.tar.gz
         CURRENT=""
         if [ -f $JOININBOX_VERSION_FILE ]; then
             CURRENT=$(cat $JOININBOX_VERSION_FILE)
@@ -897,14 +902,15 @@ if should_install_app "joininbox" && [ "$DEBIAN_VERSION" -ge "12" ]; then
         if [ -f $JOININBOX_PATCH_REVISION_FILE ]; then
             CURRENT_PATCH_REVISION=$(cat $JOININBOX_PATCH_REVISION_FILE)
         fi
-        if [ "$CURRENT" != "$JOININBOX_VERSION" ] || [ "$CURRENT_PATCH_REVISION" != "$JOININBOX_PATCH_REVISION" ]; then
+        if [ "$CURRENT" != "$JOININBOX_VERSION" ] || [ "$CURRENT_PATCH_REVISION" != "$JOININBOX_PATCH_REVISION" ] || \
+           ! venv_uses_app_python /home/joinmarket/joinmarket-clientserver/jmvenv; then
             cd /home/joinmarket
 
             # Delete all non-hidden files
             rm -rf *
             rm -rf joininbox-*
 
-            sudo -u joinmarket wget https://github.com/openoms/joininbox/archive/$JOININBOX_VERSION.tar.gz -O joininbox.tar.gz
+            sudo -u joinmarket wget $JOININBOX_UPGRADE_URL -O joininbox.tar.gz
             check_app_download joininbox.tar.gz joininbox $JOININBOX_VERSION "$JOININBOX_SHA256"
             sudo -u joinmarket tar -xvf joininbox.tar.gz
             sudo -u joinmarket rm joininbox.tar.gz
@@ -916,72 +922,6 @@ if should_install_app "joininbox" && [ "$DEBIAN_VERSION" -ge "12" ]; then
             else
                 echo "ERROR: JoinInBox install failed"
             fi
-        fi
-    fi
-fi
-
-# Upgrade JoininBox (Debian 10)
-echo "Upgrading JoinInBox..."
-if should_install_app "joininbox" && [ "$DEBIAN_VERSION" -lt "12" ]; then
-    if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
-        JOININBOX_UPGRADE_URL=https://github.com/openoms/joininbox/archive/$JOININBOX_VERSION.tar.gz
-        CURRENT=""
-        if [ -f $JOININBOX_VERSION_FILE ]; then
-            CURRENT=$(cat $JOININBOX_VERSION_FILE)
-        fi
-        if [ "$CURRENT" != "$JOININBOX_VERSION" ]; then
-            # Download and build JoinInBox
-            cd /home/joinmarket
-            
-            # Delete all non-hidden files
-            rm -rf *
-            rm -rf joininbox-*
-
-            sudo -u joinmarket wget $JOININBOX_UPGRADE_URL -O joininbox.tar.gz
-            check_app_download joininbox.tar.gz joininbox $JOININBOX_VERSION "$JOININBOX_SHA256"
-            sudo -u joinmarket tar -xvf joininbox.tar.gz
-            sudo -u joinmarket rm joininbox.tar.gz
-            mv joininbox-* joininbox
-
-            chmod -R +x ./joininbox/
-            sudo -u joinmarket cp -rf ./joininbox/scripts/* .
-
-            # Ensure config file exists
-            sudo -u joinmarket touch /home/joinmarket/joinin.conf
-
-            JM_ENV_VARS=""
-            if [ $IS_32_BIT = 1 ]; then
-                # Use Python3.7 on RP4 32-bit
-                JM_ENV_VARS="export JM_PYTHON=python3.7; "
-            elif [ "$DEBIAN_VERSION" -ge "12" ]; then
-                # Use newer python on Deb 12+ (required)
-                JM_ENV_VARS="export JM_PYTHON=python3.11; "
-            fi
-
-            # Patch JoininBox
-            if [ "$JOININBOX_VERSION" == "v0.8.4" ]; then
-                sed -i '219i\
-\
-  # PATCHING JM FOR OLDER LIBSODIUM (MYNODE) \
-  sed -i "s|libsodium-1.0.18|libsodium-1.0.20|g" /home/joinmarket/joinmarket-clientserver/install.sh \
-  sed -i "s|6f504490b342a4f8a4c4a02fc9b866cbef8622d5df4e5452b46be121e46636c1|ebb65ef6ca439333c2bb41a0c1990587288da07f6c7fd07cb3a18cc18d30ce19|g" /home/joinmarket/joinmarket-clientserver/install.sh \
-' /home/joinmarket/install.joinmarket.sh
-            fi
-            
-            # Install latest joinmarket commit to pick up bug fix preventing proper intall
-            # https://github.com/mynodebtc/mynode/issues/991
-            #sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket.sh --install commit" || true
-            
-            # Install version as expected from joininbox
-            sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket.sh --install install" || true
-
-            # Install joinmarket-api
-            sudo -u joinmarket bash -c "cd /home/joinmarket/; ${JM_ENV_VARS} ./install.joinmarket-api.sh on" || true            
-            
-            # Enable obwatcher service
-            systemctl enable ob-watcher
-
-            echo $JOININBOX_VERSION > $JOININBOX_VERSION_FILE
         fi
     fi
 fi
@@ -1069,28 +1009,18 @@ if should_install_app "specter" ; then
     if [ -f $SPECTER_VERSION_FILE ]; then
         CURRENT=$(cat $SPECTER_VERSION_FILE)
     fi
-    if [ "$CURRENT" != "$SPECTER_VERSION" ]; then
+    if ! has_app_python; then
+        echo "WARNING: Specter needs a 64-bit device with the Python for apps"
+    elif [ "$CURRENT" != "$SPECTER_VERSION" ] || ! venv_uses_app_python /opt/mynode/specter/env; then
         cd /opt/mynode
         rm -rf specter
         mkdir -p specter
         chown -R bitcoin:bitcoin specter
         cd specter
 
-        SPECTER_PYTHON_VER=python3.11
-        if [ "$DEBIAN_VERSION" -lt "12" ]; then
-            # Use default python to get 3.8
-            SPECTER_PYTHON_VER=python3
-        fi
-
         # Make venv
-        if [ ! -d env ]; then
-            sudo -u bitcoin $SPECTER_PYTHON_VER -m venv env
-        fi
-        source env/bin/activate
-        pip3 install ecdsa===0.13.3
-        pip3 install "sqlalchemy<2" # Needed for 2.1.1
-        pip3 install cryptoadvance.specter===$SPECTER_VERSION --upgrade
-        deactivate
+        sudo -u bitcoin mynode-uv venv --python $APP_PYTHON_MINOR_VERSION env
+        sudo -u bitcoin mynode-uv pip install --require-hashes --python env/bin/python -r /usr/share/mynode/venvs/specter.lock
 
         echo $SPECTER_VERSION > $SPECTER_VERSION_FILE
     fi

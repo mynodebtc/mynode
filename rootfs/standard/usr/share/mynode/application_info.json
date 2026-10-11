@@ -302,6 +302,7 @@
         "comment": "===== Keep shortname as joininbox so upgrades work =====",
         "name": "JoinMarket",
         "short_name": "joininbox",
+        "supported_archs": ["aarch64", "x86_64"],
         "author": {"name": "AdamISZ", "link":"https://github.com/AdamISZ"},
         "website": {"name": "GitHub", "link": "https://github.com/JoinMarket-Org/joinmarket-clientserver"},
         "description": [
@@ -389,6 +390,7 @@
     {
         "name": "Specter",
         "short_name": "specter",
+        "supported_archs": ["aarch64", "x86_64"],
         "short_description": "Multisig Tool",
         "author": {"name": "Specter", "link": "https://specter.solutions/"},
         "website": {"name": "GitHub", "link": "https://github.com/cryptoadvance/specter-desktop"},
