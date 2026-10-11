@@ -5,6 +5,8 @@
 
 export UV_PYTHON_INSTALL_DIR=/usr/local/lib/mynode/python
 export UV_MANAGED_PYTHON=1
+# Never pick up a uv.toml or pyproject.toml from the current directory (pass --config-file instead)
+export UV_NO_CONFIG=1
 
 if [ "$(id -u)" = "0" ]; then
     export UV_CACHE_DIR=/root/.cache/uv
