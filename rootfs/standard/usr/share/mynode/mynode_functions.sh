@@ -35,6 +35,10 @@ function has_app_python() {
     [ "$IS_64_BIT" = "1" ] && mynode-uv python find $APP_PYTHON_MINOR_VERSION > /dev/null 2>&1
 }
 
+function venv_uses_app_python() {
+    grep -q "^home = /usr/local/lib/mynode/python/" "$1/pyvenv.cfg" 2>/dev/null
+}
+
 function build_root_venv() {
     # Build /usr/local/lib/mynode/venv/<name> from scratch on the Python for apps, from
     # /usr/share/mynode/venvs/<name>.lock. Root-owned, for tools that run as root or admin.

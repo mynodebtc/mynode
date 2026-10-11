@@ -211,6 +211,7 @@
     {
         "name": "LNDManage",
         "short_name": "lndmanage",
+        "supported_archs": ["aarch64", "x86_64"],
         "author": {"name": "bitromortac", "link":""},
         "website": {"name": "GitHub", "link": "https://github.com/bitromortac/lndmanage"},
         "description": "lndmanage is a command line tool for advanced channel management of an LND node.",
@@ -416,6 +417,7 @@
     {
         "name": "CKBunker",
         "short_name": "ckbunker",
+        "supported_archs": ["aarch64", "x86_64"],
         "short_description": "Coldcard Signing Tool",
         "author": {"name": "Coldcard", "link": "https://coldcard.com/"},
         "website": {"name": "GitHub", "link": "https://github.com/Coldcard/ckbunker"},
@@ -493,6 +495,7 @@
     {
         "name": "Warden Terminal",
         "short_name": "wardenterminal",
+        "supported_archs": ["aarch64", "x86_64"],
         "short_description": "Bitcoin Dashboard",
         "author": {"name": "Alpha Zeta", "link": ""},
         "website": {"name": "GitHub", "link": "https://github.com/pxsocs/warden_terminal"},
@@ -510,6 +513,7 @@
     {
         "name": "PyBlock",
         "short_name": "pyblock",
+        "supported_archs": ["aarch64", "x86_64"],
         "short_description": "Dashboard",
         "author": {"name": "curly60e", "link": ""},
         "website": {"name": "GitHub", "link": "https://github.com/curly60e/pyblock"},

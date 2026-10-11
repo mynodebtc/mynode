@@ -1,0 +1,44 @@
+# pyBLOCK's requirements.txt (v1.1.9). lnpay-py needs requests to build (see pyblock.uv.toml)
+# pyblock.lock pins these and all of their dependencies with hashes. After changing this file or
+# the app version, regenerate it from the repo root with the command at the top of that file.
+#
+####### example-requirements.txt #######
+#
+###### Requirements without Version Specifiers ######
+art
+qrcode
+requests
+psutil
+simplejson
+certifi
+chardet
+idna
+python-gnupg
+requests
+sseclient-py
+urllib3
+lnpay-py
+xmltodict
+python-cfonts
+termcolor
+pycoingecko
+protobuf==3.13.0
+six==1.15.0
+robohash
+pillow
+numpy
+googleapis-common-protos==1.52.0
+pdfminer
+html2text
+#
+###### Requirements with Version Specifiers ######
+#   See https://www.python.org/dev/peps/pep-0440/#version-specifiers
+#
+###### Refer to other requirements files ######
+#
+#
+###### A particular file ######
+#
+###### Additional Requirements without Version Specifiers ######
+#   Same as 1st section, just here to show that you can put things in any order.
+#

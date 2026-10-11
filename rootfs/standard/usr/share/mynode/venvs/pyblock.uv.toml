@@ -1,0 +1,3 @@
+# lnpay-py imports requests in its setup.py
+[extra-build-dependencies]
+lnpay-py = ["requests"]

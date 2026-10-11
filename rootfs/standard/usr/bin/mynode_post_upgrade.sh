@@ -1191,7 +1191,9 @@ if should_install_app "ckbunker" ; then
     if [ -f $CKBUNKER_VERSION_FILE ]; then
         CURRENT=$(cat $CKBUNKER_VERSION_FILE)
     fi
-    if [ "$CURRENT" != "$CKBUNKER_VERSION" ]; then
+    if ! has_app_python; then
+        echo "WARNING: CKBunker needs a 64-bit device with the Python for apps"
+    elif [ "$CURRENT" != "$CKBUNKER_VERSION" ] || ! venv_uses_app_python /opt/mynode/ckbunker/env; then
         cd /opt/mynode
         rm -rf ckbunker
 
@@ -1202,14 +1204,10 @@ if should_install_app "ckbunker" ; then
         sudo -u bitcoin mv ckbunker-* ckbunker
         cd ckbunker
 
-        # Make venv
-        if [ ! -d env ]; then
-            sudo -u bitcoin python3 -m venv env
-        fi
-        source env/bin/activate
-        pip3 install -r requirements.txt
-        pip3 install --editable .
-        deactivate
+        # Make venv (compat mode puts the project folder on the path, since setup.py lists no modules)
+        sudo -u bitcoin mynode-uv venv --python $APP_PYTHON_MINOR_VERSION env
+        sudo -u bitcoin mynode-uv pip install --require-hashes --python env/bin/python -r /usr/share/mynode/venvs/ckbunker.lock
+        sudo -u bitcoin mynode-uv pip install --no-deps --python env/bin/python -C editable_mode=compat -e .
 
         echo $CKBUNKER_VERSION > $CKBUNKER_VERSION_FILE
     fi
@@ -1250,7 +1248,9 @@ if should_install_app "pyblock" ; then
     if [ -f $PYBLOCK_VERSION_FILE ]; then
         CURRENT=$(cat $PYBLOCK_VERSION_FILE)
     fi
-    if [ "$CURRENT" != "$PYBLOCK_VERSION" ]; then
+    if ! has_app_python; then
+        echo "WARNING: pyBLOCK needs a 64-bit device with the Python for apps"
+    elif [ "$CURRENT" != "$PYBLOCK_VERSION" ] || ! venv_uses_app_python /opt/mynode/pyblock/env; then
         cd /opt/mynode
         rm -rf pyblock
 
@@ -1262,13 +1262,9 @@ if should_install_app "pyblock" ; then
         cd pyblock
 
         # Make venv
-        if [ ! -d env ]; then
-            sudo -u bitcoin python3 -m venv env
-        fi
-        source env/bin/activate
-        pip3 install requests
-        pip3 install -r requirements.txt
-        deactivate
+        sudo -u bitcoin mynode-uv venv --python $APP_PYTHON_MINOR_VERSION env
+        sudo -u bitcoin mynode-uv pip install --require-hashes --config-file /usr/share/mynode/venvs/pyblock.uv.toml \
+            --python env/bin/python -r /usr/share/mynode/venvs/pyblock.lock
 
         # Copy default settings files
         sudo -u bitcoin mkdir -p config
@@ -1287,7 +1283,9 @@ if should_install_app "wardenterminal" ; then
     if [ -f $WARDENTERMINAL_VERSION_FILE ]; then
         CURRENT=$(cat $WARDENTERMINAL_VERSION_FILE)
     fi
-    if [ "$CURRENT" != "$WARDENTERMINAL_VERSION" ]; then
+    if ! has_app_python; then
+        echo "WARNING: Warden Terminal needs a 64-bit device with the Python for apps"
+    elif [ "$CURRENT" != "$WARDENTERMINAL_VERSION" ] || ! venv_uses_app_python /opt/mynode/wardenterminal/env; then
         cd /opt/mynode
         rm -rf wardenterminal
 
@@ -1299,12 +1297,8 @@ if should_install_app "wardenterminal" ; then
         cd wardenterminal
 
         # Make venv
-        if [ ! -d env ]; then
-            sudo -u bitcoin python3 -m venv env
-        fi
-        source env/bin/activate
-        pip3 install -r requirements.txt
-        deactivate
+        sudo -u bitcoin mynode-uv venv --python $APP_PYTHON_MINOR_VERSION env
+        sudo -u bitcoin mynode-uv pip install --require-hashes --python env/bin/python -r /usr/share/mynode/venvs/wardenterminal.lock
 
         echo $WARDENTERMINAL_VERSION > $WARDENTERMINAL_VERSION_FILE
     fi
