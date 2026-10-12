@@ -19,5 +19,17 @@ else
     fi
 fi
 
+# Faraday reads Bitcoin Core over RPC with the MyNode RPC password. It goes to sed on stdin with
+# tracing off (startup sources this script), so it stays out of command lines and logs.
+case $- in *x*) LIT_CONFIG_XTRACE=1 ;; *) LIT_CONFIG_XTRACE=0 ;; esac
+set +x
+if [ -s /mnt/hdd/mynode/settings/.btcrpcpw ]; then
+    printf 's/^faraday.bitcoin.password=.*/faraday.bitcoin.password=%s/\n' "$(cat /mnt/hdd/mynode/settings/.btcrpcpw)" | \
+        sed -i -f - /mnt/hdd/mynode/lit/lit.conf
+fi
+if [ "$LIT_CONFIG_XTRACE" = "1" ]; then
+    set -x
+fi
+
 
 chown bitcoin:bitcoin /mnt/hdd/mynode/lit/lit.conf
