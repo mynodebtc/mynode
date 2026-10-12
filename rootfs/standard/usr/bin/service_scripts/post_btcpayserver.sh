@@ -5,7 +5,7 @@ source /usr/share/mynode/mynode_functions.sh
 set -x
 
 BTCPAY_DIR=/mnt/hdd/mynode/btcpayserver
-BTCPAY_PASSWORD_TOOL="/usr/local/bin/python3 /usr/share/mynode/btcpay_password.py"
+BTCPAY_PASSWORD_TOOL="/usr/bin/mynode-python /usr/share/mynode/btcpay_password.py"
 
 # Take the BTCPay administrator account before anything else on the network can. Until a server
 # admin exists, BTCPay lets whoever asks first create one - through its registration page and

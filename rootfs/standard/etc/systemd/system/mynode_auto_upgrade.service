@@ -10,7 +10,7 @@ After=network-online.target mynode.service
 Type=oneshot
 # An upgrade can take hours on slower devices; never stop one partway
 TimeoutStartSec=infinity
-ExecStart=/usr/local/bin/python3 /usr/bin/mynode_auto_upgrade.py
+ExecStart=/usr/bin/mynode-python /usr/bin/mynode_auto_upgrade.py
 User=root
 Group=root
 StandardOutput=journal

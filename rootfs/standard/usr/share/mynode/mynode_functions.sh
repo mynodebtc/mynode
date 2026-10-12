@@ -40,21 +40,93 @@ function venv_uses_app_python() {
 }
 
 function build_root_venv() {
-    # Build /usr/local/lib/mynode/venv/<name> from scratch on the Python for apps, from
-    # /usr/share/mynode/venvs/<name>.lock. Root-owned, for tools that run as root or admin.
-    # On failure the venv is removed, so nothing runs half-installed.
-    local venv="/usr/local/lib/mynode/venv/$1"
-    if mynode-uv venv --clear --python $APP_PYTHON_MINOR_VERSION "$venv" && \
-       mynode-uv pip install --require-hashes --python "$venv/bin/python" -r "/usr/share/mynode/venvs/$1.lock"; then
-        return 0
+    # Build the venv /usr/local/lib/mynode/venv/<name> on the Python for apps, from
+    # /usr/share/mynode/venvs/<name>.lock (and <name>.pth when there is one), and check it by
+    # running the Python in $2. Root-owned, for tools that run as root or admin.
+    # Each build gets its own folder, named after its files, and venv/<name> is a link switched to
+    # it only after the check passes: a failed build changes nothing, and running processes keep
+    # their files. remove_unused_root_venvs removes the old folders at startup.
+    local name="$1"
+    local root=/usr/local/lib/mynode/venv
+    local lock="/usr/share/mynode/venvs/$name.lock"
+    local pth="/usr/share/mynode/venvs/$name.pth"
+    local hash=$(cat "$lock" "$pth" 2>/dev/null | sha256sum | cut -c1-12)
+    local dir="$name-$hash-py$APP_PYTHON_MINOR_VERSION"
+    local check="$2"
+    if [ -f "$pth" ]; then
+        check="$check; import sys; assert all(p in sys.path for p in open('$pth').read().split())"
     fi
-    rm -rf "$venv"
-    return 1
+
+    install -d -m 0755 -o root -g root $root
+    if ! (cd / && "$root/$dir/bin/python" -I -c "$check") > /dev/null 2>&1; then
+        rm -rf "$root/$dir"
+        if ! mynode-uv venv --python $APP_PYTHON_MINOR_VERSION "$root/$dir" || \
+           ! mynode-uv pip install --require-hashes --python "$root/$dir/bin/python" -r "$lock"; then
+            rm -rf "$root/$dir"
+            return 1
+        fi
+        if [ -f "$pth" ]; then
+            cp "$pth" "$root/$dir/lib/python$APP_PYTHON_MINOR_VERSION/site-packages/"
+        fi
+        if ! (cd / && "$root/$dir/bin/python" -I -c "$check"); then
+            echo "ERROR: The $name venv failed its check"
+            rm -rf "$root/$dir"
+            return 1
+        fi
+    fi
+
+    # Venvs built before they had their own folders are real folders here
+    if [ -d "$root/$name" ] && [ ! -L "$root/$name" ]; then
+        rm -rf "$root/$name-legacy"
+        mv -T "$root/$name" "$root/$name-legacy"
+    fi
+    ln -sfn "$dir" "$root/.$name.new"
+    mv -T "$root/.$name.new" "$root/$name"
+}
+
+function build_www_venv() {
+    # The venv for the web UI and MyNode's own scripts (see mynode-python)
+    build_root_venv www "import flask, pam, bcrypt, qrcode, PIL, psutil, pyudev, inotify_simple, prometheus_client, bitcoinrpc, requests, socks; from systemd import journal"
+}
+
+function remove_unused_root_venvs() {
+    # Remove the venv folders build_root_venv left behind, keeping the ones the links point at.
+    # Run at startup, when nothing still runs from them.
+    local root=/usr/local/lib/mynode/venv
+    local link
+    local dir
+    for link in $root/*; do
+        [ -L "$link" ] && [ -e "$link" ] || continue
+        local name=$(basename "$link")
+        local current=$(readlink "$link")
+        for dir in "$link"-*; do
+            [ -d "$dir" ] && [ ! -L "$dir" ] || continue
+            [ "$(basename "$dir")" != "$current" ] || continue
+            if [[ "$(basename "$dir")" =~ ^$name-([0-9a-f]{12}-py[0-9.]+|legacy)$ ]]; then
+                rm -rf "$dir"
+            fi
+        done
+    done
+}
+
+function remove_old_app_pythons() {
+    # Remove other patch versions of the Python for apps, once APP_PYTHON_VERSION is installed.
+    # Run at startup: running processes use the patch version they started with.
+    local dir
+    local ver
+    ls -d /usr/local/lib/mynode/python/cpython-$APP_PYTHON_VERSION-linux-* > /dev/null 2>&1 || return 0
+    for dir in /usr/local/lib/mynode/python/cpython-$APP_PYTHON_MINOR_VERSION.*-linux-*; do
+        [ -d "$dir" ] || continue
+        ver=$(basename $dir | cut -d- -f2)
+        if [ "$ver" != "$APP_PYTHON_VERSION" ]; then
+            mynode-uv python uninstall $ver || true
+        fi
+    done
 }
 
 function generate_app_password() {
     # Letters and digits only, so the password copies with a double-click
-    /usr/local/bin/python3 -c 'import secrets, string; a = string.ascii_letters + string.digits; print("".join(secrets.choice(a) for i in range(24)))'
+    /usr/bin/mynode-python -c 'import secrets, string; a = string.ascii_letters + string.digits; print("".join(secrets.choice(a) for i in range(24)))'
 }
 
 function has_app_password() {

@@ -19,7 +19,7 @@ if ls /mnt/hdd/mynode/ckbunker/bp-*.dat >/dev/null 2>&1; then
 elif [ -f $SETTINGS_FILE ] && ! has_app_password ckbunker; then
     CKBUNKER_PASSWORD=$(generate_app_password)
     export CKBUNKER_PASSWORD
-    /usr/local/bin/python3 - <<'EOF'
+    /usr/bin/mynode-python - <<'EOF'
 import os, re
 path = "/mnt/hdd/mynode/ckbunker/settings.yaml"
 with open(path) as f:

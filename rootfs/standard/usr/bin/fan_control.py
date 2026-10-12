@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/bin/mynode-python
 from time import sleep
 
 current_fan_speed=0

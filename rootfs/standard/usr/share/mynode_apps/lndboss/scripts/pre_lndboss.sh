@@ -7,7 +7,7 @@ source /usr/share/mynode/mynode_functions.sh
 # Work out whose login password is in auth.json: "default" (none, or the old "bolt" default),
 # "mynode" (the last one MyNode set) or "user" (set before MyNode generated passwords)
 export APP_PASSWORD_USER_SET
-PASSWORD_OWNER=$(/usr/local/bin/python3 - <<'EOF'
+PASSWORD_OWNER=$(/usr/bin/mynode-python - <<'EOF'
 import bcrypt, json, os
 DIR = "/mnt/hdd/mynode/lndboss/"
 # passwordHash of the last password MyNode set
@@ -51,7 +51,7 @@ if [ "$PASSWORD_OWNER" = "default" ] || { [ "$PASSWORD_OWNER" = "mynode" ] && ! 
     # a reinstall or reset
     LNDBOSS_PASSWORD=$(generate_app_password) || exit 1
     export LNDBOSS_PASSWORD
-    /usr/local/bin/python3 - <<'EOF' || exit 1
+    /usr/bin/mynode-python - <<'EOF' || exit 1
 import bcrypt, json, os
 password_hash = bcrypt.hashpw(os.environ["LNDBOSS_PASSWORD"].encode("utf-8"), bcrypt.gensalt()).decode("ascii")
 with open(os.open("/mnt/hdd/mynode/lndboss/auth.json", os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600), "w") as f:

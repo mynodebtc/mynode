@@ -9,7 +9,7 @@ cp -f app_data/docker-compose.yml docker-compose.yml
 # not been set up yet (one that has been set up is not readable here and is left alone).
 CONFIG_FILE=/mnt/hdd/mynode/lilywallet/lily-config-encrypted.txt
 if [ -f $CONFIG_FILE ]; then
-    CONFIG_FILE=$CONFIG_FILE /usr/local/bin/python3 - <<'EOF' || true
+    CONFIG_FILE=$CONFIG_FILE /usr/bin/mynode-python - <<'EOF' || true
 import json, os
 path = os.environ["CONFIG_FILE"]
 try:

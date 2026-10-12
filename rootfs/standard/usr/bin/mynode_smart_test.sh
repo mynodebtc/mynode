@@ -50,7 +50,7 @@ fi
 # "progress" prints the percent of the running NVMe self-test that remains, or nothing when none is
 # running. "result" prints the latest self-test log entry in the format smartctl uses for NVMe.
 nvme_self_test_log() {
-    $NVME self-test-log -o json $DRIVE 2>/dev/null | python3 -c '
+    $NVME self-test-log -o json $DRIVE 2>/dev/null | /usr/bin/mynode-python -c '
 import json, sys
 log = json.load(sys.stdin)
 if sys.argv[1] == "progress":

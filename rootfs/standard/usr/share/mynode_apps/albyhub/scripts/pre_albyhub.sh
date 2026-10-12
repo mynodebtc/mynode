@@ -39,7 +39,7 @@ ALBYHUB_URL=http://$ALBYHUB_IP:8080
 
 function albyhub_info() {
     curl -sf --max-time 5 $ALBYHUB_URL/api/info | \
-        /usr/local/bin/python3 -c 'import json, sys; v = json.load(sys.stdin).get(sys.argv[1]); print("" if v is None else str(v).lower())' "$1"
+        /usr/bin/mynode-python -c 'import json, sys; v = json.load(sys.stdin).get(sys.argv[1]); print("" if v is None else str(v).lower())' "$1"
 }
 
 # Prints the HTTP status. 401 means the hub does not accept the password.

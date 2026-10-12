@@ -8,7 +8,7 @@ After=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/python3 /usr/bin/mynode_premium_plus_connect.py
+ExecStart=/usr/bin/mynode-python /usr/bin/mynode_premium_plus_connect.py
 User=root
 Group=root
 StandardOutput=journal

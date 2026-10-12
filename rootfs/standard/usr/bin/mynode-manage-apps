@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/bin/mynode-python
 
 from argparse import ArgumentParser
 from application_info import *

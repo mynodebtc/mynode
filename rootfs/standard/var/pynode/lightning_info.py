@@ -1,6 +1,7 @@
 import copy
 import requests
 import subprocess
+import sys
 import os
 import time
 import re
@@ -507,7 +508,7 @@ def lnd_get_v2(path, timeout=10):
     return r.json()
 
 def gen_new_wallet_seed():
-    seed = to_string(subprocess.check_output("python3 /usr/bin/gen_seed.py", shell=True))
+    seed = to_string(subprocess.check_output([sys.executable, "/usr/bin/gen_seed.py"]))
     return seed
 
 def get_lnd_lit_password():

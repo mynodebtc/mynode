@@ -6,7 +6,7 @@ Description=USB Extras
 After=network.target mynode.service
 
 [Service]
-ExecStart=/usr/local/bin/python3 /usr/bin/mynode_usb_extras.py
+ExecStart=/usr/bin/mynode-python /usr/bin/mynode_usb_extras.py
 User=root
 Group=root
 StandardOutput=journal

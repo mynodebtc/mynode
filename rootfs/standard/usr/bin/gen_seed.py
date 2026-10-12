@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/bin/mynode-python
 import base64, codecs, json, requests
 import os
 

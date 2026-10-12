@@ -1,4 +1,7 @@
-# Python packages for the root interpreter (/usr/local/bin/python3), which runs the web UI.
+# Python packages for the root interpreter (/usr/local/bin/python3), which runs the web UI on
+# 32-bit devices, and on 64-bit devices until the venv for the web UI is built (see
+# rootfs/standard/usr/share/mynode/venvs/www.in, which holds the same versions).
+# Frozen with Python 3.8 for 32-bit devices: change www.in instead.
 # rootfs/standard/usr/share/mynode/mynode_pip3_requirements.txt pins these and all of their
 # dependencies. After changing this file, regenerate it from the repo root with the command at
 # the top of that file. Add -c <a device's pip freeze> to keep a device's current versions.

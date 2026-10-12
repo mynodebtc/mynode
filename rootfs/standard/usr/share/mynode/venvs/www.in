@@ -1,0 +1,22 @@
+# The web UI and MyNode's own Python scripts, run from their own venv
+# (/usr/local/lib/mynode/venv/www) on 64-bit devices through /usr/bin/mynode-python.
+# www.lock pins these and all of their dependencies with hashes. After changing this file,
+# regenerate it from the repo root with the command at the top of that file. The -c keeps the
+# versions the 32-bit devices run (mynode_pip3_requirements.txt); drop it once those are retired.
+bcrypt
+pysocks
+requests<=2.31.0
+cysystemd<2.0.0
+systemd
+flask>=2.2.2,<2.4.0
+pam
+python-bitcoinrpc
+prometheus_client
+psutil
+qrcode
+# qrcode makes its images with Pillow when installed
+pillow
+pyudev
+# python-pam imports six without declaring it
+six
+inotify_simple

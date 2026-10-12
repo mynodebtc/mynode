@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# The Python that runs the web UI and MyNode's own scripts: the venv /usr/local/lib/mynode/venv/www
+# on 64-bit devices, or the root Python (/usr/local/bin/python3) on 32-bit devices, when the venv
+# is not built, or when /home/bitcoin/.mynode/.www_use_python3 exists.
+VENV_PYTHON=/usr/local/lib/mynode/venv/www/bin/python
+if [ -x $VENV_PYTHON ] && [ ! -f /home/bitcoin/.mynode/.www_use_python3 ]; then
+    exec $VENV_PYTHON "$@"
+fi
+exec /usr/local/bin/python3 "$@"

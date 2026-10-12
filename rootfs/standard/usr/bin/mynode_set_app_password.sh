@@ -20,7 +20,7 @@ fi
 case "$APP" in
     thunderhub)
         export THUNDERHUB_PASSWORD="$PASSWORD"
-        /usr/local/bin/python3 - <<'EOF'
+        /usr/bin/mynode-python - <<'EOF'
 import bcrypt, os, re
 path = "/mnt/hdd/mynode/thunderhub/thub_config.yaml"
 password_hash = bcrypt.hashpw(os.environ["THUNDERHUB_PASSWORD"].encode("utf-8"), bcrypt.gensalt()).decode("ascii")
@@ -53,7 +53,7 @@ admin.save()
     lndboss)
         # LndBoss reads auth.json at each login, so no restart is needed
         export LNDBOSS_PASSWORD="$PASSWORD"
-        /usr/local/bin/python3 - <<'EOF'
+        /usr/bin/mynode-python - <<'EOF'
 import bcrypt, json, os
 path = "/mnt/hdd/mynode/lndboss/auth.json"
 try:

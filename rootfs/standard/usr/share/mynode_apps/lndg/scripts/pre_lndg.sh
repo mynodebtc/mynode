@@ -8,7 +8,7 @@ set -e
 # "mynode" (the last one MyNode set), "unknown" (never tracked, e.g. the random one LNDg sets
 # on a fresh install) or "user" (set from the MyNode settings page)
 export APP_PASSWORD_USER_SET
-PASSWORD_OWNER=$(/usr/local/bin/python3 - <<'EOF'
+PASSWORD_OWNER=$(/usr/bin/mynode-python - <<'EOF'
 import base64, hashlib, hmac, os, sqlite3
 DIR = "/mnt/hdd/mynode/lndg/"
 # Django hash of the last password MyNode set

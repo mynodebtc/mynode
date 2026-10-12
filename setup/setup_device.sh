@@ -480,16 +480,7 @@ if [ $IS_64_BIT = 1 ]; then
                 $TMP_INSTALL_PATH/usr/bin/mynode-uv python uninstall $ver || true
             fi
         done
-
-        # Glances runs from its own venv (glances.service does not start without it)
-        GLANCES_VENV=/usr/local/lib/mynode/venv/glances
-        if ! { $TMP_INSTALL_PATH/usr/bin/mynode-uv venv --clear --python $APP_PYTHON_MINOR_VERSION $GLANCES_VENV && \
-               $TMP_INSTALL_PATH/usr/bin/mynode-uv pip install --require-hashes --python $GLANCES_VENV/bin/python -r $TMP_INSTALL_PATH/usr/share/mynode/venvs/glances.lock; }; then
-            echo "WARNING: Failed to install Glances"
-            rm -rf /usr/local/lib/mynode/venv/glances
-        else
-            ln -sfn $GLANCES_VENV/bin/glances /usr/local/bin/glances
-        fi
+        # The venvs are built once MyNode's files are installed (below)
     else
         echo "WARNING: Failed to install Python $APP_PYTHON_VERSION for apps"
     fi
@@ -994,6 +985,21 @@ update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy || true
 rsync -r -K /tmp/upgrade/out/rootfs_*/* /
 sync
 sleep 1
+
+# Build the venvs for the web UI and Glances (64-bit only)
+source /usr/share/mynode/mynode_functions.sh
+if has_app_python; then
+    # The web UI and MyNode's scripts use the root Python until this venv is built
+    if ! build_www_venv; then
+        echo "WARNING: Failed to build the venv for the web UI"
+    fi
+    # Glances runs from its own venv (glances.service does not start without it)
+    if build_root_venv glances "import glances"; then
+        ln -sfn /usr/local/lib/mynode/venv/glances/bin/glances /usr/local/bin/glances
+    else
+        echo "WARNING: Failed to install Glances"
+    fi
+fi
 
 
 # Mark dynamic applications as defalt application

@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/mynode-python
 import time
 import os
 import subprocess

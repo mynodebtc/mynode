@@ -350,23 +350,21 @@ if ! skip_base_upgrades ; then
             cd ~
         fi
 
-        # Remove other patch versions, so venvs (which use the minor version) run APP_PYTHON_VERSION
+        # Other patch versions are removed at startup (remove_old_app_pythons)
         install -d -m 0755 -o root -g root /usr/local/lib/mynode
         if mynode-uv python install $APP_PYTHON_VERSION --no-bin; then
-            for dir in /usr/local/lib/mynode/python/cpython-$APP_PYTHON_MINOR_VERSION.*-linux-*; do
-                [ -d "$dir" ] || continue
-                ver=$(basename $dir | cut -d- -f2)
-                if [ "$ver" != "$APP_PYTHON_VERSION" ]; then
-                    mynode-uv python uninstall $ver || true
-                fi
-            done
+            # The web UI and MyNode's scripts use the root Python until this venv is built
+            if ! build_www_venv; then
+                echo "WARNING: Failed to build the venv for the web UI"
+            fi
 
             # Glances runs from its own venv (glances.service does not start without it)
-            if build_root_venv glances; then
+            if build_root_venv glances "import glances"; then
                 ln -sfn /usr/local/lib/mynode/venv/glances/bin/glances /usr/local/bin/glances
             else
                 echo "WARNING: Failed to install Glances"
-                rm -f /usr/local/bin/glances
+                # A venv from an earlier upgrade keeps running
+                [ -e /usr/local/lib/mynode/venv/glances ] || rm -f /usr/local/bin/glances
             fi
         else
             echo "WARNING: Failed to install Python $APP_PYTHON_VERSION for apps"
@@ -466,12 +464,13 @@ fi
 if should_install_app "lndmanage" ; then
     # Remove the copy installed in the web UI's Python before lndmanage had its own venv
     /usr/local/bin/python3 -m pip uninstall -y lndmanage || true
-    rm -f /usr/local/bin/lndmanage
-    if has_app_python && build_root_venv lndmanage; then
-        ln -s /usr/local/lib/mynode/venv/lndmanage/bin/lndmanage /usr/local/bin/lndmanage
+    if has_app_python && build_root_venv lndmanage "import lndmanage"; then
+        ln -sfn /usr/local/lib/mynode/venv/lndmanage/bin/lndmanage /usr/local/bin/lndmanage
         echo $LNDMANAGE_VERSION > $LNDMANAGE_VERSION_FILE
     else
         echo "WARNING: lndmanage not installed (needs a 64-bit device with the Python for apps)"
+        # A venv from an earlier upgrade keeps working
+        [ -e /usr/local/lib/mynode/venv/lndmanage ] || rm -f /usr/local/bin/lndmanage
     fi
 fi
 

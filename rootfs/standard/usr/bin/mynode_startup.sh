@@ -121,6 +121,10 @@ mkdir -p /mnt/usb_extras
 [ -d /usr/local/lib/python3.7/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.7/site-packages/pynode.pth
 [ -d /usr/local/lib/python3.8/site-packages ] && echo "/var/pynode" > /usr/local/lib/python3.8/site-packages/pynode.pth
 
+# Remove what upgrades replaced but left for the processes still using it
+remove_unused_root_venvs || true
+remove_old_app_pythons || true
+
 # Customize logo for resellers
 if [ -f /opt/mynode/custom/logo_custom.png ]; then
     cp -f /opt/mynode/custom/logo_custom.png /var/www/mynode/static/images/logo_custom.png 
@@ -149,7 +153,7 @@ do
 done
 
 # Check for USB driver updates before mount or clone tool opening
-/usr/local/bin/python3 /usr/bin/mynode_usb_driver_check.py
+/usr/bin/mynode-python /usr/bin/mynode_usb_driver_check.py
 
 # Clone tool was opened
 if [ -f /home/bitcoin/open_clone_tool ]; then
@@ -157,7 +161,7 @@ if [ -f /home/bitcoin/open_clone_tool ]; then
     echo "drive_clone" > $MYNODE_STATUS_FILE
     sync
     while [ 1 ]; do
-        python3 /usr/bin/clone_drive.py || true
+        /usr/bin/mynode-python /usr/bin/clone_drive.py || true
     done
 fi
 

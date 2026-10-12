@@ -40,7 +40,7 @@ fi
 function set_generated_rtl_password() {
     RTL_PASSWORD=$(generate_app_password)
     export RTL_PASSWORD
-    /usr/local/bin/python3 - <<'EOF'
+    /usr/bin/mynode-python - <<'EOF'
 import hashlib, os, re
 path = "/mnt/hdd/mynode/rtl/RTL-Config.json"
 digest = hashlib.sha256(os.environ["RTL_PASSWORD"].encode("utf-8")).hexdigest()

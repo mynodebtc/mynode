@@ -16,7 +16,7 @@ set +x
 # password login back on with the existing admin password, which the app page shows or the
 # user knows. A missing or default admin password gets a new one below instead.
 if has_app_password specter; then
-    /usr/local/bin/python3 - <<'EOF'
+    /usr/bin/mynode-python - <<'EOF'
 import binascii, hashlib, json, os, sys
 
 SPECTER_DIR = "/mnt/hdd/mynode/specter"
@@ -52,7 +52,7 @@ fi
 if ! has_app_password specter; then
     SPECTER_PASSWORD=$(generate_app_password) || exit 1
     export SPECTER_PASSWORD
-    /usr/local/bin/python3 - <<'EOF'
+    /usr/bin/mynode-python - <<'EOF'
 import binascii, hashlib, json, os, sys
 
 SPECTER_DIR = "/mnt/hdd/mynode/specter"
@@ -123,7 +123,7 @@ EOF
     unset SPECTER_PASSWORD
 elif ! is_app_password_user_set specter; then
     # Once the user changes the password inside Specter, it is no longer MyNode's
-    /usr/local/bin/python3 - <<'EOF'
+    /usr/bin/mynode-python - <<'EOF'
 import json, sys
 
 SPECTER_DIR = "/mnt/hdd/mynode/specter"

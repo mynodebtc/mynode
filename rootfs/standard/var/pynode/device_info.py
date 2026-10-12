@@ -1,5 +1,6 @@
 from config import *
 from threading import Timer
+import sys
 from werkzeug.routing import RequestRedirect
 from flask import flash, redirect
 from utilities import *
@@ -1545,7 +1546,7 @@ def reset_lnbits_super_user_pwd():
 #==================================
 BTCPAY_PASSWORD_FILE = "/mnt/hdd/mynode/btcpayserver/.app_password"
 
-BTCPAY_PASSWORD_TOOL = ["/usr/local/bin/python3", "/usr/share/mynode/btcpay_password.py"]
+BTCPAY_PASSWORD_TOOL = [sys.executable, "/usr/share/mynode/btcpay_password.py"]
 
 def get_btcpay_admins():
     """

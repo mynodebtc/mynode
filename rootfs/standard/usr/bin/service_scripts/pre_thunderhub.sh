@@ -27,7 +27,7 @@ if [ -f $THUB_CONFIG ]; then
     # Work out whose master password is in the config: "default" (template or the old "bolt"
     # default), "mynode" (the last one MyNode set) or "user" (changed by the user)
     export APP_PASSWORD_USER_SET
-    PASSWORD_OWNER=$(/usr/local/bin/python3 - <<'EOF'
+    PASSWORD_OWNER=$(/usr/bin/mynode-python - <<'EOF'
 import bcrypt, os, re
 DIR = "/mnt/hdd/mynode/thunderhub/"
 # Config value of the last password MyNode set
@@ -74,7 +74,7 @@ EOF
         # a reinstall or reset
         THUNDERHUB_PASSWORD=$(generate_app_password)
         export THUNDERHUB_PASSWORD
-        /usr/local/bin/python3 - <<'EOF'
+        /usr/bin/mynode-python - <<'EOF'
 import bcrypt, os, re
 path = "/mnt/hdd/mynode/thunderhub/thub_config.yaml"
 password_hash = bcrypt.hashpw(os.environ["THUNDERHUB_PASSWORD"].encode("utf-8"), bcrypt.gensalt()).decode("ascii")
