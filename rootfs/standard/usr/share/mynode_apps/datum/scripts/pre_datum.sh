@@ -10,6 +10,18 @@ DATUM_CONFIG=/mnt/hdd/mynode/datum/datum_config.json
 # Hash of the last password MyNode set, so it can be told apart from one the user chose
 SET_HASH_FILE=/mnt/hdd/mynode/datum/.app_password_hash
 
+# Keep the Bitcoin RPC password in the config current, in case .btcrpcpw was regenerated
+if [ -f $DATUM_CONFIG ] && [ -s /mnt/hdd/mynode/settings/.btcrpcpw ]; then
+    BTCPSW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
+    if [ "$(jq -r '.bitcoind.rpcpassword // ""' $DATUM_CONFIG)" != "$BTCPSW" ]; then
+        export BTCPSW
+        (umask 077
+         jq '.bitcoind.rpcpassword = env.BTCPSW' $DATUM_CONFIG > $DATUM_CONFIG.tmp
+         mv $DATUM_CONFIG.tmp $DATUM_CONFIG)
+    fi
+    unset BTCPSW
+fi
+
 function set_generated_datum_password() {
     DATUM_ADMIN_PASSWORD=$(generate_app_password)
     export DATUM_ADMIN_PASSWORD
