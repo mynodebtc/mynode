@@ -742,7 +742,8 @@ CURRENT=""
 if [ -f $LIT_VERSION_FILE ]; then
     CURRENT=$(cat $LIT_VERSION_FILE)
 fi
-if [ "$CURRENT" != "$LIT_VERSION" ]; then
+# Also install when frcli is missing (devices with LiT from before it was installed)
+if [ "$CURRENT" != "$LIT_VERSION" ] || [ ! -f /usr/local/bin/frcli ]; then
     # Download and install lit
     rm -rf /opt/download
     mkdir -p /opt/download
@@ -757,7 +758,7 @@ if [ "$CURRENT" != "$LIT_VERSION" ]; then
         # Install lit
         tar -xzf lightning-terminal-*.tar.gz
         mv $LIT_ARCH-$LIT_VERSION lightning-terminal
-        install -m 0755 -o root -g root -t /usr/local/bin lightning-terminal/lit*
+        install -m 0755 -o root -g root -t /usr/local/bin lightning-terminal/lit* lightning-terminal/frcli
 
         # Mark current version
         echo $LIT_VERSION > $LIT_VERSION_FILE

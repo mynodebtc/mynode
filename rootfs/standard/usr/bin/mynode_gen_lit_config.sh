@@ -5,6 +5,13 @@ if [ ! -f /mnt/hdd/mynode/settings/.lndalias ]; then
     echo "mynodebtc.com [MyNode]" > /mnt/hdd/mynode/settings/.lndalias
 fi
 
+# LiT makes its self-signed TLS certificate only when there is none (valid about 14 months) and
+# never renews it. Remove one expiring within 60 days, so LiT makes a new one when it starts.
+LIT_TLS_CERT=/mnt/hdd/mynode/lit/tls.cert
+if [ -f $LIT_TLS_CERT ] && ! openssl x509 -checkend 5184000 -noout -in $LIT_TLS_CERT > /dev/null 2>&1; then
+    rm -f $LIT_TLS_CERT /mnt/hdd/mynode/lit/tls.key
+fi
+
 # Generate Lightning Terminal Config
 if [ -f /mnt/hdd/mynode/settings/lit_custom.conf ]; then
     # Use Custom Config
