@@ -755,9 +755,13 @@ def reset_specter_config_page():
     flash("Specter Configuration Reset", category="message")
     return redirect("/settings")
 
-@mynode_settings.route("/settings/reset-albyhub-password")
+@mynode_settings.route("/settings/reset-albyhub-password", methods=['POST'])
 def reset_albyhub_password_page():
     check_logged_in()
+    pw = request.form.get('password')
+    if pw == None or pam.pam().authenticate("admin", pw) == False:
+        flash("Invalid Password", category="error")
+        return redirect("/settings")
 
     if not is_installed("albyhub"):
         flash("Alby Hub is not installed", category="error")

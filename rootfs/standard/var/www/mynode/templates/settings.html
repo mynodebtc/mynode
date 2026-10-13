@@ -367,9 +367,9 @@
 
                 $("#reset_albyhub_password_button").button();
                 $("#reset_albyhub_password_button").on("click", function() {
-                    if (confirm("Are you sure you want to delete Alby Hub's data and reset its password?")) {
-                        window.location.href='/settings/reset-albyhub-password';
-                    }
+                    openPasswordDialog("Reset Alby Hub Password",
+                                       "This deletes all Alby Hub data and sets it up again with a new password. Funds in LND are not affected. Enter your password to continue.",
+                                       "/settings/reset-albyhub-password");
                 });
 
                 $("#reset_app_passwords_button").button();
