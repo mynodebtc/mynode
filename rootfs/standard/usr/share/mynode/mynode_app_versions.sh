@@ -103,12 +103,12 @@ POOL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/pool_version_latest
 POOL_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/manifest-$POOL_VERSION.txt
 POOL_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/manifest-$POOL_VERSION.sig
 
-LIT_VERSION="v0.17.4-alpha"
+LIT_VERSION="v0.17.6"
 LIT_VERSION=$(get_app_version "$LIT_VERSION" "lit")
 LIT_VERSION_FILE=/home/bitcoin/.mynode/lit_version
 LIT_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lit_version_latest
 LIT_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-$LIT_VERSION.txt
-LIT_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-ViktorT-11-$LIT_VERSION.sig
+LIT_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-roasbeef-$LIT_VERSION.sig
 
 CHANTOOLS_VERSION="v0.11.3"
 CHANTOOLS_VERSION=$(get_app_version "$CHANTOOLS_VERSION" "chantools")
