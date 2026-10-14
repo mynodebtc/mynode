@@ -24,6 +24,10 @@ start_file_server:
 stop_file_server:
 	@/bin/bash scripts/stop_http_server.sh
 
+# Compare app versions with upstream releases (ARGS="-u" for updates only, "-d" for dependencies)
+.PHONY: check_app_versions
+check_app_versions:
+	@python3 scripts/check_app_versions.py $(ARGS)
 
 
 # Download base MyNode images
