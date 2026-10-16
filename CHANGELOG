@@ -1,3 +1,24 @@
+=== v0.3.50 ===
+- Released 10/15/26
+- Upgrade LND to v0.21.4
+- Upgrade Lightning Terminal to v0.17.6
+- Upgrade Alby Hub to v1.24.1
+- Upgrade LNDg to v1.11.1
+- Upgrade Canary to v1.7.0
+- Add optional automatic upgrades
+- Add timezone setting
+- Add Marketplace filters and badges
+- Add drive health (SMART) test and full filesystem check to Settings
+- Improve Bitcoin sync status with header progress
+- Keep Bitcoin wallets when resetting the blockchain
+- Set up Alby Hub with a generated password and add password reset
+- Ask for the password before sensitive actions
+- Move the web UI and Python apps to uv
+- Use Docker Compose v2
+- Remove Lily Wallet
+- Remove beta label from JAM
+- Bug Fixes
+
 === v0.3.49 ===
 - Released 09/25/26
 - Upgrade LNbits to v1.6.1
