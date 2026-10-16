@@ -494,6 +494,15 @@ def is_password_complex_enough(password):
 
     return (True, "")
 
+def set_admin_password(password):
+    # Returns True if the admin password (web UI and SSH) was changed
+    result = subprocess.run(["/usr/bin/mynode_chpasswd.sh"], input=password + "\n", universal_newlines=True,
+                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    if result.returncode != 0:
+        log_message("Error changing admin password ({}): {}".format(result.returncode, result.stdout.strip()))
+        return False
+    return True
+
 def hide_password_warning():
     if os.path.isfile("/mnt/hdd/mynode/settings/hide_password_warning"):
         return True
