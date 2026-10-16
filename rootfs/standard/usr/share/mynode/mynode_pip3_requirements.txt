@@ -56,7 +56,7 @@ systemd==0.17.1
     # via -r scripts/mynode_pip3_requirements.in
 typing-extensions==4.13.2
     # via qrcode
-urllib3==2.2.3
+urllib3==2.8.0
     # via requests
 werkzeug==3.0.6
     # via flask
