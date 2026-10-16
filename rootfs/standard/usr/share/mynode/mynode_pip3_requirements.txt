@@ -58,7 +58,7 @@ typing-extensions==4.13.2
     # via qrcode
 urllib3==2.2.3
     # via requests
-werkzeug==3.0.6
+werkzeug==3.1.9
     # via flask
 zipp==3.20.2
     # via importlib-metadata
