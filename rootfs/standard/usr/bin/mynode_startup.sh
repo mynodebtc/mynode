@@ -103,6 +103,12 @@ if [ ! -f /var/lib/mynode/.expanded_rootfs ]; then
     fi
 fi
 
+# Check for USB driver updates early, so a reboot to apply them happens before the web UI is in use.
+# The web UI waits for this before asking to change the default password. Checked again once the
+# drive is mounted.
+/usr/bin/mynode-python /usr/bin/mynode_usb_driver_check.py
+touch /tmp/.usb_driver_checked
+
 
 # Setup SD Card (if necessary)
 mkdir -p /run/tor
@@ -151,9 +157,6 @@ do
     < /dev/urandom tr -dc a-f0-9 | head -c${1:-16} > /home/bitcoin/.mynode/mynode_serial
     chmod 644 /home/bitcoin/.mynode/mynode_serial
 done
-
-# Check for USB driver updates before mount or clone tool opening
-/usr/bin/mynode-python /usr/bin/mynode_usb_driver_check.py
 
 # Clone tool was opened
 if [ -f /home/bitcoin/open_clone_tool ]; then
@@ -231,6 +234,10 @@ do
     mount_drive.tcl || true
     sleep 5s
 done
+
+# Check USB drivers again now that the drive's settings can be read. A reboot here comes before the
+# network choice and the rest of setup.
+/usr/bin/mynode-python /usr/bin/mynode_usb_driver_check.py
 
 
 # Check for docker reset

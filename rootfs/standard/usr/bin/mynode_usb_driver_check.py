@@ -17,10 +17,8 @@ def set_args(a):
     args = a
 
 def is_uas_forced():
-    if os.path.isfile("/home/bitcoin/.mynode/uas_usb_enabled") or \
-       os.path.isfile("/mnt/hdd/mynode/settings/uas_usb_enabled"):
-        return True
-    return False
+    # Also copies the drive's setting to the SD card, so the check before the drive mounts sees it
+    return settings_file_exists("uas_usb_enabled")
 
 def device_checks_uas():
     d = get_device_type()

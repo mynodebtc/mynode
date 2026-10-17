@@ -235,9 +235,11 @@ DEFAULT_PASSWORD_ALLOWED_ENDPOINTS = [
     "static",
     "page_login",
     "page_logout",
-    "page_change_default_password",
     "page_https_info",
 ]
+
+# Created by startup after its first USB driver check, which can reboot the device
+USB_DRIVER_CHECKED_FILE = "/tmp/.usb_driver_checked"
 
 @app.before_request
 def block_default_password():
@@ -249,6 +251,20 @@ def block_default_password():
         return None
 
     if not is_using_default_password():
+        return None
+
+    # Wait to ask for the new password until the device can no longer reboot during startup
+    if not os.path.isfile(USB_DRIVER_CHECKED_FILE) or is_shutting_down():
+        templateData = {
+            "title": "Starting",
+            "header_text": "Starting...",
+            "subheader_text": "",
+            "refresh_rate": 5,
+            "ui_settings": read_ui_settings()
+        }
+        return render_template('state.html', **templateData)
+
+    if request.endpoint == "page_change_default_password":
         return None
 
     return redirect("/change-default-password")

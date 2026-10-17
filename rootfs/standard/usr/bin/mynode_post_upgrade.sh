@@ -1381,7 +1381,6 @@ systemctl enable lndconnect
 systemctl enable lit
 systemctl enable firewall
 systemctl enable invalid_block_check
-systemctl enable usb_driver_check
 systemctl enable docker_images
 systemctl enable glances
 systemctl enable webssh2
@@ -1405,11 +1404,13 @@ systemctl disable lnd_admin > /dev/null 2>&1 || true
 systemctl disable lnd_unlock > /dev/null 2>&1 || true
 systemctl disable dhcpcd > /dev/null 2>&1 || true
 systemctl disable dphys-swapfile > /dev/null 2>&1 || true
+systemctl disable usb_driver_check > /dev/null 2>&1 || true
 rm -f /etc/systemd/system/bitcoind.service
 rm -f /etc/systemd/system/btc_rpc_explorer.service
 rm -f /etc/systemd/system/mempoolspace.service
 rm -f /etc/systemd/system/poold.service
 rm -f /etc/systemd/system/loopd.service
+rm -f /etc/systemd/system/usb_driver_check.service
 
 # Lily Wallet has been removed - stop it once (it can be started again from its app page)
 if [ ! -f /home/bitcoin/.mynode/.lilywallet_stopped ]; then

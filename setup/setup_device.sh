@@ -1051,7 +1051,6 @@ systemctl enable redis-server
 systemctl enable rtl
 systemctl enable tor
 systemctl enable invalid_block_check
-systemctl enable usb_driver_check
 systemctl enable docker_images
 systemctl enable glances
 #systemctl enable netdata # DISABLED BY DEFAULT

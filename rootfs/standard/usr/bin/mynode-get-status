@@ -37,4 +37,4 @@ printStatus caravan lnbits specter thunderhub | column -t
 echo -e "\n::Background-Services::"
 printStatus check_in corsproxy_btcrpc docker_images drive_check \
 			invalid_block_check lnd_admin_files lnd_backup loop pool lit \
-			mynode rotate_logs tls_proxy usb_driver_check | column -t
+			mynode rotate_logs tls_proxy | column -t
