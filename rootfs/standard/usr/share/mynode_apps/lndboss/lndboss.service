@@ -24,7 +24,8 @@ ExecStart=/usr/bin/docker run --rm \
   --env BOS_DEFAULT_LND_SOCKET="host.docker.internal:10009" \
   --user ${UID}:${GID} \
   --volume /mnt/hdd/mynode/lndboss:/.bosgui \
-  --volume /mnt/hdd/mynode/lnd:/.lnd:ro \
+  --mount type=bind,src=/mnt/hdd/mynode/lnd/tls.cert,dst=/.lnd/tls.cert,readonly \
+  --mount type=bind,src=/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/admin.macaroon,dst=/.lnd/data/chain/bitcoin/mainnet/admin.macaroon,readonly \
   --add-host=host.docker.internal:host-gateway \
   lndboss
 ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_lndboss.sh ]; then /bin/bash /usr/bin/service_scripts/post_lndboss.sh; fi'
