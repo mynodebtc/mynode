@@ -63,7 +63,7 @@ Each MyNode device comes with a number of wonderful features.
 - VPN for Remote Access
 - Bitcoin CLI
 - LN Channel Backup
-- Docker support (containers inside: Netdata Monitor, Glances, WebSSH2 (Linux Terminal), BTCPay Server)
+- Docker support (containers inside: Netdata Monitor, Glances, BTCPay Server)
 - Simple UI / Web Interface
 - Dark Mode interface
 - Dedicated hardware keeps you constantly and securely connected!

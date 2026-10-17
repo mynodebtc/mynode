@@ -10,8 +10,10 @@ After=www.service
 WorkingDirectory=/opt/mynode/wetty
 
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
-ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_wetty.sh ]; then /bin/bash /usr/bin/service_scripts/pre_wetty.sh; fi'
+# Runs as root ("+") to read the Tor address and write the allowed origins file
+ExecStartPre=+/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_wetty.sh ]; then /bin/bash /usr/bin/service_scripts/pre_wetty.sh; fi'
 Environment=NODE_ENV=production
+EnvironmentFile=-/opt/mynode/wetty/.allowed_origins
 ExecStart=/usr/bin/node build/main.js -p 2224 --host 0.0.0.0 -b /
 ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_wetty.sh ]; then /bin/bash /usr/bin/service_scripts/post_wetty.sh; fi'
 #ExecStop=TODO

@@ -12,7 +12,7 @@ mynode-manage-apps stop
 
 # Stop additional services
 date
-systemctl stop glances lndhub netdata rtl webssh2 whirlpool dojo
+systemctl stop glances lndhub netdata rtl whirlpool dojo
 date
 systemctl stop btcpayserver btcrpcexplorer specter caravan lnbits
 date

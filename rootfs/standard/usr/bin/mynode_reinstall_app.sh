@@ -77,10 +77,6 @@ elif [ "$APP" = "nodejs" ]; then
 elif [ "$APP" = "ufw" ]; then
     apt-get purge -y ufw
     apt-get install -y ufw
-elif [ "$APP" = "webssh2" ]; then
-    rm -f /mnt/hdd/mynode/settings/webssh2_version
-    systemctl stop webssh2
-    remove_docker_images_by_name 'webssh2'
 elif [ "$APP" = "vpn" ]; then
     rm -rf /etc/openvpn
     rm -rf /etc/.pivpn

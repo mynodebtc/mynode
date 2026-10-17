@@ -1054,7 +1054,6 @@ systemctl enable invalid_block_check
 systemctl enable docker_images
 systemctl enable glances
 #systemctl enable netdata # DISABLED BY DEFAULT
-systemctl enable webssh2
 systemctl enable rotate_logs
 systemctl enable corsproxy_btcrpc
 systemctl enable usb_extras

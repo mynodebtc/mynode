@@ -77,11 +77,8 @@
                 })
 
                 $("#linux_terminal").on("click", function() {
-                    port="2222";
-                    if (location.protocol == "https:") {
-                        port="2223";
-                    }
-                    url = location.protocol+'//'+location.hostname+':'+port+'/ssh/host/'+"{{local_ip}}";
+                    // The terminal only works over HTTPS
+                    url = 'https://'+location.hostname+':2225';
                     window.open(url,'_blank');
                 })
 

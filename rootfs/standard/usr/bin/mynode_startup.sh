@@ -522,15 +522,6 @@ cp -f /usr/share/mynode/netdata-compose.yml /opt/mynode/netdata/netdata-compose.
 echo "NETDATA_VERSION=${NETDATA_VERSION}" > /opt/mynode/netdata/.env
 cp -f /usr/share/mynode/netdata.conf /opt/mynode/netdata/netdata.conf
 
-# Setup webssh2
-mkdir -p /opt/mynode/webssh2
-touch /opt/mynode/webssh2/config.json
-chmod 600 /opt/mynode/webssh2/config.json
-set +x
-WEBSSH2_SESSION_SECRET=$(openssl rand -hex 32)
-sed "s/\"secret\": \"mysecret\"/\"secret\": \"$WEBSSH2_SESSION_SECRET\"/" /usr/share/mynode/webssh2_config.json > /opt/mynode/webssh2/config.json
-set -x
-
 # Setup lnbits
 mkdir -p /opt/mynode/lnbits
 # Folder needs to exist for service to run, other setup done in pre_lnbits.sh

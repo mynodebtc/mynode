@@ -3,8 +3,6 @@ HiddenServiceDir /var/lib/tor/mynode/
 HiddenServiceVersion 3
 HiddenServicePort 80 127.0.0.1:80
 HiddenServicePort 443 127.0.0.1:443
-HiddenServicePort 2222 127.0.0.1:2222
-HiddenServicePort 2223 127.0.0.1:2223
 #HiddenServicePort 3000 127.0.0.1:3000        # Do NOT enable - only use separate service (LNDHub)
 #HiddenServicePort 3001 127.0.0.1:3001        # Do NOT enable - only use separate service (LNDHub)
 HiddenServicePort 3002 127.0.0.1:3002

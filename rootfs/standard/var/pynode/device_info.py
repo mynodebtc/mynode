@@ -1208,7 +1208,6 @@ def reset_docker():
     touch("/home/bitcoin/reset_docker")
 
     # Reset marker files
-    os.system("rm -f /mnt/hdd/mynode/settings/webssh2_version")
     os.system("rm -f /mnt/hdd/mynode/settings/mempool_version")
     os.system("rm -f /mnt/hdd/mynode/settings/dojo_version")
     os.system("rm -f /mnt/hdd/mynode/settings/jam_version")

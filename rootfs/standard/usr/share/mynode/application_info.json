@@ -547,18 +547,6 @@
         "homepage_order": 43
     },
     {
-        "name": "Web SSH",
-        "short_name": "webssh2",
-        "short_description": "SSH Utility",
-        "author": {"name": "Bill Church", "link": ""},
-        "website": {"name": "GitHub", "link": "https://github.com/billchurch/webssh2"},
-        "description": [
-            "Web SSH Client using ssh2, socket.io, xterm.js, and express",
-            "A bare bones example of an HTML5 web-based terminal emulator and SSH client. We use SSH2 as a client on a host to proxy a Websocket / Socket.io connection to a SSH2 server."
-        ],
-        "category": "device_management"
-    },
-    {
         "name": "Netdata",
         "short_name": "netdata",
         "short_description": "Device Monitor",

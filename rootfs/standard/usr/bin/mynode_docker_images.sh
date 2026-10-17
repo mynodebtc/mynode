@@ -73,7 +73,6 @@ while true; do
 
         # Mark mempool and dojo for re-install
         #  Must reset version for Dojo or it will fully re-install and break rather than 'upgrade'
-        echo "reset" > $WEBSSH2_VERSION_FILE
         echo "reset" > $NETDATA_VERSION_FILE
         echo "reset" > $MEMPOOL_VERSION_FILE
         echo "reset" > $DOJO_VERSION_FILE
@@ -104,34 +103,6 @@ while true; do
         fi
         touch /tmp/need_application_refresh
     fi
-    
-
-    # Upgrade WebSSH2
-    echo "Checking for new webssh2..."
-    WEBSSH2_UPGRADE_URL=https://github.com/billchurch/webssh2/archive/${WEBSSH2_VERSION}.tar.gz
-    CURRENT=""
-    if [ -f $WEBSSH2_VERSION_FILE ]; then
-        CURRENT=$(cat $WEBSSH2_VERSION_FILE)
-    fi
-    if [ "$CURRENT" != "$WEBSSH2_VERSION" ]; then
-        remove_docker_images_by_name 'webssh2'
-
-        cd /tmp/
-        rm -rf webssh2
-        wget $WEBSSH2_UPGRADE_URL -O webssh2.tar.gz
-        if check_app_download webssh2.tar.gz webssh2 "$WEBSSH2_VERSION" "$WEBSSH2_SHA256"; then
-            tar -xvf webssh2.tar.gz
-            rm webssh2.tar.gz
-            mv webssh2-* webssh2
-            cd webssh2
-            # A build cache that points at missing layers fails every build: clear it and retry
-            docker build -t webssh2 . || { docker builder prune -af; docker build -t webssh2 .; }
-            if [ $? == 0 ]; then
-                echo $WEBSSH2_VERSION > $WEBSSH2_VERSION_FILE
-            fi
-        fi
-    fi
-    touch /tmp/need_application_refresh
 
 
     # Upgrade mempool

@@ -72,7 +72,6 @@ def page_tor():
     # v3 Services
     v3_services = []
     v3_services.append(create_v3_service("MyNode Web", general_onion_url, "80", True, ""))
-    v3_services.append(create_v3_service("WebSSH", general_onion_url, "2222 / 2223", True, "", app="webssh2"))
     v3_services.append(create_v3_service("LND Hub", lndhub_onion_url, "80 / 443", True, "", app="lndhub"))
     v3_services.append(create_v3_service("BTC RPC Explorer", general_onion_url, "3002 / 3003", False, "", app="btcrpcexplorer"))
     v3_services.append(create_v3_service("Ride the Lightning", general_onion_url, "3010 / 3011", True, "", app="rtl"))

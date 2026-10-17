@@ -287,12 +287,6 @@ NETDATA_VERSION=$(get_app_version "$NETDATA_VERSION" "netdata")
 NETDATA_VERSION_FILE=/mnt/hdd/mynode/settings/netdata_version
 NETDATA_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/netdata_version_latest
 
-WEBSSH2_VERSION="v0.2.10-0"
-WEBSSH2_SHA256="v0.2.10-0 f587b2609da639138c8fcd728b665122ac6fa23ea55185250e93b2fe80b8382b"
-WEBSSH2_VERSION=$(get_app_version "$WEBSSH2_VERSION" "webssh2")
-WEBSSH2_VERSION_FILE=/mnt/hdd/mynode/settings/webssh2_version
-WEBSSH2_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/webssh2_version_latest
-
 RATHOLE_VERSION="v0.4.7"
 RATHOLE_VERSION=$(get_app_version "$RATHOLE_VERSION" "rathole")
 RATHOLE_VERSION_FILE=/home/bitcoin/.mynode/rathole_version

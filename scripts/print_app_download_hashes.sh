@@ -16,7 +16,7 @@ DOCKER_IMAGES_FILE=rootfs/standard/usr/bin/mynode_docker_images.sh
 MARKETPLACE_DIR=rootfs/standard/usr/share/mynode_apps
 
 # Variable prefixes, matching <APP>_VERSION in VERSIONS_FILE and <APP>_UPGRADE_URL in UPGRADE_FILE, DOCKER_IMAGES_FILE or VERSIONS_FILE
-APPS="LNDHUB THUNDERHUB CARAVAN CORSPROXY JOININBOX BTCRPCEXPLORER CKBUNKER SPHINXRELAY PYBLOCK WARDENTERMINAL LOG2RAM WEBSSH2"
+APPS="LNDHUB THUNDERHUB CARAVAN CORSPROXY JOININBOX BTCRPCEXPLORER CKBUNKER SPHINXRELAY PYBLOCK WARDENTERMINAL LOG2RAM"
 
 # Marketplace app short names, using latest_version and download_source_url from their JSON
 MARKETPLACE_APPS="astral datum lndboss lndg nostrrsrelay publicpool publicpoolui wetty"

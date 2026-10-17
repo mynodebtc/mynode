@@ -1096,6 +1096,10 @@ rm -f /usr/bin/ngrok
 rm -rf /tmp/ngrok*
 
 
+# Stop WebSSH2 (replaced by the Terminal app)
+systemctl disable --now webssh2 || true
+
+
 # Upgrade CKbunker
 if should_install_app "ckbunker" ; then
     CURRENT=""
@@ -1383,7 +1387,6 @@ systemctl enable firewall
 systemctl enable invalid_block_check
 systemctl enable docker_images
 systemctl enable glances
-systemctl enable webssh2
 systemctl enable tor
 systemctl enable loop
 systemctl enable pool
