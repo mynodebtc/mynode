@@ -1165,7 +1165,7 @@
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Set App Passwords</div>
-            Some apps have no way to set their own login password. Click a button below and enter a new password to set it directly.
+            Click a button below and enter a new password to set an app's login password directly. The app page will then show it as user configured.
             <br/>
             {% for app, name in settable_password_apps.items() %}
             <button class="set_app_password_button ui-button ui-widget ui-corner-all settings_button" data-app="{{app}}" data-name="{{name}}">Set {{name}} Password</button>
@@ -1469,6 +1469,15 @@
             This will delete your RTL configuration and restart the application.
             <br/>
             <a href="/settings/reset-rtl-config" class="ui-button ui-widget ui-corner-all settings_button">Reset Configuration</a>
+
+            {% if "rtl" in settable_password_apps %}
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Reset RTL Password</div>
+            This will set a new RTL login password and restart the application.
+            <br/>
+            <button class="set_app_password_button ui-button ui-widget ui-corner-all settings_button" data-app="rtl" data-name="RTL">Reset Password</button>
+            {% endif %}
         </div>
 
 
@@ -1480,6 +1489,15 @@
             This will delete your Thunderhub configuration and restart the application.
             <br/>
             <a href="/settings/reset-thunderhub-config" class="ui-button ui-widget ui-corner-all settings_button">Reset Configuration</a>
+
+            {% if "thunderhub" in settable_password_apps %}
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Reset Thunderhub Password</div>
+            This will set a new Thunderhub login password and restart the application.
+            <br/>
+            <button class="set_app_password_button ui-button ui-widget ui-corner-all settings_button" data-app="thunderhub" data-name="Thunderhub">Reset Password</button>
+            {% endif %}
         </div>
 
 
@@ -2007,7 +2025,7 @@
 
         <div id="set-app-password-dialog" title="Set App Password" style="display:none;">
             <form id="set_app_password_form" name="set_app_password_form" action="/settings/set-app-password" method="POST">
-                <p>This will set the <span id="set_app_password_name"></span> login password directly, since it has no way to change it from its own UI.</p>
+                <p>This will set the <span id="set_app_password_name"></span> login password directly. The app page will show it as user configured instead of displaying it.</p>
                 <input type="hidden" name="app" id="set_app_password_app" value="">
                 <b>New Password:</b>
                 <br/>

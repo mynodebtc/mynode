@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Set a custom login password for an app that has no way to change it from its own UI.
-# Usage: mynode_set_app_password.sh <thunderhub|lndg|lndboss>   (new password read from stdin)
+# Set a custom login password for an app from Settings.
+# Usage: mynode_set_app_password.sh <rtl|thunderhub|lndg|lndboss>   (new password read from stdin)
 
 source /usr/share/mynode/mynode_functions.sh
 
@@ -18,6 +18,25 @@ fi
 # The user already knows this password, so unlike a generated one it is not saved for the app
 # page to show; the page shows it as user configured instead.
 case "$APP" in
+    rtl)
+        export RTL_PASSWORD="$PASSWORD"
+        /usr/bin/mynode-python - <<'EOF'
+import hashlib, os, re
+path = "/mnt/hdd/mynode/rtl/RTL-Config.json"
+digest = hashlib.sha256(os.environ["RTL_PASSWORD"].encode("utf-8")).hexdigest()
+with open(path) as f:
+    text = f.read()
+text, count = re.subn(r'"multiPassHashed":.*', lambda m: '"multiPassHashed": "{}",'.format(digest), text)
+if count == 0:
+    raise SystemExit("multiPassHashed not found in " + path)
+with open(path, "w") as f:
+    f.write(text)
+EOF
+        save_app_password_user_set rtl
+        unset RTL_PASSWORD
+        chown -R bitcoin:bitcoin /mnt/hdd/mynode/rtl
+        systemctl try-restart --no-block rtl
+        ;;
     thunderhub)
         export THUNDERHUB_PASSWORD="$PASSWORD"
         /usr/bin/mynode-python - <<'EOF'
