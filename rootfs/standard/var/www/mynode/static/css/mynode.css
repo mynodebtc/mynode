@@ -1447,3 +1447,39 @@ body .ui-tooltip.ui-widget {
     border-radius: 6px;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
 }
+
+/* Dialog forms with labeled password fields */
+.password_form label {
+    display: block;
+    margin: 14px 0 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
+.password_form input[type=password] {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 10px;
+    font-size: 15px;
+    border: 1px solid #c8c8c8;
+    border-radius: 6px;
+}
+.password_form input[type=password]:focus {
+    outline: none;
+    border-color: #f19c00;
+    box-shadow: 0 0 0 3px #f19c0033;
+}
+.password_form_intro {
+    margin: 4px 0 4px;
+    line-height: 1.45;
+}
+.password_form_divider {
+    margin: 18px 0 4px;
+    border-bottom: 1px solid #ffb70054;
+}
+.password_form_error {
+    min-height: 18px;
+    margin: 10px 0 0;
+    font-size: 13px;
+    color: #c62828;
+}

@@ -382,24 +382,33 @@
                 function setAppPassword() {
                     $("#set_app_password_form").submit();
                 }
+                function setAppPasswordError(field, message) {
+                    $("#set_app_password_error").text(message);
+                    field.trigger("focus");
+                    return false;
+                }
                 // Runs for both the dialog button and the Enter key
                 $("#set_app_password_form").on("submit", function() {
+                    if ($("#set_app_password_mynode").val() == "") {
+                        return setAppPasswordError($("#set_app_password_mynode"), "Enter your MyNode password.");
+                    }
                     if ($("#set_app_password1").val() == "") {
-                        alert("Password cannot be empty");
-                        return false;
+                        return setAppPasswordError($("#set_app_password1"), "Enter a new password.");
                     }
                     if ($("#set_app_password1").val() != $("#set_app_password2").val()) {
-                        alert("Passwords do not match");
-                        return false;
+                        return setAppPasswordError($("#set_app_password2"), "The new passwords do not match.");
                     }
                     set_app_password_dialog.dialog( "close" );
                     return true;
+                });
+                $("#set_app_password_form input").on("input", function() {
+                    $("#set_app_password_error").text("");
                 });
                 set_app_password_dialog = $( "#set-app-password-dialog" ).dialog({
                     autoOpen: false,
                     resizable: false,
                     height: "auto",
-                    width: 600,
+                    width: Math.min(460, $(window).width() - 32),
                     modal: true,
                     position: { my: "center top", at: "center top", of: window, collision: "none" },
                     buttons: {
@@ -409,14 +418,14 @@
                         }
                     },
                     open: function() {
-                        $("#set_app_password1").val("");
-                        $("#set_app_password2").val("");
-                        $("#set_app_password_mynode").val("");
+                        $("#set_app_password_form input[type=password]").val("");
+                        $("#set_app_password_error").text("");
+                        $("#set_app_password_mynode").trigger("focus");
                     }
                 });
                 $(".set_app_password_button").on("click", function() {
                     $("#set_app_password_app").val($(this).data("app"));
-                    $("#set_app_password_name").text($(this).data("name"));
+                    $(".set_app_password_name").text($(this).data("name"));
                     set_app_password_dialog.dialog("option", "title", "Set " + $(this).data("name") + " Password");
                     set_app_password_dialog.dialog( "open" );
                 });
@@ -2024,20 +2033,25 @@
         </div>
 
         <div id="set-app-password-dialog" title="Set App Password" style="display:none;">
-            <form id="set_app_password_form" name="set_app_password_form" action="/settings/set-app-password" method="POST">
-                <p>This will set the <span id="set_app_password_name"></span> login password directly. The app page will show it as user configured instead of displaying it.</p>
+            <form id="set_app_password_form" class="password_form" name="set_app_password_form" action="/settings/set-app-password" method="POST">
+                <p class="password_form_intro">
+                    Choose a new login password for <span class="set_app_password_name"></span>.
+                    The app page will show it as user configured instead of displaying it.
+                </p>
                 <input type="hidden" name="app" id="set_app_password_app" value="">
-                <b>New Password:</b>
-                <br/>
-                <input type="password" name="password1" id="set_app_password1" value="" class="text ui-widget-content ui-corner-all">
-                <br/>
-                <b>Repeat Password:</b>
-                <br/>
-                <input type="password" name="password2" id="set_app_password2" value="" class="text ui-widget-content ui-corner-all">
-                <br/>
-                <b>MyNode Password:</b>
-                <br/>
-                <input type="password" name="password" id="set_app_password_mynode" value="" class="text ui-widget-content ui-corner-all">
+
+                <label for="set_app_password_mynode">MyNode password</label>
+                <input type="password" name="password" id="set_app_password_mynode" autocomplete="current-password" class="ui-widget-content ui-corner-all">
+
+                <div class="password_form_divider"></div>
+
+                <label for="set_app_password1">New <span class="set_app_password_name"></span> password</label>
+                <input type="password" name="password1" id="set_app_password1" autocomplete="new-password" class="ui-widget-content ui-corner-all">
+
+                <label for="set_app_password2">Confirm new password</label>
+                <input type="password" name="password2" id="set_app_password2" autocomplete="new-password" class="ui-widget-content ui-corner-all">
+
+                <p id="set_app_password_error" class="password_form_error" role="alert"></p>
 
                 <!-- Allow form submission with keyboard without duplicating the dialog button -->
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
