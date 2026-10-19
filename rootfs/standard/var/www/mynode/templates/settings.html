@@ -1170,17 +1170,6 @@
             <br/>
             <button id="reset_app_passwords_button" class="ui-button ui-widget ui-corner-all settings_button">Reset Default Passwords</button>
 
-            {% if settable_password_apps %}
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Set App Passwords</div>
-            Click a button below and enter a new password to set an app's login password directly. The app page will then show it as user configured.
-            <br/>
-            {% for app, name in settable_password_apps.items() %}
-            <button class="set_app_password_button ui-button ui-widget ui-corner-all settings_button" data-app="{{app}}" data-name="{{name}}">Set {{name}} Password</button>
-            {% endfor %}
-            {% endif %}
-
         </div>
 
 
@@ -1508,6 +1497,32 @@
             <button class="set_app_password_button ui-button ui-widget ui-corner-all settings_button" data-app="thunderhub" data-name="Thunderhub">Reset Password</button>
             {% endif %}
         </div>
+
+
+        {% if "lndg" in settable_password_apps %}
+        <div class="settings_block">
+            <a id="lndg"></a>
+            <div class="settings_block_header">LNDg</div>
+
+            <div class="settings_block_subheader">Reset LNDg Password</div>
+            This will set a new password for the LNDg admin login.
+            <br/>
+            <button class="set_app_password_button ui-button ui-widget ui-corner-all settings_button" data-app="lndg" data-name="LNDg">Reset Password</button>
+        </div>
+        {% endif %}
+
+
+        {% if "lndboss" in settable_password_apps %}
+        <div class="settings_block">
+            <a id="lndboss"></a>
+            <div class="settings_block_header">LndBoss</div>
+
+            <div class="settings_block_subheader">Reset LndBoss Password</div>
+            This will set a new LndBoss login password.
+            <br/>
+            <button class="set_app_password_button ui-button ui-widget ui-corner-all settings_button" data-app="lndboss" data-name="LndBoss">Reset Password</button>
+        </div>
+        {% endif %}
 
 
         <div class="settings_block">
