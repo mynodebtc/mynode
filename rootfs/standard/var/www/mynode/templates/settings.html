@@ -374,7 +374,7 @@
 
                 $("#reset_app_passwords_button").button();
                 $("#reset_app_passwords_button").on("click", function() {
-                    if (confirm("Are you sure you want to reset all app passwords?")) {
+                    if (confirm("Are you sure you want to reset all default app passwords?")) {
                         window.location.href='/settings/reset-app-passwords';
                     }
                 });
@@ -1159,7 +1159,7 @@
             <div class="settings_block_subheader">Reset App Default Passwords</div>
             This will reset apps that are still using default passwords to new values. Those apps will be set to the new defaults and restarted.
             <br/>
-            <button id="reset_app_passwords_button" class="ui-button ui-widget ui-corner-all settings_button">Reset Passwords</button>
+            <button id="reset_app_passwords_button" class="ui-button ui-widget ui-corner-all settings_button">Reset Default Passwords</button>
 
             {% if settable_password_apps %}
             <div class="divider"></div>
@@ -1534,7 +1534,7 @@
 
             <div class="settings_block_subheader">Recover super_user</div>
             This will restart LNbits and give its super_user a new password, shown on the <a href="/app/lnbits/info">LNbits app page</a>.
-            Use this if you set your own LNbits password and lost it - Reset Passwords leaves your own passwords alone.</br>
+            Use this if you set your own LNbits password and lost it - Reset Default Passwords leaves your own passwords alone.</br>
             <a href="/settings/reset-lnbits-super_user-pwd" class="ui-button ui-widget ui-corner-all settings_button">Reset password</a></br>
 
             <div class="divider"></div>

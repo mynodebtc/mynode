@@ -134,7 +134,7 @@
                 "heading": "Instructions",
                 "content": [
                     "BTCPay Server asks for an email and password. MyNode created the administrator account shown in the App Default Credentials section on this page, so that nobody else could claim it first.",
-                    "You can change the email and password inside BTCPay, under My Settings. MyNode notices when the password is no longer the one it set and stops showing it here. If you lose it, Reset Passwords in Settings sets a new one."
+                    "You can change the email and password inside BTCPay, under My Settings. MyNode notices when the password is no longer the one it set and stops showing it here. If you lose it, the BTCPay Server section of Settings can set a new one."
                 ]
             }
         ],
