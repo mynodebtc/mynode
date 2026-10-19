@@ -9,8 +9,6 @@ set -e
 # RTL config
 sudo -u bitcoin mkdir -p /opt/mynode/RTL
 sudo -u bitcoin mkdir -p /mnt/hdd/mynode/rtl
-chown -R bitcoin:bitcoin /mnt/hdd/mynode/rtl
-chown -R bitcoin:bitcoin /mnt/hdd/mynode/rtl_backup
 
 # If local settings file is not a symlink, delete and setup symlink to HDD
 if [ ! -L /opt/mynode/RTL/RTL-Config.json ]; then
@@ -92,6 +90,10 @@ fi
 
 # Update for loop connection
 sed -i "s/localhost:8081/127.0.0.1:8081/g" /mnt/hdd/mynode/rtl/RTL-Config.json || true
+
+# After the config is written, since RTL (running as bitcoin) must be able to write it
+chown -R bitcoin:bitcoin /mnt/hdd/mynode/rtl
+chown -R bitcoin:bitcoin /mnt/hdd/mynode/rtl_backup
 
 sync
 sleep 3s
