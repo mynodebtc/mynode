@@ -7,6 +7,11 @@ set -x
 update-alternatives --set iptables /usr/sbin/iptables-legacy || true
 update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy || true
 
+# ufw can lose rules when two ufw commands change them at the same time, so MyNode's firewall
+# changes take this lock and run one at a time ("mynode-manage-apps openports" takes it itself)
+exec 9> /run/mynode_firewall.lock
+flock -x 9
+
 # Add default rules
 ufw default deny incoming
 ufw default allow outgoing
@@ -38,7 +43,9 @@ else
 fi
 
 # Open service and app ports, and remove rules from earlier versions
+flock -u 9
 mynode-manage-apps openports
+flock -x 9
 
 # Enable UFW
 ufw --force enable
@@ -48,10 +55,13 @@ systemctl enable ufw
 
 # Check UFW status
 ufw status
+flock -u 9
 
 # Reload firewall after some time to reset (fixes VPN)
 sleep 120s
+flock -x 9
 ufw reload
+flock -u 9
 
 # We don't really want to exit
 sleep 999d

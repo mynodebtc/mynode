@@ -1,4 +1,5 @@
 from utilities import *
+import fcntl
 import glob
 import os
 import re
@@ -8,6 +9,9 @@ import subprocess
 # Each service gets a ufw app profile in this file. A service is allowed from the local network
 # ranges below, or from anywhere when it is public.
 FIREWALL_PROFILE_FILE = "/etc/ufw/applications.d/mynode"
+# ufw can lose rules when two ufw commands change them at the same time, so MyNode's firewall
+# changes (mynode_firewall.sh, startup, Settings) take this lock and run one at a time
+FIREWALL_LOCK_FILE = "/run/mynode_firewall.lock"
 FIREWALL_PUBLIC_SETTINGS_FILES = ["/mnt/hdd/mynode/settings/firewall_public_services.json",
                                   "/home/bitcoin/.mynode/firewall_public_services.json"]
 
@@ -196,6 +200,11 @@ def get_firewall_rule_app(rule):
     return None
 
 def update_firewall_rules(apps):
+    with open(FIREWALL_LOCK_FILE, "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        update_firewall_rules_locked(apps)
+
+def update_firewall_rules_locked(apps):
     print("Updating firewall rules...")
     services = get_firewall_services(apps)
 

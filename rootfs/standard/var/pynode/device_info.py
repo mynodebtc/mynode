@@ -1798,7 +1798,8 @@ def get_tor_version():
 # Firewall Functions
 #==================================
 def reload_firewall():
-    os.system("ufw reload")
+    # Same lock as firewall_info.py's updates; ufw loses rules when two ufw commands overlap
+    subprocess.call(["flock", "/run/mynode_firewall.lock", "ufw", "reload"])
 
 def get_firewall_rules():
     try:
