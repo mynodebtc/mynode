@@ -34,7 +34,7 @@ fi
 
 # Wait for the API to answer - BTCPay brings up a container stack, so this takes a while
 for _ in $(seq 1 150); do
-    if curl -s -o /dev/null --max-time 5 http://127.0.0.1:49392/api/v1/server/info; then
+    if curl -s -o /dev/null --max-time 5 http://127.0.0.1:59392/api/v1/server/info; then
         break
     fi
     sleep 4

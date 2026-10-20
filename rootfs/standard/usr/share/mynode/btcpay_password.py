@@ -31,7 +31,7 @@ import sys
 import urllib.error
 import urllib.request
 
-API = "http://127.0.0.1:49392/api/v1"
+API = "http://127.0.0.1:59392/api/v1"
 LOGIN = "admin@mynode.local"
 SERVER_ADMIN_ROLE = "SERVERADMIN"
 DATABASE = "btcpayservermainnet"

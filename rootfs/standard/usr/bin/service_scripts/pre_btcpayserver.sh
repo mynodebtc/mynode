@@ -29,6 +29,17 @@ for macaroon in admin.macaroon readonly.macaroon invoice.macaroon; do
     fi
 done
 
+# BTCPay itself listens on 127.0.0.1:59392; nginx serves it on 49392 and 49393. btcpay-setup.sh
+# writes the port into BTCPay's .env, so set it again on every start.
+BTCPAY_ENV_FILE=/mnt/hdd/mynode/btcpayserver/.env
+if [ -f "$BTCPAY_ENV_FILE" ]; then
+    if grep -q '^NOREVERSEPROXY_HTTP_PORT=' "$BTCPAY_ENV_FILE"; then
+        sed -i 's/^NOREVERSEPROXY_HTTP_PORT=.*/NOREVERSEPROXY_HTTP_PORT=127.0.0.1:59392/' "$BTCPAY_ENV_FILE"
+    else
+        echo "NOREVERSEPROXY_HTTP_PORT=127.0.0.1:59392" >> "$BTCPAY_ENV_FILE"
+    fi
+fi
+
 # Compose files generated before these mounts changed still list the old ones. A new BTCPay
 # version is generated from the updated fragments.
 GENERATED_COMPOSE=/mnt/hdd/mynode/btcpayserver/btcpayserver-docker/Generated/docker-compose.generated.yml
