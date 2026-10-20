@@ -16,6 +16,8 @@ ExecStartPre=/usr/bin/is_not_shutting_down.sh
 #ExecStartPre=/usr/bin/wait_on_docker_image_install.sh
 ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_sampleapp.sh ]; then /bin/bash /usr/bin/service_scripts/pre_sampleapp.sh; fi'
 ExecStart=FILL_IN_EXECSTART
+# Docker apps publish on localhost only, at the HTTP port plus 10000 (see Ports in doc/applications.md):
+#ExecStart=/usr/bin/docker run --rm --name sampleapp --publish 127.0.0.1:18000:<container port> sampleapp
 ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_sampleapp.sh ]; then /bin/bash /usr/bin/service_scripts/post_sampleapp.sh; fi'
 #ExecStop=FILL_IN_EXECSTOP_AND_UNCOMMENT_IF_NEEDED
 

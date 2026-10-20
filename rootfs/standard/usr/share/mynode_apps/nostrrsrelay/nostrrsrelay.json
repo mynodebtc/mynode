@@ -31,6 +31,7 @@
     "supports_testnet": false,
     "http_port": null,
     "https_port": null,
+    "internal_port": 15050,
     "extra_ports": [5050, 5051],
     "requires_bitcoin": false,
     "requires_docker_image_installation": true,

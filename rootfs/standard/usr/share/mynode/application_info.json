@@ -128,6 +128,7 @@
     {
         "name": "BTCPay Server",
         "short_name": "btcpayserver",
+        "internal_port": 59392,
         "https_port": 49393,
         "app_page_content": [
             {
@@ -162,6 +163,7 @@
     {
         "name": "Mempool",
         "short_name": "mempool",
+        "internal_port": 14080,
         "app_tile_button_text": "Open",
         "author": {"name": "Mempool", "link":"https://mempool.space/"},
         "website": {"name": "GitHub", "link": "https://github.com/mempool/mempool"},

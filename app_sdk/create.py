@@ -2,7 +2,7 @@
 # Create a new MyNode application from the template in app_sdk/sampleapp.
 #
 #   app_sdk/create.py              Create a new app
-#   app_sdk/create.py check <app>  Check an app for missing files and placeholders
+#   app_sdk/create.py check <app>  Check an app for missing files, placeholders and its ports
 #   app_sdk/create.py check_doc    Check the settings table in doc/applications.md
 #
 # The new app is written to rootfs/standard/usr/share/mynode_apps/<short_name>.
@@ -21,6 +21,10 @@ APPS_DIR = os.path.join(REPO_DIR, "rootfs/standard/usr/share/mynode_apps")
 HASHES_SCRIPT = "scripts/print_app_download_hashes.sh"
 APP_INFO_FILE = "rootfs/standard/var/pynode/application_info.py"
 APP_DOC_FILE = "doc/applications.md"
+BUILTIN_APPS_FILE = "rootfs/standard/usr/share/mynode/application_info.json"
+
+# A Docker port mapping: "[ip:]host_port:container_port[/protocol]"
+PORT_MAPPING = r'((?:\d{1,3}(?:\.\d{1,3}){3}:)?\d+:\d+(?:/[a-z]+)?)'
 
 # Fields MyNode fills in itself. An app can set them, but they are not settings and are
 # left out of the documented table.
@@ -157,6 +161,123 @@ def check_app(short_name):
         if not pinned or pinned.split()[0] != app_data.get("latest_version"):
             warnings.append("download_source_sha256 is missing or does not match latest_version")
 
+    port_errors, port_warnings = check_app_ports(short_name, app_dir, app_data)
+    errors += port_errors
+    warnings += port_warnings
+
+    return errors, warnings
+
+def to_port(value):
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+def get_internal_port(app_data):
+    # Same default as application_info.py: the HTTP port plus 10000, unless set (or set to null)
+    if "internal_port" in app_data:
+        return to_port(app_data["internal_port"])
+    http_port = to_port(app_data.get("http_port"))
+    return http_port + 10000 if http_port != None else None
+
+def get_public_ports(app_data):
+    ports = [app_data.get("http_port"), app_data.get("https_port")] + list(app_data.get("extra_ports") or [])
+    return [to_port(p) for p in ports if to_port(p) != None]
+
+def load_all_apps():
+    apps = {}
+    try:
+        with open(os.path.join(REPO_DIR, BUILTIN_APPS_FILE)) as f:
+            for app in json.load(f):
+                apps[app["short_name"]] = app
+    except (IOError, ValueError, KeyError):
+        pass
+    if os.path.isdir(APPS_DIR):
+        for name in os.listdir(APPS_DIR):
+            try:
+                with open(os.path.join(APPS_DIR, name, name + ".json")) as f:
+                    apps[name] = json.load(f)
+            except (IOError, ValueError):
+                pass
+    return apps
+
+def find_docker_publishes(app_dir):
+    # Every port mapping a service, script or compose file publishes, as (file, mapping)
+    found = []
+    for root, dirs, files in os.walk(app_dir):
+        dirs[:] = [d for d in dirs if not d.startswith(".")]
+        for name in files:
+            if not name.endswith((".service", ".sh", ".yml", ".yaml")):
+                continue
+            path = os.path.join(root, name)
+            try:
+                with open(path) as f:
+                    lines = f.read().split("\n")
+            except (UnicodeDecodeError, IOError):
+                continue
+            for line in lines:
+                if line.lstrip().startswith("#"):
+                    continue
+                for m in re.finditer(r'(?:--publish|-p)[ =]["\']?' + PORT_MAPPING, line):
+                    found.append((os.path.relpath(path, app_dir), m.group(1)))
+                if name.endswith((".yml", ".yaml")):
+                    m = re.match(r'\s*-\s*["\']?' + PORT_MAPPING + r'["\']?\s*$', line)
+                    if m:
+                        found.append((os.path.relpath(path, app_dir), m.group(1)))
+    return found
+
+def check_app_ports(short_name, app_dir, app_data):
+    # The app listens on 127.0.0.1:<internal_port> and nginx serves its public ports
+    # (see Ports in doc/applications.md)
+    errors = []
+    warnings = []
+    internal_port = get_internal_port(app_data)
+    public_ports = get_public_ports(app_data)
+
+    for path, mapping in find_docker_publishes(app_dir):
+        parts = mapping.split("/")[0].split(":")
+        if len(parts) == 2:
+            errors.append("{} publishes port {} on all interfaces; publish it on 127.0.0.1:{}".format(path, parts[0], internal_port))
+        elif parts[0] != "127.0.0.1":
+            errors.append("{} publishes port {} on {}; publish it on 127.0.0.1".format(path, parts[1], parts[0]))
+        elif internal_port == None:
+            errors.append("{} publishes 127.0.0.1:{} but internal_port is not set".format(path, parts[1]))
+        elif int(parts[1]) != internal_port:
+            errors.append("{} publishes 127.0.0.1:{} but internal_port is {}".format(path, parts[1], internal_port))
+
+    nginx_file = "nginx/https_{}.conf".format(short_name)
+    try:
+        with open(os.path.join(app_dir, nginx_file)) as f:
+            nginx_conf = f.read()
+    except IOError:
+        nginx_conf = ""
+    nginx_ports = [int(p) for p in re.findall(r'^\s*listen\s+(?:\S+:)?(\d+)', nginx_conf, re.M)]
+    for port in nginx_ports:
+        if port not in public_ports:
+            errors.append("{} listens on {}, which is not http_port, https_port or in extra_ports".format(nginx_file, port))
+    # Ports of every other app
+    other_apps_ports = {}
+    for name, other in load_all_apps().items():
+        if name != short_name:
+            other_internal = get_internal_port(other)
+            other_apps_ports[name] = set(get_public_ports(other) + ([other_internal] if other_internal != None else []))
+
+    for port in sorted(set(re.findall(r'proxy_pass\s+https?://(?:127\.0\.0\.1|localhost):(\d+)', nginx_conf))):
+        # Apps without an internal port, nginx proxying to its own server blocks, and routes to
+        # another app's ports (an API the app depends on) are fine
+        port = int(port)
+        if internal_port == None or port == internal_port or port in nginx_ports:
+            continue
+        if any(port in ports for ports in other_apps_ports.values()):
+            continue
+        warnings.append("{} proxies to port {}, not internal_port {}".format(nginx_file, port, internal_port))
+
+    # No port may be used by another app
+    own_ports = set(public_ports + ([internal_port] if internal_port != None else []))
+    for name, ports in sorted(other_apps_ports.items()):
+        for port in sorted(own_ports & ports):
+            errors.append("Port {} is also used by {}".format(port, name))
+
     return errors, warnings
 
 def app_downloads_source(app_data):
@@ -253,12 +374,25 @@ def create():
 
     # Process application (is it a web app?)
     if prompt_yes_no("Does this application have a web-based user interface?"):
-        http_port = prompt_integer("Enter the HTTP port for the application?")
+        # nginx serves the HTTP and HTTPS ports; the app itself listens on localhost at the
+        # HTTP port plus 10000 (see Ports in doc/applications.md)
+        while True:
+            http_port = prompt_integer("Enter the HTTP port for the application?")
+            if http_port + 10000 <= 65535:
+                break
+            print("The HTTP port must be 55535 or lower, so the app's localhost port (HTTP port plus 10000) is valid.")
         https_port = prompt_integer("Enter the HTTPS port for the application?", (http_port+1))
+        local_port = http_port + 10000
         update_app_info(app_json_file, "http_port", http_port)
         update_app_info(app_json_file, "https_port", https_port)
-        replace_string_in_file(app_dir+"/nginx/https_sampleapp.conf", "8000", http_port)
-        replace_string_in_file(app_dir+"/nginx/https_sampleapp.conf", "8001", https_port)
+        # Replace 18000 first: it contains 8000
+        for path in [app_dir+"/nginx/https_sampleapp.conf", service_file]:
+            if os.path.isfile(path):
+                replace_string_in_file(path, "18000", "LOCAL_PORT_PLACEHOLDER")
+                replace_string_in_file(path, "8000", http_port)
+                replace_string_in_file(path, "8001", https_port)
+                replace_string_in_file(path, "LOCAL_PORT_PLACEHOLDER", local_port)
+        print("The app must listen on 127.0.0.1:{} (a Docker app publishes it there).".format(local_port))
     else:
         # Remove web template items
         os.remove(app_dir+"/nginx/https_sampleapp.conf")

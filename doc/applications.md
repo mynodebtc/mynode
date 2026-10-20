@@ -97,7 +97,38 @@ This is the python file for handling web interface requests. The web interface i
 This is the folder for HTML / Jinja templates to be used by your application. A sample template (sampleapp.html) is provided, but may not be required. Applications can use the standard app template which can be customized via the JSON file, but more advanced apps may require their own templates.
 
 ### nginx/https_sampleapp.conf
-This file is optional and will be present if your app has a web interface and can be accessed via HTTPS. It may need to be updated depending on your application requirements.
+This file is optional and will be present if your app has a web interface. It holds the nginx server blocks for the app's HTTP and HTTPS ports; see Ports below. It may need to be updated depending on your application requirements.
+
+## Ports
+
+A web app listens only on localhost, and nginx serves it on the app's public ports:
+
+- The app listens on `127.0.0.1:<internal_port>`, which defaults to `http_port + 10000`. A Docker app publishes that port on localhost only: `--publish 127.0.0.1:18000:<container port>`, or `- "127.0.0.1:18000:<container port>"` in a compose file. Never publish on all interfaces (`-p 8000:8000`).
+- nginx listens on `http_port` (plain HTTP) and `https_port` (HTTPS) and proxies both to the localhost port. The `http_port` and `https_port` values in the JSON are these public ports, and tiles, Tor and the firewall all use them.
+- Scripts on the device that call the app's own API use the localhost port directly. Install env vars can use `{INTERNAL_PORT}`.
+
+Set `internal_port` in the app JSON only when the app does not use the default (for example when it has no `http_port`), or to `null` for an app that does not follow this. `app_sdk/create.py check <app>` checks that every port the app publishes is `127.0.0.1:<internal_port>`, that its nginx file listens only on the app's ports and proxies to `internal_port`, and that no other app uses any of its ports.
+
+For example, with `http_port` 8000 and `https_port` 8001, the app listens on `127.0.0.1:18000`, and nginx serves 8000 and 8001, both proxied to 18000.
+
+This keeps nginx the only listener on an app's public ports, so the firewall rules, TLS and shared nginx settings apply to every app the same way, and onion ports reach the app through nginx too. Add WebSocket upgrade headers to both server blocks if the app uses WebSockets.
+
+Apps that follow this today:
+
+| App | HTTP / HTTPS (nginx) | App on localhost |
+|---|---|---|
+| Alby Hub | 3040 / 3041 | 13040 |
+| BTCPay Server | 49392 / 49393 | 59392 |
+| Canary | 3005 / 3006 | 13005 |
+| Jam | 5020 / 5021 | 15020 |
+| Lily Wallet | 5030 / 5031 | 15030 |
+| LndBoss | 8055 / 8056 | 18055 |
+| LNbits | 5000 / 5001 | 15000 |
+| Mempool | 4080 / 4081 | 14080 |
+| Netdata | 19999 / 20000 | 29999 |
+| Nostr relay | 5050 / 5051 | 15050 |
+
+Before picking ports for a new app, check that neither the public ports nor the localhost port are in use (`grep -rn '<port>' rootfs/standard`).
 
 ## Application Data
 
@@ -124,11 +155,12 @@ After changing which settings MyNode reads, run `app_sdk/create.py check_doc` to
 | <sub>download_source_url                | <sub>Sample Data | <sub>This is the URL to download the application and is typically a link to the GitHub source tar.gz file for a tag or release. It will be extracted and installed prior to running the apps install script. |
 | <sub>download_source_sha256             | <sub>"v0.0.1 FILL_IN_SHA256" | <sub>The pinned "&lt;version&gt; &lt;sha256&gt;" of the source download. Installs fail if the download does not match. Generate it with scripts/print_app_download_hashes.sh in the MyNode repo and update it with every version change. |
 | <sub>download_binary_url                | <sub>Dictionary | <sub>This is a dictionary of architectures to URL to download the application and is typically a link to the GitHub binary tar.gz file for a tag or release. It will be extracted and installed prior to running the apps install script. |
-| <sub>install_env_vars                   | <sub>Dictionary | <sub>If any additional data is needed during the install process. This dictionary of key/value pairs will be available as env variables. |
+| <sub>install_env_vars                   | <sub>Dictionary | <sub>If any additional data is needed during the install process. This dictionary of key/value pairs will be available as env variables. Values can use {VERSION}, {SHORT_NAME}, {HTTP_PORT}, {HTTPS_PORT} and {INTERNAL_PORT}. |
 | <sub>supports_app_page                  | <sub>true | <sub>Not currently used by MyNode. |
 | <sub>supports_testnet                   | <sub>false | <sub>Indicates if the app supports Bitcoin testnet. If not, the app will be disabled when in testnet mode. |
-| <sub>http_port                          | <sub>8000 | <sub>Indicates the HTTP port to be used by the application. This should be set for all web apps. The port will be automatically opened. |
-| <sub>https_port                         | <sub>8001 | <sub>Indicates the HTTPS port to be used by the application. Typically, the HTTP port plus one. |
+| <sub>http_port                          | <sub>8000 | <sub>Indicates the HTTP port to be used by the application. This should be set for all web apps. The port will be automatically opened. nginx serves this port; the app itself listens on localhost (see Ports). |
+| <sub>https_port                         | <sub>8001 | <sub>Indicates the HTTPS port to be used by the application. Typically, the HTTP port plus one. Served by nginx (see Ports). |
+| <sub>internal_port                      | <sub>http_port + 10000 | <sub>The port the app listens on at 127.0.0.1, behind nginx (see Ports). Defaults to the HTTP port plus 10000; set it when the app has no http_port, or to null if the app does not follow this. |
 | <sub>extra_ports                        | <sub>[] | <sub>A list of additional ports to open in the firewall. |
 | <sub>tor_service_name                  | <sub>myapp | <sub>The name of the app's Tor hidden service folder under /var/lib/tor, without the "mynode_" prefix. Only needed when it differs from the app's short name. |
 | <sub>requires_bitcoin                   | <sub>true | <sub>This indicates a dependency on Bitcoin. If true, Bitcoin must be running before the application will start. This should be true for most apps. Some device management apps may set this to false. |

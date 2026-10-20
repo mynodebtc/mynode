@@ -166,6 +166,12 @@ def get_app_screenshots(short_name):
         return sorted(screenshots)
     return screenshots
 
+def get_default_internal_port(http_port):
+    try:
+        return int(http_port) + 10000
+    except (TypeError, ValueError):
+        return None
+
 def replace_app_info_variables(app_data, text):
     text = text.replace("{VERSION}", app_data["latest_version"])
     text = text.replace("{SHORT_NAME}", app_data["short_name"])
@@ -173,6 +179,8 @@ def replace_app_info_variables(app_data, text):
         text = text.replace("{HTTP_PORT}", str(app_data["http_port"]))
     if app_data["https_port"] != None:
         text = text.replace("{HTTPS_PORT}", str(app_data["https_port"]))
+    if app_data["internal_port"] != None:
+        text = text.replace("{INTERNAL_PORT}", str(app_data["internal_port"]))
     app_tor_address = get_onion_url_for_service(app_data["short_name"]) if is_tor_remote_access_enabled() else ""
     text = text.replace("{APP_TOR_ADDRESS}", app_tor_address)
     text = text.replace("{LOCAL_IP_ADDRESS}", get_local_ip())
@@ -225,6 +233,9 @@ def initialize_application_defaults(app):
     if not "http_port" in app: app["http_port"] = None
     if not "https_port" in app: app["https_port"] = None
     if not "extra_ports" in app: app["extra_ports"] = []
+    # The port the app listens on at 127.0.0.1, behind nginx on http_port and https_port.
+    # Set it to null in the app JSON for an app that does not follow this.
+    if not "internal_port" in app: app["internal_port"] = get_default_internal_port(app["http_port"])
     # A few apps' hidden service folders are not named after the app (BTCPay Server is
     # /var/lib/tor/mynode_btcpay), so the name can be given in the app JSON
     if not "tor_service_name" in app: app["tor_service_name"] = app["short_name"]
