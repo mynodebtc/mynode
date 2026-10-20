@@ -18,7 +18,7 @@ ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_albyhub.sh ]; th
 ExecStartPre=-/usr/bin/docker rm -f albyhub
 ExecStart=docker run --rm \
   --name albyhub \
-  --publish 3040:8080 \
+  --publish 127.0.0.1:13040:8080 \
   --add-host=host.docker.internal:host-gateway \
   --volume /mnt/hdd/mynode/albyhub:/data \
   --mount type=bind,src=/mnt/hdd/mynode/lnd/tls.cert,target=/lnd/tls.cert,readonly \

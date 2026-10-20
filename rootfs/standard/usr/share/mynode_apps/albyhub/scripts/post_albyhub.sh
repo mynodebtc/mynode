@@ -14,14 +14,14 @@ fi
 # changed it in Alby Hub itself
 function check_saved_password() {
     for _ in $(seq 1 600); do
-        if curl -s -o /dev/null --max-time 5 http://127.0.0.1:3040/api/info; then
+        if curl -s -o /dev/null --max-time 5 http://127.0.0.1:13040/api/info; then
             break
         fi
         sleep 1
     done
 
     STATUS=$(printf '{"unlockPassword": "%s", "permission": "readonly"}' "$(cat $ALBYHUB_DIR/.app_password)" | \
-        curl -s -o /dev/null -w '%{http_code}' --max-time 10 -H 'Content-Type: application/json' --data @- http://127.0.0.1:3040/api/unlock)
+        curl -s -o /dev/null -w '%{http_code}' --max-time 10 -H 'Content-Type: application/json' --data @- http://127.0.0.1:13040/api/unlock)
     if [ "$STATUS" = "401" ]; then
         save_app_password_user_set albyhub
     fi

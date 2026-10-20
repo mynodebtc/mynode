@@ -23,7 +23,7 @@ ExecStart=/usr/bin/docker run --rm \
         --env JAM_JMWALLETD_WEBSOCKET_PORT="27183" \
         --env JAM_JMOBWATCH_PORT="62601" \
         --env REMOVE_LOCK_FILES="true" \
-        --publish "5020:80" \
+        --publish "127.0.0.1:15020:80" \
         --add-host=host.docker.internal:host-gateway \
         --volume /mnt/hdd/mynode/jam/data:/root/.joinmarket \
         jam:latest

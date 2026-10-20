@@ -27,7 +27,7 @@ services:
     depends_on:
       - backend
     ports:
-      - "3005:3005"
+      - "127.0.0.1:13005:3005"
     environment:
       API_URL: http://backend:3004
       PORT: "3005"

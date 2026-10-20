@@ -15,7 +15,7 @@ ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_nostrrsrelay.sh 
 ExecStartPre=-/usr/bin/docker rm -f nostrrsrelay
 ExecStart=/usr/bin/docker run --rm \
   --name nostrrsrelay \
-  --publish 5050:8080 \
+  --publish 127.0.0.1:15050:8080 \
   --user ${UID}:${GID} \
   --mount src=/mnt/hdd/mynode/nostrrsrelay/config.toml,target=/usr/src/app/config.toml,type=bind \
   --mount src=/mnt/hdd/mynode/nostrrsrelay/data,target=/usr/src/app/db,type=bind \

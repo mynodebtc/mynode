@@ -20,6 +20,6 @@ services:
     devices:
       - /dev/bus/usb
     ports:
-      - '5030:8080'
+      - '127.0.0.1:15030:8080'
     device_cgroup_rules:
       - 'c 189:* rmw'

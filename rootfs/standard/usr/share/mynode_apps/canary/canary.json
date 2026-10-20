@@ -24,6 +24,7 @@
     "requires_bitcoin": false,
     "requires_lightning": false,
     "http_port": 3005,
+    "https_port": 3006,
     "show_on_homepage": true,
     "show_on_application_page": true,
     "app_tile_name": "Canary",

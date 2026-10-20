@@ -16,7 +16,7 @@ ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_lndboss.sh ]; th
 ExecStartPre=-/usr/bin/docker rm -f lndboss
 ExecStart=/usr/bin/docker run --rm \
   --name lndboss \
-  --publish 8055:8055 \
+  --publish 127.0.0.1:18055:8055 \
   --env BOS_DATA_PATH="/.bosgui" \
   --env LNDBOSS_DIRECTORY="/.bosgui" \
   --env NODE_ENV="production" \

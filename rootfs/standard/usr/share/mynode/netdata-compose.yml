@@ -4,7 +4,7 @@ services:
     image: netdata/netdata:${NETDATA_VERSION}
     hostname: mynode.local # set to fqdn of host
     ports:
-      - 19999:19999
+      - 127.0.0.1:29999:19999
     cap_add:
       - SYS_PTRACE
     security_opt:

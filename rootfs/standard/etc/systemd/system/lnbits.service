@@ -19,7 +19,7 @@ WorkingDirectory=/opt/mynode/lnbits
 
 ExecStart=/usr/bin/docker run --rm \
     --name lnbits \
-    -p 5000:5000 \
+    -p 127.0.0.1:15000:5000 \
     --volume /mnt/hdd/mynode/lnbits/.env:/app/.env \
     --volume /mnt/hdd/mynode/lnbits/:/app/data \
     --mount type=bind,src=/mnt/hdd/mynode/lnd/tls.cert,target=/app/tls.cert,readonly \
