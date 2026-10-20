@@ -30,7 +30,7 @@
     "supports_app_page": true,
     "supports_testnet": false,
     "http_port": 4200,
-    "https_port": null,
+    "https_port": 4201,
     "requires_bitcoin": true,
     "requires_docker_image_installation": false,
     "requires_electrs": false,
