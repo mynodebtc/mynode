@@ -287,11 +287,6 @@ NETDATA_VERSION=$(get_app_version "$NETDATA_VERSION" "netdata")
 NETDATA_VERSION_FILE=/mnt/hdd/mynode/settings/netdata_version
 NETDATA_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/netdata_version_latest
 
-RATHOLE_VERSION="v0.4.7"
-RATHOLE_VERSION=$(get_app_version "$RATHOLE_VERSION" "rathole")
-RATHOLE_VERSION_FILE=/home/bitcoin/.mynode/rathole_version
-RATHOLE_LATEST_VERSION_FILE=/home/bitcoin/.mynode/rathole_version_latest
-
 # Dependency versions
 PYTHON_VERSION="3.8.9"
 #PYTHON_VERSION="3.11.14"   # New python needed once JoinMarket goes past v0.9.11

@@ -435,6 +435,11 @@
                     $("#firewall_rules").show();
                 });
 
+                $("#show_firewall_public_services").on("click", function() {
+                    $("#show_firewall_public_services").hide(0);
+                    $("#firewall_public_services").show();
+                });
+
                 $("#show_product_key").on("click", function() {
                     $("#show_product_key").hide(0);
                     $("#product_key").show();
@@ -1621,6 +1626,40 @@
             <button id="show_firewall_rules" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
             <div id="firewall_rules" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{firewall_rules}}</pre></div>
             
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Reachable From the Internet</div>
+            Services are reachable from the local network only (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, and
+            Tailscale's 100.64.0.0/10), except the ones selected here, which accept connections from any address.
+            Selecting a service does not forward it on your router. Only select services built to be exposed, or
+            that you need to reach without Tor, a VPN, or Tailscale.
+            <br/>
+            <button id="show_firewall_public_services" class="ui-button ui-widget ui-corner-all settings_button">Show Config</button>
+            <div id="firewall_public_services" style="display: none;">
+            <br/>
+            <form action="/settings/firewall-public-services" method="POST">
+                <table class="info_table">
+                    <tr>
+                        <th>Service</th>
+                        <th>Ports</th>
+                        <th>Any Address</th>
+                    </tr>
+                    {% for service in firewall_services %}
+                    <tr>
+                        <td>{{ service.name }}</td>
+                        <td>{{ service.port_text }}</td>
+                        <td><input type="checkbox" name="public_{{ service.id }}" {% if service.public %}checked{% endif %}></td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <th>Password</th>
+                        <td colspan="2"><input type="password" name="password_firewall" autocomplete="current-password" width="20" class="ui-corner-all settings_input"/></td>
+                    </tr>
+                </table>
+                <input type="submit" value="Save" class="ui-button ui-widget ui-corner-all settings_button_small"/>
+            </form>
+            </div>
+
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Reset Firewall</div>

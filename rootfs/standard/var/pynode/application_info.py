@@ -7,6 +7,7 @@ from drive_info import *
 from systemctl_info import *
 from utilities import *
 from enable_disable_functions import * 
+from firewall_info import *
 import copy
 import glob
 import re
@@ -481,8 +482,6 @@ def get_application_log(short_name):
             return get_journalctl_log("ob-watcher")
         elif short_name == "www":
             return get_journalctl_log("www")
-        elif short_name == "rathole":
-            return get_journalctl_log("rathole")
         elif short_name == "premium_plus_connect":
             return get_journalctl_log("premium_plus_connect")
         elif short_name == "i2pd":
@@ -1027,21 +1026,7 @@ def open_application_ports():
     print("Running open_application_ports...")
     trigger_application_refresh()
     apps = get_all_applications()
-    for app in apps:
-        try:
-            print("Checking ports for {}".format(app["short_name"]))
-            if "http_port" in app and app["http_port"] != None:
-                print("  Opening HTTP {}".format(app["http_port"]))
-                os.system("ufw allow {}  comment 'allow {} HTTP'".format(app["http_port"], app["short_name"]))
-            if "https_port" in app and app["https_port"] != None:
-                print("  Opening HTTPS {}".format(app["https_port"]))
-                os.system("ufw allow {}  comment 'allow {} HTTPS'".format(app["https_port"], app["short_name"]))
-            if "extra_ports" in app and app["extra_ports"] != None:
-                for port in app["extra_ports"]:
-                    print("  Opening Extra Port {}".format(port))
-                    os.system("ufw allow {}  comment 'allow {} (extra)'".format(port, app["short_name"]))
-        except Exception as e:
-            log_message("ERROR: Error opening port for application {} - {}".format(app["short_name"], str(e))) 
+    update_firewall_rules(apps)
     return None
 
 ######################################################################################

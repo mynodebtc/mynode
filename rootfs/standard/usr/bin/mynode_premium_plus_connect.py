@@ -13,7 +13,6 @@ from drive_info import *
 from application_info import *
 from bitcoin_info import *
 from lightning_info import *
-from public_apps import *
 
 
 PREMIUM_PLUS_CONNECT_URL = "https://www.mynodebtc.com/device_api/premium_plus_connect.php"
@@ -107,20 +106,6 @@ def connect_success_handler_watchtower(connect_response_data):
     except Exception as e:
         log_message("connect_success_handler_watchtower exception: {}".format(str(e)))
 
-def connect_success_handler_public_apps(connect_response_data):
-    log_message("Running connect_success_handler_public_apps...")
-    try:
-        settings = get_premium_plus_settings()
-        if settings["public_apps"]:
-            if "public_apps" in connect_response_data:
-                enable_public_apps(connect_response_data["public_apps"])
-            else:
-                disable_public_apps()
-        else:
-            disable_public_apps()
-    except Exception as e:
-        log_message("connect_success_handler_public_apps exception: {}".format(str(e)))
-
 ##############################################################
 ## Handle successful connection
 ##############################################################
@@ -128,7 +113,6 @@ def on_connect_success(connect_response_data):
     try:
         try:
             connect_success_handler_watchtower(connect_response_data)
-            connect_success_handler_public_apps(connect_response_data)
         except Exception as e:
             log_message("on_connect_success exception: {}".format(str(e)))
     except Exception as e:

@@ -88,6 +88,7 @@ def page_settings():
         "is_bitcoin_synced": is_bitcoin_synced(),
         "is_installing_docker_images": is_installing_docker_images(),
         "firewall_rules": get_firewall_rules(),
+        "firewall_services": get_firewall_services(get_all_applications()),
         "is_local_traffic_allowed": settings_file_exists("local_traffic_allowed"),
         "skip_backup_dns_servers": settings_file_exists("skip_backup_dns_servers"),
         "is_testnet_enabled": is_testnet_enabled(),
@@ -296,9 +297,6 @@ def page_status():
         #"premium_plus_connect_status_log": get_journalctl_log("premium_plus_connect"),
         "premium_plus_connect_status": get_service_status_basic_text("premium_plus_connect"),
         "premium_plus_connect_status_color": get_service_status_color("premium_plus_connect"),
-        #"rathole_status_log": get_journalctl_log("rathole"),
-        #"rathole_status": get_service_status_basic_text("rathole"),
-        #"rathole_status_color": get_service_status_color("rathole"),
         #"corsproxy_status_log": get_journalctl_log("corsproxy"),
         "corsproxy_status": get_service_status_basic_text("corsproxy_btcrpc"),
         "corsproxy_status_color": get_service_status_color("corsproxy_btcrpc"),
@@ -788,6 +786,29 @@ def reset_firewall_page():
     t.start()
     flash("Firewall Reset", category="message")
     return redirect("/settings")
+
+@mynode_settings.route("/settings/firewall-public-services", methods=['POST'])
+def firewall_public_services_page():
+    check_logged_in()
+    p = pam.pam()
+    pw = request.form.get('password_firewall')
+    if pw == None or p.authenticate("admin", pw) == False:
+        flash("Invalid Password", category="error")
+        return redirect(url_for(".page_settings"))
+
+    # Store only the choices that differ from the defaults, so later default changes still apply
+    overrides = {}
+    for service in get_firewall_services(get_all_applications()):
+        public = request.form.get("public_" + service["id"]) != None
+        if public != service["default_public"]:
+            overrides[service["id"]] = public
+    set_firewall_public_overrides(overrides)
+
+    t = Timer(1.0, open_application_ports)
+    t.start()
+
+    flash("Firewall Updated", category="message")
+    return redirect(url_for(".page_settings"))
 
 @mynode_settings.route("/settings/refresh-app-database")
 def refresh_app_database_page():

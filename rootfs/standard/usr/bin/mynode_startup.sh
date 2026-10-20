@@ -718,14 +718,6 @@ echo "Generating certificates..."
 /usr/bin/mynode_gen_cert.sh https
 /usr/bin/mynode_gen_cert_electrs.sh
 
-# Ensure copy has been made for public_apps certificate (overwritten by premium+, but needed to start nginx)
-if [ ! -f /home/bitcoin/.mynode/https/public_apps.crt ]; then
-    cp -f /home/bitcoin/.mynode/https/mynode.local.crt /home/bitcoin/.mynode/https/public_apps.crt
-fi
-if [ ! -f /home/bitcoin/.mynode/https/public_apps.key ]; then
-    cp -f /home/bitcoin/.mynode/https/mynode.local.key /home/bitcoin/.mynode/https/public_apps.key
-fi
-
 # Setup nginx HTTPS proxy
 mkdir -p /var/log/nginx || true
 mkdir -p /etc/nginx || true
@@ -770,7 +762,6 @@ systemctl enable check_in || true
 systemctl enable mynode_auto_upgrade.timer || true
 systemctl start mynode_auto_upgrade.timer || true
 systemctl enable premium_plus_connect || true
-#systemctl enable rathole || true
 systemctl enable bitcoin || true                # Make sure new bitcoin service is used
 systemctl disable bitcoind || true              # Make sure new bitcoin service is used
 rm /etc/systemd/system/bitcoind.service || true # Make sure new bitcoin service is used
@@ -794,6 +785,15 @@ rm -rf /usr/share/quicksync || true
 rm -f /usr/bin/mynode_quicksync.sh /usr/bin/mynode_quicksync_complete.sh || true
 rm -f /usr/bin/mynode-get-quicksync-status /usr/bin/mynode_torrent_check.sh || true
 rm -f /usr/bin/mynode_bandwidth.sh /usr/bin/wait_on_uploader.sh || true
+# Public apps (rathole) have been removed
+systemctl stop rathole || true
+systemctl disable rathole || true
+rm -f /etc/systemd/system/rathole.service /usr/bin/service_scripts/pre_rathole.sh || true
+rm -f /usr/local/bin/rathole /home/bitcoin/.mynode/rathole_version /home/bitcoin/.mynode/rathole_version_latest || true
+rm -rf /opt/mynode/rathole || true
+rm -f /etc/nginx/sites-enabled/https_public_apps.conf || true
+rm -f /home/bitcoin/.mynode/https/public_apps.crt /home/bitcoin/.mynode/https/public_apps.key || true
+rm -f /var/pynode/public_apps.py || true
 systemctl daemon-reload || true
 if [ -f /usr/share/joininbox/menu.update.sh ] && [ -f /home/joinmarket/menu.update.sh ]; then
     sudo -u joinmarket cp -f /usr/share/joininbox/menu.update.sh /home/joinmarket/menu.update.sh

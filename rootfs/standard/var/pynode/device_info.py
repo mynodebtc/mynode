@@ -1025,7 +1025,7 @@ def recheck_premium_plus_token():
     os.system("systemctl restart premium_plus_connect")
 
 def get_premium_plus_setting_names():
-    return ["sync_status","sync_bitcoin_and_lightning","backup_scb","watchtower", "public_apps"]
+    return ["sync_status","sync_bitcoin_and_lightning","backup_scb","watchtower"]
 def get_premium_plus_settings():
     names = get_premium_plus_setting_names()
     settings = {}
