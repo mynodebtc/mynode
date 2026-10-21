@@ -88,7 +88,7 @@ def page_settings():
         "is_bitcoin_synced": is_bitcoin_synced(),
         "is_installing_docker_images": is_installing_docker_images(),
         "firewall_rules": get_firewall_rules(),
-        "firewall_services": get_firewall_services(get_all_applications()),
+        "firewall_services": [s for s in get_firewall_services(get_all_applications()) if s["installed"]],
         "is_local_traffic_allowed": settings_file_exists("local_traffic_allowed"),
         "skip_backup_dns_servers": settings_file_exists("skip_backup_dns_servers"),
         "is_testnet_enabled": is_testnet_enabled(),
@@ -797,8 +797,14 @@ def firewall_public_services_page():
         return redirect(url_for(".page_settings"))
 
     # Store only the choices that differ from the defaults, so later default changes still apply
+    old_overrides = get_firewall_public_overrides()
     overrides = {}
     for service in get_firewall_services(get_all_applications()):
+        # Apps that are not installed are not in the list, so they keep their setting
+        if not service["installed"]:
+            if service["id"] in old_overrides:
+                overrides[service["id"]] = old_overrides[service["id"]]
+            continue
         public = request.form.get("public_" + service["id"]) != None
         if public != service["default_public"]:
             overrides[service["id"]] = public

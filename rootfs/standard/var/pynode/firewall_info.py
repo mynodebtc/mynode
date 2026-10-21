@@ -23,7 +23,8 @@ FIREWALL_LOCAL_SOURCES = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "100.
 FIREWALL_MAX_PORTS_PER_PROFILE = 15
 
 # Ports that are not in an app's JSON. Entries whose id is an app's short_name are merged with that
-# app's ports and shown under its name. Ports are in ufw profile syntax; a port without a protocol
+# app's ports, and are listed in Settings only while it is installed; "app" names a different app
+# whose install state an entry follows. Ports are in ufw profile syntax; a port without a protocol
 # is opened for TCP and UDP.
 FIREWALL_CORE_SERVICES = [
     {"id": "ssh",             "name": "SSH",                         "ports": ["22/tcp"]},
@@ -47,8 +48,8 @@ FIREWALL_CORE_SERVICES = [
     {"id": "btcpayserver",    "name": "BTCPay Server",               "ports": ["49392/tcp"]},
     {"id": "vpn",             "name": "VPN",                         "ports": ["51194"]},
     {"id": "glances",         "name": "Glances",                     "ports": ["61208/tcp", "61209/tcp"]},
-    {"id": "joinmarket",      "name": "JoinMarket Orderbook",        "ports": ["62601/tcp", "62602/tcp"]},
-    {"id": "joinmarket_api",  "name": "JoinMarket API",              "ports": ["27183/tcp", "28183/tcp", "28283/tcp"]},
+    {"id": "joinmarket",      "name": "JoinMarket Orderbook",        "ports": ["62601/tcp", "62602/tcp"], "app": "joininbox"},
+    {"id": "joinmarket_api",  "name": "JoinMarket API",              "ports": ["27183/tcp", "28183/tcp", "28283/tcp"], "app": "joininbox"},
     {"id": "datum",           "name": "DATUM",                       "ports": ["23334/tcp"]},
 ]
 
@@ -93,8 +94,11 @@ def get_firewall_profile_name(name, other_names):
 def get_firewall_services(apps):
     services = []
     by_id = {}
+    apps_by_name = {app["short_name"]: app for app in apps}
     for s in FIREWALL_CORE_SERVICES:
-        service = {"id": s["id"], "name": s["name"], "ports": list(s["ports"])}
+        app = apps_by_name.get(s.get("app", s["id"]))
+        installed = app.get("is_installed", True) if app != None else True
+        service = {"id": s["id"], "name": s["name"], "ports": list(s["ports"]), "installed": installed}
         services.append(service)
         by_id[s["id"]] = service
 
@@ -112,7 +116,8 @@ def get_firewall_services(apps):
             service = by_id[app["short_name"]]
             service["ports"] += [p for p in ports if p not in service["ports"]]
         elif len(ports) > 0:
-            service = {"id": app["short_name"], "name": app["name"], "ports": ports}
+            service = {"id": app["short_name"], "name": app["name"], "ports": ports,
+                       "installed": app.get("is_installed", True)}
             services.append(service)
             by_id[app["short_name"]] = service
 
