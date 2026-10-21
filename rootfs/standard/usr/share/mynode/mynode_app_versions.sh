@@ -327,8 +327,8 @@ GO_ARM64_SHA256="1.19.4 9df122d6baf6f2275270306b92af3b09d7973fb1259257e284dba33c
 GO_AMD64_SHA256="1.19.4 c9c08f783325c4cf840a94333159cc937f05f75d36a8b307951d5bd959cf2ab8"
 
 # Built from source on Debian 10 only
-TOR_SOURCE_VERSION="0.4.9.11"
-TOR_SOURCE_SHA256="0.4.9.11 2e6c1720118c812acf0079fd47cf91b6bfaba5d766c321c4d3d2a28d6a11a8ed"
+TOR_SOURCE_VERSION="0.4.9.14"
+TOR_SOURCE_SHA256="0.4.9.14 182449ac1c8ff43278da27b69b02040e11d03d0327db6d9126e4190ec6235e4a"
 
 # Check for override files
 if [ -f /usr/share/mynode/mynode_app_versions_custom.sh ]; then

@@ -1279,10 +1279,10 @@ mynode-manage-apps upgrade || true
 #    $TORIFY apt-get remove -y tor
 #    $TORIFY apt-get install -y tor
 #fi
-# On older Debian versions, check if we have old Tor and upgrade
+# On older Debian versions, build Tor from source if it is not the pinned version
 if [ "$DEBIAN_VERSION" -lt "12" ]; then
-    tor_version=$(tor --version | head -n 1)
-    if [[ "$tor_version" == *"0.4.8"* ]]; then
+    tor_version=$(tor --version 2>/dev/null | head -n 1 || true)
+    if [ "$tor_version" != "Tor version $TOR_SOURCE_VERSION." ]; then
         echo "Upgrading Tor..."
         set +e
 
@@ -1291,12 +1291,14 @@ if [ "$DEBIAN_VERSION" -lt "12" ]; then
         wget https://archive.torproject.org/tor-package-archive/tor-$TOR_SOURCE_VERSION.tar.gz -O tor.tar.gz
         if check_app_download tor.tar.gz tor $TOR_SOURCE_VERSION "$TOR_SOURCE_SHA256"; then
             tar xzf tor.tar.gz
-            mv tor-* tor_src
+            mv tor-$TOR_SOURCE_VERSION tor_src
             cd tor_src
 
-            ./configure --disable-unittests --prefix=/usr && make -j2
-            make install
+            # Only install if the build succeeds, so a failed build leaves the old Tor in place
+            ./configure --disable-unittests --prefix=/usr && make -j2 && make install && systemctl restart tor
         fi
+        cd /tmp
+        rm -rf tor.tar.gz tor_src
 
         set -e
     fi
