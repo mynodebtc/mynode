@@ -1635,8 +1635,9 @@ def reset_tor():
     os.system("rm -rf /mnt/hdd/mynode/lnd/v3_onion_private_key")
 
 def reset_tor_connections():
+    # Clear guards and cached directory info, but keep the onion service keys
     stop_service("tor@default")
-    os.system("rm -rf /var/lib/tor/*")
+    os.system("rm -f /var/lib/tor/state /var/lib/tor/cached-*")
     start_service("tor@default")
 
 def is_tor_remote_access_enabled():

@@ -134,7 +134,8 @@
                     }
                     openConfirmDialog("confirm-dialog",
                                       "Reset Tor Connections",
-                                      "Resetting Tor Connections will reset the current tor data and reboot. "+
+                                      "Resetting Tor Connections will restart Tor with new connections. "+
+                                      "Your tor addresses will stay the same. "+
                                       "Would you still like to reset Tor?",
                                       okFunction)
                 });
@@ -1714,7 +1715,7 @@
             <div class="divider"></div>
 
             <div class="settings_block_subheader">Reset Tor Connections</div>
-            If your Tor performance is poor, you can reset your tor connections. Tor will be restarted with new connections.
+            If your Tor performance is poor, you can reset your tor connections. Tor will be restarted with new connections, and your tor addresses will stay the same.
             <br/>
             <button id="reset_tor_connections" class="ui-button ui-widget ui-corner-all settings_button">Reset Tor Connections</button>
 
