@@ -32,7 +32,7 @@ markupsafe==2.1.5
     #   werkzeug
 pam==0.2.0
     # via -r scripts/mynode_pip3_requirements.in
-pillow==10.4.0
+pillow==13.0.0
     # via -r scripts/mynode_pip3_requirements.in
 prometheus-client==0.21.1
     # via -r scripts/mynode_pip3_requirements.in
