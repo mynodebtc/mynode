@@ -4,6 +4,7 @@
 #   app_sdk/create.py              Create a new app
 #   app_sdk/create.py check <app>  Check an app for missing files, placeholders and its ports
 #   app_sdk/create.py check_doc    Check the settings table in doc/applications.md
+#   app_sdk/create.py push <app> <device ip>  Copy an app to a device and install it
 #
 # The new app is written to rootfs/standard/usr/share/mynode_apps/<short_name>.
 # See doc/applications.md for the app layout and all JSON settings.
@@ -12,7 +13,9 @@ import os
 import re
 import sys
 import json
+import shlex
 import shutil
+import subprocess
 from argparse import ArgumentParser
 
 REPO_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -495,6 +498,48 @@ def check(short_name):
     if not warnings:
         print("{} looks good!".format(short_name))
 
+def push(short_name, device, user, reinstall):
+    errors, warnings = check_app(short_name)
+    # A source download whose pin does not match latest_version fails to install on the device
+    pin_warnings = [w for w in warnings if w.startswith("download_source_sha256")]
+    print_check_results(errors + pin_warnings, [w for w in warnings if w not in pin_warnings])
+    if errors or pin_warnings:
+        exit(1)
+
+    app_dir = os.path.join(APPS_DIR, short_name)
+    target = "{}@{}".format(user, device)
+    tmp_dir = "/tmp/mynode_app_push"
+
+    print("Copying {} to {}...".format(short_name, device))
+    sys.stdout.flush()
+    subprocess.check_call(["ssh", target, "rm -rf {0} && mkdir -p {0}".format(tmp_dir)])
+    subprocess.check_call(["rsync", "-a", "--delete", "--exclude", "__pycache__", "--exclude", ".DS_Store",
+                           app_dir + "/", "{}:{}/{}/".format(target, tmp_dir, short_name)])
+
+    # Replace the app folder (removing deleted files), load it, then install or upgrade it.
+    # Apps pushed to a device that did not have them can be removed again from the Marketplace.
+    # install only reinstalls when latest_version changed, so script changes need --reinstall.
+    script = """
+set -e
+APP={app}
+DST=/usr/share/mynode_apps/$APP
+[ -d $DST ] || touch {tmp}/$APP/is_manually_added
+mkdir -p $DST
+rsync -a --delete --exclude is_manually_added {tmp}/$APP/ $DST/
+[ -f {tmp}/$APP/is_manually_added ] && mv {tmp}/$APP/is_manually_added $DST/
+chown -R root:root $DST
+rm -rf {tmp}
+mynode-manage-apps init
+mynode-manage-apps {install} $APP
+if [ -f $DST/nginx/https_$APP.conf ]; then nginx -t && systemctl reload nginx; fi
+systemctl restart www
+if systemctl is-active --quiet $APP; then systemctl restart $APP; fi
+echo "Pushed $APP"
+""".format(app=short_name, tmp=tmp_dir, install="reinstall" if reinstall else "install")
+    # A terminal lets sudo ask for the password
+    tty = ["-t"] if sys.stdin.isatty() else []
+    subprocess.check_call(["ssh"] + tty + [target, "sudo bash -c " + shlex.quote(script)])
+
 def main():
     parser = ArgumentParser(description="Create a new MyNode application")
     subparsers = parser.add_subparsers(dest="command")
@@ -502,12 +547,23 @@ def main():
     parser_check = subparsers.add_parser("check", help="Check an application")
     parser_check.add_argument("app", help="App to check")
     subparsers.add_parser("check_doc", help="Check the settings table in doc/applications.md")
+    parser_push = subparsers.add_parser("push", help="Copy an application to a device and install it")
+    parser_push.add_argument("app", help="App to push")
+    parser_push.add_argument("device", help="Device IP address or hostname")
+    parser_push.add_argument("--user", default="admin", help="SSH user (default: admin)")
+    parser_push.add_argument("--reinstall", action="store_true", help="Reinstall even if the version did not change")
     args = parser.parse_args()
 
     if args.command == "check":
         check(args.app)
     elif args.command == "check_doc":
         check_doc()
+    elif args.command == "push":
+        try:
+            push(args.app, args.device, args.user, args.reinstall)
+        except subprocess.CalledProcessError:
+            print("Push failed")
+            exit(1)
     else:
         create()
 

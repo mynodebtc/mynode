@@ -29,21 +29,21 @@ Every download must be pinned to a hash, and the pin must be updated whenever `l
 
 ## Testing on a Device
 
-Copy the app folder to a development device and let MyNode pick it up:
+Push the app to a development device:
 
 ```
-scp -r rootfs/standard/usr/share/mynode_apps/<short name> admin@<device ip>:/tmp/
+app_sdk/create.py push <short name> <device ip>
 ```
 
-Then on the device:
+This checks the app, copies its folder to the device over SSH (as `admin`, or `--user`), and installs it. Run it again after each change. On the device it:
 
-```
-sudo cp -r /tmp/<short name> /usr/share/mynode_apps/
-sudo mynode-manage-apps init
-sudo mynode-manage-apps install <short name>
-```
+- replaces `/usr/share/mynode_apps/<short name>`, so deleted files are removed too
+- runs `mynode-manage-apps init` and `mynode-manage-apps install <short name>`
+- reloads nginx if the app has an nginx config, restarts the web UI so Python and template changes load, and restarts the app's service if it is running
 
-The app then appears on the Marketplace page, where it can be installed, enabled and uninstalled like any other app.
+`install` only reruns the install script when `latest_version` changed. Pass `--reinstall` to rerun it without a version change; this also resets the app's generated login password. Push fails if a source download's `download_source_sha256` does not match `latest_version`, since the device would refuse the download.
+
+The app then appears on the Marketplace page, where it can be enabled and uninstalled like any other app. An app the device did not already have also gets a "Remove from Device" button once uninstalled. The device should run a MyNode build from the same branch, since apps can rely on newer app settings.
 
 Deploying the whole rootfs works too, and picks up changes outside the app folder. Build it with `make rootfs`, copy it to the device as described in the [development guide](development.md), then reload the apps without rebooting:
 
