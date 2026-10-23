@@ -1,7 +1,7 @@
 # Specter Desktop, run by bitcoin from /opt/mynode/specter/env on 64-bit devices. specter.lock pins it
 # and all of its dependencies with hashes. After changing this file or SPECTER_VERSION, regenerate it
 # from the repo root with the command at the top of that file.
-cryptoadvance.specter==2.1.10
+cryptoadvance.specter==2.1.11
 ecdsa==0.13.3
 # Needed since Specter 2.1.1
 sqlalchemy<2

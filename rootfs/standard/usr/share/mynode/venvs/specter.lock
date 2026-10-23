@@ -64,9 +64,9 @@ cbor2==5.9.0 \
     # via
     #   cryptoadvance-specter
     #   hwi
-certifi==2024.6.2 \
-    --hash=sha256:3cd43f1c6fa7dedc5899d69d3ad0398fd018ad1a17fba83ddaf78aa46c747516 \
-    --hash=sha256:ddc6c8ce995e6987e7faf5e3f1b02b302836a0e5d98ece18392cb1a36c72ad56
+certifi==2024.7.4 \
+    --hash=sha256:5a1e7645bc0ec61a09e26c36f6106dd4cf40c6db3a1fb6352b0244e7fb057c7b \
+    --hash=sha256:c198e21b1289c2ab85ee4e67bb4b4ef3ead0892059901a8d5b622f24a1101e90
     # via
     #   cryptoadvance-specter
     #   requests
@@ -356,9 +356,9 @@ cryptoadvance-liquidissuer==0.2.4 \
     --hash=sha256:5a2c531801854c5a4a46daf184877e22f731cdb42d2cfb840785bda7371ba6fb \
     --hash=sha256:9e468f3e35ecc566b3f74a2263677cf26632548abb194521dba15ad37acd1e9b
     # via cryptoadvance-specter
-cryptoadvance-specter==2.1.10 \
-    --hash=sha256:76a3f8ddcccb2590fd3f77fbac981e8ce3ae05f1f9c3006c052175a32d51523f \
-    --hash=sha256:bdefa1615c2c7e88793b8ffc02ea81977d999bf3ce5e44966f7b0acd7121ad26
+cryptoadvance-specter==2.1.11 \
+    --hash=sha256:1b1f6354eecd538b388c287318c4d8c18eb43cd70a87298cb77c57c63399a873 \
+    --hash=sha256:fa2f679b069babe55ed32007f6d0d0bd4cd93ce267d339ab6040df57dd0c297a
     # via -r rootfs/standard/usr/share/mynode/venvs/specter.in
 cryptoadvance-spectrum==0.8.0 \
     --hash=sha256:cc91eef05f6417898e735b793b91135ddd989fe223ff51aeaa4bc278eb15c3ed \
@@ -1108,9 +1108,9 @@ pycparser==3.0 \
     --hash=sha256:600f49d217304a5902ac3c37e1281c9fe94e4d0489de643a9504c5cdfdfc6b29 \
     --hash=sha256:b727414169a36b7d524c1c3e31839a521725078d7b2ff038656844266160a992
     # via cffi
-pyjwt==2.12.0 \
-    --hash=sha256:2f62390b667cd8257de560b850bb5a883102a388829274147f1d724453f8fb02 \
-    --hash=sha256:9bb459d1bdd0387967d287f5656bf7ec2b9a26645d1961628cda1764e087fd6e
+pyjwt==2.13.0 \
+    --hash=sha256:41571c89ca91598c79e8ef18a2d07367d4810fbbd6f637794879baf1b7703423 \
+    --hash=sha256:66adcc2aff09b3f1bbd95fc1e1577df8ac8723c978552fd43304c8a290ac5728
     # via cryptoadvance-specter
 pyopenssl==26.0.0 \
     --hash=sha256:df94d28498848b98cc1c0ffb8ef1e71e40210d3b0a8064c9d29571ed2904bf81 \
