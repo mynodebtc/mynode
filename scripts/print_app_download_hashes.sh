@@ -8,6 +8,7 @@
 #     image digests in rootfs/standard/usr/share/mynode_apps/<app>/scripts/install_<app>.sh, or in
 #     "install_env_vars" in the app's JSON
 # Pass app names (e.g. THUNDERHUB lndg GO) to check only those. Image digests need docker buildx.
+# With --check, exit with an error if any pin is missing or does not match (for CI).
 
 set -e
 
@@ -55,7 +56,15 @@ UV_AARCH64_SHA256 UV_VERSION https://github.com/astral-sh/uv/releases/download/{
 UV_X86_64_SHA256 UV_VERSION https://github.com/astral-sh/uv/releases/download/{VERSION}/uv-x86_64-unknown-linux-gnu.tar.gz
 "
 
-SELECTED=("$@")
+CHECK=0
+SELECTED=()
+for ARG in "$@"; do
+    if [ "$ARG" = "--check" ]; then
+        CHECK=1
+    else
+        SELECTED+=("$ARG")
+    fi
+done
 
 wanted () {
     [ ${#SELECTED[@]} -eq 0 ] && return 0
@@ -88,6 +97,15 @@ status_of () {
     fi
 }
 
+# Print a pin line with its status, counting pins that are missing or do not match
+STALE=0
+report () {
+    local status
+    status=$(status_of "$2" "$3")
+    echo "$1    # $status"
+    [ "$status" = "matches" ] || STALE=$((STALE + 1))
+}
+
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT
 
@@ -111,7 +129,7 @@ for APP in $APPS; do
         curl -fsSL "$URL" -o "$TMP_DIR/download"
         PINNED="$VERSION $(sha256_of "$TMP_DIR/download")"
         CURRENT=$(grep -E "^[[:space:]]*${APP}_SHA256=\"" $VERSIONS_FILE | grep -F "\"$VERSION " | head -1 | cut -d'"' -f2)
-        echo "${APP}_SHA256=\"$PINNED\"    # $(status_of "$CURRENT" "$PINNED")"
+        report "${APP}_SHA256=\"$PINNED\"" "$CURRENT" "$PINNED"
     done
 done
 
@@ -134,7 +152,7 @@ EOF
 
     curl -fsSL "$URL" -o "$TMP_DIR/download"
     PINNED="$VERSION $(sha256_of "$TMP_DIR/download")"
-    echo "$APP: \"download_source_sha256\": \"$PINNED\",    # $(status_of "$CURRENT" "$PINNED")"
+    report "$APP: \"download_source_sha256\": \"$PINNED\"," "$CURRENT" "$PINNED"
 done
 
 while read -r VAR IMAGE TAG_SOURCE; do
@@ -153,7 +171,7 @@ while read -r VAR IMAGE TAG_SOURCE; do
         fi
         PINNED="$TAG $DIGEST"
         CURRENT=$(grep -E "^[[:space:]]*${VAR}=\"" $VERSIONS_FILE | grep -F "\"$TAG " | head -1 | cut -d'"' -f2)
-        echo "${VAR}=\"$PINNED\"    # $(status_of "$CURRENT" "$PINNED")"
+        report "${VAR}=\"$PINNED\"" "$CURRENT" "$PINNED"
     done
 done <<< "$DOCKER_IMAGES"
 
@@ -175,10 +193,10 @@ EOF
     fi
     PINNED="$TAG $DIGEST"
     if [ -n "$JSON_PIN" ]; then
-        echo "$APP: \"${VAR}\": \"$PINNED\",    # $(status_of "$JSON_PIN" "$PINNED")"
+        report "$APP: \"${VAR}\": \"$PINNED\"," "$JSON_PIN" "$PINNED"
     else
         CURRENT=$(grep -E "^[[:space:]]*${VAR}=\"" "$MARKETPLACE_DIR/$APP/scripts/install_$APP.sh" | head -1 | cut -d'"' -f2)
-        echo "$APP: ${VAR}=\"$PINNED\"    # $(status_of "$CURRENT" "$PINNED")"
+        report "$APP: ${VAR}=\"$PINNED\"" "$CURRENT" "$PINNED"
     fi
 done <<< "$MARKETPLACE_DOCKER_IMAGES"
 
@@ -194,7 +212,7 @@ while read -r VAR VERSION_VAR URL_TEMPLATE; do
         curl -fsSL "${URL_TEMPLATE//\{VERSION\}/$VERSION}" -o "$TMP_DIR/download" < /dev/null
         PINNED="$VERSION $(sha256_of "$TMP_DIR/download")"
         CURRENT=$(grep -E "^[[:space:]]*${VAR}=\"" $VERSIONS_FILE | grep -F "\"$VERSION " | head -1 | cut -d'"' -f2)
-        echo "${VAR}=\"$PINNED\"    # $(status_of "$CURRENT" "$PINNED")"
+        report "${VAR}=\"$PINNED\"" "$CURRENT" "$PINNED"
     done
 done <<< "$TOOL_DOWNLOADS"
 
@@ -203,4 +221,10 @@ if wanted BTCPAYSERVER; then
     LATEST=$(git ls-remote https://github.com/btcpayserver/btcpayserver-docker HEAD < /dev/null | cut -f1)
     CURRENT=$(grep -E '^BTCPAYSERVER_DOCKER_COMMIT="' $VERSIONS_FILE | cut -d'"' -f2)
     echo "BTCPAYSERVER_DOCKER_COMMIT=\"$LATEST\"    # latest commit, $(status_of "$CURRENT" "$LATEST")"
+fi
+
+# A newer btcpayserver-docker commit is not a stale pin, so it is not counted
+if [ "$CHECK" = "1" ] && [ "$STALE" -gt 0 ]; then
+    echo "ERROR: $STALE pin(s) missing or not matching" >&2
+    exit 1
 fi
