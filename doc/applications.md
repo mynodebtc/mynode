@@ -85,10 +85,10 @@ This script is required. The script will be executed from within the application
 This script must be present, but content is optional. By default, during uninstall will remove the app installation folder. This script will be run prior to deletion in case any special steps need to be performed.
 
 ### scripts/pre_sampleapp.sh
-This script must be present, but content is optional. This script will run prior to launching the application.
+This script is optional. If present, it will run prior to launching the application.
 
 ### scripts/post_sampleapp.sh
-This script must be present, but content is optional. This script will run after launching the application.
+This script is optional. If present, it will run after launching the application.
 
 ### www/python/sampleapp.py
 This is the python file for handling web interface requests. The web interface is handled by flask and the file comes with a single hander for "/app/sampleapp/info". Additional URLs can be registered for more complex applications if they need to offer additional functionality.

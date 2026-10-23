@@ -143,7 +143,8 @@ def check_app(short_name, pins_are_errors=False):
         errors.append('short_name in {}.json must be "{}"'.format(short_name, short_name))
 
     required_files = ["{}.png".format(short_name)]
-    for script in ["install", "uninstall", "pre", "post"]:
+    # pre and post scripts are optional; the service only runs them if present
+    for script in ["install", "uninstall"]:
         required_files.append("scripts/{}_{}.sh".format(script, short_name))
     for f in required_files:
         if not os.path.isfile(os.path.join(app_dir, f)):
