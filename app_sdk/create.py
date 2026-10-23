@@ -2,7 +2,7 @@
 # Create a new MyNode application from the template in app_sdk/sampleapp.
 #
 #   app_sdk/create.py              Create a new app
-#   app_sdk/create.py check <app>  Check an app for missing files, placeholders and its ports
+#   app_sdk/create.py check <app>  Check an app for missing files, placeholders, download pins and its ports
 #   app_sdk/create.py check_doc    Check the settings table in doc/applications.md
 #   app_sdk/create.py push <app> <device ip>  Copy an app to a device and install it
 #
@@ -164,6 +164,28 @@ def check_app(short_name):
         if not pinned or pinned.split()[0] != app_data.get("latest_version"):
             warnings.append("download_source_sha256 is missing or does not match latest_version")
 
+    # Docker images must be pinned to a digest for the tag latest_version pulls
+    try:
+        with open(os.path.join(app_dir, "scripts/install_{}.sh".format(short_name))) as f:
+            install_src = f.read()
+    except IOError:
+        install_src = ""
+    docker_images = get_marketplace_docker_images(short_name)
+    if re.search(r'^[^#\n]*pull_app_docker_image', install_src, re.M) and not docker_images:
+        warnings.append("Install script pulls a Docker image, but {} is not in MARKETPLACE_DOCKER_IMAGES in {}".format(short_name, HASHES_SCRIPT))
+    env_vars = app_data.get("install_env_vars") or {}
+    for var, image, tag_template in docker_images:
+        tag = tag_template.replace("{VERSION}", str(app_data.get("latest_version", "")))
+        # The pin is in install_env_vars if set there, otherwise in the install script
+        pinned = env_vars.get(var)
+        if pinned == None:
+            m = re.search(r'^\s*{}="([^"]*)"'.format(re.escape(var)), install_src, re.M)
+            pinned = m.group(1) if m else ""
+        if "{VERSION}" in pinned:
+            warnings.append("{} uses {{VERSION}}; pin the literal tag {} so a stale digest fails the install".format(var, tag))
+        elif len(pinned.split()) != 2 or pinned.split()[0] != tag:
+            warnings.append("{} is missing or does not match {}:{}".format(var, image, tag))
+
     port_errors, port_warnings = check_app_ports(short_name, app_dir, app_data)
     errors += port_errors
     warnings += port_warnings
@@ -282,6 +304,17 @@ def check_app_ports(short_name, app_dir, app_data):
             errors.append("Port {} is also used by {}".format(port, name))
 
     return errors, warnings
+
+def get_marketplace_docker_images(short_name):
+    # The app's (pin variable, image, tag with {VERSION}) entries in MARKETPLACE_DOCKER_IMAGES
+    with open(os.path.join(REPO_DIR, HASHES_SCRIPT)) as f:
+        m = re.search(r'^MARKETPLACE_DOCKER_IMAGES="([^"]*)"', f.read(), re.M)
+    images = []
+    for line in (m.group(1).split("\n") if m else []):
+        parts = line.split()
+        if len(parts) == 4 and parts[0] == short_name:
+            images.append(parts[1:])
+    return images
 
 def app_downloads_source(app_data):
     return not app_data.get("download_skip", False) and app_data.get("download_type", "source") == "source"

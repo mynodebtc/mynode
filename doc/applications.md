@@ -18,7 +18,7 @@ After the files are created, update the icon, install script, service file and s
 app_sdk/create.py check <short name>
 ```
 
-The check looks for missing files, leftover `FILL_IN` placeholders, and an unpinned or stale download hash.
+The check looks for missing files, leftover `FILL_IN` placeholders, and an unpinned or stale download hash or Docker image digest.
 
 ## Pinning Downloads
 
