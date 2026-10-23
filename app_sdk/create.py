@@ -120,10 +120,13 @@ def remove_app_info(app_json_path, key):
 ######################################################################################
 ## Checks
 ######################################################################################
-def check_app(short_name):
+def check_app(short_name, pins_are_errors=False):
+    # pins_are_errors: report download and image pins that do not match latest_version as
+    # errors, since the device refuses (or for {VERSION} pins, mis-tags) those downloads
     app_dir = os.path.join(APPS_DIR, short_name)
     errors = []
     warnings = []
+    pin_problems = errors if pins_are_errors else warnings
 
     if not os.path.isdir(app_dir):
         return ["No app named {} in {}".format(short_name, APPS_DIR)], warnings
@@ -162,7 +165,7 @@ def check_app(short_name):
     if app_downloads_source(app_data):
         pinned = app_data.get("download_source_sha256", "")
         if not pinned or pinned.split()[0] != app_data.get("latest_version"):
-            warnings.append("download_source_sha256 is missing or does not match latest_version")
+            pin_problems.append("download_source_sha256 is missing or does not match latest_version")
 
     # Docker images must be pinned to a digest for the tag latest_version pulls
     try:
@@ -182,9 +185,9 @@ def check_app(short_name):
             m = re.search(r'^\s*{}="([^"]*)"'.format(re.escape(var)), install_src, re.M)
             pinned = m.group(1) if m else ""
         if "{VERSION}" in pinned:
-            warnings.append("{} uses {{VERSION}}; pin the literal tag {} so a stale digest fails the install".format(var, tag))
+            pin_problems.append("{} uses {{VERSION}}; pin the literal tag {} so a stale digest fails the install".format(var, tag))
         elif len(pinned.split()) != 2 or pinned.split()[0] != tag:
-            warnings.append("{} is missing or does not match {}:{}".format(var, image, tag))
+            pin_problems.append("{} is missing or does not match {}:{}".format(var, image, tag))
 
     port_errors, port_warnings = check_app_ports(short_name, app_dir, app_data)
     errors += port_errors
@@ -532,11 +535,9 @@ def check(short_name):
         print("{} looks good!".format(short_name))
 
 def push(short_name, device, user, reinstall):
-    errors, warnings = check_app(short_name)
-    # A source download whose pin does not match latest_version fails to install on the device
-    pin_warnings = [w for w in warnings if w.startswith("download_source_sha256")]
-    print_check_results(errors + pin_warnings, [w for w in warnings if w not in pin_warnings])
-    if errors or pin_warnings:
+    errors, warnings = check_app(short_name, pins_are_errors=True)
+    print_check_results(errors, warnings)
+    if errors:
         exit(1)
 
     app_dir = os.path.join(APPS_DIR, short_name)

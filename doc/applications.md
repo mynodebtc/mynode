@@ -41,7 +41,7 @@ This checks the app, copies its folder to the device over SSH (as `admin`, or `-
 - runs `mynode-manage-apps init` and `mynode-manage-apps install <short name>`
 - reloads nginx if the app has an nginx config, restarts the web UI so Python and template changes load, and restarts the app's service if it is running
 
-`install` only reruns the install script when `latest_version` changed. Pass `--reinstall` to rerun it without a version change; this also resets the app's generated login password. Push fails if a source download's `download_source_sha256` does not match `latest_version`, since the device would refuse the download.
+`install` only reruns the install script when `latest_version` changed. Pass `--reinstall` to rerun it without a version change; this also resets the app's generated login password. Push fails if a source download's `download_source_sha256` or a Docker image pin does not match `latest_version`, since the device would refuse the download or install the old image.
 
 The app then appears on the Marketplace page, where it can be enabled and uninstalled like any other app. An app the device did not already have also gets a "Remove from Device" button once uninstalled. The device should run a MyNode build from the same branch, since apps can rely on newer app settings.
 
