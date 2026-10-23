@@ -18,9 +18,9 @@ remove_docker_images_by_name 'lndboss'
 remove_docker_images_by_name 'lndboss:latest'
 
 # Pull latest image and tag latest
-IMAGE_DIGEST="v2.19.1 sha256:2d74ad53d76704bcdb514cb4cba31f425e3762e517d714c5a7139b4c51e827db"
-pull_app_docker_image niteshbalusu/lndboss v2.19.1 lndboss "$IMAGE_DIGEST"
-docker tag niteshbalusu/lndboss:v2.19.1 lndboss
+# IMAGE_DIGEST is set from install_env_vars in lndboss.json
+pull_app_docker_image niteshbalusu/lndboss "$VERSION" lndboss "$IMAGE_DIGEST"
+docker tag niteshbalusu/lndboss:$VERSION lndboss
 
 # Build docker container
 #if [ "$DEVICE_ARCH" = "x86_64" ]; then

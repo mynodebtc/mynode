@@ -28,7 +28,10 @@
         "aarch64": "download_url",
         "x86_64": "download_url"
     },
-    "install_env_vars": {"DOCKER_IMAGE_NAME": "jam-ui-only:{VERSION}-clientserver-v0.9.11"},
+    "install_env_vars": {
+        "DOCKER_IMAGE_NAME": "jam-ui-only:{VERSION}-clientserver-v0.9.11",
+        "IMAGE_DIGEST": "v0.4.1-clientserver-v0.9.11 sha256:03fa5d0cd577d999bf78d94be18b2f36e8fc2524b069c44bcbf045f41b2aa646"
+    },
     "supports_app_page": true,
     "supports_testnet": false,
     "http_port": 5020,

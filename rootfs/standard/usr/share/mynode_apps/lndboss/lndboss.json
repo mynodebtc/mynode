@@ -24,7 +24,9 @@
         "aarch64": "download_url",
         "x86_64": "download_url"
     },
-    "install_env_vars": {},
+    "install_env_vars": {
+        "IMAGE_DIGEST": "v2.19.1 sha256:2d74ad53d76704bcdb514cb4cba31f425e3762e517d714c5a7139b4c51e827db"
+    },
     "supports_app_page": true,
     "supports_testnet": false,
     "http_port": 8055,
