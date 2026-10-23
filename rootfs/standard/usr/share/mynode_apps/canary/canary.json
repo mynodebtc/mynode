@@ -20,6 +20,10 @@
     "supported_archs": ["aarch64", "x86_64"],
     "download_skip": true,
     "requires_docker_image_installation": true,
+    "install_env_vars": {
+        "BACKEND_IMAGE_DIGEST": "v1.7.0 sha256:d5025d4be7af7c0b2a53086fd587375d54d4455da1de2cdfed7bdc47b5e1cc27",
+        "FRONTEND_IMAGE_DIGEST": "v1.7.0 sha256:f4c5d5f8d3409ff3bc270356dfd3446e16cdd87a6ae48cddfac658631a76227b"
+    },
     "requires_electrs": true,
     "requires_bitcoin": false,
     "requires_lightning": false,

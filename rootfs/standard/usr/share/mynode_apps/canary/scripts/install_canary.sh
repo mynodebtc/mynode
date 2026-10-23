@@ -59,8 +59,7 @@ write_compose_identity
 remove_docker_images_by_name "canary-backend"
 remove_docker_images_by_name "canary-frontend"
 
-BACKEND_IMAGE_DIGEST="v1.7.0 sha256:d5025d4be7af7c0b2a53086fd587375d54d4455da1de2cdfed7bdc47b5e1cc27"
-FRONTEND_IMAGE_DIGEST="v1.7.0 sha256:f4c5d5f8d3409ff3bc270356dfd3446e16cdd87a6ae48cddfac658631a76227b"
+# BACKEND_IMAGE_DIGEST and FRONTEND_IMAGE_DIGEST are set from install_env_vars in canary.json
 pull_image_with_retries schjonhaug/canary-backend "$VERSION" canary "$BACKEND_IMAGE_DIGEST"
 pull_image_with_retries schjonhaug/canary-frontend "$VERSION" canary "$FRONTEND_IMAGE_DIGEST"
 
