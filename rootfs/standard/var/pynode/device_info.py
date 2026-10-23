@@ -219,6 +219,23 @@ def run_manual_upgrade(args):
 def upgrade_device():
     run_manual_upgrade([])
 
+def upgrade_os_packages():
+    if not is_upgrade_running():
+        mark_upgrade_started()
+
+        # Log like an upgrade so the upgrade page can show upgrade_log_latest.txt while it runs
+        log_folder = "/home/admin/upgrade_logs"
+        os.system("mkdir -p {}".format(log_folder))
+        subprocess.call("/usr/bin/mynode_upgrade_os_packages.sh 2>&1 | tee {0}/upgrade_log_latest.txt > {0}/upgrade_log_os_packages.txt".format(log_folder), shell=True)
+        os.system("chown -R admin:admin {}".format(log_folder))
+
+        # Sync
+        os.system("sync")
+        time.sleep(1)
+
+        # Reboot so running services pick up the updated packages
+        reboot_device()
+
 def upgrade_device_beta():
     run_manual_upgrade(["beta"])
 

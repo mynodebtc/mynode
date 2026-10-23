@@ -378,6 +378,26 @@ def upgrade_beta_page():
     }
     return render_template('reboot.html', **templateData)
 
+@mynode_settings.route("/settings/upgrade-os-packages")
+def upgrade_os_packages_page():
+    check_logged_in()
+
+    check_and_mark_reboot_action("upgrade_os_packages")
+
+    # Upgrade OS packages
+    t = Timer(1.0, upgrade_os_packages)
+    t.start()
+
+    # Display wait page
+    templateData = {
+        "title": "Upgrading",
+        "header_text": "Upgrading OS Packages",
+        "subheader_text": "This may take a while...",
+        "show_upgrade_log": True,
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('reboot.html', **templateData)
+
 @mynode_settings.route("/settings/get-upgrade-log-raw")
 def get_upgrade_log_page():
     check_logged_in()

@@ -19,6 +19,16 @@
                                       "<p>Would you still like to upgrade your device?</p>",
                                       okFunction)
                 });
+                $("#upgrade_os_packages").on("click", function() {
+                    var okFunction = function() {
+                        window.location.href="/settings/upgrade-os-packages"
+                    }
+                    openConfirmDialog("confirm-dialog",
+                                      "Upgrade OS Packages",
+                                      "<p>This will install available updates for the operating system packages and reboot your device. It does not upgrade MyNode itself.</p>" +
+                                      "<p>Would you still like to upgrade the OS packages?</p>",
+                                      okFunction)
+                });
                 $("#enable_auto_upgrade").on("click", function() {
                     var okFunction = function() {
                         $("#enable_auto_upgrade_form").submit();
@@ -1918,6 +1928,13 @@
             This will regenerate your SSH host keys.
             <br/>
             <a href="/settings/regen-ssh-keys" class="ui-button ui-widget ui-corner-all settings_button">Regenerate</a>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">OS Packages</div>
+            This will install available updates for the operating system packages, such as security fixes, without waiting for a new MyNode release. Your device reboots to finish the upgrade.
+            <br/>
+            <button id="upgrade_os_packages" class="ui-button ui-widget ui-corner-all settings_button">Upgrade OS Packages</button>
 
             <div class="divider"></div>
 
