@@ -25,7 +25,7 @@ The check looks for missing files, leftover `FILL_IN` placeholders, and an unpin
 Every download must be pinned to a hash, and the pin must be updated whenever `latest_version` changes. Installs fail if a download does not match its pin.
 
 - **Source downloads:** the app is listed in `MARKETPLACE_APPS` in `scripts/print_app_download_hashes.sh`. Run `scripts/print_app_download_hashes.sh <short name>` and paste the printed value into `download_source_sha256` in the app's JSON file.
-- **Docker images:** add the image to `MARKETPLACE_DOCKER_IMAGES` in the same script, run it, and paste the printed value into `IMAGE_DIGEST` in the app's install script.
+- **Docker images:** add the image to `MARKETPLACE_DOCKER_IMAGES` in the same script, run it, and paste the printed value into `IMAGE_DIGEST` in the app's install script. A pin can instead go in `install_env_vars` in the app's JSON, so a version bump only changes the JSON; keep the literal tag in the value, not `{VERSION}`.
 
 ## Testing on a Device
 

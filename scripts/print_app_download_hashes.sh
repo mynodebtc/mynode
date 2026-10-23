@@ -5,7 +5,8 @@
 # of these app versions, and paste each line over the matching pin:
 #   - built-in apps: <APP>_SHA256 / <APP>_DIGEST in rootfs/standard/usr/share/mynode/mynode_app_versions.sh
 #   - marketplace apps: "download_source_sha256" in rootfs/standard/usr/share/mynode_apps/<app>/<app>.json,
-#     image digests in rootfs/standard/usr/share/mynode_apps/<app>/scripts/install_<app>.sh
+#     image digests in rootfs/standard/usr/share/mynode_apps/<app>/scripts/install_<app>.sh, or in
+#     "install_env_vars" in the app's JSON
 # Pass app names (e.g. THUNDERHUB lndg GO) to check only those. Image digests need docker buildx.
 
 set -e
@@ -159,7 +160,13 @@ done <<< "$DOCKER_IMAGES"
 while read -r APP VAR IMAGE TAG_TEMPLATE; do
     [ -n "$APP" ] || continue
     wanted "$APP" || continue
-    VERSION=$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["latest_version"])' "$MARKETPLACE_DIR/$APP/$APP.json" < /dev/null)
+    # The pin is in the JSON's install_env_vars if set there, otherwise in the install script
+    IFS=$'\t' read -r VERSION JSON_PIN < <(python3 - "$MARKETPLACE_DIR/$APP/$APP.json" "$VAR" <<'EOF'
+import json, sys
+app = json.load(open(sys.argv[1]))
+print("\t".join([app["latest_version"], (app.get("install_env_vars") or {}).get(sys.argv[2], "")]))
+EOF
+)
     TAG=${TAG_TEMPLATE//\{VERSION\}/$VERSION}
     DIGEST=$(digest_of "$IMAGE:$TAG")
     if [ -z "$DIGEST" ]; then
@@ -167,8 +174,12 @@ while read -r APP VAR IMAGE TAG_TEMPLATE; do
         exit 1
     fi
     PINNED="$TAG $DIGEST"
-    CURRENT=$(grep -E "^[[:space:]]*${VAR}=\"" "$MARKETPLACE_DIR/$APP/scripts/install_$APP.sh" | head -1 | cut -d'"' -f2)
-    echo "$APP: ${VAR}=\"$PINNED\"    # $(status_of "$CURRENT" "$PINNED")"
+    if [ -n "$JSON_PIN" ]; then
+        echo "$APP: \"${VAR}\": \"$PINNED\",    # $(status_of "$JSON_PIN" "$PINNED")"
+    else
+        CURRENT=$(grep -E "^[[:space:]]*${VAR}=\"" "$MARKETPLACE_DIR/$APP/scripts/install_$APP.sh" | head -1 | cut -d'"' -f2)
+        echo "$APP: ${VAR}=\"$PINNED\"    # $(status_of "$CURRENT" "$PINNED")"
+    fi
 done <<< "$MARKETPLACE_DOCKER_IMAGES"
 
 while read -r VAR VERSION_VAR URL_TEMPLATE; do
