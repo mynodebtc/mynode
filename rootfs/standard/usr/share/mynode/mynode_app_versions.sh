@@ -88,7 +88,7 @@ LND_UPGRADE_MANIFEST_GUGGERO_SIG_URL=https://github.com/lightningnetwork/lnd/rel
 LND_UPGRADE_MANIFEST_SUHEB_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-suheb-$LND_VERSION.sig
 LND_UPGRADE_MANIFEST_VICTORT_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-VictorT-11-$LND_VERSION.sig
 
-LOOP_VERSION="v0.35.0-beta"
+LOOP_VERSION="v0.35.2-beta"
 LOOP_VERSION=$(get_app_version "$LOOP_VERSION" "loop")
 LOOP_VERSION_FILE=/home/bitcoin/.mynode/loop_version
 LOOP_LATEST_VERSION_FILE=/home/bitcoin/.mynode/loop_version_latest
