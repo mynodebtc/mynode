@@ -16,13 +16,13 @@
         "Get instant notifications when your bitcoins move via ntfy push notifications.",
         "Features include: transaction monitoring, RBF/CPFP detection, balance alerts, and deep wallet scanning."
     ],
-    "latest_version": "v1.7.0",
+    "latest_version": "v1.7.1",
     "supported_archs": ["aarch64", "x86_64"],
     "download_skip": true,
     "requires_docker_image_installation": true,
     "install_env_vars": {
-        "BACKEND_IMAGE_DIGEST": "v1.7.0 sha256:d5025d4be7af7c0b2a53086fd587375d54d4455da1de2cdfed7bdc47b5e1cc27",
-        "FRONTEND_IMAGE_DIGEST": "v1.7.0 sha256:f4c5d5f8d3409ff3bc270356dfd3446e16cdd87a6ae48cddfac658631a76227b"
+        "BACKEND_IMAGE_DIGEST": "v1.7.1 sha256:c8ed8f87f4eaa592ae52a8ac5048dc5c503b4ea2a748cfbe105e661f74cd67e4",
+        "FRONTEND_IMAGE_DIGEST": "v1.7.1 sha256:cf85e6c49de95cbdee098ffae39087ec2992dc8d8f0462714bd8be6a9a991e84"
     },
     "requires_electrs": true,
     "requires_bitcoin": false,
