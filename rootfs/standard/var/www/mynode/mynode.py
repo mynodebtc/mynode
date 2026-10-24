@@ -671,6 +671,8 @@ def index():
             "debian_version": get_debian_version(),
             "show_old_tor_warning": show_old_tor_warning(),
             "tor_version": get_tor_version(),
+            "node_version_warning": get_node_version_warning(),
+            "node_version": get_node_version(),
             "notifications": get_active_notifications(),
             "homepage_refresh_id": get_homepage_refresh_id(),
             "usb_extras": get_usb_extras(),

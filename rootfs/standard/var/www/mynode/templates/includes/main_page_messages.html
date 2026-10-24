@@ -128,6 +128,23 @@
 </div>
 {% endif %}
 
+{% if node_version_warning %}
+<div class="main_page_error_block">
+    <p style="text-align: center; font-size: 16px;"><b>NodeJS is out of date</b></p>
+    {% if node_version_warning == "reflash" %}
+    <p style="text-align: center;">Your device is running NodeJS {{node_version}}, which no longer receives fixes or security patches.
+        Apps that use NodeJS run on this version, and MyNode upgrades cannot install a newer one on this device.</p>
+    <p style="text-align: center;"><b>Reflash your OS drive with the latest MyNode image to get a supported version of NodeJS.</b></p>
+    <p style="text-align: center;">The new image can be downloaded <a href="https://mynodebtc.com/download" target="_blank">here</a> and a guide is
+        <a href="https://docs.mynodebtc.com/advanced/flash-sd-card.html" target="_blank">available</a>.</p>
+    {% else %}
+    <p style="text-align: center;">Your device is running NodeJS {{node_version}}, which has known security issues. Apps that use NodeJS run on this version.</p>
+    <p style="text-align: center;"><b>Upgrade MyNode on the <a href="/settings#mynode">Settings</a> page to install the latest version of NodeJS.</b></p>
+    <p style="text-align: center;">If MyNode is already up to date, reinstall NodeJS from the Reinstall Applications section of the Settings page.</p>
+    {% endif %}
+</div>
+{% endif %}
+
 {% if show_old_tor_warning %}
 <div class="main_page_error_block">
     <p style="text-align: center;"><b>Warning!</b></p>

@@ -393,6 +393,20 @@ def get_tor_version():
     cached_data["tor_version"] = tor_version
     return tor_version
 
+def get_node_version():
+    # Returns "" if NodeJS is not installed
+    global cached_data
+    if "node_version" in cached_data:
+        return cached_data["node_version"]
+
+    try:
+        node_version = to_string(subprocess.check_output("node --version", shell=True, stderr=subprocess.DEVNULL).decode("utf-8").strip())
+        node_version = node_version.lstrip("v")
+    except Exception:
+        node_version = ""
+    cached_data["node_version"] = node_version
+    return node_version
+
 def get_device_ram():
     global cached_data
     if "ram" in cached_data:
@@ -829,6 +843,33 @@ def show_old_tor_warning():
     return False
 def hide_old_tor_warning():
     touch("/tmp/hide_old_tor_warning")
+
+# Oldest NodeJS release accepted for each maintained major version. Majors that are not
+# listed and are older than the newest listed major are no longer maintained.
+NODE_MIN_VERSIONS = {
+    22: (22, 23, 4),
+    24: (24, 22, 1),
+    26: (26, 12, 1),
+}
+
+def get_node_version_warning():
+    # Returns None, "upgrade" (a MyNode upgrade installs a newer NodeJS) or "reflash"
+    # (MyNode keeps 32-bit and Debian 10 devices on NodeJS 18)
+    version = get_node_version()
+    try:
+        parts = tuple(int(p) for p in version.split("."))
+    except ValueError:
+        return None
+    major = parts[0]
+    if major in NODE_MIN_VERSIONS:
+        if parts >= NODE_MIN_VERSIONS[major]:
+            return None
+    elif major > max(NODE_MIN_VERSIONS):
+        return None
+
+    if get_device_bits() == 32 or get_debian_version() < 11:
+        return "reflash"
+    return "upgrade"
 
 
 #==================================
