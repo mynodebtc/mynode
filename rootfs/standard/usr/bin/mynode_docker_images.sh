@@ -156,7 +156,11 @@ while true; do
         if [ -f $BTCPAYSERVER_VERSION_FILE ]; then
             CURRENT=$(cat $BTCPAYSERVER_VERSION_FILE)
         fi
-        if [ "$CURRENT" != "$BTCPAYSERVER_VERSION" ]; then
+        CURRENT_NBXPLORER=""
+        if [ -f $NBXPLORER_VERSION_FILE ]; then
+            CURRENT_NBXPLORER=$(cat $NBXPLORER_VERSION_FILE)
+        fi
+        if [ "$CURRENT" != "$BTCPAYSERVER_VERSION" ] || [ "$CURRENT_NBXPLORER" != "$NBXPLORER_VERSION" ]; then
             # Create a folder for BTCPay
             rm -rf /mnt/hdd/mynode/btcpayserver
             mkdir -p /mnt/hdd/mynode/btcpayserver
@@ -194,6 +198,9 @@ while true; do
 
                 cp -f /usr/share/btcpayserver/bitcoin.custom.yml /mnt/hdd/mynode/btcpayserver/btcpayserver-docker/docker-compose-generator/docker-fragments/bitcoin.custom.yml
                 cp -f /usr/share/btcpayserver/lnd.custom.yml /mnt/hdd/mynode/btcpayserver/btcpayserver-docker/docker-compose-generator/docker-fragments/lnd.custom.yml
+                if [ -n "$NBXPLORER_VERSION" ]; then
+                    sed -i "s|image: nicolasdorier/nbxplorer:.*|image: nicolasdorier/nbxplorer:$NBXPLORER_VERSION@${NBXPLORER_DIGEST##* }|" /mnt/hdd/mynode/btcpayserver/btcpayserver-docker/docker-compose-generator/docker-fragments/nbxplorer.yml
+                fi
 
                 rm -rf /usr/local/bin/btcpay-*
                 rm -rf /usr/local/bin/changedomain.sh
@@ -212,6 +219,7 @@ while true; do
                 /bin/bash -c  '. "/etc/profile.d/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY/btcpayserver-docker" && . helpers.sh && btcpay_pull'
 
                 echo $BTCPAYSERVER_VERSION > $BTCPAYSERVER_VERSION_FILE
+                echo "$NBXPLORER_VERSION" > $NBXPLORER_VERSION_FILE
             fi
         fi
     else

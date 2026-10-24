@@ -204,6 +204,14 @@ BTCPAYSERVER_GENERATOR_DIGEST="latest sha256:e92303cc1499331974aeb95099348791e6b
 BTCPAYSERVER_VERSION=$(get_app_version "$BTCPAYSERVER_VERSION" "btcpayserver")
 BTCPAYSERVER_VERSION_FILE=/home/bitcoin/.mynode/btcpayserver_version
 BTCPAYSERVER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/btcpayserver_version_latest
+# NBXplorer for BTCPay Server, in place of the one BTCPAYSERVER_DOCKER_COMMIT has. 32-bit devices
+# keep that one, for BTCPay Server 1.3.6.
+NBXPLORER_VERSION="2.6.19"
+NBXPLORER_DIGEST="2.6.19 sha256:dca2d8f8b491bad2d8248854794b6a368ca99f960ba1b783cb8fc4b379b27feb"
+if [ "$IS_32_BIT" = "1" ]; then
+    NBXPLORER_VERSION=""
+fi
+NBXPLORER_VERSION_FILE=/home/bitcoin/.mynode/nbxplorer_version
 
 BTCRPCEXPLORER_VERSION="v3.5.1"
 BTCRPCEXPLORER_SHA256="v3.5.1 731aa12573d541f00a27117784c86307c4c3833d27d2cf33565f71a34b3aa38f"
