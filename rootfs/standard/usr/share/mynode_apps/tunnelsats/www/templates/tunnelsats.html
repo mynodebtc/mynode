@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        {% include 'includes/head.html' %}
+    </head>
+    <body>
+        {% include 'includes/logo_header.html' %}
+        <div class="mynode_top_left_div">
+            <a href="/"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/home.png") }}" alt="Home"/></a>
+        </div>
+
+        <div class="main_header">{{ app.name }}</div>
+        <br/>
+
+        <div class="app_tile_row">
+            <div class="info_tile">
+                <div class="info_tile_header">Status</div>
+                <div class="info_tile_contents">
+                    <table class="info_table">
+                        <tr>
+                            <th>Status</th>
+                            <td>{{ app_status }}</td>
+                        </tr>
+                        <tr>
+                            <th>Actions</th>
+                            <td>
+                                <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 120px;" href="https://{{ request.host.split(':')[0] }}:8740" target="_blank" rel="noopener noreferrer">Open App</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <div class="instructions-header">Instructions</div>
+            <ol class="instructions-steps">
+                <li>Click Open App to launch the TunnelSats dashboard on port 8740 (HTTPS) or 8739 (HTTP).</li>
+                <li>Select a VPN server region and subscription plan, or import an existing TunnelSats configuration.</li>
+                <li>Pay the BOLT11 Lightning invoice. Your WireGuard private key is generated locally on this myNode device.</li>
+                <li>Verify the managed dataplane at any time via the Verify &amp; CLI tab or over SSH with <code>sudo tunnelsats verify</code>.</li>
+            </ol>
+        </div>
+
+        <div id="confirm-dialog"></div>
+
+        <div id="loading_spinner_overlay" class="loading_spinner_overlay" style="display:none;">
+            <img id="loading_spinner" class="loading_image" src="{{ url_for('static', filename="images/loading.gif") }}" alt="Loading"/>
+            <br/>
+            <span id="loading_spinner_message">Loading...</span>
+        </div>
+    </body>
+</html>

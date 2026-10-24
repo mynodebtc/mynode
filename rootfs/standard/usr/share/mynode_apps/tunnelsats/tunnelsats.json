@@ -1,0 +1,70 @@
+{
+    "name": "TunnelSats",
+    "short_name": "tunnelsats",
+    "author": {
+        "name": "TunnelSats",
+        "link": "https://tunnelsats.com"
+    },
+    "website": {
+        "name": "GitHub",
+        "link": "https://github.com/Tunnelsats/ts-mynode"
+    },
+    "category": "networking",
+    "short_description": "Lightning VPN",
+    "description": [
+        "TunnelSats provides dedicated WireGuard VPN tunnels with static port forwarding for Lightning Network nodes, allowing your myNode LND node to route hybrid Clearnet + Tor traffic safely without exposing your residential IP address.",
+        "Features in-app server discovery, BOLT11 Lightning checkout, automatic subscription claiming and renewal, $1 bandwidth top-ups, NIP-47 NWC auto-renewal, local X25519 key custody, and a fail-closed cgroup v2 + nftables managed dataplane."
+    ],
+    "linux_user": "tunnelsats",
+    "latest_version": "v1.0.0",
+    "minimum_debian_version": 12,
+    "supported_archs": null,
+    "download_skip": false,
+    "download_type": "source",
+    "download_source_url": "https://github.com/Tunnelsats/ts-mynode/archive/refs/tags/{VERSION}.tar.gz",
+    "download_source_sha256": "v1.0.0 dca569bf434a05fa6ebbb505c9f820ed12f72f79b67a4216fd67063ec3f1d934",
+    "download_binary_url": {},
+    "install_env_vars": {},
+    "supports_app_page": true,
+    "supports_testnet": false,
+    "http_port": 8739,
+    "https_port": 8740,
+    "internal_port": 18739,
+    "extra_ports": [],
+    "requires_bitcoin": true,
+    "requires_docker_image_installation": false,
+    "requires_electrs": false,
+    "requires_lightning": true,
+    "show_on_marketplace_page": true,
+    "show_on_application_page": true,
+    "show_on_homepage": true,
+    "show_on_status_page": true,
+    "hide_status_icon": false,
+    "app_tile_name": "TunnelSats",
+    "app_tile_running_status_text": "Running",
+    "app_tile_button_text": "Info",
+    "app_tile_button_href": "/app/tunnelsats/info",
+    "app_page_show_open_button": true,
+    "app_page_content": [
+        {
+            "heading": "Getting Started",
+            "content": [
+                "Click Open App on the left to launch the TunnelSats dashboard.",
+                "Select a VPN server region and subscription plan (1, 3, 6, or 12 months), or import an existing TunnelSats WireGuard configuration.",
+                "Pay the BOLT11 Lightning invoice with any Lightning wallet. TunnelSats generates your WireGuard X25519 private key locally on your myNode device and provisions your dedicated forwarded port automatically.",
+                "In Automated Mode (default), TunnelSats configures the fail-closed managed dataplane (tunnelsats.slice + nftables kill switch) and updates /mnt/hdd/mynode/settings/lnd_extra_config.conf for hybrid Clearnet + Tor routing.",
+                "In Manual / CLI Mode (SECURE_MODE=true), the dashboard stages your configuration at /mnt/hdd/mynode/tunnelsats/tunnelsatsv2.conf and displays exact SSH commands for manual operator execution."
+            ]
+        }
+    ],
+    "can_uninstall": true,
+    "can_reinstall": true,
+    "can_enable_disable": true,
+    "is_beta": false,
+    "is_premium": false,
+    "homepage_section": "apps",
+    "homepage_order": 95,
+    "app_type": "custom",
+    "sdk_version": 2,
+    "data_manageable": false
+}
