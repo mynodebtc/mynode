@@ -15,13 +15,13 @@
         "This is a nostr relay, written in Rust. It currently supports the entire relay protocol, and persists data with SQLite.",
         "This application is intended for advanced users and running a relay is not required to use nostr clients."
     ],
-    "latest_version": "0.8.8",
+    "latest_version": "0.10.0",
     "linux_user": "nostrrsrelay",
     "supported_archs": null,
     "download_skip": false,
     "download_type": "source",
     "download_source_url": "https://github.com/scsibug/nostr-rs-relay/archive/refs/tags/{VERSION}.tar.gz",
-    "download_source_sha256": "0.8.8 ae75136386ded334b33a2a7ed23d31b5a98dd9be02a28aeabaa36259033f58f1",
+    "download_source_sha256": "0.10.0 25266a4879e096ba476503cc5f103f3ba736fa61c3406240b810bda9636df6f3",
     "download_binary_url": {
         "aarch64": "download_url",
         "x86_64": "download_url"
