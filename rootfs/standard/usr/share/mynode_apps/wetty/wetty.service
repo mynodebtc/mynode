@@ -3,8 +3,9 @@
 
 [Unit]
 Description=wetty
-Wants=www.service
-After=www.service
+# pre_wetty.sh lists the device's addresses as allowed origins, so wait for the network to have them
+Wants=www.service network-online.target
+After=www.service network-online.target
 
 [Service]
 WorkingDirectory=/opt/mynode/wetty
