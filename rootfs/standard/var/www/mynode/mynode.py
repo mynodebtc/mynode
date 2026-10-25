@@ -981,6 +981,9 @@ def start_threads():
     app_data_cache_thread = BackgroundThread(update_application_json_cache, 300)
     app_data_cache_thread.start()
     threads.append(app_data_cache_thread)
+    service_status_thread = BackgroundThread(refresh_service_status_cache, 60)
+    service_status_thread.start()
+    threads.append(service_status_thread)
 
     app.logger.info("STARTED {} THREADS".format(len(threads)))
 

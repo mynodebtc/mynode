@@ -405,7 +405,8 @@ def need_application_refresh():
 ######################################################################################
 ## Get Applications and App Info
 ######################################################################################
-def get_all_applications(order_by="none", include_status=False):
+# The shared list, not a copy - callers must not change it. Use get_all_applications for a copy.
+def get_applications_list(include_status=False):
     global mynode_applications
 
     if need_application_refresh():
@@ -417,7 +418,10 @@ def get_all_applications(order_by="none", include_status=False):
     if include_status:
         update_applications(include_status)
 
-    apps = copy.deepcopy(mynode_applications)
+    return mynode_applications
+
+def get_all_applications(order_by="none", include_status=False):
+    apps = copy.deepcopy(get_applications_list(include_status))
     if order_by == "alphabetic":
         apps.sort(key=lambda x: x["name"])
     elif order_by == "homepage":
@@ -443,15 +447,13 @@ def get_all_applications_from_json_cache():
     return get_dictionary_file_cache(JSON_APPLICATION_CACHE_FILE)
 
 def get_application(short_name):
-    apps = get_all_applications()
-    for app in apps:
+    for app in get_applications_list():
         if app["short_name"] == short_name:
-            return app
+            return copy.deepcopy(app)
     return None
 
 def is_application_valid(short_name):
-    apps = get_all_applications()
-    for app in apps:
+    for app in get_applications_list():
         if app["short_name"] == short_name:
             return True
     return False
@@ -979,6 +981,8 @@ def restart_application(short_name):
         return True
     except Exception as e:
         return False
+    finally:
+        clear_service_status_cache()
 
 def backup_data_folder(app_data):
     log_message("  Running backup_data_folder...")
