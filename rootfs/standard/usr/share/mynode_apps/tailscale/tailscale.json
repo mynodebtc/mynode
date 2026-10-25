@@ -14,7 +14,7 @@
     "description": [
         "Tailscale is a VPN service that makes the devices and applications you own accessible anywhere in the world, securely and effortlessly. It enables encrypted point-to-point connections using the open source WireGuard protocol, which means only devices on your private network can communicate with each other."
     ],
-    "latest_version": "1.78.1",
+    "latest_version": "1.104.2",
     "linux_user": "root",
     "download_skip": true,
     "download_type": "source",
