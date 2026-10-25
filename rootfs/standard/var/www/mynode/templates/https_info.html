@@ -16,6 +16,15 @@
                 background-color: #2e9e4f1f;
                 border: 1px solid #2e9e4f;
             }
+            .https_cmd {
+                display: block;
+                text-align: left;
+                word-break: break-all;
+                margin: 6px 0;
+                padding: 6px 8px;
+                border-radius: 4px;
+                background-color: rgba(128, 128, 128, 0.15);
+            }
         </style>
      </head>
 
@@ -135,6 +144,15 @@
                 <br/><br/>
                 <b>Windows</b> &mdash; open the downloaded file, click "Install Certificate", choose "Current User",
                 then place it in "Trusted Root Certification Authorities".
+                <br/><br/>
+                <b>Linux</b> &mdash; copy the file into the system's certificate folder and refresh it. On Debian
+                and Ubuntu:
+                <code class="https_cmd">sudo cp mynode_ca.crt /usr/local/share/ca-certificates/ &amp;&amp; sudo update-ca-certificates</code>
+                On Fedora:
+                <code class="https_cmd">sudo cp mynode_ca.crt /etc/pki/ca-trust/source/anchors/ &amp;&amp; sudo update-ca-trust</code>
+                Browsers on Linux may keep their own list instead. If Chrome still warns, open Settings, then Privacy
+                and security, Security, Manage certificates, and import it as a trusted authority. For Firefox, see
+                below.
                 <br/><br/>
                 <b>Firefox</b> (on any system) &mdash; open Settings, then Privacy &amp; Security, View Certificates,
                 Authorities, Import, and tick "Trust this CA to identify websites".
