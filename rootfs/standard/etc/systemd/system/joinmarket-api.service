@@ -5,6 +5,7 @@ Description=JoinMarket API daemon
 [Service]
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_bitcoin.sh
+ExecStartPre=/usr/bin/service_scripts/pre_joinmarket.sh
 WorkingDirectory=/home/joinmarket/joinmarket-clientserver/scripts/
 ExecStart=/bin/sh -c '. /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate && python jmwalletd.py'
 User=joinmarket
