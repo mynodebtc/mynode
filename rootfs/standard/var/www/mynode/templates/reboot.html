@@ -54,6 +54,18 @@
                 checkStatus()
                 setInterval(checkStatus, 2500);
 
+                {% if status_url is defined and status_url %}
+                // Actions that only reboot when they succeed report a failure here instead
+                function checkActionStatus() {
+                    $.getJSON({{ status_url|tojson }}, function(data) {
+                        if (data && data["status"] == "failed") {
+                            window.location.replace({{ failed_url|tojson }});
+                        }
+                    });
+                }
+                setInterval(checkActionStatus, 5000);
+                {% endif %}
+
                 {% if show_upgrade_log is defined and show_upgrade_log %}
                 showing_log=0;
                 function update_upgrade_log () {

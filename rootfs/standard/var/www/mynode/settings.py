@@ -58,6 +58,8 @@ def page_settings():
         "upgrade_error": did_upgrade_fail(),
         "upgrade_log": get_recent_upgrade_log(),
         "upgrade_logs": get_all_upgrade_logs(),
+        "os_packages_upgrade_error": did_os_packages_upgrade_fail(),
+        "os_packages_upgrade_log": get_os_packages_upgrade_log_tail(),
         "auto_upgrade": get_auto_upgrade_status(),
         "timezone": get_timezone(),
         "timezone_list": get_timezone_list(),
@@ -384,19 +386,29 @@ def upgrade_os_packages_page():
 
     check_and_mark_reboot_action("upgrade_os_packages")
 
+    # Cleared here, not only when the run starts, so the wait page doesn't see an earlier failure
+    delete_settings_file(OS_PACKAGES_UPGRADE_ERROR)
+
     # Upgrade OS packages
     t = Timer(1.0, upgrade_os_packages)
     t.start()
 
-    # Display wait page
+    # Display wait page. It returns to Settings if the upgrade fails, since there is no reboot then.
     templateData = {
         "title": "Upgrading",
         "header_text": "Upgrading OS Packages",
         "subheader_text": "This may take a while...",
         "show_upgrade_log": True,
+        "status_url": "/settings/upgrade-os-packages-status",
+        "failed_url": "/settings#os_packages",
         "ui_settings": read_ui_settings()
     }
     return render_template('reboot.html', **templateData)
+
+@mynode_settings.route("/settings/upgrade-os-packages-status")
+def upgrade_os_packages_status_page():
+    check_logged_in()
+    return jsonify({"status": "failed" if did_os_packages_upgrade_fail() else "running"})
 
 @mynode_settings.route("/settings/get-upgrade-log-raw")
 def get_upgrade_log_page():

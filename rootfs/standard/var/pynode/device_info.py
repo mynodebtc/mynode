@@ -219,15 +219,29 @@ def run_manual_upgrade(args):
 def upgrade_device():
     run_manual_upgrade([])
 
+OS_PACKAGES_UPGRADE_LOG = "/home/admin/upgrade_logs/upgrade_log_os_packages.txt"
+OS_PACKAGES_UPGRADE_ERROR = "os_packages_upgrade_error"     # Settings file, set when the last run failed
+
 def upgrade_os_packages():
     if not is_upgrade_running():
         mark_upgrade_started()
+        delete_settings_file(OS_PACKAGES_UPGRADE_ERROR)
 
         # Log like an upgrade so the upgrade page can show upgrade_log_latest.txt while it runs
         log_folder = "/home/admin/upgrade_logs"
         os.system("mkdir -p {}".format(log_folder))
-        subprocess.call("/usr/bin/mynode_upgrade_os_packages.sh 2>&1 | tee {0}/upgrade_log_latest.txt > {0}/upgrade_log_os_packages.txt".format(log_folder), shell=True)
+        ret = subprocess.call(["/bin/bash", "-o", "pipefail", "-c",
+                               "/usr/bin/mynode_upgrade_os_packages.sh 2>&1 | tee {0}/upgrade_log_latest.txt > {1}".format(log_folder, OS_PACKAGES_UPGRADE_LOG)])
         os.system("chown -R admin:admin {}".format(log_folder))
+
+        if ret != 0:
+            # Don't reboot, so Settings can show the error. The next run finishes any interrupted
+            # package installs (dpkg --configure -a).
+            log_message("OS package upgrade failed (exit {})".format(ret))
+            create_settings_file(OS_PACKAGES_UPGRADE_ERROR)
+            delete_file("/tmp/upgrade_started")
+            delete_file("/tmp/mark_reboot___upgrade_os_packages")
+            return
 
         # Sync
         os.system("sync")
@@ -241,6 +255,15 @@ def upgrade_device_beta():
 
 def did_upgrade_fail():
     return os.path.isfile("/mnt/hdd/mynode/settings/upgrade_error")
+
+def did_os_packages_upgrade_fail():
+    return settings_file_exists(OS_PACKAGES_UPGRADE_ERROR) and not is_upgrade_running()
+
+def get_os_packages_upgrade_log_tail(lines=40):
+    log = to_string(get_file_contents(OS_PACKAGES_UPGRADE_LOG))
+    if log == "ERROR":
+        return ""
+    return cleanup_log("\n".join(log.splitlines()[-lines:]))
 
 def cleanup_log(log):
     log = re.sub("(product_key|PRODUCT_KEY)=[0-9A-Z]+", "product_key=************", log)

@@ -1931,9 +1931,14 @@
 
             <div class="divider"></div>
 
+            <a id="os_packages"></a>
             <div class="settings_block_subheader">OS Packages</div>
             This will install available updates for the operating system packages, such as security fixes, without waiting for a new MyNode release. Your device reboots to finish the upgrade.
             <br/>
+            {% if os_packages_upgrade_error %}
+            <p style="color: red;">The last OS package upgrade failed, so your device was not rebooted. The end of its log is below. Fix the problem and try again.</p>
+            <div style='text-align: left; font-size: 12px; overflow-x: auto;'><pre>{{os_packages_upgrade_log}}</pre></div>
+            {% endif %}
             <button id="upgrade_os_packages" class="ui-button ui-widget ui-corner-all settings_button">Upgrade OS Packages</button>
 
             <div class="divider"></div>
