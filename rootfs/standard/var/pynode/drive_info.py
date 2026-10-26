@@ -159,7 +159,7 @@ def get_current_drive_filesystem_type():
 def mount_partition(partition, folder_name, permissions="ro"):
     try:
         subprocess.check_output("mkdir -p /mnt/usb_extras/{}".format(folder_name), shell=True)
-        subprocess.check_output("mount -o {} /dev/{} /mnt/usb_extras/{}".format(permissions, partition, folder_name), shell=True)
+        subprocess.check_output("mount -o {},nosuid,nodev,noexec /dev/{} /mnt/usb_extras/{}".format(permissions, partition, folder_name), shell=True)
         return True
     except Exception as e:
         return False
