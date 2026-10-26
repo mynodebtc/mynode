@@ -1,3 +1,38 @@
+=== v0.3.51 ===
+- Released 10/24/26
+- Fix for NodeJS security issue CVE-2026-111497
+- Upgrade Lightning Terminal to v0.17.8
+- Upgrade Loop to v0.35.2
+- Upgrade BTCPay Server to v2.4.5
+- Upgrade NBXplorer to v2.6.19
+- Upgrade Mempool to v3.3.2
+- Upgrade electrs to v0.11.1
+- Upgrade Alby Hub to v1.24.4
+- Upgrade LNbits to v1.6.2
+- Upgrade RTL to v0.15.15
+- Upgrade Thunderhub to v0.19.1
+- Upgrade Balance of Satoshis to 25.3.1
+- Upgrade Channel Tools to v0.14.3
+- Upgrade Specter to v2.1.11
+- Upgrade DATUM to v0.5.1
+- Upgrade Canary to v1.7.1
+- Upgrade Nostr RS Relay to v0.10.0
+- Upgrade Netdata to v2.12.2
+- Upgrade WeTTY to v4.1.0
+- Upgrade Tailscale to v1.104.2
+- Upgrade LndBoss to v2.19.1 and mark it deprecated
+- Upgrade Tor to 0.4.9.14 on Debian 10
+- Speed up the home page
+- Add a settings button to upgrade OS packages
+- Warn on the home page when NodeJS is out of date
+- Limit service ports to the local network by default
+- Move app password buttons into each app's settings section
+- Add Reset Password to RTL and Thunderhub settings
+- Keep onion addresses when resetting Tor connections
+- Clear stale JoinMarket wallet locks on startup
+- Add Linux help for installing CA certs
+- Bug Fixes
+
 === v0.3.50 ===
 - Released 10/15/26
 - Upgrade LND to v0.21.4
