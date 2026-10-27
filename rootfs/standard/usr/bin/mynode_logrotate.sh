@@ -4,8 +4,8 @@ set -e
 set -x
 
 while true; do
-    # Rotate logs
-    logrotate /etc/logrotate.conf
+    # Rotate logs (an error in one config should not skip the checks below)
+    logrotate /etc/logrotate.conf || true
     
     # Check for any "lost" logs that are growing too large
     LARGE_FILE_COUNT=$(find /var/log/ -type f -size +10M | wc -l)
