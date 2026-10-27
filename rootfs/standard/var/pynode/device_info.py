@@ -1452,7 +1452,8 @@ def stop_electrs():
     os.system("systemctl stop electrs")
 
 def restart_electrs_actual():
-    os.system("systemctl restart electrs")
+    if is_service_enabled("electrs", force_refresh=True):
+        os.system("systemctl restart electrs")
 
 def restart_electrs():
     t = Timer(0.1, restart_electrs_actual)
@@ -1481,14 +1482,16 @@ def set_electrs_index_lookup_limit(limit):
 #==================================
 def reset_rtl_config():
     os.system("rm -rf /mnt/hdd/mynode/rtl/RTL-Config.json")
-    os.system("systemctl restart rtl")
+    if is_service_enabled("rtl", force_refresh=True):
+        os.system("systemctl restart rtl")
 
 #==================================
 # Thunderhub Functions
 #==================================
 def reset_thunderhub_config():
     os.system("rm -rf /mnt/hdd/mynode/thunderhub/thub_config.yaml")
-    os.system("systemctl restart thunderhub")
+    if is_service_enabled("thunderhub", force_refresh=True):
+        os.system("systemctl restart thunderhub")
 
 #==================================
 # Sphinx Relay Server Functions
@@ -1497,7 +1500,8 @@ def stop_sphinxrelay():
     os.system("systemctl stop sphinxrelay")
 
 def restart_sphinxrelay_actual():
-    os.system("systemctl restart sphinxrelay")
+    if is_service_enabled("sphinxrelay", force_refresh=True):
+        os.system("systemctl restart sphinxrelay")
 
 def restart_sphinxrelay():
     t = Timer(0.1, restart_sphinxrelay_actual)
@@ -1516,10 +1520,12 @@ def reset_sphinxrelay():
 # Mempool Functions
 #==================================
 def clear_mempool_cache():
+    os.system("systemctl stop mempool")
     os.system("rm -rf /mnt/hdd/mynode/mempool/data/*")
     os.system("rm -rf /mnt/hdd/mynode/mempool/mysql/data/*")
     os.system("sync")
-    os.system("systemctl restart mempool")
+    if is_service_enabled("mempool", force_refresh=True):
+        os.system("systemctl restart mempool")
 
 #==================================
 # LNbits Functions
@@ -1684,7 +1690,8 @@ def change_btcpay_password(email=None):
 #==================================
 def reset_specter_config():
     os.system("rm -rf /mnt/hdd/mynode/specter/config.json")
-    os.system("systemctl restart specter")
+    if is_service_enabled("specter", force_refresh=True):
+        os.system("systemctl restart specter")
 
 #==================================
 # BTC RPC Explorer Functions
