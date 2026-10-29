@@ -112,20 +112,21 @@ def update_lightning_info():
         log_message("update_lightning_info - GET WATCHTOWER")
         if is_watchtower_server_enabled():
             lightning_watchtower_server_info = lnd_get_v2("/watchtower/server")
-        towers = lnd_get_v2("/watchtower/client?include_sessions=1")
-        log_message("update_lightning_info - TOWER DETAILS")
-        tower_details = []
-        if towers != None and "towers" in towers:
-            for tower in towers["towers"]:
-                if "pubkey" in tower and tower["active_session_candidate"]:
-                    pubkey_decoded = base64.b64decode(tower['pubkey'])
-                    pubkey_b16 = to_string(base64.b16encode( pubkey_decoded )).lower()
-                    tower["pubkey_b16"] = pubkey_b16
-                    tower_details.append(tower)
-        lightning_watchtower_client_towers = tower_details
-        log_message("update_lightning_info - GET CLIENT STATS, POLICY")
-        lightning_watchtower_client_stats = lnd_get_v2("/watchtower/client/stats")
-        lightning_watchtower_client_policy = lnd_get_v2("/watchtower/client/policy")
+        if is_watchtower_client_enabled():
+            towers = lnd_get_v2("/watchtower/client?include_sessions=1")
+            log_message("update_lightning_info - TOWER DETAILS")
+            tower_details = []
+            if towers != None and "towers" in towers:
+                for tower in towers["towers"]:
+                    if "pubkey" in tower and tower["active_session_candidate"]:
+                        pubkey_decoded = base64.b64decode(tower['pubkey'])
+                        pubkey_b16 = to_string(base64.b16encode( pubkey_decoded )).lower()
+                        tower["pubkey_b16"] = pubkey_b16
+                        tower_details.append(tower)
+            lightning_watchtower_client_towers = tower_details
+            log_message("update_lightning_info - GET CLIENT STATS, POLICY")
+            lightning_watchtower_client_stats = lnd_get_v2("/watchtower/client/stats")
+            lightning_watchtower_client_policy = lnd_get_v2("/watchtower/client/policy")
 
         # Poll slower (make sure we gather data early)
         if lightning_update_count < 30 or lightning_update_count % 2 == 0:
