@@ -37,9 +37,9 @@ if ! skip_base_upgrades ; then
     # Update SD card
     mkdir -p /etc/torrc.d
 
-    # Remove macOS metadata files (._*) shipped by older releases
-    find -H / /home /lib /opt /usr /var -maxdepth 1 -type f -name '._*' -delete || true
-    find /etc /home/admin /home/bitcoin /lib/systemd /opt/mynode /usr/bin /usr/share /var/pynode /var/www -xdev -type f -name '._*' -delete || true
+    # Remove macOS metadata files (._*, .DS_Store) shipped by older releases
+    find -H / /home /lib /opt /usr /var -maxdepth 1 -type f \( -name '._*' -o -name '.DS_Store' \) -delete || true
+    find /etc /home/admin /home/bitcoin /lib/systemd /opt/mynode /usr/bin /usr/share /var/pynode /var/www -xdev -type f \( -name '._*' -o -name '.DS_Store' \) -delete || true
 
     # Initialize Users
     /usr/bin/mynode_initialize_users.sh
