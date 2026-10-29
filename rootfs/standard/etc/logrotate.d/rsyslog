@@ -1,6 +1,5 @@
 /var/log/syslog
 /var/log/electrs.log
-/var/log/flask
 /var/log/lndhub.log
 /var/log/lnd.log
 /var/log/lit.log
