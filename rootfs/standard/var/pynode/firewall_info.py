@@ -126,7 +126,8 @@ def get_firewall_services(apps):
     used_names = []
     for service in services:
         service["default_public"] = service["id"] in FIREWALL_DEFAULT_PUBLIC_SERVICES
-        service["public"] = overrides.get(service["id"], service["default_public"])
+        # Apps that are not installed are not listed in Settings, so they stay local-only
+        service["public"] = service["installed"] and overrides.get(service["id"], service["default_public"])
         name = get_firewall_profile_name(service["name"], other_names)
         if name in used_names:
             name = get_firewall_profile_name("{} {}".format(service["name"], service["id"]), other_names)

@@ -66,6 +66,12 @@ def uninstall_app(app):
     # Sync
     os.system("sync")
 
+    # Close the app's ports to the internet
+    try:
+        open_application_ports()
+    except Exception as e:
+        log_message("ERROR: Updating firewall after uninstalling {} failed - {}".format(app, str(e)))
+
 # For Dynamic Apps (legacy apps use uninstall_app)
 def remove_app(app):
     # Remove install markers
