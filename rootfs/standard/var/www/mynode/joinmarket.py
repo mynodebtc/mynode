@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, request, flash
-from user_management import check_logged_in
+from user_management import check_logged_in, is_admin_password_valid, get_admin_password_error
 from device_info import read_ui_settings, get_onion_url_for_service, is_tor_remote_access_enabled
 from application_info import *
 from systemctl_info import *
@@ -78,11 +78,16 @@ def joininbox_page():
     return render_template('joinmarket.html', **templateData)
 
 
-@mynode_joinmarket.route("/joinmarket/download_wallet", methods=["GET"])
+@mynode_joinmarket.route("/joinmarket/download_wallet", methods=["POST"])
 def joinmarket_download_wallet():
     check_logged_in()
+    pw = request.form.get('password_download_wallet')
+    if not is_admin_password_valid(pw):
+        flash(get_admin_password_error(), category="error")
+        return redirect("/joinmarket")
+
     wallet_folder = "/mnt/hdd/mynode/joinmarket/wallets/"
-    wallet_name = request.args.get('wallet')
+    wallet_name = request.form.get('wallet')
     if wallet_name is None:
         flash("Error finding wallet name!", category="error")
         return redirect("/joinmarket")

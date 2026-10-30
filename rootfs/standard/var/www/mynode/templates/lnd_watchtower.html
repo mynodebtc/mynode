@@ -7,7 +7,11 @@
         <meta http-equiv="refresh" content="{{ refresh_rate }}"> 
         {% endif %}
 
-        <script>
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
+            $(document).on("click", "[data-remove-tower]", function() {
+                remove_tower($(this).attr("data-remove-tower"));
+            });
+
             function remove_tower(tower) {
                 if ( confirm("Are you sure you want to remove tower "+tower+"?") ) {
                     window.location = location.protocol+'//'+location.hostname+"/lnd/watchtower/remove_tower?tower="+tower
@@ -86,9 +90,7 @@
         <div class="app_tile_row">
             <div class="info_tile">
                 <div class="info_tile_header">URI / Pubkey</div>
-                <div class="info_tile_contents" style="font-size: 12px;">
-                    {{ watchtower_server_uri }}
-                </div>
+                <div class="info_tile_contents" style="font-size: 12px; white-space: pre-line;">{{ watchtower_server_uri }}</div>
             </div>
         </div>
         {% endif %}
@@ -161,7 +163,7 @@
                                         </small>
                                     </td>
                                     <td>{{tower.num_sessions}}</td>
-                                    <td><button onclick="remove_tower('{{tower.pubkey_b16}}')" class="ui-button ui-widget ui-corner-all mynode_button_small red"><span class="ui-icon ui-icon-trash"></span></button></td>
+                                    <td><button data-remove-tower="{{tower.pubkey_b16}}" class="ui-button ui-widget ui-corner-all mynode_button_small red"><span class="ui-icon ui-icon-trash"></span></button></td>
                                 </tr>
                             {% endfor %}
                         </table>

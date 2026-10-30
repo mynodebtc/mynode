@@ -1,7 +1,8 @@
 
+import secrets
 import urllib.parse
 from config import *
-from flask import Flask, render_template, Markup, redirect, request, url_for, flash
+from flask import Flask, render_template, Markup, redirect, request, url_for, flash, session, g
 from user_management import *
 from api import mynode_api
 from bitcoin import mynode_bitcoin
@@ -43,6 +44,7 @@ from utilities import *
 import importlib
 import pam
 import re
+import glob
 import json
 import random
 import logging
@@ -54,15 +56,18 @@ import subprocess
 import os.path
 import psutil
 import time
+import socket
 
 # Proxy class to redirect to HTTP or HTTPS depending on connection
 class ReverseProxied(object):
+    TRUSTED_PROXY_IPS = ["127.0.0.1", "::1"]
+
     def __init__(self, app):
         self.app = app
 
     def __call__(self, environ, start_response):
         scheme = environ.get('HTTP_X_FORWARDED_PROTO')
-        if scheme:
+        if scheme and environ.get('REMOTE_ADDR') in self.TRUSTED_PROXY_IPS:
             environ['wsgi.url_scheme'] = scheme
         return self.app(environ, start_response)
 
@@ -228,12 +233,93 @@ def get_active_notifications():
     return active_notifications
 
 
+### Request Host Check
+def get_request_hostname():
+    host = request.host.lower()
+    if host.startswith("["):
+        host = host[1:].split("]")[0]
+    else:
+        host = host.split(":")[0]
+    return host.rstrip(".")
+
+@app.before_request
+def check_request_host():
+    hostname = get_request_hostname()
+    if not is_allowed_host(hostname):
+        app.logger.warning("Blocked request for unknown host {}".format(hostname))
+        return "Unknown host name. Open MyNode using its IP address, then add this name in Settings under Networking, Allowed Host Names.", 421
+
+
+### Force HTTPS
+# Registered before the other request checks, so no page - including the login and
+# password pages - is ever served over HTTP while HTTPS is forced
+HTTPS_AVAILABLE_CACHE_SECONDS = 5
+https_available_cache = {"time": 0, "available": False}
+
+def is_https_available():
+    # nginx serves HTTPS on 443 and proxies to this server
+    now = time.time()
+    if now - https_available_cache["time"] > HTTPS_AVAILABLE_CACHE_SECONDS:
+        available = False
+        try:
+            with socket.create_connection(("127.0.0.1", 443), timeout=0.5):
+                available = True
+        except OSError:
+            pass
+        https_available_cache["available"] = available
+        https_available_cache["time"] = now
+    return https_available_cache["available"]
+
+HTTPS_WAIT_STATE_TEXT = {
+    STATE_DRIVE_MISSING: "Looking for drive...",
+    STATE_DRIVE_CONFIRM_FORMAT: "Drive needs to be formatted",
+    STATE_DRIVE_FORMATTING: "Formatting drive...",
+    STATE_DRIVE_MOUNTED: "Starting...",
+    STATE_DRIVE_CLONE: "Clone tool is running",
+    STATE_DRIVE_FULL: "Drive is full",
+    STATE_CHOOSE_NETWORK: "Waiting to choose network",
+    STATE_ROOTFS_READ_ONLY: "SD card is read only",
+    STATE_HDD_READ_ONLY: "Drive is read only",
+    STATE_SHUTTING_DOWN: "Shutting down...",
+    STATE_UPGRADING: "Upgrading...",
+    STATE_STABLE: "Running",
+}
+
+@app.before_request
+def force_https():
+    if not is_https_forced():
+        return None
+    if not request.url.startswith('http://'):
+        return None
+    if request.endpoint == "page_https_info":
+        return None
+
+    if is_https_available():
+        url = request.url.replace('http://', 'https://', 1)
+        app.logger.info("Redirecting to HTTPS ({})".format(url))
+        return redirect(url, code=302)
+
+    # HTTPS is not up yet, which is normal early in boot. Show only the device status,
+    # and keep reloading this same address so it moves to HTTPS once available.
+    if request.endpoint == "static":
+        return None
+    templateData = {
+        "title": "Waiting for HTTPS",
+        "status_text": HTTPS_WAIT_STATE_TEXT.get(get_mynode_status(), "Starting..."),
+        "ssh_host": get_request_hostname(),
+        "refresh_rate": 10,
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('https_wait.html', **templateData), 503
+
+
 ### Force Default Password Change
 # Endpoints that stay reachable while the device is still using the default
 # password. Everything else redirects to the change password page.
 DEFAULT_PASSWORD_ALLOWED_ENDPOINTS = [
     "static",
     "page_login",
+    "page_app_login",
     "page_logout",
     "page_https_info",
 ]
@@ -302,6 +388,13 @@ def page_change_default_password():
     if not set_admin_password(p1):
         flash("Error setting password - password was not changed", category="error")
         return redirect("/change-default-password")
+
+    # Existing sessions are signed with the old key, so they stop being valid.
+    # Re-establish this one so the person changing the password stays signed in.
+    app.secret_key = rotate_flask_secret_key()
+    session.clear()
+    session["logged_in"] = True
+    session.permanent = True
 
     flash("Password Updated!", category="message")
     return redirect("/")
@@ -413,16 +506,16 @@ def index():
         }
         return render_template('reboot.html', **templateData)
     elif status == STATE_DRIVE_FULL:
-        message  = "Your drive is full!<br/><br/>"
-        message += "<p style='font-size: 16px; width: 800px; margin: auto;'>"
-        message += "To prevent corrupting any data, your device has stopped running most apps until more free space is available. "
-        message += "Please free up some space or attach a larger drive.<br/><br/>"
-        message += "To move to larger drive, try the <a href='/settings#clone_tool'>Clone Tool</a>."
-        message += "</p>"
+        message = Markup("Your drive is full!<br/><br/>"
+                         "<p style='font-size: 16px; width: 800px; margin: auto;'>"
+                         "To prevent corrupting any data, your device has stopped running most apps until more free space is available. "
+                         "Please free up some space or attach a larger drive.<br/><br/>"
+                         "To move to larger drive, try the <a href='/settings#clone_tool'>Clone Tool</a>."
+                         "</p>")
         templateData = {
             "title": "Drive Full",
             "header_text": "Drive Full",
-            "subheader_text": Markup(message),
+            "subheader_text": message,
             "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
@@ -448,17 +541,14 @@ def index():
 
             # Show Error
             error = get_clone_error()
-            msg  = ""
-            msg += "Clone Error<br/></br>"
-            msg += error
-            msg += "<br/><br/><br/>"
-            msg += "<a class='ui-button ui-widget ui-corner-all mynode_button_small' style='width: 120px;' href='/?clone_clear_error=1'>Try Again</a>"
-            msg += "<br/><br/>"
-            msg += "<a class='ui-button ui-widget ui-corner-all mynode_button_small' style='width: 120px;' href='/settings/reboot-device'>Exit Clone Tool</a>"
+            msg = Markup("Clone Error<br/><br/>{}<br/><br/><br/>"
+                         "<a class='ui-button ui-widget ui-corner-all mynode_button_small' style='width: 120px;' href='/?clone_clear_error=1'>Try Again</a>"
+                         "<br/><br/>"
+                         "<a class='ui-button ui-widget ui-corner-all mynode_button_small' style='width: 120px;' href='/settings/reboot-device'>Exit Clone Tool</a>").format(error)
             templateData = {
                 "title": "Clone Tool",
                 "header_text": "Cloning Tool",
-                "subheader_text": Markup(msg),
+                "subheader_text": msg,
                 "ui_settings": read_ui_settings(),
                 "refresh_rate": 10
             }
@@ -493,7 +583,7 @@ def index():
             templateData = {
                 "title": "Clone Tool",
                 "header_text": "Cloning Tool",
-                "subheader_text": Markup("Cloning...<br/><br/>" + progress),
+                "subheader_text": Markup("Cloning...<br/><br/>") + Markup("<br/>").join(progress.split("\n")),
                 "ui_settings": read_ui_settings(),
                 "refresh_rate": 5
             }
@@ -514,14 +604,6 @@ def index():
                 "ui_settings": read_ui_settings()
             }
             return render_template('state.html', **templateData)
-    elif status == STATE_GEN_DHPARAM:
-        templateData = {
-            "title": "Generating Data",
-            "header_text": "Generating Data",
-            "subheader_text": "This may take 15-20 minutes...",
-            "ui_settings": read_ui_settings()
-        }
-        return render_template('state.html', **templateData)
     elif not has_product_key() and not skipped_product_key():
         # Show product key page if key not set
         return redirect("/product-key")
@@ -550,25 +632,14 @@ def index():
             error_message = ""
             if bitcoin_status_code != 0 and uptime_in_seconds > 600:
                 error_message = "Bitcoin has experienced an error. Please check the Bitcoin log on the status page."
-            message = "<div class='small_message'>{}</<div>".format( get_message(include_funny=True) )
             templateData = {
                 "title": "Starting",
                 "header_text": "Starting...",
-                "subheader_text": Markup("Launching MyNode Services{}".format(message)),
-                "error_message": Markup(error_message + "<br/><br/>"),
+                "subheader_text": Markup("Launching MyNode Services<div class='small_message'>{}</div>").format(get_message(include_funny=True)),
+                "error_message": Markup("{}<br/><br/>").format(error_message),
                 "ui_settings": read_ui_settings()
             }
             return render_template('state.html', **templateData)
-
-        # if is_installing_docker_images():
-        #     message = "<div class='small_message'>{}</<div>".format( get_message(include_funny=True) )
-        #     templateData = {
-        #         "title": "Status",
-        #         "header_text": "Starting...",
-        #         "subheader_text": Markup("Building Docker Images...{}".format(message)),
-        #         "ui_settings": read_ui_settings()
-        #     }
-        #     return render_template('state.html', **templateData)
 
         # Display sync info if not synced
         if not is_bitcoin_synced():
@@ -623,14 +694,14 @@ def index():
             "config": CONFIG,
             "apps": get_all_applications(order_by="homepage"),
             "bitcoin_status_color": bitcoin_status_color,
-            "bitcoin_status": Markup(bitcoin_status),
+            "bitcoin_status": bitcoin_status,
             "current_block": current_block,
             "bitcoin_peer_count": get_bitcoin_peer_count(),
             "bitcoin_difficulty": get_bitcoin_difficulty(),
             "bitcoin_mempool_size": get_bitcoin_mempool_info()["display_bytes"],
             "bitcoin_version": get_bitcoin_version(),
             "lnd_status_color": lnd_status_color,
-            "lnd_status": Markup(lnd_status),
+            "lnd_status": lnd_status,
             "lnd_ready": lnd_ready,
             "lnd_peer_count": get_lightning_peer_count(),
             "lnd_channel_count": get_lightning_channel_count(),
@@ -730,10 +801,12 @@ def page_product_key():
         
         # Save product key
         if submit != None and product_key != None:
+            if not save_product_key(product_key):
+                flash("Invalid product key", category="error")
+                return redirect("/product-key")
+
             unset_skipped_product_key()
             delete_product_key_error()
-
-            save_product_key(product_key)
 
             t = Timer(1.0, restart_check_in)
             t.start()
@@ -750,13 +823,23 @@ def page_ignore_warning():
         skip_warning(warning)
     return redirect("/")
 
+# Return page must be a local path
+def get_safe_return_page(return_page):
+    # Normalize the same way a URL parser would before checking it
+    return_page = return_page.translate({9: None, 10: None, 13: None})
+    if not return_page.startswith("/"):
+        return "/"
+    if return_page.startswith("//") or return_page.startswith("/\\"):
+        return "/"
+    return return_page
+
 @app.route("/toggle-enabled")
 def page_toggle_app():
     check_logged_in()
 
     return_page = "/"
     if request.args.get("return_page"):
-        return_page = request.args.get("return_page")
+        return_page = get_safe_return_page(request.args.get("return_page"))
 
     # Check application specified
     if not request.args.get("app"):
@@ -827,6 +910,46 @@ def page_dismiss_notification():
     dismiss_notification(notification_id, version)
     return redirect("/")
 
+def get_session_login_ports():
+    # Ports of the nginx servers in front of apps that use the web UI login
+    ports = set()
+    for conf_file in glob.glob("/etc/nginx/sites-enabled/*.conf"):
+        try:
+            with open(conf_file) as f:
+                conf = f.read()
+        except Exception:
+            continue
+        if "mynode_session_auth.conf" in conf:
+            for m in re.finditer(r"^\s*listen\s+(?:\S+:)?(\d+)\b", conf, re.MULTILINE):
+                ports.add(m.group(1))
+    return ports
+
+# Services behind the web UI login that are not in the app list, by port
+LOGIN_BUILTIN_APP_NAMES = {
+    "3002": "BTC RPC Explorer",
+    "3003": "BTC RPC Explorer",
+    "3020": "Caravan",
+    "3021": "Caravan",
+    "5010": "Warden Terminal",
+    "5011": "Warden Terminal",
+    "8443": "Lightning Terminal",
+    "61208": "Glances",
+    "61209": "Glances",
+}
+for opendime_port in range(8010, 8020):
+    LOGIN_BUILTIN_APP_NAMES[str(opendime_port)] = "Opendime"
+
+def get_login_app_name(app_port):
+    # The app the user is logging in to open, for the app login page
+    if app_port == "":
+        return ""
+    if app_port in LOGIN_BUILTIN_APP_NAMES:
+        return LOGIN_BUILTIN_APP_NAMES[app_port]
+    for app in get_all_applications():
+        if app_port in [str(app.get("http_port")), str(app.get("https_port"))]:
+            return app["name"]
+    return ""
+
 @app.route("/login", methods=["GET","POST"])
 def page_login():
     templateData = {
@@ -843,10 +966,49 @@ def page_login():
         flash(get_login_error_message(), category="error")
         return redirect("/login")
 
+# Login for apps behind the web UI login. nginx serves it on each app's own port and onion as
+# /mynode_ui/login, a path no app uses, so the user logs in and returns without leaving the app.
+@app.route("/mynode_ui/login", methods=["GET","POST"])
+def page_app_login():
+    source = request.args if request.method == 'GET' else request.form
+    next_page = get_safe_return_page(source.get("next", "") or "/")
+    if len(next_page) > 2048:
+        next_page = "/"
+    # Set by nginx in front of the app. Not offered on the web UI's own ports.
+    app_port = request.headers.get("X-MyNode-App-Port", "")
+    if app_port not in get_session_login_ports():
+        return "Not found", 404
+    templateData = {
+        "app_name": get_login_app_name(app_port),
+        "login_next": next_page,
+        "change_default_password": False,
+        "ui_settings": read_ui_settings()
+    }
+
+    if request.method == 'POST':
+        if not login(request.form.get('password')):
+            flash(get_login_error_message(), category="error")
+            return redirect(url_for("page_app_login", next=next_page))
+
+    if is_logged_in():
+        # Apps refuse the session until the default password is changed in MyNode
+        if is_using_default_password():
+            templateData["change_default_password"] = True
+            return render_template('app_login.html', **templateData)
+        return redirect(next_page)
+    return render_template('app_login.html', **templateData)
+
 @app.route("/logout")
 def page_logout():
     logout()
     return redirect("/")
+
+# Answers nginx auth_request checks for apps that share the web UI login
+@app.route("/auth/check")
+def page_auth_check():
+    if is_logged_in():
+        return "", 204
+    return "", 401
 
 @app.route("/about")
 def page_about():
@@ -906,36 +1068,107 @@ def internal_error(error):
     }
     return render_template('state.html', **templateData), 500
 
-# Check for forced HTTPS
+# Endpoints that may be entered from another site. A top-level navigation to one of
+# these only displays a page to the user, so allowing them keeps ordinary links and
+# bookmarks working. Everything else is reachable only from the interface itself.
+CROSS_SITE_ENTRY_ENDPOINTS = set([
+    "static",
+    "index",
+    "page_login",
+    "page_app_login",
+    "page_logout",
+    "page_https_info",
+    # Only reports whether the session is logged in, for nginx in front of apps on
+    # other ports. Over plain HTTP those arrive with a Referer from the main UI port.
+    "page_auth_check",
+])
+
+def get_request_site():
+    # Returns "same-origin", "cross-site" or "unknown".
+    # Modern browsers state the relationship directly.
+    fetch_site = request.headers.get("Sec-Fetch-Site")
+    if fetch_site == "same-origin":
+        return "same-origin"
+
+    # Otherwise compare what the browser claims as the origin against the host asked for.
+    # Over plain HTTP browsers do not send Sec-Fetch-Site at all. Our own pages moving
+    # between http:// and https:// are reported as "same-site" or "cross-site", but still
+    # name this host. Our apps on other ports include the port, so they do not match -
+    # they have no need to drive the interface.
+    for header_name in ["Origin", "Referer"]:
+        value = request.headers.get(header_name)
+        if value != None and value != "":
+            if urllib.parse.urlparse(value).netloc != request.host:
+                return "cross-site"
+            return "same-origin"
+
+    # "none" means no page started the request: a typed address, a bookmark, or a link opened
+    # from another program. Like no header at all, it starts from the home page. Reloading or
+    # going back to one of our pages keeps the Referer from our own page, checked above.
+    if fetch_site != None and fetch_site != "none":
+        return "cross-site"
+
+    # Nothing to go on - typed address, bookmark or link from another program
+    return "unknown"
+
 @app.before_request
 def before_request():
-    # Check for HTTPS forced (only enforce once drive mounted and stable state)
-    # Otherwise, web GUI may be inaccessible if error occurs (NGINX needs drive for cert)
-    if is_https_forced() and get_mynode_status() == STATE_STABLE:
-        if request.endpoint == "page_https_info":
-            return None
-        if request.url and request.url.startswith('http://'):
-            app.logger.info("REDIRECTING")
-            url = request.url.replace('http://', 'https://', 1)
-            code = 302
-            app.logger.info("Redirecting to HTTPS ({})".format(url))
-            return redirect(url, code=code)
+    # Only the interface itself may drive the interface. The home page acts on some
+    # query parameters, so only a plain link to it may come from elsewhere.
+    if request.endpoint not in CROSS_SITE_ENTRY_ENDPOINTS or (request.endpoint == "index" and len(request.args) > 0):
+        site = get_request_site()
+        if site == "cross-site":
+            app.logger.warning("Blocked cross-site request to {}".format(request.path))
+            return "Cross-site requests are not allowed", 403
+        if site == "unknown":
+            # Start from the home page, the same as following a link in from elsewhere
+            if request.method in ["GET", "HEAD"]:
+                app.logger.info("Request to {} without origin, going to home page".format(request.path))
+                return redirect("/")
+            app.logger.warning("Blocked request without origin to {}".format(request.path))
+            return "Cross-site requests are not allowed", 403
 
-# Disable browser caching
+### Content Security Policy
+# Scripts run only from our own files, or from inline <script> blocks that carry this
+# response's nonce: <script nonce="{{ csp_nonce() }}">. Inline event handlers (onclick=...)
+# never run; attach handlers with .on() in a script instead.
+CSP_ENFORCED = True
+CSP_POLICY = "; ".join([
+    "default-src 'self'",
+    "script-src 'self' 'nonce-{nonce}'",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data:",
+    "connect-src 'self' https://raw.githubusercontent.com https://www.mynodebtc.com",
+    "object-src 'none'",
+    "base-uri 'none'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+])
+
+def get_csp_nonce():
+    if "csp_nonce" not in g:
+        g.csp_nonce = secrets.token_urlsafe(16)
+    return g.csp_nonce
+
+@app.context_processor
+def inject_csp_nonce():
+    return {"csp_nonce": get_csp_nonce}
+
 @app.after_request
 def set_response_headers(response):
-    # Cache OK responses for 24 hrs
-    if response.status_code in [200]:
-        if "Cache-Control" not in response.headers:
-            response.headers['Cache-Control'] = 'max-age=86400, private'
-    else:
-        # Prevents 301 from saving forever
-        response.headers['Cache-Control'] = 'no-store'
+    # The interface is never shown inside a frame, and files are used as the type we send
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-Content-Type-Options'] = 'nosniff'
 
-    # No Caching
-    #response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    #response.headers['Pragma'] = 'no-cache'
-    #response.headers['Expires'] = '0'
+    csp_header = "Content-Security-Policy" if CSP_ENFORCED else "Content-Security-Policy-Report-Only"
+    response.headers[csp_header] = CSP_POLICY.format(nonce=get_csp_nonce())
+
+    # Disable browser caching.
+    # Static files keep Flask's own headers, so the browser keeps them and checks for
+    # changes. Everything else - pages, downloads, generated images - is not stored.
+    if request.endpoint == "static" and response.status_code in [200, 304]:
+        return response
+    response.headers['Cache-Control'] = 'no-store'
     return response
 
 # DEPRECATED IN FLASK 2.3 - IF EVER NEEDED, LOOK HERE

@@ -7,10 +7,10 @@
         <meta http-equiv="refresh" content="{{ refresh_rate }}"> 
         {% endif %}
 
-        <script>
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
             $(document).ready(function() {
 
-                alias="{{alias}}"
+                alias={{ alias|default("")|tojson }}
 
                 $( document ).tooltip();
 
@@ -69,6 +69,35 @@
                     pair_wallet_dialog.dialog( "close" );
                 });
 
+                function macaroon_submit() {
+                    $("#macaroon_form").submit();
+                    macaroon_dialog.dialog( "close" );
+                }
+                macaroon_dialog = $( "#macaroon-dialog" ).dialog({
+                    autoOpen: false,
+                    resizable: false,
+                    height: "auto",
+                    width: 600,
+                    modal: true,
+                    position: { my: "center top", at: "center top", of: window, collision: "none" },
+                    buttons: {
+                        "Download": macaroon_submit,
+                        Cancel: function() {
+                            macaroon_dialog.dialog( "close" );
+                        }
+                    },
+                    open: function() {
+                        $("#password_macaroon").val("")
+                    }
+                });
+                $(".download_macaroon").on("click", function() {
+                    $("#macaroon_form").attr("action", "/lnd/"+$(this).attr("data-macaroon")+".macaroon");
+                    macaroon_dialog.dialog( "open" );
+                });
+                $("#macaroon_form").on("submit", function() {
+                    macaroon_dialog.dialog( "close" );
+                });
+
                 $("#rtl").on("click", function() {
                     port="3010"
                     if (location.protocol == "https:") {
@@ -93,7 +122,7 @@
                 })
 
                 function show_deposit_address(addr) {
-                    $("#lnd_deposit_address_text").html( addr );
+                    $("#lnd_deposit_address_text").text( addr );
                     $("#lnd_deposit_address_qrcode").attr("src", "/api/get_qr_code_image?url="+addr);
                     $("#lnd_deposit_address_qrcode").attr("title", addr);
                 }
@@ -106,22 +135,24 @@
 
                 // Initialize channel balance bars and show/hide button
                 {% for c in channels %}
-                    $( "#channel_bar_{{ c.chan_id }}" ).progressbar({
-                        value: Math.floor( {{ c.chan_percent }} )
+                    $( "#channel_bar_" + {{ c.chan_id|tojson }} ).progressbar({
+                        value: Math.floor( {{ c.chan_percent|tojson }} )
                     });
-                    $('#channel_bar_{{ c.chan_id }}').height(15);
+                    $('#channel_bar_' + {{ c.chan_id|tojson }}).height(15);
 
-                    show_channel_{{ c.chan_id }}_details = false;
-                    $("#show_channel_{{ c.chan_id }}").on("click", function() {
-                        if (show_channel_{{ c.chan_id }}_details == true) {
-                            $("#channel_table_{{ c.chan_id }}").slideUp(400);
-                            $("#show_channel_{{ c.chan_id }}").html("Show Details");
-                        } else {
-                            $("#channel_table_{{ c.chan_id }}").slideDown(400);
-                            $("#show_channel_{{ c.chan_id }}").html("Hide Details");
-                        }
-                        show_channel_{{ c.chan_id }}_details = ! show_channel_{{ c.chan_id }}_details;
-                    });
+                    (function(chan_id) {
+                        var showing_details = false;
+                        $("#show_channel_" + chan_id).on("click", function() {
+                            if (showing_details) {
+                                $("#channel_table_" + chan_id).slideUp(400);
+                                $("#show_channel_" + chan_id).text("Show Details");
+                            } else {
+                                $("#channel_table_" + chan_id).slideDown(400);
+                                $("#show_channel_" + chan_id).text("Hide Details");
+                            }
+                            showing_details = !showing_details;
+                        });
+                    })({{ c.chan_id|tojson }});
                 {% endfor %}     
             });
         </script>
@@ -237,9 +268,9 @@
                         <tr>
                             <th>Macaroons</th>
                             <td>
-                                <a class="ui-button ui-widget ui-corner-all mynode_button_small" href="/lnd/admin.macaroon">admin</a>
-                                <a class="ui-button ui-widget ui-corner-all mynode_button_small" href="/lnd/readonly.macaroon">readonly</a>
-                                <a class="ui-button ui-widget ui-corner-all mynode_button_small" href="/lnd/invoice.macaroon">invoice</a>
+                                <a class="ui-button ui-widget ui-corner-all mynode_button_small download_macaroon" data-macaroon="admin" href="#">admin</a>
+                                <a class="ui-button ui-widget ui-corner-all mynode_button_small download_macaroon" data-macaroon="readonly" href="#">readonly</a>
+                                <a class="ui-button ui-widget ui-corner-all mynode_button_small download_macaroon" data-macaroon="invoice" href="#">invoice</a>
                             </td>
                         </tr>
 {% endif %}
@@ -312,7 +343,7 @@
         <div class="app_tile_row">
             <div class="info_tile">
                 <div class="info_tile_header">URI</div>
-                <div class="info_tile_contents" style="font-size: 12px;">{{uri}}</div>
+                <div class="info_tile_contents" style="font-size: 12px; white-space: pre-line;">{{uri}}</div>
             </div>
         </div>
 {% endif %}
@@ -613,6 +644,20 @@
                 <br/>
                 <input type="password" name="password_pair_wallet" id="password_pair_wallet" value="" class="text ui-widget-content ui-corner-all">
             
+                <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </form>
+        </div>
+
+        <div id="macaroon-dialog" title="Download Macaroon" style="display:none;">
+            <form id="macaroon_form" name="macaroon_form" action="" method="POST">
+                <p>Macaroons grant access to your Lightning node. The admin macaroon gives full control of your funds.
+                    Do not share them with others.</p>
+                <p>Please enter your password to download the macaroon.</p>
+                <b>Password:</b>
+                <br/>
+                <input type="password" name="password_macaroon" id="password_macaroon" value="" class="text ui-widget-content ui-corner-all">
+
                 <!-- Allow form submission with keyboard without duplicating the dialog button -->
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
             </form>

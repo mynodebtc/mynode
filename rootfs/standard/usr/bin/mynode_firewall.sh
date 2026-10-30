@@ -3,6 +3,11 @@
 set -e
 set -x
 
+if ! command -v ufw > /dev/null; then
+    echo "ERROR: ufw is not installed - the firewall is not running"
+    exit 1
+fi
+
 # Make sure we are using legacy iptables
 update-alternatives --set iptables /usr/sbin/iptables-legacy || true
 update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy || true
@@ -28,6 +33,15 @@ ufw allow from 172.17.0.0/16 to any port 28333 comment 'allow Dojo zmqrawtx'
 ufw allow from 172.28.0.0/16 to any port 28333 comment 'allow Dojo zmqrawtx'
 ufw allow from 172.17.0.0/16 to any port 28334 comment 'allow Dojo zmqhashblock'
 ufw allow from 172.28.0.0/16 to any port 28334 comment 'allow Dojo zmqhashblock'
+# WeTTY is reached through nginx on 2225
+ufw --force delete allow 2224 || true
+# The JoinMarket API is used by Jam, which runs in Docker; localhost is allowed below
+ufw --force delete allow 27183 || true
+ufw --force delete allow 28183 || true
+ufw --force delete allow 28283 || true
+ufw allow from 172.17.0.0/16 to any port 27183 comment 'allow JoinMarket API (Jam)'
+ufw allow from 172.17.0.0/16 to any port 28183 comment 'allow JoinMarket API (Jam)'
+ufw allow from 172.17.0.0/16 to any port 28283 comment 'allow JoinMarket API (Jam)'
 ufw allow from 127.0.0.1 comment 'allow from localhost'
 #ufw allow from ::1 comment 'allow from localhost'
 

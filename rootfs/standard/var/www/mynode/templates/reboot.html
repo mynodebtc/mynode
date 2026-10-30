@@ -6,7 +6,7 @@
         <!-- Backup: reload home page after 12 hours if JS didn't detect reboot -->
         <meta http-equiv="refresh" content="43200; URL=/" />
 
-        <script>
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
             $(document).ready(function() {
                 hasShutdown = 0
                 uptime = null
@@ -25,7 +25,6 @@
                                 if (uptime == null || data["uptime_seconds"] > uptime) {
                                     uptime = data["uptime_seconds"]
                                 } else if (data["uptime_seconds"] < uptime) {
-                                    //alert("Restarting due to uptime A (" + data["uptime_seconds"] + " < " + uptime + ")")
                                     setTimeout(redirectHome, 2500)
                                 }
                             }
@@ -40,7 +39,6 @@
                                 if (uptime == null || data["uptime_seconds"] > uptime) {
                                     uptime = data["uptime_seconds"]
                                 } else if (data["uptime_seconds"] < uptime) {
-                                    //alert("Restarting due to uptime B (" + data["uptime_seconds"] + " < " + uptime + ")")
                                     setTimeout(redirectHome, 2500)
                                 }
                             }
@@ -80,18 +78,18 @@
                         data.reverse();
                         log = data.join("\n")
                         console.log("Displaying " + data.length + " lines")
-                        $("#upgrade_log_contents").html(log)
+                        $("#upgrade_log_contents").text(log)
                     });
                 }
                 $("#show_upgrade_log").on("click", function() {
                     if (!showing_log) {
-                        $("#show_upgrade_log").html("Hide Upgrade Log");
+                        $("#show_upgrade_log").text("Hide Upgrade Log");
                         $("#loading_spinner").hide(0);
                         $("#upgrade_log").show();
                         update_upgrade_log();
                         showing_log=1;
                     } else {
-                        $("#show_upgrade_log").html("Show Upgrade Log");
+                        $("#show_upgrade_log").text("Show Upgrade Log");
                         $("#loading_spinner").show();
                         $("#upgrade_log").hide(0);
                         showing_log=0;

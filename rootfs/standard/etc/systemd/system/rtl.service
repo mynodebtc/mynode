@@ -11,6 +11,9 @@ ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_lnd.sh
 ExecStartPre=+/usr/bin/service_scripts/pre_rtl.sh
 WorkingDirectory=/opt/mynode/RTL
+# nginx serves 3010 (HTTP) and 3011 (HTTPS) behind the MyNode login
+Environment=HOST=127.0.0.1
+Environment=PORT=13010
 ExecStart=/usr/bin/node rtl
 
 User=bitcoin

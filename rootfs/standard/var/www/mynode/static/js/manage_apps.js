@@ -7,7 +7,7 @@
 // ==========================================
 function restart(name, short_name) {
     if ( confirm("Are you sure you want to restart "+name+"?\n\nRestarting services like Bitcoin or LND may have side effects. If so, restart the device.") ) {
-        $('#loading_spinner_message').html("Restarting...");
+        $('#loading_spinner_message').text("Restarting...");
         $('#loading_spinner_overlay').fadeIn();
         window.location.href='/apps/restart-app?app='+short_name;
     }
@@ -15,7 +15,7 @@ function restart(name, short_name) {
 
 function restart_app_via_api(name, short_name) {
     if ( confirm("Are you sure you want to restart "+name+"?") ) {
-        $('#loading_spinner_message').html("Restarting...");
+        $('#loading_spinner_message').text("Restarting...");
         $('#loading_spinner_overlay').fadeIn();
         $.get('/api/restart_app?app='+short_name)
             .done(function( data ) {
@@ -33,7 +33,7 @@ function restart_app_via_api(name, short_name) {
 // ==========================================
 function upgrade(name, short_name) {
     if ( confirm("Are you sure you want to upgrade "+name+"? This will reboot your device.") ) {
-        $('#loading_spinner_message').html("Upgrading...");
+        $('#loading_spinner_message').text("Upgrading...");
         $('#loading_spinner_overlay').fadeIn();
         window.location.href='/settings/reinstall-app?app='+short_name;
     }
@@ -41,7 +41,7 @@ function upgrade(name, short_name) {
 
 function reinstall(name, short_name) {
     if ( confirm("Are you sure you want to re-install "+name+"? This will reboot your device.") ) {
-        $('#loading_spinner_message').html("Re-installing...");
+        $('#loading_spinner_message').text("Re-installing...");
         $('#loading_spinner_overlay').fadeIn();
         window.location.href='/settings/reinstall-app?app='+short_name;
     }
@@ -49,7 +49,7 @@ function reinstall(name, short_name) {
 
 function install(name, short_name) {
     if ( confirm("Are you sure you want to install "+name+"? This will reboot your device.") ) {
-        $('#loading_spinner_message').html("Installing...");
+        $('#loading_spinner_message').text("Installing...");
         $('#loading_spinner_overlay').fadeIn();
         window.location.href='/settings/reinstall-app?app='+short_name;
     }
@@ -68,7 +68,7 @@ function uninstall(name, short_name, return_page="") {
 
 function remove_from_device(name, short_name) {
     if ( confirm("Are you sure you want to uninstall "+name+"? ") ) {
-        $('#loading_spinner_message').html("Removing...");
+        $('#loading_spinner_message').text("Removing...");
         $('#loading_spinner_overlay').fadeIn();
         window.location.href='/settings/remove-app?app='+short_name;
     }
@@ -89,7 +89,7 @@ function get_custom_enable_message(short_name) {
         message = "Enabling Dojo for the first time will reboot your device and install Dojo.";
     }
     if (message != "") {
-        message += "<br/><br/>";
+        message += "\n\n";
     }
     return message;
 }
@@ -134,7 +134,7 @@ function toggleEnabled(short_name, full_name, enable, return_page="") {
 
 function backup_data_folder_via_api(name, short_name) {
     if ( confirm("Are you sure you want to backup "+name+"? This will stop the app, backup data, and restart the app.") ) {
-        $('#loading_spinner_message').html("Making backup...");
+        $('#loading_spinner_message').text("Making backup...");
         $('#loading_spinner_overlay').fadeIn();
         $.get('/api/backup_data_folder?app='+short_name)
             .done(function( data ) {
@@ -149,7 +149,7 @@ function backup_data_folder_via_api(name, short_name) {
 
 function restore_data_folder_via_api(name, short_name) {
     if ( confirm("Are you sure you want to restore "+name+"? This will stop the app, DELETE DATA, restore the backup files, and restart the app.") ) {
-        $('#loading_spinner_message').html("Restoring...");
+        $('#loading_spinner_message').text("Restoring...");
         $('#loading_spinner_overlay').fadeIn();
         $.get('/api/restore_data_folder?app='+short_name)
             .done(function( data ) {
@@ -172,3 +172,28 @@ function reset_data_folder_via_api(name, short_name) {
                            $('#loading_spinner_overlay').fadeIn();
                        });
 }
+// ==========================================
+// Click handler for app action buttons: data-app-action with data-name, data-short-name
+// and an optional data-return-page
+// ==========================================
+$(document).on("click", "[data-app-action]", function(event) {
+    event.preventDefault();
+    var e = $(this);
+    var name = e.attr("data-name");
+    var short_name = e.attr("data-short-name");
+    var return_page = e.attr("data-return-page") || "";
+    switch (e.attr("data-app-action")) {
+        case "enable":                      toggleEnabled(short_name, name, true, return_page); break;
+        case "disable":                     toggleEnabled(short_name, name, false, return_page); break;
+        case "install":                     install(name, short_name); break;
+        case "upgrade":                     upgrade(name, short_name); break;
+        case "reinstall":                   reinstall(name, short_name); break;
+        case "uninstall":                   uninstall(name, short_name, return_page); break;
+        case "remove_from_device":          remove_from_device(name, short_name); break;
+        case "restart":                     restart(name, short_name); break;
+        case "restart_app_via_api":         restart_app_via_api(name, short_name); break;
+        case "backup_data_folder_via_api":  backup_data_folder_via_api(name, short_name); break;
+        case "restore_data_folder_via_api": restore_data_folder_via_api(name, short_name); break;
+        case "reset_data_folder_via_api":   reset_data_folder_via_api(name, short_name); break;
+    }
+});

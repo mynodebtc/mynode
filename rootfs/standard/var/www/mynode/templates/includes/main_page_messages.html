@@ -28,7 +28,7 @@
     <p style="text-align: center;">This page was loaded over an unencrypted HTTP connection. Switch to HTTPS so web traffic to and from your node is encrypted.</p>
     <p style="text-align: center;">
         <a href="/https-info" style="margin: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Learn More</a>
-        <a href="#" onclick="location.href = 'https:' + window.location.href.substring(window.location.protocol.length); return false;" style="margin: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Use HTTPS</a>
+        <a href="#" data-use-https style="margin: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Use HTTPS</a>
         <a href="/clear-https-warning" style="margin: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Dismiss</a>
     </p>
 </div>
@@ -273,7 +273,7 @@
                     {% if device.state == "new" %}
                     <a href="/usb_extras/opendime_init?id={{device.id}}" class="ui-button ui-widget ui-corner-all settings_button_small">Initialize</a>
                     {% endif %}
-                    <a href="#" onclick="open_new_mynode_tab('{{device.port}}', 'http')" class="ui-button ui-widget ui-corner-all settings_button_small">Open</a>
+                    <a href="#" data-open-app data-http-port="{{device.port}}" data-https-port="{{device.https_port}}" data-tor-address="NA" class="ui-button ui-widget ui-corner-all settings_button_small">Open</a>
                 </p>
             </div>
         {% endif %}

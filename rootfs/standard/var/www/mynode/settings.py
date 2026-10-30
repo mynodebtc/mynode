@@ -1,12 +1,12 @@
 from config import *
-from flask import Blueprint, render_template, session, abort, Markup, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, session, abort, Markup, request, redirect, url_for, flash, current_app, Response, jsonify
 from bitcoin import is_bitcoin_synced
 from bitcoin_info import using_bitcoin_custom_config, get_custom_bitcoin_version
 from lightning_info import using_lnd_custom_config, restart_lnd
 from pprint import pprint, pformat
 from threading import Timer
 from thread_functions import *
-from user_management import check_logged_in
+from user_management import check_logged_in, is_admin_password_valid, get_admin_password_error
 from lightning_info import *
 from price_info import *
 from utilities import *
@@ -14,7 +14,6 @@ from drive_info import *
 from application_info import *
 from device_info import *
 from auto_upgrade import *
-import pam
 import time
 import os
 import subprocess
@@ -23,6 +22,22 @@ mynode_settings = Blueprint('mynode_settings',__name__)
 
 # Pages that can host a setting toggle and be returned to afterwards
 TOGGLE_SETTING_REDIRECT_PAGES = ["/settings", "/tor"]
+
+# Settings that /settings/toggle_setting can turn on and off
+TOGGLE_SETTING_NAMES = [
+    "hide_password_warning",
+    "https_forced",
+    "ipv6_disabled",
+    "keep_bitcoin_debug_log",
+    "local_traffic_allowed",
+    "randomize_balances",
+    "skip_backup_dns_servers",
+    "streamisolation_tor_disabled",
+    "tor_remote_access_disabled",
+    "tor_repo_disabled",
+    "torify_apt_get",
+    "uas_usb_enabled",
+]
 
 # Flask Pages
 @mynode_settings.route("/settings")
@@ -113,6 +128,7 @@ def page_settings():
         "is_tor_repo_enabled": not settings_file_exists("tor_repo_disabled"),
         "is_aptget_tor_enabled": settings_file_exists("torify_apt_get"),
         "is_streamisolation_tor_enabled": not settings_file_exists("streamisolation_tor_disabled"),
+        "allowed_hosts": get_allowed_hosts(),
         "skip_fsck": skip_fsck(),
         "full_fsck_results": get_full_fsck_results(),
         "full_fsck_time": get_full_fsck_time(),
@@ -125,9 +141,9 @@ def page_settings():
         "oom_error": has_oom_error(),
         "oom_info": get_oom_error_info(),
         "data_drive_usage": get_data_drive_usage(),
-        "data_drive_usage_details": Markup(get_data_drive_usage_details()),
+        "data_drive_usage_details": get_data_drive_usage_details(),
         "os_drive_usage": get_os_drive_usage(),
-        "os_drive_usage_details": Markup(get_os_drive_usage_details()),
+        "os_drive_usage_details": get_os_drive_usage_details(),
         "cpu_usage": get_cpu_usage(),
         "ram_usage": get_ram_usage(),
         "device_temp": get_device_temp(),
@@ -325,9 +341,9 @@ def page_status():
         "oom_error": has_oom_error(),
         "oom_info": get_oom_error_info(),
         "data_drive_usage": get_data_drive_usage(),
-        "data_drive_usage_details": Markup(get_data_drive_usage_details()),
+        "data_drive_usage_details": get_data_drive_usage_details(),
         "os_drive_usage": get_os_drive_usage(),
-        "os_drive_usage_details": Markup(get_os_drive_usage_details()),
+        "os_drive_usage_details": get_os_drive_usage_details(),
         "cpu_usage": get_cpu_usage(),
         "ram_usage": get_ram_usage(),
         "device_temp": get_device_temp(),
@@ -419,7 +435,7 @@ def get_upgrade_log_page():
         log = "No log file found"
         
     log = cleanup_log(log)
-    return log
+    return Response(log, mimetype="text/plain")
 
 @mynode_settings.route("/settings/clear-upgrade-logs")
 def clear_upgrade_logs_page():
@@ -591,8 +607,8 @@ def reset_app_passwords_page():
 def reset_docker_page():
     check_logged_in()
     pw = request.form.get('password')
-    if pw == None or pam.pam().authenticate("admin", pw) == False:
-        flash("Invalid Password", category="error")
+    if not is_admin_password_valid(pw):
+        flash(get_admin_password_error(), category="error")
         return redirect("/settings")
 
     check_and_mark_reboot_action("reset_docker")
@@ -697,8 +713,8 @@ def set_app_password_page():
     app_name = APPS_WITH_SETTABLE_PASSWORD[app]
 
     pw = request.form.get("password")
-    if pw == None or pam.pam().authenticate("admin", pw) == False:
-        flash("Invalid Password", category="error")
+    if not is_admin_password_valid(pw):
+        flash(get_admin_password_error(), category="error")
         return redirect("/settings")
 
     p1 = request.form.get("password1", "")
@@ -771,8 +787,8 @@ def reset_btcpay_admin_pwd_page():
 def reset_lnbits_data_page():
     check_logged_in()
     pw = request.form.get('password')
-    if pw == None or pam.pam().authenticate("admin", pw) == False:
-        flash("Invalid Password", category="error")
+    if not is_admin_password_valid(pw):
+        flash(get_admin_password_error(), category="error")
         return redirect("/settings")
 
     t = Timer(1.0, reset_lnbits_data)
@@ -795,8 +811,8 @@ def reset_specter_config_page():
 def reset_albyhub_password_page():
     check_logged_in()
     pw = request.form.get('password')
-    if pw == None or pam.pam().authenticate("admin", pw) == False:
-        flash("Invalid Password", category="error")
+    if not is_admin_password_valid(pw):
+        flash(get_admin_password_error(), category="error")
         return redirect("/settings")
 
     if not is_installed("albyhub"):
@@ -822,10 +838,9 @@ def reset_firewall_page():
 @mynode_settings.route("/settings/firewall-public-services", methods=['POST'])
 def firewall_public_services_page():
     check_logged_in()
-    p = pam.pam()
     pw = request.form.get('password_firewall')
-    if pw == None or p.authenticate("admin", pw) == False:
-        flash("Invalid Password", category="error")
+    if not is_admin_password_valid(pw):
+        flash(get_admin_password_error(), category="error")
         return redirect(url_for(".page_settings"))
 
     # Store only the choices that differ from the defaults, so later default changes still apply
@@ -859,6 +874,8 @@ def refresh_app_database_page():
 
 @mynode_settings.route("/settings/remount-external-drive")
 def remount_external_drive_page():
+    check_logged_in()
+
     os.system("mount -o remount,rw /mnt/hdd")
     flash("Remounted External Drive", category="message")
     return redirect("/settings")
@@ -866,10 +883,9 @@ def remount_external_drive_page():
 @mynode_settings.route("/settings/format-external-drive", methods=['POST'])
 def format_external_drive_page():
     check_logged_in()
-    p = pam.pam()
     pw = request.form.get('password_format_external_drive')
-    if pw == None or p.authenticate("admin", pw) == False:
-        flash("Invalid Password", category="error")
+    if not is_admin_password_valid(pw):
+        flash(get_admin_password_error(), category="error")
         return redirect(url_for(".page_settings"))
     else:
         check_and_mark_reboot_action("format_external_drive")
@@ -885,10 +901,9 @@ def format_external_drive_page():
 @mynode_settings.route("/settings/factory-reset", methods=['POST'])
 def factory_reset_page():
     check_logged_in()
-    p = pam.pam()
     pw = request.form.get('password_factory_reset')
-    if pw == None or p.authenticate("admin", pw) == False:
-        flash("Invalid Password", category="error")
+    if not is_admin_password_valid(pw):
+        flash(get_admin_password_error(), category="error")
         return redirect(url_for(".page_settings"))
     else:
         check_and_mark_reboot_action("factory_reset")
@@ -906,10 +921,9 @@ def change_password_page():
         return redirect("/settings")
 
     # Verify current password
-    p = pam.pam()
     current = request.form.get('current_password')
-    if current == None or p.authenticate("admin", current) == False:
-        flash("Invalid Password", category="error")
+    if not is_admin_password_valid(current):
+        flash(get_admin_password_error(), category="error")
         return redirect(url_for(".page_settings"))
 
     p1 = request.form.get('password1')
@@ -929,6 +943,13 @@ def change_password_page():
         flash("Error setting password - password was not changed", category="error")
         return redirect(url_for(".page_settings"))
 
+    # Existing sessions are signed with the old key, so they stop being valid.
+    # Re-establish this one so the person changing the password stays signed in.
+    current_app.secret_key = rotate_flask_secret_key()
+    session.clear()
+    session["logged_in"] = True
+    session.permanent = True
+
     flash("Password Updated!", category="message")
     return redirect(url_for(".page_settings"))
 
@@ -939,13 +960,18 @@ def change_logout_time_page():
     if not request:
         return redirect("/settings")
 
-    d = request.form.get('logout_days')
-    h = request.form.get('logout_hours')
+    try:
+        d = int(request.form.get('logout_days'))
+        h = int(request.form.get('logout_hours'))
+    except:
+        flash("Logout time must be a number", category="error")
+        return redirect(url_for(".page_settings"))
 
-    if d not in [str(x) for x in FLASK_SESSION_TIMEOUT_DAY_OPTIONS] or h not in [str(x) for x in range(24)]:
+    if d not in FLASK_SESSION_TIMEOUT_DAY_OPTIONS or h not in range(24):
         flash("Invalid logout time", category="error")
         return redirect(url_for(".page_settings"))
-    if d == "0" and h == "0":
+
+    if d == 0 and h == 0:
         flash("Logout time cannot be 0 hours and 0 days", category="error")
         return redirect(url_for(".page_settings"))
 
@@ -962,10 +988,9 @@ def change_logout_time_page():
 @mynode_settings.route("/settings/delete-lnd-wallet", methods=['POST'])
 def page_lnd_delete_wallet():
     check_logged_in()
-    p = pam.pam()
     pw = request.form.get('password_lnd_delete')
-    if pw == None or p.authenticate("admin", pw) == False:
-        flash("Invalid Password", category="error")
+    if not is_admin_password_valid(pw):
+        flash(get_admin_password_error(), category="error")
         return redirect(url_for(".page_settings"))
 
     check_and_mark_reboot_action("delete_lnd_data")
@@ -1053,13 +1078,46 @@ def page_choose_network():
 
     return redirect("/")
 
+@mynode_settings.route("/settings/allowed-hosts/add", methods=['POST'])
+def page_allowed_hosts_add():
+    check_logged_in()
+
+    name = normalize_hostname(request.form.get('hostname'))
+    hosts = get_allowed_hosts()
+    if name == "":
+        flash("Enter a host name", category="error")
+    elif is_ip_address(name) or name.endswith(".onion"):
+        flash("IP addresses and Tor addresses are always allowed", category="message")
+    elif not is_valid_hostname(name):
+        flash("Invalid host name", category="error")
+    elif name in hosts or is_builtin_hostname(name):
+        flash("{} is already allowed".format(name), category="message")
+    elif save_allowed_hosts(hosts + [name]):
+        flash("Added {}".format(name), category="message")
+    else:
+        flash("Unable to save host names", category="error")
+    return redirect("/settings#allowed_hosts")
+
+@mynode_settings.route("/settings/allowed-hosts/remove", methods=['POST'])
+def page_allowed_hosts_remove():
+    check_logged_in()
+
+    name = normalize_hostname(request.form.get('hostname'))
+    hosts = get_allowed_hosts()
+    if name in hosts:
+        hosts.remove(name)
+        if save_allowed_hosts(hosts):
+            flash("Removed {}".format(name), category="message")
+        else:
+            flash("Unable to save host names", category="error")
+    return redirect("/settings#allowed_hosts")
+
 @mynode_settings.route("/settings/reset-tor", methods=['POST'])
 def page_reset_tor():
     check_logged_in()
-    p = pam.pam()
     pw = request.form.get('password_reset_tor')
-    if pw == None or p.authenticate("admin", pw) == False:
-        flash("Invalid Password", category="error")
+    if not is_admin_password_valid(pw):
+        flash(get_admin_password_error(), category="error")
         return redirect(url_for(".page_settings"))
     else:
         check_and_mark_reboot_action("reset_tor")
@@ -1207,8 +1265,8 @@ def uninstall_app_page():
         return redirect("/apps")
 
     pw = request.form.get('password')
-    if pw == None or pam.pam().authenticate("admin", pw) == False:
-        flash("Invalid Password", category="error")
+    if not is_admin_password_valid(pw):
+        flash(get_admin_password_error(), category="error")
         return redirect("/apps")
     
     # Check application name is valid
@@ -1261,6 +1319,9 @@ def install_custom_bitcoin_page():
     version = request.args.get("version")
     if not version:
         flash("No version specified", category="error")
+        return redirect("/settings")
+    if not is_safe_version(version):
+        flash("Invalid version specified", category="error")
         return redirect("/settings")
     
     # Re-install app
@@ -1372,8 +1433,17 @@ def modify_swap_page():
 
     check_and_mark_reboot_action("modify_swap")
 
-    size = request.args.get('size')
-    set_swap_size(size)
+    try:
+        size = int(request.args.get('size'))
+    except:
+        flash("Swap size must be a number", category="error")
+        return redirect("/settings")
+
+    if size < 0 or size > 64:
+        flash("Swap size is out of range", category="error")
+        return redirect("/settings")
+
+    set_swap_size(str(size))
 
     # Trigger reboot
     t = Timer(1.0, reboot_device)
@@ -1405,6 +1475,9 @@ def page_toggle_setting():
     redirect_page = request.args.get('redirect_page', "/settings")
     if redirect_page not in TOGGLE_SETTING_REDIRECT_PAGES:
         redirect_page = "/settings"
+    if name not in TOGGLE_SETTING_NAMES:
+        flash("Unknown Setting", category="error")
+        return redirect(redirect_page)
     if enable == "1":
         create_settings_file(name)
     elif enable == "0":

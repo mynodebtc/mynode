@@ -22,7 +22,7 @@
     "install_env_vars": {},
     "supports_app_page": true,
     "supports_testnet": true,
-    "http_port": 8088,
+    "http_port": null,
     "https_port": 8089,
     "requires_bitcoin": false,
     "requires_docker_image_installation": false,

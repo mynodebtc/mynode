@@ -3,7 +3,7 @@
         <title>{{ title }}</title>
         {% include 'includes/head.html' %}
 
-        <script>
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
             $(document).ready(function() {
 
                 function downloadOvpn() {
@@ -61,8 +61,109 @@
                 $("#regen_ovpn_form").on("submit", function() {
                     regen_ovpn_dialog.dialog( "close" );
                 });
+
+                var vpn_enabled = {{ vpn_enabled|tojson }};
+                $('#vpn_enabled_checkbox').change(function () {
+                    $("#vpn_enabled_save").toggle($(this).is(":checked") != vpn_enabled);
+                });
+                $("#vpn_enabled_save").on("click", function() {
+                    // The route toggles, so only use it when the switch differs from the saved state
+                    if ($('#vpn_enabled_checkbox').is(":checked") == vpn_enabled) {
+                        return;
+                    }
+                    $('#loading_spinner_overlay').fadeIn();
+                    window.location.href='/toggle-enabled?app=vpn&return_page=/vpn-info'
+                });
             });
         </script>
+        <style>
+            .vpn_status_pill {
+                display: inline-block;
+                font-size: 11px;
+                font-weight: bold;
+                letter-spacing: 0.05em;
+                text-transform: uppercase;
+                padding: 2px 9px;
+                border-radius: 10px;
+                vertical-align: middle;
+            }
+            .vpn_status_pill.enabled {
+                color: #2e9e4f;
+                background-color: #2e9e4f1f;
+                border: 1px solid #2e9e4f;
+            }
+            .vpn_status_pill.disabled {
+                color: #888888;
+                background-color: #8888881f;
+                border: 1px solid #888888;
+            }
+            .vpn_status_pill.warning {
+                color: #d98200;
+                background-color: #d982001f;
+                border: 1px solid #d98200;
+            }
+            .vpn_card {
+                padding: 18px 22px;
+                text-align: left;
+            }
+            .vpn_card_header {
+                display: flex;
+                align-items: center;
+            }
+            .vpn_card_text {
+                flex: 1;
+                line-height: 1.5;
+            }
+            .vpn_card_title {
+                font-size: 18px;
+                font-weight: 500;
+                color: #f19c00;
+                margin-bottom: 6px;
+            }
+            .vpn_card_title .vpn_status_pill {
+                margin-left: 8px;
+            }
+            .vpn_card_control {
+                text-align: center;
+                margin-left: 25px;
+                min-width: 70px;
+            }
+            .vpn_card_control .settings_button_small {
+                margin-top: 8px;
+            }
+            .vpn_details {
+                width: 100%;
+                margin-top: 16px;
+                border-collapse: collapse;
+                font-size: 13px;
+            }
+            .vpn_details td {
+                padding: 8px 10px;
+                border-top: 1px solid #ffb70054;
+                vertical-align: middle;
+            }
+            .vpn_details td.vpn_details_label {
+                width: 160px;
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+                color: #888888;
+            }
+            .vpn_details .vpn_hint {
+                font-size: 12px;
+                color: #888888;
+                margin-top: 4px;
+            }
+            .vpn_mono {
+                font-family: Menlo, Consolas, monospace;
+            }
+            .vpn_card_buttons {
+                margin-top: 4px;
+            }
+            .vpn_card_buttons .ui-button {
+                margin-right: 8px;
+            }
+        </style>
     </head>
 
     <body>
@@ -73,65 +174,87 @@
 
         {% include 'includes/message_display.html' %}
 
-        <div class="main_header">
-            VPN Status
-        </div>
+        <div class="main_header">VPN</div>
         <br/>
-        
-        <div class="app_tile_row">
-            <div class="info_tile">
-                <div class="info_tile_header">Status</div>
-                <div class="info_tile_contents">{{status}}</div>
-            </div>
-            <div class="info_tile">
-                <div class="info_tile_header">VPN Port</div>
-                <div class="info_tile_contents">{{port}}</div>
-            </div>
-            <div class="info_tile">
-                <div class="info_tile_header">Port Forwarded</div>
-                <div class="info_tile_contents">
-                    {% if port_forwarded %}
-                    <div class="port_forwarded_icon green"></div>
+
+        <div class="settings_block vpn_card">
+            <div class="vpn_card_header">
+                <div class="vpn_card_text">
+                    <div class="vpn_card_title">
+                        VPN Server
+                        {% if not vpn_enabled %}
+                            <span class="vpn_status_pill disabled">Disabled</span>
+                        {% elif vpn_file_exists %}
+                            <span class="vpn_status_pill enabled">Running</span>
+                        {% else %}
+                            <span class="vpn_status_pill warning">Setting up</span>
+                        {% endif %}
+                    </div>
+                    {% if vpn_enabled %}
+                        The OpenVPN server lets devices with your VPN client file connect to your node and your network from anywhere.
                     {% else %}
-                    <div class="port_forwarded_icon red"></div>
-                    <p style="font-size: 9px;">Please forward port 51194 to your node's local IP address</p>
+                        The OpenVPN server is off. Enable it to connect to your node and your network from anywhere. Your existing VPN client file will keep working when you enable it again.
                     {% endif %}
                 </div>
-            </div>
-            <div class="info_tile">
-                <div class="info_tile_header">Public IP Address</div>
-                <div class="info_tile_contents">
-                    {{public_ip}}
-                    {% if 'Failed to find' in public_ip or 'not_detected' in public_ip %}
-                        <br/>
-                        <a href="/vpn-info/find-public-ip" class="ui-button ui-widget ui-corner-all settings_button_small">Refresh</a>
-                    {% endif %}
+                <div class="vpn_card_control">
+                    <label class="switch">
+                        <input type="checkbox" id="vpn_enabled_checkbox" {% if vpn_enabled %}checked{% endif %}>
+                        <span class="slider round"></span>
+                    </label>
+                    <br/>
+                    <button id="vpn_enabled_save" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
                 </div>
             </div>
+
+            {% if vpn_enabled %}
+            <table class="vpn_details">
+                <tr>
+                    <td class="vpn_details_label">Public IP Address</td>
+                    <td>
+                        <span class="vpn_mono">{{ public_ip }}</span>
+                        {% if 'Failed to find' in public_ip or 'not_detected' in public_ip %}
+                            &nbsp;<a href="/vpn-info/find-public-ip" class="ui-button ui-widget ui-corner-all settings_button_small">Refresh</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="vpn_details_label">Port</td>
+                    <td><span class="vpn_mono">{{ port }}</span> (UDP)</td>
+                </tr>
+                <tr>
+                    <td class="vpn_details_label">Port Forwarding</td>
+                    <td>
+                        {% if port_forwarded %}
+                            <span class="vpn_status_pill enabled">Detected</span>
+                        {% else %}
+                            <span class="vpn_status_pill warning">Not detected</span>
+                            <div class="vpn_hint">On your router, forward UDP port {{ port }} to your node's local IP address, <span class="vpn_mono">{{ local_ip }}</span>.</div>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+            {% endif %}
         </div>
 
-        <div class="app_tile_row">
-            <div class="info_tile">
-                <div class="info_tile_header">Download OVPN File</div>
-                <div class="info_tile_contents">
-                    {% if vpn_file_exists %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="download_ovpn" style="width: 70%;" href="#">download</a>
-                    {% else %}
-                    Generating file...
-                    {% endif %}
-                </div>
+        {% if vpn_enabled %}
+        <div class="settings_block vpn_card">
+            <div class="vpn_card_title">VPN Client File</div>
+            <div class="vpn_card_text">
+                {% if vpn_file_exists %}
+                    Import this OVPN file into an OpenVPN client on your phone, tablet or laptop to connect. Anyone with the file can reach your node and your network, so keep it private.
+                    Regenerate the files if you are having problems or think the file has been shared. Any client using the old file will need the new one.
+                {% else %}
+                    Your VPN client file is being generated. This can take a few minutes; refresh this page to check.
+                {% endif %}
             </div>
-            <div class="info_tile">
-                <div class="info_tile_header">Regenerate VPN Files</div>
-                <div class="info_tile_contents">
-                    {% if vpn_file_exists %}
-                    <a class="ui-button ui-widget ui-corner-all mynode_button_small" id="regen_ovpn" style="width: 70%;" href="#">regenerate</a>
-                    {% else %}
-                    Generating file...
-                    {% endif %}
-                </div>
+            {% if vpn_file_exists %}
+            <div class="vpn_card_buttons">
+                <a class="ui-button ui-widget ui-corner-all settings_button" id="download_ovpn" href="#">Download OVPN File</a>
+                <a class="ui-button ui-widget ui-corner-all settings_button" id="regen_ovpn" href="#">Regenerate VPN Files</a>
             </div>
+            {% endif %}
         </div>
+        {% endif %}
 
 
         <div id="download-ovpn-dialog" title="Download OVPN File" style="display:none;">
@@ -159,6 +282,12 @@
                 <!-- Allow form submission with keyboard without duplicating the dialog button -->
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
             </form>
+        </div>
+
+        <div id="loading_spinner_overlay" class="loading_spinner_overlay" style="display:none;">
+            <img id="loading_spinner" class="loading_image" src="{{ url_for('static', filename="images/loading.gif")}}"/>
+            <br/>
+            <span id="loading_spinner_message">Saving...</span>
         </div>
 
         {% include 'includes/footer.html' %}

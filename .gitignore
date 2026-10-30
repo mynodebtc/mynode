@@ -19,13 +19,19 @@ instance/
 # Local-only notes and plans
 CLAUDE.md
 plans_local
+plans
 
 .DS_Store
 
 # Output (rootfs, etc...)
 out/
-plans/
 
 # Release tarballs stuff
 releases/
 release.sh
+
+# Claude Code local files
+.claude/*
+!.claude/skills/
+
+CLAUDE.local.md

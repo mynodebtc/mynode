@@ -26,6 +26,10 @@ else
     fi
 fi
 
+# LiT listens on 127.0.0.1 only, custom config or not; nginx serves it on 8443 behind the MyNode login
+sed -i -e '/^[[:space:]]*httpslisten[[:space:]]*=/d' -e '/^[[:space:]]*insecure-httplisten[[:space:]]*=/d' /mnt/hdd/mynode/lit/lit.conf
+sed -i '1i httpslisten=127.0.0.1:8444' /mnt/hdd/mynode/lit/lit.conf
+
 # Faraday reads Bitcoin Core over RPC with the MyNode RPC password. It goes to sed on stdin with
 # tracing off (startup sources this script), so it stays out of command lines and logs.
 case $- in *x*) LIT_CONFIG_XTRACE=1 ;; *) LIT_CONFIG_XTRACE=0 ;; esac
@@ -40,3 +44,4 @@ fi
 
 
 chown bitcoin:bitcoin /mnt/hdd/mynode/lit/lit.conf
+chmod 600 /mnt/hdd/mynode/lit/lit.conf

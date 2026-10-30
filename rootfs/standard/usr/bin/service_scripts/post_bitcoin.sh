@@ -11,15 +11,16 @@ fi
 
 sleep 60s
 
-# Give admin the ability to access the BTC cookie
-chmod 640 /mnt/hdd/mynode/bitcoin/.cookie
-cp -f /mnt/hdd/mynode/bitcoin/.cookie /home/admin/.bitcoin/.cookie
-chown admin:admin /home/admin/.bitcoin/.cookie
+# Give admin a copy of the BTC cookie
+chmod 600 /mnt/hdd/mynode/bitcoin/.cookie
+install -m 600 -o admin -g admin /mnt/hdd/mynode/bitcoin/.cookie /home/admin/.bitcoin/.cookie
 
 if [ -f /mnt/hdd/mynode/bitcoin/testnet3/.cookie ]; then
     mkdir -p /mnt/hdd/mynode/bitcoin/testnet3
-    cp -f /mnt/hdd/mynode/bitcoin/testnet3/.cookie /home/admin/.bitcoin/testnet3/.cookie
-    chown -R admin:admin /home/admin/.bitcoin/testnet3
+    chmod 600 /mnt/hdd/mynode/bitcoin/testnet3/.cookie
+    mkdir -p /home/admin/.bitcoin/testnet3
+    install -m 600 -o admin -g admin /mnt/hdd/mynode/bitcoin/testnet3/.cookie /home/admin/.bitcoin/testnet3/.cookie
+    chown admin:admin /home/admin/.bitcoin/testnet3
 fi
 
 # Make data folders readable for easier transfer between nodes (new files are still 700)

@@ -6,19 +6,28 @@
 
         <script src="{{ url_for('static', filename='js/manage_apps.js')}}"></script>
 
-        <script>
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
+            $(document).on("click", "[data-toggle-details]", function() {
+                if ($(this).attr("data-toggle-details") == "bitcoin") { toggleBitcoinDetails(); }
+                else { toggleLightningDetails(); }
+            });
+            $(document).on("click", "[data-toggle-pinned]", function() {
+                if ($(this).attr("data-toggle-pinned") == "bitcoin") { togglePinnedBitcoinDetails(); }
+                else { togglePinnedLightningDetails(); }
+            });
+
             // Data
             var application_data = {};
             {% for app in apps %}
-            application_data["{{app.short_name}}"] = {};
-            application_data["{{app.short_name}}"]["name"] = "{{app.name}}";
-            application_data["{{app.short_name}}"]["short_name"] = "{{app.short_name}}";
-            application_data["{{app.short_name}}"]["is_enabled"] = {% if app.is_enabled %}true{% else %}false{% endif %};
+            application_data[{{ app.short_name|tojson }}] = {};
+            application_data[{{ app.short_name|tojson }}]["name"] = {{ app.name|tojson }};
+            application_data[{{ app.short_name|tojson }}]["short_name"] = {{ app.short_name|tojson }};
+            application_data[{{ app.short_name|tojson }}]["is_enabled"] = {% if app.is_enabled %}true{% else %}false{% endif %};
             {% endfor %}
             var electrs_active = {% if electrs_active %}1{% else %}0{% endif %};
             var lnd_ready = {% if lnd_ready %}true{% else %}false{% endif %};
             var is_installing_docker_images = {% if is_installing_docker_images %}true{% else %}false{% endif %};
-            var homepage_refresh_id = "{{homepage_refresh_id}}";
+            var homepage_refresh_id = {{ homepage_refresh_id|tojson }};
             var lnd_last_btc_tx = "";
             var lnd_last_ln_tx = "";
             var price_data = {};
@@ -29,7 +38,7 @@
             // Update status functions
             function update_status(status_name, data) {
                 if (data != null && "status" in data && data["status"] != null) {
-                    $("#"+status_name).html(data["status"]);
+                    $("#"+status_name).css("white-space", "pre-line").text(data["status"]);
                 }
             }
             function update_status_icon(status_icon_name, data) {
@@ -97,7 +106,7 @@
                 $("#ticker").show();
                 $("#ticker_text").slideUp('fast', function() {
                     display_id = ticker_rotate_count % display_options.length;
-                    $("#ticker_text").html( display_options[display_id] );
+                    $("#ticker_text").text( display_options[display_id] );
                     $("#ticker_text").slideDown();
                     ticker_rotate_count = ticker_rotate_count + 1;
                 });
@@ -118,6 +127,16 @@
                     p = ":" + location.port
                 }
                 window.location.href=location.protocol+'//'+location.hostname+p+"/";
+            }
+
+            // Transaction table icon. The title is set as an attribute value, never as HTML,
+            // since it can hold text from others (invoice memos).
+            function tx_icon(image, title) {
+                icon = $("<img>", {src: "/static/images/"+image}).css("width", "16px");
+                if (title !== undefined) {
+                    icon.attr("title", title);
+                }
+                return icon;
             }
 
             function need_to_update_tx_table(transactions, last_displayed_tx) {
@@ -148,10 +167,10 @@
             var pinned_bitcoin_details = {% if ui_settings['pinned_bitcoin_details'] %}true{% else %}false{% endif %};
             function togglePinnedBitcoinDetails() {
                 if (pinned_bitcoin_details) {
-                    $('#pin_bitcoin_details_icon').attr('src', location.protocol+'//'+location.hostname+'/static/images/pin.png');
+                    $('#pin_bitcoin_details_icon').attr('src', '/static/images/pin.png');
                     $.get("/api/toggle_setting?setting=pinned_bitcoin_details");
                 } else {
-                    $('#pin_bitcoin_details_icon').attr('src', location.protocol+'//'+location.hostname+'/static/images/unpin.png');
+                    $('#pin_bitcoin_details_icon').attr('src', '/static/images/unpin.png');
                     $.get("/api/toggle_setting?setting=pinned_bitcoin_details");
                 }
                 pinned_bitcoin_details = !pinned_bitcoin_details;
@@ -161,10 +180,10 @@
             function toggleBitcoinDetails() {
                 if (showing_bitcoin_details) {
                     $("#bitcoin_details").slideUp(400);
-                    $('#show_bitcoin_details').attr('src', location.protocol+'//'+location.hostname+'/static/images/expand_down.png');
+                    $('#show_bitcoin_details').attr('src', '/static/images/expand_down.png');
                 } else {
                     $("#bitcoin_details").slideDown(400);
-                    $('#show_bitcoin_details').attr('src', location.protocol+'//'+location.hostname+'/static/images/expand_up.png');
+                    $('#show_bitcoin_details').attr('src', '/static/images/expand_up.png');
                 }
                 showing_bitcoin_details = !showing_bitcoin_details;
             }
@@ -172,10 +191,10 @@
             var pinned_lightning_details = {% if ui_settings['pinned_lightning_details'] %}true{% else %}false{% endif %};
             function togglePinnedLightningDetails() {
                 if (pinned_lightning_details) {
-                    $('#pin_lightning_details_icon').attr('src', location.protocol+'//'+location.hostname+'/static/images/pin.png');
+                    $('#pin_lightning_details_icon').attr('src', '/static/images/pin.png');
                     $.get("/api/toggle_setting?setting=pinned_lightning_details");
                 } else {
-                    $('#pin_lightning_details_icon').attr('src', location.protocol+'//'+location.hostname+'/static/images/unpin.png');
+                    $('#pin_lightning_details_icon').attr('src', '/static/images/unpin.png');
                     $.get("/api/toggle_setting?setting=pinned_lightning_details");
                 }
                 pinned_lightning_details = !pinned_lightning_details;
@@ -185,16 +204,16 @@
             function toggleLightningDetails() {
                 if (showing_lightning_details) {
                     $("#lightning_details").slideUp(400);
-                    $('#show_lightning_details').attr('src', location.protocol+'//'+location.hostname+'/static/images/expand_down.png');
+                    $('#show_lightning_details').attr('src', '/static/images/expand_down.png');
                 } else {
                     $("#lightning_details").slideDown(400);
-                    $('#show_lightning_details').attr('src', location.protocol+'//'+location.hostname+'/static/images/expand_up.png');
+                    $('#show_lightning_details').attr('src', '/static/images/expand_up.png');
                     {% for c in lnd_channels %}
                         // Initialize channel balance bars
-                        $( "#channel_bar_{{ c.chan_id }}" ).progressbar({
-                            value: Math.floor( {{ c.chan_percent }} )
+                        $( "#channel_bar_" + {{ c.chan_id|tojson }} ).progressbar({
+                            value: Math.floor( {{ c.chan_percent|tojson }} )
                         });
-                        $('#channel_bar_{{ c.chan_id }}').height(15);
+                        $('#channel_bar_' + {{ c.chan_id|tojson }}).height(15);
                     {% endfor %}
                 }
                 showing_lightning_details = !showing_lightning_details;
@@ -208,30 +227,30 @@
                     //console.log("Bitcoin Data: " + JSON.stringify(data))
                     bitcoin_info = data;
                     if ("current_block" in data && data["current_block"] != null) {
-                        $("#current_block").html(data["current_block"]);
+                        $("#current_block").text(data["current_block"]);
                     }
                     if ("peer_count" in data && data["peer_count"] != null) {
-                        $("#bitcoin_peer_count").html(data["peer_count"]);
+                        $("#bitcoin_peer_count").text(data["peer_count"]);
                     }
                     if ("difficulty" in data && data["difficulty"] != null) {
-                        $("#bitcoin_difficulty").html(data["difficulty"]);
+                        $("#bitcoin_difficulty").text(data["difficulty"]);
                     }
                     if ("mempool_size" in data && data["mempool_size"] != null) {
-                        $("#bitcoin_mempool_size").html(data["mempool_size"]);
+                        $("#bitcoin_mempool_size").text(data["mempool_size"]);
                     }
                     if ("recent_blocks" in data && data["recent_blocks"] != null) {
                         blocks = data["recent_blocks"].reverse();
                         for (i=0; i < data["recent_blocks"].length; i++) {
                             b = data["recent_blocks"][i]
                             //console.log(JSON.stringify(b))
-                            $("#bitcoin_block_height_"+i).html(b["height"]);
+                            $("#bitcoin_block_height_"+i).text(b["height"]);
                             size = parseFloat(b["size"]) / 1000 / 1000;
-                            $("#bitcoin_block_size_"+i).html(size.toFixed(2) + " MB");
-                            $("#bitcoin_block_num_txs_"+i).html(b["nTx"] + " txs");
+                            $("#bitcoin_block_size_"+i).text(size.toFixed(2) + " MB");
+                            $("#bitcoin_block_num_txs_"+i).text(b["nTx"] + " txs");
                             var now = new Date();
                             var nowSeconds = Math.round(now.getTime() / 1000);
                             var minutesAgo = Math.round((nowSeconds - parseInt(b["time"])) / 60);
-                            $("#bitcoin_block_time_"+i).html(minutesAgo + " min ago");
+                            $("#bitcoin_block_time_"+i).text(minutesAgo + " min ago");
                         }
                     }
                 });
@@ -241,21 +260,21 @@
                     //console.log("Lightning Data: " + JSON.stringify(data))
                     lnd_info = data;
                     if ("channel_count" in data && data["channel_count"] != null) {
-                        $("#lnd_channel_count").html(data["channel_count"]);
+                        $("#lnd_channel_count").text(data["channel_count"]);
                     }
                     if ("peer_count" in data && data["peer_count"] != null) {
-                        $("#lnd_peer_count").html(data["peer_count"]);
+                        $("#lnd_peer_count").text(data["peer_count"]);
                     }
                     if ("balances" in data && data["balances"] != null) {
                         balances = data["balances"]
                         if ("wallet_balance" in balances && balances["wallet_balance"] != null) {
-                            $("#lnd_wallet_balance").html(balances["wallet_balance"]);
+                            $("#lnd_wallet_balance").text(balances["wallet_balance"]);
                         }
                         if ("channel_balance" in balances && balances["channel_balance"] != null) {
-                            $("#lnd_channel_balance").html(balances["channel_balance"]);
+                            $("#lnd_channel_balance").text(balances["channel_balance"]);
                         }
                         if ("total_balance" in balances && balances["total_balance"] != null) {
-                            $("#lnd_total_balance").html(balances["total_balance"] + " sats");
+                            $("#lnd_total_balance").text(balances["total_balance"] + " sats");
                         }
                     }
                     if ("lnd_ready" in data && data["lnd_ready"] != null) {
@@ -270,8 +289,8 @@
                                 c = channels[i];
                                 //console.log(JSON.stringify(c))
                                 update_channel_status_icon(c)
-                                $("#channel_local_"+c["chan_id"]).html(c["local_balance"]+" sats");
-                                $("#channel_remote_"+c["chan_id"]).html(c["remote_balance"]+" sats");
+                                $("#channel_local_"+c["chan_id"]).text(c["local_balance"]+" sats");
+                                $("#channel_remote_"+c["chan_id"]).text(c["remote_balance"]+" sats");
 
 
                                 $("#channel_bar_"+c["chan_id"]).progressbar({
@@ -287,22 +306,22 @@
                             while ($('#lnd_transactions tr').length > 1) {
                                 $('#lnd_transactions tr:last').remove();
                             }
-                            for (i=0; i < transactions.length && i < {{lnd_tx_display_limit}}; i++) {
+                            for (i=0; i < transactions.length && i < {{ lnd_tx_display_limit|tojson }}; i++) {
                                 tx = transactions[i];
                                 //console.log(JSON.stringify(tx))
                                 if (i==0) {lnd_last_btc_tx = tx;}
-                                row =  "<tr>";
-                                row += "<td>"+tx['date_str']+"</td>";
-                                row += "<td>"+tx['amount_str']+"</td>";
-                                row += "<td>";
-                                if      (tx["num_confirmations"] <  1) { row += "<img style=\"width: 16px;\" src=\"/static/images/confirm_pending.png\" title=\"pending transaction\"/>"; }
-                                else if (tx["num_confirmations"] <= 3) { row += "<img style=\"width: 16px;\" src=\"/static/images/confirm_bars_"+tx["num_confirmations"]+".png\" title=\""+tx["num_confirmations"]+" confirmations\"/>"; }
-                                else if (tx["num_confirmations"] >  3) { row += "<img style=\"width: 16px;\" src=\"/static/images/confirm_complete.png\" title=\""+tx["num_confirmations"]+" confirmations\"/>"; }
-                                row += "</td>";
-                                row += "</tr>";
+                                confirmations = parseInt(tx["num_confirmations"]) || 0;
+                                icons = $("<td>");
+                                if      (confirmations <  1) { icons.append(tx_icon("confirm_pending.png", "pending transaction")); }
+                                else if (confirmations <= 3) { icons.append(tx_icon("confirm_bars_"+confirmations+".png", confirmations+" confirmations")); }
+                                else                         { icons.append(tx_icon("confirm_complete.png", confirmations+" confirmations")); }
+                                row = $("<tr>").append(
+                                    $("<td>").text(tx['date_str']),
+                                    $("<td>").text(tx['amount_str']),
+                                    icons);
                                 $('#lnd_transactions tr:last').after(row);
                             }
-                            if (transactions.length >= {{lnd_tx_display_limit}}) {
+                            if (transactions.length >= {{ lnd_tx_display_limit|tojson }}) {
                                 $('#lnd_transactions tr:last').after("<tr><td colspan=9>more...</td></tr>");
                             }
                             if (transactions.length == 0) {
@@ -318,32 +337,31 @@
                             while ($('#lnd_payments_and_invoices tr').length > 1) {
                                 $('#lnd_payments_and_invoices tr:last').remove();
                             }
-                            for (i=0; i < payments_and_invoices.length && i < {{lnd_tx_display_limit}}; i++) {
+                            for (i=0; i < payments_and_invoices.length && i < {{ lnd_tx_display_limit|tojson }}; i++) {
                                 tx = payments_and_invoices[i];
                                 //console.log(JSON.stringify(tx))
                                 if (i==0) {lnd_last_ln_tx = tx;}
-                                row =  "<tr>";
-                                row += "<td>"+tx['date_str']+"</td>";
-                                row += "<td>"+tx['value_str']+"</td>";
-                                row += "<td>";
+                                icons = $("<td>");
                                 if (tx["type"] == "PAYMENT") {
-                                    row += "<img style=\"width: 16px;\" src=\"/static/images/ln_send.png\"/>";
+                                    icons.append(tx_icon("ln_send.png"));
                                 } else {
-                                    row += "<img style=\"width: 16px;\" src=\"/static/images/ln_recv.png\"/>";
+                                    icons.append(tx_icon("ln_recv.png"));
                                 }
-                                if ("state" in tx && tx["state"] == "OPEN")      { row += "<img style=\"width: 16px;\" src=\"/static/images/invoice_pending.png\" title=\"open invoice\"/>"; }
-                                if ("state" in tx && tx["state"] == "SETTLED")   { row += "<img style=\"width: 16px;\" src=\"/static/images/invoice_complete.png\" title=\"settled invoice\"/>"; }
-                                if ("state" in tx && tx["state"] == "CANCELED")  { row += "<img style=\"width: 16px;\" src=\"/static/images/invoice_cancelled.png\" title=\"cancelled invoice\"/>"; }
-                                if ("state" in tx && tx["state"] == "CANCELLED") { row += "<img style=\"width: 16px;\" src=\"/static/images/invoice_cancelled.png\" title=\"cancelled invoice\"/>"; }
+                                if ("state" in tx && tx["state"] == "OPEN")      { icons.append(tx_icon("invoice_pending.png", "open invoice")); }
+                                if ("state" in tx && tx["state"] == "SETTLED")   { icons.append(tx_icon("invoice_complete.png", "settled invoice")); }
+                                if ("state" in tx && tx["state"] == "CANCELED")  { icons.append(tx_icon("invoice_cancelled.png", "cancelled invoice")); }
+                                if ("state" in tx && tx["state"] == "CANCELLED") { icons.append(tx_icon("invoice_cancelled.png", "cancelled invoice")); }
 
                                 if ("memo" in tx && tx["memo"] != "") {
-                                    row += "<img style=\"width: 16px;\" src=\"/static/images/memo.png\" title=\""+tx["memo"]+"\"/>";
+                                    icons.append(tx_icon("memo.png", tx["memo"]));
                                 }
-                                row += "</td>";
-                                row += "</tr>";
+                                row = $("<tr>").append(
+                                    $("<td>").text(tx['date_str']),
+                                    $("<td>").text(tx['value_str']),
+                                    icons);
                                 $('#lnd_payments_and_invoices tr:last').after(row);
                             }
-                            if (payments_and_invoices.length >= {{lnd_tx_display_limit}}) {
+                            if (payments_and_invoices.length >= {{ lnd_tx_display_limit|tojson }}) {
                                 $('#lnd_payments_and_invoices tr:last').after("<tr><td colspan=9>more...</td></tr>");
                             }
                             if (payments_and_invoices.length == 0) {
@@ -367,10 +385,10 @@
                 // Update app status
                 {% for app in apps %}
                     {% if app.show_on_homepage %}
-                        $.getJSON("/api/get_service_status?service={{app.short_name}}", function( data ) {
-                            update_status("{{app.short_name}}_status", data);
-                            update_status_icon("{{app.short_name}}_status_icon", data);
-                            update_sso_token("{{app.short_name}}", data);
+                        $.getJSON("/api/get_service_status?service=" + {{ app.short_name|tojson }}, function( data ) {
+                            update_status({{ app.short_name|tojson }} + "_status", data);
+                            update_status_icon({{ app.short_name|tojson }} + "_status_icon", data);
+                            update_sso_token({{ app.short_name|tojson }}, data);
                         });
                     {% endif %}
                 {% endfor %}
@@ -390,16 +408,16 @@
                     //console.log("Device Data: " + JSON.stringify(data))
                     device_info = data
                     if ("data_drive_usage" in data && data["data_drive_usage"] != null) {
-                        $("#data_drive_usage").html(data["data_drive_usage"]);
+                        $("#data_drive_usage").text(data["data_drive_usage"]);
                     }
                     if ("cpu" in data && data["cpu"] != null) {
-                        $("#device_cpu_usage").html(data["cpu"]);
+                        $("#device_cpu_usage").text(data["cpu"]);
                     }
                     if ("ram" in data && data["ram"] != null) {
-                        $("#device_ram_usage").html(data["ram"]);
+                        $("#device_ram_usage").text(data["ram"]);
                     }
                     if ("temp" in data && data["temp"] != null) {
-                        $("#device_temp").html(data["temp"] + " &deg;C");
+                        $("#device_temp").text(data["temp"] + " \u00b0C");
                         if (data["temp"] != "...") {
                             $("#temp_tile").show();
                         }
@@ -439,7 +457,7 @@
                     hostname=location.hostname
                     port_string=""
                     if (is_using_tor()) {
-                        hostname="{{lndhub_onion}}"
+                        hostname={{ lndhub_onion|tojson }}
                         // Use "default" port - either 80 or 443 for HTTP/HTTPS
                     } else {
                         port_string=":3000"

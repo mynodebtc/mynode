@@ -2,6 +2,12 @@
 
 source /usr/share/mynode/mynode_device_info.sh
 
+# Same rule as is_safe_version() in utilities.py
+function is_valid_app_version()
+{
+    [[ "$1" =~ ^[A-Za-z0-9_][A-Za-z0-9_.-]{0,63}$ ]] && [[ "$1" != *..* ]]
+}
+
 function get_app_version()
 {
     local official_version=$1
@@ -13,7 +19,35 @@ function get_app_version()
     if [ -f "/mnt/hdd/mynode/settings/${short_name}_version_latest_custom" ]; then
         version=$(cat /mnt/hdd/mynode/settings/${short_name}_version_latest_custom)
     fi
+    if [ "$version" != "$official_version" ] && ! is_valid_app_version "$version"; then
+        echo "Ignoring invalid custom $short_name version" >&2
+        version=$official_version
+    fi
     echo "$version"
+}
+
+# Apply a custom versions file. Only NAME=version and NAME="version" lines that
+# set a *_VERSION variable assigned in this file are used.
+function load_custom_app_versions()
+{
+    local file=$1
+    local line name value
+    while IFS= read -r line || [ -n "$line" ]; do
+        line=${line%$'\r'}
+        [[ "$line" =~ ^[[:space:]]*(#.*)?$ ]] && continue
+        name=${line%%=*}
+        value=${line#*=}
+        if [[ "$value" == \"*\" ]]; then
+            value=${value:1:${#value}-2}
+        fi
+        if [[ "$line" == *=* && "$name" =~ ^[A-Z0-9_]+_VERSION$ ]] && \
+           grep -q "^${name}=" "${BASH_SOURCE[0]}" && \
+           is_valid_app_version "$value"; then
+            printf -v "$name" '%s' "$value"
+        else
+            echo "Ignoring custom version line: $line" >&2
+        fi
+    done < "$file"
 }
 
 function is_custom_app_version()
@@ -70,6 +104,57 @@ function pull_app_docker_image()
     docker pull "$image@$pinned_digest" && docker tag "$image@$pinned_digest" "$image:$tag"
 }
 
+# Check that a detached signature has a valid signature from one of the given
+# primary key fingerprints. Other signatures on the file are ignored.
+function check_gpg_signer()
+{
+    local sig_file=$1
+    local data_file=$2
+    shift 2
+    local signers
+    signers=$(gpg --status-fd 1 --verify "$sig_file" "$data_file" 2>/dev/null | awk '$2 == "VALIDSIG" {print $NF}')
+
+    local fingerprint
+    for fingerprint in "$@"; do
+        if echo "$signers" | grep -qxF "$fingerprint"; then
+            echo "Valid signature on $data_file from $fingerprint"
+            return 0
+        fi
+    done
+    echo "ERROR: no valid signature on $data_file from a known key"
+    return 1
+}
+
+# Set up the NodeSource apt repo with NodeSource's setup script, from the copy in
+# /usr/share/mynode/nodesource (or <script_dir>). Versions chosen by the user
+# download the script. Either way, the repo is removed unless its key is
+# NODESOURCE_KEY_FINGERPRINT.
+function install_nodesource_repo()
+{
+    local version=$1
+    local script_dir=${2:-/usr/share/mynode/nodesource}
+    local script="$script_dir/setup_${version}"
+
+    if [ -f "$script" ]; then
+        bash "$script"
+    elif is_custom_app_version "nodejs"; then
+        echo "Custom nodejs version $version, downloading NodeSource setup script"
+        curl -fsSL "https://deb.nodesource.com/setup_${version}" | bash -
+    else
+        echo "ERROR: no NodeSource setup script for $version"
+        return 1
+    fi
+
+    local fingerprints
+    fingerprints=$(gpg --show-keys --with-colons /usr/share/keyrings/nodesource.gpg 2>/dev/null | awk -F: '$1 == "pub" {want = 1; next} $1 == "fpr" && want {print $10; want = 0}')
+    if [ "$fingerprints" != "$NODESOURCE_KEY_FINGERPRINT" ]; then
+        echo "ERROR: unexpected NodeSource key: $fingerprints"
+        rm -f /etc/apt/sources.list.d/nodesource.list /etc/apt/sources.list.d/nodesource.sources
+        rm -f /usr/share/keyrings/nodesource.gpg
+        return 1
+    fi
+}
+
 BTC_VERSION="29.3"
 if [ "$DEBIAN_VERSION" -lt "12" ]; then
     BTC_VERSION="27.2"
@@ -77,6 +162,8 @@ fi
 BTC_VERSION=$(get_app_version "$BTC_VERSION" "bitcoin")
 BTC_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version
 BTC_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version_latest
+# Bitcoin Core release signers: Wladimir van der Laan, Michael Ford (fanquake)
+BTC_SIGNER_FINGERPRINTS="01EA5486DE18A882D4C2684590C8019E36C2E964 E777299FC265DD04793070EB944D35F9AC3DB76A"
 
 LND_VERSION="v0.21.4-beta"
 LND_VERSION=$(get_app_version "$LND_VERSION" "lnd")
@@ -87,6 +174,8 @@ LND_UPGRADE_MANIFEST_ROASBEEF_SIG_URL=https://github.com/lightningnetwork/lnd/re
 LND_UPGRADE_MANIFEST_GUGGERO_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-guggero-$LND_VERSION.sig
 LND_UPGRADE_MANIFEST_SUHEB_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-suheb-$LND_VERSION.sig
 LND_UPGRADE_MANIFEST_VICTORT_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-VictorT-11-$LND_VERSION.sig
+# LND release signers: roasbeef, guggero, suheb, ViktorT-11
+LND_SIGNER_FINGERPRINTS="A5B61896952D9FDA83BC054CDC42612E89237182 F4FC70F07310028424EFC20A8E4256593F177720 3E9BD4436C288039CA827A9200C9E2BC2E45666F C20A78516A0944900EBFCA29961CC8259AE675D4"
 
 LOOP_VERSION="v0.35.2-beta"
 LOOP_VERSION=$(get_app_version "$LOOP_VERSION" "loop")
@@ -95,6 +184,8 @@ LOOP_LATEST_VERSION_FILE=/home/bitcoin/.mynode/loop_version_latest
 LOOP_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt
 LOOP_UPGRADE_MANIFEST_SIG_MODIFIER=""
 LOOP_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest$LOOP_UPGRADE_MANIFEST_SIG_MODIFIER-$LOOP_VERSION.txt.sig
+# Loop release signers: Alex Bosworth, Andras Banki-Horvath
+LOOP_SIGNER_FINGERPRINTS="DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E 9FC6B0BFD597A94DBF09708280E5375C094198D8"
 
 POOL_VERSION="v0.6.4-beta"
 POOL_VERSION=$(get_app_version "$POOL_VERSION" "pool")
@@ -102,6 +193,8 @@ POOL_VERSION_FILE=/home/bitcoin/.mynode/pool_version
 POOL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/pool_version_latest
 POOL_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/manifest-$POOL_VERSION.txt
 POOL_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/manifest-$POOL_VERSION.sig
+# Pool release signer: guggero
+POOL_SIGNER_FINGERPRINTS="F4FC70F07310028424EFC20A8E4256593F177720"
 
 LIT_VERSION="v0.17.8"
 LIT_VERSION=$(get_app_version "$LIT_VERSION" "lit")
@@ -109,6 +202,8 @@ LIT_VERSION_FILE=/home/bitcoin/.mynode/lit_version
 LIT_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lit_version_latest
 LIT_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-$LIT_VERSION.txt
 LIT_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-roasbeef-$LIT_VERSION.sig
+# Lightning Terminal release signers: roasbeef, Elle Mouton, Viktor Tigerstrom, ViktorT-11
+LIT_SIGNER_FINGERPRINTS="A5B61896952D9FDA83BC054CDC42612E89237182 26984CB69EB8C4A26196F7A4D7D916376026F177 187F6ADD93AE3B0CF335AA6AB984570980684DCC C20A78516A0944900EBFCA29961CC8259AE675D4"
 
 CHANTOOLS_VERSION="v0.14.3"
 CHANTOOLS_VERSION=$(get_app_version "$CHANTOOLS_VERSION" "chantools")
@@ -116,6 +211,8 @@ CHANTOOLS_VERSION_FILE=/home/bitcoin/.mynode/chantools_version
 CHANTOOLS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/chantools_version_latest
 CHANTOOLS_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/chantools/releases/download/$CHANTOOLS_VERSION/manifest-$CHANTOOLS_VERSION.txt
 CHANTOOLS_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/chantools/releases/download/$CHANTOOLS_VERSION/manifest-$CHANTOOLS_VERSION.sig
+# Chantools release signer: guggero
+CHANTOOLS_SIGNER_FINGERPRINTS="F4FC70F07310028424EFC20A8E4256593F177720"
 
 ELECTRS_VERSION="v0.11.1"
 if [ "$IS_32_BIT" = "1" ]; then
@@ -193,6 +290,8 @@ fi
 RTL_VERSION=$(get_app_version "$RTL_VERSION" "rtl")
 RTL_VERSION_FILE=/home/bitcoin/.mynode/rtl_version
 RTL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/rtl_version_latest
+# RTL release signer: suheb
+RTL_SIGNER_FINGERPRINTS="3E9BD4436C288039CA827A9200C9E2BC2E45666F"
 
 BTCPAYSERVER_VERSION="2.4.5"
 if [ "$IS_32_BIT" = "1" ]; then
@@ -325,6 +424,7 @@ if [ "$DEBIAN_VERSION" -lt "11" ]; then
     NODE_JS_VERSION="18.x"
 fi
 NODE_JS_VERSION=$(get_app_version "$NODE_JS_VERSION" "nodejs")
+NODESOURCE_KEY_FINGERPRINT="6F71F525282841EEDAF851B42F59B5F99B1BE0B4"
 
 RUST_VERSION="1.86.0"
 
@@ -340,7 +440,7 @@ TOR_SOURCE_SHA256="0.4.9.14 182449ac1c8ff43278da27b69b02040e11d03d0327db6d9126e4
 
 # Check for override files
 if [ -f /usr/share/mynode/mynode_app_versions_custom.sh ]; then
-    source /usr/share/mynode/mynode_app_versions_custom.sh
+    load_custom_app_versions /usr/share/mynode/mynode_app_versions_custom.sh
 elif [ -f /mnt/hdd/mynode/settings/mynode_app_versions_custom.sh ]; then
-    source /mnt/hdd/mynode/settings/mynode_app_versions_custom.sh
+    load_custom_app_versions /mnt/hdd/mynode/settings/mynode_app_versions_custom.sh
 fi

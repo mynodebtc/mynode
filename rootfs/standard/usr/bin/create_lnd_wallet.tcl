@@ -1,12 +1,15 @@
 #!/usr/bin/expect
 
+# Run quietly; only the exit code is used
+log_user 0
+
 set timeout 5
 
 set f [open "/mnt/hdd/mynode/settings/.lndpw"]
 set pw [read $f]
 close $f
 
-set seed [lindex $argv 0];
+set seed $env(LND_SEED)
 set backup_args ""
 if { [file exists "/tmp/lnd_channel_backup"] == 1} {      
     set backup_args "--multi_file=/tmp/lnd_channel_backup"

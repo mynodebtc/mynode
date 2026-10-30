@@ -119,6 +119,8 @@ class OpendimeHandler(UsbDeviceHandler):
         self.partition = partition
         self.folder_name = f"opendime_{self.id}"
         self.state = "loading_1"
+        self.port = None
+        self.https_port = None
         self.http_server = None
         self.http_server_thread = None
 
@@ -130,6 +132,7 @@ class OpendimeHandler(UsbDeviceHandler):
         dict["partition"] = self.partition
         dict["folder_name"] = self.folder_name
         dict["port"] = self.port
+        dict["https_port"] = self.https_port
         dict["state"] = self.state
         return dict
 
@@ -161,8 +164,12 @@ class OpendimeHandler(UsbDeviceHandler):
                 except Exception as e:
                     self.state = "error_reading_opendime"
 
-                self.port = 8010 + (self.id % 10)
-                self.http_server = HTTPServer(('', self.port), web_handler_from(f"/mnt/usb_extras/{self.folder_name}"))
+                # nginx serves HTTP on port and HTTPS on https_port, proxied to local_port
+                slot = self.id % 5
+                self.port = 8010 + (slot * 2)
+                self.https_port = self.port + 1
+                self.local_port = 18010 + slot
+                self.http_server = HTTPServer(('127.0.0.1', self.local_port), web_handler_from(f"/mnt/usb_extras/{self.folder_name}"))
                 self.http_server_thread = Thread(target = self.http_server.serve_forever)
                 self.http_server_thread.setDaemon(True)
                 self.http_server_thread.start()

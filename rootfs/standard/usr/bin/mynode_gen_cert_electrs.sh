@@ -13,8 +13,7 @@ OUTPUT_DIR="${OUTPUT_DIR_BASE}/electrs"
 HDD_DIR="${HDD_DIR_BASE}/electrs"
 DAYS=10000
 
-# nginx, startup and tls_proxy (as bitcoin) all run this. The lock is taken on this script, which
-# every caller can open.
+# nginx and startup both run this. The lock is taken on this script, which every caller can open.
 exec 9<"$0"
 flock 9
 
@@ -117,7 +116,7 @@ cat $TMP_DIR/key > $TMP_DIR/pem
 echo "" >> $TMP_DIR/pem
 cat $TMP_DIR/crt >> $TMP_DIR/pem
 
-# Move the new files into place only once all of them exist. tls_proxy reads them as bitcoin.
+# Move the new files into place only once all of them exist.
 dirs=$OUTPUT_DIR
 if [ $DRIVE_MOUNTED = 1 ]; then
     dirs="$dirs $HDD_DIR"

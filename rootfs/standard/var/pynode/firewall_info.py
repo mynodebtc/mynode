@@ -49,7 +49,6 @@ FIREWALL_CORE_SERVICES = [
     {"id": "vpn",             "name": "VPN",                         "ports": ["51194"]},
     {"id": "glances",         "name": "Glances",                     "ports": ["61208/tcp", "61209/tcp"]},
     {"id": "joinmarket",      "name": "JoinMarket Orderbook",        "ports": ["62601/tcp", "62602/tcp"], "app": "joininbox"},
-    {"id": "joinmarket_api",  "name": "JoinMarket API",              "ports": ["27183/tcp", "28183/tcp", "28283/tcp"], "app": "joininbox"},
     {"id": "datum",           "name": "DATUM",                       "ports": ["23334/tcp"]},
 ]
 

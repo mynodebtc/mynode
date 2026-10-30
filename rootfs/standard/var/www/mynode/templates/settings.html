@@ -3,7 +3,11 @@
         <title>{{ title }}</title>
         {% include 'includes/head.html' %}
 
-        <script>
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
+            $(document).on("click", "[data-show-upgrade-log]", function() {
+                showUpgradeLog($(this).attr("data-show-upgrade-log"));
+            });
+
             $(document).ready(function() {
 
                 var showChangelog=0;
@@ -15,8 +19,8 @@
                     }
                     openConfirmDialog("confirm-dialog", 
                                       "Upgrade MyNode",
-                                      "<p>This will upgrade your MyNode to the latest version and reboot your device.</p>" +
-                                      "<p>Would you still like to upgrade your device?</p>",
+                                      "This will upgrade your MyNode to the latest version and reboot your device.\n\n" +
+                                      "Would you still like to upgrade your device?",
                                       okFunction)
                 });
                 $("#upgrade_os_packages").on("click", function() {
@@ -46,8 +50,8 @@
                     }
                     openConfirmDialog("confirm-dialog", 
                                       "Upgrade MyNode",
-                                      "<p>This will upgrade your MyNode to the latest beta version and reboot your device.</p>" +
-                                      "<p>Would you still like to upgrade your device?</p>",
+                                      "This will upgrade your MyNode to the latest beta version and reboot your device.\n\n" +
+                                      "Would you still like to upgrade your device?",
                                       okFunction)
                 });
 
@@ -227,11 +231,11 @@
 
                 $("#run-disk-benchmark").on("click", function() {
                     $("#run-disk-benchmark").prop("disabled",true);
-                    $("#run-disk-benchmark-results").html("Loading...");
+                    $("#run-disk-benchmark-results").text("Loading...");
                     $.get("/api/get_drive_benchmark")
                         .done(function( data ) {
                             $("#run-disk-benchmark").prop("disabled",false);
-                            $("#run-disk-benchmark-results").html( data["data"] );
+                            $("#run-disk-benchmark-results").text( data["data"] );
                         }
                     );
                 });
@@ -304,11 +308,11 @@
 
                 $("#view-usb-info").on("click", function() {
                     $("#view-usb-info").prop("disabled",true);
-                    $("#view-usb-info-results").html("Loading...");
+                    $("#view-usb-info-results").text("Loading...");
                     $.get("/api/get_usb_info")
                         .done(function( data ) {
                             $("#view-usb-info").prop("disabled",false);
-                            $("#view-usb-info-results").html( data["data"] );
+                            $("#view-usb-info-results").text( data["data"] );
                         }
                     );
                 });
@@ -492,12 +496,12 @@
                 });
 
                 $("#check_for_updates").on("click", function() {
-                    $('#loading_spinner_message').html("Checking...");
+                    $('#loading_spinner_message').text("Checking...");
                     $('#loading_spinner_overlay').fadeIn();
                     window.location.href='/settings/get-latest-version'
                 });
                 $("#check_for_updates_beta").on("click", function() {
-                    $('#loading_spinner_message').html("Checking...");
+                    $('#loading_spinner_message').text("Checking...");
                     $('#loading_spinner_overlay').fadeIn();
                     window.location.href='/settings/get-latest-version'
                 });
@@ -505,11 +509,11 @@
                 showing_upgrade_log=0;
                 $("#show_upgrade_logs").on("click", function() {
                     if (showing_upgrade_log == 0) {
-                        $("#show_upgrade_logs").html("Hide Upgrade Logs");
+                        $("#show_upgrade_logs").text("Hide Upgrade Logs");
                         $("#upgrade_logs").show();
                         showing_upgrade_log = 1;
                     } else {
-                        $("#show_upgrade_logs").html("Show Upgrade Logs");
+                        $("#show_upgrade_logs").text("Show Upgrade Logs");
                         $("#upgrade_logs").hide();
                         showing_upgrade_log = 0;
                     }
@@ -519,11 +523,11 @@
                 showing_upgrade_beta_log=0;
                 $("#show_upgrade_log_beta").on("click", function() {
                     if (showing_upgrade_beta_log == 0) {
-                        $("#show_upgrade_log_beta").html("Hide Upgrade Log");
+                        $("#show_upgrade_log_beta").text("Hide Upgrade Log");
                         $("#upgrade_log_beta").show();
                         showing_upgrade_beta_log = 1;
                     } else {
-                        $("#show_upgrade_log_beta").html("Show Upgrade Log");
+                        $("#show_upgrade_log_beta").text("Show Upgrade Log");
                         $("#upgrade_log_beta").hide();
                         showing_upgrade_beta_log = 0;
                     }
@@ -536,17 +540,18 @@
                 $("#upgrade_changelog").on("click", function() {
                     $.get("https://raw.githubusercontent.com/mynodebtc/mynode/master/CHANGELOG")
                         .done(function( data ) {
-                            var parts = data.split("=== v{{current_version}} ===");
+                            var current_header = "=== v" + {{ current_version|tojson }} + " ===";
+                            var latest_header = "=== v" + {{ latest_version|tojson }} + " ===";
+                            var parts = data.split(current_header);
                             var changes = parts[0];
-                            parts = changes.split("=== v{{latest_version}} ===")
+                            parts = changes.split(latest_header)
                             if (parts.length > 1) {
-                                changes = "=== v{{latest_version}} ===" + parts[1];
+                                changes = latest_header + parts[1];
                             }
 
-                            changes = "<pre style='font-size: 10px;'>"+changes+"</pre>";
                             openInfoDialog("upgrade-changelog-info",
                                     "Recent Changes",
-                                    changes);
+                                    $("<pre>").css("font-size", "10px").text(changes));
                         }
                     );
                 });
@@ -554,11 +559,11 @@
                 showing_info_table_advanced_rows=0;
                 $("#info_table_show_advanced_info").on("click", function() {
                     if (showing_info_table_advanced_rows) {
-                        $("#info_table_show_advanced_info").html("Show");
+                        $("#info_table_show_advanced_info").text("Show");
                         $(".info_table_advanced_row").hide();
                         showing_info_table_advanced_rows = 0;
                     } else {
-                        $("#info_table_show_advanced_info").html("Hide");
+                        $("#info_table_show_advanced_info").text("Hide");
                         $(".info_table_advanced_row").show();
                         showing_info_table_advanced_rows = 1;
                     }
@@ -642,9 +647,9 @@
                         }
                         openConfirmDialog("confirm-dialog",
                                           "Custom Bitcoin Version",
-                                          "<p>This version of Bitcoin Knots applies the BIP110 (RDTS) network upgrade, which fixes critical vulnerabilities in long-standing network design. To avoid applying this upgrade by accident, this version asks for explicit confirmation.</p>" +
-                                          "<p>If you do not know what you are doing, you can learn more at https://bitcoinknots.org/learn/2026-rdts</p>" +
-                                          "<p>Do you want to install this version?</p>",
+                                          "This version of Bitcoin Knots applies the BIP110 (RDTS) network upgrade, which fixes critical vulnerabilities in long-standing network design. To avoid applying this upgrade by accident, this version asks for explicit confirmation.\n\n" +
+                                          "If you do not know what you are doing, you can learn more at https://bitcoinknots.org/learn/2026-rdts\n\n" +
+                                          "Do you want to install this version?",
                                           okFunction)
                     } else {
                         window.location.href='/settings/install-custom-bitcoin?version='+custom_bitcoin_choice
@@ -884,14 +889,14 @@
 
             function hideAllUpgradeLogs() {
                 {% for f in upgrade_logs %}
-                $("#upgrade_log_{{f.id}}").hide();
-                $("#show_upgrade_log_{{f.id}}").html("Show");
+                $("#upgrade_log_" + {{ f.id|tojson }}).hide();
+                $("#show_upgrade_log_" + {{ f.id|tojson }}).text("Show");
                 {% endfor %}
             }
             function showUpgradeLog(id) {
                 hideAllUpgradeLogs()
                 $("#upgrade_log_"+id).show();
-                $("#show_upgrade_log_"+id).html("Showing");
+                $("#show_upgrade_log_"+id).text("Showing");
             }
         </script>
      </head>
@@ -957,7 +962,7 @@
                     </tr>
                     {% for f in upgrade_logs %}
                     <tr>
-                        <td><button onclick="showUpgradeLog({{f.id}})" id="show_upgrade_log_{{f.id}}" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button></td>
+                        <td><button data-show-upgrade-log="{{f.id}}" id="show_upgrade_log_{{f.id}}" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button></td>
                         <td>{{f.name}}</td>
                         <td>&nbsp;&nbsp;&nbsp;&nbsp;{{f.date}}</td>
                     </tr>
@@ -1702,6 +1707,34 @@
             </label>
             <br/><br/>
             <button id="skip_backup_dns_servers" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+
+            <div class="divider"></div>
+
+            <a id="allowed_hosts"></a>
+            <div class="settings_block_subheader">Allowed Host Names</div>
+            MyNode can always be opened using its IP address, mynode.local, or its Tor address. To open it using another name,
+            such as a Tailscale MagicDNS name or your own domain, add that name here.
+            <br/><br/>
+            {% if allowed_hosts %}
+            <table border="0" style="font-size: 14px;">
+                {% for host in allowed_hosts %}
+                <tr>
+                    <td style="padding-right: 20px;">{{ host }}</td>
+                    <td>
+                        <form action="/settings/allowed-hosts/remove" method="POST" style="margin: 0;">
+                            <input type="hidden" name="hostname" value="{{ host }}"/>
+                            <button type="submit" title="Remove" class="ui-button ui-widget ui-corner-all mynode_button_small red"><span class="ui-icon ui-icon-close"></span></button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            <br/>
+            {% endif %}
+            <form action="/settings/allowed-hosts/add" method="POST">
+                <input type="text" name="hostname" placeholder="mynode.example.com" maxlength="253" class="ui-corner-all settings_input"/>
+                <input type="submit" value="Add" class="ui-button ui-widget ui-corner-all"/>
+            </form>
 
         </div>
 

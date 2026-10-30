@@ -4,20 +4,53 @@
         {% include 'includes/head.html' %}
 
 
-        <script>
-            function delete_wallet(wallet_name, wallet_name_encoded) {
-                if (confirm("Are you sure you want to delete the '"+wallet_name+"'?\n\n CAUTION: This cannot be undone and could cause lost funds.")) {
-                    window.location.href='/bitcoin/delete_wallet?wallet='+wallet_name_encoded;
-                }
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
+            function makePasswordDialog(dialog_id, button_text) {
+                var dialog = $("#"+dialog_id).dialog({
+                    autoOpen: false,
+                    resizable: false,
+                    height: "auto",
+                    width: 600,
+                    modal: true,
+                    position: { my: "center top", at: "center top", of: window, collision: "none" },
+                    buttons: {
+                        [button_text]: function() {
+                            dialog.find("form").submit();
+                        },
+                        Cancel: function() {
+                            dialog.dialog( "close" );
+                        }
+                    },
+                    open: function() {
+                        dialog.find("input[type=password]").val("");
+                    }
+                });
+                dialog.find("form").on("submit", function() {
+                    dialog.dialog( "close" );
+                });
+                return dialog;
             }
 
-            function download_wallet(wallet_name_encoded) {
-                window.location.href = "/bitcoin/download_wallet?wallet="+wallet_name_encoded;
-            }
-            
             $(document).ready(function() {
 
                 $( document ).tooltip();
+
+                var download_wallet_dialog = makePasswordDialog("download-wallet-dialog", "Download");
+                var delete_wallet_dialog = makePasswordDialog("delete-wallet-dialog", "Delete");
+                var bitcoin_cli_dialog = makePasswordDialog("bitcoin-cli-dialog", "Open");
+
+                $(".download_wallet_button").on("click", function() {
+                    $("#download_wallet_name").val($(this).attr("data-wallet"));
+                    download_wallet_dialog.dialog( "open" );
+                });
+                $(".delete_wallet_button").on("click", function() {
+                    $("#delete_wallet_name").val($(this).attr("data-wallet"));
+                    $("#delete_wallet_label").text($(this).attr("data-wallet"));
+                    delete_wallet_dialog.dialog( "open" );
+                });
+                $("#open_bitcoin_cli").on("click", function() {
+                    bitcoin_cli_dialog.dialog( "open" );
+                });
 
                 $('#bip37_checkbox').change(function () {
                     $("#bip37_save").show();
@@ -28,7 +61,7 @@
                     {
                         openConfirmDialog("confirm-dialog", 
                                         "Enable Peer Bloom Filters (BIP 37)", 
-                                        "Are you sure you want to enable bloom filters?<br/><br/>\
+                                        "Are you sure you want to enable bloom filters?\n\n\
                                         Enabling peer bloom filters may have negative consequences. See https://github.com/bitcoin/bitcoin/issues/9540.",
                                         function(){
                                             $( this ).dialog( "close" );
@@ -173,7 +206,7 @@
                         </tr>
                         <tr>
                             <th>Terminal</th>
-                            <td><a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/bitcoin/cli">open</a></td>
+                            <td><a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" id="open_bitcoin_cli" href="#">open</a></td>
                         </tr>
                         <tr>
                             <th>Whitepaper</th>
@@ -256,11 +289,11 @@
                             {% endif %}
                         </td>
                         <td style="width: 80px;">
-                            <button class="ui-button ui-widget ui-corner-all mynode_button" title="Download" style="width: 60px;" onclick="download_wallet('{{wallet.walletname|urlencode}}')"><i class="fas fa-arrow-down"></i></button>
+                            <button class="ui-button ui-widget ui-corner-all mynode_button download_wallet_button" title="Download" style="width: 60px;" data-wallet="{{ wallet.walletname }}"><i class="fas fa-arrow-down"></i></button>
                         </td>
                         <td style="width: 80px;">
                             {% if wallet.can_delete %}
-                            <button class="ui-button ui-widget ui-corner-all mynode_button" title="Delete"   style="width: 60px;" onclick="delete_wallet('{{wallet.walletname}}', '{{wallet.walletname|urlencode}}')"><i class='fas fa-trash'></i></button>
+                            <button class="ui-button ui-widget ui-corner-all mynode_button delete_wallet_button" title="Delete"   style="width: 60px;" data-wallet="{{ wallet.walletname }}"><i class='fas fa-trash'></i></button>
                             {% endif %}
                         </td>
                     </tr>
@@ -321,6 +354,47 @@
 
         <div id="alert_popup" class="bottom_center_alert_popup"></div>
         <div id="confirm-dialog"></div>
+
+        <div id="download-wallet-dialog" title="Download Wallet" style="display:none;">
+            <form action="/bitcoin/download_wallet" method="POST">
+                <input type="hidden" name="wallet" id="download_wallet_name" value="">
+                <p>The downloaded file contains the wallet's private keys. Anyone with a copy can spend its funds.</p>
+                <p>Please enter your password to download the wallet.</p>
+                <b>Password:</b>
+                <br/>
+                <input type="password" name="password_download_wallet" value="" class="text ui-widget-content ui-corner-all">
+
+                <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </form>
+        </div>
+
+        <div id="delete-wallet-dialog" title="Delete Wallet" style="display:none;">
+            <form action="/bitcoin/delete_wallet" method="POST">
+                <input type="hidden" name="wallet" id="delete_wallet_name" value="">
+                <p>Are you sure you want to delete the wallet '<span id="delete_wallet_label"></span>'?</p>
+                <p>CAUTION: This cannot be undone and could cause lost funds.</p>
+                <b>Password:</b>
+                <br/>
+                <input type="password" name="password_delete_wallet" value="" class="text ui-widget-content ui-corner-all">
+
+                <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </form>
+        </div>
+
+        <div id="bitcoin-cli-dialog" title="Bitcoin Terminal" style="display:none;">
+            <form action="/bitcoin/cli" method="POST">
+                <p>The terminal can send funds and export private keys from the node's Bitcoin wallets.</p>
+                <p>Please enter your password to open the terminal.</p>
+                <b>Password:</b>
+                <br/>
+                <input type="password" name="password_bitcoin_cli" value="" class="text ui-widget-content ui-corner-all">
+
+                <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </form>
+        </div>
 
         {% include 'includes/footer.html' %}
      </body>

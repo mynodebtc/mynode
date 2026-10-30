@@ -1,7 +1,7 @@
 
 from flask import Blueprint, render_template, redirect, jsonify, request, send_file, make_response, flash
 from flask import current_app as app
-from user_management import check_logged_in
+from user_management import check_logged_in, is_admin_password_valid, get_admin_password_error
 from bitcoin_info import *
 from lightning_info import *
 from electrum_info import *
@@ -10,7 +10,6 @@ from thread_functions import *
 from systemctl_info import *
 from application_info import *
 from sphinxrelay import get_connection_string
-import pam
 from drive_info import *
 from price_info import *
 from messages import *
@@ -20,6 +19,7 @@ else:
     import cStringIO
 import json
 import subprocess
+import stat
 import re
 import os
 
@@ -111,6 +111,9 @@ def api_get_service_status():
     data["sso_token"] = ""
 
     service = request.args.get('service')
+    if not is_application_valid(service):
+        data["status"] = "unknown_service"
+        return generate_api_json_response(data)
 
     # Try standard status API
     data["status"] = get_application_status(service)
@@ -187,8 +190,8 @@ def api_reset_data_folder():
         flash("Invalid application", category="error")
         return redirect("/apps")
     pw = request.form.get("password")
-    if pw == None or pam.pam().authenticate("admin", pw) == False:
-        flash("Invalid Password", category="error")
+    if not is_admin_password_valid(pw):
+        flash(get_admin_password_error(), category="error")
         return redirect("/app/{}/info".format(app_name))
     if not reset_data_folder(app_name):
         flash("Error resetting app data", category="error")
@@ -201,8 +204,8 @@ def api_reveal_secret():
     check_logged_in()
 
     pw = request.form.get("password")
-    if pw == None or pam.pam().authenticate("admin", pw) == False:
-        return jsonify({"error": "Invalid Password"})
+    if not is_admin_password_valid(pw):
+        return jsonify({"error": get_admin_password_error()})
 
     secret = request.form.get("secret")
     value = None
@@ -350,6 +353,16 @@ def api_set_setting():
     
     return generate_api_json_response(data)
 
+def get_benchmark_drive():
+    drive = to_string( get_file_contents("/tmp/.mynode_drive") ).strip()
+    # Rebuild the path from the base name so it can only ever point inside /dev
+    path = "/dev/" + os.path.basename(drive)
+    if path != drive:
+        return None
+    if not os.path.exists(path) or not stat.S_ISBLK(os.stat(path).st_mode):
+        return None
+    return path
+
 @mynode_api.route("/api/get_drive_benchmark")
 def api_get_drive_benchmark():
     check_logged_in()
@@ -357,8 +370,14 @@ def api_get_drive_benchmark():
     data = {}
     data["status"] = "error"
     data["data"] = "UNKNOWN"
+
+    drive = get_benchmark_drive()
+    if drive == None:
+        data["data"] = "Drive not found"
+        return generate_api_json_response(data)
+
     try:
-        data["data"] = to_string(subprocess.check_output("hdparm -Tt $(cat /tmp/.mynode_drive)", shell=True))
+        data["data"] = to_string(subprocess.check_output(["hdparm", "-Tt", drive]))
         data["status"] = "success"
     except Exception as e:
         data["data"] = str(e)

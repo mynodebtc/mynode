@@ -186,7 +186,7 @@
             </p>
         </div>
 
-        <script>
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
             $(document).ready(function() {
                 $("#use_https_button").on("click", function() {
                     location.href = 'https:' + window.location.href.substring(window.location.protocol.length);

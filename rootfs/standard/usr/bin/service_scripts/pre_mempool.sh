@@ -11,7 +11,7 @@ cp -f /usr/share/mynode/mempool.env /mnt/hdd/mynode/mempool/.env
 sed -i "s/VERSION=.*/VERSION=$MEMPOOL_VERSION/g" /mnt/hdd/mynode/mempool/.env
 set +x
 BTCRPCPW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
-sed -i "s/BITCOIN_RPC_PASS=.*/BITCOIN_RPC_PASS=$BTCRPCPW/g" /mnt/hdd/mynode/mempool/.env
+printf 's/BITCOIN_RPC_PASS=.*/BITCOIN_RPC_PASS=%s/g\n' "$BTCRPCPW" | sed -i -f - /mnt/hdd/mynode/mempool/.env
 set -x
 
 if [ $IS_RASPI -eq 1 ] && [ $IS_ARM64 -eq 0 ]; then
@@ -21,3 +21,4 @@ else
 fi
 
 chown -R mempool:mempool /mnt/hdd/mynode/mempool
+chmod 600 /mnt/hdd/mynode/mempool/.env

@@ -15,7 +15,7 @@
             }
         </style>
 
-        <script>
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
             $(document).ready(function() {
 
                 $("#format-confirm").on("click", function() {

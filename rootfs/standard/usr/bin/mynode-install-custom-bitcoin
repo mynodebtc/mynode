@@ -81,9 +81,8 @@ if [ "$APP" = "core29x_autoupdate" ]; then
         cd /opt/download
 
         # Download, install and verify
-        # Note: Bitcoin Core's SHA256SUMS.asc has many signers, so only require a good signature from a known key
         wget $BTC_UPGRADE_URL $BTC_SHASUM $BTC_ASC
-        gpg --verify SHA256SUMS.asc SHA256SUMS 2>&1 | grep "Good signature"
+        check_gpg_signer SHA256SUMS.asc SHA256SUMS $BTC_SIGNER_FINGERPRINTS
         sha256sum -c SHA256SUMS --ignore-missing
         tar -xvf bitcoin-29.3-$ARCH.tar.gz
         mv bitcoin-29.3 bitcoin

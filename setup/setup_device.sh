@@ -159,8 +159,25 @@ elif [ $IS_X86 = 1 ]; then
     TARBALL="mynode_rootfs_debian.tar.gz"
 fi
 if [ "$SERVER_IP" == "online" ]; then
-    TARBALL="${TARBALL/"mynode_rootfs_"/"mynode_release_latest_"}"
-    wget https://mynodebtc.com/device/upgrade_images/${TARBALL} -O /tmp/rootfs.tar.gz
+    RELEASE_TYPE="${TARBALL#mynode_rootfs_}"
+    RELEASE_TYPE="${RELEASE_TYPE%.tar.gz}"
+    RELEASE_URL="https://www.mynodebtc.com/device_api/download_latest_standard.php?type=${RELEASE_TYPE}&product_key=community_edition"
+    wget "${RELEASE_URL}" -O /tmp/rootfs.tar.gz
+    wget "${RELEASE_URL}&hash=1" -O /tmp/rootfs.tar.gz.sha256
+
+    # Verify release signature
+    cat > /tmp/mynode_release.pub << 'EOF'
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApzQyKOKNBEhKWf1mJtqw
+qSLzSkMACMF0Zz0rr2UT7MnxTfHpVYLJEwBfIxCAqys8AGHWAQNalG8+UzmrsuWl
+yAGo+rqKiSKUQ5NmthC5B49eL26Tie4jwK9hbLmHlzbxP+/1gqwWFM9ZlozbtTW3
+LGzvT7evXdMOqCoVojJWCkCdKaWuXkCxlUQxs9wuMNdskKyA7ohifmHwS4DlkcZR
+PaiUcgXugMOrLwTuYvnmMG1Z4EA7UuFujX2jryKblo61VMZjo369RIZhdCWUJMdn
+vXkYNq4HtHk2hn3sdTIAWCfZ0+qoyhBI5DXn1Yh/zwCT0YwHPD/woP/my1zmIw6H
+uQIDAQAB
+-----END PUBLIC KEY-----
+EOF
+    openssl dgst -sha256 -verify /tmp/mynode_release.pub -signature /tmp/rootfs.tar.gz.sha256 /tmp/rootfs.tar.gz
 else
     wget http://${SERVER_IP}:8000/${TARBALL} -O /tmp/rootfs.tar.gz
 fi
@@ -264,7 +281,7 @@ apt-get -y install fail2ban ufw tclsh redis-server
 if [ "$DEBIAN_VERSION" -ge "12" ]; then
     apt-get -y install python3-systemd
     mkdir -p /etc/fail2ban/jail.d
-    printf "[sshd]\nbackend = systemd\n" > /etc/fail2ban/jail.d/mynode_sshd.conf
+    printf "[sshd]\nbackend = systemd\njournalmatch = _SYSTEMD_UNIT=ssh.service + _COMM=sshd\n" > /etc/fail2ban/jail.d/mynode_sshd.conf
 fi
 apt-get -y install clang hitch zlib1g-dev libffi-dev file toilet ncdu
 apt-get -y install toilet-fonts avahi-daemon figlet
@@ -489,7 +506,7 @@ fi
 
 # Install node
 if [ ! -f /tmp/installed_node ]; then
-    curl -sL https://deb.nodesource.com/setup_$NODE_JS_VERSION | bash -
+    install_nodesource_repo $NODE_JS_VERSION $(echo /tmp/upgrade/out/rootfs_*/usr/share/mynode/nodesource)
     apt-get install -y nodejs
     touch /tmp/installed_node
 fi
@@ -589,7 +606,7 @@ if [ "$CURRENT" != "$BTC_VERSION" ]; then
     wget $BTC_UPGRADE_SHA256SUM_ASC_URL -O SHA256SUMS.asc
 
     sha256sum --ignore-missing --check SHA256SUMS
-    gpg --verify SHA256SUMS.asc SHA256SUMS |& grep "gpg: Good signature"
+    check_gpg_signer SHA256SUMS.asc SHA256SUMS $BTC_SIGNER_FINGERPRINTS
 
     # Install Bitcoin
     tar -xvf bitcoin-$BTC_VERSION-$ARCH.tar.gz
@@ -635,9 +652,16 @@ if [ "$CURRENT" != "$LND_VERSION" ]; then
     wget $LND_UPGRADE_MANIFEST_URL -O manifest.txt
     wget $LND_UPGRADE_MANIFEST_ROASBEEF_SIG_URL -O manifest_roasbeef.txt.sig || true
     wget $LND_UPGRADE_MANIFEST_GUGGERO_SIG_URL -O manifest_guggero.txt.sig || true
+    wget $LND_UPGRADE_MANIFEST_SUHEB_SIG_URL -O manifest_suheb.txt.sig || true
+    wget $LND_UPGRADE_MANIFEST_VICTORT_SIG_URL -O manifest_victort.txt.sig || true
 
-    gpg --verify manifest_roasbeef.txt.sig manifest.txt || \
-    gpg --verify manifest_guggero.txt.sig manifest.txt
+    check_gpg_signer manifest_roasbeef.txt.sig manifest.txt $LND_SIGNER_FINGERPRINTS || \
+    check_gpg_signer manifest_guggero.txt.sig manifest.txt $LND_SIGNER_FINGERPRINTS || \
+    check_gpg_signer manifest_suheb.txt.sig manifest.txt $LND_SIGNER_FINGERPRINTS || \
+    check_gpg_signer manifest_victort.txt.sig manifest.txt $LND_SIGNER_FINGERPRINTS
+
+    # Check the download against the signed manifest
+    awk -v f="$LND_ARCH-$LND_VERSION.tar.gz" '$2 == f' manifest.txt | sha256sum --check -
 
     tar -xzf lnd-*.tar.gz
     mv $LND_ARCH-$LND_VERSION lnd
@@ -676,8 +700,11 @@ if [ "$CURRENT" != "$LOOP_VERSION" ]; then
     wget $LOOP_UPGRADE_MANIFEST_URL -O manifest.txt
     wget $LOOP_UPGRADE_MANIFEST_SIG_URL -O manifest.txt.sig
 
-    gpg --verify manifest.txt.sig manifest.txt
+    check_gpg_signer manifest.txt.sig manifest.txt $LOOP_SIGNER_FINGERPRINTS
     if [ $? == 0 ]; then
+        # Check the download against the signed manifest
+        awk -v f="$LOOP_ARCH-$LOOP_VERSION.tar.gz" '$2 == f' manifest.txt | sha256sum --check -
+
         # Install Loop
         tar -xzf loop-*.tar.gz
         mv $LOOP_ARCH-$LOOP_VERSION loop
@@ -714,8 +741,11 @@ if [ "$CURRENT" != "$POOL_VERSION" ]; then
     wget $POOL_UPGRADE_MANIFEST_URL -O manifest.txt
     wget $POOL_UPGRADE_MANIFEST_SIG_URL -O manifest.txt.sig
 
-    gpg --verify manifest.txt.sig manifest.txt
+    check_gpg_signer manifest.txt.sig manifest.txt $POOL_SIGNER_FINGERPRINTS
     if [ $? == 0 ]; then
+        # Check the download against the signed manifest
+        awk -v f="$POOL_ARCH-$POOL_VERSION.tar.gz" '$2 == f' manifest.txt | sha256sum --check -
+
         # Install Pool
         tar -xzf pool-*.tar.gz
         mv $POOL_ARCH-$POOL_VERSION pool
@@ -753,8 +783,11 @@ if [ "$CURRENT" != "$LIT_VERSION" ] || [ ! -f /usr/local/bin/frcli ]; then
     wget $LIT_UPGRADE_MANIFEST_URL -O manifest.txt
     wget $LIT_UPGRADE_MANIFEST_SIG_URL  -O manifest.txt.sig
 
-    gpg --verify manifest.txt.sig manifest.txt
+    check_gpg_signer manifest.txt.sig manifest.txt $LIT_SIGNER_FINGERPRINTS
     if [ $? == 0 ]; then
+        # Check the download against the signed manifest
+        awk -v f="$LIT_ARCH-$LIT_VERSION.tar.gz" '$2 == f' manifest.txt | sha256sum --check -
+
         # Install lit
         tar -xzf lightning-terminal-*.tar.gz
         mv $LIT_ARCH-$LIT_VERSION lightning-terminal
@@ -792,8 +825,11 @@ if [ "$CURRENT" != "$CHANTOOLS_VERSION" ]; then
     wget $CHANTOOLS_UPGRADE_MANIFEST_URL -O manifest.txt
     wget $CHANTOOLS_UPGRADE_MANIFEST_SIG_URL  -O manifest.txt.sig
 
-    gpg --verify manifest.txt.sig manifest.txt
+    check_gpg_signer manifest.txt.sig manifest.txt $CHANTOOLS_SIGNER_FINGERPRINTS
     if [ $? == 0 ]; then
+        # Check the download against the signed manifest
+        awk -v f="$CHANTOOLS_ARCH-$CHANTOOLS_VERSION.tar.gz" '$2 == f' manifest.txt | sha256sum --check -
+
         # Install lit
         tar -xzf chantools-*.tar.gz
         mv $CHANTOOLS_ARCH-$CHANTOOLS_VERSION chantools
@@ -865,7 +901,7 @@ if [ "$CURRENT" != "$RTL_VERSION" ]; then
     sudo -u bitcoin wget $RTL_UPGRADE_URL -O RTL.tar.gz
     sudo -u bitcoin wget $RTL_UPGRADE_ASC_URL -O RTL.tar.gz.asc
 
-    gpg --verify RTL.tar.gz.asc RTL.tar.gz
+    check_gpg_signer RTL.tar.gz.asc RTL.tar.gz $RTL_SIGNER_FINGERPRINTS
 
     sudo -u bitcoin tar -xvf RTL.tar.gz
     sudo -u bitcoin rm RTL.tar.gz RTL.tar.gz.asc
@@ -986,6 +1022,12 @@ update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy || true
 rsync -r -K /tmp/upgrade/out/rootfs_*/* /
 sync
 sleep 1
+
+# Initialize users again, now that the installed files are in place
+/usr/bin/mynode_initialize_users.sh
+
+# Use MyNode's nginx config, which loads the modules its sites need
+cp -f /usr/share/mynode/nginx.conf /etc/nginx/nginx.conf
 
 # Build the venvs for the web UI and Glances (64-bit only)
 source /usr/share/mynode/mynode_functions.sh

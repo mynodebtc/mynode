@@ -10,7 +10,9 @@ After=lnd.service
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/usr/bin/wait_on_lnd.sh
 ExecStartPre=+/usr/bin/service_scripts/pre_thunderhub.sh
-Environment=PORT=3030
+# nginx serves 3030 (HTTP) and 3031 (HTTPS) behind the MyNode login
+Environment=PORT=13030
+Environment=HOST=127.0.0.1
 WorkingDirectory=/opt/mynode/thunderhub
 ExecStart=/usr/bin/npm run start
 

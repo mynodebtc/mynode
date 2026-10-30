@@ -13,6 +13,9 @@ ExecStartPre=+/usr/bin/mynode_bake_app_macaroon.sh sphinxrelay
 ExecStartPre=+/usr/bin/service_scripts/pre_sphinxrelay.sh
 WorkingDirectory=/opt/mynode/sphinxrelay
 Environment=USE_PASSWORD=true
+# Behind nginx on 53001; its rate limit counts clients by nginx's X-Forwarded-For
+Environment=PORT=63001
+Environment=RATE_LIMIT_TRUST_PROXY=1
 ExecStart=npm run prod
 
 User=bitcoin

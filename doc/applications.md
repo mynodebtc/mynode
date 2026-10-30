@@ -121,14 +121,119 @@ Apps that follow this today:
 | BTCPay Server | 49392 / 49393 | 59392 |
 | Canary | 3005 / 3006 | 13005 |
 | Jam | 5020 / 5021 | 15020 |
+| JoinMarket orderbook | 62601 / 62602 | 26601 |
 | Lily Wallet | 5030 / 5031 | 15030 |
 | LndBoss | 8055 / 8056 | 18055 |
 | LNbits | 5000 / 5001 | 15000 |
+| LNDHub | 3000 / 3001 | 13000 |
 | Mempool | 4080 / 4081 | 14080 |
 | Netdata | 19999 / 20000 | 29999 |
 | Nostr relay | 5050 / 5051 | 15050 |
+| Public Pool UI | 4200 / 4201 | 14200 |
+| Sphinx Relay | 53001 / none | 63001 |
 
 Before picking ports for a new app, check that neither the public ports nor the localhost port are in use (`grep -rn '<port>' rootfs/standard`).
+
+## MyNode Login
+
+Apps that manage the node, such as wallets, Lightning tools, terminals and dashboards, require the MyNode web login on every port that serves them: the HTTP port, the HTTPS port and their onion addresses. nginx checks for a MyNode session before a request reaches the app. An app's own login, if it has one, comes after that.
+
+### Requiring the login
+
+In both server blocks, HTTP and HTTPS, include `mynode_session_auth.conf` and add `auth_request /mynode_auth_check;` to every location that proxies to or serves the app:
+
+```nginx
+# HTTP
+server {
+    listen 8000;
+    server_name sampleapphttp;
+
+    include /etc/nginx/mynode/mynode_session_auth.conf;
+
+    location / {
+        auth_request /mynode_auth_check;
+        proxy_pass http://127.0.0.1:18000;
+
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Cookie $mynode_proxy_cookie;
+    }
+}
+
+# HTTPS
+server {
+    listen 8001 ssl;
+    server_name sampleapp;
+
+    include /etc/nginx/mynode/mynode_ssl_params.conf;
+    include /etc/nginx/mynode/mynode_ssl_cert_key.conf;
+
+    include /etc/nginx/mynode/mynode_session_auth.conf;
+
+    location / {
+        auth_request /mynode_auth_check;
+        proxy_pass http://127.0.0.1:18000;
+
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+
+        include /etc/nginx/mynode/mynode_ssl_proxy_params.conf;
+    }
+}
+```
+
+- **Login page:** without a session, a request is redirected to `/mynode_ui/login` on the same host and port, the same over an onion address, and returns to the requested page after logging in. The page names the app from the `name` in its JSON, matched by `http_port` or `https_port`. Services that are not in the app list are named in `LOGIN_BUILTIN_APP_NAMES` in `mynode.py`.
+- **Reserved paths:** the include serves `/mynode_ui/login` and `/mynode_ui/static/` from the MyNode web UI. The app must not use any path under `/mynode_ui/`.
+- **Cookies:** `proxy_set_header Cookie $mynode_proxy_cookie;` passes the app its own cookies but not the MyNode session cookie. `mynode_ssl_proxy_params.conf` sets the same header for the HTTPS block.
+- **WebSockets:** keep the three upgrade lines in both blocks if the app uses WebSockets. `$connection_upgrade` is defined in `nginx.conf`.
+- **Static sites:** when nginx serves the app's files itself, use `root` and `auth_request` in both blocks. Don't proxy the HTTPS block to the HTTP port: the proxied request has no session cookie, so the HTTP block's login check refuses it.
+- **Calls from the device:** scripts and services on the device that call the app use its localhost port, which has no login. If something can only call the public port, allow just that path from `127.0.0.1` in its own `location`, as DATUM does for `/NOTIFY`.
+- **Onion services made by the app:** if the app creates its own onion service, turn it off or point it at an nginx port. One pointed at the localhost port reaches the app without the login.
+
+Apps that require the MyNode login: Alby Hub, Astral, BTC RPC Explorer, Canary, Caravan, CKBunker, DATUM, Glances, Jam, Lightning Terminal, Lily Wallet, LndBoss, LNDg, Netdata, Opendime (USB extras), RTL, Specter, Tailscale, Terminal (WeTTY), Thunderhub and Warden Terminal.
+
+### Apps without the MyNode login
+
+These apps are meant to be used by other people or by other software, and keep their own logins or accounts:
+
+| App | Who uses it |
+|---|---|
+| BTCPay Server | Customers paying invoices and visiting stores. Store owners use BTCPay's own login. |
+| LNbits | People given LNbits wallet links. The admin side uses LNbits' own super user login. |
+| LNDHub | Wallet apps, each with its own LNDHub account. |
+| Mempool | Anyone looking up blocks and transactions. It is read-only. |
+| Public Pool UI | Miners checking their stats on the pool. |
+| Nostr relay | Nostr clients. |
+| JoinMarket orderbook | JoinMarket users reading the public orderbook. |
+| Sphinx Relay | The Sphinx phone app, which uses its own token. |
+
+These apps answer only to the host names the MyNode web interface accepts: IP addresses, `.onion` names, MyNode's built-in names such as `mynode.local`, and the names added in Settings under Allowed Host Names. Any other name gets `421`. Include `mynode_host_check.conf` in both server blocks, HTTP and HTTPS:
+
+```nginx
+server {
+    listen 8000;
+    server_name sampleapphttp;
+
+    include /etc/nginx/mynode/mynode_host_check.conf;
+    ...
+}
+```
+
+Someone who opens an app by their own domain name, for example a BTCPay store behind a port forward, adds that name under Allowed Host Names. Docker containers can reach these apps on the host as `host.docker.internal`. Apps that require the MyNode login do not need the include: the login check already refuses names the web interface does not accept.
+
+Services without a web interface, such as Electrum Server, Bitcoin RPC, LND's gRPC and REST APIs, and Public Pool's Stratum ports, are used by their own clients with their own credentials. nginx is not in front of them.
+
+### The login and the firewall
+
+The MyNode login decides whether a request to an app needs a MyNode session. The firewall decides which addresses can connect to the app's ports at all. Under Settings, Reachable From the Internet chooses the services that accept connections from any address, with defaults in `FIREWALL_DEFAULT_PUBLIC_SERVICES` in `var/pynode/firewall_info.py`. Every other service accepts connections from the local network only. The two are independent. For example, LNbits can be reachable from the internet without a MyNode login, while RTL is reachable from the local network and requires one.
+
+The older public app tunnels in `var/pynode/public_apps.py` (Premium+, ports 6001 to 6003) are a separate feature and are unrelated to both.
 
 ## Application Data
 
@@ -179,6 +284,7 @@ After changing which settings MyNode reads, run `app_sdk/create.py check_doc` to
 | <sub>app_tile_button_text               | <sub>"Info" | <sub>This defines the text of the link displayed in the application tile on the home page. |
 | <sub>app_tile_button_href               | <sub>"/app/sampleapp/info" | <sub>This defines the destination of the link displayed on the application tile on the home page. |
 | <sub>app_tile_button_open_app_directly | <sub>false | <sub>Makes the app tile button open the app itself instead of app_tile_button_href. Requires a port to be set. |
+| <sub>app_tile_button_always_shown | <sub>false | <sub>Shows the app tile button on the home page even while the app is disabled, instead of an Enable button. For apps whose own page has an on/off control. |
 | <sub>app_page_show_open_button          | <sub>true | <sub>This toggles whether or not the Open button is displayed on the application page. It should be true for web-based applications. |
 | <sub>app_page_content                   | <sub>Sample Data | <sub>This defines the application page content if using the generic application page (ex. /app/[app]/info). It is a list of dictionaries with two items - heading and content. Content can be a list of string to be displayed as paragraphs. |
 | <sub>app_page_additional_buttons       | <sub>[] | <sub>Extra buttons on the app page. A list of dictionaries with a title and an href. |

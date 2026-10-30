@@ -95,8 +95,8 @@ setup_new_debian: start_file_server out/base_images/debian_base.ova rootfs
 	@/bin/bash scripts/setup_new_debian.sh
 
 
-# Clone repo to get release tools, kept outside the repo tree
-RELEASE_TOOL_DIR ?= $(HOME)/.mynode_release_tool
+# Clone repo to get release tools, kept alongside this repo
+RELEASE_TOOL_DIR ?= $(CURDIR)/../mynode_release_tool
 release.sh:
 	@if [ -d "$(RELEASE_TOOL_DIR)/.git" ]; then \
 		git -C "$(RELEASE_TOOL_DIR)" pull --ff-only; \

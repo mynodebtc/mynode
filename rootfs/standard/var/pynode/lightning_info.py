@@ -45,17 +45,16 @@ TLS_CERT_FILE = "/mnt/hdd/mynode/lnd/tls.cert"
 LND_REST_PORT = "10080"
 
 # Functions
-def run_lncli_command(cmd):
+def run_lncli_command_args(args):
     try:
-        base =  "lncli "
-        base += "--lnddir=/mnt/hdd/mynode/lnd "
+        cmd = ["lncli", "--lnddir=/mnt/hdd/mynode/lnd"]
         if is_testnet_enabled():
-            base += "--network=testnet "
-        cmd = cmd.replace("lncli ", base)
-        output = subprocess.check_output(cmd, shell=True)
+            cmd.append("--network=testnet")
+        cmd += args
+        output = subprocess.check_output(cmd)
         return output
     except Exception as e:
-        log_message("ERROR in run_lncli_command: {}".format(str(e)))
+        log_message("ERROR in run_lncli_command_args: {}".format(str(e)))
         return None
 
 def update_lightning_info():
@@ -460,7 +459,7 @@ def get_lightning_watchtower_server_info():
                     if first_uri:
                         first_uri = False
                     else:
-                        text += "<br/>"
+                        text += "\n"
                     text += uri
                 server_info["watchtower_server_uri"] = text
             elif "pubkey" in server_info or "listeners" in server_info:
@@ -541,6 +540,19 @@ def restart_lnd_actual():
     os.system("systemctl restart lnd")
     os.system("systemctl restart lnd_admin")
 
+def restart_lnd_when_synced():
+    # LND does not stop until it has synced to the chain, so wait for that first
+    for i in range(360):
+        try:
+            info = lnd_get("/getinfo")
+            if info.get("synced_to_chain") == True:
+                restart_lnd_actual()
+                return
+        except:
+            pass
+        time.sleep(10)
+    log_message("LND not synced after wallet creation, skipping restart")
+
 def restart_lnd():
     t = Timer(0.1, restart_lnd_actual)
     t.start()
@@ -566,11 +578,17 @@ def lnd_wallet_exists():
 
 def create_wallet(seed):
     try:
-        subprocess.check_call("create_lnd_wallet.tcl \""+seed+"\"", shell=True)
+        seed = " ".join(seed.split())
+        subprocess.check_call(["create_lnd_wallet.tcl"], env=dict(os.environ, LND_SEED=seed))
         
         # Sync FS and sleep so the success redirect understands the wallet was created
         os.system("sync")
         time.sleep(2)
+
+        # Restart LND to apply the listen addresses for a device with a wallet
+        t = Timer(10, restart_lnd_when_synced)
+        t.daemon = True
+        t.start()
 
         return True
     except:

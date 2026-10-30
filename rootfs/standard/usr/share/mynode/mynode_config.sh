@@ -10,6 +10,7 @@ VPN_BACKUP_DIR=/mnt/hdd/mynode/vpn
 LATEST_VERSION_URL="https://www.mynodebtc.com/device_api/get_latest_version.php?type=${DEVICE_TYPE}"
 LATEST_BETA_VERSION_URL="https://www.mynodebtc.com/device_api/get_latest_version.php?type=${DEVICE_TYPE}&beta=1"
 UPGRADE_ERROR_FILE="/mnt/hdd/mynode/settings/upgrade_error"
+UPGRADE_INCOMPLETE_FILE="/tmp/upgrade_incomplete"
 LND_BACKUP_FOLDER="/home/bitcoin/lnd_backup/"
 LND_TLS_CERT_FILE="/mnt/hdd/mynode/lnd/tls.cert"
 LND_WALLET_FILE="/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/wallet.db"
@@ -29,10 +30,13 @@ fi
 BITCOIN_SYNCED_FILE="/mnt/hdd/mynode/.mynode_bitcoin_synced"
 BITCOIN_SYNCED_AT_LEAST_ONCE="/mnt/hdd/mynode/.mynode_bitcoin_synced_at_least_once"
 
+# Keep the product key out of traced logs
+case $- in *x*) MYNODE_CONFIG_XTRACE=1 ;; *) MYNODE_CONFIG_XTRACE=0 ;; esac
+set +x
 IS_PREMIUM=0
 PRODUCT_KEY="not_found"
 if [ -f $PRODUCT_KEY_FILE ]; then
-    PRODUCT_KEY=$(cat $PRODUCT_KEY_FILE)
+    PRODUCT_KEY=$(cat $PRODUCT_KEY_FILE 2>/dev/null || echo "not_found")
     if [ ! -f /home/bitcoin/.mynode/.product_key_skipped ] && [ ! -f /mnt/hdd/mynode/settings/.product_key_skipped ]; then
         if [ ! -f /home/bitcoin/.mynode/.product_key_error ] && [ ! -f /mnt/hdd/mynode/settings/.product_key_error ]; then
             IS_PREMIUM=1
@@ -44,6 +48,9 @@ UPGRADE_DOWNLOAD_URL="https://www.mynodebtc.com/device_api/download_latest_stand
 UPGRADE_DOWNLOAD_SIGNATURE_URL="https://www.mynodebtc.com/device_api/download_latest_standard.php?type=${DEVICE_TYPE}&product_key=${PRODUCT_KEY}&hash=1"
 UPGRADE_BETA_DOWNLOAD_URL="https://www.mynodebtc.com/device_api/download_latest_standard.php?type=${DEVICE_TYPE}&product_key=${PRODUCT_KEY}&beta=1"
 UPGRADE_BETA_DOWNLOAD_SIGNATURE_URL="https://www.mynodebtc.com/device_api/download_latest_standard.php?type=${DEVICE_TYPE}&product_key=${PRODUCT_KEY}&beta=1&hash=1"
+if [ "$MYNODE_CONFIG_XTRACE" = "1" ]; then
+    set -x
+fi
 
 # Update settings for other devices
 if [ -f /usr/share/mynode/mynode_config_raspi.sh ]; then

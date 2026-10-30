@@ -10,6 +10,7 @@ from getpass import getpass
 from os import urandom
 
 import hmac
+import sys
 
 def generate_salt(size):
     """Create size byte hex salt"""
@@ -32,7 +33,11 @@ def main():
     if not args.password:
         args.password = generate_password()
     elif args.password == '-':
-        args.password = getpass()
+        # Read from stdin when piped, so the password is not in the command line
+        if sys.stdin.isatty():
+            args.password = getpass()
+        else:
+            args.password = sys.stdin.readline().rstrip('\n')
 
     # Create 16 byte hex salt
     salt = generate_salt(16)

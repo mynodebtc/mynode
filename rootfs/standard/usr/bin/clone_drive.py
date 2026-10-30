@@ -203,7 +203,7 @@ def main():
                     lines = l.split("\r")
                     logline = lines[len(lines)-1].strip()
                     parts = logline.split()
-                    logline = parts[0] + " bytes copied<br/>" + parts[1] + "<br/>" + parts[2] + "<br/>" + parts[3]
+                    logline = parts[0] + " bytes copied\n" + parts[1] + "\n" + parts[2] + "\n" + parts[3]
                 except Exception as e:
                     logline = "Clone status parse error: ".format(str(e))
                 try:

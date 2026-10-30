@@ -3,7 +3,7 @@
         <title>{{ title }}</title>
         {% include 'includes/head.html' %}
 
-        <script>
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
             $(document).ready(function() {
                 function redirectHome() {
                     window.location.replace("/");

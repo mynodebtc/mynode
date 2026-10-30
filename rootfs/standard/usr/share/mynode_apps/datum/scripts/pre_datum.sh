@@ -22,6 +22,13 @@ if [ -f $DATUM_CONFIG ] && [ -s /mnt/hdd/mynode/settings/.btcrpcpw ]; then
     unset BTCPSW
 fi
 
+# The dashboard listens on 127.0.0.1:31000 only; nginx serves 21000 and 21001 behind the MyNode login
+if [ -f $DATUM_CONFIG ] && [ "$(jq -r '"\(.api.listen_addr // "")|\(.api.listen_port // "")"' $DATUM_CONFIG)" != "127.0.0.1|31000" ]; then
+    (umask 077
+     jq '.api.listen_addr = "127.0.0.1" | .api.listen_port = 31000' $DATUM_CONFIG > $DATUM_CONFIG.tmp
+     mv $DATUM_CONFIG.tmp $DATUM_CONFIG)
+fi
+
 function set_generated_datum_password() {
     DATUM_ADMIN_PASSWORD=$(generate_app_password)
     export DATUM_ADMIN_PASSWORD

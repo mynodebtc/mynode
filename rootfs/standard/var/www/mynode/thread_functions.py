@@ -1,4 +1,5 @@
 import subprocess
+from markupsafe import Markup
 import psutil
 import os
 from config import *
@@ -60,29 +61,23 @@ def update_device_info():
         # Update every 3 days (72 hrs) (start at ~15 min)
         if device_info_call_count % (60*24*3) == 15:
             if not os.path.isfile(BITCOIN_SYNCED_FILE):
-                os_drive_usage_details = "<small>Waiting on Bitcoin sync...</small>"
-                data_drive_usage_details = "<small>Waiting on Bitcoin sync...</small>"
+                os_drive_usage_details = Markup("<small>Waiting on Bitcoin sync...</small>")
+                data_drive_usage_details = Markup("<small>Waiting on Bitcoin sync...</small>")
             else:
-                os_drive_usage_details = ""
-                os_drive_usage_details += "<small>"
-                os_drive_usage_details += "<b>App Storage</b><br/>"
-                os_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /opt/mynode/", ignore_failure=True) + "</pre><br/>"
-                os_drive_usage_details += "<b>User Storage</b><br/>"
-                os_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /home/", ignore_failure=True) + "</pre><br/>"
-                os_drive_usage_details += "<b>Rust Toolchain Storage</b><br/>"
+                # Markup.format escapes the command output
+                storage = Markup("<b>{}</b><br/><pre>{}</pre><br/>")
+                os_details = storage.format("App Storage", run_linux_cmd(["du", "-h", "-d1", "/opt/mynode/"], ignore_failure=True))
+                os_details += storage.format("User Storage", run_linux_cmd(["du", "-h", "-d1", "/home/"], ignore_failure=True))
+                os_details += Markup("<b>Rust Toolchain Storage</b><br/>")
                 if os.path.isdir("/root/.cargo/"):
-                    os_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /root/.cargo/", ignore_failure=True) + "</pre><br/>"
+                    os_details += Markup("<pre>{}</pre><br/>").format(run_linux_cmd(["du", "-h", "-d1", "/root/.cargo/"], ignore_failure=True))
                 if os.path.isdir("/home/admin/.cargo/"):
-                    os_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /home/admin/.cargo/", ignore_failure=True) + "</pre><br/>"
-                os_drive_usage_details += "</small>"
+                    os_details += Markup("<pre>{}</pre><br/>").format(run_linux_cmd(["du", "-h", "-d1", "/home/admin/.cargo/"], ignore_failure=True))
+                os_drive_usage_details = Markup("<small>{}</small>").format(os_details)
 
-                data_drive_usage_details = ""
-                data_drive_usage_details += "<small>"
-                data_drive_usage_details += "<b>Disk Format</b>"
-                data_drive_usage_details += "<p>" + get_current_drive_filesystem_type() + "</p>"
-                data_drive_usage_details += "<b>Data Storage</b><br/>"
-                data_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /mnt/hdd/mynode/", ignore_failure=True) + "</pre><br/>"
-                data_drive_usage_details += "</small>"
+                data_details = Markup("<b>Disk Format</b><p>{}</p>").format(get_current_drive_filesystem_type())
+                data_details += storage.format("Data Storage", run_linux_cmd(["du", "-h", "-d1", "/mnt/hdd/mynode/"], ignore_failure=True))
+                data_drive_usage_details = Markup("<small>{}</small>").format(data_details)
 
     except Exception as e:
         log_message("CAUGHT update_device_info EXCEPTION: " + str(e))

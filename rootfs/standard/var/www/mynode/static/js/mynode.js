@@ -6,9 +6,18 @@ function refreshIn(seconds) {
     }, seconds*1000); 
 }
 
+// Dialog contents: a string is shown as text (blank lines separate paragraphs), and an
+// element is shown as it is
+function dialog_contents(message) {
+    if (typeof message === "string") {
+        return $("<p>").css("white-space", "pre-line").text(message);
+    }
+    return $("<p>").append(message); // html-ok: an element here, strings take the branch above
+}
+
 // Open info dialog
 function openInfoDialog(divid, title, message) {
-    $("#"+divid).html("<p>"+message+"</p>")
+    $("#"+divid).empty().append(dialog_contents(message))
     info_dialog = $("#"+divid).dialog({
         title: title,
         resizable: false,
@@ -27,7 +36,7 @@ function openInfoDialog(divid, title, message) {
 
 // Open confirm dialog
 function openConfirmDialog(divid, title, message, okFunction) {
-    $("#"+divid).html("<p>"+message+"</p>")
+    $("#"+divid).empty().append(dialog_contents(message))
     confirm_dialog = $( "#"+divid ).dialog({
         title: title,
         resizable: false,
@@ -152,7 +161,7 @@ $(document).on("click", ".reveal_secret_copy", function() {
     var text = icon.closest(".reveal_secret").find(".reveal_secret_text").text();
     function showResult(message) {
         if ($("#alert_popup").length) {
-            showAlertPopup("alert_popup", $("<b>").text(message));
+            showAlertPopup("alert_popup", message);
         } else {
             icon.attr("title", message);
         }
@@ -166,7 +175,7 @@ $(document).on("click", ".reveal_secret_copy", function() {
 
 // Show alert popup with contents
 function showAlertPopup(divid, message) {
-    $("#"+divid).html(message);
+    $("#"+divid).empty().append($("<b>").text(message));
     $("#"+divid).show().delay(3000).fadeOut();
 }
 
@@ -211,6 +220,15 @@ function open_app_in_new_tab(http_port, https_port="NA", requires_https=false, c
             protocol = "http:"
             port_string = ":"+tor_http_port
         }
+
+        // If app is HTTPS only - its onion has no port 80
+        if (http_port == "NA" || http_port == "None") {
+            protocol = "https:"
+            port_string = ""
+            if (tor_https_port != "443") {
+                port_string=":"+tor_https_port
+            }
+        }
     } else {
         if (protocol == "http:" && http_port != "80") {
             port_string=":"+http_port
@@ -235,3 +253,22 @@ function open_app_in_new_tab(http_port, https_port="NA", requires_https=false, c
     url = protocol+'//'+hostname+port_string
     window.open(url,'_blank');
 }
+// Click handlers for elements marked with data-* attributes. Pages do not use inline
+// onclick handlers, so they work under the Content Security Policy.
+$(document).on("click", "[data-open-app]", function(event) {
+    event.preventDefault();
+    var e = $(this);
+    open_app_in_new_tab(e.attr("data-http-port"), e.attr("data-https-port"), false, e.attr("data-tor-address"));
+});
+$(document).on("click", "[data-open-mynode-tab]", function(event) {
+    event.preventDefault();
+    open_new_mynode_tab($(this).attr("data-open-mynode-tab"), $(this).attr("data-protocol"));
+});
+$(document).on("click", "[data-use-https]", function(event) {
+    event.preventDefault();
+    location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
+});
+$(document).on("click", "[data-href]", function(event) {
+    event.preventDefault();
+    window.location = $(this).attr("data-href");
+});

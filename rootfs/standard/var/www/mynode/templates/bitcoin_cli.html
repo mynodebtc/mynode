@@ -2,7 +2,7 @@
     <head>
         <title>{{ title }}</title>
         {% include 'includes/head.html' %}
-        <script>
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
         $(document).ready(function() {
             // Show intial prompt
             $("#cli_contents").append("<b>>>></b> ");
@@ -20,17 +20,17 @@
                 console.log("Command: "+cmd)
 
                 $("#cmd").val("");
-                $("#cli_contents").append("<b>"+cmd+"</b><br/>");
+                $("#cli_contents").append($("<b>").text(cmd), "\n");
 
                 // Disable button until response
                 $("#cmd").prop("disabled", true);
                 $("#submit_btn").prop("disabled", true);
 
-                var posting = $.post( "/bitcoin/cli-run", {cmd:  cmd} );
+                var posting = $.post( "/bitcoin/cli-run", {cmd:  cmd, token: {{ cli_token|tojson }}} );
                 posting.done(function( data ) {
                     console.log("Response:" + data)
 
-                    $("#cli_contents").append( data+"<br/>" );
+                    $("#cli_contents").append( document.createTextNode(data+"\n") );
                     $("#cli_contents").append( "<b>>>></b> " );
 
                     // Re-enable button until response

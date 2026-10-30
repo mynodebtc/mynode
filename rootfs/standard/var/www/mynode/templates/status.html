@@ -3,16 +3,20 @@
         <title>{{ title }}</title>
         {% include 'includes/head.html' %}
 
-        <script>
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
+            $(document).on("click", "[data-show-log]", function() {
+                showLog($(this).attr("data-show-log"));
+            });
+
             function showLog(name) {
                 visible = $("#"+name+"_log").is(':visible');
                 if (visible) {
-                    $("#show_"+name+"_log").html("Show Log");
+                    $("#show_"+name+"_log").text("Show Log");
                     $("#"+name+"_log").hide();
                 } else {
-                    $("#show_"+name+"_log").html("Hide Log");
+                    $("#show_"+name+"_log").text("Hide Log");
                     $.get( "/api/get_log?app="+name, function( data ) {
-                        $("#"+name+"_log").html("<pre>"+data["log"]+"</pre>");
+                        $("#"+name+"_log").empty().append($("<pre>").text(data["log"]));
                         $("#"+name+"_log").show();
                     });
                 }
@@ -48,11 +52,11 @@
                 showing_info_table_advanced_rows=0;
                 $("#info_table_show_advanced_info").on("click", function() {
                     if (showing_info_table_advanced_rows) {
-                        $("#info_table_show_advanced_info").html("Show");
+                        $("#info_table_show_advanced_info").text("Show");
                         $(".info_table_advanced_row").hide();
                         showing_info_table_advanced_rows = 0;
                     } else {
-                        $("#info_table_show_advanced_info").html("Hide");
+                        $("#info_table_show_advanced_info").text("Hide");
                         $(".info_table_advanced_row").show();
                         showing_info_table_advanced_rows = 1;
                     }
@@ -85,7 +89,7 @@
                 // Functions to update status and status color
                 function update_status_basic(status_name, data) {
                     if (data != null && "status" in data && data["status_basic"] != null) {
-                        $("#"+status_name).html(data["status_basic"]);
+                        $("#"+status_name).text(data["status_basic"]);
                     }
                 }
                 function update_status_icon(status_icon_name, data) {
@@ -101,9 +105,9 @@
                 }
                 {% for app in apps %}
                     {% if app.show_on_status_page %}
-                        $.getJSON("/api/get_service_status?service={{app.short_name}}", function( data ) {
-                            update_status_basic("{{app.short_name}}_status", data);
-                            update_status_icon("{{app.short_name}}_status_icon", data);
+                        $.getJSON("/api/get_service_status?service=" + {{ app.short_name|tojson }}, function( data ) {
+                            update_status_basic({{ app.short_name|tojson }} + "_status", data);
+                            update_status_icon({{ app.short_name|tojson }} + "_status_icon", data);
                         });
                     {% endif %}
                 {% endfor %}
@@ -153,7 +157,7 @@
                 <div class="settings_block_subheader_status_icon {{ startup_status_color }}"></div>
                 {{ startup_status }}
             </div>
-            <button id="show_startup_log" onclick="showLog('startup')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <button id="show_startup_log" data-show-log="startup" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="startup_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{startup_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -162,7 +166,7 @@
                 <div class="settings_block_subheader_status_icon {{ tor_status_color }}"></div>
                 {{ tor_status }}
             </div>
-            <button id="show_tor_log" onclick="showLog('tor')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <button id="show_tor_log" data-show-log="tor" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="tor_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{tor_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -171,7 +175,7 @@
                 <div class="settings_block_subheader_status_icon {{ bitcoin_status_color }}"></div>
                 {{ bitcoin_status }}
             </div>
-            <button id="show_bitcoin_log" onclick="showLog('bitcoin')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <button id="show_bitcoin_log" data-show-log="bitcoin" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="bitcoin_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{bitcoin_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -182,7 +186,7 @@
                 <div class="settings_block_subheader_status_icon {{ lnd_status_color }}"></div>
                 {{ lnd_status }}
             </div>
-            <button id="show_lnd_log" onclick="showLog('lnd')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <button id="show_lnd_log" data-show-log="lnd" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="lnd_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lnd_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -208,7 +212,7 @@
                             <div id="{{app.short_name}}_status_icon" class="settings_block_subheader_status_icon clear"></div>
                             <span id="{{app.short_name}}_status">Loading....</span>
                         </div>
-                        <button id="show_{{app.short_name}}_log" onclick="showLog('{{app.short_name}}')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+                        <button id="show_{{app.short_name}}_log" data-show-log="{{app.short_name}}" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
                         <div id="{{app.short_name}}_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>Loading...</pre></div>
                         <div class="divider"></div>
                     {% endif %}
@@ -221,7 +225,7 @@
                 <div class="settings_block_subheader_status_icon {{ joinmarket_api_status_color }}"></div>
                 {{ joinmarket_api_status }}
             </div>
-            <button id="show_joinmarket-api_log" onclick="showLog('joinmarket-api')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <button id="show_joinmarket-api_log" data-show-log="joinmarket-api" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="joinmarket-api_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{joinmarket_api_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -230,7 +234,7 @@
                 <div class="settings_block_subheader_status_icon {{ joinmarket_obwatcher_status_color }}"></div>
                 {{ joinmarket_obwatcher_status }}
             </div>
-            <button id="show_joinmarket-obwatcher_log" onclick="showLog('joinmarket-obwatcher')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <button id="show_joinmarket-obwatcher_log" data-show-log="joinmarket-obwatcher" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="joinmarket-obwatcher_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{joinmarket_obwatcher_status_log}}</pre></div>
             <div class="divider"></div>
             {% endif %}
@@ -241,7 +245,7 @@
                 <div class="settings_block_subheader_status_icon {{ whirlpool_status_color }}"></div>
                 {{ whirlpool_status }}
             </div>
-            <button id="show_whirlpool_log" onclick="showLog('whirlpool')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <button id="show_whirlpool_log" data-show-log="whirlpool" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="whirlpool_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{whirlpool_status_log}}</pre></div>
             <div class="divider"></div>
             {% endif %}
@@ -259,7 +263,7 @@
                     {% if 'nginx' in running_containers %} nginx {% endif %}
                 </span>
             </div>
-            <button id="show_dojo_log" onclick="showLog('dojo')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <button id="show_dojo_log" data-show-log="dojo" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="dojo_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{dojo_status_log}}</pre></div>
             <div class="divider"></div>
             {% endif %}
@@ -275,7 +279,7 @@
                     {% if 'generated_postgres_1' in running_containers %} postgres {% endif %}
                 </span>
             </div>
-            <button id="show_btcpayserver_log" onclick="showLog('btcpayserver')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <button id="show_btcpayserver_log" data-show-log="btcpayserver" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="btcpayserver_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{btcpayserver_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -293,7 +297,7 @@
                     {% if 'mempool-api-1' in running_containers %} mempool-api-1 {% endif %}
                 </span>
             </div>
-            <button id="show_mempool_log" onclick="showLog('mempool')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <button id="show_mempool_log" data-show-log="mempool" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="mempool_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{mempool_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -304,7 +308,7 @@
                 <div class="settings_block_subheader_status_icon {{ docker_status_color }}"></div>
                 {{ docker_status }}
             </div>
-            <button id="show_docker_log" onclick="showLog('docker')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <button id="show_docker_log" data-show-log="docker" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="docker_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -314,7 +318,7 @@
                 <div class="settings_block_subheader_status_icon {{ docker_image_build_status_color }}"></div>
                 {{ docker_image_build_status }}
             </div>
-            <button id="show_docker_image_build_log" onclick="showLog('docker_image_build')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <button id="show_docker_image_build_log" data-show-log="docker_image_build" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="docker_image_build_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_image_build_status_log}}</pre></div>
             <div class="divider"></div>
             {% endif %}
@@ -324,7 +328,7 @@
                 <div class="settings_block_subheader_status_icon {{ nginx_status_color }}"></div>
                 {{ nginx_status }}
             </div>
-            <button id="show_nginx_log" onclick="showLog('nginx')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <button id="show_nginx_log" data-show-log="nginx" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="nginx_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{nginx_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -334,7 +338,7 @@
                 <div class="settings_block_subheader_status_icon {{ usb_extras_status_color }}"></div>
                 {{ usb_extras_status }}
             </div>
-            <button id="show_usb_extras_log" onclick="showLog('usb_extras')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <button id="show_usb_extras_log" data-show-log="usb_extras" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="usb_extras_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{usb_extras_status_log}}</pre></div>
             <div class="divider"></div>
             {% endif %}
@@ -345,7 +349,7 @@
                 <div class="settings_block_subheader_status_icon {{ premium_plus_connect_status_color }}"></div>
                 {{ premium_plus_connect_status }}
             </div>
-            <button id="show_premium_plus_connect_log" onclick="showLog('premium_plus_connect')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <button id="show_premium_plus_connect_log" data-show-log="premium_plus_connect" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="premium_plus_connect_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{premium_plus_connect_status_log}}</pre></div>
             <div class="divider"></div>
             {% endif %}
@@ -356,7 +360,7 @@
                 <div class="settings_block_subheader_status_icon {{ www_status_color }}"></div>
                 {{ www_status }}
             </div>
-            <button id="show_www_log" onclick="showLog('www')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <button id="show_www_log" data-show-log="www" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="www_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{www_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -365,7 +369,7 @@
                 <div class="settings_block_subheader_status_icon {{ i2pd_status_color }}"></div>
                 {{ i2pd_status }}
             </div>
-            <button id="show_i2pd_log" onclick="showLog('i2pd')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <button id="show_i2pd_log" data-show-log="i2pd" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="i2pd_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{i2pd_status_log}}</pre></div>
             <div class="divider"></div>
 
@@ -374,7 +378,7 @@
                 <div class="settings_block_subheader_status_icon {{ ufw_status_color }}"></div>
                 {{ ufw_status }}
             </div>
-            <button id="show_ufw_log" onclick="showLog('ufw')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <button id="show_ufw_log" data-show-log="ufw" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="ufw_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{ufw_status_log}}</pre></div>
             <div class="divider"></div>
             
@@ -383,7 +387,7 @@
                 <div class="settings_block_subheader_status_icon {{ linux_status_color }}"></div>
                 {{ linux_status }}
             </div>
-            <button id="show_linux_log" onclick="showLog('linux')" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
+            <button id="show_linux_log" data-show-log="linux" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
             <div id="linux_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{linux_status_log}}</pre></div>
         </div>
 

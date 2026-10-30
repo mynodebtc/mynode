@@ -1,15 +1,18 @@
-from flask import Blueprint, render_template, session, abort, Markup, request, redirect, flash
+from flask import Blueprint, render_template, session, abort, Markup, request, redirect, flash, Response, current_app, jsonify
 from pprint import pprint, pformat
 from bitcoin_info import *
 from device_info import *
 #from bitcoin.wallet import *
 from subprocess import check_output, check_call
 from electrum_info import *
-from user_management import check_logged_in
+from user_management import check_logged_in, is_admin_password_valid, get_admin_password_error
 import socket
 import json
 import time
-import pam
+import traceback
+import shutil
+import shlex
+from itsdangerous import URLSafeTimedSerializer, BadSignature
 
 mynode_bitcoin = Blueprint('mynode_bitcoin',__name__)
 
@@ -65,10 +68,11 @@ def bitcoin_status_page():
 
 
     except Exception as e:
+        log_message("ERROR loading bitcoin status: {}".format(traceback.format_exc()))
         templateData = {
             "title": "Bitcoin Error",
             "header": "Bitcoin Status",
-            "message": Markup("Error communicating with bitcoin. Node may be busy syncing.<br/><br/>{}".format(str(e))),
+            "message": "Error communicating with bitcoin. Node may be busy syncing. See /var/log/mynode.log for details.",
             "ui_settings": read_ui_settings()
         }
         return render_template('error.html', **templateData)
@@ -96,17 +100,28 @@ def bitcoin_status_page():
     }
     return render_template('bitcoin.html', **templateData)
 
-@mynode_bitcoin.route("/bitcoin/download_wallet", methods=["GET"])
+@mynode_bitcoin.route("/bitcoin/download_wallet", methods=["POST"])
 def bitcoin_download_wallet():
     check_logged_in()
-    wallet_name = request.args.get('wallet')
+    if not is_admin_password_valid(request.form.get('password_download_wallet')):
+        flash(get_admin_password_error(), category="error")
+        return redirect("/bitcoin")
+
+    wallet_name = request.form.get('wallet')
     if wallet_name is None:
         flash("Error finding wallet to download!", category="error")
         return redirect("/bitcoin")
 
+    if not is_safe_wallet_name(wallet_name):
+        flash("Invalid wallet name", category="error")
+        return redirect("/bitcoin")
+
     os.system("mkdir -p /tmp/download_wallets")
-    os.system("chmod 777 /tmp/download_wallets")
-    run_bitcoincli_command("-rpcwallet='"+wallet_name+"' dumpwallet '/tmp/download_wallets/"+wallet_name+"'")
+    os.system("chown bitcoin:bitcoin /tmp/download_wallets")
+    os.system("chmod 700 /tmp/download_wallets")
+    run_bitcoincli_command_args(["-rpcwallet={}".format(wallet_name),
+                                 "dumpwallet",
+                                 "/tmp/download_wallets/{}".format(wallet_name)])
 
     if not os.path.isfile("/tmp/download_wallets/"+wallet_name):
         flash("Error exporting wallet data for download", category="error")
@@ -117,16 +132,24 @@ def bitcoin_download_wallet():
 
     return download_file(directory="/tmp/download_wallets/", filename=wallet_name)
 
-@mynode_bitcoin.route("/bitcoin/delete_wallet", methods=["GET"])
+@mynode_bitcoin.route("/bitcoin/delete_wallet", methods=["POST"])
 def bitcoin_delete_wallet():
     check_logged_in()
-    wallet_name = request.args.get('wallet')
+    if not is_admin_password_valid(request.form.get('password_delete_wallet')):
+        flash(get_admin_password_error(), category="error")
+        return redirect("/bitcoin")
+
+    wallet_name = request.form.get('wallet')
     if wallet_name is None:
         flash("Error finding wallet to delete!", category="error")
         return redirect("/bitcoin")
 
-    run_bitcoincli_command("unloadwallet {}".format(wallet_name))
-    run_linux_cmd("rm -rf /mnt/hdd/mynode/bitcoin/{}".format(wallet_name))
+    if not is_safe_wallet_name(wallet_name):
+        flash("Invalid wallet name", category="error")
+        return redirect("/bitcoin")
+
+    run_bitcoincli_command_args(["unloadwallet", wallet_name])
+    shutil.rmtree("/mnt/hdd/mynode/bitcoin/{}".format(wallet_name), ignore_errors=True)
 
     # Update wallet info
     update_bitcoin_other_info()
@@ -167,9 +190,8 @@ def bitcoin_config_page():
     custom_config = request.form.get('custom_config')
 
     # Handle form
-    pw = request.form.get('password')
-    if request.method == 'POST' and (pw == None or pam.pam().authenticate("admin", pw) == False):
-        flash("Invalid Password", category="error")
+    if request.method == 'POST' and not is_admin_password_valid(request.form.get('password')):
+        flash(get_admin_password_error(), category="error")
     elif request.method == 'POST':
         if pre_bitcoin_config != None:
             set_bitcoin_pre_config(pre_bitcoin_config)
@@ -212,13 +234,34 @@ def bitcoin_config_page():
     }
     return render_template('bitcoin_config.html', **templateData)
 
-@mynode_bitcoin.route("/bitcoin/cli")
+# The terminal is unlocked with the password, which issues a token the page sends with each command
+BITCOIN_CLI_TOKEN_MAX_AGE = 60 * 60
+
+def get_bitcoin_cli_serializer():
+    return URLSafeTimedSerializer(current_app.secret_key, salt="bitcoin-cli")
+
+def is_bitcoin_cli_token_valid(token):
+    try:
+        get_bitcoin_cli_serializer().loads(token or "", max_age=BITCOIN_CLI_TOKEN_MAX_AGE)
+        return True
+    except BadSignature:
+        return False
+
+@mynode_bitcoin.route("/bitcoin/cli", methods=["GET","POST"])
 def bitcoincli():
     check_logged_in()
+
+    if request.method == 'GET':
+        return redirect("/bitcoin")
+
+    if not is_admin_password_valid(request.form.get('password_bitcoin_cli')):
+        flash(get_admin_password_error(), category="error")
+        return redirect("/bitcoin")
 
     # Load page
     templateData = {
         "title": "Bitcoin Terminal",
+        "cli_token": get_bitcoin_cli_serializer().dumps("bitcoin-cli"),
         "ui_settings": read_ui_settings()
     }
     return render_template('bitcoin_cli.html', **templateData)
@@ -229,8 +272,14 @@ def runcmd_page():
     
     if not request:
         return ""
-    response = run_bitcoincli_command(request.form['cmd'])
-    return response
+    if not is_bitcoin_cli_token_valid(request.form.get('token')):
+        return Response("Error: Terminal locked. Reopen it from the Bitcoin page.", mimetype="text/plain")
+    try:
+        args = shlex.split(request.form['cmd'])
+    except ValueError as e:
+        return Response("Error: {}".format(e), mimetype="text/plain")
+    response = run_bitcoincli_command_args(args)
+    return Response(response, mimetype="text/plain")
 
 @mynode_bitcoin.route("/bitcoin/toggle_bip37")
 def bitcoin_toggle_bip37():

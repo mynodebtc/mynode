@@ -1,0 +1,195 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% include 'includes/head.html' %}
+        <noscript><meta http-equiv="refresh" content="{{ refresh_rate }}"></noscript>
+
+        <style>
+            .https_wait_card {
+                max-width: 560px;
+                margin: 10px auto 0 auto;
+                padding: 28px 32px;
+                background: #ffffff;
+                border: 1px solid #e2e2e2;
+                border-radius: 10px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+                color: #444444;
+                font-size: 15px;
+                line-height: 1.5;
+            }
+            .https_wait_title {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                font-size: 26px;
+                font-weight: 600;
+                color: #333333;
+                margin-bottom: 12px;
+            }
+            .https_wait_icon {
+                color: #f9c132;
+                font-size: 26px;
+            }
+            .https_wait_status {
+                display: inline-block;
+                margin: 6px 0 18px 0;
+                padding: 4px 12px;
+                border-radius: 14px;
+                background: #f3f3f3;
+                font-size: 13px;
+                color: #555555;
+            }
+            .https_wait_status i,
+            .https_wait_status svg {
+                margin-right: 6px;
+            }
+            .https_wait_help {
+                margin-top: 18px;
+                padding-top: 16px;
+                border-top: 1px solid #e8e8e8;
+            }
+            .https_wait_card details {
+                margin-top: 12px;
+                border: 1px solid #e2e2e2;
+                border-radius: 8px;
+                padding: 0 14px;
+            }
+            .https_wait_card summary {
+                cursor: pointer;
+                padding: 10px 0;
+                font-weight: 600;
+                color: #333333;
+            }
+            .https_wait_card details[open] summary {
+                border-bottom: 1px solid #e8e8e8;
+                margin-bottom: 8px;
+            }
+            .https_wait_card ol {
+                padding-left: 20px;
+                margin: 8px 0 12px 0;
+            }
+            .https_wait_card li {
+                margin-bottom: 12px;
+            }
+            .https_wait_card code {
+                display: block;
+                margin-top: 6px;
+                padding: 8px 10px;
+                background: #1b2127;
+                color: #e6e6e6;
+                border-radius: 6px;
+                font-family: Menlo, Consolas, "Courier New", monospace;
+                font-size: 13px;
+                overflow-x: auto;
+                white-space: pre;
+                user-select: all;
+                -webkit-user-select: all;
+            }
+            .https_wait_note {
+                font-size: 13px;
+                color: #777777;
+                margin-bottom: 12px;
+            }
+            @media (max-width: 600px) {
+                .https_wait_card {
+                    margin: 10px 16px 0 16px;
+                    padding: 22px 18px;
+                }
+            }
+        </style>
+        {% if ui_settings['darkmode'] %}
+        <style>
+            .https_wait_card {
+                background: #20242b;
+                border-color: #3a4750;
+                box-shadow: none;
+                color: #dddddd;
+            }
+            .https_wait_title,
+            .https_wait_card summary {
+                color: #eeeeee;
+            }
+            .https_wait_status {
+                background: #303841;
+                color: #dddddd;
+            }
+            .https_wait_help,
+            .https_wait_card details[open] summary {
+                border-color: #3a4750;
+            }
+            .https_wait_card details {
+                border-color: #3a4750;
+            }
+            .https_wait_card code {
+                background: #121c21;
+            }
+            .https_wait_note {
+                color: #aaaaaa;
+            }
+        </style>
+        {% endif %}
+
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
+            // Reload this same address until HTTPS is available, then the server redirects.
+            // Wait while the troubleshooting steps are open, so they stay readable.
+            $(document).ready(function() {
+                setInterval(function() {
+                    if (!$("#https_wait_steps").prop("open")) {
+                        window.location.reload();
+                    }
+                }, {{ refresh_rate|tojson }} * 1000);
+            });
+        </script>
+    </head>
+
+    <body>
+        {% include 'includes/logo_header.html' %}
+
+        <div class="https_wait_card">
+            <div class="https_wait_title">
+                <i class="fas fa-lock https_wait_icon"></i>
+                <span>Waiting for HTTPS</span>
+            </div>
+
+            <div>
+                This device requires a secure HTTPS connection, and HTTPS is not available yet.
+                This is normal while the device is starting up. This page will reload automatically.
+            </div>
+
+            <div class="https_wait_status"><i class="fas fa-circle-notch fa-spin"> </i>Device status: {{ status_text }}</div>
+
+            <div class="https_wait_help">
+                If this does not go away, try these troubleshooting steps.
+
+                <details id="https_wait_steps">
+                    <summary>Troubleshooting steps</summary>
+                    <div class="https_wait_note">
+                        These steps turn off Force HTTPS. Once the device is working again, it can be
+                        turned back on in Settings.
+                    </div>
+                    <ol>
+                        <li>
+                            SSH to the device
+                            <code>ssh admin@{{ ssh_host }}</code>
+                        </li>
+                        <li>
+                            Remove the Force HTTPS setting from the SD card
+                            <code>sudo rm -f /home/bitcoin/.mynode/https_forced</code>
+                        </li>
+                        <li>
+                            Remove the Force HTTPS setting from the drive
+                            <code>sudo rm -f /mnt/hdd/mynode/settings/https_forced</code>
+                        </li>
+                        <li>
+                            Reboot the device
+                            <code>sudo reboot</code>
+                        </li>
+                    </ol>
+                </details>
+            </div>
+        </div>
+
+        <div style="height: 40px;">&nbsp;</div>
+    </body>
+</html>

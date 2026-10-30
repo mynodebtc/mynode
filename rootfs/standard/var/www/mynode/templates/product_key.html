@@ -2,7 +2,7 @@
     <head>
         <title>{{ title }}</title>
         {% include 'includes/head.html' %}
-        <script>
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
         $(document).ready(function() {
 
             $("#pk_submit").button().button("disable");
@@ -25,14 +25,14 @@
                 clean_key = replace_all(clean_key, "-", "");
 
                 // Clear message
-                $("#product_key_message").html("&nbsp;");
+                $("#product_key_message").text("\u00a0");
                 $("#product_key_message").removeClass("red_text");
                 $("#product_key_message").removeClass("green_text");
 
                 // Check key if proper size
                 if (clean_key.length == 12)
                 {
-                    $("#product_key_message").html("Checking key...");
+                    $("#product_key_message").text("Checking key...");
                     var data = {
                         product_key: clean_key
                     }

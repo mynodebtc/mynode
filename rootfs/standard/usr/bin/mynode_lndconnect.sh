@@ -2,7 +2,9 @@
 
 source /usr/share/mynode/mynode_config.sh
 
+umask 077
 mkdir -p /tmp/mynode_lndconnect/
+chmod 700 /tmp/mynode_lndconnect/
 cd /tmp/mynode_lndconnect/
 
 echo "Starting lndconnect script..."

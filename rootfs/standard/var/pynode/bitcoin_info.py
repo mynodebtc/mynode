@@ -59,11 +59,18 @@ def is_bitcoin_synced():
         return True
     return False
 
-def run_bitcoincli_command(cmd):
-    cmd = "bitcoin-cli --conf=/mnt/hdd/mynode/bitcoin/bitcoin.conf --datadir=/mnt/hdd/mynode/bitcoin "+cmd+"; exit 0"
-    log_message("Running bitcoin-cli cmd:  {}".format(cmd))
+def run_bitcoincli_command_args(args):
+    cmd = ["bitcoin-cli",
+           "--conf=/mnt/hdd/mynode/bitcoin/bitcoin.conf",
+           "--datadir=/mnt/hdd/mynode/bitcoin"] + args
+    # Log the method only, not its arguments
+    method = next((a for a in args if not a.startswith("-")), "")
+    log_message("Running bitcoin-cli method: {}".format(method))
     try:
-        results = to_string(subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True))
+        results = to_string(subprocess.check_output(cmd, stderr=subprocess.STDOUT,
+                                                    stdin=subprocess.DEVNULL))
+    except subprocess.CalledProcessError as e:
+        results = to_string(e.output)
     except Exception as e:
         results = str(e)
     return results
@@ -322,12 +329,14 @@ def update_bitcoin_other_info():
                     data = r.json()
                     bitcoin_recommended_fees = ""
                     bitcoin_recommended_fees += "Low priority: {} sat/vB".format(data["hourFee"])
-                    bitcoin_recommended_fees += " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "
+                    bitcoin_recommended_fees += " " + "\u00a0" * 11 + " "
                     bitcoin_recommended_fees += "Medium priority: {} sat/vB".format(data["halfHourFee"])
-                    bitcoin_recommended_fees += " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "
+                    bitcoin_recommended_fees += " " + "\u00a0" * 11 + " "
                     bitcoin_recommended_fees += "High priority: {} sat/vB".format(data["fastestFee"])
                 except Exception as e:
-                    bitcoin_recommended_fees = "Fee error - " . str(e)
+                    # Mempool is often slow to answer while it starts or syncs, so hide the fees until it does
+                    log_message("update_bitcoin_other_info - MEMPOOL FEES UNAVAILABLE - {}".format(str(e)))
+                    bitcoin_recommended_fees = None
             else:
                 bitcoin_recommended_fees = None
         except Exception as e1:
@@ -350,7 +359,7 @@ def get_bitcoin_status():
         if remaining == 0:
             status = "Running"
         else:
-            status = "Syncing<br/>{} blocks remaining...".format(remaining)
+            status = "Syncing\n{} blocks remaining...".format(remaining)
     else:
         status = "Waiting for info..."
     return status
@@ -497,8 +506,8 @@ def create_default_wallets():
                     break
             if not found:
                 log_message("Creating new default wallet {}".format(new_wallet))
-                run_bitcoincli_command("-named createwallet wallet_name={} descriptors=false".format(new_wallet))
-                run_bitcoincli_command("loadwallet {}".format(new_wallet))
+                run_bitcoincli_command_args(["-named", "createwallet", "wallet_name={}".format(new_wallet), "descriptors=false"])
+                run_bitcoincli_command_args(["loadwallet", new_wallet])
 
 
 def get_default_bitcoin_config():

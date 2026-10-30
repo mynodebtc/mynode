@@ -4,6 +4,12 @@ source /usr/share/mynode/mynode_functions.sh
 
 set -e
 
+# Listen on 127.0.0.1:19823 only. nginx serves PORT_NUMBER (9823, HTTP) and 9824 (HTTPS) behind the
+# MyNode login, and CKBunker's own onion service, which points at PORT_NUMBER, goes through it too.
+sed -i -e "s/web._run_app(app, port=settings.PORT_NUMBER/web._run_app(app, host='127.0.0.1', port=19823/" \
+    -e "s/web._run_app(app, host='127.0.0.1', port=settings.PORT_NUMBER/web._run_app(app, host='127.0.0.1', port=19823/" \
+    /opt/mynode/ckbunker/webapp.py
+
 # Set the master login password the first time CKBunker starts with MyNode's settings file.
 # A password saved in the CKBunker Bunker Setup tab takes precedence over this one.
 SETTINGS_FILE=/mnt/hdd/mynode/ckbunker/settings.yaml

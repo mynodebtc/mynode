@@ -1,12 +1,14 @@
 #!/bin/bash
 
 source /usr/share/mynode/mynode_config.sh
+source /usr/share/mynode/mynode_functions.sh
 
 set -x
 
 apt -y update
 
 mkdir -p $VPN_BACKUP_DIR
+chmod 700 $VPN_BACKUP_DIR
 
 while [ true ]; do
     # Check for backup files
@@ -31,6 +33,12 @@ while [ true ]; do
         cp -rf /etc/openvpn/ $VPN_BACKUP_DIR/
         cp /home/pivpn/ovpns/mynode_vpn.ovpn $VPN_BACKUP_DIR/mynode_vpn.ovpn
     fi
+
+    # Client configs are only read by root
+    chmod 700 /home/pivpn/ovpns
+    chmod 600 /home/pivpn/ovpns/mynode_vpn.ovpn
+
+    configure_vpn_firewall || true
 
     systemctl enable openvpn
     systemctl start openvpn

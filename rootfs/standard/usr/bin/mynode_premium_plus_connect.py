@@ -79,7 +79,7 @@ def connect_success_handler_watchtower(connect_response_data):
             premium_plus_watchtower_uri = connect_response_data["watchtower_uri"]
             parts = premium_plus_watchtower_uri.split("@")
             premium_plus_watchtower_pubkey = parts[0]
-            output = run_lncli_command("lncli wtclient towers")
+            output = run_lncli_command_args(["wtclient", "towers"])
             info = json.loads(output)
             towers = info["towers"]
             
@@ -95,13 +95,13 @@ def connect_success_handler_watchtower(connect_response_data):
                             log_message("Found Premium+ Tower")
                 if not found_watchtower:
                     log_message("Adding Premium+ Tower {}".format(premium_plus_watchtower_uri))
-                    run_lncli_command("lncli wtclient add {}".format(premium_plus_watchtower_uri))
+                    run_lncli_command_args(["wtclient", "add", premium_plus_watchtower_uri])
             else:
                 # Look for P+ watchtower to remove it
                 for t in towers:
                     if premium_plus_watchtower_pubkey == t["pubkey"] and t["active_session_candidate"] == True:
                         log_message("Removing Premium+ Tower {}".format(premium_plus_watchtower_pubkey))
-                        run_lncli_command("lncli wtclient remove {}".format(premium_plus_watchtower_pubkey))
+                        run_lncli_command_args(["wtclient", "remove", premium_plus_watchtower_pubkey])
 
     except Exception as e:
         log_message("connect_success_handler_watchtower exception: {}".format(str(e)))

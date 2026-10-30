@@ -148,6 +148,64 @@ dphys-swapfile swapoff || true
 dphys-swapfile uninstall || true
 umount /mnt/hdd || true
 
+# Initialize Users (before waiting on the drive, which can take indefinitely)
+/usr/bin/mynode_initialize_users.sh
+
+# Regen machine ID and NetworkManager key on fresh installs only (the SSH keys have not been
+# made yet), so existing devices keep theirs
+if [ ! -f /home/bitcoin/.mynode/.genmachineid ]; then
+    if [ ! -f /home/bitcoin/.mynode/.gensshkeys ]; then
+        OLD_MACHINE_ID=$(cat /etc/machine-id || true)
+        tr -d '-' < /proc/sys/kernel/random/uuid > /etc/machine-id.new
+        chmod 444 /etc/machine-id.new
+        mv -f /etc/machine-id.new /etc/machine-id
+        NEW_MACHINE_ID=$(cat /etc/machine-id)
+        rm -f /var/lib/NetworkManager/secret_key
+
+        # journalctl reads the folder named after the machine ID, so move this boot's logs over
+        for d in /var/log/journal /run/log/journal; do
+            if [ -n "$OLD_MACHINE_ID" ] && [ -d $d/$OLD_MACHINE_ID ] && [ ! -e $d/$NEW_MACHINE_ID ]; then
+                mv $d/$OLD_MACHINE_ID $d/$NEW_MACHINE_ID
+            fi
+        done
+        systemctl restart systemd-journald || true
+    fi
+    touch /home/bitcoin/.mynode/.genmachineid
+    sync
+fi
+
+# Regen SSH keys (check if force regen or keys are missing / empty)
+while [ ! -f /home/bitcoin/.mynode/.gensshkeys ] || 
+      [ ! -f /etc/ssh/ssh_host_ecdsa_key.pub ] ||
+      [ ! -s /etc/ssh/ssh_host_ecdsa_key.pub ] ||
+      [ ! -f /etc/ssh/ssh_host_ed25519_key.pub ] ||
+      [ ! -s /etc/ssh/ssh_host_ed25519_key.pub ] ||
+      [ ! -f /etc/ssh/ssh_host_rsa_key.pub ] ||
+      [ ! -s /etc/ssh/ssh_host_rsa_key.pub ]
+do
+    sleep 10s
+    rm -rf /etc/ssh/ssh_host_*
+    dpkg-reconfigure openssh-server
+    systemctl restart ssh
+
+    touch /home/bitcoin/.mynode/.gensshkeys
+    sync
+    sleep 5s
+done
+
+# Regen i2pd keys (once per device)
+if [ ! -f /home/bitcoin/.mynode/.geni2pdkeys ]; then
+    I2PD_ACTIVE=0
+    systemctl is-active --quiet i2pd && I2PD_ACTIVE=1
+    systemctl stop i2pd || true
+    rm -f /var/lib/i2pd/router.keys /var/lib/i2pd/router.info /var/lib/i2pd/ntcp2.keys /var/lib/i2pd/ssu2.keys /var/lib/i2pd/irc-keys.dat
+    if [ $I2PD_ACTIVE = 1 ]; then
+        systemctl start i2pd || true
+    fi
+    touch /home/bitcoin/.mynode/.geni2pdkeys
+    sync
+fi
+
 
 # Generate MyNode serial number
 while [ ! -f /home/bitcoin/.mynode/mynode_serial ] || [ ! -s /home/bitcoin/.mynode/mynode_serial ]
@@ -312,28 +370,19 @@ rm -rf $MYNODE_DIR/.mynode_bitcoin_synced
 # Sync product key (SD preferred)
 cp -f /home/bitcoin/.mynode/.product_key* /mnt/hdd/mynode/settings/ || true
 cp -f /mnt/hdd/mynode/settings/.product_key* home/bitcoin/.mynode/ || true
-
-# Initialize Users
-/usr/bin/mynode_initialize_users.sh
-
-# Regen SSH keys (check if force regen or keys are missing / empty)
-while [ ! -f /home/bitcoin/.mynode/.gensshkeys ] || 
-      [ ! -f /etc/ssh/ssh_host_ecdsa_key.pub ] ||
-      [ ! -s /etc/ssh/ssh_host_ecdsa_key.pub ] ||
-      [ ! -f /etc/ssh/ssh_host_ed25519_key.pub ] ||
-      [ ! -s /etc/ssh/ssh_host_ed25519_key.pub ] ||
-      [ ! -f /etc/ssh/ssh_host_rsa_key.pub ] ||
-      [ ! -s /etc/ssh/ssh_host_rsa_key.pub ]
-do
-    sleep 10s
-    rm -rf /etc/ssh/ssh_host_*
-    dpkg-reconfigure openssh-server
-    systemctl restart ssh
-
-    touch /home/bitcoin/.mynode/.gensshkeys
-    sync
-    sleep 5s
+for f in /home/bitcoin/.mynode/.product_key /mnt/hdd/mynode/settings/.product_key \
+         /home/bitcoin/.mynode/.premium_plus_token /mnt/hdd/mynode/settings/.premium_plus_token; do
+    if [ -f "$f" ]; then
+        chown bitcoin:bitcoin "$f"
+        chmod 600 "$f"
+    fi
 done
+# Upgrade logs written by older versions hold the product key
+if [ -d /home/admin/upgrade_logs ]; then
+    chmod 700 /home/admin/upgrade_logs
+    grep -lE "(product_key|PRODUCT_KEY)=[0-9A-Za-z]" /home/admin/upgrade_logs/* 2>/dev/null | \
+        xargs -r sed -i -E "s/(product_key|PRODUCT_KEY)=[0-9A-Za-z]+/\1=<hidden>/g" || true
+fi
 
 # Gen RSA keys
 sudo -u admin mkdir -p /home/admin/.ssh
@@ -545,7 +594,8 @@ udevadm control --reload-rules
 groupadd plugdev || true
 sudo usermod -aG plugdev bitcoin
 
-# Update other files that need RPC password (needed if upgrades overwrite files)
+# Update other files that need RPC password (needed if upgrades overwrite files).
+# The password goes to sed on stdin, since command lines are visible to every user.
 set +x
 BTCRPCPW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
 if [ -f /opt/mynode/LndHub/config.js ]; then
@@ -554,24 +604,34 @@ if [ -f /opt/mynode/LndHub/config.js ]; then
     chown bitcoin:bitcoin /opt/mynode/LndHub/config.js
 fi
 if [ -f /opt/mynode/btc-rpc-explorer/.env ]; then
-    sed -i "s/BTCEXP_BITCOIND_PASS=.*/BTCEXP_BITCOIND_PASS=$BTCRPCPW/g" /opt/mynode/btc-rpc-explorer/.env
+    printf 's/BTCEXP_BITCOIND_PASS=.*/BTCEXP_BITCOIND_PASS=%s/g\n' "$BTCRPCPW" | sed -i -f - /opt/mynode/btc-rpc-explorer/.env
+    chmod 600 /opt/mynode/btc-rpc-explorer/.env
 fi
 if [ -f /mnt/hdd/mynode/joinmarket/joinmarket.cfg ]; then
-    sed -i "s/rpc_password = .*/rpc_password = $BTCRPCPW/g" /mnt/hdd/mynode/joinmarket/joinmarket.cfg
+    printf 's/rpc_password = .*/rpc_password = %s/g\n' "$BTCRPCPW" | sed -i -f - /mnt/hdd/mynode/joinmarket/joinmarket.cfg
+    chmod 600 /mnt/hdd/mynode/joinmarket/joinmarket.cfg
 fi
 if [ -f /mnt/hdd/mynode/lit/lit.conf ]; then
-    sed -i "s/faraday.bitcoin.password=.*/faraday.bitcoin.password=$BTCRPCPW/g" /mnt/hdd/mynode/lit/lit.conf
+    printf 's/faraday.bitcoin.password=.*/faraday.bitcoin.password=%s/g\n' "$BTCRPCPW" | sed -i -f - /mnt/hdd/mynode/lit/lit.conf
+    chmod 600 /mnt/hdd/mynode/lit/lit.conf
 fi
+install -m 600 -o bitcoin -g bitcoin /dev/null /mnt/hdd/mynode/settings/.btcrpc_environment
 echo "BTC_RPC_PASSWORD=$BTCRPCPW" > /mnt/hdd/mynode/settings/.btcrpc_environment
-chown bitcoin:bitcoin /mnt/hdd/mynode/settings/.btcrpc_environment
+# Upgrade logs written by older versions can hold the RPC password
+if [ -n "$BTCRPCPW" ] && [ -d /home/admin/upgrade_logs ]; then
+    # The password is passed on stdin, never in a command line
+    grep -lFf <(printf '%s\n' "$BTCRPCPW") /home/admin/upgrade_logs/* 2>/dev/null | while read -r f; do
+        printf 's/%s/<hidden>/g\n' "$BTCRPCPW" | sed -i -f - "$f"
+    done || true
+fi
 if [ -f /mnt/hdd/mynode/bitcoin/bitcoin.conf ]; then
     sed -i "s/rpcauth=.*/$RPCAUTH/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
 fi
 if [ -f /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-bitcoind.conf ]; then
-    sed -i "s/BITCOIND_RPC_PASSWORD=.*/BITCOIND_RPC_PASSWORD=$BTCRPCPW/g" /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-bitcoind.conf
+    printf 's/BITCOIND_RPC_PASSWORD=.*/BITCOIND_RPC_PASSWORD=%s/g\n' "$BTCRPCPW" | sed -i -f - /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-bitcoind.conf
 fi
 if [ -f /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-bitcoind.conf.tpl ]; then
-    sed -i "s/BITCOIND_RPC_PASSWORD=.*/BITCOIND_RPC_PASSWORD=$BTCRPCPW/g" /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-bitcoind.conf.tpl
+    printf 's/BITCOIND_RPC_PASSWORD=.*/BITCOIND_RPC_PASSWORD=%s/g\n' "$BTCRPCPW" | sed -i -f - /mnt/hdd/mynode/dojo/docker/my-dojo/conf/docker-bitcoind.conf.tpl
 fi
 set -x
 
@@ -698,6 +758,15 @@ if [ "$SWAP" -ne "0" ]; then
     dphys-swapfile swapon || true
 fi
 
+# Apply the IPv6 setting. The settings file is on the drive, but the sysctl file is on the
+# OS disk, so it can be missing (for example after a new SD card).
+if settings_file_exists "ipv6_disabled" ; then
+    cp -f /usr/share/mynode/sysctl_noipv6.conf /etc/sysctl.d/10-disableipv6.conf
+    sysctl -p /etc/sysctl.d/10-disableipv6.conf || true
+else
+    rm -f /etc/sysctl.d/10-disableipv6.conf
+fi
+
 
 # Make sure every enabled service is really enabled
 #   This can happen from full-SD card upgrades
@@ -722,9 +791,6 @@ echo "Generating certificates..."
 mkdir -p /var/log/nginx || true
 mkdir -p /etc/nginx || true
 rm -f /etc/nginx/modules-enabled/50-mod-* || true # Remove unnecessary files
-echo "gen_dhparam" > $MYNODE_STATUS_FILE
-/usr/bin/mynode_gen_dhparam.sh
-echo "drive_mounted" > $MYNODE_STATUS_FILE
 cp -f /usr/share/mynode/nginx.conf /etc/nginx/nginx.conf
 systemctl restart nginx || true
 

@@ -178,8 +178,13 @@ else
     fi
 fi
 
+# Keep the RPC password out of traced logs
+case $- in *x*) GEN_BITCOIN_CONFIG_XTRACE=1 ;; *) GEN_BITCOIN_CONFIG_XTRACE=0 ;; esac
+set +x
 PW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
-RPCAUTH=$(gen_rpcauth.py mynode $PW)
+RPCAUTH=$(printf '%s\n' "$PW" | gen_rpcauth.py mynode -)
+unset PW
+if [ $GEN_BITCOIN_CONFIG_XTRACE = 1 ]; then set -x; fi
 #sed -i "s/rpcpassword=.*/rpcpassword=$PW/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
 sed -i "s/rpcauth=.*/$RPCAUTH/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
 

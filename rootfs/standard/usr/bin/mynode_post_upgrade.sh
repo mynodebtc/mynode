@@ -14,6 +14,15 @@ date
 # Mark we are upgrading
 echo "upgrading" > $MYNODE_STATUS_FILE
 
+# Components that fail to upgrade are skipped so the rest can finish, and are
+# recorded so the upgrade is reported as incomplete
+rm -f $UPGRADE_INCOMPLETE_FILE
+function upgrade_component_failed()
+{
+    echo "$1"
+    touch $UPGRADE_INCOMPLETE_FILE
+}
+
 # Shut down main services to save memory and CPU
 /usr/bin/mynode_stop_critical_services.sh
 
@@ -55,9 +64,6 @@ if ! skip_base_upgrades ; then
     systemctl stop https || true
     systemctl disable tls_proxy || true
     systemctl stop tls_proxy || true
-
-    # Create dhparam.pem (do before dpkg configure since its needed for nginx)
-    /usr/bin/mynode_gen_dhparam.sh
 
 
     # Check if any dpkg installs have failed and correct
@@ -124,7 +130,7 @@ if ! skip_base_upgrades ; then
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 648ACFD622F3D138   # Debian Backports
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E98404D386FA1D9   # Debian Backports
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 66F6C87B98EBCFE2   # I2P (R4SAS)
-    gpg --no-default-keyring --keyring /usr/share/keyrings/nodesource.gpg --keyserver keyserver.ubuntu.com --recv-keys 2F59B5F99B1BE0B4 # NodeJS
+    gpg --no-default-keyring --keyring /usr/share/keyrings/nodesource.gpg --keyserver keyserver.ubuntu.com --recv-keys 6F71F525282841EEDAF851B42F59B5F99B1BE0B4 # NodeJS
     set -e
 
     # Check for updates (might auto-install all updates later)
@@ -179,8 +185,21 @@ if ! skip_base_upgrades ; then
     if [ "$DEBIAN_VERSION" -ge "12" ]; then
         $TORIFY apt-get -y install python3-systemd
         mkdir -p /etc/fail2ban/jail.d
-        printf "[sshd]\nbackend = systemd\n" > /etc/fail2ban/jail.d/mynode_sshd.conf
+        printf "[sshd]\nbackend = systemd\njournalmatch = _SYSTEMD_UNIT=ssh.service + _COMM=sshd\n" > /etc/fail2ban/jail.d/mynode_sshd.conf
     fi
+
+    # The VPN setup used to install iptables-persistent, which replaces ufw on Debian 12.
+    # Remove it and its saved rules, and make sure ufw is installed. The VPN's rules are
+    # set up in ufw when the VPN starts.
+    if dpkg-query -W -f='${Status}\n' iptables-persistent netfilter-persistent 2>/dev/null | grep -q "ok installed" || \
+       ! dpkg-query -W -f='${Status}' ufw 2>/dev/null | grep -q "ok installed"; then
+        apt-get -y purge iptables-persistent netfilter-persistent || true
+        rm -f /etc/iptables/rules.v4 /etc/iptables/rules.v6
+        if [ -f /etc/pivpn/NO_UFW ]; then
+            echo 0 > /etc/pivpn/NO_UFW
+        fi
+    fi
+    $TORIFY apt-get -y install ufw
 
     # Install Openbox GUI
     if [ $IS_X86 = 1 ]; then
@@ -390,7 +409,7 @@ if ! skip_base_upgrades ; then
         CURRENT_NODE_VERSION=$(cat /etc/apt/sources.list.d/nodesource.list /etc/apt/sources.list.d/nodesource.sources 2>/dev/null || true)
         if [ $NODE_TOO_OLD = 1 ] || [[ "$CURRENT_NODE_VERSION" != *"node_${NODE_JS_VERSION}"* ]]; then
             # Upgrade node
-            curl -sL https://deb.nodesource.com/setup_${NODE_JS_VERSION} | bash -
+            install_nodesource_repo $NODE_JS_VERSION
             apt-get install -y nodejs
 
             # Mark apps using node as needing re-install
@@ -524,7 +543,7 @@ if [ "$CURRENT" != "$BTC_VERSION" ]; then
     wget $BTC_UPGRADE_SHA256SUM_ASC_URL -O SHA256SUMS.asc
 
     if sha256sum --ignore-missing --check SHA256SUMS; then
-        if gpg --verify SHA256SUMS.asc SHA256SUMS |& grep "gpg: Good signature"; then
+        if check_gpg_signer SHA256SUMS.asc SHA256SUMS $BTC_SIGNER_FINGERPRINTS; then
             # Install Bitcoin
             tar -xvf bitcoin-$BTC_VERSION-$ARCH.tar.gz
             mv bitcoin-$BTC_VERSION bitcoin
@@ -537,10 +556,10 @@ if [ "$CURRENT" != "$BTC_VERSION" ]; then
             wget $BTC_CLI_COMPLETION_URL -O bitcoin-cli.bash
             sudo cp bitcoin-cli.bash /etc/bash_completion.d/bitcoin-cli
         else
-            echo "ERROR UPGRADING BITCOIN - GPG FAILED"
+            upgrade_component_failed "ERROR UPGRADING BITCOIN - GPG FAILED"
         fi
     else
-        echo "ERROR UPGRADING BITCOIN - SHASUM FAILED"
+        upgrade_component_failed "ERROR UPGRADING BITCOIN - SHASUM FAILED"
     fi
 elif [[ "$CURRENT" == *"_autoupdate" ]]; then
     # Handle custom versions that auto-update
@@ -576,10 +595,12 @@ if [ "$CURRENT" != "$LND_VERSION" ]; then
     wget $LND_UPGRADE_MANIFEST_SUHEB_SIG_URL -O manifest_suheb.txt.sig || true
     wget $LND_UPGRADE_MANIFEST_VICTORT_SIG_URL -O manifest_victort.txt.sig || true
 
-    if gpg --verify manifest_roasbeef.txt.sig manifest.txt || \
-       gpg --verify manifest_guggero.txt.sig manifest.txt || \
-       gpg --verify manifest_suheb.txt.sig manifest.txt || \
-       gpg --verify manifest_victort.txt.sig manifest.txt; then
+    # Check the signature, then the download against the signed manifest
+    if { check_gpg_signer manifest_roasbeef.txt.sig manifest.txt $LND_SIGNER_FINGERPRINTS || \
+         check_gpg_signer manifest_guggero.txt.sig manifest.txt $LND_SIGNER_FINGERPRINTS || \
+         check_gpg_signer manifest_suheb.txt.sig manifest.txt $LND_SIGNER_FINGERPRINTS || \
+         check_gpg_signer manifest_victort.txt.sig manifest.txt $LND_SIGNER_FINGERPRINTS; } &&
+       awk -v f="$LND_ARCH-$LND_VERSION.tar.gz" '$2 == f' manifest.txt | sha256sum --check -; then
         # Install LND
         tar -xzf lnd-*.tar.gz
         mv $LND_ARCH-$LND_VERSION lnd
@@ -588,7 +609,7 @@ if [ "$CURRENT" != "$LND_VERSION" ]; then
         # Mark current version
         echo $LND_VERSION > $LND_VERSION_FILE
     else
-        echo "ERROR UPGRADING LND - GPG FAILED"
+        upgrade_component_failed "ERROR UPGRADING LND - VERIFICATION FAILED"
     fi
 
     # Download bash-completion file for lncli
@@ -620,7 +641,9 @@ if [ "$CURRENT" != "$LOOP_VERSION" ]; then
     wget $LOOP_UPGRADE_MANIFEST_URL -O manifest.txt
     wget $LOOP_UPGRADE_MANIFEST_SIG_URL -O manifest.txt.sig
 
-    if gpg --verify manifest.txt.sig manifest.txt; then
+    # Check the signature, then the download against the signed manifest
+    if check_gpg_signer manifest.txt.sig manifest.txt $LOOP_SIGNER_FINGERPRINTS &&
+       awk -v f="$LOOP_ARCH-$LOOP_VERSION.tar.gz" '$2 == f' manifest.txt | sha256sum --check -; then
         # Install Loop
         tar -xzf loop-*.tar.gz
         mv $LOOP_ARCH-$LOOP_VERSION loop
@@ -629,7 +652,7 @@ if [ "$CURRENT" != "$LOOP_VERSION" ]; then
         # Mark current version
         echo $LOOP_VERSION > $LOOP_VERSION_FILE
     else
-        echo "ERROR UPGRADING LOOP - GPG FAILED"
+        upgrade_component_failed "ERROR UPGRADING LOOP - VERIFICATION FAILED"
     fi
 fi
 
@@ -657,7 +680,9 @@ if [ "$CURRENT" != "$POOL_VERSION" ]; then
     wget $POOL_UPGRADE_MANIFEST_URL -O manifest.txt
     wget $POOL_UPGRADE_MANIFEST_SIG_URL -O manifest.txt.sig
 
-    if gpg --verify manifest.txt.sig manifest.txt; then
+    # Check the signature, then the download against the signed manifest
+    if check_gpg_signer manifest.txt.sig manifest.txt $POOL_SIGNER_FINGERPRINTS &&
+       awk -v f="$POOL_ARCH-$POOL_VERSION.tar.gz" '$2 == f' manifest.txt | sha256sum --check -; then
         # Install Pool
         tar -xzf pool-*.tar.gz
         mv $POOL_ARCH-$POOL_VERSION pool
@@ -666,7 +691,7 @@ if [ "$CURRENT" != "$POOL_VERSION" ]; then
         # Mark current version
         echo $POOL_VERSION > $POOL_VERSION_FILE
     else
-        echo "ERROR UPGRADING POOL - GPG FAILED"
+        upgrade_component_failed "ERROR UPGRADING POOL - VERIFICATION FAILED"
     fi
 fi
 
@@ -695,7 +720,9 @@ if [ "$CURRENT" != "$LIT_VERSION" ] || [ ! -f /usr/local/bin/frcli ]; then
     wget $LIT_UPGRADE_MANIFEST_URL -O manifest.txt
     wget $LIT_UPGRADE_MANIFEST_SIG_URL  -O manifest.txt.sig
 
-    if gpg --verify manifest.txt.sig manifest.txt; then
+    # Check the signature, then the download against the signed manifest
+    if check_gpg_signer manifest.txt.sig manifest.txt $LIT_SIGNER_FINGERPRINTS &&
+       awk -v f="$LIT_ARCH-$LIT_VERSION.tar.gz" '$2 == f' manifest.txt | sha256sum --check -; then
         # Install lit
         tar -xzf lightning-terminal-*.tar.gz
         mv $LIT_ARCH-$LIT_VERSION lightning-terminal
@@ -704,7 +731,7 @@ if [ "$CURRENT" != "$LIT_VERSION" ] || [ ! -f /usr/local/bin/frcli ]; then
         # Mark current version
         echo $LIT_VERSION > $LIT_VERSION_FILE
     else
-        echo "ERROR UPGRADING LIT - GPG FAILED"
+        upgrade_component_failed "ERROR UPGRADING LIT - VERIFICATION FAILED"
     fi
 fi
 
@@ -732,7 +759,9 @@ if [ "$CURRENT" != "$CHANTOOLS_VERSION" ]; then
     wget $CHANTOOLS_UPGRADE_MANIFEST_URL -O manifest.txt
     wget $CHANTOOLS_UPGRADE_MANIFEST_SIG_URL  -O manifest.txt.sig
 
-    if gpg --verify manifest.txt.sig manifest.txt; then
+    # Check the signature, then the download against the signed manifest
+    if check_gpg_signer manifest.txt.sig manifest.txt $CHANTOOLS_SIGNER_FINGERPRINTS &&
+       awk -v f="$CHANTOOLS_ARCH-$CHANTOOLS_VERSION.tar.gz" '$2 == f' manifest.txt | sha256sum --check -; then
         # Install lit
         tar -xzf chantools-*.tar.gz
         mv $CHANTOOLS_ARCH-$CHANTOOLS_VERSION chantools
@@ -741,7 +770,7 @@ if [ "$CURRENT" != "$CHANTOOLS_VERSION" ]; then
         # Mark current version
         echo $CHANTOOLS_VERSION > $CHANTOOLS_VERSION_FILE
     else
-        echo "ERROR UPGRADING CHANTOOLS - GPG FAILED"
+        upgrade_component_failed "ERROR UPGRADING CHANTOOLS - VERIFICATION FAILED"
     fi
 fi
 
@@ -770,7 +799,7 @@ if should_install_app "lndhub" ; then
 
             echo $LNDHUB_VERSION > $LNDHUB_VERSION_FILE
         else
-            echo "ERROR: LndHub install failed"
+            upgrade_component_failed "ERROR: LndHub install failed"
         fi
     fi
     cd ~
@@ -805,7 +834,7 @@ if should_install_app "caravan" ; then
             echo $CARAVAN_VERSION > $CARAVAN_VERSION_FILE
             touch $CARAVAN_SETTINGS_UPDATE_FILE
         else
-            echo "ERROR: Caravan build failed"
+            upgrade_component_failed "ERROR: Caravan build failed"
         fi
     fi
     cd ~
@@ -833,7 +862,7 @@ if [ "$CURRENT" != "$CORSPROXY_VERSION" ]; then
     if npm install; then
         echo $CORSPROXY_VERSION > $CORSPROXY_VERSION_FILE
     else
-        echo "ERROR: CORS Proxy install failed"
+        upgrade_component_failed "ERROR: CORS Proxy install failed"
     fi
 fi
 cd ~
@@ -925,7 +954,7 @@ if should_install_app "joininbox"; then
                 echo $JOININBOX_PATCH_REVISION > $JOININBOX_PATCH_REVISION_FILE
                 echo $JOININBOX_VERSION > $JOININBOX_VERSION_FILE
             else
-                echo "ERROR: JoinInBox install failed"
+                upgrade_component_failed "ERROR: JoinInBox install failed"
             fi
         fi
     fi
@@ -970,7 +999,7 @@ if should_install_app "rtl" ; then
         sudo -u bitcoin wget $RTL_UPGRADE_URL -O RTL.tar.gz
         sudo -u bitcoin wget $RTL_UPGRADE_ASC_URL -O RTL.tar.gz.asc
 
-        if gpg --verify RTL.tar.gz.asc RTL.tar.gz; then
+        if check_gpg_signer RTL.tar.gz.asc RTL.tar.gz $RTL_SIGNER_FINGERPRINTS; then
             sudo -u bitcoin tar -xvf RTL.tar.gz
             sudo -u bitcoin rm RTL.tar.gz RTL.tar.gz.asc
             sudo -u bitcoin mv RTL-* RTL
@@ -978,10 +1007,10 @@ if should_install_app "rtl" ; then
             if sudo -u bitcoin NG_CLI_ANALYTICS=false npm install --omit=dev --legacy-peer-deps; then
                 echo $RTL_VERSION > $RTL_VERSION_FILE
             else
-                echo "ERROR: RTL install failed"
+                upgrade_component_failed "ERROR: RTL install failed"
             fi
         else
-            echo "ERROR UPGRADING RTL - GPG FAILED"
+            upgrade_component_failed "ERROR UPGRADING RTL - GPG FAILED"
         fi
     fi
 fi
@@ -1005,7 +1034,7 @@ if should_install_app "btcrpcexplorer" ; then
         if sudo -u bitcoin npm install --omit=dev; then
             echo $BTCRPCEXPLORER_VERSION > $BTCRPCEXPLORER_VERSION_FILE
         else
-            echo "ERROR: BTC RPC Explorer install failed"
+            upgrade_component_failed "ERROR: BTC RPC Explorer install failed"
         fi
     fi
 fi
@@ -1062,7 +1091,7 @@ if should_install_app "thunderhub" ; then
 
             echo $THUNDERHUB_VERSION > $THUNDERHUB_VERSION_FILE
         else
-            echo "ERROR: Thunderhub build failed"
+            upgrade_component_failed "ERROR: Thunderhub build failed"
         fi
     fi
 fi
@@ -1154,7 +1183,7 @@ if should_install_app "sphinxrelay" ; then
         if sudo -u bitcoin npm install; then
             echo $SPHINXRELAY_VERSION > $SPHINXRELAY_VERSION_FILE
         else
-            echo "ERROR: Sphinx Relay build failed"
+            upgrade_component_failed "ERROR: Sphinx Relay build failed"
         fi
     fi
 fi
@@ -1234,7 +1263,7 @@ if should_install_app "bos" ; then
         if npm install -g balanceofsatoshis@$BOS_VERSION; then
             echo $BOS_VERSION > $BOS_VERSION_FILE
         else
-            echo "ERROR: Balance of Satoshis install failed"
+            upgrade_component_failed "ERROR: Balance of Satoshis install failed"
         fi
     fi
 fi
@@ -1327,6 +1356,15 @@ cp -f /usr/share/mynode/nginx.conf /etc/nginx/nginx.conf
 # Remove password hash files that are no longer used
 rm -f /home/bitcoin/.mynode/.hashedpw || true
 rm -f /home/bitcoin/.mynode/.hashedpw_bcrypt || true
+
+# VPN client configs are only read by root
+if [ -d /home/pivpn/ovpns ]; then
+    chmod 700 /home/pivpn/ovpns
+    find /home/pivpn/ovpns -type f -exec chmod 600 {} \;
+fi
+if [ -d /mnt/hdd/mynode/vpn ]; then
+    chmod 700 /mnt/hdd/mynode/vpn
+fi
 
 # Remove global node packages that are no longer used
 npm uninstall -g pug-cli browserify uglify-js babel-cli || true

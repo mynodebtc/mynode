@@ -133,6 +133,49 @@ function has_app_password() {
     [ -s "/mnt/hdd/mynode/${1}/.app_password" ]
 }
 
+# Firewall rules the VPN needs: NAT for its clients and forwarding from its interface.
+# Run every time the VPN starts, since /etc/ufw is on the OS disk but the VPN config can be
+# restored from the drive, and the network device can change.
+function configure_vpn_firewall() {
+    local vpn_net="10.8.0.0/24"
+    local rules_changed=0
+    local dev
+
+    if ! command -v ufw > /dev/null; then
+        echo "ERROR: ufw is not installed, cannot set up the VPN firewall rules"
+        return 1
+    fi
+
+    dev=$(ip route get 8.8.8.8 | awk '{for(i=1;i<=NF;i++)if($i~/dev/)print $(i+1)}')
+    if [ -z "$dev" ]; then
+        echo "ERROR: no default route, cannot set up the VPN firewall rules"
+        return 1
+    fi
+
+    # NAT for VPN clients, in ufw's before.rules. Update the device in an existing rule
+    # (including one added by an older VPN setup), or add a new block.
+    if grep -q -E -- "-s ${vpn_net} -o [^ ]+ -j MASQUERADE" /etc/ufw/before.rules; then
+        if ! grep -q -- "-s ${vpn_net} -o ${dev} -j MASQUERADE" /etc/ufw/before.rules; then
+            sed -i -E "s#(-s ${vpn_net} -o )[^ ]+( -j MASQUERADE)#\1${dev}\2#" /etc/ufw/before.rules
+            rules_changed=1
+        fi
+    else
+        sed -i "/delete these required/i # MyNode VPN NAT\n*nat\n:POSTROUTING ACCEPT [0:0]\n-A POSTROUTING -s ${vpn_net} -o ${dev} -j MASQUERADE\nCOMMIT\n" /etc/ufw/before.rules
+        rules_changed=1
+    fi
+
+    # Forwarding for VPN clients (ufw's default forward policy is to drop)
+    if ! grep -q -- "-i tun0" /etc/ufw/user.rules; then
+        ufw route allow in on tun0 from ${vpn_net} comment 'allow VPN clients'
+    fi
+
+    sysctl -q -w net.ipv4.ip_forward=1
+
+    if [ $rules_changed = 1 ] && ufw status | grep -q "Status: active"; then
+        ufw reload
+    fi
+}
+
 function save_app_default_password() {
     # Record the login password MyNode set for an app, so the app page can show it.
     # Stored in the app's storage folder, which is owned by the app's user.
@@ -152,7 +195,8 @@ function save_app_password_user_set() {
 }
 
 function is_app_password_user_set() {
-    [ "$(cat "/mnt/hdd/mynode/${1}/.app_password" 2>/dev/null)" = "$APP_PASSWORD_USER_SET" ]
+    # Keep the saved password out of traced logs
+    grep -qsxF -- "$APP_PASSWORD_USER_SET" "/mnt/hdd/mynode/${1}/.app_password"
 }
 
 function remove_docker_images_by_name() {

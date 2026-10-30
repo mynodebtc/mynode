@@ -4,10 +4,10 @@ Description=ob-watcher
 
 [Service]
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
-ExecStartPre=/usr/bin/wait_on_bitcoin.sh
+ExecStartPre=+/usr/bin/wait_on_bitcoin.sh
 
 WorkingDirectory=/home/joinmarket/joinmarket-clientserver/scripts/obwatch
-ExecStart=/bin/sh -c '. /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate && python ob-watcher.py --host=0.0.0.0'
+ExecStart=/bin/sh -c '. /home/joinmarket/joinmarket-clientserver/jmvenv/bin/activate && python ob-watcher.py --host=127.0.0.1 --port=26601'
 User=joinmarket
 Group=joinmarket
 Type=simple

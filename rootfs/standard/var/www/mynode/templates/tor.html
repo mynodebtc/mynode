@@ -3,19 +3,19 @@
         <title>{{ title }}</title>
         {% include 'includes/head.html' %}
 
-        <script>
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
             $(document).ready(function() {
                 hidden=1
                 $("#show_onion_urls").on("click", function() {
                     if (hidden == 1) {
-                        $("#show_onion_urls").html('Hide Onion URLs');
+                        $("#show_onion_urls").text('Hide Onion URLs');
                         $(".onion_url_placeholder").hide(0)
                         $(".onion_url").show();
                         $(".onion_password_placeholder").hide(0)
                         $(".onion_password").show();
                         hidden=0;
                     } else {
-                        $("#show_onion_urls").html('Show Onion URLs');
+                        $("#show_onion_urls").text('Show Onion URLs');
                         $(".onion_url_placeholder").show()
                         $(".onion_url").hide(0);
                         $(".onion_password_placeholder").show()
@@ -26,7 +26,9 @@
 
                 {% if is_tor_remote_access_enabled %}
                 {% for service in v3_services %}
-                $("#{{ service.id }}").tooltip({ content: "<img style='width: 300px; height: 300px;' src='/api/get_qr_code_image?url={{ service.link }}'/>" });
+                $("#" + {{ service.id|tojson }}).tooltip({ content: function() {
+                    return $("<img>", {src: "/api/get_qr_code_image?url=" + encodeURIComponent({{ service.link|tojson }})}).css({width: "300px", height: "300px"});
+                } });
                 {% endfor %}
                 {% endif %}
 

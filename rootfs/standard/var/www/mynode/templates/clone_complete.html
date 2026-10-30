@@ -9,7 +9,7 @@
         <meta http-equiv="refresh" content="30">
         {% endif %}
 
-        <script>
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
             $(document).ready(function() {
                 $("#reboot-device").on("click", function() {
                     window.location.href="/settings/reboot-device"

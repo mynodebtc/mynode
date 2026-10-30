@@ -596,7 +596,6 @@ STATE_DRIVE_MOUNTED =         "drive_mounted"
 STATE_DRIVE_CLONE =           "drive_clone"
 STATE_DRIVE_FULL =            "drive_full"
 STATE_DOCKER_RESET =          "docker_reset"
-STATE_GEN_DHPARAM =           "gen_dhparam"
 STATE_CHOOSE_NETWORK =        "choose_network"
 STATE_STABLE =                "stable"
 STATE_ROOTFS_READ_ONLY =      "rootfs_read_only"
@@ -795,13 +794,24 @@ def get_https_ca_info():
         return None
     return {"name": name.group(1).strip(), "fingerprint": fingerprint.group(1).upper()}
 
+FLASK_SECRET_KEY_FILE = "/home/bitcoin/.mynode/flask_secret_key"
+
 def get_flask_secret_key():
-    if os.path.isfile("/home/bitcoin/.mynode/flask_secret_key"):
-        key = to_string( get_file_contents("/home/bitcoin/.mynode/flask_secret_key") )
+    key_file = FLASK_SECRET_KEY_FILE
+    if os.path.isfile(key_file):
+        key = to_string( get_file_contents(key_file) )
     else:
         key = secrets.token_hex()
-        set_file_contents("/home/bitcoin/.mynode/flask_secret_key", key)
+        set_file_contents(key_file, key)
+    try:
+        os.chmod(key_file, 0o600)
+    except:
+        log_message("Unable to set permissions on {}".format(key_file))
     return key
+
+def rotate_flask_secret_key():
+    delete_file(FLASK_SECRET_KEY_FILE)
+    return get_flask_secret_key()
 
 FLASK_SESSION_TIMEOUT_DAY_OPTIONS = [0,1,2,3,5,10,15,20,30]
 
@@ -932,9 +942,12 @@ def get_product_key():
 def is_valid_product_key():
     return not os.path.isfile("/home/bitcoin/.mynode/.product_key_error")
 def save_product_key(product_key):
-    pk = product_key.replace("-","")
-    os.system("echo '{}' > /home/bitcoin/.mynode/.product_key".format(pk))
-    os.system("echo '{}' > /mnt/hdd/mynode/settings/.product_key".format(pk))
+    pk = product_key.strip().replace("-","")
+    if not is_safe_name(pk):
+        return False
+    set_private_file_contents("/home/bitcoin/.mynode/.product_key", pk + "\n")
+    set_private_file_contents("/mnt/hdd/mynode/settings/.product_key", pk + "\n")
+    return True
 def mark_product_key_error():
     os.system("echo '{}' > /home/bitcoin/.mynode/.product_key_error".format("ERROR"))
 def delete_product_key_error():
@@ -1047,14 +1060,14 @@ def get_premium_plus_token():
                 token = f.read().strip()
 
                 # Re-save to SD card since it was missing
-                set_file_contents("/home/bitcoin/.mynode/.premium_plus_token", token)
+                set_private_file_contents("/home/bitcoin/.mynode/.premium_plus_token", token)
     except:
         token = "error_2"
     return token
 def reset_premium_plus_token_status():
     delete_file("/home/bitcoin/.mynode/.premium_plus_token_status")
 def set_premium_plus_token_status(msg):
-    os.system("echo '{}' > /home/bitcoin/.mynode/.premium_plus_token_status".format(msg))
+    set_file_contents("/home/bitcoin/.mynode/.premium_plus_token_status", str(msg))
 def get_premium_plus_token_status():
     status = "UNKNOWN"
     if not has_premium_plus_token():
@@ -1089,8 +1102,8 @@ def get_premium_plus_last_sync():
     except Exception as e:
         return "Unknown"
 def save_premium_plus_token(token):
-    set_file_contents("/home/bitcoin/.mynode/.premium_plus_token", token)
-    set_file_contents("/mnt/hdd/mynode/settings/.premium_plus_token", token)
+    set_private_file_contents("/home/bitcoin/.mynode/.premium_plus_token", token)
+    set_private_file_contents("/mnt/hdd/mynode/settings/.premium_plus_token", token)
 
 def get_premium_plus_response_data():
     data = []
@@ -1318,6 +1331,81 @@ def get_docker_running_containers():
 
 
 #==================================
+# Allowed Host Names
+#==================================
+# The web interface and apps behind nginx answer to IP addresses, .onion names, the names below, and
+# names the user adds in Settings (one per line in ALLOWED_HOSTS_FILE).
+ALLOWED_HOSTS_FILE = "/mnt/hdd/mynode/settings/allowed_hosts"
+LOCAL_HOST_SUFFIXES = ["", ".local", ".lan", ".home", ".home.arpa", ".localdomain", ".internal"]
+HOSTNAME_REGEX = re.compile(r"^(?=.{1,253}\Z)[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*\Z")
+
+def is_ip_address(value):
+    import ipaddress
+    try:
+        ipaddress.ip_address(value)
+        return True
+    except ValueError:
+        return False
+
+def normalize_hostname(name):
+    if name == None:
+        return ""
+    return name.strip().lower().rstrip(".")
+
+def is_valid_hostname(name):
+    return HOSTNAME_REGEX.match(name) != None
+
+def get_builtin_hostnames():
+    import socket
+    names = ["localhost"]
+    for name in ["mynode", socket.gethostname().lower()]:
+        for suffix in LOCAL_HOST_SUFFIXES:
+            if name + suffix not in names:
+                names.append(name + suffix)
+    return names
+
+def get_allowed_hosts():
+    hosts = []
+    try:
+        if os.path.isfile(ALLOWED_HOSTS_FILE):
+            with open(ALLOWED_HOSTS_FILE) as f:
+                for line in f:
+                    name = normalize_hostname(line)
+                    if name != "" and not name.startswith("#") and name not in hosts:
+                        hosts.append(name)
+    except Exception as e:
+        log_message("Unable to read {}: {}".format(ALLOWED_HOSTS_FILE, str(e)))
+    return hosts
+
+def save_allowed_hosts(hosts):
+    if len(hosts) == 0:
+        delete_file(ALLOWED_HOSTS_FILE)
+        saved = True
+    else:
+        saved = set_file_contents(ALLOWED_HOSTS_FILE, "\n".join(hosts) + "\n")
+    # Apps behind nginx check the same names
+    os.system("/usr/bin/mynode_gen_nginx_allowed_hosts.sh && systemctl reload nginx")
+    return saved
+
+# With several devices on one network, Avahi publishes all but the first as mynode-2.local,
+# mynode-3.local and so on, and can rename the device at any time after boot
+def is_avahi_renamed_hostname(hostname):
+    import socket
+    for name in ["mynode", socket.gethostname().lower()]:
+        if re.match(r"^" + re.escape(name) + r"-[0-9]+\.local\Z", hostname):
+            return True
+    return False
+
+def is_builtin_hostname(hostname):
+    return hostname in get_builtin_hostnames() or is_avahi_renamed_hostname(hostname)
+
+def is_allowed_host(hostname):
+    if is_ip_address(hostname) or hostname.endswith(".onion"):
+        return True
+    return is_builtin_hostname(hostname) or hostname in get_allowed_hosts()
+
+
+#==================================
 # USB Extras Functions
 #==================================
 def get_usb_extras():
@@ -1426,8 +1514,21 @@ def delete_lnd_watchtower_server_data():
     return True
 
 def delete_lnd_macaroons():
-    os.system("find /mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/ -name '*.macaroon' -delete")
-    os.system("find /mnt/hdd/mynode/lnd/data/chain/bitcoin/testnet/ -name '*.macaroon' -delete")
+    # Delete each root key store with the macaroons, so new root keys are made at the next start
+    # and every earlier macaroon stops working. LND makes its own when the wallet unlocks; app
+    # macaroons baked from LND's (LNbits, Alby Hub, Sphinx Relay) are baked again when the app
+    # starts. LiT, Faraday, Loop and Pool have their own root key stores.
+    for network in ["mainnet", "testnet"]:
+        folders = ["/mnt/hdd/mynode/lnd/data/chain/bitcoin/{}".format(network)]
+        folders += ["/mnt/hdd/mynode/{}/{}".format(app, network) for app in ["lit", "faraday", "loop", "pool"]]
+        for folder in folders:
+            if os.path.isdir(folder):
+                subprocess.run(["find", folder, "-maxdepth", "1", "(", "-name", "*.macaroon", "-o",
+                                "-name", "macaroons.db", "-o", "-name", "macaroons.db.last-compacted", ")",
+                                "-delete"])
+        # Admin's copies (mynode_lnd_admin_files.sh copies them again)
+        subprocess.run(["find", "/home/admin/.lnd/data/chain/bitcoin/{}".format(network), "-maxdepth", "1",
+                        "-name", "*.macaroon", "-delete"], stderr=subprocess.DEVNULL)
     return True
 
 #==================================

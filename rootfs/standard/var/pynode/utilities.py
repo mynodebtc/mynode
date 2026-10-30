@@ -7,6 +7,7 @@ import sys
 import codecs
 import urllib
 import requests
+import re
 import pwd
 import grp
 from decimal import Decimal
@@ -50,14 +51,10 @@ def unquote_plus(s):
 # Utilities
 #==================================
 def touch(file_path):
-    # In rare cases, touch seems to fail, so try both python and system call
-    # Touch via python
     if os.path.exists(file_path):
         os.utime(file_path, None)
     else:
         open(file_path, 'a').close()
-    # Touch via system
-    os.system("touch {}".format(file_path))
     # Sync
     os.system("sync")
 
@@ -65,7 +62,6 @@ def delete_file(file_path):
     try:
         if os.path.exists(file_path):
             os.remove(file_path)
-            os.system("rm -f {}".format(file_path))
     except Exception as e:
         log_message("FAILED TO DELETE {}".format(file_path))
     
@@ -82,6 +78,22 @@ def set_file_contents(filename, data):
     data = data.replace('\r\n','\n')
     try:
         with open(filename, "w") as f:
+            f.write(data)
+        os.system("sync")
+        return True
+    except:
+        return False
+    return False
+
+# Like set_file_contents, but mode 600 and owned by owner (who must be able to read it)
+def set_private_file_contents(filename, data, owner="bitcoin"):
+    data = data.replace('\r\n','\n')
+    try:
+        fd = os.open(filename, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        with os.fdopen(fd, "w") as f:
+            os.fchmod(f.fileno(), 0o600)
+            user = pwd.getpwnam(owner)
+            os.fchown(f.fileno(), user.pw_uid, user.pw_gid)
             f.write(data)
         os.system("sync")
         return True
@@ -165,10 +177,58 @@ def get_dictionary_file_cache(file_path):
         return None
 
 #==================================
+# Input Validation
+#==================================
+# Values that get built into file paths or passed as command arguments.
+# App and setting names are plain identifiers. Wallet names also allow a dot,
+# since bitcoind uses names like wallet.dat.
+SAFE_NAME_REGEX = re.compile(r"^[A-Za-z0-9_]+$")
+SAFE_WALLET_NAME_REGEX = re.compile(r"^[A-Za-z0-9_][A-Za-z0-9_.]*$")
+SAFE_VERSION_REGEX = re.compile(r"^[A-Za-z0-9_.-]+$")
+SAFE_TOWER_REGEX = re.compile(r"^[A-Za-z0-9_.:@-]+$")
+
+def is_safe_name(name):
+    if name == None:
+        return False
+    return SAFE_NAME_REGEX.match(name) != None
+
+def is_safe_wallet_name(name):
+    if name == None:
+        return False
+    if ".." in name:
+        return False
+    return SAFE_WALLET_NAME_REGEX.match(name) != None
+
+def is_safe_download_url(url):
+    if url == None or url == "":
+        return False
+    return url.startswith("http://") or url.startswith("https://")
+
+def is_safe_version(version):
+    if version == None or len(version) > 64:
+        return False
+    if version.startswith("-") or version.startswith("."):
+        return False
+    if ".." in version:
+        return False
+    return SAFE_VERSION_REGEX.match(version) != None
+
+def is_safe_tower(tower):
+    if tower == None or tower == "":
+        return False
+    if tower.startswith("-"):
+        return False
+    return SAFE_TOWER_REGEX.match(tower) != None
+
+#==================================
 # Settings File Functions
 #==================================
 def create_settings_file(name):
     from drive_info import is_mynode_drive_mounted
+
+    if not is_safe_name(name):
+        log_message("Refusing to create settings file for name: {}".format(name))
+        return
 
     folder_1="/home/bitcoin/.mynode/"
     folder_2="/mnt/hdd/mynode/settings/"
@@ -179,6 +239,10 @@ def create_settings_file(name):
         touch(path_2)
 
 def delete_settings_file(name):
+    if not is_safe_name(name):
+        log_message("Refusing to delete settings file for name: {}".format(name))
+        return
+
     folder_1="/home/bitcoin/.mynode/"
     folder_2="/mnt/hdd/mynode/settings/"
     path_1="{}{}".format(folder_1, name)
@@ -192,6 +256,9 @@ def delete_settings_file(name):
 
 def settings_file_exists(name):
     from drive_info import is_mynode_drive_mounted
+
+    if not is_safe_name(name):
+        return False
 
     folder_1="/home/bitcoin/.mynode/"
     folder_2="/mnt/hdd/mynode/settings/"
@@ -330,9 +397,23 @@ def make_tor_request(url, data, file_data=None, max_retries=5, fallback_to_ip=Tr
 #==================================
 # Linux Functions
 #==================================
-def run_linux_cmd(cmd, ignore_failure=False, print_command=False):
+def run_linux_cmd_args(args, ignore_failure=False, print_command=False):
     try:
-        output = to_string(subprocess.check_output(cmd, shell=True))
+        output = to_string(subprocess.check_output(args))
+        if print_command:
+            print(" ".join(args))
+            if output != "":
+                print(output)
+        return output
+    except Exception as e:
+        if not ignore_failure:
+            log_message("ERROR in run_linux_cmd_args: {} ({})".format(" ".join(args), str(e)))
+        return ""
+
+def run_linux_cmd(args, ignore_failure=False, print_command=False):
+    cmd = " ".join(args)
+    try:
+        output = to_string(subprocess.check_output(args))
         if print_command:
             print(cmd)
             if output != "":
@@ -358,13 +439,13 @@ def linux_user_exists(username):
 
 # May need to add options for passwords, making home folder, etc... later. For now, no passwd.
 def linux_create_user(username, make_home_folder=False):
-    dash_m = ""
-
+    if linux_user_exists(username):
+        return
+    cmd = ["useradd"]
     if make_home_folder:
-        dash_m = "-m"
-
-    cmd = "useradd {} -s /bin/bash {} || true".format(dash_m, username)
-    run_linux_cmd(cmd, print_command=True)
+        cmd.append("-m")
+    cmd += ["-s", "/bin/bash", username]
+    run_linux_cmd(cmd, ignore_failure=True, print_command=True)
 
 def user_is_in_group(username, group):
     try:
@@ -378,4 +459,4 @@ def user_is_in_group(username, group):
 
 def add_user_to_group(username, group):
     if not user_is_in_group(username, group):
-        run_linux_cmd("adduser {} {}".format(username, group), print_command=True)
+        run_linux_cmd(["adduser", username, group], print_command=True)

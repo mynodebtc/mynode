@@ -1,0 +1,61 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>Login</title>
+        <!-- Served on the app's own port under /mynode_ui/, so every path here stays under it -->
+        <link rel="shortcut icon" type="image/png" sizes="32x32" href="/mynode_ui/static/favicons/favicon-32x32.png">
+        <link rel="shortcut icon" type="image/png" sizes="16x16" href="/mynode_ui/static/favicons/favicon-16x16.png">
+        <link href="/mynode_ui/static/css/mynode.css" rel="stylesheet">
+        {% if ui_settings['darkmode'] %}
+        <link href="/mynode_ui/static/css/mynode_dark.css" rel="stylesheet">
+        {% endif %}
+        <link href="/mynode_ui/static/jquery_ui/jquery-ui.min.css" rel="stylesheet">
+        <meta http-equiv="Content-Language" content="en">
+        <meta name="google" content="notranslate">
+
+        {% if ui_settings['background'] and ui_settings['background'] != "none" %}
+        <style>
+        body {
+            background-image: url("/mynode_ui/static/images/backgrounds/{{ui_settings['background']}}.png");
+            background-repeat: no-repeat;
+            {% if ui_settings['background'] == "digital" or ui_settings['background'] == "digital_mesh" %}
+            background-attachment: absolute;
+            top: 0px;
+            left: 0px;
+            {% else %}
+            background-attachment: fixed;
+            background-position: center;
+            {% endif %}
+        }
+        </style>
+        {% endif %}
+    </head>
+
+    <body>
+        {% if ui_settings['reseller'] %}
+            {% set logo_file = 'logo_dark_custom.png' if ui_settings['darkmode'] else 'logo_custom.png' %}
+        {% else %}
+            {% set logo_file = 'logo_dark.png' if ui_settings['darkmode'] else 'logo.png' %}
+        {% endif %}
+        <div class="logo_header"><img class="logo_image" width="350" height="62" alt="MyNode logo" src="/mynode_ui/static/images/{{ logo_file }}"/></div>
+
+        <div class="main_header">Login</div>
+        {% if app_name %}
+        <div class="main_header_sub_text" style="width: auto;">Log in to MyNode to open {{ app_name }}.</div>
+        {% endif %}
+
+        {% include 'includes/message_display.html' %}
+
+        {% if change_default_password %}
+        <div class="main_header_sub_text" style="width: auto;">Change MyNode's default password first. Open the MyNode home page to set a new one.</div>
+        {% else %}
+        <div class="login_div">
+            <form action="/mynode_ui/login" method="POST">
+                <input type="hidden" name="next" value="{{ login_next }}"/>
+                <input type="password" id="password" name="password" placeholder="enter password" autocomplete="current-password" class="ui-corner-all login_password" autofocus/>
+                <br/>
+                <input type="submit" id="login_submit" value="Login" class="ui-button ui-widget ui-corner-all login_submit"/>
+            </form>
+        </div>
+        {% endif %}
+     </body>
+</html>

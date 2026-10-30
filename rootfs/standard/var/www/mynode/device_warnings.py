@@ -47,6 +47,8 @@ def is_warning_skipped(warning):
 def skip_warning(warning):
     global warning_data
     init_warning_data()
+    if warning not in warning_data:
+        return
     touch("/tmp/warning_skipped_{}".format(warning))
 
 def is_warning_present():
