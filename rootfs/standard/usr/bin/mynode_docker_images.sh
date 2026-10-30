@@ -161,8 +161,13 @@ while true; do
             CURRENT_NBXPLORER=$(cat $NBXPLORER_VERSION_FILE)
         fi
         if [ "$CURRENT" != "$BTCPAYSERVER_VERSION" ] || [ "$CURRENT_NBXPLORER" != "$NBXPLORER_VERSION" ]; then
-            # Create a folder for BTCPay
-            rm -rf /mnt/hdd/mynode/btcpayserver
+            # Create a folder for BTCPay. The saved login stays with the database it belongs to,
+            # which is kept in a Docker volume, not in this folder.
+            if docker volume inspect generated_postgres_datadir >/dev/null 2>&1; then
+                find /mnt/hdd/mynode/btcpayserver -mindepth 1 -maxdepth 1 ! -name .app_password -exec rm -rf {} +
+            else
+                rm -rf /mnt/hdd/mynode/btcpayserver
+            fi
             mkdir -p /mnt/hdd/mynode/btcpayserver
             cd /mnt/hdd/mynode/btcpayserver
 
