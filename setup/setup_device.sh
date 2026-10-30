@@ -268,8 +268,8 @@ fi
 #apt-mark hold redis-server
 
 # Upgrade packages
-# full-upgrade (not plain upgrade like mynode_post_upgrade.sh) since this only
-# runs once at image-build time and we want the image to ship with a new kernel
+# full-upgrade (not upgrade --with-new-pkgs like mynode_post_upgrade.sh) since
+# this only runs once at image-build time, where it's safe to remove packages
 apt-get -y full-upgrade
 
 # Install other tools (run section multiple times to make sure success)

@@ -32,7 +32,7 @@ if [ $IS_X86 = 1 ]; then
     apt-mark hold grub*
 fi
 
-# Upgrade packages, keeping MyNode's changes to config files
-$TORIFY apt-get $APT_OPTIONS -y upgrade
+# Upgrade packages, including new kernels, keeping MyNode's changes to config files
+$TORIFY apt-get $APT_OPTIONS -y --with-new-pkgs upgrade
 
 echo "OS packages upgraded"
