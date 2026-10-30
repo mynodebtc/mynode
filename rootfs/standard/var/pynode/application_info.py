@@ -1294,7 +1294,11 @@ def uninstall_dynamic_app(short_name):
     # Delete install marker files
     clear_app_installed(short_name)
 
-    # Disable service 
+    # Delete version files, or installing this version again is skipped
+    delete_file("/home/bitcoin/.mynode/"+short_name+"_version")
+    delete_file("/mnt/hdd/mynode/settings/"+short_name+"_version")
+
+    # Disable service
     disable_service(short_name)
 
     # Delete SD card folder
