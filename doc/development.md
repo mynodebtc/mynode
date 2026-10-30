@@ -67,3 +67,5 @@ Add another argument to the local upgrade script. This works with any of the opt
 - To update files only, run `sudo mynode-local-upgrade [ip address or file] files`
 - To update files and restart web server, run `sudo mynode-local-upgrade [ip address or file] www`
 - To update files and reload applications, run `sudo mynode-local-upgrade [ip address or file] apps`
+- To update files, reload applications and restart nginx, run `sudo mynode-local-upgrade [ip address or file] nginx`
+- To update files and reboot without the post-upgrade script, run `sudo mynode-local-upgrade [ip address or file] reboot`
