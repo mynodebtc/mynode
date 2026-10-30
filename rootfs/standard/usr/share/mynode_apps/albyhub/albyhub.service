@@ -29,6 +29,7 @@ ExecStart=docker run --rm \
   --env LND_CERT_FILE="/lnd/tls.cert" \
   --env LND_MACAROON_FILE="/lnd/albyhub.macaroon" \
   --env ENABLE_ADVANCED_SETUP=false \
+  --env GODEBUG=multipathtcp=0 \
   albyhub
 ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_albyhub.sh ]; then /bin/bash /usr/bin/service_scripts/post_albyhub.sh; fi'
 ExecStop=docker stop -t 2 albyhub
