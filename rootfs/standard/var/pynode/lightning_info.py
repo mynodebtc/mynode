@@ -24,6 +24,7 @@ pool_version = None
 lit_version = None
 lightning_peers = None
 lightning_peer_aliases = {}
+lightning_peer_alias_misses = {}
 lightning_channels = None
 lightning_channel_balance = None
 lightning_wallet_balance = None
@@ -210,14 +211,19 @@ def get_lightning_node_info(pubkey):
 
 def get_lightning_peer_alias(pubkey):
     global lightning_peer_aliases
+    global lightning_peer_alias_misses
     if pubkey in lightning_peer_aliases:
         return lightning_peer_aliases[pubkey]
+    # Private nodes are never in the graph, so wait an hour before looking a missing node up again
+    if time.time() - lightning_peer_alias_misses.get(pubkey, 0) < 60 * 60:
+        return "UNKNOWN"
 
     nodeinfo = get_lightning_node_info(pubkey)
     if nodeinfo != None and "node" in nodeinfo:
         if "alias" in nodeinfo["node"]:
             lightning_peer_aliases[pubkey] = nodeinfo["node"]["alias"]
             return nodeinfo["node"]["alias"]
+    lightning_peer_alias_misses[pubkey] = time.time()
     return "UNKNOWN"
 
 def get_lightning_peer_count():
