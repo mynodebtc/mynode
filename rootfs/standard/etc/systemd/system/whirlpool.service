@@ -13,7 +13,7 @@ User=bitcoin
 Group=bitcoin
 Type=simple
 KillMode=control-group
-TimeoutSec=60
+TimeoutSec=120
 Restart=always
 RestartSec=60
 
