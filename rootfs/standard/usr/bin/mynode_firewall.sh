@@ -12,6 +12,11 @@ fi
 update-alternatives --set iptables /usr/sbin/iptables-legacy || true
 update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy || true
 
+# Drop TCP packets with IPv4 options, which normal traffic doesn't use. The raw table also sees
+# traffic to Docker containers, and ufw leaves it alone, so the rule stays through a ufw reload.
+IP_OPTIONS_RULE=(PREROUTING -p tcp -m u32 --u32 "0>>24&0xF=6:15" -j DROP)
+iptables -w -t raw -C "${IP_OPTIONS_RULE[@]}" || iptables -w -t raw -I "${IP_OPTIONS_RULE[@]}" || true
+
 # ufw can lose rules when two ufw commands change them at the same time, so MyNode's firewall
 # changes take this lock and run one at a time ("mynode-manage-apps openports" takes it itself)
 exec 9> /run/mynode_firewall.lock
