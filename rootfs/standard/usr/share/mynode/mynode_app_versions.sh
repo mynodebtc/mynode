@@ -283,7 +283,7 @@ fi
 DOJO_VERSION_FILE=/mnt/hdd/mynode/settings/dojo_version
 DOJO_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/dojo_version_latest
 
-RTL_VERSION="v0.15.15"
+RTL_VERSION="v0.15.16"
 if [ "$IS_32_BIT" = "1" ] || [ "$DEBIAN_VERSION" -lt "11" ]; then
     RTL_VERSION="v0.15.0"   # Newer versions require NodeJS 20.19+ (these devices stay on NodeJS 18)
 fi
