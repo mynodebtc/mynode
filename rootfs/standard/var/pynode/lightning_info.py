@@ -36,6 +36,7 @@ lightning_watchtower_client_stats = {}
 lightning_watchtower_client_policy = {}
 lightning_desync_count = 0
 lightning_update_count = 0
+lightning_error_counts = {}
 
 LIGHTNING_CACHE_FILE = "/tmp/lightning_info.json"
 LND_FOLDER = "/mnt/hdd/mynode/lnd/"
@@ -79,7 +80,7 @@ def update_lightning_info():
     #    time.sleep(10)
 
     # Get latest LN info
-    lightning_info = lnd_get("/getinfo")
+    lightning_info = lnd_get_keep_last("/getinfo", lightning_info)
     lightning_update_count = lightning_update_count + 1
 
     # Set is LND ready
@@ -105,10 +106,10 @@ def update_lightning_info():
             os.system("printf \"%s | De-sync greater than 0 (was {}), but now synced! Setting to 0. \\n\" \"$(date)\" >> /tmp/lnd_failures".format(lightning_desync_count))
             lightning_desync_count = 0
         log_message("update_lightning_info - GET PEERS, CHANNELS, BALANCE, WALLET")
-        lightning_peers = lnd_get("/peers")
-        lightning_channels = lnd_get("/channels")
-        lightning_channel_balance = lnd_get("/balance/channels")
-        lightning_wallet_balance = lnd_get("/balance/blockchain")
+        lightning_peers = lnd_get_keep_last("/peers", lightning_peers)
+        lightning_channels = lnd_get_keep_last("/channels", lightning_channels)
+        lightning_channel_balance = lnd_get_keep_last("/balance/channels", lightning_channel_balance)
+        lightning_wallet_balance = lnd_get_keep_last("/balance/blockchain", lightning_wallet_balance)
         log_message("update_lightning_info - GET WATCHTOWER")
         if is_watchtower_server_enabled():
             lightning_watchtower_server_info = lnd_get_v2("/watchtower/server")
@@ -497,6 +498,19 @@ def lnd_get(path, timeout=10, params={}):
         log_message("ERROR in lnd_get: "+str(e))
         return {"error": str(e)}
     return r.json()
+
+# LND's REST API sometimes times out, so keep the last answer through a few failed requests instead
+# of showing 0 peers, channels or balance until the next update
+def lnd_get_keep_last(path, last):
+    global lightning_error_counts
+    data = lnd_get(path)
+    if "error" in data:
+        lightning_error_counts[path] = lightning_error_counts.get(path, 0) + 1
+        if lightning_error_counts[path] <= 3:
+            return last
+    else:
+        lightning_error_counts[path] = 0
+    return data
 
 def lnd_get_v2(path, timeout=10):
     try:
