@@ -66,10 +66,10 @@ fi
 # Custom re-install steps
 if [ "$APP" = "core29x_autoupdate" ]; then
     # Stays on the latest Bitcoin Core 29.x release, even after MyNode moves to a newer major version
-    CORE_29X_LATEST_VERSION="29.3" # Must be unique each version (only used to track trigger upgrade)
-    BTC_UPGRADE_URL=https://bitcoincore.org/bin/bitcoin-core-29.3/bitcoin-29.3-$ARCH.tar.gz
-    BTC_SHASUM=https://bitcoincore.org/bin/bitcoin-core-29.3/SHA256SUMS
-    BTC_ASC=https://bitcoincore.org/bin/bitcoin-core-29.3/SHA256SUMS.asc
+    CORE_29X_LATEST_VERSION="29.5" # Must be unique each version (only used to track trigger upgrade)
+    BTC_UPGRADE_URL=https://bitcoincore.org/bin/bitcoin-core-29.5/bitcoin-29.5-$ARCH.tar.gz
+    BTC_SHASUM=https://bitcoincore.org/bin/bitcoin-core-29.5/SHA256SUMS
+    BTC_ASC=https://bitcoincore.org/bin/bitcoin-core-29.5/SHA256SUMS.asc
 
     CURRENT=""
     if [ -f $CUSTOM_BITCOIN_AUTOUPDATE_VERSION_FILE ]; then
@@ -84,8 +84,8 @@ if [ "$APP" = "core29x_autoupdate" ]; then
         wget $BTC_UPGRADE_URL $BTC_SHASUM $BTC_ASC
         check_gpg_signer SHA256SUMS.asc SHA256SUMS $BTC_SIGNER_FINGERPRINTS
         sha256sum -c SHA256SUMS --ignore-missing
-        tar -xvf bitcoin-29.3-$ARCH.tar.gz
-        mv bitcoin-29.3 bitcoin
+        tar -xvf bitcoin-29.5-$ARCH.tar.gz
+        mv bitcoin-29.5 bitcoin
         install -m 0755 -o root -g root -t /usr/local/bin bitcoin/bin/*
     fi
     echo "core29x_autoupdate" > /home/bitcoin/.mynode/bitcoin_version

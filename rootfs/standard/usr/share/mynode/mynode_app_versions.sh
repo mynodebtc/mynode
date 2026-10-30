@@ -155,7 +155,7 @@ function install_nodesource_repo()
     fi
 }
 
-BTC_VERSION="29.3"
+BTC_VERSION="29.5"
 if [ "$DEBIAN_VERSION" -lt "12" ]; then
     BTC_VERSION="27.2"
 fi
