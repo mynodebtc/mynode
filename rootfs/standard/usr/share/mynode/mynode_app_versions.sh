@@ -305,8 +305,8 @@ BTCPAYSERVER_VERSION_FILE=/home/bitcoin/.mynode/btcpayserver_version
 BTCPAYSERVER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/btcpayserver_version_latest
 # NBXplorer for BTCPay Server, in place of the one BTCPAYSERVER_DOCKER_COMMIT has. 32-bit devices
 # keep that one, for BTCPay Server 1.3.6.
-NBXPLORER_VERSION="2.6.19"
-NBXPLORER_DIGEST="2.6.19 sha256:dca2d8f8b491bad2d8248854794b6a368ca99f960ba1b783cb8fc4b379b27feb"
+NBXPLORER_VERSION="2.6.21"
+NBXPLORER_DIGEST="2.6.21 sha256:117b061886f7b1f0a9ebdb0792c0195c77abda855b76dd51b0481bb4cae3fdc3"
 if [ "$IS_32_BIT" = "1" ]; then
     NBXPLORER_VERSION=""
 fi
