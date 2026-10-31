@@ -405,6 +405,26 @@ def get_debian_version():
     cached_data["debian_version"] = debian_version
     return debian_version
 
+def parse_kernel_version(release, version):
+    # Debian kernels have an ABI name for a release (6.1.0-54-amd64), so the real version is in the
+    # build string (#1 SMP PREEMPT_DYNAMIC Debian 6.1.190-1). Raspberry Pi adds an epoch (1:6.12.109-1+rpt1).
+    match = re.search(r"Debian (?:\d+:)?(\d+)\.(\d+)\.(\d+)", version)
+    if not match:
+        match = re.match(r"(\d+)\.(\d+)(?:\.(\d+))?", release)
+    if not match:
+        return None
+    return tuple(int(part or 0) for part in match.groups())
+
+def get_kernel_version():
+    global cached_data
+    if "kernel_version" in cached_data:
+        return cached_data["kernel_version"]
+
+    uname = os.uname()
+    kernel_version = parse_kernel_version(uname.release, uname.version)
+    cached_data["kernel_version"] = kernel_version
+    return kernel_version
+
 def get_tor_version():
     global cached_data
     if "tor_version" in cached_data:
