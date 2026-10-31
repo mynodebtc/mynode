@@ -189,3 +189,10 @@ if [ $GEN_BITCOIN_CONFIG_XTRACE = 1 ]; then set -x; fi
 sed -i "s/rpcauth=.*/$RPCAUTH/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
 
 chown bitcoin:bitcoin /mnt/hdd/mynode/bitcoin/bitcoin.conf
+
+# Run i2pd when Bitcoin uses it or when it was turned on in Settings
+if grep -q "^i2psam=" /mnt/hdd/mynode/bitcoin/bitcoin.conf; then
+    systemctl enable --now --no-block i2pd || true
+elif [ ! -f /mnt/hdd/mynode/settings/i2pd_enabled ]; then
+    systemctl disable --now --no-block i2pd || true
+fi
