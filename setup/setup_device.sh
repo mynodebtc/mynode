@@ -786,9 +786,11 @@ if [ "$CURRENT" != "$LIT_VERSION" ] || [ ! -f /usr/local/bin/frcli ]; then
 
     wget $LIT_UPGRADE_URL
     wget $LIT_UPGRADE_MANIFEST_URL -O manifest.txt
-    wget $LIT_UPGRADE_MANIFEST_SIG_URL  -O manifest.txt.sig
+    wget $LIT_UPGRADE_MANIFEST_ROASBEEF_SIG_URL -O manifest_roasbeef.txt.sig || true
+    wget $LIT_UPGRADE_MANIFEST_VIKTORT_SIG_URL -O manifest_viktort.txt.sig || true
 
-    check_gpg_signer manifest.txt.sig manifest.txt $LIT_SIGNER_FINGERPRINTS
+    check_gpg_signer manifest_roasbeef.txt.sig manifest.txt $LIT_SIGNER_FINGERPRINTS || \
+    check_gpg_signer manifest_viktort.txt.sig manifest.txt $LIT_SIGNER_FINGERPRINTS
     if [ $? == 0 ]; then
         # Check the download against the signed manifest
         awk -v f="$LIT_ARCH-$LIT_VERSION.tar.gz" '$2 == f' manifest.txt | sha256sum --check -
