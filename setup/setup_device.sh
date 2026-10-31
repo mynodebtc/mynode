@@ -1094,6 +1094,7 @@ systemctl enable redis-server
 #systemctl enable mongodb
 #systemctl enable electrs # DISABLED BY DEFAULT
 #systemctl enable lndhub # DISABLED BY DEFAULT
+systemctl disable i2pd # Started when Bitcoin uses I2P
 #systemctl enable btcrpcexplorer # DISABLED BY DEFAULT
 systemctl enable rtl
 systemctl enable tor
