@@ -117,7 +117,7 @@ def page_settings():
         "keep_bitcoin_debug_log": settings_file_exists("keep_bitcoin_debug_log"),
         "electrs_tx_lookup_limit": get_electrs_index_lookup_limit(),
         "btcrpcexplorer_token_enabled": is_btcrpcexplorer_token_enabled(),
-        "is_i2p_enabled": is_service_enabled("i2pd"),
+        "is_i2p_enabled": is_service_enabled("i2pd", force_refresh=True),
         "is_ipv6_enabled": not settings_file_exists("ipv6_disabled"),
         "is_btc_ipv4_enabled": settings_file_exists("btc_ipv4_enabled"),
         "is_btc_tor_enabled": settings_file_exists("btc_tor_enabled"),

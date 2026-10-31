@@ -1228,14 +1228,10 @@
                             </label>
                         </td>
                         <td>
-                            {% if is_i2p_enabled %}
                             <label class="switch">
                                 <input type="checkbox" name="btc_i2p_checkbox" {% if is_btc_i2p_enabled %}checked{% endif %}>
                                 <span class="slider round"></span>
                             </label>
-                            {% else %}
-                                disabled
-                            {% endif %}
                         </td>
                     </tr>
                     <tr>
@@ -1265,7 +1261,7 @@
             <div class="divider"></div>
 
             <div class="settings_block_subheader">I2P</div>
-            A privacy network option, similar to Tor, can be be enabled. Enabling I2P will run the service in the background and it can be used as a network for Bitcoin.
+            A privacy network option, similar to Tor. The I2P service runs in the background when Bitcoin uses it. Turn it on here to also run it when Bitcoin does not.
             <br/><br/>
             <label class="switch">
                 <input type="checkbox" id="i2p_checkbox" {% if is_i2p_enabled %}checked{% endif %}>
