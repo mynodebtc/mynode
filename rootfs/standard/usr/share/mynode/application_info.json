@@ -329,6 +329,7 @@
         "name": "Joinmarket",
         "short_name": "joinmarket",
         "show_on_application_page": false,
+        "can_reinstall": false,
         "is_premium": true
     },
     {
