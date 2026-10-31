@@ -14,6 +14,7 @@
 - Upgrade Balance of Satoshis to 25.5.0
 - Upgrade WeTTY to v4.2.1
 - Upgrade Tailscale to v1.104.4
+- Change auto-upgrade delay from 7 days to 5 days
 - Run i2pd only when Bitcoin uses it or it is turned on in Settings
 - Keep the BTCPay login when upgrading
 - Prevent deleting the default JoinMarket wallet
