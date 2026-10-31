@@ -39,7 +39,7 @@
                     }
                     openConfirmDialog("confirm-dialog",
                                       "Enable Automatic Updates",
-                                      "New versions of MyNode will be installed automatically 7 days after they are released, between 3 and 5 AM local time. Your device reboots to finish the upgrade.\n\n" +
+                                      "New versions of MyNode will be installed automatically 5 days after they are released, between 3 and 5 AM local time. Your device reboots to finish the upgrade.\n\n" +
                                       "You can turn this off in the Device section.",
                                       okFunction)
                 });
@@ -1035,7 +1035,7 @@
 
             {% if auto_upgrade.available and auto_upgrade.enabled %}
             <div class="settings_block_subheader">Automatic Updates</div>
-            New versions of MyNode can be installed automatically 7 days after they are released, between 3 and 5 AM local time. Your device reboots to finish the upgrade.
+            New versions of MyNode can be installed automatically 5 days after they are released, between 3 and 5 AM local time. Your device reboots to finish the upgrade.
             <br/><br/>
             <form action="/settings/auto-upgrade" method="POST">
                 <label class="switch">
