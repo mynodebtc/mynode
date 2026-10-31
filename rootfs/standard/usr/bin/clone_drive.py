@@ -205,7 +205,7 @@ def main():
                     parts = logline.split()
                     logline = parts[0] + " bytes copied\n" + parts[1] + "\n" + parts[2] + "\n" + parts[3]
                 except Exception as e:
-                    logline = "Clone status parse error: ".format(str(e))
+                    logline = "Clone status parse error: {}".format(str(e))
                 try:
                     out_fd = open('/tmp/.clone_progress','w')
                     out_fd.write(logline)
