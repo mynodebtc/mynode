@@ -196,7 +196,7 @@ POOL_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/pool/releases/dow
 # Pool release signer: guggero
 POOL_SIGNER_FINGERPRINTS="F4FC70F07310028424EFC20A8E4256593F177720"
 
-LIT_VERSION="v0.17.8"
+LIT_VERSION="v0.17.10"
 LIT_VERSION=$(get_app_version "$LIT_VERSION" "lit")
 LIT_VERSION_FILE=/home/bitcoin/.mynode/lit_version
 LIT_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lit_version_latest
