@@ -1,0 +1,81 @@
+Package: linux-image-amd64
+Status: install ok installed
+Priority: optional
+Section: misc
+Architecture: amd64
+Version: 6.1.187-1
+Maintainer: Test Fixture <fixture@example.invalid>
+Description: Inert synthetic installed-state fixture
+Depends: linux-image-6.1.0-53-amd64 (= 6.1.187-1)
+
+Package: linux-image-6.1.0-53-amd64
+Status: install ok installed
+Priority: optional
+Section: misc
+Architecture: amd64
+Version: 6.1.187-1
+Maintainer: Test Fixture <fixture@example.invalid>
+Description: Inert synthetic installed-state fixture
+
+Package: kmod
+Status: install ok installed
+Priority: optional
+Section: misc
+Architecture: amd64
+Version: 30
+Maintainer: Test Fixture <fixture@example.invalid>
+Description: Inert synthetic installed-state fixture
+
+Package: linux-base
+Status: install ok installed
+Priority: optional
+Section: misc
+Architecture: amd64
+Version: 4.9
+Maintainer: Test Fixture <fixture@example.invalid>
+Description: Inert synthetic installed-state fixture
+
+Package: initramfs-tools
+Status: install ok installed
+Priority: optional
+Section: misc
+Architecture: amd64
+Version: 0.142
+Maintainer: Test Fixture <fixture@example.invalid>
+Description: Inert synthetic installed-state fixture
+
+Package: firmware-linux-free
+Status: install ok installed
+Priority: optional
+Section: misc
+Architecture: amd64
+Version: 20200122-1
+Maintainer: Test Fixture <fixture@example.invalid>
+Description: Inert synthetic installed-state fixture
+
+Package: apparmor
+Status: install ok installed
+Priority: optional
+Section: misc
+Architecture: amd64
+Version: 3.0.8-3
+Maintainer: Test Fixture <fixture@example.invalid>
+Description: Inert synthetic installed-state fixture
+
+Package: fixture-application
+Status: install ok installed
+Priority: optional
+Section: misc
+Architecture: amd64
+Version: 1
+Maintainer: Test Fixture <fixture@example.invalid>
+Description: Inert synthetic installed-state fixture
+
+Package: fixture-keep
+Status: install ok installed
+Priority: optional
+Section: misc
+Architecture: amd64
+Version: 1
+Maintainer: Test Fixture <fixture@example.invalid>
+Description: Inert synthetic installed-state fixture

@@ -33,6 +33,7 @@ if [ $IS_X86 = 1 ]; then
 fi
 
 # Upgrade packages, keeping MyNode's changes to config files
-$TORIFY apt-get $APT_OPTIONS -y upgrade
+# Permit new dependencies (including kernel ABI packages), but not removals.
+$TORIFY apt-get $APT_OPTIONS --with-new-pkgs -y upgrade
 
 echo "OS packages upgraded"

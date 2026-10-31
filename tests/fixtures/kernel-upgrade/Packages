@@ -1,0 +1,39 @@
+Package: linux-image-6.1.0-54-amd64
+Source: linux-signed-amd64 (6.1.190+1)
+Version: 6.1.190-1
+Installed-Size: 400354
+Maintainer: Debian Kernel Team <debian-kernel@lists.debian.org>
+Architecture: amd64
+Replaces: linux-image-6.1.0-54-amd64-unsigned
+Depends: kmod, linux-base (>= 4.3~), initramfs-tools (>= 0.120+deb8u2) | linux-initramfs-tool
+Suggests: linux-doc-6.1, debian-kernel-handbook, grub-pc | grub-efi-amd64 | extlinux
+Conflicts: linux-image-6.1.0-54-amd64-unsigned
+Breaks: fwupdate (<< 12-7), initramfs-tools (<< 0.120+deb8u2), wireless-regdb (<< 2019.06.03-1~)
+Description: Linux 6.1 for 64-bit PCs (signed)
+Homepage: https://www.kernel.org/
+Built-Using: linux (= 6.1.190-1)
+Description-md5: eaf7b81be84ec12eb25fe90a4bac0f60
+Recommends: firmware-linux-free, apparmor
+Section: kernel
+Priority: optional
+Filename: pool/updates/main/l/linux-signed-amd64/linux-image-6.1.0-54-amd64_6.1.190-1_amd64.deb
+Size: 70491372
+SHA256: d788f148714b4cec6a9ff5e66282f56d9a7a0c2c12ac3e5093de12abaf47f56e
+
+Package: linux-image-amd64
+Source: linux-signed-amd64 (6.1.190+1)
+Version: 6.1.190-1
+Installed-Size: 13
+Maintainer: Debian Kernel Team <debian-kernel@lists.debian.org>
+Architecture: amd64
+Provides: linux-image-generic, linux-latest-modules-6.1.0-54-amd64, virtualbox-guest-modules, wireguard-modules (= 1.0.0)
+Depends: linux-image-6.1.0-54-amd64 (= 6.1.190-1)
+Description: Linux for 64-bit PCs (meta-package)
+Homepage: https://www.kernel.org/
+Built-Using: linux (= 6.1.190-1)
+Description-md5: 6a25122b463a5515998ee600e16b3daf
+Section: kernel
+Priority: optional
+Filename: pool/updates/main/l/linux-signed-amd64/linux-image-amd64_6.1.190-1_amd64.deb
+Size: 1480
+SHA256: 6f95b79d16a2b32107cb1acd5dad29eb20ee9c909f89a38f8a6f0d8a60a8fd3b
