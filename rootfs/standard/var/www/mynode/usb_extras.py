@@ -6,7 +6,6 @@ from utilities import is_safe_name
 import os
 import time
 import subprocess
-import os
 
 mynode_usb_extras = Blueprint('mynode_usb_extras',__name__)
 

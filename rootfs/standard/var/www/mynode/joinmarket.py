@@ -7,7 +7,6 @@ from utilities import *
 import os
 import time
 import subprocess
-import os
 
 mynode_joinmarket = Blueprint('mynode_joinmarket',__name__)
 
