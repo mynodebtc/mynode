@@ -30,6 +30,11 @@ IS_64_BIT=0
 IS_UNKNOWN=0
 DEVICE_TYPE="unknown"
 MODEL=$(cat /proc/device-tree/model) || IS_UNKNOWN=1
+# Minimal Debian installs do not include lsb_release
+if ! command -v lsb_release > /dev/null; then
+    apt-get update
+    apt-get -y install lsb-release
+fi
 DEBIAN_CODENAME=$(lsb_release -c -s) || DEBIAN_CODENAME="unknown"
 uname -a | grep -E 'amd64|x86_64' && IS_X86=1 && IS_64_BIT=1 && IS_UNKNOWN=0 || true
 if [[ $MODEL == *"Rock64"* ]]; then
