@@ -29,8 +29,8 @@
                     }
                     openConfirmDialog("confirm-dialog",
                                       "Upgrade OS Packages",
-                                      "<p>This will install available updates for the operating system packages and reboot your device. It does not upgrade MyNode itself.</p>" +
-                                      "<p>Would you still like to upgrade the OS packages?</p>",
+                                      "This will install available updates for the operating system packages and reboot your device. It does not upgrade MyNode itself.\n\n" +
+                                      "Would you still like to upgrade the OS packages?",
                                       okFunction)
                 });
                 $("#enable_auto_upgrade").on("click", function() {
@@ -39,8 +39,8 @@
                     }
                     openConfirmDialog("confirm-dialog",
                                       "Enable Automatic Updates",
-                                      "<p>New versions of MyNode will be installed automatically 7 days after they are released, between 3 and 5 AM local time. Your device reboots to finish the upgrade.</p>" +
-                                      "<p>You can turn this off in the Device section.</p>",
+                                      "New versions of MyNode will be installed automatically 7 days after they are released, between 3 and 5 AM local time. Your device reboots to finish the upgrade.\n\n" +
+                                      "You can turn this off in the Device section.",
                                       okFunction)
                 });
                 $("#upgrade-beta").on("click", function() {
