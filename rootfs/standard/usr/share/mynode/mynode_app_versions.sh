@@ -173,7 +173,7 @@ LND_UPGRADE_MANIFEST_URL=https://github.com/lightningnetwork/lnd/releases/downlo
 LND_UPGRADE_MANIFEST_ROASBEEF_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-roasbeef-$LND_VERSION.sig
 LND_UPGRADE_MANIFEST_GUGGERO_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-guggero-$LND_VERSION.sig
 LND_UPGRADE_MANIFEST_SUHEB_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-suheb-$LND_VERSION.sig
-LND_UPGRADE_MANIFEST_VICTORT_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-VictorT-11-$LND_VERSION.sig
+LND_UPGRADE_MANIFEST_VICTORT_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-ViktorT-11-$LND_VERSION.sig
 # LND release signers: roasbeef, guggero, suheb, ViktorT-11
 LND_SIGNER_FINGERPRINTS="A5B61896952D9FDA83BC054CDC42612E89237182 F4FC70F07310028424EFC20A8E4256593F177720 3E9BD4436C288039CA827A9200C9E2BC2E45666F C20A78516A0944900EBFCA29961CC8259AE675D4"
 
