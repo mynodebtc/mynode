@@ -1,0 +1,11 @@
+{
+  "url": "https://security.debian.org/debian-security/dists/bookworm-security/main/binary-amd64/Packages.xz",
+  "saved_index_sha256": "aa2d2edb5e9664a67270ebce3ae1ac66639775db6ba4c753e58f46caf8905e4c",
+  "fixture_sha256": "b55cbecf27547a685659e1d18e3a53bbfc4c73b701572a3973729c83039f2754",
+  "packages": [
+    "linux-image-6.1.0-54-amd64",
+    "linux-image-amd64"
+  ],
+  "collection_date": "2026-10-31",
+  "verification": "Extracted unchanged stanzas from previously saved HTTPS index; repository signature not independently verified. No package binaries included."
+}

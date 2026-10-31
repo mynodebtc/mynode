@@ -139,7 +139,8 @@ if ! skip_base_upgrades ; then
     #apt-mark hold redis-server
 
     # Upgrade packages
-    $TORIFY apt-get -y upgrade
+    # Permit new dependencies (including kernel ABI packages), but not removals.
+    $TORIFY apt-get --with-new-pkgs -y upgrade
 
     # Install any new software
     $TORIFY apt-get -y install apt-transport-https lsb-release gnupg

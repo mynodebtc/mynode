@@ -1,0 +1,7 @@
+Package: fixture-application
+Version: 2
+Architecture: amd64
+Conflicts: fixture-keep
+Description: Synthetic removal-policy control
+Filename: fixture-application.deb
+Size: 1
