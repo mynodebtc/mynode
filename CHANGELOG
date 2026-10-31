@@ -1,6 +1,6 @@
 === v0.3.52 ===
 - Released 10/30/26
-- ***** CRITICAL UPDATE *****
+- ***** CRITICAL SECURITY UPDATE *****
 - Install new kernels on amd64 for CVE-2026-98432 fix
 - Add mitigations for Linux kernel security issue CVE-2026-98432 for all platforms
 - Warn on the home page when the Linux kernel is missing the CVE-2026-98432 fix
