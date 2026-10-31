@@ -718,10 +718,12 @@ if [ "$CURRENT" != "$LIT_VERSION" ] || [ ! -f /usr/local/bin/frcli ]; then
 
     wget $LIT_UPGRADE_URL
     wget $LIT_UPGRADE_MANIFEST_URL -O manifest.txt
-    wget $LIT_UPGRADE_MANIFEST_SIG_URL  -O manifest.txt.sig
+    wget $LIT_UPGRADE_MANIFEST_ROASBEEF_SIG_URL -O manifest_roasbeef.txt.sig || true
+    wget $LIT_UPGRADE_MANIFEST_VIKTORT_SIG_URL -O manifest_viktort.txt.sig || true
 
     # Check the signature, then the download against the signed manifest
-    if check_gpg_signer manifest.txt.sig manifest.txt $LIT_SIGNER_FINGERPRINTS &&
+    if { check_gpg_signer manifest_roasbeef.txt.sig manifest.txt $LIT_SIGNER_FINGERPRINTS || \
+         check_gpg_signer manifest_viktort.txt.sig manifest.txt $LIT_SIGNER_FINGERPRINTS; } &&
        awk -v f="$LIT_ARCH-$LIT_VERSION.tar.gz" '$2 == f' manifest.txt | sha256sum --check -; then
         # Install lit
         tar -xzf lightning-terminal-*.tar.gz

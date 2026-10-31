@@ -201,7 +201,8 @@ LIT_VERSION=$(get_app_version "$LIT_VERSION" "lit")
 LIT_VERSION_FILE=/home/bitcoin/.mynode/lit_version
 LIT_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lit_version_latest
 LIT_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-$LIT_VERSION.txt
-LIT_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-roasbeef-$LIT_VERSION.sig
+LIT_UPGRADE_MANIFEST_ROASBEEF_SIG_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-roasbeef-$LIT_VERSION.sig
+LIT_UPGRADE_MANIFEST_VIKTORT_SIG_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-ViktorT-11-$LIT_VERSION.sig
 # Lightning Terminal release signers: roasbeef, Elle Mouton, Viktor Tigerstrom, ViktorT-11
 LIT_SIGNER_FINGERPRINTS="A5B61896952D9FDA83BC054CDC42612E89237182 26984CB69EB8C4A26196F7A4D7D916376026F177 187F6ADD93AE3B0CF335AA6AB984570980684DCC C20A78516A0944900EBFCA29961CC8259AE675D4"
 
