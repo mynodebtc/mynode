@@ -897,6 +897,45 @@ def show_old_tor_warning():
 def hide_old_tor_warning():
     touch("/tmp/hide_old_tor_warning")
 
+# First patch level with the CVE-2026-98432 fix, for each kernel branch that received it
+CVE_2026_98432_FIXED_PATCH_LEVELS = {
+    (5, 10): 272,
+    (5, 15): 223,
+    (6, 1): 190,
+    (6, 6): 159,
+    (6, 12): 113,
+    (6, 18): 56,
+    (7, 2): 10,
+}
+
+def is_kernel_affected_by_cve_2026_98432(kernel_version):
+    if kernel_version is None:
+        return False
+    if kernel_version < (4, 4, 0) or kernel_version >= (7, 3, 0):
+        return False
+    # Branches not listed went end of life without the fix
+    fixed_patch_level = CVE_2026_98432_FIXED_PATCH_LEVELS.get(kernel_version[:2])
+    return fixed_patch_level is None or kernel_version[2] < fixed_patch_level
+
+def get_cve_2026_98432_fixed_kernel_version():
+    kernel_version = get_kernel_version()
+    if kernel_version is None or kernel_version[:2] not in CVE_2026_98432_FIXED_PATCH_LEVELS:
+        return None
+    return "{}.{}.{}".format(kernel_version[0], kernel_version[1], CVE_2026_98432_FIXED_PATCH_LEVELS[kernel_version[:2]])
+
+def get_kernel_version_string():
+    kernel_version = get_kernel_version()
+    if kernel_version is None:
+        return "unknown"
+    return ".".join(str(part) for part in kernel_version)
+
+def show_kernel_cve_warning():
+    if not os.path.isfile("/tmp/hide_kernel_cve_warning"):
+        return is_kernel_affected_by_cve_2026_98432(get_kernel_version())
+    return False
+def hide_kernel_cve_warning():
+    touch("/tmp/hide_kernel_cve_warning")
+
 # Oldest NodeJS release accepted for each maintained major version. Majors that are not
 # listed and are older than the newest listed major are no longer maintained.
 NODE_MIN_VERSIONS = {
