@@ -216,7 +216,7 @@ def check_usb_devices():
                 # Check drive for partitions
                 drive = drives[0]
                 partitions = find_partitions_for_drive(drive)
-                log_message(f"Drive {drive} paritions: {partitions}")
+                log_message(f"Drive {drive} partitions: {partitions}")
 
                 num_partitions = len(partitions)
                 if num_partitions == 0:

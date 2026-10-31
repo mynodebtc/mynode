@@ -207,7 +207,7 @@ function open_app_in_new_tab(http_port, https_port="NA", requires_https=false, c
 
     if (is_using_tor() && custom_tor_address != "NA") {
         hostname=custom_tor_address
-        // Use "default" port - either 80 or 443 for HTTP/HTTPS unless overriden
+        // Use "default" port - either 80 or 443 for HTTP/HTTPS unless overridden
         if (protocol == "http:" && tor_http_port != "80") {
             port_string=":"+tor_http_port
         }

@@ -65,7 +65,7 @@ function batteryinfo() {
 			read status_battery_charging < $mainline_dir/charger/charging
 			read status_ac_connect < $mainline_dir/ac/connected
 			read battery_percent< $mainline_dir/battery/capacity
-			# dispay charging / percentage
+			# display charging / percentage
 			if [[ "$status_ac_connect" == "1" && "$battery_percent" -lt "100" ]]; then
 				status_battery_text=" charging"
 			elif [[ "$status_ac_connect" == "1" && "$battery_percent" -eq "100" ]]; then

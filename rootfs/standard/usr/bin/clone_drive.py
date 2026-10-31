@@ -82,7 +82,7 @@ def main():
     both_drives_have_mynode = False
     for d in drives:
         partitions = find_partitions_for_drive(d)
-        log_message(f"Drive {d} paritions: {partitions}")
+        log_message(f"Drive {d} partitions: {partitions}")
 
         if len(partitions) == 0:
             # No partition found - must be target drive since its empty

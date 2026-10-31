@@ -159,7 +159,7 @@ def get_current_drive_filesystem_type():
     return filesystem_type
 
 #==================================
-# Mount / Unmount Parition Functions
+# Mount / Unmount Partition Functions
 #==================================
 def mount_partition(partition, folder_name, permissions="ro"):
     try:

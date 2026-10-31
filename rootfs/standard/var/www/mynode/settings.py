@@ -1074,7 +1074,7 @@ def page_choose_network():
         else:
             flash("Error: Unknown network choice.", category="error")
     else:
-        flash("Error: Network detaults already setup. Use settings page to change networks.", category="error")
+        flash("Error: Network defaults already setup. Use settings page to change networks.", category="error")
 
     return redirect("/")
 

@@ -7,10 +7,10 @@ source /usr/share/mynode/mynode_app_versions.sh
 
 sleep 10s
 
-# initalize mysql db (REQUIRED TO START MYSQL)
+# initialize mysql db (REQUIRED TO START MYSQL)
 isRunning=""
 
-# Initialize databse must be done manually on old mempool versions
+# Initialize database must be done manually on old mempool versions
 if [ "$MEMPOOL_VERSION" = "v2.3.1" ]; then
     # check on loop if  mysql db is running. when running initialize
     while [ 1 ]; do

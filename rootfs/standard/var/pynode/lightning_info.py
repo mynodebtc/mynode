@@ -95,7 +95,7 @@ def update_lightning_info():
         lightning_desync_count += 1
         os.system("printf \"%s | LND De-sync!!! Count: {} \\n\" \"$(date)\" >> /tmp/lnd_failures".format(lightning_desync_count))
         if lightning_desync_count >= 8:
-            os.system("printf \"%s | De-sync count too high! Retarting LND... \\n\" \"$(date)\" >> /tmp/lnd_failures")
+            os.system("printf \"%s | De-sync count too high! Restarting LND... \\n\" \"$(date)\" >> /tmp/lnd_failures")
             restart_lnd()
             lightning_desync_count = 0
         return True

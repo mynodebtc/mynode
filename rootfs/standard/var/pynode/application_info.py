@@ -107,7 +107,7 @@ def mark_app_installed(short_name):
     elif os.path.isfile(latest_version_2):
         touch(install_marker_2)
     else:
-        # App maybe dyanmic app (no version latest file) so mark sd card
+        # App maybe dynamic app (no version latest file) so mark sd card
         touch(install_marker_1)
 
 def clear_app_installed(short_name):
@@ -1232,7 +1232,7 @@ def upgrade_dynamic_apps(short_name="all"):
                             if app_data["install_env_vars"]:
                                 for key in app_data["install_env_vars"]:
                                     my_env[key] = app_data["install_env_vars"][key]
-                            # Home dir needs to be set to user so it doesn't inhert root home (causes docker issues)
+                            # Home dir needs to be set to user so it doesn't inherit root home (causes docker issues)
                             subprocess.check_output("cd {}; sudo -u {} --preserve-env HOME=/home/{} /bin/bash /usr/bin/service_scripts/install_{}.sh 1>&2".format(app_data["install_folder"], app_data["linux_user"], app_data["linux_user"], app_name), shell=True, env=my_env)
 
                             # Mark update latest version if success

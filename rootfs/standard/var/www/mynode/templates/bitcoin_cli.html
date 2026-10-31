@@ -4,7 +4,7 @@
         {% include 'includes/head.html' %}
         <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
         $(document).ready(function() {
-            // Show intial prompt
+            // Show initial prompt
             $("#cli_contents").append("<b>>>></b> ");
             $("#cmd").focus();
 

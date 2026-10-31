@@ -184,7 +184,7 @@
         "author": {"name": "BlueWallet", "link":"https://bluewallet.io/"},
         "website": {"name": "GitHub", "link": "https://github.com/BlueWallet/LndHub"},
         "description": [
-            "A free and open source, multiple account plugin for Lightning built on top of the Lightning Network Deamon. It allows that a group of users run different accounts with only one node in a trust-minimized setup.",
+            "A free and open source, multiple account plugin for Lightning built on top of the Lightning Network Daemon. It allows that a group of users run different accounts with only one node in a trust-minimized setup.",
             "Ideal for hosted shared services or groups, families and friends that want to share their own node."
         ],
         "category": "bitcoin_app",
@@ -428,7 +428,7 @@
         "website": {"name": "GitHub", "link": "https://github.com/Coldcard/ckbunker"},
         "description": [
             "CKBunker is a python program that you run on a computer attached to a Coldcard. It will setup and operate the Coldcard in “HSM Mode” where it signs without a human pressing the OK key. To keep your funds safe, the Coldcard implements a complex set of spending rules which cannot be changed once HSM mode is started.",
-            "Using the tord (Tor deamon) you already have, the CK Bunker can make itself available as a hidden service for remote access over Tor. A pretty website for setup and operation allows access to all HSM-related Coldcard features, including:",
+            "Using the tord (Tor daemon) you already have, the CK Bunker can make itself available as a hidden service for remote access over Tor. A pretty website for setup and operation allows access to all HSM-related Coldcard features, including:",
             " - transaction signing, by uploading a PSBT; can broadcast signed txn using Blockstream.info (onion)",
             " - define policy rules, spending limits, velocity controls, logging policy",
             " - user setup (TOTP QR scan to enroll on Coldcard, or random passwords (Coldcard) or known password",
@@ -616,7 +616,7 @@
         "author": {"name": "Tor", "link": "https://www.torproject.org/"},
         "website": {"name": "GitHub", "link": "https://github.com/TheTorProject"},
         "description": [
-            "Tor services are avilable for remotely connecting and using MyNode services and applications. It can provide access to web-based wallets and well as support remote connections to LND and Bitcoin directly.",
+            "Tor services are available for remotely connecting and using MyNode services and applications. It can provide access to web-based wallets and well as support remote connections to LND and Bitcoin directly.",
             "Tor Mission - To advance human rights and freedoms by creating and deploying free and open source anonymity and privacy technologies, supporting their unrestricted availability and use, and furthering their scientific and popular understanding."
         ],
         "category": "networking",

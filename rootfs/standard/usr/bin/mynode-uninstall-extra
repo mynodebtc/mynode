@@ -13,7 +13,7 @@ if [ "$#" -lt 1 ]; then
 fi
 APP="$1"
 
-# Skip for now, probably don't need to stop all servies and require reboot
+# Skip for now, probably don't need to stop all services and require reboot
 # Shut down main services to save memory and CPU and stop app being reinstalled
 #/usr/bin/mynode_stop_critical_services.sh
 

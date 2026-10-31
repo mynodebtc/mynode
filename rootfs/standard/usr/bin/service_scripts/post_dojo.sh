@@ -6,7 +6,7 @@ source /usr/share/mynode/mynode_config.sh
 
 sleep 30s #dojo needs time to start before passing next line
 
-# initalize mysql db (REQUIRED TO START MYSQL)
+# initialize mysql db (REQUIRED TO START MYSQL)
 counter=0
 target=200
 isRunning=""
@@ -25,14 +25,14 @@ do
     if [ $IS_RASPI == 1 ]; then
         docker exec -i db bash -c "mysql -h db -u root -p$MYSQL_ROOT_PASSWORD $MYSQL_DATABASE" </mnt/hdd/mynode/dojo/db-scripts/1_db.sql
     fi
-    echo "dojo mysql db initalized"
+    echo "dojo mysql db initialized"
     sleep 5s
-    # Stop dojo after install/update and initalization is complete
+    # Stop dojo after install/update and initialization is complete
     cd /mnt/hdd/mynode/dojo/docker/my-dojo
     sudo ./dojo.sh stop
     counter=$target
   else
-    echo "waiting to initalize dojo mysql db - retrying $[ $target-$counter ] more times"
+    echo "waiting to initialize dojo mysql db - retrying $[ $target-$counter ] more times"
     counter=$(( $counter + 1 ))
     sleep 30s
   fi

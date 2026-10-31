@@ -91,7 +91,7 @@ This script is optional. If present, it will run prior to launching the applicat
 This script is optional. If present, it will run after launching the application.
 
 ### www/python/sampleapp.py
-This is the python file for handling web interface requests. The web interface is handled by flask and the file comes with a single hander for "/app/sampleapp/info". Additional URLs can be registered for more complex applications if they need to offer additional functionality.
+This is the python file for handling web interface requests. The web interface is handled by flask and the file comes with a single handler for "/app/sampleapp/info". Additional URLs can be registered for more complex applications if they need to offer additional functionality.
 
 ### www/templates/
 This is the folder for HTML / Jinja templates to be used by your application. A sample template (sampleapp.html) is provided, but may not be required. Applications can use the standard app template which can be customized via the JSON file, but more advanced apps may require their own templates.

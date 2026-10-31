@@ -25,7 +25,7 @@ differences are:
 
 ## Testnet Toggle
 - Testnet can be enabled via the settings page. This is a great way to test various Bitcoin and Lightning applications. However, not all apps support testnet yet or have not been integrated within MyNode to work on testnet. The following apps
-have support or patial support.
+have support or partial support.
  - Bitcoin
  - Lightning
  - Electrum Server

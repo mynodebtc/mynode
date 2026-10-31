@@ -1045,10 +1045,10 @@ if has_app_python; then
 fi
 
 
-# Mark dynamic applications as defalt application
+# Mark dynamic applications as default application
 # ... (none yet)
 
-# Upgrade Dyanmic Applications (must be done after file installation)
+# Upgrade Dynamic Applications (must be done after file installation)
 # mynode-manage-apps upgrade # not yet working during setup process
 
 

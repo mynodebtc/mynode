@@ -87,7 +87,7 @@ else
         sed -i "s/dbcache=.*/dbcache=12000/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
         sed -i "s/maxmempool=.*/maxmempool=2000/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
     else
-        echo "UNKNOWN RAM AMMOUNT: $TOTAL_RAM_GB"
+        echo "UNKNOWN RAM AMOUNT: $TOTAL_RAM_GB"
         sed -i "s/dbcache=.*/dbcache=500/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
         sed -i "s/maxmempool=.*/maxmempool=50/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
     fi
