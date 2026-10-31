@@ -128,6 +128,25 @@
 </div>
 {% endif %}
 
+{% if show_kernel_cve_warning %}
+<div class="main_page_error_block">
+    <p style="text-align: center; font-size: 16px;"><b>Your Linux kernel has a known security issue</b></p>
+    <p style="text-align: center;">Your device is running Linux {{kernel_version}}, which is affected by
+        <a href="https://security-tracker.debian.org/tracker/CVE-2026-98432" target="_blank">CVE-2026-98432</a>.{% if kernel_cve_fixed_version %} The issue is fixed in Linux {{kernel_cve_fixed_version}} and newer.{% endif %}</p>
+    {% if debian_version < 12 %}
+    <p style="text-align: center;"><b>Debian {{debian_version}} no longer receives kernel updates. Reflash your OS drive with the latest MyNode image to get a supported kernel.</b></p>
+    <p style="text-align: center;">The new image can be downloaded <a href="https://mynodebtc.com/download" target="_blank">here</a> and a guide is
+        <a href="https://docs.mynodebtc.com/advanced/flash-sd-card.html" target="_blank">available</a>.</p>
+    {% else %}
+    <p style="text-align: center;"><b>Upgrade OS packages on the <a href="/settings#os_packages">Settings</a> page, then reboot your device.</b></p>
+    <p style="text-align: center;">If this message returns after rebooting, a fixed kernel is not available for your device yet. Try again later.</p>
+    {% endif %}
+    <p style="text-align: center;">
+        <a href="/clear-kernel-cve-warning" class="ui-button ui-widget ui-corner-all settings_button_small">OK</a>
+    </p>
+</div>
+{% endif %}
+
 {% if node_version_warning %}
 <div class="main_page_error_block">
     <p style="text-align: center; font-size: 16px;"><b>NodeJS is out of date</b></p>

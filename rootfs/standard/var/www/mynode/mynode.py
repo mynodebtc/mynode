@@ -742,6 +742,9 @@ def index():
             "debian_version": get_debian_version(),
             "show_old_tor_warning": show_old_tor_warning(),
             "tor_version": get_tor_version(),
+            "show_kernel_cve_warning": show_kernel_cve_warning(),
+            "kernel_version": get_kernel_version_string(),
+            "kernel_cve_fixed_version": get_cve_2026_98432_fixed_kernel_version(),
             "node_version_warning": get_node_version_warning(),
             "node_version": get_node_version(),
             "notifications": get_active_notifications(),
@@ -894,6 +897,12 @@ def page_clear_https_warning():
 def page_clear_old_tor_warning():
     check_logged_in()
     hide_old_tor_warning()
+    return redirect("/")
+
+@app.route("/clear-kernel-cve-warning")
+def page_clear_kernel_cve_warning():
+    check_logged_in()
+    hide_kernel_cve_warning()
     return redirect("/")
 
 @app.route("/dismiss-expiration-warning")
