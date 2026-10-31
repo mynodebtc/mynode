@@ -929,6 +929,9 @@ def get_kernel_version_string():
         return "unknown"
     return ".".join(str(part) for part in kernel_version)
 
+def is_kernel_cve_mitigated_device():
+    return get_device_type() in ["raspi4", "raspi5"]
+
 def show_kernel_cve_warning():
     if not os.path.isfile("/tmp/hide_kernel_cve_warning"):
         return is_kernel_affected_by_cve_2026_98432(get_kernel_version())

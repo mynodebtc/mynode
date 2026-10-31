@@ -133,6 +133,9 @@
     <p style="text-align: center; font-size: 16px;"><b>Your Linux kernel has a known security issue</b></p>
     <p style="text-align: center;">Your device is running Linux {{kernel_version}}, which is affected by
         <a href="https://security-tracker.debian.org/tracker/CVE-2026-98432" target="_blank">CVE-2026-98432</a>.{% if kernel_cve_fixed_version %} The issue is fixed in Linux {{kernel_cve_fixed_version}} and newer.{% endif %}</p>
+    {% if kernel_cve_mitigated_device %}
+    <p style="text-align: center;">MyNode has mitigations in place for this issue on Raspberry Pi 4 and 5.{% if debian_version >= 12 %} Watch for later updates that include a fixed kernel.{% endif %}</p>
+    {% endif %}
     {% if debian_version < 12 %}
     <p style="text-align: center;"><b>Debian {{debian_version}} no longer receives kernel updates. Reflash your OS drive with the latest MyNode image to get a supported kernel.</b></p>
     <p style="text-align: center;">The new image can be downloaded <a href="https://mynodebtc.com/download" target="_blank">here</a> and a guide is
