@@ -1,11 +1,3 @@
-// Refresh page after N seconds
-function refreshIn(seconds) {
-    setTimeout(function() {
-        //window.location.reload();
-        alert("reload")
-    }, seconds*1000); 
-}
-
 // Dialog contents: a string is shown as text (blank lines separate paragraphs), and an
 // element is shown as it is
 function dialog_contents(message) {
