@@ -1772,7 +1772,7 @@ def reset_lnbits_super_user_pwd():
     """
     try:
         super_user_id, super_user_username = fetch_super_user_info()
-        print(f"LNbits super_user password reset")
+        print("LNbits super_user password reset")
         print(f"super_user ID: {super_user_id}")
         print(f"super_user username: {super_user_username}")
 

@@ -162,8 +162,8 @@ def main():
 
     # Setup for clone
     set_clone_state("in_progress")
-    os.system(f"mkdir -p /tmp/drive1")
-    os.system(f"mkdir -p /tmp/drive2")
+    os.system("mkdir -p /tmp/drive1")
+    os.system("mkdir -p /tmp/drive2")
     os.system(f"umount /dev/{mynode_partition}")
     os.system(f"umount /dev/{target_partition}")
 
@@ -192,7 +192,7 @@ def main():
     try:
         #cmd = ["dd","bs=64K",f"if=/dev/{mynode_drive}",f"of=/dev/{target_drive}","conv=sync,noerror"]
         #cmd = ["dd","bs=512",f"if=/dev/zero",f"of=/dev/null","count=5999999","conv=sync,noerror"]
-        cmd = ["rsync","-avxHAX","--info=progress2",f"/tmp/drive1/","/tmp/drive2/"]
+        cmd = ["rsync","-avxHAX","--info=progress2","/tmp/drive1/","/tmp/drive2/"]
         clone_process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         log_message("CLONE PID: {}".format(clone_process.pid))
         for l in clone_process.stdout:
