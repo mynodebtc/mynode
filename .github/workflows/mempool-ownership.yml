@@ -1,0 +1,44 @@
+name: Mempool volume ownership
+
+on:
+  push:
+    branches: [fix/mempool-preserve-db-owner]
+  pull_request:
+    paths:
+      - rootfs/standard/usr/bin/service_scripts/pre_mempool.sh
+      - rootfs/standard/usr/bin/mynode_startup.sh
+      - rootfs/standard/usr/share/mynode/mempool-docker-compose.yml
+      - tests/test_mempool_ownership.py
+      - .github/workflows/mempool-ownership.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ownership:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Shell syntax and error-level ShellCheck
+        shell: bash
+        run: |
+          set -euo pipefail
+          for script in rootfs/standard/usr/bin/service_scripts/pre_mempool.sh rootfs/standard/usr/bin/mynode_startup.sh; do
+            bash -n "$script"
+          done
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends shellcheck
+          shellcheck --severity=error rootfs/standard/usr/bin/service_scripts/pre_mempool.sh rootfs/standard/usr/bin/mynode_startup.sh
+      - name: Real Linux ownership regression in disposable container
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar -cf - rootfs/standard/usr/bin/service_scripts/pre_mempool.sh rootfs/standard/usr/bin/mynode_startup.sh rootfs/standard/usr/share/mynode/mempool-docker-compose.yml tests/test_mempool_ownership.py |
+            docker run --rm -i --network none --read-only --cap-drop ALL \
+              --cap-add CHOWN --cap-add DAC_OVERRIDE --cap-add FOWNER --cap-add SETUID --cap-add SETGID \
+              --tmpfs /src:rw,exec,size=16m --tmpfs /mnt:rw,size=16m \
+              --tmpfs /usr/share/mynode:rw,size=1m --tmpfs /etc:rw,size=2m --tmpfs /tmp:rw,size=4m \
+              -e MYNODE_DISPOSABLE_TEST=1 python:3.14-slim \
+              bash -c 'set -e; cd /src; tar --no-same-owner -xf -; python3 tests/test_mempool_ownership.py'
