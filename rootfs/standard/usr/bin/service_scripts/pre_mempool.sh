@@ -20,4 +20,8 @@ else
     sed -i "s|MARIA_DB_IMAGE=.*|MARIA_DB_IMAGE=mariadb:10.9.3|g" /mnt/hdd/mynode/mempool/.env
 fi
 
-chown -R mempool:mempool /mnt/hdd/mynode/mempool
+# The database image owns mysql/ (including its bind-mounted data directory).
+# Do not traverse symlinks or change their targets when preparing app files.
+find -P /mnt/hdd/mynode/mempool \
+    -path /mnt/hdd/mynode/mempool/mysql -prune -o \
+    -exec chown -h mempool:mempool {} +

@@ -513,8 +513,12 @@ fi
 chown -R joinmarket:joinmarket /mnt/hdd/mynode/joinmarket
 
 # Setup Mempool
-# Moved to pre_mempool.sh
-chown -R mempool:mempool /mnt/hdd/mynode/mempool
+# Keep ownership preparation consistent with pre_mempool.sh.
+# The database image owns mysql/ (including its bind-mounted data directory).
+# Do not traverse symlinks or change their targets when preparing app files.
+find -P /mnt/hdd/mynode/mempool \
+    -path /mnt/hdd/mynode/mempool/mysql -prune -o \
+    -exec chown -h mempool:mempool {} +
 
 # Setup Netdata
 mkdir -p /opt/mynode/netdata
