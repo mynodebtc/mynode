@@ -99,6 +99,8 @@ Once you are running MyNode, you can easily [update the software](https://docs.m
 ### Developing the MyNode Platform
 See the [development guide](https://github.com/mynodebtc/mynode/blob/master/doc/development.md).
 
+For web UI changes, `make dev-ui` runs the MyNode web UI locally in Docker with a mocked backend, no device needed. See the [UI dev mode guide](https://github.com/mynodebtc/mynode/blob/master/dev/dev-ui/README.md).
+
 ### Adding new Applications to MyNode
 To create and add new applications to MyNode, see the [application guide](https://github.com/mynodebtc/mynode/blob/master/doc/applications.md).
 

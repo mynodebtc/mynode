@@ -69,3 +69,15 @@ Add another argument to the local upgrade script. This works with any of the opt
 - To update files and reload applications, run `sudo mynode-local-upgrade [ip address or file] apps`
 - To update files, reload applications and restart nginx, run `sudo mynode-local-upgrade [ip address or file] nginx`
 - To update files and reboot without the post-upgrade script, run `sudo mynode-local-upgrade [ip address or file] reboot`
+
+
+## UI Changes Without a Device
+For changes to the web UI only (templates, CSS, JavaScript, Flask routes), `make dev-ui` runs the real MyNode web UI in a Docker container on your PC with a mocked backend. No device, bitcoind or LND is needed, and edits load on refresh.
+
+```
+make dev-ui
+```
+
+Open http://localhost:8888 and log in with password `bolt`. A **DEV** button on every page switches the mocked device between states, such as syncing, drive missing, warnings and installed apps, so each page can be checked. Changes that touch services, scripts or anything outside the web UI still need testing on a device with one of the options above.
+
+See [dev/dev-ui/README.md](../dev/dev-ui/README.md) for the full guide, including how the mocks work and how to edit the sample data.
