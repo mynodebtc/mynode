@@ -1,4 +1,4 @@
-# Mocked UI dev container for the myNode web UI.
+# Mocked UI dev container for the MyNode web UI.
 # Runs the real Flask app from the repo (volume-mounted read-only at the same
 # paths used on a device) with a mock shim layer so no real backend is needed.
 FROM python:3.11-slim-bookworm

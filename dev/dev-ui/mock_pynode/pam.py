@@ -1,5 +1,5 @@
 """Mock `pam` module: authenticates the web UI login against the DEV_PASSWORD
-environment variable (default 'bolt', the myNode factory password) instead of
+environment variable (default 'bolt', the MyNode factory password) instead of
 the OS admin user. The real login flow in user_management.py (rate limiting,
 session handling) runs unchanged."""
 import os

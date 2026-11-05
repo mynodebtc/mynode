@@ -22,7 +22,7 @@ case "$CMD" in
   "difficulty": 126411437451912.23,
   "verificationprogress": 0.9999,
   "pruned": false,
-  "warnings": "(mocked bitcoin-cli output from myNode UI dev mode)"
+  "warnings": "(mocked bitcoin-cli output from MyNode UI dev mode)"
 }
 EOF
         ;;
@@ -30,6 +30,6 @@ EOF
         echo "(mock bitcoin-cli) Try: getblockcount, getblockchaininfo"
         ;;
     *)
-        echo "(mock bitcoin-cli) command '$CMD' is not mocked - this is the myNode UI dev container"
+        echo "(mock bitcoin-cli) command '$CMD' is not mocked - this is the MyNode UI dev container"
         ;;
 esac

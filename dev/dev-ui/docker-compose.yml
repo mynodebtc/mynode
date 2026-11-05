@@ -26,7 +26,7 @@ services:
       # greps /proc/mounts for it, and df is used for drive size.
       - /mnt/hdd:mode=0777
     environment:
-      # Password accepted by the mocked PAM login (myNode default).
+      # Password accepted by the mocked PAM login (MyNode default).
       - DEV_PASSWORD=bolt
       # Set to 1 to skip the login page entirely.
       - DEV_AUTOLOGIN=0

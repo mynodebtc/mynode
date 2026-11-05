@@ -1,6 +1,6 @@
 """Build the fixture filesystem for the mocked UI dev container.
 
-The real myNode code reads absolute paths (/mnt/hdd/..., /home/bitcoin/...,
+The real MyNode code reads absolute paths (/mnt/hdd/..., /home/bitcoin/...,
 /usr/share/mynode/..., /tmp/...) as inline literals, so instead of trying to
 intercept paths we recreate the device's filesystem inside the container.
 
@@ -102,7 +102,7 @@ def seed_share_dir():
     _write("/usr/share/mynode/latest_version", version, overwrite=False)
     _write(
         "/usr/share/mynode/changelog",
-        "=== myNode {v} (mocked changelog) ===\n"
+        "=== MyNode {v} (mocked changelog) ===\n"
         "- This device is running the mocked UI dev container\n"
         "- Sample changelog entry two\n"
         "- Sample changelog entry three\n".format(v=version),

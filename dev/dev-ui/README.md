@@ -1,6 +1,6 @@
-# myNode UI Dev Mode (mocked backend)
+# MyNode UI Dev Mode (mocked backend)
 
-Run the real myNode web UI in a Docker container with a fully mocked backend —
+Run the real MyNode web UI in a Docker container with a fully mocked backend —
 no bitcoind, no LND, no systemd, no real device. For developing and testing UI
 changes (templates, CSS, JS, Flask routes) with instant hot reload.
 
