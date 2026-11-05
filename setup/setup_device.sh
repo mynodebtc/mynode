@@ -298,6 +298,7 @@ apt -y -qq install apt-transport-https ca-certificates
 apt-get -y install libevent-dev ncurses-dev
 apt-get -y install zlib1g-dev libudev-dev libusb-1.0-0-dev python3-venv gunicorn
 apt-get -y install sqlite3 libsqlite3-dev torsocks python3-requests libsystemd-dev
+apt-get -y install unattended-upgrades
 apt-get -y install libjpeg-dev zlib1g-dev psmisc hexyl libbz2-dev liblzma-dev netcat-openbsd
 apt-get -y install hdparm iotop nut obfs4proxy libpq-dev socat btrfs-progs i2pd apparmor pass
 apt-get -y install gdisk xxd

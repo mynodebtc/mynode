@@ -767,6 +767,10 @@ else
     rm -f /etc/sysctl.d/10-disableipv6.conf
 fi
 
+# Apply the automatic OS security updates setting. Like IPv6, the setting is on the drive
+# but the apt config is on the OS disk.
+/usr/bin/mynode_unattended_upgrades.sh || true
+
 
 # Make sure every enabled service is really enabled
 #   This can happen from full-SD card upgrades

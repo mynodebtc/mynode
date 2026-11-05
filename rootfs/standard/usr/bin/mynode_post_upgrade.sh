@@ -26,11 +26,12 @@ function upgrade_component_failed()
 # Shut down main services to save memory and CPU
 /usr/bin/mynode_stop_critical_services.sh
 
-# Check if upgrades use tor
-TORIFY=""
-if [ -f /mnt/hdd/mynode/settings/torify_apt_get ]; then
-    TORIFY="torify"
-fi
+# Don't let automatic OS security updates use apt at the same time
+pause_automatic_os_updates
+
+# Remove the old setting to download upgrades via tor
+rm -f /mnt/hdd/mynode/settings/torify_apt_get /mnt/hdd/mynode/settings/.torify_apt_get
+rm -f /home/bitcoin/.mynode/torify_apt_get /home/bitcoin/.mynode/.torify_apt_get
 
 # Delete ramlog to prevent ram issues (remake necessary folders)
 rm -rf /var/log/*
@@ -126,7 +127,7 @@ if ! skip_base_upgrades ; then
     gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 187F6ADD93AE3B0CF335AA6AB984570980684DCC # Lightning Terminal
     gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys C20A78516A0944900EBFCA29961CC8259AE675D4 # Lightning Terminal (Viktor)
     gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 3E9BD4436C288039CA827A9200C9E2BC2E45666F # RTL (Suheb)
-    $TORIFY wget -q https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc -O- | apt-key add - # Tor
+    wget -q https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc -O- | apt-key add - # Tor
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 648ACFD622F3D138   # Debian Backports
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E98404D386FA1D9   # Debian Backports
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 66F6C87B98EBCFE2   # I2P (R4SAS)
@@ -135,7 +136,7 @@ if ! skip_base_upgrades ; then
 
     # Check for updates (might auto-install all updates later)
     export DEBIAN_FRONTEND=noninteractive
-    $TORIFY apt-get update --allow-releaseinfo-change || \
+    apt-get update --allow-releaseinfo-change || \
             apt-get update --allow-releaseinfo-change
 
     # Freeze any packages we don't want to update
@@ -145,27 +146,30 @@ if ! skip_base_upgrades ; then
     #apt-mark hold redis-server
 
     # Upgrade packages, including new kernels
-    $TORIFY apt-get -y --with-new-pkgs upgrade
+    apt-get -y --with-new-pkgs upgrade
 
     # Install any new software
-    $TORIFY apt-get -y install apt-transport-https lsb-release gnupg
-    $TORIFY apt-get -y install fonts-dejavu
-    $TORIFY apt-get -y install pv sysstat network-manager unzip pkg-config libfreetype6-dev libpng-dev
-    $TORIFY apt-get -y install libatlas-base-dev libffi-dev libssl-dev python3-bottle
-    $TORIFY apt-get -y -qq install apt-transport-https ca-certificates
-    $TORIFY apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
-    $TORIFY apt-get -y install libevent-dev ncurses-dev
-    $TORIFY apt-get -y install libudev-dev libusb-1.0-0-dev python3-venv gunicorn sqlite3 libsqlite3-dev
-    $TORIFY apt-get -y install torsocks python3-requests libsystemd-dev libjpeg-dev zlib1g-dev psmisc
-    $TORIFY apt-get -y install hexyl libbz2-dev liblzma-dev netcat-openbsd hdparm iotop nut obfs4proxy
-    $TORIFY apt-get -y install libpq-dev socat btrfs-progs i2pd apparmor pass gdisk xxd
-    $TORIFY apt-get -y install cmake pkgconf libcurl4-openssl-dev libjansson-dev libmicrohttpd-dev libsodium-dev
-    $TORIFY apt-get -y install --no-install-recommends smartmontools nvme-cli
+    apt-get -y install apt-transport-https lsb-release gnupg
+    apt-get -y install fonts-dejavu
+    apt-get -y install pv sysstat network-manager unzip pkg-config libfreetype6-dev libpng-dev
+    apt-get -y install libatlas-base-dev libffi-dev libssl-dev python3-bottle
+    apt-get -y -qq install apt-transport-https ca-certificates
+    apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
+    apt-get -y install libevent-dev ncurses-dev
+    apt-get -y install libudev-dev libusb-1.0-0-dev python3-venv gunicorn sqlite3 libsqlite3-dev
+    apt-get -y install torsocks python3-requests libsystemd-dev libjpeg-dev zlib1g-dev psmisc
+    apt-get -y install hexyl libbz2-dev liblzma-dev netcat-openbsd hdparm iotop nut obfs4proxy
+    apt-get -y install libpq-dev socat btrfs-progs i2pd apparmor pass gdisk xxd
+    apt-get -y install cmake pkgconf libcurl4-openssl-dev libjansson-dev libmicrohttpd-dev libsodium-dev
+    apt-get -y install --no-install-recommends smartmontools nvme-cli
     # nvme-cli enables NVMe over Fabrics units MyNode doesn't use (they fail on kernels without nvme-fabrics)
     systemctl mask nvmf-autoconnect.service nvmf-connect@.service nvmefc-boot-connections.service > /dev/null 2>&1 || true
 
+    # Install automatic OS security updates (turned on or off in mynode_unattended_upgrades.sh)
+    apt-get -y install unattended-upgrades
+
     # Install Java
-    $TORIFY apt-get -y install default-jre
+    apt-get -y install default-jre
 
     # Install software specific to debian version
     if [ "$DEBIAN_CODENAME" == "bullseye" ]; then
@@ -173,7 +177,7 @@ if ! skip_base_upgrades ; then
     elif [ "$DEBIAN_CODENAME" == "bookworm" ]; then
         apt-get -y install wireguard
     elif [ "$DEBIAN_CODENAME" == "buster" ]; then
-        $TORIFY apt-get -y -t buster-backports install wireguard
+        apt-get -y -t buster-backports install wireguard
     else
         echo "========================================="
         echo "== UNKNOWN DEBIAN VERSION: $DEBIAN_CODENAME"
@@ -183,7 +187,7 @@ if ! skip_base_upgrades ; then
 
     # Use journald for the fail2ban sshd jail (no auth.log without rsyslog on Debian 12+)
     if [ "$DEBIAN_VERSION" -ge "12" ]; then
-        $TORIFY apt-get -y install python3-systemd
+        apt-get -y install python3-systemd
         mkdir -p /etc/fail2ban/jail.d
         printf "[sshd]\nbackend = systemd\njournalmatch = _SYSTEMD_UNIT=ssh.service + _COMM=sshd\n" > /etc/fail2ban/jail.d/mynode_sshd.conf
     fi
@@ -199,32 +203,32 @@ if ! skip_base_upgrades ; then
             echo 0 > /etc/pivpn/NO_UFW
         fi
     fi
-    $TORIFY apt-get -y install ufw
+    apt-get -y install ufw
 
     # Install Openbox GUI
     if [ $IS_X86 = 1 ]; then
-        $TORIFY apt-get -y install xorg chromium openbox lightdm
+        apt-get -y install xorg chromium openbox lightdm
     fi
 
     # Install device specific packages
     if [ $IS_X86 = 1 ]; then
-        $TORIFY apt-get -y install cloud-init
-        $TORIFY apt-get -y install intel-microcode || true
+        apt-get -y install cloud-init
+        apt-get -y install intel-microcode || true
     fi
 
     # Use timesyncd for NTP
     apt-get -y purge ntp # (conflicts with systemd-timedatectl)
     apt-get -y purge chrony # (conflicts with systemd-timedatectl)
     if [ $IS_ARMBIAN = 1 ] ; then
-        $TORIFY apt-get -y install systemd-timesyncd || true
+        apt-get -y install systemd-timesyncd || true
         timedatectl set-ntp true || true
     fi
 
 
     # Install nginx
     mkdir -p /var/log/nginx || true
-    $TORIFY apt-get -y install nginx || true
-    $TORIFY apt-get install libnginx-mod-stream || true
+    apt-get -y install nginx || true
+    apt-get install libnginx-mod-stream || true
     # Install may fail, so we need to edit the default config file and reconfigure
     rm -f /etc/nginx/modules-enabled/50-mod-* || true
     echo "" > /etc/nginx/sites-available/default
@@ -445,12 +449,12 @@ if ! skip_base_upgrades ; then
     
     # Install Docker
     mkdir -p /etc/apt/keyrings
-    $TORIFY curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --batch --yes --dearmor -o /etc/apt/keyrings/docker.gpg
+    curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --batch --yes --dearmor -o /etc/apt/keyrings/docker.gpg
     echo \
         "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
         $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
-    $TORIFY apt-get update --allow-releaseinfo-change
-    $TORIFY apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin || true
+    apt-get update --allow-releaseinfo-change
+    apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin || true
 
     # docker-compose is Compose v2 from docker-compose-plugin. The old pip Compose v1 fails to
     # recreate containers on current Docker. BTCPay's installer may already have put its own v2
@@ -460,7 +464,7 @@ if ! skip_base_upgrades ; then
         # BTCPay's installer also replaces the plugin with a link to /usr/local/bin/docker-compose
         if [ -L $COMPOSE_PLUGIN ]; then
             rm -f $COMPOSE_PLUGIN
-            $TORIFY apt-get install -y --reinstall docker-compose-plugin || true
+            apt-get install -y --reinstall docker-compose-plugin || true
         fi
         if [ -f $COMPOSE_PLUGIN ]; then
             /usr/local/bin/python3 -m pip uninstall -y docker-compose || true
@@ -1311,8 +1315,8 @@ mynode-manage-apps upgrade || true
 #rm -f /usr/local/bin/tor || true
 #TOR_VERSION=$(tor --version)
 #if [[ "$TOR_VERSION" != *"Tor version 0.4"* ]]; then
-#    $TORIFY apt-get remove -y tor
-#    $TORIFY apt-get install -y tor
+#    apt-get remove -y tor
+#    apt-get install -y tor
 #fi
 # On older Debian versions, build Tor from source if it is not the pinned version
 if [ "$DEBIAN_VERSION" -lt "12" ]; then

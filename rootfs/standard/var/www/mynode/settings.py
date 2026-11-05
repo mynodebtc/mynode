@@ -35,8 +35,8 @@ TOGGLE_SETTING_NAMES = [
     "streamisolation_tor_disabled",
     "tor_remote_access_disabled",
     "tor_repo_disabled",
-    "torify_apt_get",
     "uas_usb_enabled",
+    "unattended_upgrades_disabled",
 ]
 
 # Flask Pages
@@ -75,6 +75,8 @@ def page_settings():
         "upgrade_logs": get_all_upgrade_logs(),
         "os_packages_upgrade_error": did_os_packages_upgrade_fail(),
         "os_packages_upgrade_log": get_os_packages_upgrade_log_tail(),
+        "is_unattended_upgrades_enabled": not settings_file_exists("unattended_upgrades_disabled"),
+        "unattended_upgrades_supported": get_debian_codename() != "buster",
         "auto_upgrade": get_auto_upgrade_status(),
         "timezone": get_timezone(),
         "timezone_list": get_timezone_list(),
@@ -126,7 +128,6 @@ def page_settings():
         "is_lnd_tor_enabled": settings_file_exists("lnd_tor_enabled"),
         "is_tor_remote_access_enabled": is_tor_remote_access_enabled(),
         "is_tor_repo_enabled": not settings_file_exists("tor_repo_disabled"),
-        "is_aptget_tor_enabled": settings_file_exists("torify_apt_get"),
         "is_streamisolation_tor_enabled": not settings_file_exists("streamisolation_tor_disabled"),
         "allowed_hosts": get_allowed_hosts(),
         "skip_fsck": skip_fsck(),

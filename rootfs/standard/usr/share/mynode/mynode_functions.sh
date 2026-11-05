@@ -24,6 +24,22 @@ function is_service_enabled {
     systemctl is-enabled "$1" > /dev/null 2>&1
 }
 
+# Keep the daily apt jobs (automatic OS security updates) from starting while MyNode
+# uses apt, and wait for a run that already started to finish. The timers start again
+# on the next boot (see mynode_unattended_upgrades.sh).
+function pause_automatic_os_updates {
+    systemctl stop apt-daily.timer apt-daily-upgrade.timer > /dev/null 2>&1 || true
+    for i in $(seq 1 120); do
+        # These are oneshot services, so they are "activating" (not "active") while running
+        if ! systemctl show -p ActiveState --value apt-daily.service apt-daily-upgrade.service 2>/dev/null | grep -qxE "activating|active|deactivating"; then
+            return 0
+        fi
+        echo "Waiting for automatic OS updates to finish..."
+        sleep 10
+    done
+    return 0
+}
+
 function skip_base_upgrades {
     if [ -f /tmp/skip_base_upgrades ]; then
         return 0

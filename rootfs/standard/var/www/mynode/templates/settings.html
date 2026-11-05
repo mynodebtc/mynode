@@ -872,18 +872,19 @@
                     window.location.href='/settings/toggle_setting?name=tor_repo_disabled&enable='+val
                 });
 
-                $('#aptget_tor_checkbox').change(function () {
-                    $("#aptget_tor").show();
+                $('#unattended_upgrades_checkbox').change(function () {
+                    $("#unattended_upgrades").show();
                 });
-                $("#aptget_tor").on("click", function() {
-                    checked=$('#aptget_tor_checkbox').is(":checked")
-                    val = "0"
+                $("#unattended_upgrades").on("click", function() {
+                    checked=$('#unattended_upgrades_checkbox').is(":checked")
+                    // Inverted setting (uses disable flag)
+                    val = "1"
                     if (checked)
                     {
-                        val = "1"
+                        val = "0"
                     }
                     $('#loading_spinner_overlay').fadeIn();
-                    window.location.href='/settings/toggle_setting?name=torify_apt_get&enable='+val
+                    window.location.href='/settings/toggle_setting?name=unattended_upgrades_disabled&enable='+val
                 });
             });
 
@@ -1774,20 +1775,6 @@
 
             <div class="divider"></div>
 
-            <div class="settings_block_subheader">Use Tor for System Upgrades</div>
-            During upgrades, new system packages are downloaded and installed. This setting will download and install those packages via tor.
-            <br/><br/>
-            This is not recommended unless you are having a specific upgrade issue accessing some package servers.
-            <br/><br/>
-            <label class="switch">
-                <input type="checkbox" id="aptget_tor_checkbox" {% if is_aptget_tor_enabled %}checked{% endif %}>
-                <span class="slider round"></span>
-            </label>
-            <br/><br/>
-            <button id="aptget_tor" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
-
-            <div class="divider"></div>
-
             {% if is_lnd_tor_enabled %}
             <div class="settings_block_subheader">Use Tor Stream Isolation for LND</div>
             When using tor, enable stream isolation for LND. This increases privacy, but it can take significant resources with large numbers of lightning channels.
@@ -1969,6 +1956,24 @@
             <div style='text-align: left; font-size: 12px; overflow-x: auto;'><pre>{{os_packages_upgrade_log}}</pre></div>
             {% endif %}
             <button id="upgrade_os_packages" class="ui-button ui-widget ui-corner-all settings_button">Upgrade OS Packages</button>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Automatically Install OS Security Updates</div>
+            {% if unattended_upgrades_supported %}
+            Once a day, check for security updates to the operating system packages and install them automatically. Only security fixes from Debian are installed, and your device is never rebooted automatically. Some updates take effect at the next reboot.
+            <br/><br/>
+            This is recommended. MyNode applications, such as Bitcoin and Lightning, are only updated by MyNode upgrades.
+            <br/><br/>
+            <label class="switch">
+                <input type="checkbox" id="unattended_upgrades_checkbox" {% if is_unattended_upgrades_enabled %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <br/><br/>
+            <button id="unattended_upgrades" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+            {% else %}
+            Your device's operating system (Debian Buster) no longer receives security updates from Debian, so there are none to install automatically.
+            {% endif %}
 
             <div class="divider"></div>
 

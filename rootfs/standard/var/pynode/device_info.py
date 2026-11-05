@@ -2111,6 +2111,8 @@ def custom_settings_file_handler(name, enabled):
             os.system("sync")
     elif name == "tor_remote_access_disabled":
         apply_tor_remote_access_setting()
+    elif name == "unattended_upgrades_disabled":
+        os.system("/usr/bin/mynode_unattended_upgrades.sh")
     else:
         log_message("No custom setting handler for: "+name)
 #==================================
