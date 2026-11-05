@@ -150,6 +150,16 @@
 </div>
 {% endif %}
 
+{% if show_reboot_required_notice %}
+<div class="main_page_warning_block">
+    <p style="text-align: center;"><b>Reboot to Finish Updates</b></p>
+    <p style="text-align: center;">Operating system updates were installed that take effect after a reboot. Reboot your device from the <a href="/settings#device">Settings</a> page when convenient.</p>
+    <p style="text-align: center;">
+        <a href="/clear-reboot-required-notice" class="ui-button ui-widget ui-corner-all settings_button_small">OK</a>
+    </p>
+</div>
+{% endif %}
+
 {% if node_version_warning %}
 <div class="main_page_error_block">
     <p style="text-align: center; font-size: 16px;"><b>NodeJS is out of date</b></p>

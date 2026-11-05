@@ -747,6 +747,7 @@ def index():
             "kernel_version": get_kernel_version_string(),
             "kernel_cve_fixed_version": get_cve_2026_98432_fixed_kernel_version(),
             "kernel_cve_mitigated_device": is_kernel_cve_mitigated_device(),
+            "show_reboot_required_notice": show_reboot_required_notice(),
             "node_version_warning": get_node_version_warning(),
             "node_version": get_node_version(),
             "notifications": get_active_notifications(),
@@ -906,6 +907,12 @@ def page_clear_old_tor_warning():
 def page_clear_kernel_cve_warning():
     check_logged_in()
     hide_kernel_cve_warning()
+    return redirect("/")
+
+@app.route("/clear-reboot-required-notice")
+def page_clear_reboot_required_notice():
+    check_logged_in()
+    hide_reboot_required_notice()
     return redirect("/")
 
 @app.route("/dismiss-expiration-warning")

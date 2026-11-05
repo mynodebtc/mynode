@@ -1034,6 +1034,15 @@ def show_kernel_cve_warning():
 def hide_kernel_cve_warning():
     touch("/tmp/hide_kernel_cve_warning")
 
+# Created when an installed package, such as a new kernel, needs a reboot to take effect.
+# It is in /run, so a reboot removes it.
+def show_reboot_required_notice():
+    if not os.path.isfile("/tmp/hide_reboot_required_notice"):
+        return os.path.isfile("/var/run/reboot-required")
+    return False
+def hide_reboot_required_notice():
+    touch("/tmp/hide_reboot_required_notice")
+
 # Oldest NodeJS release accepted for each maintained major version. Majors that are not
 # listed and are older than the newest listed major are no longer maintained.
 NODE_MIN_VERSIONS = {
