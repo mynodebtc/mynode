@@ -1,0 +1,4 @@
+#!/bin/bash
+# Generic no-op stand-in for device scripts/binaries that are irrelevant in
+# the mocked UI dev container. Succeeds silently.
+exit 0

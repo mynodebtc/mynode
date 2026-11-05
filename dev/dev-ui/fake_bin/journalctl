@@ -1,0 +1,63 @@
+#!/bin/bash
+# Fake journalctl: emits a plausible canned log that reflects the service's
+# current mock state (/tmp/mock_services/<unit>), so a service shown red on
+# the UI has a matching error log.
+# Usage seen in the code: journalctl -r --unit=<name> --no-pager | head -n 300
+UNIT="mock"
+for arg in "$@"; do
+    case "$arg" in
+        --unit=*) UNIT="${arg#--unit=}" ;;
+    esac
+done
+
+NOW=$(date "+%b %d %H:%M:%S")
+HOST="mynode"
+
+STATE="running"
+[ -f "/tmp/mock_services/$UNIT" ] && STATE=$(cat "/tmp/mock_services/$UNIT")
+
+# Non-running services get a matching error/inactive log
+case "$STATE" in
+    failed)
+        cat << EOF
+$NOW $HOST systemd[1]: $UNIT.service: Main process exited, code=exited, status=1/FAILURE
+$NOW $HOST $UNIT[321]: [mock] ERROR: service '$UNIT' crashed - see above
+$NOW $HOST $UNIT[321]: [mock] starting up
+$NOW $HOST systemd[1]: Started mock service $UNIT.
+EOF
+        exit 0
+        ;;
+    stopped|disabled)
+        cat << EOF
+$NOW $HOST systemd[1]: $UNIT.service: Deactivated successfully.
+$NOW $HOST systemd[1]: Stopped mock service $UNIT.
+EOF
+        exit 0
+        ;;
+esac
+
+case "$UNIT" in
+    electrs)
+        cat << EOF
+$NOW $HOST electrs[512]: [mock] serving Electrum RPC on 0.0.0.0:50001
+$NOW $HOST electrs[512]: [mock] indexing 1 blocks
+$NOW $HOST electrs[512]: [mock] chain updated: tip=00000000000000000001mock
+$NOW $HOST systemd[1]: Started Electrum Rust Server.
+EOF
+        ;;
+    lnd)
+        cat << EOF
+$NOW $HOST lnd[433]: [mock] [INF] LTND: Waiting for wallet encryption password.
+$NOW $HOST lnd[433]: [mock] [INF] LTND: Version: 0.18.3-beta
+$NOW $HOST systemd[1]: Started LND Lightning Daemon.
+EOF
+        ;;
+    *)
+        cat << EOF
+$NOW $HOST $UNIT[321]: [mock] Service '$UNIT' log line 3 - everything is fine
+$NOW $HOST $UNIT[321]: [mock] Service '$UNIT' log line 2 - initialization complete
+$NOW $HOST $UNIT[321]: [mock] Service '$UNIT' log line 1 - starting up
+$NOW $HOST systemd[1]: Started mock service $UNIT.
+EOF
+        ;;
+esac

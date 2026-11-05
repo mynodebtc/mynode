@@ -1,0 +1,12 @@
+# Dependencies for the mocked UI dev container.
+# Pins follow rootfs/standard/usr/share/mynode/mynode_pip3_requirements.txt where
+# the device pins matter (flask must stay <2.4 because mynode.py imports Markup
+# from flask).
+flask==2.2.5
+werkzeug==2.2.3
+requests==2.31.0
+psutil
+prometheus_client
+python-bitcoinrpc
+qrcode
+pillow
