@@ -11,7 +11,8 @@ import os
 import time
 from urllib.parse import urlsplit
 
-from flask import Blueprint, Response, abort, jsonify, request, session
+from flask import Blueprint, Response, abort, current_app, jsonify, request, send_from_directory, session
+from werkzeug.security import safe_join
 
 from _mockutil import real, get_knob, set_knob
 
@@ -111,6 +112,25 @@ def autologin():
         return
     session["logged_in"] = True
     session.permanent = True
+
+
+def serve_app_assets():
+    """before_request hook: serve a dynamic app's icon and screenshots from its
+    folder under /usr/share/mynode_apps when the static folder lacks them."""
+    parts = request.path.split("/")
+    if request.path.startswith("/static/images/app_icons/") and len(parts) == 5 and parts[4].endswith(".png"):
+        app_name, rel = parts[4][:-len(".png")], parts[4]
+    elif request.path.startswith("/static/images/screenshots/") and len(parts) == 6:
+        app_name, rel = parts[4], "screenshots/" + parts[5]
+    else:
+        return None
+    static_file = safe_join(current_app.static_folder, request.path[len("/static/"):])
+    if static_file and os.path.isfile(static_file):
+        return None
+    app_dir = safe_join(application_info.get_dynamic_app_dir(), app_name)
+    if not app_dir or not os.path.isfile(safe_join(app_dir, rel) or ""):
+        return None
+    return send_from_directory(app_dir, rel)
 
 
 def inject_overlay(response):

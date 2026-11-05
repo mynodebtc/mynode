@@ -40,6 +40,8 @@ switcher:
 - **System** — drive-almost-full error, upgrade banner, premium vs community
   edition, simulated reboot/shutdown, and **RESET ALL** back to the golden state.
 - **Apps** — one-click install/uninstall (marker files only, no real install).
+  This covers the app SDK apps in `rootfs/standard/usr/share/mynode_apps` too
+  (mounted read-only); their icons and screenshots are served from there.
 
 Everything the panel does is also available as plain HTTP endpoints under
 `/dev/...` (no auth, but only from localhost pages or non-browser clients) — see `dev_blueprint.py`.

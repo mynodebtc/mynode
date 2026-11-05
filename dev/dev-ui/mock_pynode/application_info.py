@@ -12,6 +12,8 @@ from _mockutil import load_real, export
 
 _real = load_real("application_info")
 
+_real_get_app_screenshots = _real.get_app_screenshots
+
 
 def _write_install_log(action, app, lines_file):
     os.makedirs("/home/admin/upgrade_logs", exist_ok=True)
@@ -71,6 +73,16 @@ def uninstall_app(app):
     _write_install_log("Uninstall", app, "/home/admin/upgrade_logs/uninstall_{}.txt".format(app))
 
 
+def get_app_screenshots(short_name):
+    # A device copies a dynamic app's screenshots into the static folder; here
+    # they are listed from the app's own folder (served by serve_app_assets)
+    screenshots = _real_get_app_screenshots(short_name)
+    folder = os.path.join(_real.get_dynamic_app_dir(), short_name, "screenshots")
+    if not screenshots and os.path.isdir(folder):
+        screenshots = sorted(s for s in os.listdir(folder) if s.endswith(".png") and not s.startswith("."))
+    return screenshots
+
+
 def remove_app(app):
     # Like the real remove_app for dynamic apps, but keeps the app definition
     # under /usr/share/mynode_apps so it can be "reinstalled" in dev mode.
@@ -83,5 +95,6 @@ def remove_app(app):
 _real.reinstall_app = reinstall_app
 _real.uninstall_app = uninstall_app
 _real.remove_app = remove_app
+_real.get_app_screenshots = get_app_screenshots
 
 export(globals(), _real)

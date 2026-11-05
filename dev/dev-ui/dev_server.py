@@ -31,6 +31,7 @@ register_dynamic_app_flask_blueprints(app)
 # Dev-only controls: /dev/* endpoints + floating overlay on every HTML page.
 app.register_blueprint(dev_blueprint.mynode_dev)
 app.after_request(dev_blueprint.inject_overlay)
+app.before_request(dev_blueprint.serve_app_assets)
 if os.environ.get("DEV_AUTOLOGIN") == "1":
     app.before_request(dev_blueprint.autologin)
 

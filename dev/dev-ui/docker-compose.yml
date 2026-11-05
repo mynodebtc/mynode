@@ -14,6 +14,10 @@ services:
       # Source for /usr/share/mynode fixture content (application_info.json,
       # bitcoin.conf, version, ...). Copied into place by seed_fixture_fs.py.
       - ../../rootfs/standard/usr/share/mynode:/opt/mynode/share:ro
+      # Marketplace apps defined by the app SDK. Their icons and screenshots
+      # are served from here (dev_blueprint.serve_app_assets), since a device
+      # copies them into the read-only static folder.
+      - ../../rootfs/standard/usr/share/mynode_apps:/usr/share/mynode_apps:ro
       # The dev harness itself (mocks, fixtures, fake bins, dev server).
       # Read-only too, so the container cannot rewrite this compose file.
       - .:/opt/mynode/dev:ro
