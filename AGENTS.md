@@ -1,4 +1,4 @@
-# Copilot instructions for MyNode
+# Agent instructions for MyNode
 
 ## Build and validation commands
 
@@ -7,7 +7,7 @@
 - `make start_file_server` / `make stop_file_server` serves `out/` on port `8000` so a device can download locally built tarballs.
 - On a running MyNode device, `sudo mynode-local-upgrade <dev-pc-ip>` installs the matching tarball from that file server. Use `sudo mynode-local-upgrade <dev-pc-ip> files` for a file-only refresh or `sudo mynode-local-upgrade <dev-pc-ip> www` to refresh files and restart the web UI without a full reboot.
 - `make setup_new_<device>` is the fresh-device/bootstrap path. Current Makefile targets are `rock64`, `rockpro64`, `rockpi4`, `raspi3`, `raspi4`, `raspi5`, and `debian`.
-- No repository-wide lint target or automated test suite is defined here, so there is no single-test runner to point Copilot at. Validation in this repo is normally `make rootfs` plus targeted on-device smoke testing through `mynode-local-upgrade`.
+- No repository-wide lint target or automated test suite is defined here, so there is no single-test runner. Validation in this repo is normally `make rootfs` plus targeted on-device smoke testing through `mynode-local-upgrade`.
 - For web UI changes (templates, static assets, Flask routes in `rootfs/standard/var/www/mynode` and `rootfs/standard/var/pynode`), `make dev-ui` runs the real web UI in Docker with a mocked backend at `http://localhost:8888` (password `bolt`). Source is mounted read-only and reloads on change. Switch the mocked device state with the `/dev/...` endpoints (`/dev/state`, `/dev/sync`, `/dev/app`, `/dev/service`, `/dev/reset`; see `dev/dev-ui/dev_blueprint.py`). Every request, including GETs, needs `-H 'Sec-Fetch-Site: same-origin'`, or the app redirects to `/`. Anything touching services, shell scripts or the OS still needs on-device testing. See `dev/dev-ui/README.md`.
 
 ## High-level architecture
