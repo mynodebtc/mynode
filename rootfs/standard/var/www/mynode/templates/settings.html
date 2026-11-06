@@ -966,7 +966,7 @@
                     <tr>
                         <td><button data-show-upgrade-log="{{f.id}}" id="show_upgrade_log_{{f.id}}" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button></td>
                         <td><a href="/settings/download-upgrade-log?file={{f.filename|urlencode}}" class="ui-button ui-widget ui-corner-all settings_button_small">Download</a></td>
-                        <td>{{f.name}}</td>
+                        <td style="padding-left: 12px;">{{f.name}}</td>
                         <td>&nbsp;&nbsp;&nbsp;&nbsp;{{f.date}}</td>
                     </tr>
                     {% endfor %}
