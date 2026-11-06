@@ -145,8 +145,7 @@ if ! skip_base_upgrades ; then
 
     # Check for updates (might auto-install all updates later)
     export DEBIAN_FRONTEND=noninteractive
-    apt-get update --allow-releaseinfo-change || \
-            apt-get update --allow-releaseinfo-change
+    apt_get_update
 
     # Freeze any packages we don't want to update
     if [ $IS_X86 = 1 ]; then
@@ -458,7 +457,7 @@ if ! skip_base_upgrades ; then
     echo \
         "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
         $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
-    apt-get update --allow-releaseinfo-change
+    apt_get_update
     apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin || true
 
     # docker-compose is Compose v2 from docker-compose-plugin. The old pip Compose v1 fails to

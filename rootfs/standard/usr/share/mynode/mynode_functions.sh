@@ -40,6 +40,35 @@ function pause_automatic_os_updates {
     return 0
 }
 
+# Runs "apt-get <options> update", trying twice. A single broken third-party repo (one that moved,
+# was removed or changed its signing key) makes apt-get update fail even though the other package
+# lists were updated, so a failure is not fatal: the errors are saved to APT_UPDATE_ERROR_FILE for the
+# Status and Settings pages, and the file is removed after a clean update.
+APT_UPDATE_ERROR_FILE="/mnt/hdd/mynode/settings/apt_update_error"
+function apt_get_update {
+    local output_file
+    local rc=0
+    local attempt
+    output_file=$(mktemp)
+    for attempt in 1 2; do
+        apt-get "$@" update --allow-releaseinfo-change > "$output_file" 2>&1 && rc=0 || rc=$?
+        cat "$output_file"
+        if [ $rc -eq 0 ]; then
+            rm -f "$APT_UPDATE_ERROR_FILE" "$output_file"
+            return 0
+        fi
+    done
+
+    # Keep the errors (and the lines under them, like "404  Not Found"), not the full output
+    mkdir -p "$(dirname "$APT_UPDATE_ERROR_FILE")"
+    if ! grep -E "^(E:|Err:)|^ +[0-9]{3} " "$output_file" > "$APT_UPDATE_ERROR_FILE"; then
+        tail -n 20 "$output_file" > "$APT_UPDATE_ERROR_FILE"
+    fi
+    rm -f "$output_file"
+    echo "WARNING: apt-get update failed (exit $rc). Continuing with the package lists that did update."
+    return 0
+}
+
 function skip_base_upgrades {
     if [ -f /tmp/skip_base_upgrades ]; then
         return 0

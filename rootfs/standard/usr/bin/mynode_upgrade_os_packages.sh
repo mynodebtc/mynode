@@ -23,8 +23,7 @@ trap "systemctl start apt-daily.timer apt-daily-upgrade.timer > /dev/null 2>&1 |
 dpkg --configure -a --force-confdef --force-confold
 
 # Check for updates
-apt-get $APT_OPTIONS update --allow-releaseinfo-change || \
-        apt-get $APT_OPTIONS update --allow-releaseinfo-change
+apt_get_update $APT_OPTIONS
 
 # Freeze any packages we don't want to update
 if [ $IS_X86 = 1 ]; then

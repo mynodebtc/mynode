@@ -135,14 +135,33 @@ function install_nodesource_repo()
     local script_dir=${2:-/usr/share/mynode/nodesource}
     local script="$script_dir/setup_${version}"
 
+    # NodeSource's script stops when "apt update" fails, which one broken repo anywhere on the
+    # device causes. Run it with an apt whose "update" failures are only warnings.
+    local apt_shim_dir
+    apt_shim_dir=$(mktemp -d)
+    cat > "$apt_shim_dir/apt" <<'EOF'
+#!/bin/bash
+if [ "$1" = "update" ]; then
+    /usr/bin/apt "$@" || echo "WARNING: apt update failed (exit $?). Continuing."
+    exit 0
+fi
+exec /usr/bin/apt "$@"
+EOF
+    chmod +x "$apt_shim_dir/apt"
+
+    local rc=0
     if [ -f "$script" ]; then
-        bash "$script"
+        PATH="$apt_shim_dir:$PATH" bash "$script" || rc=$?
     elif is_custom_app_version "nodejs"; then
         echo "Custom nodejs version $version, downloading NodeSource setup script"
-        curl -fsSL "https://deb.nodesource.com/setup_${version}" | bash -
+        curl -fsSL "https://deb.nodesource.com/setup_${version}" | PATH="$apt_shim_dir:$PATH" bash - || rc=$?
     else
         echo "ERROR: no NodeSource setup script for $version"
-        return 1
+        rc=1
+    fi
+    rm -rf "$apt_shim_dir"
+    if [ $rc -ne 0 ]; then
+        return $rc
     fi
 
     local fingerprints
