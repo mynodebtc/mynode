@@ -20,5 +20,6 @@ else
     sed -i "s|MARIA_DB_IMAGE=.*|MARIA_DB_IMAGE=mariadb:10.9.3|g" /mnt/hdd/mynode/mempool/.env
 fi
 
-chown -R mempool:mempool /mnt/hdd/mynode/mempool
+# MariaDB's image sets the owner of its database folder when the container starts
+find /mnt/hdd/mynode/mempool -path /mnt/hdd/mynode/mempool/mysql -prune -o -exec chown mempool:mempool {} +
 chmod 600 /mnt/hdd/mynode/mempool/.env
