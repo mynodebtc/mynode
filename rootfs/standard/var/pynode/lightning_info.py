@@ -372,6 +372,12 @@ LND_TX_LABEL_TYPES = {
     "sweep": "Sweep",
     "justicetx": "Justice transaction",
 }
+LND_TX_LABEL_ICONS = {
+    "openchannel": "channel_open.svg",
+    "closechannel": "channel_close.svg",
+    "sweep": "channel_close.svg",
+    "justicetx": "channel_close.svg",
+}
 
 def get_lnd_tx_label_type(label):
     m = re.match(r"^\d+:([a-z]+)", label)
@@ -390,6 +396,7 @@ def get_lightning_transactions():
             if label_type == "closechannel" and str(tx.get("amount", "")) == "0":
                 continue
             tx["label_str"] = LND_TX_LABEL_TYPES.get(label_type, label_type) if label_type else label
+            tx["label_icon"] = LND_TX_LABEL_ICONS.get(label_type, "tooltip_icon.png") if tx["label_str"] else ""
             tx["id"] = tx["tx_hash"]
             if settings_file_exists("randomize_balances"):
                 tx["amount_str"] = format_sat_amount(str(random.randint(-200000,500000)))

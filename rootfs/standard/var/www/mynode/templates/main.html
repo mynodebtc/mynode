@@ -319,7 +319,8 @@
                                 if      (confirmations <  1) { icons.append(tx_icon("confirm_pending.png", "pending transaction")); }
                                 else if (confirmations <= 3) { icons.append(tx_icon("confirm_bars_"+confirmations+".png", confirmations+" confirmations")); }
                                 else                         { icons.append(tx_icon("confirm_complete.png", confirmations+" confirmations")); }
-                                row = $("<tr>").attr("title", tx['label_str'] || "").append(
+                                if (tx['label_icon']) { icons.append(tx_icon(tx['label_icon'], tx['label_str']).css("margin-left", "4px")); }
+                                row = $("<tr>").append(
                                     $("<td>").text(tx['date_str']),
                                     $("<td>").text(tx['amount_str']),
                                     icons);

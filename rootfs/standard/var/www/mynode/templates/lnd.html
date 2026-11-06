@@ -411,7 +411,7 @@
     {% if transactions and transactions|length > 0 or payments and payments|length > 0 or invoices and invoices|length > 0 %}
         <br/>
         <div class="main_header">Recent Transactions</div>
-        <div class="app_tile_row">
+        <div class="app_tile_row" style="align-items: flex-start;">
         {% if transactions and transactions|length > 0 %}
             <table style="font-size: 12px; width: 300px; margin: 10px;" class="bitcoin_table">
                 <thead class="bitcoin_table_header">
@@ -420,14 +420,24 @@
                 <thead class="bitcoin_table_header">
                     <td>Date</td>
                     <td>Amount</td>
-                    <td>Confirmations</td>
+                    <td></td>
                 </thead>
                 <tbody>
                     {% for tx in transactions[:tx_display_limit] %}
-                        <tr title="{{ tx.label_str }}">
+                        <tr>
                             <td>{{ tx.date_str }}</td>
                             <td>{{ tx.amount_str }}</td>
-                            <td>{{ tx.num_confirmations }}</td>
+                            <td>
+                                {% set confirmations = tx.num_confirmations|int %}
+                                {% if confirmations < 1 %}
+                                    <img style="width: 16px; vertical-align: middle;" src="{{ url_for('static', filename='images/confirm_pending.png') }}" title="pending transaction"/>
+                                {% elif confirmations <= 3 %}
+                                    <img style="width: 16px; vertical-align: middle;" src="{{ url_for('static', filename='images/confirm_bars_' ~ confirmations ~ '.png') }}" title="{{ confirmations }} confirmations"/>
+                                {% else %}
+                                    <img style="width: 16px; vertical-align: middle;" src="{{ url_for('static', filename='images/confirm_complete.png') }}" title="{{ confirmations }} confirmations"/>
+                                {% endif %}
+                                {% if tx.label_icon %}<img style="width: 16px; vertical-align: middle; margin-left: 4px;" src="{{ url_for('static', filename='images/' + tx.label_icon) }}" title="{{ tx.label_str }}"/>{% else %}<span style="display: inline-block; width: 16px; margin-left: 4px;"></span>{% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                     {% if transactions|length >= tx_display_limit %}
@@ -472,8 +482,7 @@
                 <thead class="bitcoin_table_header">
                     <td>Date</td>
                     <td>Amount</td>
-                    <td>Memo</td>
-                    <td>State</td>
+                    <td></td>
                 </thead>
                 <tbody>
                     {% for tx in invoices[:tx_display_limit] %}
@@ -481,11 +490,17 @@
                             <td>{{ tx.date_str }}</td>
                             <td>{{ tx.value_str }}</td>
                             <td>
-                                {% if tx.memo != "" %}
-                                    <img style="width: 16px;" src="{{ url_for('static', filename="images/memo.png")}}" title="{{ tx.memo }}"/>
+                                {% if tx.state == "OPEN" %}
+                                    <img style="width: 16px; vertical-align: middle;" src="{{ url_for('static', filename='images/invoice_pending.png') }}" title="open invoice"/>
+                                {% elif tx.state == "SETTLED" %}
+                                    <img style="width: 16px; vertical-align: middle;" src="{{ url_for('static', filename='images/invoice_complete.png') }}" title="settled invoice"/>
+                                {% elif tx.state in ["CANCELED", "CANCELLED"] %}
+                                    <img style="width: 16px; vertical-align: middle;" src="{{ url_for('static', filename='images/invoice_cancelled.png') }}" title="cancelled invoice"/>
+                                {% else %}
+                                    <img style="width: 16px; vertical-align: middle;" src="{{ url_for('static', filename='images/tooltip_icon.png') }}" title="{{ tx.state|lower }} invoice"/>
                                 {% endif %}
+                                {% if tx.memo != "" %}<img style="width: 16px; vertical-align: middle; margin-left: 4px;" src="{{ url_for('static', filename='images/memo.png') }}" title="{{ tx.memo }}"/>{% else %}<span style="display: inline-block; width: 16px; margin-left: 4px;"></span>{% endif %}
                             </td>
-                            <td>{{ tx.state }}</td>
                         </tr>
                     {% endfor %}
                     {% if invoices|length >= tx_display_limit %}
