@@ -28,6 +28,7 @@ lightning_peer_alias_misses = {}
 lightning_channels = None
 lightning_channel_balance = None
 lightning_wallet_balance = None
+lightning_pending_channels = None
 lightning_transactions = None
 lightning_payments = None
 lightning_invoices = None
@@ -63,6 +64,7 @@ def update_lightning_info():
     global lightning_channels
     global lightning_channel_balance
     global lightning_wallet_balance
+    global lightning_pending_channels
     global lightning_transactions
     global lightning_payments
     global lightning_invoices
@@ -110,6 +112,7 @@ def update_lightning_info():
         lightning_channels = lnd_get_keep_last("/channels", lightning_channels)
         lightning_channel_balance = lnd_get_keep_last("/balance/channels", lightning_channel_balance)
         lightning_wallet_balance = lnd_get_keep_last("/balance/blockchain", lightning_wallet_balance)
+        lightning_pending_channels = lnd_get_keep_last("/pendingchannels", lightning_pending_channels)
         log_message("update_lightning_info - GET WATCHTOWER")
         if is_watchtower_server_enabled():
             lightning_watchtower_server_info = lnd_get_v2("/watchtower/server")
@@ -301,18 +304,21 @@ def get_lightning_wallet_balance():
     global lightning_wallet_balance
     return copy.deepcopy(lightning_wallet_balance)
 
-def get_lightning_balance_info():
-    channel_balance_data = get_lightning_channel_balance()
-    wallet_balance_data = get_lightning_wallet_balance()
+def get_lightning_pending_channels():
+    global lightning_pending_channels
+    return copy.deepcopy(lightning_pending_channels)
 
+def get_lightning_balance_info():
     balance_data = {}
     balance_data["channel_balance"] = "N/A"
     balance_data["channel_pending"] = "N/A"
     balance_data["wallet_balance"] = "N/A"
     balance_data["wallet_pending"] = "N/A"
+    balance_data["closing_balance"] = "0"
     balance_data["total_balance"] = "N/A"
     channel_num = -1
     wallet_num = -1
+    closing_num = 0
 
     channel_balance_data = get_lightning_channel_balance()
     if channel_balance_data != None and "balance" in channel_balance_data:
@@ -328,8 +334,14 @@ def get_lightning_balance_info():
     if wallet_balance_data != None and "unconfirmed_balance" in wallet_balance_data:
         balance_data["wallet_pending"] = format_sat_amount( wallet_balance_data["unconfirmed_balance"] )
 
+    # Funds in channels that are closing are in neither balance until the close (or its sweep) confirms
+    pending_channels_data = get_lightning_pending_channels()
+    if pending_channels_data != None and "total_limbo_balance" in pending_channels_data:
+        closing_num = int(pending_channels_data["total_limbo_balance"])
+        balance_data["closing_balance"] = format_sat_amount(closing_num)
+
     if channel_num >= 0 and wallet_num >= 0:
-        balance_data["total_balance"] = format_sat_amount(channel_num + wallet_num)
+        balance_data["total_balance"] = format_sat_amount(channel_num + wallet_num + closing_num)
 
     if settings_file_exists("randomize_balances"):
         if is_cached("randomized_channel_balance", 3600):
@@ -348,9 +360,22 @@ def get_lightning_balance_info():
         balance_data["channel_pending"] = "0"
         balance_data["wallet_balance"] = format_sat_amount(wallet_num)
         balance_data["wallet_pending"] = "0"
+        balance_data["closing_balance"] = "0"
         balance_data["total_balance"] = format_sat_amount(channel_num + wallet_num)
 
     return balance_data
+
+# Readable names for the labels LND gives its own transactions ("0:<type>:...")
+LND_TX_LABEL_TYPES = {
+    "openchannel": "Channel open",
+    "closechannel": "Channel close",
+    "sweep": "Sweep",
+    "justicetx": "Justice transaction",
+}
+
+def get_lnd_tx_label_type(label):
+    m = re.match(r"^\d+:([a-z]+)", label)
+    return m.group(1) if m else None
 
 def get_lightning_transactions():
     global lightning_transactions
@@ -358,6 +383,13 @@ def get_lightning_transactions():
         transactions = []
         data = copy.deepcopy(lightning_transactions)
         for tx in data["transactions"]:
+            label = tx.get("label", "")
+            label_type = get_lnd_tx_label_type(label)
+            # A force close's commitment transaction moves none of the wallet's funds (amount 0), and
+            # LND can list it as unconfirmed after it confirms. The closing balance shows those funds.
+            if label_type == "closechannel" and str(tx.get("amount", "")) == "0":
+                continue
+            tx["label_str"] = LND_TX_LABEL_TYPES.get(label_type, label_type) if label_type else label
             tx["id"] = tx["tx_hash"]
             if settings_file_exists("randomize_balances"):
                 tx["amount_str"] = format_sat_amount(str(random.randint(-200000,500000)))

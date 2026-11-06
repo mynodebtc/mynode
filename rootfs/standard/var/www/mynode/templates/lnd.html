@@ -397,6 +397,12 @@
                             {% endif %}
                         </td>
                     </tr>
+                    {% if closing_balance != "0" %}
+                    <tr>
+                        <th><b>Closing Channels</b></th>
+                        <td>{{ closing_balance }} sats</td>
+                    </tr>
+                    {% endif %}
                 </table>
             </div>
         </div>
@@ -418,7 +424,7 @@
                 </thead>
                 <tbody>
                     {% for tx in transactions[:tx_display_limit] %}
-                        <tr>
+                        <tr title="{{ tx.label_str }}">
                             <td>{{ tx.date_str }}</td>
                             <td>{{ tx.amount_str }}</td>
                             <td>{{ tx.num_confirmations }}</td>

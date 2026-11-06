@@ -276,6 +276,10 @@
                         if ("total_balance" in balances && balances["total_balance"] != null) {
                             $("#lnd_total_balance").text(balances["total_balance"] + " sats");
                         }
+                        if ("closing_balance" in balances && balances["closing_balance"] != null) {
+                            $("#lnd_closing_balance_amount").text(balances["closing_balance"]);
+                            $("#lnd_closing_balance").prop("hidden", balances["closing_balance"] == "0");
+                        }
                     }
                     if ("lnd_ready" in data && data["lnd_ready"] != null) {
                         if (lnd_ready != data["lnd_ready"]) {
@@ -315,7 +319,7 @@
                                 if      (confirmations <  1) { icons.append(tx_icon("confirm_pending.png", "pending transaction")); }
                                 else if (confirmations <= 3) { icons.append(tx_icon("confirm_bars_"+confirmations+".png", confirmations+" confirmations")); }
                                 else                         { icons.append(tx_icon("confirm_complete.png", confirmations+" confirmations")); }
-                                row = $("<tr>").append(
+                                row = $("<tr>").attr("title", tx['label_str'] || "").append(
                                     $("<td>").text(tx['date_str']),
                                     $("<td>").text(tx['amount_str']),
                                     icons);

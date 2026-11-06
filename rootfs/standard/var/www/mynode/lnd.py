@@ -207,6 +207,7 @@ def page_lnd():
         "channel_pending": format_sat_amount(balance_info["channel_pending"]),
         "wallet_balance": format_sat_amount(balance_info["wallet_balance"]),
         "wallet_pending": format_sat_amount(balance_info["wallet_pending"]),
+        "closing_balance": balance_info["closing_balance"],
         "peers": peers,
         "channels": channels,
         "transactions": transactions,

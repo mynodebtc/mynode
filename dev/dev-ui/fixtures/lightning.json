@@ -47,12 +47,18 @@
         "confirmed_balance": "1523419",
         "unconfirmed_balance": "0"
     },
+    "/v1/pendingchannels": {
+        "total_limbo_balance": "0",
+        "pending_open_channels": [],
+        "pending_force_closing_channels": [],
+        "waiting_close_channels": []
+    },
     "/v1/transactions": {
         "transactions": [
             {"tx_hash": "mockchainmocktx0000000000000000000000000000000000000000000000001", "amount": "500000", "num_confirmations": 4402, "block_height": 900721, "time_stamp": -2592000, "total_fees": "312", "label": ""},
             {"tx_hash": "mockchainmocktx0000000000000000000000000000000000000000000000002", "amount": "1200000", "num_confirmations": 2519, "block_height": 902604, "time_stamp": -1512000, "total_fees": "254", "label": ""},
-            {"tx_hash": "mockchainmocktx0000000000000000000000000000000000000000000000003", "amount": "-180000", "num_confirmations": 913, "block_height": 904210, "time_stamp": -604800, "total_fees": "188", "label": ""},
-            {"tx_hash": "mockchainmocktx0000000000000000000000000000000000000000000000004", "amount": "3419", "num_confirmations": 121, "block_height": 905002, "time_stamp": -86400, "total_fees": "0", "label": ""}
+            {"tx_hash": "mockchainmocktx0000000000000000000000000000000000000000000000003", "amount": "-180000", "num_confirmations": 913, "block_height": 904210, "time_stamp": -604800, "total_fees": "188", "label": "0:openchannel:shortchanid-995033322958848000"},
+            {"tx_hash": "mockchainmocktx0000000000000000000000000000000000000000000000004", "amount": "3419", "num_confirmations": 121, "block_height": 905002, "time_stamp": -86400, "total_fees": "0", "label": "0:sweep"}
         ]
     },
     "/v1/payments": {

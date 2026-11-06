@@ -197,6 +197,7 @@
             <div>
                 <b>Balance</b><br/>
                 <span id="lnd_total_balance" style="font-size: 12px; margin-top: 5px;">{{lnd_balance_info['total_balance']}} sats</span>
+                <div id="lnd_closing_balance" style="font-size: 10px;" {% if lnd_balance_info['closing_balance'] == "0" %}hidden{% endif %}>Includes <span id="lnd_closing_balance_amount">{{lnd_balance_info['closing_balance']}}</span> sats in closing channels</div>
 
                 <br/><br/>
                 <b>Deposit</b><br/>
