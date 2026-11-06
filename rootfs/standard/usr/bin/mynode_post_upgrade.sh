@@ -105,6 +105,15 @@ if ! skip_base_upgrades ; then
         # Comment out nodesource repo for buster (doesn't work anymore)
         sed -i 's|^deb|#deb|' /etc/apt/sources.list.d/nodesource.list
     fi
+    # NodeSource removed its per-codename repos (e.g. "node_18.x bookworm main"), which now 404 and
+    # make apt-get update fail. Move an old entry to "nodistro", keeping its Node version, before updating.
+    if [ -f /etc/apt/sources.list.d/nodesource.list ] && grep -q "^deb .*deb\.nodesource\.com/node_" /etc/apt/sources.list.d/nodesource.list && ! grep -q "^deb .* nodistro main" /etc/apt/sources.list.d/nodesource.list; then
+        OLD_NODE_REPO_VERSION=$(sed -n 's|^deb .*deb\.nodesource\.com/node_\([0-9]*\.x\).*|\1|p' /etc/apt/sources.list.d/nodesource.list | head -n 1)
+        if [ "$OLD_NODE_REPO_VERSION" != "" ]; then
+            echo "Repairing stale NodeSource apt repo entry (codename -> nodistro) for node_${OLD_NODE_REPO_VERSION}"
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${OLD_NODE_REPO_VERSION} nodistro main" > /etc/apt/sources.list.d/nodesource.list
+        fi
+    fi
 
     # Raspbian mirrors
     #if [ $IS_RASPI = 1 ]; then
@@ -433,10 +442,6 @@ if ! skip_base_upgrades ; then
             # Remove global and cached packages built against the old version
             npm uninstall -g balanceofsatoshis || true
             npm cache clean --force || true
-        elif [[ "$CURRENT_NODE_VERSION" != *"nodistro"* ]]; then
-            # Same major version, but we need to handle nodesource's migration from codename -> nodistro
-            echo "Repairing stale NodeSource apt repo entry (codename -> nodistro)"
-            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODE_JS_VERSION} nodistro main" > /etc/apt/sources.list.d/nodesource.list
         else
             echo "Node version match"
         fi
