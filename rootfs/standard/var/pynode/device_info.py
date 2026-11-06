@@ -269,6 +269,16 @@ def cleanup_log(log):
     log = re.sub("(product_key|PRODUCT_KEY)=[0-9A-Z]+", "product_key=************", log)
     return log
 
+# Contents of a file in the upgrade log folder, or None if there is no such file
+def get_upgrade_log(filename):
+    folder = "/home/admin/upgrade_logs/"
+    if not os.path.isdir(folder) or filename not in os.listdir(folder):
+        return None
+    path = os.path.join(folder, filename)
+    if not os.path.isfile(path):
+        return None
+    return cleanup_log( to_string( get_file_contents(path) ) )
+
 def get_recent_upgrade_log():
     log =  to_string( get_file_contents("/home/admin/upgrade_logs/upgrade_log_latest.txt") )
     return cleanup_log(log)
@@ -284,6 +294,7 @@ def get_all_upgrade_logs():
             log = {}
             log["id"] = log_id
             log["name"] = "Latest Upgrade"
+            log["filename"] = "upgrade_log_latest.txt"
             modTimeSeconds = os.path.getmtime( os.path.join(folder, "upgrade_log_latest.txt") )
             log["date"] = time.strftime('%Y-%m-%d', time.localtime(modTimeSeconds))
             log["log"] = get_recent_upgrade_log()
@@ -298,6 +309,7 @@ def get_all_upgrade_logs():
                     log = {}
                     log["id"] = log_id
                     log["name"] = f
+                    log["filename"] = f
                     modTimeSeconds = os.path.getmtime(fullpath)
                     log["date"] = time.strftime('%Y-%m-%d', time.localtime(modTimeSeconds))
                     log["log"] = cleanup_log( to_string( get_file_contents(fullpath) ) )

@@ -438,6 +438,19 @@ def get_upgrade_log_page():
     log = cleanup_log(log)
     return Response(log, mimetype="text/plain")
 
+@mynode_settings.route("/settings/download-upgrade-log")
+def download_upgrade_log_page():
+    check_logged_in()
+
+    filename = request.args.get("file", "")
+    log = get_upgrade_log(filename)
+    if log == None:
+        flash("Log not found", category="error")
+        return redirect("/settings")
+
+    return Response(log, mimetype="text/plain",
+                    headers={"Content-Disposition": "attachment; filename=\"{}\"".format(filename)})
+
 @mynode_settings.route("/settings/clear-upgrade-logs")
 def clear_upgrade_logs_page():
     check_logged_in()
@@ -1166,14 +1179,6 @@ def page_btcrpcexplorer_token():
 
     flash("BTC RPC Explorer Token Setting Saved", category="message")
     return redirect(url_for(".page_settings")) 
-
-@mynode_settings.route("/settings/mynode_logs.tar.gz")
-def download_logs_page():
-    check_logged_in()
-
-    os.system("/usr/bin/mynode_gen_debug_tarball.sh")
-
-    return download_file(directory="/tmp/", filename="mynode_logs.tar.gz")
 
 @mynode_settings.route("/settings/mynode_web.cert")
 def download_https_cert_page():

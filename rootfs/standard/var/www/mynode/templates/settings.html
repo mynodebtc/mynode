@@ -958,18 +958,20 @@
                 <table style="font-size: 12px;">
                     <tr>
                         <th></th>
+                        <th></th>
                         <th>Log</th>
                         <th>Date</th>
                     </tr>
                     {% for f in upgrade_logs %}
                     <tr>
                         <td><button data-show-upgrade-log="{{f.id}}" id="show_upgrade_log_{{f.id}}" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button></td>
+                        <td><a href="/settings/download-upgrade-log?file={{f.filename|urlencode}}" class="ui-button ui-widget ui-corner-all settings_button_small">Download</a></td>
                         <td>{{f.name}}</td>
                         <td>&nbsp;&nbsp;&nbsp;&nbsp;{{f.date}}</td>
                     </tr>
                     {% endfor %}
                     <tr>
-                        <td colspan="3" style="margin: auto;">
+                        <td colspan="4" style="margin: auto;">
                             <center><button id="clear_upgrade_logs" class="ui-button ui-widget ui-corner-all settings_button_small">Clear All Logs</button></center>
                         </td>
                     </tr>
@@ -1894,17 +1896,6 @@
         <div class="settings_block">
             <a id="advanced"></a>
             <div class="settings_block_header">Advanced</div>
-
-            <div class="settings_block_subheader">Download Debug Logs</div>
-            This will download all recent logs from your MyNode. This can be helpful for debugging issues.
-            <br/>
-            It may take about one minute to gather and download the logs.
-            <br/>
-            Do not share these logs in a public place. They may contain sensitive information.
-            <br/>
-            <a href="/settings/mynode_logs.tar.gz" class="ui-button ui-widget ui-corner-all settings_button">Download Logs</a>
-
-            <div class="divider"></div>
 
             <div class="settings_block_subheader">Toggle Testnet</div>
             Testnet can be enabled for Bitcoin and Lightning, which can be used to test various features, but may cause other applications to 

@@ -1134,6 +1134,10 @@ fi
 rm -f /usr/bin/ngrok
 rm -rf /tmp/ngrok*
 
+# Remove the debug log bundle (replaced by upgrade log downloads)
+rm -f /usr/bin/mynode_gen_debug_tarball.sh
+rm -rf /tmp/mynode_logs.tar.gz /tmp/mynode_info
+
 
 # Stop WebSSH2 (replaced by the Terminal app)
 systemctl disable --now webssh2 || true

@@ -34,7 +34,7 @@ NOOP_BINS = [
     "bitcoind", "lnd", "lncli", "loopd", "poold", "litd", "electrs", "tor",
     "mynode_chpasswd.sh", "mynode_stop_critical_services.sh",
     "mynode_get_latest_version.sh", "mynode_gen_cert.sh",
-    "mynode_gen_debug_tarball.sh", "mynode_reinstall_app.sh",
+    "mynode_reinstall_app.sh",
     "mynode_uninstall_app.sh", "mynode_upgrade.sh",
     "mynode_upgrade_running.sh", "mynode-install-custom-bitcoin",
     "mynode-get-quicksync-progress", "create_lnd_wallet.tcl",
