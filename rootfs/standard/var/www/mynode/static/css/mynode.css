@@ -1483,3 +1483,32 @@ body .ui-tooltip.ui-widget {
     font-size: 13px;
     color: #c62828;
 }
+
+/* Health table on the Status page */
+.health_summary {
+    font-style: normal;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.health_table {
+    font-size: 14px;
+    width: 100%;
+}
+.health_table th {
+    white-space: nowrap;
+    vertical-align: top;
+    padding-bottom: 8px;
+}
+.health_table td {
+    vertical-align: top;
+    padding-bottom: 8px;
+}
+.health_link {
+    margin-left: 8px;
+}
+.health_details {
+    font-size: 11px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 4px 0 0 0;
+}

@@ -85,6 +85,21 @@ def get_service_status_code(service_name):
         return 0
     return 3
 
+def get_failed_services():
+    # Names of services that crashed or failed to start, sorted
+    try:
+        output = to_string(subprocess.check_output(["systemctl", "list-units", "--state=failed", "--type=service",
+                                                    "--plain", "--no-legend", "--no-pager"], timeout=10))
+    except Exception as e:
+        log_message("get_failed_services: systemctl list-units failed: {}".format(str(e)))
+        return []
+    failed = []
+    for line in output.splitlines():
+        fields = line.split()
+        if len(fields) > 0 and fields[0].endswith(".service"):
+            failed.append(fields[0][:-len(".service")])
+    return sorted(failed)
+
 def get_service_status_basic_text(service_name):
     if not is_service_enabled(service_name):
         return "Disabled"

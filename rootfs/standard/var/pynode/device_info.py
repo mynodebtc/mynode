@@ -259,6 +259,89 @@ def did_upgrade_fail():
 def did_os_packages_upgrade_fail():
     return settings_file_exists(OS_PACKAGES_UPGRADE_ERROR) and not is_upgrade_running()
 
+# Written by apt_get_update (mynode_functions.sh) when "apt-get update" failed during an upgrade
+APT_UPDATE_ERROR_FILE = "/mnt/hdd/mynode/settings/apt_update_error"
+
+def get_apt_update_error():
+    # Returns None, or {"time": "YYYY-MM-DD HH:MM", "errors": "<apt's error lines>"}
+    try:
+        mtime = os.path.getmtime(APT_UPDATE_ERROR_FILE)
+        with open(APT_UPDATE_ERROR_FILE, "r") as f:
+            errors = f.read().strip()
+    except Exception:
+        return None
+    # A later update without errors (like the daily one for automatic security updates) fixed it
+    last_update = get_apt_last_update_time()
+    if last_update is not None and last_update > mtime:
+        return None
+    return {"time": time.strftime("%Y-%m-%d %H:%M", time.localtime(mtime)), "errors": errors}
+
+# Touched by apt after each "apt-get update" without errors (/etc/apt/apt.conf.d/15update-stamp)
+APT_UPDATE_SUCCESS_STAMP = "/var/lib/apt/periodic/update-success-stamp"
+# Touched by apt.systemd.daily after unattended-upgrade runs without failing
+UNATTENDED_UPGRADES_STAMP = "/var/lib/apt/periodic/unattended-upgrades-stamp"
+UNATTENDED_UPGRADES_LOG = "/var/log/unattended-upgrades/unattended-upgrades.log"
+
+def get_file_mtime(path):
+    try:
+        return os.path.getmtime(path)
+    except Exception:
+        return None
+
+def get_apt_last_update_time():
+    return get_file_mtime(APT_UPDATE_SUCCESS_STAMP)
+
+def get_unattended_upgrades_last_run_time():
+    return get_file_mtime(UNATTENDED_UPGRADES_STAMP)
+
+def get_unattended_upgrades_last_run_errors():
+    # ERROR lines from the most recent run in the unattended-upgrades log, or [] if none
+    try:
+        with open(UNATTENDED_UPGRADES_LOG, "r") as f:
+            lines = f.read().splitlines()
+    except Exception:
+        return []
+    for i in range(len(lines) - 1, -1, -1):
+        if "Starting unattended upgrades script" in lines[i]:
+            lines = lines[i:]
+            break
+    return [l for l in lines if " ERROR " in l]
+
+def split_kernel_release(release):
+    # "6.1.0-16-amd64" -> ((6, 1, 0, 16), "-amd64") and "6.6.51+rpt-rpi-v8" -> ((6, 6, 51), "+rpt-rpi-v8")
+    match = re.match(r"^(\d+(?:[.\-]\d+)*)(.*)$", release)
+    if not match:
+        return None, None
+    return tuple(int(p) for p in re.split(r"[.\-]", match.group(1))), match.group(2)
+
+def get_newer_installed_kernel(running_release=None, modules_dir="/lib/modules"):
+    # Release of the newest installed kernel of the running kernel's flavor, if it is newer than the
+    # running one (the device needs a reboot to use it). Otherwise None.
+    if running_release is None:
+        running_release = os.uname().release
+    running_version, flavor = split_kernel_release(running_release)
+    if running_version is None:
+        return None
+    newest = None
+    newest_version = running_version
+    try:
+        releases = os.listdir(modules_dir)
+    except Exception:
+        return None
+    for release in releases:
+        # A removed kernel can leave an empty folder behind
+        if not os.path.isdir(os.path.join(modules_dir, release, "kernel")):
+            continue
+        version, release_flavor = split_kernel_release(release)
+        if version is not None and release_flavor == flavor and version > newest_version:
+            newest = release
+            newest_version = version
+    return newest
+
+def is_reboot_required():
+    # Debian packages (like kernels, via unattended-upgrades' hook) request a reboot with this file
+    return os.path.isfile("/run/reboot-required") or get_newer_installed_kernel() is not None
+
 def get_os_packages_upgrade_log_tail(lines=40):
     log = to_string(get_file_contents(OS_PACKAGES_UPGRADE_LOG))
     if log == "ERROR":
