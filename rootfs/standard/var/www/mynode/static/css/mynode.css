@@ -1513,7 +1513,7 @@ body .ui-tooltip.ui-widget {
     margin: 4px 0 0 0;
 }
 
-/* Health indicator (top right) and banner on the home page */
+/* Health indicators (top right) on the home page */
 .health_indicator {
     position: relative;
     display: inline-block;
@@ -1539,20 +1539,4 @@ body .ui-tooltip.ui-widget {
 }
 .health_indicator_badge_warning {
     background-color: #e67700;
-}
-.health_banner {
-    text-align: center;
-    font-size: 13px;
-    padding-top: 6px;
-    padding-bottom: 6px;
-}
-.health_banner_icon {
-    width: 16px;
-    height: 16px;
-    vertical-align: text-bottom;
-    margin-right: 6px;
-}
-.health_banner a {
-    margin-left: 8px;
-    font-weight: bold;
 }

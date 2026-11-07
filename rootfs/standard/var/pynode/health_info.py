@@ -164,11 +164,22 @@ def check_memory():
                       details=get_oom_error_info(), link=("/settings/clear-oom-error", "Clear"))
     return _check("Memory", "ok", "RAM usage {}".format(get_ram_usage()))
 
+# A problem with one of these is an error, since much of the device stops working without them.
+# Problems with other services (apps) are warnings.
+CORE_SERVICES = ["mynode", "bitcoin", "lnd", "tor@default", "www", "nginx", "docker"]
+
 def check_failed_services():
-    failed = get_failed_services()
-    if failed:
-        return _check("Services", "warning", "{} service(s) crashed or failed to start: {}. Their logs are in Service Status below.".format(len(failed), ", ".join(failed)))
-    return _check("Services", "ok", "No failed services.")
+    problems = get_service_problems()
+    if not problems:
+        return _check("Services", "ok", "No failed or crashing services.")
+    descriptions = []
+    for p in problems:
+        if p["state"] == "failed":
+            descriptions.append("{} (failed)".format(p["name"]))
+        else:
+            descriptions.append("{} (restarted {} times after crashing)".format(p["name"], p["restarts"]))
+    status = "error" if any(p["name"] in CORE_SERVICES for p in problems) else "warning"
+    return _check("Services", status, "{}. Their logs are in Service Status below.".format(", ".join(descriptions)))
 
 def check_data_drive():
     name = "Data Drive"
