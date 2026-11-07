@@ -1,3 +1,11 @@
+{% if health_summary and health_summary.problem_count > 0 %}
+<div class="main_page_{{ "error" if health_summary.status == "error" else "warning" }}_block health_banner">
+    <img class="health_banner_icon" src="{{ url_for('static', filename="images/health_error.svg" if health_summary.status == "error" else "images/warning_triangle.svg")}}"/>
+    <span>Health check found {{ health_summary.text }}.</span>
+    <a href="/status#health">View Details</a>
+</div>
+{% endif %}
+
 {% if product_key_skipped %}
 <div class="main_page_warning_block">
     <p style="text-align: center;"><b>Community Edition</b></p>

@@ -1512,3 +1512,47 @@ body .ui-tooltip.ui-widget {
     word-break: break-word;
     margin: 4px 0 0 0;
 }
+
+/* Health indicator (top right) and banner on the home page */
+.health_indicator {
+    position: relative;
+    display: inline-block;
+}
+.health_indicator_badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    box-sizing: border-box;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 16px;
+    text-align: center;
+    color: #ffffff;
+    pointer-events: none;
+}
+.health_indicator_badge_error {
+    background-color: #e03131;
+}
+.health_indicator_badge_warning {
+    background-color: #e67700;
+}
+.health_banner {
+    text-align: center;
+    font-size: 13px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+.health_banner_icon {
+    width: 16px;
+    height: 16px;
+    vertical-align: text-bottom;
+    margin-right: 6px;
+}
+.health_banner a {
+    margin-left: 8px;
+    font-weight: bold;
+}

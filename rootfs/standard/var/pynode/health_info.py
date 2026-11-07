@@ -10,14 +10,20 @@ import time
 # Device health checks for the Status page. Each check returns a dict, or None when it does not apply
 # to this device:
 #   name     - what is checked
-#   status   - "ok", "warning", "error" or "unknown"
+#   status   - "error" or "warning" (problems, counted on the home page), "info" (worth knowing,
+#              like an available upgrade, but not a problem), "ok" or "unknown"
 #   summary  - one line about the result
 #   details  - optional text shown under the summary (preformatted)
 #   link     - optional (url, text) for where to fix it
 # Dismissing a warning on the home page does not hide it here.
 
-HEALTH_STATUS_COLORS = {"ok": "green", "warning": "yellow", "error": "red", "unknown": "gray"}
-HEALTH_STATUS_ORDER = {"error": 0, "warning": 1, "unknown": 2, "ok": 3}
+HEALTH_STATUS_COLORS = {"ok": "green", "info": "blue", "warning": "yellow", "error": "red", "unknown": "gray"}
+HEALTH_STATUS_ORDER = {"error": 0, "warning": 1, "info": 2, "unknown": 3, "ok": 4}
+
+# The home page reuses results this recent, since it reloads often. The Status page always checks again.
+HEALTH_CHECKS_HOME_MAX_AGE = 60
+health_checks_cache = None
+health_checks_cache_time = 0
 
 APT_UPDATE_MAX_AGE_DAYS = 7
 UNATTENDED_UPGRADES_MAX_AGE_DAYS = 3
@@ -58,7 +64,7 @@ def check_mynode_upgrade():
                       "The automatic upgrade to {} has failed {} time(s).".format(auto_upgrade["target"], auto_upgrade["attempts"]),
                       link=("/settings#mynode", "Settings"))
     if current not in ["0.0", "error"] and latest not in ["0.0", "error"] and current != latest:
-        return _check("MyNode Upgrade", "warning", "Version {} is available (running {}).".format(latest, current),
+        return _check("MyNode Upgrade", "info", "Version {} is available (running {}).".format(latest, current),
                       link=("/settings#mynode", "Settings"))
     return _check("MyNode Upgrade", "ok", "Running version {}.".format(current))
 
@@ -87,7 +93,8 @@ def check_unattended_upgrades():
     if get_debian_codename() == "buster":
         return _check(name, "unknown", "Debian 10 no longer receives security updates.")
     if settings_file_exists("unattended_upgrades_disabled"):
-        return _check(name, "warning", "Turned off.", link=("/settings#os_packages", "Settings"))
+        # The owner's choice, so it is not counted as a problem
+        return _check(name, "info", "Turned off. Turning them on is recommended.", link=("/settings#os_packages", "Settings"))
 
     last_run = get_unattended_upgrades_last_run_time()
     errors = get_unattended_upgrades_last_run_errors()
@@ -258,8 +265,12 @@ HEALTH_CHECKS = [
     check_tor_version,
 ]
 
-def get_health_checks():
-    # Problems first, then the rest in the order above
+def get_health_checks(max_age=0):
+    # Problems first, then the rest in the order above. Results up to max_age seconds old are reused.
+    global health_checks_cache
+    global health_checks_cache_time
+    if max_age > 0 and health_checks_cache is not None and time.time() - health_checks_cache_time < max_age:
+        return health_checks_cache
     results = []
     for check in HEALTH_CHECKS:
         try:
@@ -269,7 +280,10 @@ def get_health_checks():
             result = _check(check.__name__.replace("check_", "").replace("_", " ").title(), "unknown", "Could not be checked.")
         if result is not None:
             results.append(result)
-    return sorted(results, key=lambda r: HEALTH_STATUS_ORDER[r["status"]])
+    results = sorted(results, key=lambda r: HEALTH_STATUS_ORDER[r["status"]])
+    health_checks_cache = results
+    health_checks_cache_time = time.time()
+    return results
 
 def get_health_summary(checks):
     errors = len([c for c in checks if c["status"] == "error"])
@@ -286,4 +300,5 @@ def get_health_summary(checks):
     if warnings:
         parts.append("{} warning{}".format(warnings, "" if warnings == 1 else "s"))
     text = ", ".join(parts) if parts else "No problems found"
-    return {"status": status, "color": HEALTH_STATUS_COLORS[status], "text": text}
+    return {"status": status, "color": HEALTH_STATUS_COLORS[status], "text": text,
+            "errors": errors, "warnings": warnings, "problem_count": errors + warnings}
