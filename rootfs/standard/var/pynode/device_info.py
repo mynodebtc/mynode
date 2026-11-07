@@ -276,8 +276,10 @@ def get_apt_update_error():
         return None
     return {"time": time.strftime("%Y-%m-%d %H:%M", time.localtime(mtime)), "errors": errors}
 
-# Touched by apt after each "apt-get update" without errors (/etc/apt/apt.conf.d/15update-stamp)
-APT_UPDATE_SUCCESS_STAMP = "/var/lib/apt/periodic/update-success-stamp"
+# Touched by apt.systemd.daily (apt-daily.service) after its "apt-get update" runs without errors.
+# A manual or MyNode upgrade "apt-get update" doesn't touch it, but apt_get_update removes
+# APT_UPDATE_ERROR_FILE itself after a clean update.
+APT_UPDATE_SUCCESS_STAMP = "/var/lib/apt/periodic/update-stamp"
 # Touched by apt.systemd.daily after unattended-upgrade runs without failing
 UNATTENDED_UPGRADES_STAMP = "/var/lib/apt/periodic/unattended-upgrades-stamp"
 UNATTENDED_UPGRADES_LOG = "/var/log/unattended-upgrades/unattended-upgrades.log"
