@@ -1,0 +1,24 @@
+<div class="settings_block_subheader_status health_summary">
+    <div class="settings_block_subheader_status_icon {{ health_summary.color }}"></div>
+    {{ health_summary.text }}
+</div>
+<table class="info_table health_table">
+    {% for check in health_checks %}
+    <tr>
+        <th>
+            <div class="settings_block_subheader_status_icon {{ check.color }}" title="{{ check.status|capitalize }}"></div>
+            {{ check.name }}
+        </th>
+        <td>
+            {{ check.summary }}
+            {% if check.link %}
+                {% set link_url, link_text = check.link %}
+                <a href="{{ link_url }}" {% if link_url.startswith("http") %}target="_blank"{% endif %} class="ui-button ui-widget ui-corner-all settings_button_small health_link">{{ link_text }}</a>
+            {% endif %}
+            {% if check.details %}
+                <pre class="health_details">{{ check.details }}</pre>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>

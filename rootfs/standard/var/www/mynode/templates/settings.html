@@ -1946,6 +1946,12 @@
             <p style="color: red;">The last OS package upgrade failed, so your device was not rebooted. The end of its log is below. Fix the problem and try again.</p>
             <div style='text-align: left; font-size: 12px; overflow-x: auto;'><pre>{{os_packages_upgrade_log}}</pre></div>
             {% endif %}
+            {% if apt_update_error %}
+            <p style="color: red;">Some package sources could not be updated during the upgrade on {{apt_update_error.time}}, so packages from them
+                stay on older versions. The upgrade continued without them. This is often a third-party source that moved or changed its key, and
+                the next upgrade may fix it. The errors are below.</p>
+            <div style='text-align: left; font-size: 12px; overflow-x: auto;'><pre>{{apt_update_error.errors}}</pre></div>
+            {% endif %}
             <button id="upgrade_os_packages" class="ui-button ui-widget ui-corner-all settings_button">Upgrade OS Packages</button>
 
             <div class="divider"></div>

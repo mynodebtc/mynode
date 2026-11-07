@@ -55,6 +55,14 @@ def get_service_status_code(service_name):
     return 0 if _service_state(service_name) == "running" else 3
 
 
+def get_service_problems():
+    try:
+        names = os.listdir(MOCK_SERVICES_DIR)
+    except Exception:
+        return []
+    return [{"name": n, "state": "failed", "restarts": 0} for n in sorted(names) if _service_state(n) == "failed"]
+
+
 def get_service_status_basic_text(service_name):
     state = _service_state(service_name)
     if state == "disabled":

@@ -37,6 +37,7 @@ from device_info import *
 from auto_upgrade import *
 from drive_info import *
 from device_warnings import *
+from health_info import get_health_checks, get_health_summary, HEALTH_CHECKS_HOME_MAX_AGE
 from systemctl_info import *
 from application_info import *
 from price_info import *
@@ -756,6 +757,7 @@ def index():
             "swap_usage": get_swap_usage(),
             "device_temp": get_device_temp(),
             "upgrade_available": upgrade_available,
+            "health_summary": get_health_summary(get_health_checks(max_age=HEALTH_CHECKS_HOME_MAX_AGE)),
             "auto_upgrade": get_auto_upgrade_status(),
             "set_timezone_from_browser": should_set_timezone_from_browser(),
             "show_https_warning": not request.is_secure and not is_https_warning_hidden(),

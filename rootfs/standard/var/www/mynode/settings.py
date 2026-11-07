@@ -14,6 +14,7 @@ from drive_info import *
 from application_info import *
 from device_info import *
 from auto_upgrade import *
+from health_info import get_health_checks, get_health_summary
 import time
 import os
 import subprocess
@@ -75,6 +76,7 @@ def page_settings():
         "upgrade_logs": get_all_upgrade_logs(),
         "os_packages_upgrade_error": did_os_packages_upgrade_fail(),
         "os_packages_upgrade_log": get_os_packages_upgrade_log_tail(),
+        "apt_update_error": get_apt_update_error(),
         "is_unattended_upgrades_enabled": not settings_file_exists("unattended_upgrades_disabled"),
         "unattended_upgrades_supported": get_debian_codename() != "buster",
         "auto_upgrade": get_auto_upgrade_status(),
@@ -200,9 +202,13 @@ def page_status():
     # Find running containers
     running_containers = get_docker_running_containers()
 
+    health_checks = get_health_checks()
+
     templateData = {
         "title": "Status",
         "password_message": "",
+        "health_checks": health_checks,
+        "health_summary": get_health_summary(health_checks),
         "current_version": current_version,
         "latest_version": latest_version,
         "current_beta_version": current_beta_version,

@@ -604,6 +604,18 @@
         </div>
 
         <div class="mynode_top_right_div">
+            {% if health_summary.errors > 0 %}
+                <a href="/status#health" class="health_indicator" title="Health: {{ health_summary.errors }} error{{ "s" if health_summary.errors != 1 }}">
+                    <img class="mynode_nav_icon" src="{{ url_for('static', filename="images/health_error.svg")}}"/>
+                    <span class="health_indicator_badge health_indicator_badge_error">{{ health_summary.errors }}</span>
+                </a>
+            {% endif %}
+            {% if health_summary.warnings > 0 %}
+                <a href="/status#health" class="health_indicator" title="Health: {{ health_summary.warnings }} warning{{ "s" if health_summary.warnings != 1 }}">
+                    <img class="mynode_nav_icon" src="{{ url_for('static', filename="images/warning_triangle.svg")}}"/>
+                    <span class="health_indicator_badge health_indicator_badge_warning">{{ health_summary.warnings }}</span>
+                </a>
+            {% endif %}
             {% if upgrade_available %}
                 <a href="/settings" title="Upgrade Available{% if auto_upgrade.enabled and auto_upgrade.target and auto_upgrade.scheduled and not auto_upgrade.skipped %} - installs automatically after {{auto_upgrade.scheduled}}{% endif %}"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/upgrade.png")}}"/></a>
             {% endif %}
