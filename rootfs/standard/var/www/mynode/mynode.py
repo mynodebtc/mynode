@@ -748,6 +748,7 @@ def index():
             "kernel_cve_fixed_version": get_cve_2026_98432_fixed_kernel_version(),
             "kernel_cve_mitigated_device": is_kernel_cve_mitigated_device(),
             "show_reboot_required_notice": show_reboot_required_notice(),
+            "show_kernel_update_notice": show_kernel_update_notice(),
             "node_version_warning": get_node_version_warning(),
             "node_version": get_node_version(),
             "notifications": get_active_notifications(),
@@ -913,6 +914,12 @@ def page_clear_kernel_cve_warning():
 def page_clear_reboot_required_notice():
     check_logged_in()
     hide_reboot_required_notice()
+    return redirect("/")
+
+@app.route("/clear-kernel-update-notice")
+def page_clear_kernel_update_notice():
+    check_logged_in()
+    hide_kernel_update_notice()
     return redirect("/")
 
 @app.route("/dismiss-expiration-warning")
@@ -1236,6 +1243,9 @@ def start_threads():
     service_status_thread = BackgroundThread(refresh_service_status_cache, 60)
     service_status_thread.start()
     threads.append(service_status_thread)
+    kernel_update_thread = BackgroundThread(update_kernel_update_cache, 60*10)
+    kernel_update_thread.start()
+    threads.append(kernel_update_thread)
 
     app.logger.info("STARTED {} THREADS".format(len(threads)))
 

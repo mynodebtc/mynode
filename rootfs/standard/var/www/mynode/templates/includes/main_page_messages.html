@@ -160,6 +160,16 @@
 </div>
 {% endif %}
 
+{% if show_kernel_update_notice %}
+<div class="main_page_warning_block">
+    <p style="text-align: center;"><b>Linux Kernel Update Available</b></p>
+    <p style="text-align: center;">A newer Linux kernel is available for your device. Upgrade OS packages on the <a href="/settings#os_packages">Settings</a> page, then reboot your device.</p>
+    <p style="text-align: center;">
+        <a href="/clear-kernel-update-notice" class="ui-button ui-widget ui-corner-all settings_button_small">OK</a>
+    </p>
+</div>
+{% endif %}
+
 {% if node_version_warning %}
 <div class="main_page_error_block">
     <p style="text-align: center; font-size: 16px;"><b>NodeJS is out of date</b></p>

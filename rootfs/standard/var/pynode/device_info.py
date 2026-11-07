@@ -1043,6 +1043,63 @@ def show_reboot_required_notice():
 def hide_reboot_required_notice():
     touch("/tmp/hide_reboot_required_notice")
 
+# Packages that bring in new kernels when they are upgraded. Automatic OS security updates
+# don't install Raspberry Pi kernels or Debian kernels from point releases, but
+# "Upgrade OS Packages" and MyNode upgrades do.
+KERNEL_PACKAGES = ["raspberrypi-kernel", "linux-image-rpi-2712", "linux-image-rpi-v8",
+                   "linux-image-amd64", "linux-image-arm64"]
+
+# Runs in a background thread: apt-cache can take several seconds when it has to rebuild
+# its cache after packages change
+def update_kernel_update_cache():
+    global cached_data
+    # The package lists and installed packages decide the answer, so only check again
+    # after one of them changes
+    try:
+        key = (os.path.getmtime("/var/lib/apt/lists"), os.path.getmtime("/var/lib/dpkg/status"))
+    except OSError:
+        return
+    if cached_data.get("kernel_update_key") == key:
+        return
+
+    update_version = None
+    try:
+        output = to_string(subprocess.check_output(["apt-cache", "policy"] + KERNEL_PACKAGES,
+                                                   stderr=subprocess.DEVNULL, timeout=60))
+    except Exception as e:
+        log_message("Unable to check for kernel updates: {}".format(str(e)))
+        return
+    installed = None
+    for line in output.splitlines():
+        line = line.strip()
+        if line.startswith("Installed:"):
+            installed = line.split(":", 1)[1].strip()
+        elif line.startswith("Candidate:"):
+            candidate = line.split(":", 1)[1].strip()
+            if installed not in [None, "(none)"] and candidate not in ["(none)", installed]:
+                update_version = candidate
+            installed = None
+
+    cached_data["kernel_update_key"] = key
+    cached_data["kernel_update_version"] = update_version
+
+# Returns the version of a newer kernel package that can be installed, or None
+def get_kernel_update_version():
+    return cached_data.get("kernel_update_version")
+
+# Dismissing the notice hides it until a different kernel version is available
+def show_kernel_update_notice():
+    update_version = get_kernel_update_version()
+    if update_version is None:
+        return False
+    if os.path.isfile("/tmp/hide_kernel_update_notice"):
+        return to_string(get_file_contents("/tmp/hide_kernel_update_notice")) != update_version
+    return True
+def hide_kernel_update_notice():
+    update_version = get_kernel_update_version()
+    if update_version is not None:
+        set_file_contents("/tmp/hide_kernel_update_notice", update_version)
+
 # Oldest NodeJS release accepted for each maintained major version. Majors that are not
 # listed and are older than the newest listed major are no longer maintained.
 NODE_MIN_VERSIONS = {
