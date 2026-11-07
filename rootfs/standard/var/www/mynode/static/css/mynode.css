@@ -1503,6 +1503,9 @@ body .ui-tooltip.ui-widget {
     vertical-align: top;
     padding-bottom: 8px;
 }
+#show_health_details {
+    margin-bottom: 10px;
+}
 .health_link {
     margin-left: 8px;
 }

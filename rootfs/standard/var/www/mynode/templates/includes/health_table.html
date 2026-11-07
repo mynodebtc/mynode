@@ -2,7 +2,11 @@
     <div class="settings_block_subheader_status_icon {{ health_summary.color }}"></div>
     {{ health_summary.text }}
 </div>
-<table class="info_table health_table">
+{# Without errors or warnings, only the summary shows until the table is expanded #}
+{% if health_summary.problem_count == 0 %}
+<button id="show_health_details" class="ui-button ui-widget ui-corner-all settings_button_small">Show Details</button>
+{% endif %}
+<table id="health_table" class="info_table health_table"{% if health_summary.problem_count == 0 %} style="display: none;"{% endif %}>
     {% for check in health_checks %}
     <tr>
         <th>
