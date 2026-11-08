@@ -11,10 +11,10 @@
             function showLog(name) {
                 visible = $("#"+name+"_log").is(':visible');
                 if (visible) {
-                    $("#show_"+name+"_log").text("Show Log");
+                    $("#show_"+name+"_log").removeClass("mn_open");
                     $("#"+name+"_log").hide();
                 } else {
-                    $("#show_"+name+"_log").text("Hide Log");
+                    $("#show_"+name+"_log").addClass("mn_open");
                     $.get( "/api/get_log?app="+name, function( data ) {
                         $("#"+name+"_log").empty().append($("<pre>").text(data["log"]));
                         $("#"+name+"_log").show();
@@ -137,246 +137,108 @@
             {% include 'includes/health_table.html' %}
         </div>
 
+        {# One card per service. The log opens full width below the card's row. #}
+        {% macro service_card(key, name, color, status, log, status_id=none, containers=none, running=[]) %}
+            <div class="mn_service">
+                <div {% if status_id %}id="{{status_id}}_status_icon" {% endif %}class="settings_block_subheader_status_icon {{ color }}"></div>
+                <div class="mn_service_main">
+                    <div class="mn_service_name">{{ name }}</div>
+                    <div {% if status_id %}id="{{status_id}}_status" {% endif %}class="mn_service_status">{{ status }}</div>
+                    {% if containers is not none %}
+                    <div class="mn_service_containers">
+                        <span class="mn_label">Running Containers</span>
+                        {% for container, label in containers | selectattr("0", "in", running) %}
+                            <span class="mn_chip">{{ label }}</span>
+                        {% else %}
+                            <span class="mn_service_status">None</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                <button id="show_{{key}}_log" data-show-log="{{key}}" class="mn_label mn_label_toggle mn_service_log_toggle" title="Show Log">Log <i class="fas fa-chevron-down"></i></button>
+            </div>
+            <div id="{{key}}_log" class="mn_details mn_service_log" style="display: none;"><pre>{{ log }}</pre></div>
+        {% endmacro %}
+
         <div class="settings_block">
             <div class="settings_block_header">Service Status</div>
 
-            <div class="settings_block_subheader">MyNode Startup Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ startup_status_color }}"></div>
-                {{ startup_status }}
-            </div>
-            <button id="show_startup_log" data-show-log="startup" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="startup_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{startup_status_log}}</pre></div>
-            <div class="divider"></div>
+            <div class="mn_services">
+                {{ service_card("startup", "MyNode Startup", startup_status_color, startup_status, startup_status_log) }}
+                {{ service_card("tor", "Tor", tor_status_color, tor_status, tor_status_log) }}
+                {{ service_card("bitcoin", "Bitcoin", bitcoin_status_color, bitcoin_status, bitcoin_status_log) }}
 
-            <div class="settings_block_subheader">Tor Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ tor_status_color }}"></div>
-                {{ tor_status }}
-            </div>
-            <button id="show_tor_log" data-show-log="tor" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="tor_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{tor_status_log}}</pre></div>
-            <div class="divider"></div>
+                {% if is_bitcoin_synced %}
+                {{ service_card("lnd", "LND", lnd_status_color, lnd_status, lnd_status_log) }}
 
-            <div class="settings_block_subheader">Bitcoin Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ bitcoin_status_color }}"></div>
-                {{ bitcoin_status }}
-            </div>
-            <button id="show_bitcoin_log" data-show-log="bitcoin" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="bitcoin_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{bitcoin_status_log}}</pre></div>
-            <div class="divider"></div>
+                {% for app in apps %}
+                    {% if app.show_on_status_page %}
+                        {% set display = 1 %}
+                        {% if app.requires_bitcoin and not is_bitcoin_synced %}
+                            {% set display = 0 %}
+                        {% endif %}
+                        {% if app.requires_lightning %}
+                            {% set display = 0 %}
+                            {% if lnd_wallet_exists and lnd_ready %}
+                                {% set display = 1 %}
+                            {% endif %}
+                        {% endif %}
+                        {% if not app.is_enabled %}
+                            {% set display = 0 %}
+                        {% endif %}
 
-            {% if is_bitcoin_synced %}
-
-            <div class="settings_block_subheader">LND Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ lnd_status_color }}"></div>
-                {{ lnd_status }}
-            </div>
-            <button id="show_lnd_log" data-show-log="lnd" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="lnd_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{lnd_status_log}}</pre></div>
-            <div class="divider"></div>
-
-            {% for app in apps %}
-                {% if app.show_on_status_page %}
-                    {% set display = 1 %}
-                    {% if app.requires_bitcoin and not is_bitcoin_synced %}
-                        {% set display = 0 %}
-                    {% endif %}
-                    {% if app.requires_lightning %}
-                        {% set display = 0 %}
-                        {% if lnd_wallet_exists and lnd_ready %}
-                            {% set display = 1 %}
+                        {% if display %}
+                            {{ service_card(app.short_name, app.name, "clear", "Loading....", "Loading...", status_id=app.short_name) }}
                         {% endif %}
                     {% endif %}
-                    {% if not app.is_enabled %}
-                        {% set display = 0 %}
-                    {% endif %}
-                    
-                    {% if display %}
-                        <div class="settings_block_subheader">{{app.name}} Status</div>
-                        <div class="settings_block_subheader_status">
-                            <div id="{{app.short_name}}_status_icon" class="settings_block_subheader_status_icon clear"></div>
-                            <span id="{{app.short_name}}_status">Loading....</span>
-                        </div>
-                        <button id="show_{{app.short_name}}_log" data-show-log="{{app.short_name}}" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-                        <div id="{{app.short_name}}_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>Loading...</pre></div>
-                        <div class="divider"></div>
-                    {% endif %}
+                {% endfor %}
+
+                {% if joininbox_installed %}
+                {{ service_card("joinmarket-api", "Joinmarket API", joinmarket_api_status_color, joinmarket_api_status, joinmarket_api_status_log) }}
+                {{ service_card("joinmarket-obwatcher", "Joinmarket Orderbook Watcher", joinmarket_obwatcher_status_color, joinmarket_obwatcher_status, joinmarket_obwatcher_status_log) }}
                 {% endif %}
-            {% endfor %}
 
-            {% if joininbox_installed %}
-            <div class="settings_block_subheader">Joinmarket API Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ joinmarket_api_status_color }}"></div>
-                {{ joinmarket_api_status }}
+                {% if whirlpool_installed %}
+                {{ service_card("whirlpool", "Whirlpool", whirlpool_status_color, whirlpool_status, whirlpool_status_log) }}
+                {% endif %}
+
+                {% if dojo_installed %}
+                {{ service_card("dojo", "Dojo", dojo_status_color, dojo_status, dojo_status_log,
+                                containers=[("tor", "tor"), ("nodejs", "nodejs"), ("db", "db"), ("nginx", "nginx")],
+                                running=running_containers) }}
+                {% endif %}
+
+                {{ service_card("btcpayserver", "BTCPay Server", btcpayserver_status_color, btcpayserver_status, btcpayserver_status_log,
+                                containers=[("generated_btcpayserver_1", "btcpayserver"), ("generated_nbxplorer_1", "nbxplorer"), ("generated_postgres_1", "postgres")],
+                                running=running_containers) }}
+
+                {{ service_card("mempool", "Mempool", mempool_status_color, mempool_status, mempool_status_log,
+                                containers=[("mempool_web_1", "mempool_web_1"), ("mempool_db_1", "mempool_db_1"), ("mempool_api_1", "mempool_api_1"),
+                                            ("mempool-web-1", "mempool-web-1"), ("mempool-db-1", "mempool-db-1"), ("mempool-api-1", "mempool-api-1")],
+                                running=running_containers) }}
+                {% endif %}
+
+                {{ service_card("docker", "Docker", docker_status_color, docker_status, docker_status_log) }}
+
+                {% if is_bitcoin_synced %}
+                {{ service_card("docker_image_build", "Docker Image Build", docker_image_build_status_color, docker_image_build_status, docker_image_build_status_log) }}
+                {% endif %}
+
+                {{ service_card("nginx", "NGINX", nginx_status_color, nginx_status, nginx_status_log) }}
+
+                {% if is_bitcoin_synced %}
+                {{ service_card("usb_extras", "USB Extras", usb_extras_status_color, usb_extras_status, usb_extras_status_log) }}
+                {% endif %}
+
+                {% if is_premium_plus_token_set %}
+                {{ service_card("premium_plus_connect", "Premium+", premium_plus_connect_status_color, premium_plus_connect_status, premium_plus_connect_status_log) }}
+                {% endif %}
+
+                {{ service_card("www", "Web Server", www_status_color, www_status, www_status_log) }}
+                {{ service_card("i2pd", "I2PD", i2pd_status_color, i2pd_status, i2pd_status_log) }}
+                {{ service_card("ufw", "Firewall", ufw_status_color, ufw_status, ufw_status_log) }}
+                {{ service_card("linux", "Linux", linux_status_color, linux_status, linux_status_log) }}
             </div>
-            <button id="show_joinmarket-api_log" data-show-log="joinmarket-api" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="joinmarket-api_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{joinmarket_api_status_log}}</pre></div>
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Joinmarket Orderbook Watcher Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ joinmarket_obwatcher_status_color }}"></div>
-                {{ joinmarket_obwatcher_status }}
-            </div>
-            <button id="show_joinmarket-obwatcher_log" data-show-log="joinmarket-obwatcher" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="joinmarket-obwatcher_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{joinmarket_obwatcher_status_log}}</pre></div>
-            <div class="divider"></div>
-            {% endif %}
-
-            {% if whirlpool_installed %}
-            <div class="settings_block_subheader">Whirlpool Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ whirlpool_status_color }}"></div>
-                {{ whirlpool_status }}
-            </div>
-            <button id="show_whirlpool_log" data-show-log="whirlpool" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="whirlpool_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{whirlpool_status_log}}</pre></div>
-            <div class="divider"></div>
-            {% endif %}
-
-            {% if dojo_installed %}
-            <div class="settings_block_subheader">Dojo Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ dojo_status_color }}"></div>
-                {{ dojo_status }}
-                <span class='status_container_list'>
-                    Running Containers: 
-                    {% if 'tor' in running_containers %} tor {% endif %}
-                    {% if 'nodejs' in running_containers %} nodejs {% endif %}
-                    {% if 'db' in running_containers %} db {% endif %}
-                    {% if 'nginx' in running_containers %} nginx {% endif %}
-                </span>
-            </div>
-            <button id="show_dojo_log" data-show-log="dojo" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="dojo_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{dojo_status_log}}</pre></div>
-            <div class="divider"></div>
-            {% endif %}
-
-            <div class="settings_block_subheader">BTCPay Server Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ btcpayserver_status_color }}"></div>
-                {{ btcpayserver_status }}
-                <span class='status_container_list'>
-                    Running Containers: 
-                    {% if 'generated_btcpayserver_1' in running_containers %} btcpayserver {% endif %}
-                    {% if 'generated_nbxplorer_1' in running_containers %} nbxplorer {% endif %}
-                    {% if 'generated_postgres_1' in running_containers %} postgres {% endif %}
-                </span>
-            </div>
-            <button id="show_btcpayserver_log" data-show-log="btcpayserver" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="btcpayserver_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{btcpayserver_status_log}}</pre></div>
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Mempool Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ mempool_status_color }}"></div>
-                {{ mempool_status }}
-                <span class='status_container_list'>
-                    Running Containers: 
-                    {% if 'mempool_web_1' in running_containers %} mempool_web_1 {% endif %}
-                    {% if 'mempool_db_1' in running_containers %} mempool_db_1 {% endif %}
-                    {% if 'mempool_api_1' in running_containers %} mempool_api_1 {% endif %}
-                    {% if 'mempool-web-1' in running_containers %} mempool-web-1 {% endif %}
-                    {% if 'mempool-db-1' in running_containers %} mempool-db-1 {% endif %}
-                    {% if 'mempool-api-1' in running_containers %} mempool-api-1 {% endif %}
-                </span>
-            </div>
-            <button id="show_mempool_log" data-show-log="mempool" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="mempool_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{mempool_status_log}}</pre></div>
-            <div class="divider"></div>
-
-            {% endif %}
-
-            <div class="settings_block_subheader">Docker Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ docker_status_color }}"></div>
-                {{ docker_status }}
-            </div>
-            <button id="show_docker_log" data-show-log="docker" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="docker_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_status_log}}</pre></div>
-            <div class="divider"></div>
-
-            {% if is_bitcoin_synced %}
-            <div class="settings_block_subheader">Docker Image Build Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ docker_image_build_status_color }}"></div>
-                {{ docker_image_build_status }}
-            </div>
-            <button id="show_docker_image_build_log" data-show-log="docker_image_build" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="docker_image_build_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{docker_image_build_status_log}}</pre></div>
-            <div class="divider"></div>
-            {% endif %}
-
-            <div class="settings_block_subheader">NGINX Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ nginx_status_color }}"></div>
-                {{ nginx_status }}
-            </div>
-            <button id="show_nginx_log" data-show-log="nginx" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="nginx_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{nginx_status_log}}</pre></div>
-            <div class="divider"></div>
-
-            {% if is_bitcoin_synced %}
-            <div class="settings_block_subheader">USB Extras Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ usb_extras_status_color }}"></div>
-                {{ usb_extras_status }}
-            </div>
-            <button id="show_usb_extras_log" data-show-log="usb_extras" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="usb_extras_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{usb_extras_status_log}}</pre></div>
-            <div class="divider"></div>
-            {% endif %}
-
-            {% if is_premium_plus_token_set %}
-            <div class="settings_block_subheader">Premium+ Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ premium_plus_connect_status_color }}"></div>
-                {{ premium_plus_connect_status }}
-            </div>
-            <button id="show_premium_plus_connect_log" data-show-log="premium_plus_connect" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="premium_plus_connect_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{premium_plus_connect_status_log}}</pre></div>
-            <div class="divider"></div>
-            {% endif %}
-
-
-            <div class="settings_block_subheader">Web Server Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ www_status_color }}"></div>
-                {{ www_status }}
-            </div>
-            <button id="show_www_log" data-show-log="www" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="www_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{www_status_log}}</pre></div>
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">I2PD Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ i2pd_status_color }}"></div>
-                {{ i2pd_status }}
-            </div>
-            <button id="show_i2pd_log" data-show-log="i2pd" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="i2pd_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{i2pd_status_log}}</pre></div>
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Firewall Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ ufw_status_color }}"></div>
-                {{ ufw_status }}
-            </div>
-            <button id="show_ufw_log" data-show-log="ufw" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="ufw_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{ufw_status_log}}</pre></div>
-            <div class="divider"></div>
-            
-            <div class="settings_block_subheader">Linux Status</div>
-            <div class="settings_block_subheader_status">
-                <div class="settings_block_subheader_status_icon {{ linux_status_color }}"></div>
-                {{ linux_status }}
-            </div>
-            <button id="show_linux_log" data-show-log="linux" class="ui-button ui-widget ui-corner-all settings_button_small">Show Log</button>
-            <div id="linux_log" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{linux_status_log}}</pre></div>
         </div>
 
 

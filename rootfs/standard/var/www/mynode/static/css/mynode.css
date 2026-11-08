@@ -1754,3 +1754,192 @@ body .ui-tooltip.ui-widget {
     float: right;
     margin: 0 0 0 10px !important;
 }
+
+/* Service Status cards on the Status page */
+.mn_services {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-flow: row dense;
+    gap: 8px;
+    text-align: left;
+}
+.mn_service {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 10px;
+    background-color: #ffffff;
+    border: 1px solid #ececec;
+    border-radius: 8px;
+    min-width: 0;
+}
+.mn_service .settings_block_subheader_status_icon {
+    flex: 0 0 auto;
+    margin: 5px 0 0 0;
+}
+.mn_service_main {
+    flex: 1;
+    min-width: 0;
+}
+.mn_service_name {
+    color: #222222;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 20px;
+}
+.mn_service_status {
+    color: #666666;
+    font-size: 12px;
+    line-height: 17px;
+    overflow-wrap: anywhere;
+}
+.mn_service_containers {
+    margin-top: 4px;
+}
+.mn_service_containers .mn_label {
+    display: block;
+    font-size: 10px;
+    line-height: 14px;
+}
+.mn_chip {
+    display: inline-block;
+    margin: 2px 4px 0 0;
+    padding: 0 6px;
+    border-radius: 8px;
+    background-color: #f1f3f5;
+    color: #495057;
+    font-size: 11px;
+    line-height: 16px;
+}
+.mn_service_log_toggle {
+    flex: 0 0 auto;
+    line-height: 20px;
+}
+.mn_service_log {
+    grid-column: 1 / -1;
+    margin-bottom: 0;
+    font-size: 12px;
+    max-height: 500px;
+    overflow: auto;
+}
+.mn_service_log pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* Settings page MyNode block */
+.mn_card {
+    background-color: #ffffff;
+    border: 1px solid #ececec;
+    border-radius: 8px;
+    padding: 12px;
+    text-align: left;
+}
+.mn_card_text {
+    font-size: 13px;
+    line-height: 19px;
+    margin-bottom: 10px;
+}
+.mn_section_gap {
+    height: 18px;
+}
+.mn_version_values {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    margin-bottom: 10px;
+}
+.mn_version_state {
+    margin-left: auto;
+}
+.mn_version_actions {
+    margin-bottom: 0;
+}
+.mn_version_actions .mn_label_toggle {
+    display: inline-block;
+}
+.mn_version_actions .mn_label_toggle + .mn_label_toggle {
+    margin-left: 10px;
+}
+.mn_badge_update {
+    color: #b35c00;
+    background-color: #ffb70026;
+}
+.ui-button.ui-widget.ui-corner-all.mn_primary_button {
+    background-color: #f19c00;
+    color: #ffffff;
+}
+.ui-button.ui-widget.ui-corner-all.mn_primary_button:hover {
+    background-color: #db8e00;
+}
+.ui-button.ui-widget.ui-corner-all.mn_primary_button.ui-state-disabled {
+    background-color: #e2e2e2;
+    color: #000000;
+}
+.mn_panel {
+    margin-top: 10px;
+}
+.mn_log_list {
+    margin: 6px 0 8px 0;
+}
+.mn_log_row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    border-top: 1px solid #ececec;
+    font-size: 13px;
+}
+.mn_log_row:first-child {
+    border-top: none;
+}
+.mn_log_name {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+.mn_log_date {
+    color: #8a8f98;
+    font-size: 12px;
+    white-space: nowrap;
+}
+.mn_log_row .ui-button.settings_button_small {
+    margin: 0;
+}
+.mn_log_text {
+    margin-top: 8px;
+    max-height: 500px;
+    overflow: auto;
+    font-size: 12px;
+}
+.mn_log_text pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+.mn_password_form {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    gap: 10px;
+    align-items: end;
+}
+.mn_field {
+    display: block;
+    min-width: 0;
+}
+.mn_field .mn_label {
+    display: block;
+    margin-bottom: 3px;
+}
+.mn_field input {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 5px 8px;
+    border: 1px solid #d0d4d9;
+    border-radius: 6px;
+}
+.mn_password_form .ui-button.settings_button_small {
+    margin: 0;
+    padding: 7px 12px;
+}

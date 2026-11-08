@@ -10,8 +10,6 @@
 
             $(document).ready(function() {
 
-                var showChangelog=0;
-
                 $("#upgrade").on("click", function() {
                     // Enable electrs
                     var okFunction = function() {
@@ -471,18 +469,8 @@
                 });
 
                 $("#show_mynode_changelog").on("click", function() {
-                    if (showChangelog)
-                    {
-                        $("#show_mynode_changelog").text("Show Change Log");
-                        $("#mynode_changelog").hide();
-                        showChangelog=0;
-                    }
-                    else
-                    {
-                        $("#show_mynode_changelog").text("Hide Change Log");
-                        $("#mynode_changelog").show();
-                        showChangelog=1;
-                    }
+                    $("#mynode_changelog").toggle();
+                    $(this).toggleClass("mn_open");
                 });
 
                 $("#check_for_updates").on("click", function() {
@@ -496,17 +484,9 @@
                     window.location.href='/settings/get-latest-version'
                 });
 
-                showing_upgrade_log=0;
                 $("#show_upgrade_logs").on("click", function() {
-                    if (showing_upgrade_log == 0) {
-                        $("#show_upgrade_logs").text("Hide Upgrade Logs");
-                        $("#upgrade_logs").show();
-                        showing_upgrade_log = 1;
-                    } else {
-                        $("#show_upgrade_logs").text("Show Upgrade Logs");
-                        $("#upgrade_logs").hide();
-                        showing_upgrade_log = 0;
-                    }
+                    $("#upgrade_logs").toggle();
+                    $(this).toggleClass("mn_open");
                 });
                 showUpgradeLog(0);
 
@@ -906,112 +886,114 @@
         <div class="settings_block">
             <a id="mynode"></a>
             <div class="settings_block_header">MyNode</div>
-            
+
             <div class="settings_block_subheader">Version</div>
-            <table class="info_table">
-                <tr>
-                    <th>Current Version</th>
-                    <td>{{current_version}}</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>Latest Version</th>
-                    <td>{{latest_version}}</td>
-                    <td>
-                        &nbsp;<button id="check_for_updates" class="ui-button ui-widget ui-corner-all settings_button_small">Check for Updates</button>
-                        {% if auto_upgrade.available and not auto_upgrade.enabled %}
-                        &nbsp;<button id="enable_auto_upgrade" class="ui-button ui-widget ui-corner-all settings_button_small">Enable Automatic Updates</button>
+            {% set update_available = current_version != latest_version and latest_version != "" %}
+            <div class="mn_card mn_version">
+                <div class="mn_version_values">
+                    <div>
+                        <div class="mn_label">Current Version</div>
+                        <div class="mn_stat_value">{{current_version}}</div>
+                    </div>
+                    <div>
+                        <div class="mn_label">Latest Version</div>
+                        <div class="mn_stat_value">{{latest_version if latest_version else "Unknown"}}</div>
+                    </div>
+                    <div class="mn_version_state">
+                        {% if update_available %}
+                            <span class="mn_badge mn_badge_update"><i class="fas fa-arrow-up"></i> Update available</span>
+                        {% elif latest_version != "" %}
+                            <span class="mn_badge mn_badge_good"><i class="fas fa-check"></i> Up to date</span>
                         {% endif %}
-                        &nbsp;<button id="show_upgrade_logs" class="ui-button ui-widget ui-corner-all settings_button_small">Show Upgrade Logs</button>
-                    </td>
-                </tr>
-            </table>
+                    </div>
+                </div>
+                <div class="mn_actions mn_version_actions">
+                    {% if update_available %}
+                        <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button_small mn_primary_button">Upgrade</button>
+                        <button id="upgrade_changelog" class="ui-button ui-widget ui-corner-all settings_button_small">See Changes</button>
+                    {% elif not product_key_skipped and upgrade_error %}
+                        <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button_small mn_primary_button">Retry Upgrade</button>
+                    {% endif %}
+                    <button id="check_for_updates" class="ui-button ui-widget ui-corner-all settings_button_small">Check for Updates</button>
+                    {% if auto_upgrade.available and not auto_upgrade.enabled %}
+                    <button id="enable_auto_upgrade" class="ui-button ui-widget ui-corner-all settings_button_small">Enable Automatic Updates</button>
+                    {% endif %}
+                    <button id="show_upgrade_logs" class="mn_label mn_label_toggle mn_actions_right" title="Show Upgrade Logs">Upgrade Logs <i class="fas fa-chevron-down"></i></button>
+                    <button id="show_mynode_changelog" class="mn_label mn_label_toggle" title="Show Change Log">Change Log <i class="fas fa-chevron-down"></i></button>
+                </div>
+            </div>
             <form id="enable_auto_upgrade_form" action="/settings/auto-upgrade" method="POST" style="display: none;">
                 <input type="hidden" name="enabled" value="1"/>
             </form>
-            {% if current_version != latest_version and latest_version != "" %}
-                <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Upgrade</button>
-                <button id="upgrade_changelog" class="ui-button ui-widget ui-corner-all settings_button">See Changes</button>
-                {% if product_key_skipped %}
-                    <p>Upgrade to MyNode Premium to get one-click updates!</p>
-                    <p>For manual upgrades, see our <a target="_blank" href="https://docs.mynodebtc.com/device/upgrading-device.html">upgrade guide</a>!</p>
-                {% endif %}
-            {% elif not product_key_skipped and upgrade_error %}
-                <p style="color: red;">It appears a recent upgrade may not have fully completed.</p>
-                <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Retry Upgrade</button>
+
+            {% if update_available and product_key_skipped %}
+            <div class="mn_alert mn_alert_notice">
+                Upgrade to MyNode Premium to get one-click updates!
+                For manual upgrades, see our <a target="_blank" href="https://docs.mynodebtc.com/device/upgrading-device.html">upgrade guide</a>!
+            </div>
+            {% elif not update_available and not product_key_skipped and upgrade_error %}
+            <div class="mn_alert mn_alert_error">It appears a recent upgrade may not have fully completed.</div>
             {% endif %}
-            
-            <div id="upgrade_logs" style='text-align: left; font-size: 12px; width: 800px; display: none;'>
 
-                <br/><br/>
-
-                <table style="font-size: 12px;">
-                    <tr>
-                        <th></th>
-                        <th></th>
-                        <th>Log</th>
-                        <th>Date</th>
-                    </tr>
+            <div id="upgrade_logs" class="mn_details mn_panel" style="display: none;">
+                <div class="mn_label">Upgrade Logs</div>
+                <div class="mn_log_list">
                     {% for f in upgrade_logs %}
-                    <tr>
-                        <td><button data-show-upgrade-log="{{f.id}}" id="show_upgrade_log_{{f.id}}" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button></td>
-                        <td><a href="/settings/download-upgrade-log?file={{f.filename|urlencode}}" class="ui-button ui-widget ui-corner-all settings_button_small">Download</a></td>
-                        <td style="padding-left: 12px;">{{f.name}}</td>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;{{f.date}}</td>
-                    </tr>
+                    <div class="mn_log_row">
+                        <span class="mn_log_name">{{f.name}}</span>
+                        <span class="mn_log_date">{{f.date}}</span>
+                        <button data-show-upgrade-log="{{f.id}}" id="show_upgrade_log_{{f.id}}" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
+                        <a href="/settings/download-upgrade-log?file={{f.filename|urlencode}}" class="ui-button ui-widget ui-corner-all settings_button_small">Download</a>
+                    </div>
+                    {% else %}
+                    <div class="mn_log_row mn_log_date">No upgrade logs</div>
                     {% endfor %}
-                    <tr>
-                        <td colspan="4" style="margin: auto;">
-                            <center><button id="clear_upgrade_logs" class="ui-button ui-widget ui-corner-all settings_button_small">Clear All Logs</button></center>
-                        </td>
-                    </tr>
-                </table>
+                </div>
+                <button id="clear_upgrade_logs" class="ui-button ui-widget ui-corner-all settings_button_small">Clear All Logs</button>
 
                 {% for f in upgrade_logs %}
-                <div id="upgrade_log_{{f.id}}" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{f.log}}</pre></div>
+                <div id="upgrade_log_{{f.id}}" class="mn_log_text" style="display: none;"><pre>{{f.log}}</pre></div>
                 {% endfor %}
             </div>
 
-            <div class="divider"></div>
+            <div id="mynode_changelog" class="mn_details mn_panel" style="display: none;">
+                <div class="mn_label">Change Log</div>
+                <div class="mn_log_text"><pre>{{changelog}}</pre></div>
+            </div>
 
+            <div class="mn_section_gap"></div>
 
-            {% include 'includes/status_table.html' %}
+            {% with show_status_link=True %}
+                {% include 'includes/status_table.html' %}
+            {% endwith %}
 
             {% include 'includes/info_table.html' %}
-            <div class="divider"></div>
 
-            <div class="settings_block_subheader">Change Log</div>
-            <button id="show_mynode_changelog" class="ui-button ui-widget ui-corner-all settings_button">View Change Log</button>
-            <div id="mynode_changelog" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{changelog}}</pre></div>
-            <div class="divider"></div>
+            <div class="mn_section_gap"></div>
 
             <div class="settings_block_subheader">Change Password</div>
-            {{password_message}}
-            This will change the password you use in the MyNode GUI and the password for SSH.
-            <br/><br/>
-            {{password_requirements}}
-            <br/><br/>
-            <form action="/settings/password" method="POST">
-                <table class="info_table">
-                    <tr>
-                        <th>Current Password</th>
-                        <td><input type="password" id="current_password" name="current_password" autocomplete="current-password" width="20" class="ui-corner-all settings_input"/></td>
-                    </tr>
-                    <tr>
-                        <th>Password</th>
-                        <td><input type="password" id="password1" name="password1" width="20" autocomplete="new-password" class="ui-corner-all settings_input"/></td>
-                    </tr>
-                    <tr>
-                        <th>Repeat Password</th>
-                        <td><input type="password" id="password2" name="password2" width="20" autocomplete="new-password" class="ui-corner-all settings_input"/></td>
-                    </tr>
-                </table>
-                <input type="submit" id="password_submit" value="Change Password" class="ui-button ui-widget ui-corner-all settings_button"/>
-            </form>
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Detailed Status</div>
-            <a href="/status" class="ui-button ui-widget ui-corner-all settings_button">Status</a>
+            <div class="mn_card">
+                {{password_message}}
+                <div class="mn_card_text">
+                    This will change the password you use in the MyNode GUI and the password for SSH.
+                    {{password_requirements}}
+                </div>
+                <form action="/settings/password" method="POST" class="mn_password_form">
+                    <label class="mn_field">
+                        <span class="mn_label">Current Password</span>
+                        <input type="password" id="current_password" name="current_password" autocomplete="current-password" class="ui-corner-all settings_input"/>
+                    </label>
+                    <label class="mn_field">
+                        <span class="mn_label">New Password</span>
+                        <input type="password" id="password1" name="password1" autocomplete="new-password" class="ui-corner-all settings_input"/>
+                    </label>
+                    <label class="mn_field">
+                        <span class="mn_label">Repeat Password</span>
+                        <input type="password" id="password2" name="password2" autocomplete="new-password" class="ui-corner-all settings_input"/>
+                    </label>
+                    <input type="submit" id="password_submit" value="Change Password" class="ui-button ui-widget ui-corner-all settings_button_small mn_primary_button"/>
+                </form>
+            </div>
         </div>
 
 

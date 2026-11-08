@@ -351,3 +351,48 @@ body .ui-tooltip.ui-widget {
 .mn_health_name {
     color: #eeeeee;
 }
+.mn_service {
+    background-color: #ffffff06;
+    border-color: #ffffff14;
+}
+.mn_service_name {
+    color: #eeeeee;
+}
+.mn_service_status {
+    color: #aaaaaa;
+}
+.mn_chip {
+    background-color: #ffffff14;
+    color: #cccccc;
+}
+.mn_card {
+    background-color: #ffffff06;
+    border-color: #ffffff14;
+}
+.mn_log_row {
+    border-color: #ffffff14;
+}
+.mn_log_date {
+    color: #8b949e;
+}
+.mn_badge_update {
+    color: #ffc04d;
+    background-color: #ffb70024;
+}
+.ui-button.ui-widget.ui-corner-all.mn_primary_button {
+    color: #1b2127;
+    background-color: orange;
+}
+.ui-button.ui-widget.ui-corner-all.mn_primary_button:hover {
+    color: #1b2127;
+    background-color: #ffb733;
+}
+.ui-button.ui-widget.ui-corner-all.mn_primary_button.ui-state-disabled {
+    color: #c3c3c3;
+    background-color: #2a343d;
+}
+.mn_field input {
+    background-color: #1b2127;
+    border-color: #ffffff24;
+    color: #ddd;
+}
