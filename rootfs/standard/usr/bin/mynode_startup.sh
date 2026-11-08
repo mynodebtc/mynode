@@ -595,6 +595,19 @@ udevadm control --reload-rules
 groupadd plugdev || true
 sudo usermod -aG plugdev bitcoin
 
+# Debian 10's NUT (2.7.4) starts its services without a UPS set up (MODE=none), and they fail. Keep
+# them off until a UPS is set up in /etc/nut/nut.conf. Debian 12's NUT skips them by itself.
+if [ "$DEBIAN_VERSION" -lt "12" ] && [ -f /etc/nut/nut.conf ]; then
+    if grep -qE '^[[:space:]]*MODE[[:space:]]*=[[:space:]]*"?(none)?"?[[:space:]]*$' /etc/nut/nut.conf || \
+       ! grep -qE '^[[:space:]]*MODE[[:space:]]*=' /etc/nut/nut.conf; then
+        systemctl disable nut-server nut-monitor || true
+        systemctl stop nut-monitor nut-server nut-driver || true
+        systemctl reset-failed nut-driver nut-monitor nut-server || true
+    elif ! systemctl is-enabled nut-monitor > /dev/null 2>&1; then
+        systemctl enable --now nut-server nut-monitor || true
+    fi
+fi
+
 # Update other files that need RPC password (needed if upgrades overwrite files).
 # The password goes to sed on stdin, since command lines are visible to every user.
 set +x
