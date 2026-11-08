@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/mynodebtc/mynode/tags"><img src="https://img.shields.io/github/v/tag/mynodebtc/mynode?label=version&color=f7931a" alt="Version"></a>
+  <a href="https://github.com/mynodebtc/mynode/tags"><img src="https://img.shields.io/github/v/tag/mynodebtc/mynode?label=version&color=green" alt="Version"></a>
   <a href="https://t.me/mynode_btc"><img src="https://img.shields.io/badge/chat-telegram-26a5e4?logo=telegram&logoColor=white" alt="Telegram"></a>
   <a href="https://x.com/mynodebtc"><img src="https://img.shields.io/badge/follow-%40mynodebtc-000000?logo=x&logoColor=white" alt="Follow on X"></a>
 </p>
@@ -17,7 +17,8 @@
   <a href="https://mynodebtc.com/download">Download</a> ·
   <a href="https://docs.mynodebtc.com">Docs</a> ·
   <a href="https://mynodebtc.com/order_now">Buy a Device</a> ·
-  <a href="https://t.me/mynode_btc">Community</a>
+  <a href="https://t.me/mynode_btc">Telegram</a> ·
+  <a href="https://mynodebtc.com/support">Support</a>
 </p>
 
 <p align="center">
@@ -65,9 +66,6 @@ New apps are added through the [app SDK](doc/applications.md).
 | Raspberry Pi 4 | Raspberry Pi 4/5 | 2 TB SSD over USB 3 |
 | PC or mini PC (amd64) | PC | Internal 2 TB SSD |
 | Virtual machine (VirtualBox, VMware) | OVA | Virtual disk, 2 TB |
-
-Images for older boards such as the RockPro64 are under **Other** on the
-[download page](https://mynodebtc.com/download).
 
 ### Install
 
@@ -125,8 +123,6 @@ priority support to MyNode Community Edition.
 - **Web UI:** `make dev-ui` runs the real web interface in Docker with a mocked backend, no
   device needed. See the [UI dev mode guide](dev/dev-ui/README.md).
 - **Apps:** add a new application with the [application guide](doc/applications.md).
-- **Bounties:** some features and improvements carry a reward. See the
-  [bounty list](doc/bounties.md).
 
 The MyNode community helps with development and support every day. This project would not be
 possible without them.
