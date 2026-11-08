@@ -216,8 +216,8 @@ def get_lightning_peer_alias(pubkey):
     global lightning_peer_alias_misses
     if pubkey in lightning_peer_aliases:
         return lightning_peer_aliases[pubkey]
-    # Private nodes are never in the graph, so wait an hour before looking a missing node up again
-    if time.time() - lightning_peer_alias_misses.get(pubkey, 0) < 60 * 60:
+    # Time of the next lookup for a node without an alias
+    if time.time() < lightning_peer_alias_misses.get(pubkey, 0):
         return "UNKNOWN"
 
     nodeinfo = get_lightning_node_info(pubkey)
@@ -225,7 +225,12 @@ def get_lightning_peer_alias(pubkey):
         if "alias" in nodeinfo["node"]:
             lightning_peer_aliases[pubkey] = nodeinfo["node"]["alias"]
             return nodeinfo["node"]["alias"]
-    lightning_peer_alias_misses[pubkey] = time.time()
+    # LND answers "unable to find node" (with a "code") for nodes not in the graph, such as private
+    # nodes, so wait an hour. Otherwise it did not answer, which is common while it starts.
+    if nodeinfo != None and "code" in nodeinfo:
+        lightning_peer_alias_misses[pubkey] = time.time() + 60 * 60
+    else:
+        lightning_peer_alias_misses[pubkey] = time.time() + 60
     return "UNKNOWN"
 
 def get_lightning_peer_count():
