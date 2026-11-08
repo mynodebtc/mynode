@@ -314,6 +314,11 @@ def update_bitcoin_other_info():
 
                 wallet_rpc_connection = AuthServiceProxy("http://%s:%s@127.0.0.1:8332/wallet/%s"%(rpc_user, rpc_pass, wallet_name), timeout=60)
                 wallet_info = wallet_rpc_connection.getwalletinfo()
+                # Bitcoin Core 30 removed the balances from getwalletinfo
+                if "balance" not in wallet_info:
+                    balances = wallet_rpc_connection.getbalances()["mine"]
+                    wallet_info["balance"] = balances["trusted"]
+                    wallet_info["unconfirmed_balance"] = balances["untrusted_pending"]
                 wallet_info["can_delete"] = True
                 if wallet_name in ["wallet.dat", "joinmarket_wallet.dat"]:
                     wallet_info["can_delete"] = False
@@ -506,7 +511,7 @@ def create_default_wallets():
                     break
             if not found:
                 log_message("Creating new default wallet {}".format(new_wallet))
-                run_bitcoincli_command_args(["-named", "createwallet", "wallet_name={}".format(new_wallet), "descriptors=false"])
+                run_bitcoincli_command_args(["-named", "createwallet", "wallet_name={}".format(new_wallet), "disable_private_keys=true"])
                 run_bitcoincli_command_args(["loadwallet", new_wallet])
 
 

@@ -174,7 +174,7 @@ EOF
     fi
 }
 
-BTC_VERSION="29.5"
+BTC_VERSION="32.1"
 if [ "$DEBIAN_VERSION" -lt "12" ]; then
     BTC_VERSION="27.2"
 fi

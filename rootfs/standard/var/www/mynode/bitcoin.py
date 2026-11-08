@@ -120,7 +120,7 @@ def bitcoin_download_wallet():
     os.system("chown bitcoin:bitcoin /tmp/download_wallets")
     os.system("chmod 700 /tmp/download_wallets")
     run_bitcoincli_command_args(["-rpcwallet={}".format(wallet_name),
-                                 "dumpwallet",
+                                 "backupwallet",
                                  "/tmp/download_wallets/{}".format(wallet_name)])
 
     if not os.path.isfile("/tmp/download_wallets/"+wallet_name):
