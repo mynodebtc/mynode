@@ -1,3 +1,18 @@
+=== v0.3.53 ===
+- Released 11/08/26
+- Upgrade Bitcoin to v32.1
+- Include Raspberry Pi kernel with CVE-2026-98432 fix
+- Add automatic OS security updates
+- Modernize the Status page, Service Status and Settings
+- Add device health summary to the Status page
+- Add health check icons to the home page
+- Show a notice when OS updates need a reboot
+- Fix upgrades failing on outdated NodeSource repos or a broken package source
+- Show closing channel funds and transaction labels in the Lightning wallet
+- Replace the debug log download with upgrade log downloads
+- Keep Tailscale connected across restarts and reboots
+- Bug Fixes
+
 === v0.3.52 ===
 - Released 10/30/26
 - ***** CRITICAL SECURITY UPDATE *****
