@@ -44,14 +44,72 @@ apps, upgrades and support, so you can use Bitcoin and Lightning privately and s
 
 ## What's Included
 
-| | |
-|---|---|
-| **Bitcoin** | Bitcoin Core, Electrum Server, Mempool, BTC RPC Explorer, Specter, Caravan, JoinMarket |
-| **Lightning** | LND, Ride the Lightning, Thunderhub, Lightning Terminal, Loop, Pool, LNbits, LNDg, Alby Hub |
-| **Payments** | BTCPay Server, LND Hub |
-| **Mining** | Public Pool, DATUM |
-| **Nostr** | Nostr RS Relay, Astral, Noscl |
-| **System** | Tor, VPN and Tailscale remote access, firewall, Netdata monitoring, web terminal, Docker |
+<table>
+  <tr><th colspan="7" align="left">Bitcoin</th></tr>
+  <tr>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/bitcoin.png" alt="" height="48"><br><sub>Bitcoin Core</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/electrs.png" alt="" height="48"><br><sub>Electrum Server</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/mempool.png" alt="" height="48"><br><sub>Mempool</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/btcrpcexplorer.png" alt="" height="48"><br><sub>BTC RPC Explorer</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/specter.png" alt="" height="48"><br><sub>Specter</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/caravan.png" alt="" height="48"><br><sub>Caravan</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/usr/share/mynode_apps/lilywallet/lilywallet.png" alt="" height="48"><br><sub>Lily Wallet</sub></td>
+  </tr>
+  <tr>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/joininbox.png" alt="" height="48"><br><sub>JoinMarket</sub></td>
+    <td align="center" valign="top" width="14%"><picture><source media="(prefers-color-scheme: dark)" srcset="images/app_icons_dark/jam.png"><img src="rootfs/standard/usr/share/mynode_apps/jam/jam.png" alt="" height="48"></picture><br><sub>Jam</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/ckbunker.png" alt="" height="48"><br><sub>CKBunker</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/usr/share/mynode_apps/canary/canary.png" alt="" height="48"><br><sub>Canary</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/wardenterminal.png" alt="" height="48"><br><sub>Warden Terminal</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/pyblock.png" alt="" height="48"><br><sub>PyBlock</sub></td>
+  </tr>
+  <tr><th colspan="7" align="left">Lightning</th></tr>
+  <tr>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/lnd.png" alt="" height="48"><br><sub>LND</sub></td>
+    <td align="center" valign="top" width="14%"><picture><source media="(prefers-color-scheme: dark)" srcset="images/app_icons_dark/rtl.png"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/rtl.png" alt="" height="48"></picture><br><sub>Ride the Lightning</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/thunderhub.png" alt="" height="48"><br><sub>Thunderhub</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/lit_purple.png" alt="" height="48"><br><sub>Lightning Terminal</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/loop.png" alt="" height="48"><br><sub>Loop</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/lnbits.png" alt="" height="48"><br><sub>LNbits</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/lndg.png" alt="" height="48"><br><sub>LNDg</sub></td>
+  </tr>
+  <tr>
+    <td align="center" valign="top" width="14%"><picture><source media="(prefers-color-scheme: dark)" srcset="images/app_icons_dark/albyhub.png"><img src="rootfs/standard/usr/share/mynode_apps/albyhub/albyhub.png" alt="" height="48"></picture><br><sub>Alby Hub</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/bos.png" alt="" height="48"><br><sub>Balance of Satoshis</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/pool.png" alt="" height="48"><br><sub>Pool</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/lndmanage.png" alt="" height="48"><br><sub>LNDManage</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/usr/share/mynode_apps/lntop/lntop.png" alt="" height="48"><br><sub>lntop</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/chantools.png" alt="" height="48"><br><sub>Channel Tools</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/lndconnect.png" alt="" height="48"><br><sub>LNDConnect</sub></td>
+  </tr>
+  <tr><th colspan="7" align="left">Payments</th></tr>
+  <tr>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/btcpayserver.png" alt="" height="48"><br><sub>BTCPay Server</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/lndhub.png" alt="" height="48"><br><sub>LND Hub</sub></td>
+  </tr>
+  <tr><th colspan="7" align="left">Mining</th></tr>
+  <tr>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/usr/share/mynode_apps/publicpool/publicpool.png" alt="" height="48"><br><sub>Public Pool</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/usr/share/mynode_apps/datum/datum.png" alt="" height="48"><br><sub>DATUM</sub></td>
+  </tr>
+  <tr><th colspan="7" align="left">Nostr and chat</th></tr>
+  <tr>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/usr/share/mynode_apps/nostrrsrelay/nostrrsrelay.png" alt="" height="48"><br><sub>Nostr RS Relay</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/usr/share/mynode_apps/astral/astral.png" alt="" height="48"><br><sub>Astral</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/usr/share/mynode_apps/noscl/noscl.png" alt="" height="48"><br><sub>Noscl</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/sphinxrelay.png" alt="" height="48"><br><sub>Sphinx Relay</sub></td>
+  </tr>
+  <tr><th colspan="7" align="left">System</th></tr>
+  <tr>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/tor.png" alt="" height="48"><br><sub>Tor</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/vpn.png" alt="" height="48"><br><sub>VPN</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/usr/share/mynode_apps/tailscale/tailscale.png" alt="" height="48"><br><sub>Tailscale</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/netdata.png" alt="" height="48"><br><sub>Netdata</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/usr/share/mynode_apps/wetty/wetty.png" alt="" height="48"><br><sub>Terminal</sub></td>
+  </tr>
+</table>
+
+MyNode also sets up a firewall and Docker.
 
 New apps are added through the [app SDK](doc/applications.md).
 
