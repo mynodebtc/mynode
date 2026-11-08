@@ -13,7 +13,6 @@ ExecStartPre=/usr/bin/is_not_shutting_down.sh
 ExecStartPre=/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_tailscale.sh ]; then /bin/bash /usr/bin/service_scripts/pre_tailscale.sh; fi'
 ExecStart=/usr/bin/tailscale web --listen 127.0.0.1:8088
 ExecStartPost=/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_tailscale.sh ]; then /bin/bash /usr/bin/service_scripts/post_tailscale.sh; fi'
-ExecStop=/bin/bash -c '/usr/bin/tailscale down || true'
 
 User=root
 Group=root

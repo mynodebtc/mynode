@@ -35,6 +35,9 @@ def disable_actions(short_name):
         # Disable OpenVPN as well
         os.system("systemctl stop openvpn --no-pager")
         os.system("systemctl disable openvpn --no-pager")
+    if short_name == "tailscale":
+        # Leave the tailnet only when the app is turned off, not on every stop or reboot
+        os.system("/usr/bin/tailscale down")
 
 # Function to start/stop/restart service
 def start_service(short_name):
