@@ -1,163 +1,152 @@
-<div class="settings_block_subheader">
-    Info
-</div>
-<table border="0" class="info_table" id="info_table">
-    <tr>
-        <th>Serial Number</th>
-        <td>{{serial_number}}</td>
-    </tr>
-    <tr>
-        <th>Product Key</th>
-        <td>
+{# Device details and notices. Shared by the Status and Settings pages. #}
+<div class="settings_block_subheader">Device</div>
+<div class="mn_info_grid" id="info_table">
+    {% if show_version %}
+    <div class="mn_info">
+        <div class="mn_label">MyNode Version</div>
+        <div class="mn_info_value">{{current_version}}</div>
+    </div>
+    {% endif %}
+    <div class="mn_info">
+        <div class="mn_label">Serial Number</div>
+        <div class="mn_info_value">{{serial_number}}</div>
+    </div>
+    <div class="mn_info mn_info_wide">
+        <div class="mn_label">Product Key</div>
+        <div class="mn_info_value">
             {% if product_key_skipped %}
                 {{product_key}}
-                &nbsp;<a href="/product-key" class="ui-button ui-widget ui-corner-all settings_button_small">Enter Product Key</a>
+                <a href="/product-key" class="ui-button ui-widget ui-corner-all settings_button_small">Enter Product Key</a>
             {% else %}
                 <button id="show_product_key" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
                 <span id="product_key" style="display: none;">{{product_key}}</span>
-                &nbsp;<a href="/product-key" class="ui-button ui-widget ui-corner-all settings_button_small">Change</a>
+                <a href="/product-key" class="ui-button ui-widget ui-corner-all settings_button_small">Change</a>
             {% endif %}
-        </td>
-    </tr>
+        </div>
+    </div>
     {% if not product_key_skipped and check_in_data %}
     <!-- Only show support and not P+, it would be redundant in most cases -->
-    <tr>
-        <th>Support</th>
-        <td>
+    <div class="mn_info">
+        <div class="mn_label">Support</div>
+        <div class="mn_info_value">
             {% if check_in_data.support is defined and check_in_data.support.active is defined %}
                 {% if check_in_data.support.active %}
-                    <i class='fas fa-check' style="vertical-align: middle;" data-toggle='tooltip' data-placement='bottom'
+                    <span class="mn_badge mn_badge_good" data-toggle='tooltip' data-placement='bottom'
                         {% if check_in_data.support.days_remaining is defined %}
                             title='Active - Expires in {{check_in_data.support.days_remaining}} days'
                         {% else %}
                             title='Active'
                         {% endif %}
-                        ></i>
+                        ><i class='fas fa-check'></i> Active</span>
                     {% if check_in_data.support.days_remaining is defined and check_in_data.support.days_remaining|int < 45 %}
-                        <i class='fas fa-exclamation' style="color: red; vertical-align: middle; margin-left: 5px;" data-toggle='tooltip' data-placement='bottom' title='Expiring Soon! {{check_in_data.support.days_remaining}} days remaining.'></i>
-                        <a href="https://mynodebtc.com/order/premium_plus" target="_blank" style="margin-left: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Extend</a>
+                        <i class='fas fa-exclamation mn_warn_icon' data-toggle='tooltip' data-placement='bottom' title='Expiring Soon! {{check_in_data.support.days_remaining}} days remaining.'></i>
+                        <a href="https://mynodebtc.com/order/premium_plus" target="_blank" class="ui-button ui-widget ui-corner-all settings_button_small">Extend</a>
                     {% endif %}
                 {% else %}
-                    <i class='fas fa-times' style="vertical-align: middle;" data-toggle='tooltip' data-placement='bottom'
+                    <span class="mn_badge mn_badge_bad" data-toggle='tooltip' data-placement='bottom'
                         {% if check_in_data.support.days_remaining is defined %}
                             title='Inactive - Expired {{check_in_data.support.days_remaining|int|abs}} days ago'
                         {% else %}
                             title='Inactive - Expired'
                         {% endif %}
-                    ></i>
+                    ><i class='fas fa-times'></i> Inactive</span>
                     {% if check_in_data.support.days_remaining is defined and check_in_data.support.days_remaining|int > -45 %}
-                        <i class='fas fa-exclamation' style="color: red; vertical-align: middle; margin-left: 5px;" data-toggle='tooltip' data-placement='bottom' title='Expired recently! Expired {{check_in_data.support.days_remaining|int|abs}} days ago.'></i>
+                        <i class='fas fa-exclamation mn_warn_icon' data-toggle='tooltip' data-placement='bottom' title='Expired recently! Expired {{check_in_data.support.days_remaining|int|abs}} days ago.'></i>
                     {% endif %}
-                    <a href="https://mynodebtc.com/order/premium_plus" target="_blank" style="margin-left: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Extend</a>
+                    <a href="https://mynodebtc.com/order/premium_plus" target="_blank" class="ui-button ui-widget ui-corner-all settings_button_small">Extend</a>
                 {% endif %}
             {% else %}
                 Unknown
             {% endif %}
-        </td>
-    </tr>
+        </div>
+    </div>
     {% endif %}
-    <tr>
-        <th>Device Type</th>
-        <td>
+    <div class="mn_info">
+        <div class="mn_label">Device Type</div>
+        <div class="mn_info_value">
             {{device_type}}
             {% if device_type == "raspi4" %}
-                {% if device_arch == "aarch64" %}
-                64-bit
-                {% else %}
-                32-bit<br/><br/><small>* It is recommended to upgrade to a 64-bit image by reflashing your OS. Some apps can no longer be updated on 32-bit.
-                The image can be downloaded <a href="https://mynodebtc.com/download" target="_blank">here</a> and a guide is <a href="https://docs.mynodebtc.com/advanced/flash-sd-card.html" target="_blank">available</a>.</small>
-                {% endif %}
+                {% if device_arch == "aarch64" %}64-bit{% else %}32-bit{% endif %}
             {% endif %}
-        </td>
-    </tr>
-    <tr>
-        <th>Device RAM</th>
-        <td>{{device_ram}} GB</td>
-    </tr>
-    <tr>
-        <th>Local IP</th>
-        <td>
-            {{local_ip}}
-            {% if local_ip_subnet_conflit %}
-                <br/><span style="color: red; font-size: 10px;">*Your IP address may conflict with internal subnets and cause issues</span>
-            {% endif %}
-        </td>
-    </tr>
+        </div>
+    </div>
+    <div class="mn_info">
+        <div class="mn_label">Device RAM</div>
+        <div class="mn_info_value">{{device_ram}} GB</div>
+    </div>
+    <div class="mn_info">
+        <div class="mn_label">Local IP</div>
+        <div class="mn_info_value">{{local_ip}}</div>
+    </div>
+    <div class="mn_info info_table_advanced_row">
+        <div class="mn_label">Debian Version</div>
+        <div class="mn_info_value">{{debian_version}} ({{debian_codename}})</div>
+    </div>
+    <div class="mn_info info_table_advanced_row">
+        <div class="mn_label">Architecture</div>
+        <div class="mn_info_value">{{device_arch}}</div>
+    </div>
+    <div class="mn_info mn_info_wide">
+        <div class="mn_label">Date</div>
+        <div class="mn_info_value">{{date}}</div>
+    </div>
+</div>
+
+{# Notices span the full width below the grid #}
+<div class="mn_alerts">
+    {% if device_type == "raspi4" and device_arch != "aarch64" %}
+    <div class="mn_alert mn_alert_notice">
+        <b>32-bit OS.</b> It is recommended to upgrade to a 64-bit image by reflashing your OS. Some apps can no longer be updated on 32-bit.
+        The image can be downloaded <a href="https://mynodebtc.com/download" target="_blank">here</a> and a guide is <a href="https://docs.mynodebtc.com/advanced/flash-sd-card.html" target="_blank">available</a>.
+    </div>
+    {% endif %}
+    {% if local_ip_subnet_conflit %}
+    <div class="mn_alert mn_alert_error">
+        <b>Local IP.</b> Your IP address may conflict with internal subnets and cause issues.
+    </div>
+    {% endif %}
     {% if throttled_data['RAW_DATA'] != "0x0" and throttled_data['RAW_DATA'] != "MISSING" %}
     {% if throttled_data['UNDERVOLTED'] or throttled_data['CAPPED'] or throttled_data['THROTTLED'] or throttled_data['SOFT_TEMPLIMIT'] %}
-    <tr>
-        <th>Active Throttling Data</th>
-        <td style="color: red; font-size: 10px">
-            {% if throttled_data['UNDERVOLTED'] %}Undervolted<br/>{% endif %}
-            {% if throttled_data['CAPPED'] %}Capped CPU<br/>{% endif %}
-            {% if throttled_data['THROTTLED'] %}Throttled CPU<br/>{% endif %}
-            {% if throttled_data['SOFT_TEMPLIMIT'] %}Hit Soft Temp Limit<br/>{% endif %}
-        </td>
-    </tr>
+    <div class="mn_alert mn_alert_error">
+        <b>Active Throttling:</b>
+        {% set items = [] %}
+        {% if throttled_data['UNDERVOLTED'] %}{% set _ = items.append("Undervolted") %}{% endif %}
+        {% if throttled_data['CAPPED'] %}{% set _ = items.append("Capped CPU") %}{% endif %}
+        {% if throttled_data['THROTTLED'] %}{% set _ = items.append("Throttled CPU") %}{% endif %}
+        {% if throttled_data['SOFT_TEMPLIMIT'] %}{% set _ = items.append("Hit Soft Temp Limit") %}{% endif %}
+        {{ items | join(", ") }}
+    </div>
     {% endif %}
     {% if throttled_data['HAS_UNDERVOLTED'] or throttled_data['HAS_CAPPED'] or throttled_data['HAS_THROTTLED'] or throttled_data['HAS_SOFT_TEMPLIMIT'] %}
-    <tr>
-        <th>Historic Throttling Data<br/><span style="font-size: 10px;">*Occurred since last reboot</span></th>
-        <td style="color: red; font-size: 10px;">
-            {% if throttled_data['HAS_UNDERVOLTED'] %}Undervolted<br/>{% endif %}
-            {% if throttled_data['HAS_CAPPED'] %}Capped CPU<br/>{% endif %}
-            {% if throttled_data['HAS_THROTTLED'] %}Throttled CPU<br/>{% endif %}
-            {% if throttled_data['HAS_SOFT_TEMPLIMIT'] %}Hit Soft Temp Limit<br/>{% endif %}
-        </td>
-    </tr>
+    <div class="mn_alert mn_alert_error">
+        <b>Historic Throttling</b> (occurred since last reboot):
+        {% set items = [] %}
+        {% if throttled_data['HAS_UNDERVOLTED'] %}{% set _ = items.append("Undervolted") %}{% endif %}
+        {% if throttled_data['HAS_CAPPED'] %}{% set _ = items.append("Capped CPU") %}{% endif %}
+        {% if throttled_data['HAS_THROTTLED'] %}{% set _ = items.append("Throttled CPU") %}{% endif %}
+        {% if throttled_data['HAS_SOFT_TEMPLIMIT'] %}{% set _ = items.append("Hit Soft Temp Limit") %}{% endif %}
+        {{ items | join(", ") }}
+    </div>
     {% endif %}
     {% endif %}
     {% if oom_error %}
-    <tr>
-        <th>Memory</th>
-        <td style="font-size: 12px;">
-            <!--<span class="ui-icon ui-icon-alert"></span> <b>Low Memory</b> <span class="ui-icon ui-icon-alert"></span><br/>-->
-            <b>Low Memory</b><br/>
-            Your device was running low on memory and a process has been restarted. You may want to disable some applications.<br/>
-            <span style="font-size: 10px;">{{ oom_info }}</span><br/><br/>
-            <a href="/settings/clear-oom-error" class="ui-button ui-widget ui-corner-all settings_button_small">Clear Warning</a>
-        </td>
-    </tr>
+    <div class="mn_alert mn_alert_error">
+        <a href="/settings/clear-oom-error" class="ui-button ui-widget ui-corner-all settings_button_small mn_alert_button">Clear Warning</a>
+        <b>Low Memory.</b> Your device was running low on memory and a process has been restarted. You may want to disable some applications.
+        <div class="mn_alert_detail">{{ oom_info }}</div>
+    </div>
     {% endif %}
     {% if has_checkin_error %}
-    <tr>
-        <th>Server</th>
-        <td style="color: red;"><b>Error contacting mynodebtc.com via Tor!</b><br/>You may have issues checking for new versions or saving product keys. This may be a temporary issue.</td>
-    </tr>
+    <div class="mn_alert mn_alert_error">
+        <b>Error contacting mynodebtc.com via Tor!</b> You may have issues checking for new versions or saving product keys. This may be a temporary issue.
+    </div>
     {% endif %}
     {% if debian_version < 12 %}
-    <tr>
-        <th>OS Version</th>
-        <td>
-            <span style="font-size: 10px;">
-                <span style="color: red; font-weight: bold;">Notice!</span><br/>
-                You are currently using an old Operating System version (Debian {{debian_version}}). It is recommended to upgrade by reflashing
-                your OS drive. Otherwise, some apps will remain on old versions and you may have issues. The new image can be downloaded
-                <a href="https://mynodebtc.com/download" target="_blank">here</a> and a guide is
-                <a href="https://docs.mynodebtc.com/advanced/flash-sd-card.html" target="_blank">available</a>.
-            </span>
-        </td>
-    </tr>
+    <div class="mn_alert mn_alert_notice">
+        <b>Old OS version.</b> You are currently using an old Operating System version (Debian {{debian_version}}). It is recommended to upgrade by reflashing
+        your OS drive. Otherwise, some apps will remain on old versions and you may have issues. The new image can be downloaded
+        <a href="https://mynodebtc.com/download" target="_blank">here</a> and a guide is
+        <a href="https://docs.mynodebtc.com/advanced/flash-sd-card.html" target="_blank">available</a>.
+    </div>
     {% endif %}
-
-
-    <!-- BUTTON DISABLED: From here down are the "Details" (hidden unless show details is clicked)-->
-    <!--
-    <tr>
-        <th>Advanced Info</th>
-        <td>
-            <button id="info_table_show_advanced_info" class="ui-button ui-widget ui-corner-all settings_button_small">Show</button>
-        </td>
-    </tr>
-    -->
-    <tr class="info_table_advanced_row" style="">
-        <th>Debian Version</th>
-        <td>{{debian_version}} ({{debian_codename}})</td>
-    </tr>
-    <tr class="info_table_advanced_row" style="">
-        <th>Architecture</th>
-        <td>{{device_arch}}</td>
-    </tr>
-    
-</table>
-<div class="divider"></div>
+</div>

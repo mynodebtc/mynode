@@ -1,28 +1,29 @@
-<div class="settings_block_subheader_status health_summary">
+<div class="mn_health_summary mn_health_summary_{{ health_summary.status }}">
     <div class="settings_block_subheader_status_icon {{ health_summary.color }}"></div>
-    {{ health_summary.text }}
+    <span class="mn_health_summary_text">{{ health_summary.text }}</span>
+    <span class="mn_label">{{ health_checks|length }} checks</span>
+    {# Without errors or warnings, only the summary shows until the list is expanded #}
+    {% if health_summary.problem_count == 0 %}
+    <button id="show_health_details" class="mn_label mn_label_toggle mn_health_toggle" title="Show Details">Details <i class="fas fa-chevron-down"></i></button>
+    {% endif %}
 </div>
-{# Without errors or warnings, only the summary shows until the table is expanded #}
-{% if health_summary.problem_count == 0 %}
-<button id="show_health_details" class="ui-button ui-widget ui-corner-all settings_button_small">Show Details</button>
-{% endif %}
-<table id="health_table" class="info_table health_table"{% if health_summary.problem_count == 0 %} style="display: none;"{% endif %}>
+<div id="health_table" class="mn_health_list"{% if health_summary.problem_count == 0 %} style="display: none;"{% endif %}>
     {% for check in health_checks %}
-    <tr>
-        <th>
+    <div class="mn_health_row mn_health_row_{{ check.status }}">
+        <div class="mn_health_name">
             <div class="settings_block_subheader_status_icon {{ check.color }}" title="{{ check.status|capitalize }}"></div>
             {{ check.name }}
-        </th>
-        <td>
-            {{ check.summary }}
+        </div>
+        <div class="mn_health_body">
             {% if check.link %}
                 {% set link_url, link_text = check.link %}
-                <a href="{{ link_url }}" {% if link_url.startswith("http") %}target="_blank"{% endif %} class="ui-button ui-widget ui-corner-all settings_button_small health_link">{{ link_text }}</a>
+                <a href="{{ link_url }}" {% if link_url.startswith("http") %}target="_blank"{% endif %} class="ui-button ui-widget ui-corner-all settings_button_small mn_health_link">{{ link_text }}</a>
             {% endif %}
+            {{ check.summary }}
             {% if check.details %}
-                <pre class="health_details">{{ check.details }}</pre>
+                <pre class="mn_health_details">{{ check.details }}</pre>
             {% endif %}
-        </td>
-    </tr>
+        </div>
+    </div>
     {% endfor %}
-</table>
+</div>

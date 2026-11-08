@@ -286,3 +286,68 @@ body .ui-tooltip.ui-widget {
     border-color: #3a4750;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
 }
+
+/* MyNode overview */
+.mn_label {
+    color: #8b949e;
+}
+.mn_stat,
+.mn_details,
+.mn_info_grid {
+    background-color: #ffffff06;
+    border-color: #ffffff14;
+}
+.mn_info {
+    border-color: #ffffff14;
+}
+.mn_stat_value,
+.mn_info_value {
+    color: #eeeeee;
+}
+.mn_bar {
+    background-color: #ffffff14;
+}
+.mn_label_toggle:hover {
+    color: orange;
+}
+.mn_bar_fill {
+    background-color: orange;
+}
+.mn_badge_good {
+    color: #69db7c;
+    background-color: #69db7c1a;
+}
+.mn_badge_bad {
+    color: #ff8787;
+    background-color: #ff87871a;
+}
+.mn_alert {
+    color: #ddd;
+}
+.mn_health_summary,
+.mn_health_list {
+    background-color: #ffffff06;
+    border-color: #ffffff14;
+}
+.mn_health_summary_ok {
+    border-left-color: #69db7c;
+}
+.mn_health_summary_warning {
+    border-left-color: orange;
+}
+.mn_health_summary_error {
+    border-left-color: #ff6b6b;
+}
+.mn_health_row {
+    border-color: #ffffff14;
+}
+.mn_health_row_error {
+    background-color: #ff6b6b12;
+}
+.mn_health_row_warning {
+    background-color: #ffb70012;
+}
+.mn_health_summary_text,
+.mn_health_name {
+    color: #eeeeee;
+}

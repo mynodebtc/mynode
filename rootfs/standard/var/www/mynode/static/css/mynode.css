@@ -1484,32 +1484,74 @@ body .ui-tooltip.ui-widget {
     color: #c62828;
 }
 
-/* Health table on the Status page */
-.health_summary {
-    font-style: normal;
-    font-weight: bold;
-    margin-bottom: 10px;
+/* Health block on the Status page */
+.mn_health_summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border: 1px solid #ececec;
+    border-left: 3px solid #2b8a3e;
+    border-radius: 8px;
+    background-color: #ffffff;
+    text-align: left;
 }
-.health_table {
+.mn_health_summary_warning {
+    border-left-color: #f19c00;
+}
+.mn_health_summary_error {
+    border-left-color: #e03131;
+}
+.mn_health_summary .settings_block_subheader_status_icon {
+    margin-right: 0;
+}
+.mn_health_summary_text {
+    color: #222222;
     font-size: 14px;
-    width: 100%;
+    font-weight: 600;
 }
-.health_table th {
-    white-space: nowrap;
-    vertical-align: top;
-    padding-bottom: 8px;
+.mn_health_toggle {
+    margin-left: auto;
 }
-.health_table td {
-    vertical-align: top;
-    padding-bottom: 8px;
+.mn_health_list {
+    margin-top: 10px;
+    border: 1px solid #ececec;
+    border-radius: 8px;
+    background-color: #ffffff;
+    overflow: hidden;
+    text-align: left;
 }
-#show_health_details {
-    margin-bottom: 10px;
+.mn_health_row {
+    display: flex;
+    gap: 12px;
+    padding: 7px 12px;
+    border-top: 1px solid #ececec;
+    font-size: 13px;
+    line-height: 20px;
 }
-.health_link {
-    margin-left: 8px;
+.mn_health_row:first-child {
+    border-top: none;
 }
-.health_details {
+.mn_health_row_error {
+    background-color: #e031310d;
+}
+.mn_health_row_warning {
+    background-color: #ffb70012;
+}
+.mn_health_name {
+    flex: 0 0 200px;
+    color: #222222;
+    font-weight: 500;
+}
+.mn_health_body {
+    flex: 1;
+    min-width: 0;
+}
+.mn_health_link.ui-button.settings_button_small {
+    float: right;
+    margin: 0 0 0 10px;
+}
+.mn_health_details {
     font-size: 11px;
     white-space: pre-wrap;
     word-break: break-word;
@@ -1542,4 +1584,173 @@ body .ui-tooltip.ui-widget {
 }
 .health_indicator_badge_warning {
     background-color: #e67700;
+}
+
+/* MyNode overview (System tiles and Device grid) on the Status and Settings pages */
+.mn_label {
+    color: #8a8f98;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 16px;
+    white-space: nowrap;
+}
+.mn_stats,
+.mn_info_grid {
+    text-align: left;
+}
+.mn_stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.mn_stat {
+    background-color: #ffffff;
+    border: 1px solid #ececec;
+    border-radius: 8px;
+    padding: 10px 12px;
+}
+.mn_stat_value {
+    color: #222222;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 26px;
+    margin-top: 2px;
+    white-space: nowrap;
+}
+.mn_bar {
+    height: 4px;
+    margin-top: 6px;
+    border-radius: 2px;
+    background-color: #ececec;
+    overflow: hidden;
+}
+.mn_bar_fill {
+    height: 100%;
+    border-radius: 2px;
+    background-color: #f19c00;
+}
+.mn_bar_fill_danger {
+    background-color: #e03131;
+}
+.mn_warn_icon {
+    color: #e03131;
+    font-size: 0.8em;
+    margin-left: 2px;
+}
+.mn_label_toggle {
+    display: block;
+    padding: 0;
+    border: none;
+    background: none;
+    font-family: inherit;
+    cursor: pointer;
+}
+.mn_label_toggle:hover {
+    color: #f19c00;
+}
+.mn_label_toggle svg {
+    font-size: 9px;
+    margin-left: 2px;
+    vertical-align: 1px;
+    transition: transform 0.15s;
+}
+.mn_label_toggle.mn_open svg {
+    transform: rotate(180deg);
+}
+.mn_details {
+    background-color: #ffffff;
+    border: 1px solid #ececec;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    text-align: left;
+}
+.mn_details pre {
+    margin: 4px 0;
+    white-space: pre-wrap;
+}
+.mn_actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 18px;
+}
+.mn_actions .ui-button.settings_button_small {
+    margin: 0;
+}
+.mn_actions_right {
+    margin-left: auto !important;
+}
+.mn_info_grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border: 1px solid #ececec;
+    border-radius: 8px;
+    background-color: #ffffff;
+    overflow: hidden;
+}
+.mn_info {
+    padding: 8px 12px;
+    border-right: 1px solid #ececec;
+    border-bottom: 1px solid #ececec;
+    margin: 0 -1px -1px 0;
+    min-width: 0;
+}
+.mn_info_wide {
+    grid-column: span 2;
+}
+.mn_info_value {
+    color: #222222;
+    font-size: 14px;
+    line-height: 22px;
+    min-height: 22px;
+    overflow-wrap: anywhere;
+}
+.mn_info_value .ui-button.settings_button_small {
+    margin: 0 4px 0 0;
+    vertical-align: baseline;
+}
+.mn_badge {
+    display: inline-block;
+    padding: 0 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    line-height: 20px;
+    font-weight: 500;
+    margin-right: 4px;
+}
+.mn_badge_good {
+    color: #2b8a3e;
+    background-color: #2b8a3e1a;
+}
+.mn_badge_bad {
+    color: #c92a2a;
+    background-color: #e031311a;
+}
+.mn_alert {
+    margin-top: 10px;
+    padding: 8px 12px;
+    border-left: 3px solid #e03131;
+    border-radius: 4px;
+    background-color: #e031310f;
+    font-size: 13px;
+    text-align: left;
+    overflow: hidden;
+}
+.mn_alert_notice {
+    border-left-color: #f19c00;
+    background-color: #ffb70014;
+}
+.mn_alert_detail {
+    margin-top: 4px;
+    font-size: 11px;
+    opacity: 0.8;
+}
+.mn_alert_button {
+    float: right;
+    margin: 0 0 0 10px !important;
 }

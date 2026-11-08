@@ -30,33 +30,18 @@
                 });
 
                 $("#show_os_drive_usage_details").on("click", function() {
-                    if($("#os_drive_usage_details").is(":visible")){
-                        $("#show_os_drive_usage_details").text("Show Details")
-                        $("#os_drive_usage_details").hide();
-                    } else {
-                        $("#show_os_drive_usage_details").text("Hide Details")
-                        $("#os_drive_usage_details").show();
-                    }
+                    $("#os_drive_usage_details").toggle();
+                    $(this).toggleClass("mn_open");
                 });
 
                 $("#show_health_details").on("click", function() {
-                    if($("#health_table").is(":visible")){
-                        $("#show_health_details").text("Show Details")
-                        $("#health_table").hide();
-                    } else {
-                        $("#show_health_details").text("Hide Details")
-                        $("#health_table").show();
-                    }
+                    $("#health_table").toggle();
+                    $(this).toggleClass("mn_open");
                 });
 
                 $("#show_data_drive_usage_details").on("click", function() {
-                    if($("#data_drive_usage_details").is(":visible")){
-                        $("#show_data_drive_usage_details").text("Show Details")
-                        $("#data_drive_usage_details").hide();
-                    } else {
-                        $("#show_data_drive_usage_details").text("Hide Details")
-                        $("#data_drive_usage_details").show();
-                    }
+                    $("#data_drive_usage_details").toggle();
+                    $(this).toggleClass("mn_open");
                 });
 
                 showing_info_table_advanced_rows=0;
@@ -140,23 +125,11 @@
         <br/>
         <div class="settings_block">
             <div class="settings_block_header">MyNode</div>
-            
-            <div class="settings_block_subheader">Version</div>
-            <table class="info_table">
-                <tr>
-                    <th>Current Version</th>
-                    <td>{{current_version}}</td>
-                    <td></td>
-                </tr>
-            </table>
-            <div class="divider"></div>
 
-            {% include 'includes/info_table.html' %}
-
-            {% include 'includes/status_table.html' %}
-
-            <div class="settings_block_subheader">Settings</div>
-            <a href="/settings" class="ui-button ui-widget ui-corner-all settings_button">Settings</a>
+            {% with show_version=True, show_settings_link=True %}
+                {% include 'includes/status_table.html' %}
+                {% include 'includes/info_table.html' %}
+            {% endwith %}
         </div>
 
         <div class="settings_block" id="health">
