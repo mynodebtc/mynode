@@ -1,17 +1,11 @@
 {# Device details and notices. Shared by the Status and Settings pages. #}
 <div class="settings_block_subheader">Device</div>
 <div class="mn_info_grid" id="info_table">
-    {% if show_version %}
     <div class="mn_info">
         <div class="mn_label">MyNode Version</div>
         <div class="mn_info_value">{{current_version}}</div>
     </div>
-    {% endif %}
     <div class="mn_info">
-        <div class="mn_label">Serial Number</div>
-        <div class="mn_info_value">{{serial_number}}</div>
-    </div>
-    <div class="mn_info mn_info_wide">
         <div class="mn_label">Product Key</div>
         <div class="mn_info_value">
             {% if product_key_skipped %}
@@ -23,6 +17,10 @@
                 <a href="/product-key" class="ui-button ui-widget ui-corner-all settings_button_small">Change</a>
             {% endif %}
         </div>
+    </div>
+    <div class="mn_info mn_info_wide">
+        <div class="mn_label">Serial Number</div>
+        <div class="mn_info_value">{{serial_number}}</div>
     </div>
     {% if not product_key_skipped and check_in_data %}
     <!-- Only show support and not P+, it would be redundant in most cases -->
