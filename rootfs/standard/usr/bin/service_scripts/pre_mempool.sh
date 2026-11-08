@@ -21,5 +21,5 @@ else
 fi
 
 # MariaDB's image sets the owner of its database folder when the container starts
-find /mnt/hdd/mynode/mempool -path /mnt/hdd/mynode/mempool/mysql -prune -o -exec chown mempool:mempool {} +
+find /mnt/hdd/mynode/mempool -path /mnt/hdd/mynode/mempool/mysql -prune -o -exec chown -h mempool:mempool {} +
 chmod 600 /mnt/hdd/mynode/mempool/.env
