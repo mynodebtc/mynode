@@ -1,180 +1,167 @@
-[![MyNode](https://docs.mynodebtc.com/images/logo.png)](https://github.com/mynodebtc/mynode)
+<p align="center">
+  <a href="https://mynodebtc.com"><img src="https://docs.mynodebtc.com/images/logo.png" alt="MyNode" width="420"></a>
+</p>
 
-[![Version](https://img.shields.io/github/v/tag/mynodebtc/mynode?label=version&color=green)](https://github.com/mynodebtc/mynode/tag)
-[![Community Chat](https://img.shields.io/badge/community%20chat-telegram-blue)](https://t.me/mynode_btc)
+<p align="center">
+  <b>The easiest way to run your own Bitcoin and Lightning node.</b>
+</p>
 
-[![Twitter](https://img.shields.io/twitter/follow/mynodebtc?style=social)](https://twitter.com/mynodebtc)
+<p align="center">
+  <a href="https://github.com/mynodebtc/mynode/tags"><img src="https://img.shields.io/github/v/tag/mynodebtc/mynode?label=version&color=f7931a" alt="Version"></a>
+  <a href="https://t.me/mynode_btc"><img src="https://img.shields.io/badge/chat-telegram-26a5e4?logo=telegram&logoColor=white" alt="Telegram"></a>
+  <a href="https://x.com/mynodebtc"><img src="https://img.shields.io/badge/follow-%40mynodebtc-000000?logo=x&logoColor=white" alt="Follow on X"></a>
+</p>
 
+<p align="center">
+  <a href="https://mynodebtc.com">Website</a> ·
+  <a href="https://mynodebtc.com/download">Download</a> ·
+  <a href="https://docs.mynodebtc.com">Docs</a> ·
+  <a href="https://mynodebtc.com/order_now">Buy a Device</a> ·
+  <a href="https://t.me/mynode_btc">Community</a>
+</p>
 
-# Bitcoin, Lightning, and more!
-MyNode aims to be the easiest way to run a dedicated, easy to use, Bitcoin Node and Lightning Wallet!
-                            
-We combine the best open source software with our interface, management, and support so you can easily, privately, and securely use Bitcoin and Lightning.
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="images/ui_home_dark.png">
+    <img src="images/ui_home_light.png" alt="MyNode home page" width="800">
+  </picture>
+</p>
 
-Website: https://mynodebtc.com
+## Why MyNode
 
+MyNode combines the best open source Bitcoin software with a simple web interface, one-click
+apps, upgrades and support, so you can use Bitcoin and Lightning privately and securely.
 
-## User Interface
-<img src="images/ui_dual_mode.png" width="600">
+- **Verify, don't trust.** Your own full node checks every block and transaction, so you no
+  longer rely on third-party explorers or wallet servers that can track you or lie to you.
+- **Bitcoin and Lightning in one box.** Run a Lightning node, connect your wallets, and accept
+  payments from hardware you control.
+- **Dozens of apps.** Install wallets, explorers, payment servers and Lightning tools from the
+  marketplace with one click.
+- **Dedicated hardware.** Runs around the clock on a Raspberry Pi, a mini PC, a virtual machine,
+  or a MyNode Model Two.
 
-## Overview
-MyNode is a platform that provides uptime, reliability, ease-of-use and a huge variety of applications! By integrating a number of Bitcoin-related open source projects, it provides access to Bitcoin and Lightning along with a number of other features.
+## What's Included
 
-By running Bitcoin and Lightning on your MyNode device, you maintain all the security and privacy originally intended in the Bitcoin protocol. Your transactions are verified by your local node, removing the need to trust online 3rd parties for spending or verifying funds.
+| | |
+|---|---|
+| **Bitcoin** | Bitcoin Core, Electrum Server, Mempool, BTC RPC Explorer, Specter, Caravan, JoinMarket |
+| **Lightning** | LND, Ride the Lightning, Thunderhub, Lightning Terminal, Loop, Pool, LNbits, LNDg, Alby Hub |
+| **Payments** | BTCPay Server, LND Hub |
+| **Mining** | Public Pool, DATUM |
+| **Nostr** | Nostr RS Relay, Astral, Noscl |
+| **System** | Tor, VPN and Tailscale remote access, firewall, Netdata monitoring, web terminal, Docker |
 
-## MyNode Premium
-MyNode offers premium support, simplified upgrades and more! If you are running MyNode Community Edition and want one-click upgrades or you want to purchase a supported, high quality device, please visit mynodebtc.com.
+New apps are added through the [app SDK](doc/applications.md).
 
-Upgrade now or purchase a device at:<br/>
-https://mynodebtc.com/order_now
+## Get Started
 
-<b>Devices - Model One and Model Two</b>
-<br/>
-<img src="images/devices.png" width="600">
+### Supported hardware
 
-## Features
-Each MyNode device comes with a number of wonderful features.
+| Hardware | Image | Data drive |
+|---|---|---|
+| [MyNode Model Two](https://mynodebtc.com/products/two) | Comes pre-installed | Internal 2 TB NVMe SSD |
+| Raspberry Pi 5 | Raspberry Pi 4/5 | 2 TB SSD over USB 3 |
+| Raspberry Pi 4 | Raspberry Pi 4/5 | 2 TB SSD over USB 3 |
+| PC or mini PC (amd64) | PC | Internal 2 TB SSD |
+| Virtual machine (VirtualBox, VMware) | OVA | Virtual disk, 2 TB |
 
-<img src="images/app_icons.png" width="600">
-<!--
-- Bitcoin Node
-- Lightning Node
-- Electrum Server
-- BTCPay Server
-- RTL (Ride the Lightning) - Lightning Wallet
-- Specter Desktop
-- Thunderhub
-- BTC RPC Explorer
-- Mempool - Mempool local visualizer for the Bitcoin blockchain
-- LND Hub - Lightning Wallet Server
-- Lndmanage
-- Lightning Loop - A Non-Custodial Off/On Chain Bridge
-- Lightning Pool - A Non-Custodial auction for liquidity where bids are kept private and trades clear periodically
-- Lightning Terminal
-- LNBits
-- Caravan
-- Warden Terminal
-- PyBlock
-- Lndmanage
-- Tor
-- JoininBox / JoinMarket
-- LND Connect - Generate QR Codes for connecting wallets
-- Virtual Machine support (OVA file: VirtualBox, VMWare)
-- VPN for Remote Access
-- Bitcoin CLI
-- LN Channel Backup
-- Docker support (containers inside: Netdata Monitor, Glances, BTCPay Server)
-- Simple UI / Web Interface
-- Dark Mode interface
-- Dedicated hardware keeps you constantly and securely connected!
--->
+Images for older boards such as the RockPro64 are under **Other** on the
+[download page](https://mynodebtc.com/download).
 
-## Running MyNode
-You can run MyNode on your own device in just a few easy steps!
+### Install
 
-1. Download an Image
-    * [Downloads](https://mynodebtc.com/download)
-2. Flash Image onto SD Card
-    * Download [Etcher](https://www.balena.io/etcher/)
-    * Flash Downloaded Image
-3. Insert SD Card, connect ethernet cable to router, and Boot your Device
-4. Attach External Drive to Device
-    * 1TB+ Required
-5. Visit http://mynode.local/ or http://ip_of_device/
+1. [Download the image](https://mynodebtc.com/download) for your hardware.
+2. Flash it to an SD card (Raspberry Pi) or USB flash drive (PC) with
+   [Balena Etcher](https://etcher.balena.io/) or
+   [Raspberry Pi Imager](https://www.raspberrypi.com/software/).
+3. Insert the card or drive, attach the data drive, and connect an Ethernet cable.
+4. Power on, then open <http://mynode.local/> or `http://<device-ip>/`.
+5. [Upgrade](https://docs.mynodebtc.com/device/upgrading-device.html) to the latest version
+   before you start using it.
 
-## Supported Devices
-We currently have images for the following devices available for download.
- - Raspberry Pi 4
- - RockPro64
- - Rock Pi 4
- - PCs and Servers
- - Virtual Machine Support (VirtualBox, VMWare)
+<details>
+<summary><b>Install on an existing Debian system (beta)</b></summary>
 
-## Upgrading your MyNode
-Once you are running MyNode, you can easily [update the software](https://docs.mynodebtc.com/device/upgrading-device.html) yourself!
+<br>
 
+On a supported device already running Debian 12 (Bookworm), log in and run:
 
-## Developing for MyNode
-
-### Developing the MyNode Platform
-See the [development guide](https://github.com/mynodebtc/mynode/blob/master/doc/development.md).
-
-For web UI changes, `make dev-ui` runs the MyNode web UI locally in Docker with a mocked backend, no device needed. See the [UI dev mode guide](https://github.com/mynodebtc/mynode/blob/master/dev/dev-ui/README.md).
-
-### Adding new Applications to MyNode
-To create and add new applications to MyNode, see the [application guide](https://github.com/mynodebtc/mynode/blob/master/doc/applications.md).
-
-
-## Install on Existing System (beta)
-To setup a new device on a supported platform that is already running Linux (Raspi4, RockPi 4, RockPro64, PC, ...), you can run two simple commands.
-
-First, install Debian - last tested with the Debian 10.11 (Buster) images.
-
-Second, login and run these two commands.
-
-```
+```bash
 wget https://raw.githubusercontent.com/mynodebtc/mynode/latest_release/setup/setup_device.sh -O mynode_setup.sh
 sudo bash ./mynode_setup.sh online
 ```
 
-Once the script successfully completed, reboot and you will be running MyNode!
+Reboot when the script finishes and the device will be running MyNode.
+
+</details>
+
+## MyNode Model Two and Premium
+
+The Model Two is a supported, ready-to-run MyNode device. Premium adds one-click upgrades and
+priority support to MyNode Community Edition.
+[Order a device or upgrade](https://mynodebtc.com/order_now).
+
+<p align="center">
+  <img src="images/model_two_rev_b.png" alt="MyNode Model Two Rev B" width="600">
+</p>
 
 ## Screenshots
-<img src="images/ui.png" width="600">
 
---------------------
+<table>
+  <tr>
+    <td width="50%" valign="top"><img src="images/ui_bitcoin.png" alt="Bitcoin status page"></td>
+    <td width="50%" valign="top"><img src="images/ui_lightning.png" alt="Lightning status page"></td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top"><img src="images/ui_marketplace.png" alt="App marketplace"></td>
+    <td width="50%" valign="top"><img src="images/ui_app.png" alt="Alby Hub app page"></td>
+  </tr>
+</table>
 
-<img src="images/2.png" width="600">
+## Contributing
 
---------------------
+- **Platform:** start with the [development guide](doc/development.md).
+- **Web UI:** `make dev-ui` runs the real web interface in Docker with a mocked backend, no
+  device needed. See the [UI dev mode guide](dev/dev-ui/README.md).
+- **Apps:** add a new application with the [application guide](doc/applications.md).
+- **Bounties:** some features and improvements carry a reward. See the
+  [bounty list](doc/bounties.md).
 
-<img src="images/3.png" width="600">
-
---------------------
-
-<img src="images/marketplace.png" width="600">
-
---------------------
-
-<img src="images/6.png" width="600">
-
-
-## What is Bitcoin?
-Bitcoin is a unique form of digital money that enables users to send money over the Internet securely without the need for banks or other 3rd parties. This enables anyone with Internet access the ability to participate in the global economy no matter where they live - anywhere from rural Africa to Venezuela to Antarctica to space!
-
-Bitcoin is also unique in that it is deflationary and only has a finite amount of Bitcoin that will ever exist - 21 million. This is similar to land or other valuable natural resources that are limited in their supply. This limited supply is based on computer software algorithms built into the Bitcoin protocol. No person, company, or government can change that limit. This makes Bitcoin valuable to many people who want to save money.
-
-The Lightning Network is another layer on top of Bitcoin, speeding up the rate at which Bitcoin can be sent. Bitcoin transactions are very secure, but can take time to fully confirm. The Lightning Network allows people to send Bitcoin back and forth without the need to wait for each transaction to be included in a Bitcoin block.
-
-There is much more to Bitcoin and the Lighting Network than is mentioned here. For more information, start with these links.
-
-<a href="https://www.upfolio.com/ultimate-bitcoin-guide">Ultimate Bitcoin Guide</a>
-
-<a href="https://medium.freecodecamp.org/explain-bitcoin-like-im-five-73b4257ac833">Explain Bitcoin Like I’m Five</a>
-
-<a href="https://www.lopp.net/bitcoin-information.html">Bitcoin Information</a>
+The MyNode community helps with development and support every day. This project would not be
+possible without them.
 
 ## Security
-There are many reasons to run a Bitcoin Node. It helps keep the Bitcoin network secure and reduces the trust you are giving others when using 3rd party Bitcoin Explorers or Bitcoin Light Wallet servers. They can track you or give you false information, reducing your security and privacy. A “full node”, like the Bitcoin node running on your MyNode device, personally validates all blocks in the Bitcoin blockchain making sure your Bitcoin transactions and Lightning network use is built on the strongest, most trusted foundation possible.
 
-By using MyNode for your Lightning Wallet, Bitcoin Wallet, and Block Explorer, you no longer have to trust others to give you the correct information! This increases your security when protecting your valuable assets.
+Found a vulnerability? Please report it privately. See the [security policy](.github/SECURITY.md).
 
-Please note, MyNode is not responsible for any lost funds while using your device. We have taken significant measures to protect your assets by securing MyNode, but lightning wallets are meant to be online and used for spending where risks are greater. Please do your own research into Bitcoin and the Lightning Network before investing in cryptocurrency.
-
-For long term storage of cryptocurrency assets, please consider using a hardware wallet, like a Ledger or Trezor.
-
-## Community
-MyNode has a wonderful, helpful community that assists with development and support. It would be impossible to run this project without their involvement and support! The effort they put in to make this, and all Bitcoin projects, a success is truly appreciated.
-
-## Bounties
-It takes a lot of work to add new features and maintain MyNode. In order to provide desired features, improve documentation, and help provide the best product possible, some new features and improvements have bounties associsated with them. If anyone in the community would like to implement improvements, they can claim the bounty.
-
-[Bounty List](https://github.com/mynodebtc/mynode/blob/master/doc/bounties.md)
+> [!WARNING]
+> MyNode is not responsible for lost funds. Lightning wallets stay online to spend, which
+> carries more risk than cold storage. Keep long-term savings on a hardware wallet, and learn
+> how Bitcoin and Lightning work before you put funds on your node.
 
 ## License
-The primary MyNode License is a variation of CC BY-NC-ND 4.0 with some modifications in Section 9.
 
-This license applies to the MyNode platform, but each application likely has its own license and code to integrate each application to MyNode uses the LGPL v3.0. Code to add applications can be stored under `./rootfs/standard/usr/share/mynode_apps/` and uses the License file at `./rootfs/standard/usr/share/mynode_apps/LICENSE.md`.
+The MyNode platform uses a variation of CC BY-NC-ND 4.0 with changes in Section 9. See
+[LICENSE.md](LICENSE.md).
 
-## Responsible Disclosure
-Found any critical bugs or vulnerabilities? Please send us an email at admin@mynodebtc.com. Thanks!
+Each bundled application has its own license. The code that integrates applications into
+MyNode, under `rootfs/standard/usr/share/mynode_apps/`, uses the LGPL v3.0 in
+[that folder's LICENSE.md](rootfs/standard/usr/share/mynode_apps/LICENSE.md).
+
+<details>
+<summary><b>New to Bitcoin?</b></summary>
+
+<br>
+
+Bitcoin is digital money you can send over the Internet without banks or other third parties.
+Anyone with an Internet connection can use it, wherever they live. Only 21 million bitcoin will
+ever exist, and no person, company or government can change that limit.
+
+The Lightning Network is a layer on top of Bitcoin for fast payments. Instead of waiting for
+each transaction to be confirmed in a block, Lightning lets people send bitcoin back and forth
+instantly.
+
+To learn more, start with [Jameson Lopp's Bitcoin resources](https://www.lopp.net/bitcoin-information.html).
+
+</details>
