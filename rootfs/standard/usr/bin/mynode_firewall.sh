@@ -50,17 +50,6 @@ ufw allow from 172.17.0.0/16 to any port 28283 comment 'allow JoinMarket API (Ja
 ufw allow from 127.0.0.1 comment 'allow from localhost'
 #ufw allow from ::1 comment 'allow from localhost'
 
-# Allow all local traffic
-if [ -f /mnt/hdd/mynode/settings/local_traffic_allowed ]; then
-    ufw allow from 10.0.0.0/8
-    ufw allow from 192.168.0.0/16
-    ufw allow from 172.16.0.0/12
-else
-    ufw delete allow from 10.0.0.0/8
-    ufw delete allow from 192.168.0.0/16
-    ufw delete allow from 172.16.0.0/12
-fi
-
 # Open service and app ports, and remove rules from earlier versions
 flock -u 9
 mynode-manage-apps openports
@@ -74,6 +63,23 @@ systemctl enable ufw
 
 # Check UFW status
 ufw status
+flock -u 9
+
+# Allow all local traffic. The setting is on the data drive, which mounts after this service starts,
+# so wait for it. The rules from the last boot stay in place until then.
+while [ ! -f /mnt/hdd/.mynode ]; do
+    sleep 10s
+done
+flock -x 9
+if [ -f /mnt/hdd/mynode/settings/local_traffic_allowed ]; then
+    ufw allow from 10.0.0.0/8
+    ufw allow from 192.168.0.0/16
+    ufw allow from 172.16.0.0/12
+else
+    ufw delete allow from 10.0.0.0/8
+    ufw delete allow from 192.168.0.0/16
+    ufw delete allow from 172.16.0.0/12
+fi
 flock -u 9
 
 # Reload firewall after some time to reset (fixes VPN)
