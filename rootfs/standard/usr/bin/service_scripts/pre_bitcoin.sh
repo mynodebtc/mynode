@@ -12,9 +12,18 @@ if [ -f /mnt/hdd/mynode/bitcoin/wallet.dat ]; then
     chown -R bitcoin:bitcoin /mnt/hdd/mynode/bitcoin/wallet.dat
 fi
 
+# Newer Bitcoin Core versions create their data folders (wallets/, settings.json, testnet3/, ...) even
+# for --version, so ask as the bitcoin user. MyNode v0.3.53 asked as root, and bitcoind cannot start
+# with root-owned folders: give back any it left.
+for folder in testnet3 testnet4 signet regtest wallets; do
+    if [ -d "/mnt/hdd/mynode/bitcoin/$folder" ] && [ "$(stat -c %U "/mnt/hdd/mynode/bitcoin/$folder")" = "root" ]; then
+        chown -R bitcoin:bitcoin "/mnt/hdd/mynode/bitcoin/$folder"
+    fi
+done
+
 # Bitcoin Core 30 and newer cannot load legacy (BDB) wallets. Move JoinMarket's old watch-only wallet
 # aside; MyNode creates a descriptor wallet with the same name once Bitcoin is synced.
-BTC_MAJOR_VERSION=$(/usr/local/bin/bitcoind --version 2>/dev/null | head -1 | grep -o "v[0-9][0-9]*" | head -1 | tr -d v)
+BTC_MAJOR_VERSION=$(runuser -u bitcoin -- /usr/local/bin/bitcoind --version 2>/dev/null | head -1 | grep -o "v[0-9][0-9]*" | head -1 | tr -d v)
 if [ "${BTC_MAJOR_VERSION:-0}" -ge 30 ]; then
     for wallet in /mnt/hdd/mynode/bitcoin/joinmarket_wallet.dat /mnt/hdd/mynode/bitcoin/testnet3/wallets/joinmarket_wallet.dat; do
         wallet_file="$wallet"
