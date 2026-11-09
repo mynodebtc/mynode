@@ -74,7 +74,7 @@ apps, upgrades and support, so you can use Bitcoin and Lightning privately and s
     <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/lndg.png" alt="" height="48"><br><sub>LNDg</sub></td>
   </tr>
   <tr>
-    <td align="center" valign="top" width="14%"><picture><source media="(prefers-color-scheme: dark)" srcset="images/app_icons_dark/albyhub.png"><img src="rootfs/standard/usr/share/mynode_apps/albyhub/albyhub.png" alt="" height="48"></picture><br><sub>Alby Hub</sub></td>
+    <td align="center" valign="top" width="14%"><img src="rootfs/standard/usr/share/mynode_apps/albyhub/albyhub.png" alt="" height="48"><br><sub>Alby Hub</sub></td>
     <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/bos.png" alt="" height="48"><br><sub>Balance of Satoshis</sub></td>
     <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/pool.png" alt="" height="48"><br><sub>Pool</sub></td>
     <td align="center" valign="top" width="14%"><img src="rootfs/standard/var/www/mynode/static/images/app_icons/lndmanage.png" alt="" height="48"><br><sub>LNDManage</sub></td>
