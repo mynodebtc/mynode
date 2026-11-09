@@ -904,10 +904,13 @@ def reset_albyhub_password_page():
 @mynode_settings.route("/settings/reset-firewall")
 def reset_firewall_page():
     check_logged_in()
-    t = Timer(3.0, reload_firewall)
+
+    check_and_mark_reboot_action("reset_firewall")
+
+    t = Timer(1.0, reset_firewall)
     t.start()
-    flash("Firewall Reset", category="message")
-    return redirect("/settings")
+
+    return redirect("/rebooting")
 
 @mynode_settings.route("/settings/firewall-public-services", methods=['POST'])
 def firewall_public_services_page():

@@ -193,6 +193,17 @@
                                       okFunction)
                 });
 
+                $("#reset_firewall").on("click", function() {
+                    var okFunction = function() {
+                        window.location.href="/settings/reset-firewall"
+                    }
+                    openConfirmDialog("confirm-dialog",
+                                      "Reset Firewall",
+                                      "This clears every firewall rule and reboots your device. MyNode sets up its rules again as the device starts.\n\n" +
+                                      "Would you like to reset the firewall?",
+                                      okFunction)
+                });
+
                 $("#run-full-drive-check").on("click", function() {
                     var okFunction = function() {
                         window.location.href="/settings/run-full-drive-check"
@@ -1977,10 +1988,10 @@
                 <div class="mn_setting">
                     <div class="mn_setting_text">
                         <div class="mn_setting_title">Reset Firewall</div>
-                        <div class="mn_setting_desc">Resetting the firewall will disable and re-enable the firewall and then reboot the device.</div>
+                        <div class="mn_setting_desc">This clears every firewall rule and reboots the device. MyNode sets up its rules again as the device starts. Use it if the firewall rules have gone wrong.</div>
                     </div>
                     <div class="mn_setting_control">
-                        <a href="/settings/reset-firewall" class="ui-button ui-widget ui-corner-all settings_button_small mn_danger_button">Reset Firewall</a>
+                        <button id="reset_firewall" class="ui-button ui-widget ui-corner-all settings_button_small mn_danger_button">Reset Firewall</button>
                     </div>
                 </div>
             </div>

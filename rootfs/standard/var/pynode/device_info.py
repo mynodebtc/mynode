@@ -2241,9 +2241,12 @@ def get_tor_version():
 #==================================
 # Firewall Functions
 #==================================
-def reload_firewall():
-    # Same lock as firewall_info.py's updates; ufw loses rules when two ufw commands overlap
-    subprocess.call(["flock", "/run/mynode_firewall.lock", "ufw", "reload"])
+def reset_firewall():
+    # Back to ufw's defaults, so stray or duplicate rules go too. The firewall service adds
+    # MyNode's rules again at boot, and the VPN service its NAT rule. Same lock as firewall_info.py's
+    # updates; ufw loses rules when two ufw commands overlap.
+    subprocess.call(["flock", "/run/mynode_firewall.lock", "ufw", "--force", "reset"])
+    reboot_device()
 
 def get_firewall_rules():
     try:
