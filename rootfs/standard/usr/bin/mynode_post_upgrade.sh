@@ -105,6 +105,11 @@ if ! skip_base_upgrades ; then
         # Comment out nodesource repo for buster (doesn't work anymore)
         sed -i 's|^deb|#deb|' /etc/apt/sources.list.d/nodesource.list
     fi
+    if [ "$DEBIAN_CODENAME" = "bullseye" ]; then
+        # The Tor Project no longer serves bullseye
+        sed -i '/^deb https:\/\/deb.torproject.org/d' /etc/apt/sources.list
+        sed -i '/^deb-src https:\/\/deb.torproject.org/d' /etc/apt/sources.list
+    fi
     # NodeSource removed its per-codename repos (e.g. "node_18.x bookworm main"), which now 404 and
     # make apt-get update fail. Move an old entry to "nodistro", keeping its Node version, before updating.
     if [ -f /etc/apt/sources.list.d/nodesource.list ] && grep -q "^deb .*deb\.nodesource\.com/node_" /etc/apt/sources.list.d/nodesource.list && ! grep -q "^deb .* nodistro main" /etc/apt/sources.list.d/nodesource.list; then
