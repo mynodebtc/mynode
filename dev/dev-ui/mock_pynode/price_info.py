@@ -1,6 +1,6 @@
 """Mock shim for www/mynode/price_info.py (shadows the www module).
 
-Replaces the `torify curl blockchain.info` price fetch with a random walk
+Replaces the `torify curl` price fetch with a random walk
 around the fixture price, and seeds 24h of history so the ticker/delta UI has
 data immediately. All getters stay real."""
 import random
