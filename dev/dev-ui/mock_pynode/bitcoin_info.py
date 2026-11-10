@@ -83,6 +83,9 @@ class FakeAuthServiceProxy(object):
     def getpeerinfo(self):
         return fixture("bitcoin.json")["peers"]
 
+    def getconnectioncount(self):
+        return len(fixture("bitcoin.json")["peers"])
+
     def getnetworkinfo(self):
         return fixture("bitcoin.json")["network_info"]
 
