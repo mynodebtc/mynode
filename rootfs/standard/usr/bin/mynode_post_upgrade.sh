@@ -172,6 +172,10 @@ if ! skip_base_upgrades ; then
     apt-get -y install --no-install-recommends smartmontools nvme-cli
     # nvme-cli enables NVMe over Fabrics units MyNode doesn't use (they fail on kernels without nvme-fabrics)
     systemctl mask nvmf-autoconnect.service nvmf-connect@.service nvmefc-boot-connections.service > /dev/null 2>&1 || true
+    # smartmontools enables the smartd daemon, which MyNode doesn't use (the SMART test runs smartctl). It fails
+    # when no drive passes SMART through. The unit is smartmontools.service on Debian 12, smartd.service on 10.
+    systemctl disable --now smartmontools.service smartd.service > /dev/null 2>&1 || true
+    systemctl reset-failed smartmontools.service smartd.service > /dev/null 2>&1 || true
 
     # Install automatic OS security updates (turned on or off in mynode_unattended_upgrades.sh)
     apt-get -y install unattended-upgrades
