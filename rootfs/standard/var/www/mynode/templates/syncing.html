@@ -10,7 +10,7 @@
                 $("#sync_stage_text").text(sync["stage_text"]);
                 $("#sync_peers").text(sync["peers"]);
                 $("#sync_peers_row").toggleClass("sync_peers_warning", sync["no_peers"]);
-                $("#sync_no_peers_note").toggle(sync["no_peers"]);
+                $("#sync_no_peers_note").text(sync["no_peers_hint"]).toggle(sync["no_peers"]);
 
                 var step = sync["step"];
                 if (step != null) {
@@ -71,7 +71,7 @@
                 </div>
             </div>
             <div id="sync_no_peers_note" class="sync_no_peers_note" {% if not sync.no_peers %}style="display: none;"{% endif %}>
-                No peers connected. Check that the device is connected to the internet.
+                {{ sync.no_peers_hint }}
             </div>
 
             <div id="sync_step" class="sync_step" {% if not sync.step %}style="display: none;"{% endif %}>

@@ -25,6 +25,7 @@ bitcoin_recommended_fees = None
 bitcoin_version = None
 bitcoin_connection_count = None
 bitcoin_sync_status = None
+bitcoin_no_peers_since = None
 header_tip_time_cache = {"height": None, "time": None}
 BITCOIN_CACHE_FILE = "/tmp/bitcoin_info.json"
 
@@ -182,6 +183,7 @@ def update_bitcoin_main_info():
     global bitcoin_blockchain_info
     global bitcoin_connection_count
     global bitcoin_sync_status
+    global bitcoin_no_peers_since
 
     info = None
     try:
@@ -209,6 +211,11 @@ def update_bitcoin_main_info():
             if header_tip_time == None or int(time.time()) - header_tip_time > 600 * 144:
                 log_status = read_header_sync_from_log()
         bitcoin_sync_status = calculate_bitcoin_sync_status(info, bitcoin_connection_count, header_tip_time, log_status)
+        if bitcoin_connection_count == 0:
+            if bitcoin_no_peers_since == None:
+                bitcoin_no_peers_since = time.time()
+        else:
+            bitcoin_no_peers_since = None
 
         if info != None:
             # Save specific data
@@ -227,6 +234,7 @@ def update_bitcoin_main_info():
     except Exception as e:
         log_message("ERROR: In update_bitcoin_info - {} DATA: {}".format( str(e), str(info) ))
         bitcoin_sync_status = calculate_bitcoin_sync_status(None, None, None, None)
+        bitcoin_no_peers_since = None
         return False
 
     update_bitcoin_json_cache()
@@ -399,6 +407,22 @@ def get_bitcoin_sync_status():
     global bitcoin_sync_status
     return copy.deepcopy(bitcoin_sync_status)
 
+def get_bitcoin_no_peers_warning():
+    # Seconds of zero peers before warning, and the hint to show. Tor and I2P take minutes to connect,
+    # and with Clearnet off a working internet connection is not enough on its own.
+    generic = (10 * 60, "No peers connected. Check the device's internet connection.")
+    if using_bitcoin_custom_config() or settings_file_exists("btc_ipv4_enabled"):
+        return generic
+    networks = []
+    if settings_file_exists("btc_tor_enabled"):
+        networks.append("Tor")
+    if settings_file_exists("btc_i2p_enabled"):
+        networks.append("I2P")
+    if len(networks) == 0:
+        return generic
+    return (60 * 60, ("No peers connected. Bitcoin only uses {}, which some networks block and which need "
+                      "the correct date and time. Check the clock, or enable Clearnet in Settings.").format(" and ".join(networks)))
+
 def get_bitcoin_sync_display():
     # Text and the current stage (if any) for the sync page
     status = get_bitcoin_sync_status()
@@ -408,7 +432,14 @@ def get_bitcoin_sync_display():
     display = {}
     display["stage"] = status["stage"]
     display["peers"] = "{:,}".format(status["peers"]) if status["peers"] != None else "..."
-    display["no_peers"] = status["peers"] == 0
+    display["no_peers"] = False
+    display["no_peers_hint"] = ""
+    no_peers_since = bitcoin_no_peers_since
+    if status["peers"] == 0 and no_peers_since != None:
+        delay, hint = get_bitcoin_no_peers_warning()
+        if time.time() - no_peers_since >= delay:
+            display["no_peers"] = True
+            display["no_peers_hint"] = hint
     display["marked_synced"] = is_bitcoin_synced()
     display["step"] = None
 
