@@ -2,7 +2,8 @@
 import secrets
 import urllib.parse
 from config import *
-from flask import Flask, render_template, Markup, redirect, request, url_for, flash, session, g
+from flask import Flask, render_template, Markup, redirect, request, url_for, flash, session, g, has_request_context
+from flask.sessions import SecureCookieSessionInterface
 from user_management import *
 from api import mynode_api
 from bitcoin import mynode_bitcoin
@@ -73,6 +74,18 @@ class ReverseProxied(object):
         return self.app(environ, start_response)
 
 
+# Marks the session cookie Secure while Force HTTPS is on. Read when the cookie is written, so it
+# follows the setting without restarting the web UI. Onion addresses are reached over http:// and
+# bring their own encryption, so the flag there would only keep the cookie from being stored.
+class MyNodeSessionInterface(SecureCookieSessionInterface):
+    def get_cookie_secure(self, app):
+        if not is_https_forced():
+            return False
+        if has_request_context() and get_request_hostname().endswith(".onion"):
+            return False
+        return True
+
+
 app = Flask(__name__)
 app.config['DEBUG'] = False
 app.config['TEMPLATES_AUTO_RELOAD'] = True
@@ -81,6 +94,7 @@ app.config['UPLOAD_FOLDER'] = "/tmp/flask_uploads"
 app.config['SESSION_PERMANENT'] = True
 app.config["SESSION_COOKIE_NAME"] = "mynode_session_id"
 app.config["SESSION_COOKIE_SAMESITE"] = "Strict"
+app.session_interface = MyNodeSessionInterface()
 app.secret_key = get_flask_secret_key()
 timeout_days, timeout_hours = get_flask_session_timeout()
 app.permanent_session_lifetime = timedelta(days=timeout_days, hours=timeout_hours)
@@ -976,6 +990,38 @@ def get_login_app_name(app_port):
             return app["name"]
     return ""
 
+# The HTTPS port of the same nginx server, for the services above that are not in the app list
+LOGIN_BUILTIN_HTTPS_PORTS = {
+    "3002": "3003",
+    "3020": "3021",
+    "5010": "5011",
+    "61208": "61209",
+}
+# Each Opendime slot gets an HTTP port and the next one for HTTPS (mynode_usb_extras.py)
+for opendime_port in range(8010, 8020, 2):
+    LOGIN_BUILTIN_HTTPS_PORTS[str(opendime_port)] = str(opendime_port + 1)
+
+def get_login_https_port(app_port):
+    # The HTTPS port in front of the same app, read from the app's own definition so apps added
+    # later need no change here
+    if app_port in LOGIN_BUILTIN_HTTPS_PORTS:
+        return LOGIN_BUILTIN_HTTPS_PORTS[app_port]
+    for app in get_all_applications():
+        if app_port == str(app.get("http_port")) and app.get("https_port") not in [None, ""]:
+            return str(app["https_port"])
+    return ""
+
+def get_app_https_login_url(app_port, next_page):
+    # Same host over HTTPS, on the app's own HTTPS port, or the web UI's own login when the app
+    # has no HTTPS port at all
+    host = get_request_hostname()
+    if ":" in host:
+        host = "[" + host + "]"
+    https_port = get_login_https_port(app_port)
+    if https_port == "":
+        return "https://{}/login".format(host)
+    return "https://{}:{}/mynode_ui/login?{}".format(host, https_port, urllib.parse.urlencode({"next": next_page}))
+
 @app.route("/login", methods=["GET","POST"])
 def page_login():
     templateData = {
@@ -1004,6 +1050,13 @@ def page_app_login():
     app_port = request.headers.get("X-MyNode-App-Port", "")
     if app_port not in get_session_login_ports():
         return "Not found", 404
+    # The shared proxy params always say https, so nginx passes this page the real scheme. While
+    # HTTPS is forced the form belongs on the app's HTTPS port, which is also where the session
+    # cookie is kept. Onion addresses are left alone - they are encrypted already.
+    if (is_https_forced()
+            and request.headers.get("X-MyNode-Client-Scheme", "https") == "http"
+            and not get_request_hostname().endswith(".onion")):
+        return redirect(get_app_https_login_url(app_port, next_page))
     templateData = {
         "app_name": get_login_app_name(app_port),
         "login_next": next_page,
