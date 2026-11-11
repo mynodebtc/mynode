@@ -779,9 +779,17 @@ def get_clone_target_drive_has_mynode():
 def get_drive_info(drive):
     data = {}
     data["name"] = "NOT_FOUND"
+    if drive == None:
+        return data
+    # The name is turned into a path under /dev, so only allow a plain device name
+    drive = to_string(drive).strip()
+    if not is_safe_name(drive):
+        log_message("Refusing to look up drive info for name: {}".format(drive))
+        return data
     try:
-        lsblk_output = to_string(subprocess.check_output("lsblk -io KNAME,TYPE,SIZE,MODEL,VENDOR /dev/{} | grep disk".format(drive), shell=True).decode("utf-8"))
-        parts = lsblk_output.split()
+        lsblk_output = to_string(subprocess.check_output(["lsblk", "-io", "KNAME,TYPE,SIZE,MODEL,VENDOR", "/dev/" + drive]))
+        disk_lines = [line for line in lsblk_output.split("\n") if "disk" in line]
+        parts = " ".join(disk_lines).split()
         data["name"] = parts[0]
         data["size"] = parts[2]
         data["model"] = parts[3]
