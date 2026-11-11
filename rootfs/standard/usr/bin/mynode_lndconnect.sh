@@ -3,9 +3,10 @@
 source /usr/share/mynode/mynode_config.sh
 
 umask 077
-mkdir -p /tmp/mynode_lndconnect/
-chmod 700 /tmp/mynode_lndconnect/
-cd /tmp/mynode_lndconnect/
+# Start from a folder of our own, never one that is already there
+rm -rf /tmp/mynode_lndconnect
+mkdir -m 700 /tmp/mynode_lndconnect || exit 1
+cd /tmp/mynode_lndconnect/ || exit 1
 
 echo "Starting lndconnect script..."
 
