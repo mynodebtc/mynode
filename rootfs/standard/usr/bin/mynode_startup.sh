@@ -302,7 +302,6 @@ done
 if [ -f /home/bitcoin/reset_docker ]; then
     # Show status
     echo "docker_reset" > $MYNODE_STATUS_FILE
-    chmod 777 $MYNODE_STATUS_FILE
 
     # Delete docker data
     rm -rf /mnt/hdd/mynode/docker
@@ -363,7 +362,6 @@ if [ -d /var/lib/containerd ] && [ ! -L /var/lib/containerd ] && [ -n "$(ls -A /
 fi
 
 echo "drive_mounted" > $MYNODE_STATUS_FILE
-chmod 777 $MYNODE_STATUS_FILE
 rm -rf $MYNODE_DIR/.mynode_bitcoin_synced
 
 
@@ -702,6 +700,10 @@ USER=$(stat -c '%U' /mnt/hdd/mynode/lit)
 if [ "$USER" != "bitcoin" ]; then
     chown -R bitcoin:bitcoin /mnt/hdd/mynode/lit
 fi
+# Loop, Pool, Faraday, LiT and LiT's tapd keep their macaroons and databases here, for bitcoin only
+mkdir -p /home/bitcoin/.tapd
+chown bitcoin:bitcoin /home/bitcoin/.tapd
+chmod 700 /mnt/hdd/mynode/loop /mnt/hdd/mynode/pool /mnt/hdd/mynode/faraday /mnt/hdd/mynode/lit /home/bitcoin/.tapd
 USER=$(stat -c '%U' /mnt/hdd/mynode/whirlpool)
 if [ "$USER" != "bitcoin" ]; then
     chown -R bitcoin:bitcoin /mnt/hdd/mynode/whirlpool

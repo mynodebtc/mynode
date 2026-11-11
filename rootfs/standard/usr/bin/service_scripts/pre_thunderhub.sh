@@ -105,5 +105,10 @@ fi
 
 chown -R bitcoin:bitcoin /mnt/hdd/mynode/thunderhub
 
+# Thunderhub rewrites its login cookie at every start but keeps the file's mode
+if [ -f /opt/mynode/thunderhub/.cookie ]; then
+    chmod 600 /opt/mynode/thunderhub/.cookie
+fi
+
 sync
 sleep 3s

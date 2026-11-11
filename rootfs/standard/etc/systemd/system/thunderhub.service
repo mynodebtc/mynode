@@ -13,6 +13,8 @@ ExecStartPre=+/usr/bin/service_scripts/pre_thunderhub.sh
 # nginx serves 3030 (HTTP) and 3031 (HTTPS) behind the MyNode login
 Environment=PORT=13030
 Environment=HOST=127.0.0.1
+# Thunderhub's files, such as its login cookie, are for its own user (and root)
+UMask=0077
 WorkingDirectory=/opt/mynode/thunderhub
 ExecStart=/usr/bin/npm run start
 
