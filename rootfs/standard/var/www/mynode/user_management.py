@@ -34,29 +34,40 @@ def is_logged_in():
         return True
     return False
 
-def get_login_source():
-    # Where a password attempt comes from. Attempts are counted per source, so one client
-    # reaching its limit does not stop others. Clients on the network connect directly and are
-    # counted by address. Everything that arrives through this device - nginx for HTTPS and for
-    # the onion service, the local desktop - comes from loopback; nginx passes the client's
-    # address in X-Real-IP, and anything without a usable one shares a single local count.
+def get_client_address():
+    # The address the request came from, or None when it never left this device. Clients on the
+    # network connect directly. Everything that arrives through this device - nginx for HTTPS and
+    # for the onion service, the local desktop, a tunnel - comes from loopback; nginx passes the
+    # client's address in X-Real-IP, and anything without a usable one counts as this device.
     try:
         address = request.remote_addr
     except RuntimeError:
-        return LOGIN_ATTEMPT_LOCAL_SOURCE
+        return None
     try:
         ip = ipaddress.ip_address(address)
     except (TypeError, ValueError):
-        return LOGIN_ATTEMPT_LOCAL_SOURCE
+        return None
     if not ip.is_loopback:
-        return str(ip)
+        return ip
     try:
         forwarded = ipaddress.ip_address(request.headers.get("X-Real-IP", "").strip())
     except ValueError:
-        return LOGIN_ATTEMPT_LOCAL_SOURCE
+        return None
     if forwarded.is_loopback:
+        return None
+    return forwarded
+
+def is_local_client():
+    return get_client_address() == None
+
+def get_login_source():
+    # Where a password attempt comes from. Attempts are counted per source, so one client
+    # reaching its limit does not stop others, and everything arriving through this device
+    # itself shares a single local count.
+    address = get_client_address()
+    if address == None:
         return LOGIN_ATTEMPT_LOCAL_SOURCE
-    return str(forwarded)
+    return str(address)
 
 def login(password):
     source = get_login_source()

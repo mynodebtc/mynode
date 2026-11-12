@@ -102,6 +102,11 @@ def is_plaintext_request():
     # Neither TLS nor an onion, so anything sent on it is readable on the way
     return has_request_context() and not is_encrypted_request() and not is_onion_request()
 
+def is_insecure_request():
+    # Readable on the way AND sent across the network: the desktop on the node itself, and a
+    # tunnel ending on it, both arrive from this device and have nothing in between to listen in
+    return is_plaintext_request() and not is_local_client()
+
 
 class MyNodeSessionInterface(SecureCookieSessionInterface):
     def get_cookie_name(self, app):
@@ -1310,6 +1315,18 @@ def get_csp_nonce():
 @app.context_processor
 def inject_csp_nonce():
     return {"csp_nonce": get_csp_nonce}
+
+@app.context_processor
+def inject_connection_info():
+    # The login page on an app's own port cannot reach the interface with a relative link, so
+    # the whole address is given here. HTTPS has its own port, which this page does not know.
+    hostname = get_request_hostname()
+    if ":" in hostname:
+        hostname = "[{}]".format(hostname)
+    return {
+        "insecure_connection": is_insecure_request(),
+        "https_info_url": "http://{}/https-info".format(hostname),
+    }
 
 @app.after_request
 def set_response_headers(response):

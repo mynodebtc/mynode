@@ -855,6 +855,37 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     margin-bottom: 20px;
 }
 
+.insecure_connection_badge {
+    max-width: 440px;
+    margin: 0 auto 18px auto;
+    padding: 8px 14px;
+    border: 1px solid orange;
+    border-radius: 8px;
+    background-color: rgb(255, 250, 238);
+    color: #333333;
+    font-size: 12px;
+    line-height: 1.7;
+    text-align: center;
+}
+
+.insecure_connection_badge a {
+    white-space: nowrap;
+}
+
+.insecure_connection_badge_label {
+    display: inline-block;
+    margin-right: 6px;
+    padding: 1px 8px;
+    border-radius: 9px;
+    background-color: orange;
+    color: #333333;
+    font-weight: bold;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    vertical-align: 1px;
+}
+
 .main_page_error_block {
     color: #333333;
     border: 2px solid red;
