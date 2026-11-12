@@ -193,29 +193,36 @@
                     {% endif %}
                 {% endfor %}
 
-                {% if joininbox_installed %}
+                {% if joinmarket_api_enabled %}
                 {{ service_card("joinmarket-api", "Joinmarket API", joinmarket_api_status_color, joinmarket_api_status, joinmarket_api_status_log) }}
+                {% endif %}
+
+                {% if joinmarket_obwatcher_enabled %}
                 {{ service_card("joinmarket-obwatcher", "Joinmarket Orderbook Watcher", joinmarket_obwatcher_status_color, joinmarket_obwatcher_status, joinmarket_obwatcher_status_log) }}
                 {% endif %}
 
-                {% if whirlpool_installed %}
+                {% if whirlpool_enabled %}
                 {{ service_card("whirlpool", "Whirlpool", whirlpool_status_color, whirlpool_status, whirlpool_status_log) }}
                 {% endif %}
 
-                {% if dojo_installed %}
+                {% if dojo_enabled %}
                 {{ service_card("dojo", "Dojo", dojo_status_color, dojo_status, dojo_status_log,
                                 containers=[("tor", "tor"), ("nodejs", "nodejs"), ("db", "db"), ("nginx", "nginx")],
                                 running=running_containers) }}
                 {% endif %}
 
+                {% if btcpayserver_enabled %}
                 {{ service_card("btcpayserver", "BTCPay Server", btcpayserver_status_color, btcpayserver_status, btcpayserver_status_log,
                                 containers=[("generated_btcpayserver_1", "btcpayserver"), ("generated_nbxplorer_1", "nbxplorer"), ("generated_postgres_1", "postgres")],
                                 running=running_containers) }}
+                {% endif %}
 
+                {% if mempool_enabled %}
                 {{ service_card("mempool", "Mempool", mempool_status_color, mempool_status, mempool_status_log,
                                 containers=[("mempool_web_1", "mempool_web_1"), ("mempool_db_1", "mempool_db_1"), ("mempool_api_1", "mempool_api_1"),
                                             ("mempool-web-1", "mempool-web-1"), ("mempool-db-1", "mempool-db-1"), ("mempool-api-1", "mempool-api-1")],
                                 running=running_containers) }}
+                {% endif %}
                 {% endif %}
 
                 {{ service_card("docker", "Docker", docker_status_color, docker_status, docker_status_log) }}
