@@ -64,7 +64,7 @@
         </div>
         {% endif %}
 
-        {% if not is_https %}
+        {% if not is_https and not is_https_forced %}
         <p class="warning_icon_row">
             <img class="warning_triangle_icon" src="{{ url_for('static', filename="images/warning_triangle.svg")}}"/>
             HTTPS may be required in a future release of MyNode.
@@ -176,6 +176,17 @@
         </div>
         {% endif %}
 
+        {% if is_https_forced %}
+        <div class="settings_block">
+            <div class="settings_block_header">HTTPS Is Already Required</div>
+            <p>
+                Force HTTPS is on, so every other page moves to HTTPS and your password is never sent unencrypted.
+                This page is the one exception, so these steps can be read before logging in.
+                <br/><br/>
+                <a href="/settings#ui" class="ui-button ui-widget ui-corner-all settings_button">Settings</a>
+            </p>
+        </div>
+        {% else %}
         <div class="settings_block">
             <div class="settings_block_header">Making HTTPS Permanent</div>
             <p>
@@ -185,6 +196,7 @@
                 <a href="/settings#ui" class="ui-button ui-widget ui-corner-all settings_button">Settings</a>
             </p>
         </div>
+        {% endif %}
 
         <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
             $(document).ready(function() {
