@@ -74,16 +74,76 @@ class ReverseProxied(object):
         return self.app(environ, start_response)
 
 
-# Marks the session cookie Secure while Force HTTPS is on. Read when the cookie is written, so it
-# follows the setting without restarting the web UI. Onion addresses are reached over http:// and
-# bring their own encryption, so the flag there would only keep the cookie from being stored.
+# The session cookie is named for the kind of connection it was issued on: an encrypted one gets a
+# Secure cookie under its own name, a plain one keeps the original name. Browsers do not let an
+# http:// response replace a cookie held with Secure, so a single shared name would strand a browser
+# that moves between the two. Both are decided when the cookie is read and written, so they follow
+# the connection rather than any setting.
+SESSION_COOKIE_NAME = "mynode_session_id"
+SESSION_COOKIE_NAME_ENCRYPTED = "__Secure-" + SESSION_COOKIE_NAME
+SESSION_COOKIE_NAMES = [SESSION_COOKIE_NAME, SESSION_COOKIE_NAME_ENCRYPTED]
+
+def is_onion_request():
+    return has_request_context() and get_request_hostname().endswith(".onion")
+
+def is_encrypted_request():
+    if not has_request_context():
+        return False
+    # The shared proxy params always say https, so the locations that need the scheme the client
+    # really used pass it separately
+    scheme = request.headers.get("X-MyNode-Client-Scheme", "") or request.scheme
+    if scheme != "https":
+        return False
+    # Onion addresses bring their own encryption and are reached over http://, so a Secure cookie
+    # there would only keep the browser from storing it. nginx claims https for an app's onion.
+    return not is_onion_request()
+
+def is_plaintext_request():
+    # Neither TLS nor an onion, so anything sent on it is readable on the way
+    return has_request_context() and not is_encrypted_request() and not is_onion_request()
+
+
 class MyNodeSessionInterface(SecureCookieSessionInterface):
+    def get_cookie_name(self, app):
+        if is_encrypted_request():
+            return SESSION_COOKIE_NAME_ENCRYPTED
+        return SESSION_COOKIE_NAME
+
     def get_cookie_secure(self, app):
-        if not is_https_forced():
-            return False
-        if has_request_context() and get_request_hostname().endswith(".onion"):
-            return False
-        return True
+        return is_encrypted_request()
+
+    def open_session(self, app, request):
+        session = super().open_session(app, request)
+        if session is None or session:
+            return session
+        # Nothing stored under this name. An encrypted connection takes over a session held under
+        # the plain name, so turning Force HTTPS on, or an upgrade, does not sign the owner out.
+        if not is_encrypted_request():
+            return session
+        value = request.cookies.get(SESSION_COOKIE_NAME)
+        if not value:
+            return session
+        try:
+            data = self.get_signing_serializer(app).loads(
+                value, max_age=int(app.permanent_session_lifetime.total_seconds()))
+        except Exception:
+            return session
+        session = self.session_class(data)
+        session.modified = True
+        return session
+
+    def save_session(self, app, session, response):
+        super().save_session(app, session, response)
+        # While HTTPS is forced the plain name is not used, so take it back from the browser. Only an
+        # encrypted response can, and the browser is on its way to one whenever it has this cookie.
+        if (is_https_forced()
+                and is_encrypted_request()
+                and request.cookies.get(SESSION_COOKIE_NAME)):
+            response.delete_cookie(SESSION_COOKIE_NAME,
+                                   path=app.config["SESSION_COOKIE_PATH"] or "/",
+                                   domain=app.config["SESSION_COOKIE_DOMAIN"],
+                                   httponly=True,
+                                   samesite=app.config["SESSION_COOKIE_SAMESITE"])
 
 
 app = Flask(__name__)
@@ -92,7 +152,7 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024     # 32 MB upload file max
 app.config['UPLOAD_FOLDER'] = "/tmp/flask_uploads"
 app.config['SESSION_PERMANENT'] = True
-app.config["SESSION_COOKIE_NAME"] = "mynode_session_id"
+app.config["SESSION_COOKIE_NAME"] = SESSION_COOKIE_NAME
 app.config["SESSION_COOKIE_SAMESITE"] = "Strict"
 app.session_interface = MyNodeSessionInterface()
 app.secret_key = get_flask_secret_key()
@@ -1080,11 +1140,29 @@ def page_app_login():
 @app.route("/logout")
 def page_logout():
     logout()
-    return redirect("/")
+    response = redirect("/")
+    # The session clears the cookie for this connection itself. Clear the other name as well, so one
+    # logout ends both where the browser takes it - an http response cannot touch a Secure cookie.
+    current_name = app.session_interface.get_cookie_name(app)
+    for name in SESSION_COOKIE_NAMES:
+        if name == current_name:
+            continue
+        response.delete_cookie(name,
+                               path=app.config["SESSION_COOKIE_PATH"] or "/",
+                               domain=app.config["SESSION_COOKIE_DOMAIN"],
+                               secure=(name == SESSION_COOKIE_NAME_ENCRYPTED),
+                               httponly=True,
+                               samesite=app.config["SESSION_COOKIE_SAMESITE"])
+    return response
 
 # Answers nginx auth_request checks for apps that share the web UI login
 @app.route("/auth/check")
 def page_auth_check():
+    # nginx asks this as https so the forced-HTTPS redirect stays out of a subrequest, so the check
+    # looks at the client's own connection itself. While HTTPS is forced, a session is not accepted
+    # on a plaintext one; the login page the 401 leads to moves the browser onto HTTPS.
+    if is_https_forced() and is_plaintext_request():
+        return "", 401
     if is_logged_in():
         return "", 204
     return "", 401
