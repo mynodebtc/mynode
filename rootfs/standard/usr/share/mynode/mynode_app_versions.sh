@@ -184,7 +184,7 @@ BTC_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version_latest
 # Bitcoin Core release signers: Wladimir van der Laan, Michael Ford (fanquake)
 BTC_SIGNER_FINGERPRINTS="01EA5486DE18A882D4C2684590C8019E36C2E964 E777299FC265DD04793070EB944D35F9AC3DB76A"
 
-LND_VERSION="v0.21.6-beta"
+LND_VERSION="v0.21.8-beta"
 LND_VERSION=$(get_app_version "$LND_VERSION" "lnd")
 LND_VERSION_FILE=/home/bitcoin/.mynode/lnd_version
 LND_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnd_version_latest
