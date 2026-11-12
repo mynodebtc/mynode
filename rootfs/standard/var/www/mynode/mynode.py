@@ -102,6 +102,11 @@ def is_plaintext_request():
     # Neither TLS nor an onion, so anything sent on it is readable on the way
     return has_request_context() and not is_encrypted_request() and not is_onion_request()
 
+def get_session_cookie_domain():
+    # Older Flask stores False here once it has worked out there is no domain to set, and a
+    # cookie cannot be written with that. Either way it means the host the browser asked for.
+    return app.config["SESSION_COOKIE_DOMAIN"] or None
+
 def is_insecure_request():
     # Readable on the way AND sent across the network: the desktop on the node itself, and a
     # tunnel ending on it, both arrive from this device and have nothing in between to listen in
@@ -146,7 +151,7 @@ class MyNodeSessionInterface(SecureCookieSessionInterface):
                 and request.cookies.get(SESSION_COOKIE_NAME)):
             response.delete_cookie(SESSION_COOKIE_NAME,
                                    path=app.config["SESSION_COOKIE_PATH"] or "/",
-                                   domain=app.config["SESSION_COOKIE_DOMAIN"],
+                                   domain=get_session_cookie_domain(),
                                    httponly=True,
                                    samesite=app.config["SESSION_COOKIE_SAMESITE"])
 
@@ -1154,7 +1159,7 @@ def page_logout():
             continue
         response.delete_cookie(name,
                                path=app.config["SESSION_COOKIE_PATH"] or "/",
-                               domain=app.config["SESSION_COOKIE_DOMAIN"],
+                               domain=get_session_cookie_domain(),
                                secure=(name == SESSION_COOKIE_NAME_ENCRYPTED),
                                httponly=True,
                                samesite=app.config["SESSION_COOKIE_SAMESITE"])
