@@ -338,8 +338,8 @@ BTCRPCEXPLORER_VERSION=$(get_app_version "$BTCRPCEXPLORER_VERSION" "btcrpcexplor
 BTCRPCEXPLORER_VERSION_FILE=/home/bitcoin/.mynode/btcrpcexplorer_version
 BTCRPCEXPLORER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/btcrpcexplorer_version_latest
 
-LNBITS_VERSION="v1.6.2"
-LNBITS_DIGEST="v1.6.2 sha256:284b9c2a0df9a1f867b4c52b694699fccade513c09368879922ff90bc7bf850e"
+LNBITS_VERSION="v1.7.0"
+LNBITS_DIGEST="v1.7.0 sha256:9fc5157f31339968537beedc9517d22a91b5f2e171fcb42f1ca76f5305502df1"
 LNBITS_VERSION=$(get_app_version "$LNBITS_VERSION" "lnbits")
 LNBITS_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version
 LNBITS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version_latest
