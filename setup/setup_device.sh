@@ -463,15 +463,14 @@ fi
 
 
 # Install Python3 specific tools
-/usr/local/bin/python3 -m pip install pip==$PYTHON_PIP_VERSION setuptools==$PYTHON_SETUPTOOLS_VERSION wheel==$PYTHON_WHEEL_VERSION
+/usr/local/bin/python3 -m pip install pip==$PYTHON_PIP_VERSION setuptools==$PYTHON_SETUPTOOLS_VERSION wheel==$PYTHON_WHEEL_VERSION packaging==$PYTHON_PACKAGING_VERSION
 
 # PyYAML Workaround (maybe only needed for python 3.10+)
 #echo 'Cython < 3.0' > /tmp/constraint.txt
 #PIP_CONSTRAINT=/tmp/constraint.txt pip3 wheel PyYAML==5.4.1
 #pip3 install 'PyYAML==5.4.1'
 
-/usr/local/bin/python3 -m pip install -r $TMP_INSTALL_PATH/usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir || \
-    /usr/local/bin/python3 -m pip install -r $TMP_INSTALL_PATH/usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir --use-deprecated=html5lib
+/usr/local/bin/python3 -m pip install -r $TMP_INSTALL_PATH/usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir
 
 # Install uv and the Python for apps with their own venv (64-bit only)
 if [ $IS_64_BIT = 1 ]; then

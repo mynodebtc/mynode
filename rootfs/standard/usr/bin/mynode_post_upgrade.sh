@@ -354,16 +354,15 @@ if ! skip_base_upgrades ; then
 
 
     # Install any pip3 software
-    PIP_TOOLS="pip==$PYTHON_PIP_VERSION setuptools==$PYTHON_SETUPTOOLS_VERSION wheel==$PYTHON_WHEEL_VERSION"
-    /usr/local/bin/python3 -m pip install $PIP_TOOLS || /usr/local/bin/python3 -m pip install $PIP_TOOLS --use-deprecated=html5lib
+    PIP_TOOLS="pip==$PYTHON_PIP_VERSION setuptools==$PYTHON_SETUPTOOLS_VERSION wheel==$PYTHON_WHEEL_VERSION packaging==$PYTHON_PACKAGING_VERSION"
+    /usr/local/bin/python3 -m pip install $PIP_TOOLS
     
     # PyYAML Workaround (maybe only needed for python 3.10+)
     #echo 'Cython < 3.0' > /tmp/constraint.txt
     #PIP_CONSTRAINT=/tmp/constraint.txt pip3 wheel PyYAML==5.4.1
     #pip3 install 'PyYAML==5.4.1'
     
-    /usr/local/bin/python3 -m pip install -r /usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir || \
-        /usr/local/bin/python3 -m pip install -r /usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir --use-deprecated=html5lib
+    /usr/local/bin/python3 -m pip install -r /usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir
 
     # Install uv and the Python for apps with their own venv (64-bit only)
     if [ $IS_64_BIT = 1 ]; then
@@ -976,27 +975,6 @@ else
     # Older images enabled ob-watcher without JoinMarket, so it failed and restarted every minute
     systemctl disable --now ob-watcher > /dev/null 2>&1 || true
 fi
-
-# Install Whirlpool
-if should_install_app "whirlpool" ; then
-    WHIRLPOOL_UPGRADE_URL=https://code.samourai.io/whirlpool/whirlpool-client-cli/uploads/$WHIRLPOOL_UPLOAD_FILE_ID/whirlpool-client-cli-$WHIRLPOOL_VERSION-run.jar
-    CURRENT=""
-    if [ -f $WHIRLPOOL_VERSION_FILE ]; then
-        CURRENT=$(cat $WHIRLPOOL_VERSION_FILE)
-    fi
-    if [ "$CURRENT" != "$WHIRLPOOL_VERSION" ]; then
-        sudo -u bitcoin mkdir -p /opt/mynode/whirlpool
-        cd /opt/mynode/whirlpool
-        sudo rm -rf *.jar
-        sudo -u bitcoin wget -O whirlpool.jar $WHIRLPOOL_UPGRADE_URL
-
-        cp -f /usr/share/whirlpool/whirlpool.asc whirlpool.asc
-        gpg --verify whirlpool.asc
-
-        echo $WHIRLPOOL_VERSION > $WHIRLPOOL_VERSION_FILE
-    fi
-fi
-
 
 # Upgrade RTL
 if should_install_app "rtl" ; then

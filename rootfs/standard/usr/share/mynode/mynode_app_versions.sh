@@ -425,6 +425,7 @@ PYTHON_SHA256="3.8.9 5e391f3ec45da2954419cab0beaefd8be38895ea5ce33577c3ec14940c4
 PYTHON_PIP_VERSION="25.0.1"
 PYTHON_SETUPTOOLS_VERSION="75.3.4"
 PYTHON_WHEEL_VERSION="0.45.1"
+PYTHON_PACKAGING_VERSION="24.2"
 
 # uv, and the Python it installs for apps that run in their own venv (64-bit only). Apps create
 # venvs with "mynode-uv venv --python $APP_PYTHON_MINOR_VERSION"; a new patch version in
