@@ -407,10 +407,11 @@ def page_lnd_pair_wallet():
 
     #Electrum QR:
     #bluewallet:setelectrumserver?server=v7gtzf7nua6hdmb2wtqaqioqmesdb4xrlly4zwr7bvayxv2bpg665pqd.onion%3A50001%3At
-    # While Force HTTPS is on, nginx moves LNDHub's plain port to its HTTPS port, so the wallet is
-    # pointed straight at the one that answers. The Tor address below stays on http - an onion is
+    # The wallet is pointed at LNDHub's HTTPS port when this page is being read over HTTPS, so the
+    # QR matches the connection the owner chose, and whenever HTTPS is forced, since nginx then
+    # moves the plain port there anyway. The Tor address below stays on http - an onion is
     # encrypted already, and only the plain port is published as an onion service.
-    if is_https_forced():
+    if request.scheme == "https" or is_https_forced():
         bluewallet_lndhub_local_text = "bluewallet:setlndhuburl?url=https://"+local_ip+":3001"
     else:
         bluewallet_lndhub_local_text = "bluewallet:setlndhuburl?url=http://"+local_ip+":3000"

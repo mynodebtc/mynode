@@ -370,24 +370,43 @@ HTTPS_WAIT_STATE_TEXT = {
     STATE_STABLE: "Running",
 }
 
+# Reachable over plain HTTP while HTTPS is forced: the two pages that explain how to reach the node
+# over HTTPS, and the files they are drawn with. Those files are the interface's own stylesheets and
+# images, and a browser that has not trusted the certificate yet cannot fetch them over HTTPS - the
+# pages would arrive as unstyled text, which is no way to meet someone's first connection.
+HTTPS_FORCED_ALLOWED_ENDPOINTS = [
+    "static",
+    "page_https_info",
+    "page_https_is_forced",
+]
+
+def wants_html_page():
+    # A page someone navigated to, rather than a file that page asks for or a program's request
+    return "text/html" in request.headers.get("Accept", "")
+
 @app.before_request
 def force_https():
     if not is_https_forced():
         return None
     if not request.url.startswith('http://'):
         return None
-    if request.endpoint == "page_https_info":
+    if request.endpoint in HTTPS_FORCED_ALLOWED_ENDPOINTS:
         return None
 
     if is_https_available():
+        # A browser is sent to the page that says why the link did not work. Going straight to the
+        # address in HTTPS instead leaves a first-time visitor looking at the certificate warning
+        # with nothing explaining it. Anything that is not a page still moves to HTTPS, and so does
+        # an onion address - that connection is encrypted, the certificate covers the .onion name,
+        # and its reader has no plain link to be told about.
+        if wants_html_page() and not is_onion_request():
+            return redirect("/https-is-forced", code=302)
         url = request.url.replace('http://', 'https://', 1)
         app.logger.info("Redirecting to HTTPS ({})".format(url))
         return redirect(url, code=302)
 
     # HTTPS is not up yet, which is normal early in boot. Show only the device status,
     # and keep reloading this same address so it moves to HTTPS once available.
-    if request.endpoint == "static":
-        return None
     templateData = {
         "title": "Waiting for HTTPS",
         "status_text": HTTPS_WAIT_STATE_TEXT.get(get_mynode_status(), "Starting..."),
@@ -407,6 +426,7 @@ DEFAULT_PASSWORD_ALLOWED_ENDPOINTS = [
     "page_app_login",
     "page_logout",
     "page_https_info",
+    "page_https_is_forced",
 ]
 
 # Created by startup after its first USB driver check, which can reboot the device
@@ -1201,6 +1221,23 @@ def page_https_info():
     }
     return render_template('https_info.html', **templateData)
 
+@app.route("/https-is-forced")
+def page_https_is_forced():
+    # No login check - this page is where an http:// link lands while HTTPS is forced, and it has
+    # to work before anyone can log in. It is served over that same plain connection on purpose.
+    hostname = get_request_hostname()
+    if ":" in hostname:
+        hostname = "[{}]".format(hostname)
+    templateData = {
+        "title": "HTTPS Required",
+        "https_url": "https://{}/".format(hostname),
+        "is_https": False,
+        "is_https_forced": True,
+        "ca_info": get_https_ca_info(),
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('https_is_forced.html', **templateData)
+
 @app.route("/rebooting")
 def page_rebooting():
     check_logged_in()
@@ -1245,6 +1282,7 @@ CROSS_SITE_ENTRY_ENDPOINTS = set([
     "page_app_login",
     "page_logout",
     "page_https_info",
+    "page_https_is_forced",
     # Only reports whether the session is logged in, for nginx in front of apps on
     # other ports. Over plain HTTP those arrive with a Referer from the main UI port.
     "page_auth_check",

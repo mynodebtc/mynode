@@ -1,0 +1,49 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>HTTPS Required</title>
+        {% include 'includes/head.html' %}
+        <style>
+            .https_cmd {
+                display: block;
+                text-align: left;
+                word-break: break-all;
+                margin: 6px 0;
+                padding: 6px 8px;
+                border-radius: 4px;
+                background-color: rgba(128, 128, 128, 0.15);
+            }
+        </style>
+     </head>
+
+    <body>
+        {% include 'includes/logo_header.html' %}
+
+        <div class="main_header">HTTPS Required</div>
+
+        <div class="main_page_warning_block">
+            <p style="text-align: center;">The link you opened starts with <b>http://</b>, and this MyNode is set
+                to answer only over an encrypted connection. Nothing was sent over the one you used.</p>
+            <p style="text-align: center;">
+                <a href="{{ https_url }}" class="ui-button ui-widget ui-corner-all settings_button">Open MyNode over HTTPS</a>
+            </p>
+            <p style="text-align: center;">
+                Your browser may warn you the first time. That is expected here, and the steps below explain why
+                and what to do. Update the bookmark or link you used to <b>https://</b> so you land here directly.
+            </p>
+        </div>
+
+        {% include 'includes/https_help.html' %}
+
+        <div class="settings_block">
+            <div class="settings_block_header">Turning This Off</div>
+            <p>
+                Force HTTPS is what redirects you here. It can be turned off in Settings once you are logged in,
+                and the Using HTTPS page keeps these steps for later.
+                <br/><br/>
+                <a href="/https-info" class="ui-button ui-widget ui-corner-all settings_button">Using HTTPS</a>
+            </p>
+        </div>
+
+        {% include 'includes/footer.html' %}
+     </body>
+</html>
