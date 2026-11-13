@@ -17,11 +17,9 @@ if [ ! -f /mnt/hdd/mynode/settings/btc_network_settings_defaulted ] && [ ! -f /h
             touch /mnt/hdd/mynode/settings/btc_ipv4_enabled
         fi
     else
-        # Set new defaults
+        # Set new defaults (Tor only - I2P stays off unless turned on in Settings)
         touch /home/bitcoin/.mynode/btc_tor_enabled
         touch /mnt/hdd/mynode/settings/btc_tor_enabled
-        touch /home/bitcoin/.mynode/btc_i2p_enabled
-        touch /mnt/hdd/mynode/settings/btc_i2p_enabled
     fi
 
     touch /mnt/hdd/mynode/settings/btc_network_settings_defaulted
