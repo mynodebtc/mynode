@@ -1,7 +1,6 @@
 <!-- Shown when the page arrived over an unencrypted connection from the network. Nothing is
      shown over HTTPS, over an onion address, or for the desktop on the node itself. -->
 {% if insecure_connection %}
-<div class="insecure_connection_badge"><span
-    class="insecure_connection_badge_label">Not encrypted</span>Anyone on your network can read this
-    page and the password you type. <a href="{{ https_info_url }}">Set up HTTPS</a></div>
+<div class="insecure_connection_badge">Use HTTPS to encrypt your traffic.
+    <a href="{{ https_info_url }}">Set up HTTPS.</a></div>
 {% endif %}
