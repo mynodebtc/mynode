@@ -1520,4 +1520,18 @@ def page_toggle_setting():
         return redirect("/rebooting")
 
     flash("Setting Updated", category="message")
+
+    # Turning Force HTTPS on moves this browser across itself. Left to the usual relative
+    # redirect it would stay on a plain page, and its next request would meet the notice that
+    # explains http:// links - which the browser that just asked for HTTPS does not need.
+    # An onion address is already encrypted and keeps its own handling.
+    if name == "https_forced" and enable == "1" and request.scheme != "https":
+        hostname = request.host.lower()
+        if hostname.startswith("["):
+            hostname = "[" + hostname[1:].split("]")[0] + "]"
+        else:
+            hostname = hostname.split(":")[0]
+        if not hostname.rstrip(".").endswith(".onion"):
+            return redirect("https://{}{}".format(hostname, redirect_page))
+
     return redirect(redirect_page)
