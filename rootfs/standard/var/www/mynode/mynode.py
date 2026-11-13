@@ -127,7 +127,9 @@ class MyNodeSessionInterface(SecureCookieSessionInterface):
         if session is None or session:
             return session
         # Nothing stored under this name. An encrypted connection takes over a session held under
-        # the plain name, so turning Force HTTPS on, or an upgrade, does not sign the owner out.
+        # the plain name, so an upgrade keeps the owner signed in. A browser only offers the plain
+        # name here when it arrives on its own, such as a typed address or a bookmark: a link or a
+        # redirect from the plain port counts as a different site to it, and the cookie stays home.
         if not is_encrypted_request():
             return session
         value = request.cookies.get(SESSION_COOKIE_NAME)
