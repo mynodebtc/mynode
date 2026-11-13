@@ -2284,6 +2284,9 @@ def custom_settings_file_handler(name, enabled):
         apply_tor_remote_access_setting()
     elif name == "unattended_upgrades_disabled":
         os.system("/usr/bin/mynode_unattended_upgrades.sh")
+    elif name == "https_forced":
+        # nginx moves the open apps' plain HTTP ports to their HTTPS port while this is on
+        os.system("/usr/bin/mynode_gen_nginx_https_forced.sh && systemctl reload nginx")
     else:
         log_message("No custom setting handler for: "+name)
 #==================================
