@@ -7,6 +7,11 @@
         <script src="{{ url_for('static', filename='js/manage_apps.js')}}"></script>
 
         <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
+            {% if os_release_upgrade.available %}
+            $(document).on("click", ".home_upgrade_os_release", function() {
+                confirmOsReleaseUpgrade({{ os_release_upgrade.next_version|tojson }}, {{ os_release_upgrade.next_codename|tojson }});
+            });
+            {% endif %}
             $(document).on("click", "[data-toggle-details]", function() {
                 if ($(this).attr("data-toggle-details") == "bitcoin") { toggleBitcoinDetails(); }
                 else { toggleLightningDetails(); }

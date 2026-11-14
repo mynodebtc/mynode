@@ -40,6 +40,7 @@ from drive_info import *
 from device_warnings import *
 from health_info import get_health_checks, get_health_summary, HEALTH_CHECKS_HOME_MAX_AGE
 from systemctl_info import *
+from os_upgrade import get_os_release_upgrade_info
 from application_info import *
 from price_info import *
 from utilities import *
@@ -847,6 +848,7 @@ def index():
             "show_32_bit_warning": show_32_bit_warning(),
             "show_old_debian_warning": show_old_debian_warning(),
             "debian_version": get_debian_version(),
+            "os_release_upgrade": get_os_release_upgrade_info(),
             "show_old_tor_warning": show_old_tor_warning(),
             "tor_version": get_tor_version(),
             "show_kernel_cve_warning": show_kernel_cve_warning(),

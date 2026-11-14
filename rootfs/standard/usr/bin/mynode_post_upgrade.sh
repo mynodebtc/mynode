@@ -156,7 +156,7 @@ if ! skip_base_upgrades ; then
     if [ $IS_X86 = 1 ]; then
         apt-mark hold grub*
     fi
-    #apt-mark hold redis-server
+    apt-mark unhold redis-server || true   # Images from 2020-2022 hold it
 
     # Upgrade packages, including new kernels
     apt-get -y --with-new-pkgs upgrade
@@ -313,7 +313,9 @@ if ! skip_base_upgrades ; then
 
     # Update Python3
     CURRENT_PYTHON3_VERSION=$(python3 --version)
-    if [[ "$CURRENT_PYTHON3_VERSION" != *"Python ${PYTHON_VERSION}"* ]]; then
+    # mynode_upgrade_os.sh asks for a rebuild after a Debian release upgrade changes its libraries
+    PYTHON_REBUILD_FILE=/home/bitcoin/.mynode/rebuild_python
+    if [[ "$CURRENT_PYTHON3_VERSION" != *"Python ${PYTHON_VERSION}"* ]] || [ -f $PYTHON_REBUILD_FILE ]; then
         mkdir -p /opt/download
         cd /opt/download
         rm -rf Python-*
@@ -328,6 +330,7 @@ if ! skip_base_upgrades ; then
         make -j4
         make install
         #make altinstall # Installs version, but doesn't become default python3
+        rm -f $PYTHON_REBUILD_FILE
 
         # Mark apps using python as needing re-install
         rm -f /home/bitcoin/.mynode/specter_version

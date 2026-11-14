@@ -2,6 +2,7 @@ from device_info import *
 from drive_info import *
 from systemctl_info import *
 from auto_upgrade import get_auto_upgrade_status
+from os_upgrade import get_os_release_upgrade_info
 import os
 import re
 import subprocess
@@ -228,6 +229,10 @@ def check_server_connection():
 def check_operating_system():
     debian_version = get_debian_version()
     if debian_version < 12:
+        os_upgrade = get_os_release_upgrade_info()
+        if os_upgrade["available"]:
+            return _check("Operating System", "error", "Debian {} is no longer supported. Upgrade the OS to Debian {}, which can take several hours.".format(debian_version, os_upgrade["next_version"]),
+                          link=("/settings#os_release", "Settings"))
         return _check("Operating System", "error", "Debian {} is no longer supported. Reflash your OS drive with the latest MyNode image.".format(debian_version),
                       link=("https://mynodebtc.com/download", "Download"))
     if get_device_bits() == 32:
@@ -241,6 +246,10 @@ def check_nodejs():
         return None
     warning = get_node_version_warning()
     if warning == "reflash":
+        os_upgrade = get_os_release_upgrade_info()
+        if os_upgrade["available"]:
+            return _check("NodeJS", "error", "NodeJS {} no longer receives security fixes. Upgrade the OS to Debian {} to get a supported version.".format(version, os_upgrade["next_version"]),
+                          link=("/settings#os_release", "Settings"))
         return _check("NodeJS", "error", "NodeJS {} no longer receives security fixes. Reflash your OS drive to get a supported version.".format(version))
     if warning == "upgrade":
         return _check("NodeJS", "error", "NodeJS {} has known security issues. Upgrade MyNode to install a newer version.".format(version),

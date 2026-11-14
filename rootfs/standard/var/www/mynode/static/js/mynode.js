@@ -45,6 +45,21 @@ function openConfirmDialog(divid, title, message, okFunction) {
     });
 }
 
+// Confirm, then start the upgrade to the next Debian release (Settings and the home page)
+function confirmOsReleaseUpgrade(nextVersion, nextCodename) {
+    var okFunction = function() {
+        window.location.href="/settings/upgrade-os-release"
+    }
+    openConfirmDialog("confirm-dialog",
+                      "Upgrade OS",
+                      "This will upgrade the operating system to Debian " + nextVersion + " (" + nextCodename + "), " +
+                      "reinstall your apps for it, and reboot your device. Your data drive is not changed.\n\n" +
+                      "This can take several hours. Your node is offline until it finishes. " +
+                      "Do not turn off your device while it runs.\n\n" +
+                      "Would you still like to upgrade the OS?",
+                      okFunction)
+}
+
 // Ask for the admin password, then POST it with the given fields to action
 function openPasswordDialog(title, message, action, fields={}, onSubmit=null) {
     var form = $("<form>", {method: "POST", action: action});

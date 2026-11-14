@@ -141,10 +141,15 @@
     {% endif %}
     {% if debian_version < 12 %}
     <div class="mn_alert mn_alert_notice">
+        {% if os_release_upgrade is defined and os_release_upgrade.available %}
+        <b>Old OS version.</b> You are currently using an old Operating System version (Debian {{debian_version}}). It is recommended to
+        <a href="/settings#os_release">upgrade the OS</a>, which can take several hours. Otherwise, some apps will remain on old versions and you may have issues.
+        {% else %}
         <b>Old OS version.</b> You are currently using an old Operating System version (Debian {{debian_version}}). It is recommended to upgrade by reflashing
         your OS drive. Otherwise, some apps will remain on old versions and you may have issues. The new image can be downloaded
         <a href="https://mynodebtc.com/download" target="_blank">here</a> and a guide is
         <a href="https://docs.mynodebtc.com/advanced/flash-sd-card.html" target="_blank">available</a>.
+        {% endif %}
     </div>
     {% endif %}
 </div>

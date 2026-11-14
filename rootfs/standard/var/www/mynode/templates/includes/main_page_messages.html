@@ -121,10 +121,24 @@
     <p style="text-align: center;">Your device is running Debian {{debian_version}}.
         Bitcoin Core, NodeJS and numerous apps, including RTL, Thunderhub, Balance of Satoshis, JoinInBox, Specter, WeTTY, Public Pool, and more
         stay on older versions on Debian {{debian_version}} that do not receive fixes or security patches. The Debian {{debian_version}} Operating System itself also no longer receives regular security updates.</p>
+    {% if os_release_upgrade.available %}
+    <p style="text-align: center;"><b>Upgrade the OS to keep receiving updates.</b></p>
+    <p style="text-align: center;">This upgrades your device to Debian {{os_release_upgrade.next_version}} ({{os_release_upgrade.next_codename}})
+        and reinstalls your apps for it, without changing your data drive. This can take several hours. Your node is offline until it
+        finishes, and your device reboots when it is done.
+        {% if os_release_upgrade.next_version < 12 %}Afterwards, upgrade again to get to Debian 12.{% endif %}</p>
+    <p style="text-align: center;">
+        <button class="home_upgrade_os_release ui-button ui-widget ui-corner-all settings_button_small">Upgrade OS</button>
+    </p>
+    <p style="text-align: center;">You can also reflash your OS drive with the latest MyNode image. The new image can be downloaded
+        <a href="https://mynodebtc.com/download" target="_blank">here</a> and a guide is
+        <a href="https://docs.mynodebtc.com/advanced/flash-sd-card.html" target="_blank">available</a>.</p>
+    {% else %}
     <p style="text-align: center;"><b>Reflash your OS drive with the latest MyNode image to keep receiving updates.</b></p>
     <p style="text-align: center;">The new image can be downloaded <a href="https://mynodebtc.com/download" target="_blank">here</a> and a guide is
         <a href="https://docs.mynodebtc.com/advanced/flash-sd-card.html" target="_blank">available</a>.</p>
     <p style="text-align: center;"><b>You need to re-flash your OS drive as soon as possible.</b></p>
+    {% endif %}
 </div>
 {% endif %}
 
@@ -173,7 +187,15 @@
 {% if node_version_warning %}
 <div class="main_page_error_block">
     <p style="text-align: center; font-size: 16px;"><b>NodeJS is out of date</b></p>
-    {% if node_version_warning == "reflash" %}
+    {% if node_version_warning == "reflash" and os_release_upgrade.available %}
+    <p style="text-align: center;">Your device is running NodeJS {{node_version}}, which no longer receives fixes or security patches.
+        Apps that use NodeJS run on this version, and MyNode upgrades cannot install a newer one on Debian {{debian_version}}.</p>
+    <p style="text-align: center;"><b>Upgrade the OS to Debian {{os_release_upgrade.next_version}} to get a supported version of NodeJS.</b>
+        This can take several hours.</p>
+    <p style="text-align: center;">
+        <button class="home_upgrade_os_release ui-button ui-widget ui-corner-all settings_button_small">Upgrade OS</button>
+    </p>
+    {% elif node_version_warning == "reflash" %}
     <p style="text-align: center;">Your device is running NodeJS {{node_version}}, which no longer receives fixes or security patches.
         Apps that use NodeJS run on this version, and MyNode upgrades cannot install a newer one on this device.</p>
     <p style="text-align: center;"><b>Reflash your OS drive with the latest MyNode image to get a supported version of NodeJS.</b></p>

@@ -14,6 +14,7 @@ from drive_info import *
 from application_info import *
 from device_info import *
 from auto_upgrade import *
+from os_upgrade import get_os_release_upgrade_info, start_os_release_upgrade, did_os_release_upgrade_fail, get_os_release_upgrade_log_tail, get_interrupted_os_release_upgrade
 from health_info import get_health_checks, get_health_summary
 import time
 import os
@@ -77,6 +78,10 @@ def page_settings():
         "os_packages_upgrade_error": did_os_packages_upgrade_fail(),
         "os_packages_upgrade_log": get_os_packages_upgrade_log_tail(),
         "apt_update_error": get_apt_update_error(),
+        "os_release_upgrade": get_os_release_upgrade_info(),
+        "os_release_upgrade_error": did_os_release_upgrade_fail(),
+        "os_release_upgrade_interrupted": get_interrupted_os_release_upgrade() is not None,
+        "os_release_upgrade_log": get_os_release_upgrade_log_tail(),
         "is_unattended_upgrades_enabled": not settings_file_exists("unattended_upgrades_disabled"),
         "unattended_upgrades_supported": get_debian_codename() != "buster",
         "auto_upgrade": get_auto_upgrade_status(),
@@ -221,6 +226,7 @@ def page_status():
         "device_arch": get_device_arch(),
         "debian_version": get_debian_version(),
         "debian_codename": get_debian_codename(),
+        "os_release_upgrade": get_os_release_upgrade_info(),
         "device_ram": device_ram,
         "check_in_data": get_check_in_data(),
         "product_key": product_key,
@@ -435,6 +441,38 @@ def upgrade_os_packages_page():
 def upgrade_os_packages_status_page():
     check_logged_in()
     return jsonify({"status": "failed" if did_os_packages_upgrade_fail() else "running"})
+
+@mynode_settings.route("/settings/upgrade-os-release")
+def upgrade_os_release_page():
+    check_logged_in()
+
+    if not get_os_release_upgrade_info()["available"]:
+        flash("An OS upgrade is not available for this device.", category="error")
+        return redirect("/settings#os_release")
+
+    check_and_mark_reboot_action("upgrade_os_release")
+
+    if not start_os_release_upgrade():
+        delete_file("/tmp/mark_reboot___upgrade_os_release")
+        flash("The OS upgrade could not be started. Another upgrade may be running.", category="error")
+        return redirect("/settings#os_release")
+
+    # Display wait page. It returns to Settings if the upgrade fails, since there is no reboot then.
+    templateData = {
+        "title": "Upgrading",
+        "header_text": "Upgrading the OS",
+        "subheader_text": "This can take several hours. Do not turn off your device.",
+        "show_upgrade_log": True,
+        "status_url": "/settings/upgrade-os-release-status",
+        "failed_url": "/settings#os_release",
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('reboot.html', **templateData)
+
+@mynode_settings.route("/settings/upgrade-os-release-status")
+def upgrade_os_release_status_page():
+    check_logged_in()
+    return jsonify({"status": "failed" if did_os_release_upgrade_fail() else "running"})
 
 @mynode_settings.route("/settings/get-upgrade-log-raw")
 def get_upgrade_log_page():

@@ -21,6 +21,9 @@
                                       "Would you still like to upgrade your device?",
                                       okFunction)
                 });
+                $("#upgrade_os_release").on("click", function() {
+                    confirmOsReleaseUpgrade({{ os_release_upgrade.next_version|tojson }}, {{ os_release_upgrade.next_codename|tojson }});
+                });
                 $("#upgrade_os_packages").on("click", function() {
                     var okFunction = function() {
                         window.location.href="/settings/upgrade-os-packages"
@@ -1926,6 +1929,29 @@
             <div style='text-align: left; font-size: 12px; overflow-x: auto;'><pre>{{apt_update_error.errors}}</pre></div>
             {% endif %}
             <button id="upgrade_os_packages" class="ui-button ui-widget ui-corner-all settings_button">Upgrade OS Packages</button>
+
+            <div class="divider"></div>
+
+            <a id="os_release"></a>
+            <div class="settings_block_subheader">Upgrade OS</div>
+            Your device runs Debian {{debian_version}} ({{debian_codename}}).
+            {% if os_release_upgrade.available %}
+            This will upgrade it to Debian {{os_release_upgrade.next_version}} ({{os_release_upgrade.next_codename}}) and reinstall your apps for it,
+            like flashing a new image but without changing your data drive. This can take several hours, and your device reboots when it finishes.
+            Upgrade one release at a time; after the reboot, run it again if a newer release is offered.
+            {% else %}
+            {{os_release_upgrade.reason}}
+            {% endif %}
+            <br/>
+            {% if os_release_upgrade_error %}
+            <p style="color: red;">The last OS upgrade failed, so your device was not rebooted. The end of its log is below. Fix the problem and
+                try again, or reboot your device.</p>
+            <div style='text-align: left; font-size: 12px; overflow-x: auto;'><pre>{{os_release_upgrade_log}}</pre></div>
+            {% elif os_release_upgrade_interrupted %}
+            <p style="color: red;">The last OS upgrade was interrupted before it finished. Upgrade the OS again to finish upgrading to
+                Debian {{os_release_upgrade.next_version}}. Do not turn off your device while it runs.</p>
+            {% endif %}
+            <button id="upgrade_os_release" class="ui-button ui-widget ui-corner-all settings_button" {% if not os_release_upgrade.available %}disabled{% endif %}>Upgrade OS</button>
 
             <div class="divider"></div>
 
