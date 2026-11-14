@@ -402,3 +402,20 @@ body .ui-tooltip.ui-widget {
     border-color: #ffffff24;
     color: #ddd;
 }
+
+.mynode_dock {
+    background: rgba(40, 44, 52, 0.76);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.45);
+}
+.mynode_dock_separator {
+    background: rgba(255, 255, 255, 0.16);
+}
+/* Must follow the rule above: the narrow-width fallback has no pill */
+@media (max-width: 1010px) {
+    .mynode_dock {
+        background: none;
+        border: none;
+        box-shadow: none;
+    }
+}

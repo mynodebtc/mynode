@@ -12,6 +12,25 @@
                 confirmOsReleaseUpgrade({{ os_release_upgrade.next_version|tojson }}, {{ os_release_upgrade.next_codename|tojson }});
             });
             {% endif %}
+            // While the dock is vertical its tooltips open to the right, so they
+            // do not cover the icon below. The narrow-width fallback is a row
+            // again, where the default placement below the icon is correct.
+            $(document).ready(function() {
+                $(document).tooltip("option", "open", function(event, ui) {
+                    // The open event carries no target, so find the item by its aria-describedby
+                    var item = $("[aria-describedby='" + ui.tooltip.attr("id") + "']");
+                    var dock = item.closest(".mynode_dock");
+                    if (dock.length && dock.css("flex-direction") == "column") {
+                        ui.tooltip.position({
+                            my: "left+12 center",
+                            at: "right center",
+                            of: item,
+                            collision: "flipfit"
+                        });
+                    }
+                });
+            });
+
             $(document).on("click", "[data-toggle-details]", function() {
                 if ($(this).attr("data-toggle-details") == "bitcoin") { toggleBitcoinDetails(); }
                 else { toggleLightningDetails(); }
@@ -608,7 +627,7 @@
             {% endif %}
         </div>
 
-        <div class="mynode_top_right_div">
+        <div class="mynode_dock">
             {% if health_summary.errors > 0 %}
                 <a href="/status#health" class="health_indicator" title="Health: {{ health_summary.errors }} error{{ "s" if health_summary.errors != 1 }}">
                     <img class="mynode_nav_icon" src="{{ url_for('static', filename="images/health_error.svg")}}"/>
@@ -625,12 +644,16 @@
                 <a href="/settings" title="Upgrade Available{% if auto_upgrade.enabled and auto_upgrade.target and auto_upgrade.scheduled and not auto_upgrade.skipped %} - installs automatically after {{auto_upgrade.scheduled}}{% endif %}"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/upgrade.png")}}"/></a>
             {% endif %}
 
+            <a href="/status" title="Status"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/status_heartbeat.svg")}}"/></a>
+            <a href="/settings" title="Settings"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/settings.png")}}"/></a>
+
             {% if ui_settings['darkmode'] %}
                 <a href="/settings/toggle-darkmode-home" title="Disable Darkmode"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/lightbulb.png")}}"/></a>
             {% else %}
                 <a href="/settings/toggle-darkmode-home" title="Enable Darkmode"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/lightbulb.png")}}"/></a>
             {% endif %}
             <a href="#" id="https" title="Use HTTPS" style="display: none;"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/https_lock.png")}}"/></a>
+            <div class="mynode_dock_separator"></div>
             <a href="/logout" title="Logout"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/logout.png")}}"/></a>
             <a href="#" id="power_button" title="Reboot or Shutdown"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/power.png")}}"/></a>
         </div> 
