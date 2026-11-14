@@ -457,15 +457,7 @@ for u in $users; do
     done
 done
 
-# Setup symlinks for admin (need to be careful here - lnd,bitcoin can't be symlinked)
-if [ ! -L /home/admin/.pool ]; then     # Pool Config (symlink so admin user can run pool commands)
-    mv /home/admin/.pool /home/admin/.pool_backup || true
-    ln -s /mnt/hdd/mynode/pool /home/admin/.pool
-fi
-if [ ! -L /home/admin/.loop ]; then     # Loop Config (symlink so admin user can run loop commands)
-    mv /home/admin/.loop /home/admin/.loop_backup || true
-    ln -s /mnt/hdd/mynode/loop /home/admin/.loop
-fi
+# Admin gets copies of the LND, Loop and Pool files it needs from mynode_lnd_admin_files.sh
 
 
 # Dojo - move to HDD

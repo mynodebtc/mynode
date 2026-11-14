@@ -1760,8 +1760,11 @@ def delete_lnd_macaroons():
                                 "-name", "macaroons.db", "-o", "-name", "macaroons.db.last-compacted", ")",
                                 "-delete"])
         # Admin's copies (mynode_lnd_admin_files.sh copies them again)
-        subprocess.run(["find", "/home/admin/.lnd/data/chain/bitcoin/{}".format(network), "-maxdepth", "1",
-                        "-name", "*.macaroon", "-delete"], stderr=subprocess.DEVNULL)
+        admin_folders = ["/home/admin/.lnd/data/chain/bitcoin/{}".format(network)]
+        admin_folders += ["/home/admin/.{}/{}".format(app, network) for app in ["loop", "pool"]]
+        for folder in admin_folders:
+            if os.path.isdir(folder) and not os.path.islink(folder):
+                subprocess.run(["find", folder, "-maxdepth", "1", "-name", "*.macaroon", "-delete"])
     return True
 
 #==================================
