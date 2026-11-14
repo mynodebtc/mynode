@@ -10,10 +10,11 @@ from drive_info import *
 from utilities import *
 from enable_disable_functions import *
 from systemctl_info import *
-from electrum_info import update_electrs_info
+from electrum_info import update_electrs_info, get_electrum_server_current_block
 from price_info import update_price_info
 from requests import get
 import random
+import time
 
 # Info to get from the update threads
 has_updated_btc_info = False
@@ -134,11 +135,27 @@ def update_bitcoin_other_info_thread():
         log_message("CAUGHT update_bitcoin_other_info_thread EXCEPTION: " + str(e))
 
 
-# Updates electrs info every 60 seconds
+# Updates electrs info every 10 seconds while the index is behind, so the sync percentage keeps
+# moving, then every 60 seconds once it has caught up. The thread itself runs every 10 seconds
+# and skips the updates it does not need.
+last_electrs_update = 0
+
 def update_electrs_info_thread():
+    global last_electrs_update
     try:
-        if is_service_enabled("electrs"):
-            update_electrs_info()
+        if not is_service_enabled("electrs"):
+            return
+
+        electrs_block = get_electrum_server_current_block()
+        bitcoin_block = get_bitcoin_block_height()
+        caught_up = electrs_block != None and bitcoin_block != None and electrs_block >= bitcoin_block - 5
+        interval = 60 if caught_up else 10
+
+        if time.time() - last_electrs_update < interval:
+            return
+        last_electrs_update = time.time()
+
+        update_electrs_info()
     except Exception as e:
         log_message("CAUGHT update_electrs_info_thread EXCEPTION: " + str(e))
 

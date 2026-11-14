@@ -15,10 +15,9 @@ mynode_electrum_server = Blueprint('mynode_electrum_server',__name__)
 def electrum_server_page():
     check_logged_in()
 
-    # Make sure data is up to date
-    update_electrs_info()
-
-    # Get latest info
+    # The indexed height is refreshed by update_electrs_info_thread every 60s. Do not query it
+    # here - electrs v0.12+ only answers the Electrum RPC between index batches, so refreshing
+    # on page load held the page for as long as a batch took (15s during a reindex).
     current_block = get_electrum_server_current_block()
     if current_block == None:
         current_block = "Unknown"
@@ -51,6 +50,7 @@ def electrum_server_page():
         "server_standard_port": server_standard_port,
         "server_secure_port": server_secure_port,
         "electrs_version": get_electrs_version(),
+        "bitcoin_version_too_old": get_bitcoin_version_too_old_for_electrs(),
         "electrs_command": electrs_command,
         "is_tor_remote_access_enabled": is_tor_remote_access_enabled(),
         "electrs_onion_hostname": electrs_onion_hostname,

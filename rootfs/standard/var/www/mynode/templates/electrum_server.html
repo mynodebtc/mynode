@@ -14,6 +14,17 @@
 
         {% include 'includes/message_display.html' %}
 
+        {% if bitcoin_version_too_old %}
+        <div style="margin: auto; text-align: center; max-width: 800px;">
+            <div class='error_message'>
+                This version of the Electrum Server needs Bitcoin Core 31 or newer, but Bitcoin
+                {{ bitcoin_version_too_old }} is installed, so the Electrum Server cannot index the
+                blockchain. Select the default version under <a href="/settings">Settings</a>,
+                Custom Bitcoin Version, to use the Electrum Server.
+            </div>
+        </div>
+        {% endif %}
+
         <br/>
 
         <div class="app_tile_row">

@@ -15,6 +15,10 @@ ExecStartPre=+/usr/bin/service_scripts/pre_electrs.sh
 ExecStart=/usr/bin/electrs --conf=/mnt/hdd/mynode/electrs/electrs.toml
 User=bitcoin
 Group=bitcoin
+# electrs v0.12+ builds its index with RocksDB compaction off and turns it on at the tip, when
+# compaction opens the ~1000 level-0 files at once. The default limit of 1024 made it exit with
+# "Too many open files" until the backlog cleared.
+LimitNOFILE=65536
 TimeoutSec=300
 Restart=always
 RestartSec=60

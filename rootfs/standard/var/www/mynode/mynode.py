@@ -1414,7 +1414,7 @@ def start_threads():
     btc_thread2 = BackgroundThread(update_bitcoin_other_info_thread, 60)
     btc_thread2.start()
     threads.append(btc_thread2)
-    electrs_info_thread = BackgroundThread(update_electrs_info_thread, 60)
+    electrs_info_thread = BackgroundThread(update_electrs_info_thread, 10) # Thread manages timing
     electrs_info_thread.start()
     threads.append(electrs_info_thread)
     lnd_thread = BackgroundThread(update_lnd_info_thread, 60)

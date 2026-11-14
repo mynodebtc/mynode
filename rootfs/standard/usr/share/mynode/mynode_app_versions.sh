@@ -234,10 +234,19 @@ CHANTOOLS_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/chantools/re
 # Chantools release signer: guggero
 CHANTOOLS_SIGNER_FINGERPRINTS="F4FC70F07310028424EFC20A8E4256593F177720"
 
-ELECTRS_VERSION="v0.11.1"
+ELECTRS_VERSION="v0.12.1"
+# electrs v0.12+ indexes over the bitcoind REST API and needs Bitcoin Core 31+, which the
+# older Debian releases do not run (see BTC_VERSION above). They stay on the last v0.11.
+if [ "$DEBIAN_VERSION" -lt "12" ]; then
+    ELECTRS_VERSION="v0.11.1"
+fi
 if [ "$IS_32_BIT" = "1" ]; then
     ELECTRS_VERSION="v0.9.9"
 fi
+# Records the electrs version (major.minor) that built the index on disk, and when the index
+# was last removed because no installed version could read it
+ELECTRS_INDEX_FORMAT_FILE=/mnt/hdd/mynode/electrs/index_format
+ELECTRS_INDEX_RESET_FILE=/mnt/hdd/mynode/electrs/index_last_reset
 ELECTRS_VERSION_FILE=/home/bitcoin/.mynode/electrs_version
 ELECTRS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/electrs_version_latest
 

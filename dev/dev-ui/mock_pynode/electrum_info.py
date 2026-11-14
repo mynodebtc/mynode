@@ -31,7 +31,7 @@ def get_electrs_db_size(is_testnet=False):
     return "97G"
 
 
-def get_from_electrum(method, params=[]):
+def get_from_electrum(method, params=[], timeout=15):
     return {"id": 0, "result": "(mocked electrum response)"}
 
 

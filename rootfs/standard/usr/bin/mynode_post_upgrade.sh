@@ -890,6 +890,16 @@ cd ~
 
 
 # Upgrade electrs (just mark version, included in overlay)
+# Record which electrs version built the index that is already on disk, before the installed
+# version is overwritten below. pre_electrs.sh uses it to decide whether the index has to be
+# rebuilt for the version this upgrade installs.
+if [ ! -f $ELECTRS_INDEX_FORMAT_FILE ] && [ -f $ELECTRS_VERSION_FILE ]; then
+    if [ -d /mnt/hdd/mynode/electrs/bitcoin ] || [ -d /mnt/hdd/mynode/electrs/testnet ]; then
+        PREVIOUS_ELECTRS_VERSION=$(cat $ELECTRS_VERSION_FILE)
+        echo "${PREVIOUS_ELECTRS_VERSION#v}" | cut -d. -f1,2 > $ELECTRS_INDEX_FORMAT_FILE
+        chown bitcoin:bitcoin $ELECTRS_INDEX_FORMAT_FILE || true
+    fi
+fi
 echo $ELECTRS_VERSION > $ELECTRS_VERSION_FILE
 
 
