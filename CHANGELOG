@@ -1,3 +1,19 @@
+=== v0.3.54 ===
+- Released 11/14/26
+- Upgrade electrs to v0.12.1 (database will be rebuilt)
+- Upgrade LND to v0.21.8
+- Upgrade LNbits to v1.7.0
+- Add an Upgrade OS setting for Debian release upgrades
+- Add a navigation dock to the home page
+- Warn on the login page when the connection is not encrypted
+- Hide disabled services on the Status page
+- Fetch the price ticker over Tor with a fallback
+- Improve upgrade consistency from very old MyNode versions
+- Fix Bitcoin failing to start on testnet
+- Improve the sync page's no-peers warning when Clearnet is off
+- Disable the unused smartd service
+- Bug Fixes
+
 === v0.3.53 ===
 - Released 11/08/26
 - Upgrade Bitcoin to v32.1
