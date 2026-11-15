@@ -40,10 +40,18 @@ def get_electrs_index_height():
         pass
 
     # While v0.12+ builds the index it only answers between batches, and a batch of large
-    # blocks takes longer than the socket timeout above, so use the height it last logged
+    # blocks takes longer than the socket timeout above, so use the height it last logged.
+    # Only lines from the running electrs count - after a reset the journal still holds the old
+    # index's height, and the unit keeps its last InvocationID while stopped.
     try:
+        if not is_service_active("electrs"):
+            return None
+        invocation_id = to_string(subprocess.check_output(
+            ["systemctl", "show", "--property=InvocationID", "--value", "electrs"])).strip()
+        if not re.match(r"^[0-9a-f]{32}$", invocation_id):
+            return None
         log = to_string(subprocess.check_output(
-            "journalctl --unit=electrs --no-pager --lines=200", shell=True))
+            ["journalctl", "_SYSTEMD_INVOCATION_ID=" + invocation_id, "--no-pager", "--lines=200"]))
         heights = re.findall(r"height=([0-9]+): indexed", log)
         if len(heights) > 0:
             return int(heights[-1])
@@ -68,6 +76,16 @@ def update_electrs_info():
                 electrs_active = True
     except:
         pass
+
+def clear_electrs_info():
+    # The index was deleted, so forget the height it had reached. Apps that need electrs then
+    # show "Waiting on Electrum", and wait_on_electrs.sh holds back their start, until the new
+    # index catches up.
+    global electrum_server_current_block
+    global electrs_active
+    electrum_server_current_block = None
+    electrs_active = False
+    delete_file("/tmp/electrs_up_to_date")
 
 def get_electrs_version():
     global electrs_version

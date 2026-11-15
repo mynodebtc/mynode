@@ -6,6 +6,7 @@ from flask import flash, redirect
 from utilities import *
 from enable_disable_functions import *
 from systemctl_info import *
+from electrum_info import clear_electrs_info
 import time
 import json
 import os
@@ -1804,6 +1805,8 @@ def delete_electrs_data():
 def reset_electrs():
     stop_electrs()
     delete_electrs_data()
+    # After the delete - the update thread can re-mark electrs up to date while it runs
+    clear_electrs_info()
     restart_electrs()
 
 def get_electrs_index_lookup_limit():
