@@ -4,7 +4,7 @@ bcrypt==5.0.0
     # via -r scripts/mynode_pip3_requirements.in
 blinker==1.8.2
     # via flask
-certifi==2026.7.22
+certifi==2026.10.23
     # via requests
 charset-normalizer==3.5.1
     # via requests
