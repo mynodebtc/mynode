@@ -1951,7 +1951,7 @@
             <p style="color: red;">The last OS upgrade was interrupted before it finished. Upgrade the OS again to finish upgrading to
                 Debian {{os_release_upgrade.next_version}}. Do not turn off your device while it runs.</p>
             {% endif %}
-            <button id="upgrade_os_release" class="ui-button ui-widget ui-corner-all settings_button" {% if not os_release_upgrade.available %}disabled{% endif %}>Upgrade OS</button>
+            <button id="upgrade_os_release" class="ui-button ui-widget ui-corner-all settings_button {% if not os_release_upgrade.available %}ui-state-disabled{% endif %}" {% if not os_release_upgrade.available %}disabled{% endif %}>Upgrade OS</button>
 
             <div class="divider"></div>
 
