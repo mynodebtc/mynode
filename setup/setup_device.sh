@@ -1109,6 +1109,10 @@ systemctl enable docker_images
 systemctl enable glances
 #systemctl enable netdata # DISABLED BY DEFAULT
 systemctl enable rotate_logs
+# rotate_logs runs logrotate every 10 minutes; stop before mask, or the timer is left failed
+systemctl stop logrotate.timer > /dev/null 2>&1 || true
+systemctl disable logrotate.timer > /dev/null 2>&1 || true
+systemctl mask logrotate.timer > /dev/null 2>&1 || true
 systemctl enable corsproxy_btcrpc
 systemctl enable usb_extras
 
