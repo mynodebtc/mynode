@@ -762,7 +762,7 @@ def reset_thunderhub_config_page():
     return redirect("/settings")
 
 # Apps whose login password can be set from Settings
-APPS_WITH_SETTABLE_PASSWORD = {"rtl": "RTL", "thunderhub": "Thunderhub", "lndg": "LNDg", "lndboss": "LndBoss"}
+APPS_WITH_SETTABLE_PASSWORD = {"rtl": "RTL", "thunderhub": "Thunderhub", "lndg": "LNDg", "lndboss": "LndBoss", "specter": "Specter"}
 
 @mynode_settings.route("/settings/set-app-password", methods=["POST"])
 def set_app_password_page():
@@ -784,7 +784,7 @@ def set_app_password_page():
         flash("Passwords did not match or were empty!", category="error")
         return redirect("/settings")
     # Pre-start scripts replace the old default password with a generated one
-    if p1 == "bolt":
+    if p1 == "bolt" or (app == "specter" and p1 == "admin"):
         flash("Choose a password other than the old default", category="error")
         return redirect("/settings")
 

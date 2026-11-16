@@ -1590,6 +1590,16 @@
             This will delete your Specter configuration and restart Specter. This should not impact wallets and devices stored in Specter. If Specter is having issues starting, this may help.
             <br/>
             <a href="/settings/reset-specter-config" class="ui-button ui-widget ui-corner-all settings_button">Reset Configuration</a>
+
+            {% if "specter" in settable_password_apps %}
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Set Specter Password</div>
+            This will set a new password for the Specter admin login and restart the application.
+            A connected Swan account will need to be connected again.
+            <br/>
+            <button class="set_app_password_button ui-button ui-widget ui-corner-all settings_button" data-app="specter" data-name="Specter">Set Password</button>
+            {% endif %}
         </div>
 
 

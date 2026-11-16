@@ -415,7 +415,7 @@
                 "heading": "Instructions",
                 "content": [
                     "Specter is a wallet coordinator for multisig and hardware wallets that uses your Bitcoin node. You can open the app with the Open button on the left.",
-                    "Specter asks for a password. It is shown in the App Default Credentials section on this page. If you had already set your own Specter password, it is kept and shown here as user configured."
+                    "Specter asks for a password. It is shown in the App Default Credentials section on this page. If you had already set your own Specter password, it is kept and shown here as user configured. You can set a new Specter password on the Settings page."
                 ]
             }
         ]
