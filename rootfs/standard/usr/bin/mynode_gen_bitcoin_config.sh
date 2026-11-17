@@ -51,13 +51,6 @@ else
     # Generate a default config
     cat /usr/share/mynode/bitcoin.conf >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
     echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
-
-    # Debian 10 and 11 run electrs v0.11 (see mynode_app_versions.sh), which reads the
-    # bip125-replaceable mempool field
-    if [ "$(lsb_release -r -s)" -lt "12" ]; then
-        echo "deprecatedrpc=bip125" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
-        echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
-    fi
     sync
 
     # Generate config based on RAM
