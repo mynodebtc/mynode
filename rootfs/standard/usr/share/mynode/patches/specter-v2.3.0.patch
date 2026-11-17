@@ -1,0 +1,43 @@
+--- a/cryptoadvance/specter/wallet/wallet.py
++++ b/cryptoadvance/specter/wallet/wallet.py
+@@ -2070,6 +2070,7 @@
+             locktime,
+             options,
+             True,  # bip32-der
++            *self.psbt_v0_args(),
+         )
+ 
+         # Always explicitly fill psbt with any missing fields
+@@ -2096,6 +2097,7 @@
+                 locktime,
+                 options,
+                 True,  # bip32-der
++                *self.psbt_v0_args(),
+             )
+ 
+             # Always explicitly fill psbt with any missing fields
+@@ -2112,6 +2114,15 @@
+             self.save_pending_psbt(psbt)
+         return psbt
+ 
++    def psbt_v0_args(self):
++        """Bitcoin Core 32 makes v2 PSBTs by default. Returns the trailing positional
++        arguments that ask walletcreatefundedpsbt and converttopsbt for a v0 PSBT instead:
++        null for the argument before psbt_version (tx version / iswitness, so it keeps its
++        default), then psbt_version 0. Older Core and Spectrum take neither argument."""
++        if self.manager.bitcoin_core_version_raw >= 320000:
++            return [None, 0]
++        return []
++
+     def get_rbf_utxo(self, rbf_tx_id):
+         decoded_tx = self.decode_tx(rbf_tx_id)
+         selected_coins = [
+@@ -2150,7 +2161,7 @@
+         raw_tx = self.gettransaction(txid)["hex"]
+         # fill derivation info
+         raw_psbt = self.rpc.utxoupdatepsbt(
+-            self.rpc.converttopsbt(raw_tx, True),
++            self.rpc.converttopsbt(raw_tx, True, *self.psbt_v0_args()),
+             [self.recv_descriptor, self.change_descriptor],
+         )
+         return self.PSBTCls(

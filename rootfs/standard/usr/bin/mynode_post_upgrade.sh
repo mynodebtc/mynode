@@ -1069,7 +1069,14 @@ if should_install_app "specter" ; then
         sudo -u bitcoin mynode-uv venv --python $APP_PYTHON_MINOR_VERSION env
         sudo -u bitcoin mynode-uv pip install --require-hashes --python env/bin/python -r /usr/share/mynode/venvs/specter.lock
 
-        echo $SPECTER_VERSION > $SPECTER_VERSION_FILE
+        # Apply the MyNode patch
+        SPECTER_SITE_PACKAGES=$(env/bin/python -c "import sysconfig; print(sysconfig.get_paths()['purelib'])")
+        if [ -d "$SPECTER_SITE_PACKAGES" ] && \
+           (cd "$SPECTER_SITE_PACKAGES" && sudo -u bitcoin git apply --check $SPECTER_PATCH && sudo -u bitcoin git apply $SPECTER_PATCH); then
+            echo $SPECTER_VERSION > $SPECTER_VERSION_FILE
+        else
+            upgrade_component_failed "ERROR: Specter patch failed"
+        fi
     fi
 fi
 

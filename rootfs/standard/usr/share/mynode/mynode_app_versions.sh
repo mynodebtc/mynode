@@ -353,10 +353,12 @@ LNBITS_VERSION=$(get_app_version "$LNBITS_VERSION" "lnbits")
 LNBITS_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version
 LNBITS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version_latest
 
-SPECTER_VERSION="2.1.11"   # Must match usr/share/mynode/venvs/specter.in
+SPECTER_VERSION="2.3.0"   # Must match usr/share/mynode/venvs/specter.in
 SPECTER_VERSION=$(get_app_version "$SPECTER_VERSION" "specter")
 SPECTER_VERSION_FILE=/home/bitcoin/.mynode/specter_version
 SPECTER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/specter_version_latest
+# Makes Specter ask Bitcoin Core 32+ for v0 PSBTs (applied inside the venv's site-packages)
+SPECTER_PATCH=/usr/share/mynode/patches/specter-v2.3.0.patch
 
 THUNDERHUB_VERSION="v0.19.1"
 THUNDERHUB_SHA256="v0.19.1 56b9cc6e29aa7dd85725cdb421a249c802e03675125bcf27d1353b05c994832d"

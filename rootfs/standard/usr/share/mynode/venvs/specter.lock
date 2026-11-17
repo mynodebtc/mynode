@@ -356,9 +356,9 @@ cryptoadvance-liquidissuer==0.2.4 \
     --hash=sha256:5a2c531801854c5a4a46daf184877e22f731cdb42d2cfb840785bda7371ba6fb \
     --hash=sha256:9e468f3e35ecc566b3f74a2263677cf26632548abb194521dba15ad37acd1e9b
     # via cryptoadvance-specter
-cryptoadvance-specter==2.1.11 \
-    --hash=sha256:1b1f6354eecd538b388c287318c4d8c18eb43cd70a87298cb77c57c63399a873 \
-    --hash=sha256:fa2f679b069babe55ed32007f6d0d0bd4cd93ce267d339ab6040df57dd0c297a
+cryptoadvance-specter==2.3.0 \
+    --hash=sha256:770b577f47f4f12156ae932dcd9d6ee521427fd26e2c8ea2f67393eb1f7185c2 \
+    --hash=sha256:cc845a4f6b6c3272d40289c12d71ff0197599b03212fe9f9080a69636fb91552
     # via -r rootfs/standard/usr/share/mynode/venvs/specter.in
 cryptoadvance-spectrum==0.8.0 \
     --hash=sha256:cc91eef05f6417898e735b793b91135ddd989fe223ff51aeaa4bc278eb15c3ed \
@@ -455,9 +455,9 @@ flask-cors==6.0.0 \
     --hash=sha256:4592c1570246bf7beee96b74bc0adbbfcb1b0318f6ba05c412e8909eceec3393 \
     --hash=sha256:6332073356452343a8ccddbfec7befdc3fdd040141fe776ec9b94c262f058657
     # via cryptoadvance-specter
-flask-httpauth==4.8.0 \
-    --hash=sha256:66568a05bc73942c65f1e2201ae746295816dc009edd84b482c44c758d75097a \
-    --hash=sha256:a58fedd09989b9975448eef04806b096a3964a7feeebc0a78831ff55685b62b0
+flask-httpauth==4.8.1 \
+    --hash=sha256:0080393d70e12327781f7509115175ec5e47209816489a620d4fd39e20cea2e8 \
+    --hash=sha256:88499b22f1353893743c3cd68f2ca561c4ad9ef75cd6bcc7f621161cd0e80744
     # via cryptoadvance-specter
 flask-login==0.6.3 \
     --hash=sha256:5e23d14a607ef12806c699590b89d0f0e0d67baeec599d75947bf9c147330333 \
@@ -1133,9 +1133,9 @@ python-dateutil==2.9.0.post0 \
     # via
     #   flask-apscheduler
     #   pandas
-python-dotenv==0.21.1 \
-    --hash=sha256:1c93de8f636cde3ce377292818d0e440b6e45a82f215c3744979151fa8151c49 \
-    --hash=sha256:41e12e0318bebc859fcc4d97d4db8d20ad21721a6aa5047dd59f090391cb549a
+python-dotenv==1.2.2 \
+    --hash=sha256:1d8214789a24de455a8b8bd8ae6fe3c6b69a5e3d64aa8a8e5d68e694bbcb285a \
+    --hash=sha256:2c371a91fbd7ba082c2c1dc1f8bf89ca22564a087c2c287cd9b662adde799cf3
     # via cryptoadvance-specter
 pytimeparse==1.1.8 \
     --hash=sha256:04b7be6cc8bd9f5647a6325444926c3ac34ee6bc7e69da4367ba282f076036bd \
@@ -1147,9 +1147,9 @@ pytz==2026.5 \
     # via
     #   flask-babel
     #   flask-restful
-requests==2.31.0 \
-    --hash=sha256:58cd2187c01e70e6e26505bca751777aa9f2ee0b7f4300988b709f44e013003f \
-    --hash=sha256:942c5a758f98d790eaed1a29cb6eefc7ffb0d1cf7af05c3d2791656dbd6ad1e1
+requests==2.33.0 \
+    --hash=sha256:3324635456fa185245e24865e810cecec7b4caf933d7eb133dcde67d48cee69b \
+    --hash=sha256:c7ebc5e8b0f21837386ad0e1c8fe8b829fa5f544d8df3b2253bff14ef29d7652
     # via
     #   cryptoadvance-specter
     #   cryptoadvance-spectrum
@@ -1178,9 +1178,9 @@ specterext-stacktrack==0.3.0 \
     --hash=sha256:14f96f1f552f57ba017b8bc642f07343edbb1abafe09e03bbaae179d78d7ce23 \
     --hash=sha256:9e2946185730aab377951e83a27d8791a34e0f031e44f15991212b6b85722ca0
     # via cryptoadvance-specter
-specterext-timelockrecovery==0.2.3 \
-    --hash=sha256:5df3deb6245a22d48f75bbb62fd87dc141a9f60407011ce9fbb0a7bcc40fe4cc \
-    --hash=sha256:a0b22c4e010061055da4ea6ea4e08bbc38d1f7c2ec58327970caa0ce987cba95
+specterext-timelockrecovery==0.2.5 \
+    --hash=sha256:84554908500c1e556ffe3c6155f57689f8328f5975b70e986648e7e05684d62f \
+    --hash=sha256:b109f4b24867b4ed8b166816f4d3d018c0dbeed8d55d9ef0aab322faceb34ab9
     # via cryptoadvance-specter
 sqlalchemy==1.4.54 \
     --hash=sha256:02d2ecb9508f16ab9c5af466dfe5a88e26adf2e1a8d1c56eb616396ccae2c186 \
@@ -1252,10 +1252,11 @@ urllib3==2.8.0 \
     --hash=sha256:0cf3cae568d36aa9576b28dfb35f11328f1cb974ca7647d9475ebb86c75ac6e3 \
     --hash=sha256:63bf2ead4c879426ebf22ef2a781eeb4aa3b4ae798a0435506f8687fd5bb9b63
     # via requests
-werkzeug==3.1.9 \
-    --hash=sha256:55ca7c70a75689be937aa27f8ff4b018f06ff4838fc73045560bf0f5a1291060 \
-    --hash=sha256:6392e50c78460ba618e5b21f08a71f59c99ce99cdc6cf6e3dd7e6ccca8754fab
+werkzeug==3.0.6 \
+    --hash=sha256:1bc0c2310d2fbb07b1dd1105eba2f7af72f322e1e455f2f93c993bee8c8a5f17 \
+    --hash=sha256:a8dd59d4de28ca70471a34cba79bed5f7ef2e036a76b3ab0835474246eb41f8d
     # via
+    #   cryptoadvance-specter
     #   flask
     #   flask-cors
     #   flask-login
