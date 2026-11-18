@@ -16,13 +16,13 @@
         "Features in-app server discovery, BOLT11 Lightning checkout, automatic subscription claiming and renewal, $1 bandwidth top-ups, NIP-47 NWC auto-renewal, local X25519 key custody, and a fail-closed cgroup v2 + nftables managed dataplane."
     ],
     "linux_user": "tunnelsats",
-    "latest_version": "v1.0.0",
+    "latest_version": "v1.0.1",
     "minimum_debian_version": 12,
     "supported_archs": null,
     "download_skip": false,
     "download_type": "source",
     "download_source_url": "https://github.com/Tunnelsats/ts-mynode/archive/refs/tags/{VERSION}.tar.gz",
-    "download_source_sha256": "v1.0.0 dca569bf434a05fa6ebbb505c9f820ed12f72f79b67a4216fd67063ec3f1d934",
+    "download_source_sha256": "v1.0.1 72a732e994892815ef7bae2402d73cada2fcc5040ce1456600d7cbd783c91589",
     "download_binary_url": {},
     "install_env_vars": {},
     "supports_app_page": true,
@@ -49,11 +49,11 @@
         {
             "heading": "Getting Started",
             "content": [
-                "Click Open App on the left to launch the TunnelSats dashboard.",
+                "Click Open App on the left to launch the TunnelSats dashboard (protected by your MyNode login).",
                 "Select a VPN server region and subscription plan (1, 3, 6, or 12 months), or import an existing TunnelSats WireGuard configuration.",
                 "Pay the BOLT11 Lightning invoice with any Lightning wallet. TunnelSats generates your WireGuard X25519 private key locally on your myNode device and provisions your dedicated forwarded port automatically.",
-                "In Automated Mode (default), TunnelSats configures the fail-closed managed dataplane (tunnelsats.slice + nftables kill switch) and updates /mnt/hdd/mynode/settings/lnd_extra_config.conf for hybrid Clearnet + Tor routing.",
-                "In Manual / CLI Mode (SECURE_MODE=true), the dashboard stages your configuration at /mnt/hdd/mynode/tunnelsats/tunnelsatsv2.conf and displays exact SSH commands for manual operator execution."
+                "Root-owned host reconciliation configures the fail-closed managed dataplane (tunnelsats.slice + nftables kill switch) and updates /mnt/hdd/mynode/settings/lnd_extra_config.conf for hybrid Clearnet + Tor routing.",
+                "For manual CLI-only operation, enable root-enforced Secure Mode via 'sudo /usr/local/sbin/tunnelsats-reconcile enable-secure-mode' over SSH so host mutations only run from root SSH commands."
             ]
         }
     ],
