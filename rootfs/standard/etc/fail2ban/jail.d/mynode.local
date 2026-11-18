@@ -1,0 +1,7 @@
+[sshd]
+enabled = true
+ignoreip =
+ignoreself = false
+maxretry = 10
+findtime = 600
+bantime = 1800

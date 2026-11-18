@@ -14,13 +14,13 @@
     "description": [
         "DATUM (Decentralized Alternative Templates for Universal Mining) is a brand new bitcoin mining protocol that allows you to create your own block templates using your own Bitcoin node."
     ],
-    "latest_version": "v0.4.1beta",
+    "latest_version": "v0.5.1beta",
     "supported_archs": ["aarch64","x86_64"],
     "minimum_debian_version": 12,
     "download_skip": false,
     "download_type": "source",
     "download_source_url": "https://github.com/OCEAN-xyz/datum_gateway/archive/refs/tags/{VERSION}.tar.gz",
-    "download_source_sha256": "v0.4.1beta 728641bff6a63270199eea2e68f565a4cf182e85f8dd44cc2a458b4e86f89cd0",
+    "download_source_sha256": "v0.5.1beta 0f7e9a7c52511fe801e4ba6007b029268daa20ad09e0d8064514849846f5d95f",
     "download_binary_url": {
         "aarch64": "",
         "x86_64": ""

@@ -15,7 +15,7 @@ echo "==================== INSTALLING APP ===================="
 
 # Setup folders and config
 mkdir -p /mnt/hdd/mynode/nostrrsrelay/data
-if [ ! -f /mnt/hdd/mynode/nostrrsrelay/app_data/config.toml ]; then
+if [ ! -f /mnt/hdd/mynode/nostrrsrelay/config.toml ]; then
     cp -f /usr/share/mynode_apps/nostrrsrelay/app_data/config.toml /mnt/hdd/mynode/nostrrsrelay/config.toml
 fi
 

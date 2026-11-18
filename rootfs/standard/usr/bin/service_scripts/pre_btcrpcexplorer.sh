@@ -13,7 +13,8 @@ chown -R bitcoin:bitcoin /opt/mynode/btc-rpc-explorer
 set +x
 BTCRPCPW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
 if [ -f /opt/mynode/btc-rpc-explorer/.env ]; then
-    sed -i "s/BTCEXP_BITCOIND_PASS=.*/BTCEXP_BITCOIND_PASS=$BTCRPCPW/g" /opt/mynode/btc-rpc-explorer/.env
+    printf 's/BTCEXP_BITCOIND_PASS=.*/BTCEXP_BITCOIND_PASS=%s/g\n' "$BTCRPCPW" | sed -i -f - /opt/mynode/btc-rpc-explorer/.env
+    chmod 600 /opt/mynode/btc-rpc-explorer/.env
 fi
 set -x
 

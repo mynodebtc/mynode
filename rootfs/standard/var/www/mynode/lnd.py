@@ -6,14 +6,14 @@ from lightning_info import *
 from settings import reboot_device, read_ui_settings
 from device_info import *
 from utilities import *
-from user_management import check_logged_in
+from user_management import check_logged_in, is_admin_password_valid, get_admin_password_error
 from werkzeug.utils import secure_filename
 import urllib
 import traceback
+import hashlib
 import base64
 import subprocess
 import json
-import pam
 import time
 import re
 import requests
@@ -139,7 +139,7 @@ def page_lnd():
                 if first_uri:
                     first_uri = False
                 else:
-                    uri += "<br/>"
+                    uri += "\n"
                 uri += u
         else:
             uri = "..."
@@ -167,11 +167,11 @@ def page_lnd():
         invoices = get_lightning_invoices()
 
     except Exception as e:
+        log_message("ERROR loading lightning status: {}".format(traceback.format_exc()))
         templateData = {
             "title": "Lightning Status",
             "header": "Lightning Status",
-            #"message": str(e),
-            "message": traceback.format_exc(),
+            "message": "Error communicating with lnd. Node may be busy syncing. See /var/log/mynode.log for details.",
             "refresh_rate": 10,
             "ui_settings": read_ui_settings()
         }
@@ -200,13 +200,14 @@ def page_lnd():
         "num_pending_channels": num_pending_channels,
         "num_inactive_channels": num_inactive_channels,
         "pubkey": pubkey,
-        "uri": Markup(uri),
+        "uri": uri,
         "channel_db_size": lnd_get_channel_db_size(),
         "lnd_deposit_address": lnd_deposit_address,
         "channel_balance": format_sat_amount(balance_info["channel_balance"]),
         "channel_pending": format_sat_amount(balance_info["channel_pending"]),
         "wallet_balance": format_sat_amount(balance_info["wallet_balance"]),
         "wallet_pending": format_sat_amount(balance_info["wallet_pending"]),
+        "closing_balance": balance_info["closing_balance"],
         "peers": peers,
         "channels": channels,
         "transactions": transactions,
@@ -238,9 +239,14 @@ def lnd_tls_cert():
     check_logged_in()
     return download_file(directory="/mnt/hdd/mynode/lnd/", filename="tls.cert")
 
-@mynode_lnd.route("/lnd/<name>.macaroon")
+@mynode_lnd.route("/lnd/<name>.macaroon", methods=["POST"])
 def lnd_download_macaroon(name):
     check_logged_in()
+    pw = request.form.get('password_macaroon')
+    if not is_admin_password_valid(pw):
+        flash(get_admin_password_error(), category="error")
+        return redirect(url_for(".page_lnd"))
+
 
     folder = "mainnet"
     if is_testnet_enabled():
@@ -258,13 +264,17 @@ def lnd_channel_backup():
 
     return download_file(directory=parts[0]+"/", filename=parts[1])
 
+def hash_wallet_seed(seed):
+    return hashlib.sha256(seed.strip().encode()).hexdigest()
+
 @mynode_lnd.route("/lnd/create_wallet")
 def page_lnd_create_wallet():
     check_logged_in()
 
     try:
         seed = gen_new_wallet_seed()
-        session['seed'] = seed.strip()
+        session.pop('seed', None)
+        session['seed_hash'] = hash_wallet_seed(seed)
     except:
         templateData = {
             "title": "Lightning Wallet",
@@ -295,7 +305,7 @@ def page_lnd_create_wallet_with_seed():
         return render_template('lnd_wallet_create_with_seed.html', **templateData)
 
     # Get seed
-    seed = request.form.get('seed').strip()
+    seed = request.form.get('seed', '').strip()
 
     # Check for channel backup
     channel_backup_filename = "/tmp/lnd_channel_backup"
@@ -328,12 +338,12 @@ def page_lnd_create_wallet_confirm():
         return render_template('lnd_wallet_create_confirm.html', **templateData)
 
     # Parse submission
-    seed = request.form.get('seed').strip()
-    if seed != session['seed']:
-        session["seed"] = None
+    seed = request.form.get('seed', '').strip()
+    if hash_wallet_seed(seed) != session.get('seed_hash'):
+        session.pop("seed_hash", None)
         flash("Incorrect Seed", category="error")
         return redirect(url_for(".page_lnd"))
-    session["seed"] = None
+    session.pop("seed_hash", None)
 
     # Seed matches, create wallet!
     if create_wallet(seed):
@@ -365,15 +375,14 @@ def page_lnd_pair_wallet():
     if request.method == 'GET':
         return redirect(url_for(".page_lnd"))
 
-    p = pam.pam()
     pw = request.form.get('password_pair_wallet')
     from_homepage = request.form.get('pair_wallet_from_homepage')
-    if pw == None or p.authenticate("admin", pw) == False:
+    if not is_admin_password_valid(pw):
         if from_homepage != None:
-            flash("Invalid Password", category="error")
+            flash(get_admin_password_error(), category="error")
             return redirect("/")
         else:
-            flash("Invalid Password", category="error")
+            flash(get_admin_password_error(), category="error")
             return redirect(url_for(".page_lnd"))
 
     # Lndconnect Data
@@ -398,7 +407,13 @@ def page_lnd_pair_wallet():
 
     #Electrum QR:
     #bluewallet:setelectrumserver?server=v7gtzf7nua6hdmb2wtqaqioqmesdb4xrlly4zwr7bvayxv2bpg665pqd.onion%3A50001%3At
-    bluewallet_lndhub_local_text = "bluewallet:setlndhuburl?url=http://"+local_ip+":3000"
+    # The wallet is pointed at LNDHub's HTTPS port when this page is being read over HTTPS, so the
+    # QR matches the connection the owner chose. The Tor address below stays on http - an onion is
+    # encrypted already, and only the plain port is published as an onion service.
+    if request.scheme == "https":
+        bluewallet_lndhub_local_text = "bluewallet:setlndhuburl?url=https://"+local_ip+":3001"
+    else:
+        bluewallet_lndhub_local_text = "bluewallet:setlndhuburl?url=http://"+local_ip+":3000"
     bluewallet_lndhub_local_img = "/api/get_qr_code_image?url="+quote_plus(bluewallet_lndhub_local_text)
     bluewallet_lndhub_tor_text = "bluewallet:setlndhuburl?url=http://"+lndhub_onion_url+":3000"
     bluewallet_lndhub_tor_img = "/api/get_qr_code_image?url="+quote_plus(bluewallet_lndhub_tor_text)
@@ -490,8 +505,8 @@ def lnd_config_page():
 
     # Handle form
     pw = request.form.get('password')
-    if request.method == 'POST' and (pw == None or pam.pam().authenticate("admin", pw) == False):
-        flash("Invalid Password", category="error")
+    if request.method == 'POST' and not is_admin_password_valid(pw):
+        flash(get_admin_password_error(), category="error")
     elif request.method == 'POST':
         if extra_lnd_config != None:
             set_lnd_extra_config(extra_lnd_config)
@@ -569,7 +584,7 @@ def page_lnd_watchtower():
     templateData = {
         "title": "Lightning Watchtower",
         "watchtower_server_enabled": is_watchtower_server_enabled(),
-        "watchtower_server_uri": Markup(watchtower_server_info["watchtower_server_uri"]),
+        "watchtower_server_uri": watchtower_server_info["watchtower_server_uri"],
         "watchtower_client_enabled": is_watchtower_client_enabled(),
         "watchtower_client_towers": watchtower_client_towers,
         "watchtower_client_stats": watchtower_client_stats,
@@ -584,8 +599,11 @@ def page_lnd_watchtower_add_tower():
     check_logged_in()
 
     if request.form.get("new_tower"):
-        cmd = "lncli wtclient add {}".format(request.form.get("new_tower"))
-        r = run_lncli_command(cmd)
+        new_tower = request.form.get("new_tower")
+        if not is_safe_tower(new_tower):
+            flash("Error adding tower - invalid tower", category="error")
+            return redirect(url_for(".page_lnd_watchtower"))
+        r = run_lncli_command_args(["wtclient", "add", new_tower])
         if r == None:
             flash("Error adding tower!", category="error")
             return redirect(url_for(".page_lnd_watchtower"))
@@ -604,8 +622,11 @@ def page_lnd_watchtower_remove_tower():
     check_logged_in()
 
     if request.args.get("tower"):
-        cmd = "lncli wtclient remove {}".format(request.args.get("tower"))
-        r = run_lncli_command(cmd)
+        tower = request.args.get("tower")
+        if not is_safe_tower(tower):
+            flash("Error removing tower - invalid tower", category="error")
+            return redirect(url_for(".page_lnd_watchtower"))
+        r = run_lncli_command_args(["wtclient", "remove", tower])
         if r == None:
             flash("Error removing tower!", category="error")
             return redirect(url_for(".page_lnd_watchtower"))

@@ -9,7 +9,9 @@ set -e
 echo \"==================== INSTALLING APP ====================\"
 
 # export bitcoin password
+set +x
 BTCPSW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
+set -x
 
 # GIT VERIFY IS FAILING DUE TO EXPIRED KEY
 # USE GITHUB TARBALL FOR INSTALL FOR NOW
@@ -41,7 +43,8 @@ if [ ! -f /mnt/hdd/mynode/datum/datum_config.json ]; then
     \"rpcurl\": \"127.0.0.1:8332\"
   },
   \"api\": {
-    \"listen_port\": 21000,
+    \"listen_addr\": \"127.0.0.1\",
+    \"listen_port\": 31000,
     \"modify_conf\": true,
     \"admin_password\": \"\"
   },
@@ -64,9 +67,12 @@ if [ ! -f /mnt/hdd/mynode/datum/datum_config.json ]; then
 }
 " > datum_config.json
 
-    jq --arg BTCPSW "$BTCPSW" '.bitcoind.rpcpassword = $BTCPSW' datum_config.json > datum_config.json.tmp && mv datum_config.json.tmp datum_config.json
+    set +x
+    BTCPSW="$BTCPSW" jq '.bitcoind.rpcpassword = env.BTCPSW' datum_config.json > datum_config.json.tmp && mv datum_config.json.tmp datum_config.json
+    set -x
 
     cp datum_config.json /mnt/hdd/mynode/datum
+    rm -f datum_config.json   # the working copy holds the RPC password
 
     # The fresh config has no admin password, so let pre_datum.sh set a new one
     rm -f /mnt/hdd/mynode/datum/.app_password

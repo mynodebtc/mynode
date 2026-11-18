@@ -1,3 +1,93 @@
+=== v0.3.54 ===
+- Released 11/14/26
+- Upgrade electrs to v0.12.1 (database will be rebuilt)
+- Upgrade LND to v0.21.8
+- Upgrade LNbits to v1.7.0
+- Add an Upgrade OS setting for Debian release upgrades
+- Add a navigation dock to the home page
+- Warn on the login page when the connection is not encrypted
+- Hide disabled services on the Status page
+- Fetch the price ticker over Tor with a fallback
+- Improve upgrade consistency from very old MyNode versions
+- Fix Bitcoin failing to start on testnet
+- Improve the sync page's no-peers warning when Clearnet is off
+- Disable the unused smartd service
+- Bug Fixes
+
+=== v0.3.53 ===
+- Released 11/08/26
+- Upgrade Bitcoin to v32.1
+- Include Raspberry Pi kernel with CVE-2026-98432 fix
+- Add automatic OS security updates
+- Modernize the Status page, Service Status and Settings
+- Add device health summary to the Status page
+- Add health check icons to the home page
+- Show a notice when OS updates need a reboot
+- Fix upgrades failing on outdated NodeSource repos or a broken package source
+- Show closing channel funds and transaction labels in the Lightning wallet
+- Replace the debug log download with upgrade log downloads
+- Keep Tailscale connected across restarts and reboots
+- Bug Fixes
+
+=== v0.3.52 ===
+- Released 10/30/26
+- ***** CRITICAL SECURITY UPDATE *****
+- Install new kernels on amd64 for CVE-2026-98432 fix
+- Add mitigations for Linux kernel security issue CVE-2026-98432 for all platforms
+- Warn on the home page when the Linux kernel is missing the CVE-2026-98432 fix
+- Install new kernels during upgrades
+- Upgrade Bitcoin to v29.5
+- Upgrade LND to v0.21.6
+- Upgrade Lightning Terminal to v0.17.10
+- Upgrade BTCPay Server to v2.4.7
+- Upgrade NBXplorer to v2.6.21
+- Upgrade RTL to v0.15.16
+- Upgrade Balance of Satoshis to 25.5.0
+- Upgrade WeTTY to v4.2.1
+- Upgrade Tailscale to v1.104.4
+- Change auto-upgrade delay from 7 days to 5 days
+- Run i2pd only when Bitcoin uses it or it is turned on in Settings
+- Keep the BTCPay login when upgrading
+- Prevent deleting the default JoinMarket wallet
+- Give LND and slow-starting services more time to reach Bitcoin
+- Bug Fixes
+- Security Updates
+
+=== v0.3.51 ===
+- Released 10/24/26
+- Fix for NodeJS security issue CVE-2026-111497
+- Upgrade Lightning Terminal to v0.17.8
+- Upgrade Loop to v0.35.2
+- Upgrade BTCPay Server to v2.4.5
+- Upgrade NBXplorer to v2.6.19
+- Upgrade Mempool to v3.3.2
+- Upgrade electrs to v0.11.1
+- Upgrade Alby Hub to v1.24.4
+- Upgrade LNbits to v1.6.2
+- Upgrade RTL to v0.15.15
+- Upgrade Thunderhub to v0.19.1
+- Upgrade Balance of Satoshis to 25.3.1
+- Upgrade Channel Tools to v0.14.3
+- Upgrade Specter to v2.1.11
+- Upgrade DATUM to v0.5.1
+- Upgrade Canary to v1.7.1
+- Upgrade Nostr RS Relay to v0.10.0
+- Upgrade Netdata to v2.12.2
+- Upgrade WeTTY to v4.1.0
+- Upgrade Tailscale to v1.104.2
+- Upgrade LndBoss to v2.19.1 and mark it deprecated
+- Upgrade Tor to 0.4.9.14 on Debian 10
+- Speed up the home page
+- Add a settings button to upgrade OS packages
+- Warn on the home page when NodeJS is out of date
+- Limit service ports to the local network by default
+- Move app password buttons into each app's settings section
+- Add Reset Password to RTL and Thunderhub settings
+- Keep onion addresses when resetting Tor connections
+- Clear stale JoinMarket wallet locks on startup
+- Add Linux help for installing CA certs
+- Bug Fixes
+
 === v0.3.50 ===
 - Released 10/15/26
 - Upgrade LND to v0.21.4

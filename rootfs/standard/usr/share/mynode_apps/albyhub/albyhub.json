@@ -19,7 +19,7 @@
         "– all in one intuitive interface.",
         "You will also easily understand how the lightning network works and learning effortlessly along the way."
     ],
-    "latest_version": "v1.24.1",
+    "latest_version": "v1.24.4",
     "supported_archs": null,
     "download_skip": true,
     "download_type": "source",
@@ -29,7 +29,7 @@
         "x86_64": "download_url"
     },
     "install_env_vars": {
-        "IMAGE_DIGEST": "v1.24.1 sha256:ca9da58cafd68e91358820a20d83d328a333a8f699007a70d9aa50538da7c129"
+        "IMAGE_DIGEST": "v1.24.4 sha256:ac82a3b2a94de92f3f168fab5b41c48f4316ad864cad6afdba2068beb229a2da"
     },
     "supports_app_page": true,
     "supports_testnet": false,

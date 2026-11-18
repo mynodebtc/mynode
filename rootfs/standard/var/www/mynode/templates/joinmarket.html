@@ -2,6 +2,36 @@
     <head>
         <title>{{ title }}</title>
         {% include 'includes/head.html' %}
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
+            $(document).ready(function() {
+                var download_wallet_dialog = $("#download-wallet-dialog").dialog({
+                    autoOpen: false,
+                    resizable: false,
+                    height: "auto",
+                    width: 600,
+                    modal: true,
+                    position: { my: "center top", at: "center top", of: window, collision: "none" },
+                    buttons: {
+                        "Download": function() {
+                            $("#download_wallet_form").submit();
+                        },
+                        Cancel: function() {
+                            download_wallet_dialog.dialog( "close" );
+                        }
+                    },
+                    open: function() {
+                        $("#password_download_wallet").val("");
+                    }
+                });
+                $("#download_wallet_form").on("submit", function() {
+                    download_wallet_dialog.dialog( "close" );
+                });
+                $(".download_wallet_button").on("click", function() {
+                    $("#download_wallet_name").val($(this).attr("data-wallet"));
+                    download_wallet_dialog.dialog( "open" );
+                });
+            });
+        </script>
     </head>
     <body>
         {% include 'includes/logo_header.html' %}
@@ -25,12 +55,12 @@
                 <div class="info_tile_contents">
                     <button
                         class="ui-button ui-widget ui-corner-all mynode_button_small {% if not is_jam_installed or not is_jam_enabled %}ui-state-disabled{% endif %}"
-                        onclick="open_app_in_new_tab('{{jam_http_port}}', '{{jam_https_port}}', false, '{{jam_tor_address}}')"
+                        data-open-app data-http-port="{{jam_http_port}}" data-https-port="{{jam_https_port}}" data-tor-address="{{jam_tor_address}}"
                         {% if not is_jam_installed or not is_jam_enabled %}
                         disabled="disabled" title="JAM must be installed and running"
                         {% endif %}
                         >Open Jam</button>
-                    <button class="ui-button ui-widget ui-corner-all mynode_button_small" onclick="open_app_in_new_tab('{{ob_http_port}}', '{{ob_https_port}}', false, '{{ob_tor_address}}')">Open Orderbook</button>
+                    <button class="ui-button ui-widget ui-corner-all mynode_button_small" data-open-app data-http-port="{{ob_http_port}}" data-https-port="{{ob_https_port}}" data-tor-address="{{ob_tor_address}}">Open Orderbook</button>
                 </div>
             </div>
         </div>
@@ -73,7 +103,7 @@
                     <tr>
                         <td>{{ wallet.name }}</td>
                         <td>
-                            <a class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" href="/joinmarket/download_wallet?wallet={{wallet.name|urlencode}}">download</a>
+                            <a class="ui-button ui-widget ui-corner-all mynode_button_small download_wallet_button" style="width: 100px;" data-wallet="{{ wallet.name }}" href="#">download</a>
                         </td>
                     </tr>
                 {% endfor %}
@@ -147,6 +177,19 @@
                 <li>Accessing Joinmarket via multiple methods can interfere and cause issues.</li>
                 <li>More information on JoinMarket usage can be found on their <a href="https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/master/docs/USAGE.md" target="_blank">Github</a>.</li>
             </ul>
+        </div>
+        <div id="download-wallet-dialog" title="Download Wallet" style="display:none;">
+            <form id="download_wallet_form" action="/joinmarket/download_wallet" method="POST">
+                <input type="hidden" name="wallet" id="download_wallet_name" value="">
+                <p>Wallet files may contain private keys. Anyone with a copy may be able to spend its funds.</p>
+                <p>Please enter your password to download the wallet.</p>
+                <b>Password:</b>
+                <br/>
+                <input type="password" name="password_download_wallet" id="password_download_wallet" value="" class="text ui-widget-content ui-corner-all">
+
+                <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </form>
         </div>
     </body>
 </html>

@@ -2,7 +2,7 @@
 # /etc/systemd/system/lnd_admin_files.service
 
 [Unit]
-Description=Copy LND Files to Admin User
+Description=Copy LND, Loop and Pool Files to Admin User
 Wants=lnd.service
 After=lnd.service
 

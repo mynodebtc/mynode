@@ -96,6 +96,16 @@ else
     fi
 fi
 
+# Until a wallet exists, only listen for RPC on this device
+LND_WALLET_FILE=/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/wallet.db
+if [ -f /mnt/hdd/mynode/settings/.testnet_enabled ]; then
+    LND_WALLET_FILE=/mnt/hdd/mynode/lnd/data/chain/bitcoin/testnet/wallet.db
+fi
+if [ ! -f $LND_WALLET_FILE ]; then
+    sed -i -E "/^(rpclisten|restlisten)=\[::\]:/d" /mnt/hdd/mynode/lnd/lnd.conf
+    sed -i -E "s/^(rpclisten|restlisten)=0\.0\.0\.0:/\1=127.0.0.1:/" /mnt/hdd/mynode/lnd/lnd.conf
+fi
+
 # Append tor domain
 if [ -f /var/lib/tor/mynode_lnd/hostname ]; then
     echo "" >> /mnt/hdd/mynode/lnd/lnd.conf

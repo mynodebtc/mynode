@@ -6,6 +6,7 @@ from flask import flash, redirect
 from utilities import *
 from enable_disable_functions import *
 from systemctl_info import *
+from electrum_info import clear_electrs_info
 import time
 import json
 import os
@@ -219,15 +220,29 @@ def run_manual_upgrade(args):
 def upgrade_device():
     run_manual_upgrade([])
 
+OS_PACKAGES_UPGRADE_LOG = "/home/admin/upgrade_logs/upgrade_log_os_packages.txt"
+OS_PACKAGES_UPGRADE_ERROR = "os_packages_upgrade_error"     # Settings file, set when the last run failed
+
 def upgrade_os_packages():
     if not is_upgrade_running():
         mark_upgrade_started()
+        delete_settings_file(OS_PACKAGES_UPGRADE_ERROR)
 
         # Log like an upgrade so the upgrade page can show upgrade_log_latest.txt while it runs
         log_folder = "/home/admin/upgrade_logs"
         os.system("mkdir -p {}".format(log_folder))
-        subprocess.call("/usr/bin/mynode_upgrade_os_packages.sh 2>&1 | tee {0}/upgrade_log_latest.txt > {0}/upgrade_log_os_packages.txt".format(log_folder), shell=True)
+        ret = subprocess.call(["/bin/bash", "-o", "pipefail", "-c",
+                               "/usr/bin/mynode_upgrade_os_packages.sh 2>&1 | tee {0}/upgrade_log_latest.txt > {1}".format(log_folder, OS_PACKAGES_UPGRADE_LOG)])
         os.system("chown -R admin:admin {}".format(log_folder))
+
+        if ret != 0:
+            # Don't reboot, so Settings can show the error. The next run finishes any interrupted
+            # package installs (dpkg --configure -a).
+            log_message("OS package upgrade failed (exit {})".format(ret))
+            create_settings_file(OS_PACKAGES_UPGRADE_ERROR)
+            delete_file("/tmp/upgrade_started")
+            delete_file("/tmp/mark_reboot___upgrade_os_packages")
+            return
 
         # Sync
         os.system("sync")
@@ -242,9 +257,113 @@ def upgrade_device_beta():
 def did_upgrade_fail():
     return os.path.isfile("/mnt/hdd/mynode/settings/upgrade_error")
 
+def did_os_packages_upgrade_fail():
+    return settings_file_exists(OS_PACKAGES_UPGRADE_ERROR) and not is_upgrade_running()
+
+# Written by apt_get_update (mynode_functions.sh) when "apt-get update" failed during an upgrade
+APT_UPDATE_ERROR_FILE = "/mnt/hdd/mynode/settings/apt_update_error"
+
+def get_apt_update_error():
+    # Returns None, or {"time": "YYYY-MM-DD HH:MM", "errors": "<apt's error lines>"}
+    try:
+        mtime = os.path.getmtime(APT_UPDATE_ERROR_FILE)
+        with open(APT_UPDATE_ERROR_FILE, "r") as f:
+            errors = f.read().strip()
+    except Exception:
+        return None
+    # A later update without errors (like the daily one for automatic security updates) fixed it
+    last_update = get_apt_last_update_time()
+    if last_update is not None and last_update > mtime:
+        return None
+    return {"time": time.strftime("%Y-%m-%d %H:%M", time.localtime(mtime)), "errors": errors}
+
+# Touched by apt.systemd.daily (apt-daily.service) after its "apt-get update" runs without errors.
+# A manual or MyNode upgrade "apt-get update" doesn't touch it, but apt_get_update removes
+# APT_UPDATE_ERROR_FILE itself after a clean update.
+APT_UPDATE_SUCCESS_STAMP = "/var/lib/apt/periodic/update-stamp"
+# Touched by apt.systemd.daily after unattended-upgrade runs without failing
+UNATTENDED_UPGRADES_STAMP = "/var/lib/apt/periodic/unattended-upgrades-stamp"
+UNATTENDED_UPGRADES_LOG = "/var/log/unattended-upgrades/unattended-upgrades.log"
+
+def get_file_mtime(path):
+    try:
+        return os.path.getmtime(path)
+    except Exception:
+        return None
+
+def get_apt_last_update_time():
+    return get_file_mtime(APT_UPDATE_SUCCESS_STAMP)
+
+def get_unattended_upgrades_last_run_time():
+    return get_file_mtime(UNATTENDED_UPGRADES_STAMP)
+
+def get_unattended_upgrades_last_run_errors():
+    # ERROR lines from the most recent run in the unattended-upgrades log, or [] if none
+    try:
+        with open(UNATTENDED_UPGRADES_LOG, "r") as f:
+            lines = f.read().splitlines()
+    except Exception:
+        return []
+    for i in range(len(lines) - 1, -1, -1):
+        if "Starting unattended upgrades script" in lines[i]:
+            lines = lines[i:]
+            break
+    return [l for l in lines if " ERROR " in l]
+
+def split_kernel_release(release):
+    # "6.1.0-16-amd64" -> ((6, 1, 0, 16), "-amd64") and "6.6.51+rpt-rpi-v8" -> ((6, 6, 51), "+rpt-rpi-v8")
+    match = re.match(r"^(\d+(?:[.\-]\d+)*)(.*)$", release)
+    if not match:
+        return None, None
+    return tuple(int(p) for p in re.split(r"[.\-]", match.group(1))), match.group(2)
+
+def get_newer_installed_kernel(running_release=None, modules_dir="/lib/modules"):
+    # Release of the newest installed kernel of the running kernel's flavor, if it is newer than the
+    # running one (the device needs a reboot to use it). Otherwise None.
+    if running_release is None:
+        running_release = os.uname().release
+    running_version, flavor = split_kernel_release(running_release)
+    if running_version is None:
+        return None
+    newest = None
+    newest_version = running_version
+    try:
+        releases = os.listdir(modules_dir)
+    except Exception:
+        return None
+    for release in releases:
+        # A removed kernel can leave an empty folder behind
+        if not os.path.isdir(os.path.join(modules_dir, release, "kernel")):
+            continue
+        version, release_flavor = split_kernel_release(release)
+        if version is not None and release_flavor == flavor and version > newest_version:
+            newest = release
+            newest_version = version
+    return newest
+
+def is_reboot_required():
+    # Debian packages (like kernels, via unattended-upgrades' hook) request a reboot with this file
+    return os.path.isfile("/run/reboot-required") or get_newer_installed_kernel() is not None
+
+def get_os_packages_upgrade_log_tail(lines=40):
+    log = to_string(get_file_contents(OS_PACKAGES_UPGRADE_LOG))
+    if log == "ERROR":
+        return ""
+    return cleanup_log("\n".join(log.splitlines()[-lines:]))
+
 def cleanup_log(log):
     log = re.sub("(product_key|PRODUCT_KEY)=[0-9A-Z]+", "product_key=************", log)
     return log
+
+# Contents of a file in the upgrade log folder, or None if there is no such file
+def get_upgrade_log(filename):
+    folder = "/home/admin/upgrade_logs/"
+    if not os.path.isdir(folder) or filename not in os.listdir(folder):
+        return None
+    path = os.path.join(folder, filename)
+    if not os.path.isfile(path):
+        return None
+    return cleanup_log( to_string( get_file_contents(path) ) )
 
 def get_recent_upgrade_log():
     log =  to_string( get_file_contents("/home/admin/upgrade_logs/upgrade_log_latest.txt") )
@@ -261,6 +380,7 @@ def get_all_upgrade_logs():
             log = {}
             log["id"] = log_id
             log["name"] = "Latest Upgrade"
+            log["filename"] = "upgrade_log_latest.txt"
             modTimeSeconds = os.path.getmtime( os.path.join(folder, "upgrade_log_latest.txt") )
             log["date"] = time.strftime('%Y-%m-%d', time.localtime(modTimeSeconds))
             log["log"] = get_recent_upgrade_log()
@@ -275,6 +395,7 @@ def get_all_upgrade_logs():
                     log = {}
                     log["id"] = log_id
                     log["name"] = f
+                    log["filename"] = f
                     modTimeSeconds = os.path.getmtime(fullpath)
                     log["date"] = time.strftime('%Y-%m-%d', time.localtime(modTimeSeconds))
                     log["log"] = cleanup_log( to_string( get_file_contents(fullpath) ) )
@@ -382,6 +503,26 @@ def get_debian_version():
     cached_data["debian_version"] = debian_version
     return debian_version
 
+def parse_kernel_version(release, version):
+    # Debian kernels have an ABI name for a release (6.1.0-54-amd64), so the real version is in the
+    # build string (#1 SMP PREEMPT_DYNAMIC Debian 6.1.190-1). Raspberry Pi adds an epoch (1:6.12.109-1+rpt1).
+    match = re.search(r"Debian (?:\d+:)?(\d+)\.(\d+)\.(\d+)", version)
+    if not match:
+        match = re.match(r"(\d+)\.(\d+)(?:\.(\d+))?", release)
+    if not match:
+        return None
+    return tuple(int(part or 0) for part in match.groups())
+
+def get_kernel_version():
+    global cached_data
+    if "kernel_version" in cached_data:
+        return cached_data["kernel_version"]
+
+    uname = os.uname()
+    kernel_version = parse_kernel_version(uname.release, uname.version)
+    cached_data["kernel_version"] = kernel_version
+    return kernel_version
+
 def get_tor_version():
     global cached_data
     if "tor_version" in cached_data:
@@ -392,6 +533,20 @@ def get_tor_version():
     tor_version = tor_version.strip(".")
     cached_data["tor_version"] = tor_version
     return tor_version
+
+def get_node_version():
+    # Returns "" if NodeJS is not installed
+    global cached_data
+    if "node_version" in cached_data:
+        return cached_data["node_version"]
+
+    try:
+        node_version = to_string(subprocess.check_output("node --version", shell=True, stderr=subprocess.DEVNULL).decode("utf-8").strip())
+        node_version = node_version.lstrip("v")
+    except Exception:
+        node_version = ""
+    cached_data["node_version"] = node_version
+    return node_version
 
 def get_device_ram():
     global cached_data
@@ -559,7 +714,6 @@ STATE_DRIVE_MOUNTED =         "drive_mounted"
 STATE_DRIVE_CLONE =           "drive_clone"
 STATE_DRIVE_FULL =            "drive_full"
 STATE_DOCKER_RESET =          "docker_reset"
-STATE_GEN_DHPARAM =           "gen_dhparam"
 STATE_CHOOSE_NETWORK =        "choose_network"
 STATE_STABLE =                "stable"
 STATE_ROOTFS_READ_ONLY =      "rootfs_read_only"
@@ -626,9 +780,17 @@ def get_clone_target_drive_has_mynode():
 def get_drive_info(drive):
     data = {}
     data["name"] = "NOT_FOUND"
+    if drive == None:
+        return data
+    # The name is turned into a path under /dev, so only allow a plain device name
+    drive = to_string(drive).strip()
+    if not is_safe_name(drive):
+        log_message("Refusing to look up drive info for name: {}".format(drive))
+        return data
     try:
-        lsblk_output = to_string(subprocess.check_output("lsblk -io KNAME,TYPE,SIZE,MODEL,VENDOR /dev/{} | grep disk".format(drive), shell=True).decode("utf-8"))
-        parts = lsblk_output.split()
+        lsblk_output = to_string(subprocess.check_output(["lsblk", "-io", "KNAME,TYPE,SIZE,MODEL,VENDOR", "/dev/" + drive]))
+        disk_lines = [line for line in lsblk_output.split("\n") if "disk" in line]
+        parts = " ".join(disk_lines).split()
         data["name"] = parts[0]
         data["size"] = parts[2]
         data["model"] = parts[3]
@@ -758,13 +920,24 @@ def get_https_ca_info():
         return None
     return {"name": name.group(1).strip(), "fingerprint": fingerprint.group(1).upper()}
 
+FLASK_SECRET_KEY_FILE = "/home/bitcoin/.mynode/flask_secret_key"
+
 def get_flask_secret_key():
-    if os.path.isfile("/home/bitcoin/.mynode/flask_secret_key"):
-        key = to_string( get_file_contents("/home/bitcoin/.mynode/flask_secret_key") )
+    key_file = FLASK_SECRET_KEY_FILE
+    if os.path.isfile(key_file):
+        key = to_string( get_file_contents(key_file) )
     else:
         key = secrets.token_hex()
-        set_file_contents("/home/bitcoin/.mynode/flask_secret_key", key)
+        set_file_contents(key_file, key)
+    try:
+        os.chmod(key_file, 0o600)
+    except:
+        log_message("Unable to set permissions on {}".format(key_file))
     return key
+
+def rotate_flask_secret_key():
+    delete_file(FLASK_SECRET_KEY_FILE)
+    return get_flask_secret_key()
 
 FLASK_SESSION_TIMEOUT_DAY_OPTIONS = [0,1,2,3,5,10,15,20,30]
 
@@ -830,6 +1003,141 @@ def show_old_tor_warning():
 def hide_old_tor_warning():
     touch("/tmp/hide_old_tor_warning")
 
+# First patch level with the CVE-2026-98432 fix, for each kernel branch that received it
+CVE_2026_98432_FIXED_PATCH_LEVELS = {
+    (5, 10): 272,
+    (5, 15): 223,
+    (6, 1): 190,
+    (6, 6): 159,
+    (6, 12): 113,
+    (6, 18): 56,
+    (7, 2): 10,
+}
+
+def is_kernel_affected_by_cve_2026_98432(kernel_version):
+    if kernel_version is None:
+        return False
+    if kernel_version < (4, 4, 0) or kernel_version >= (7, 3, 0):
+        return False
+    # Branches not listed went end of life without the fix
+    fixed_patch_level = CVE_2026_98432_FIXED_PATCH_LEVELS.get(kernel_version[:2])
+    return fixed_patch_level is None or kernel_version[2] < fixed_patch_level
+
+def get_cve_2026_98432_fixed_kernel_version():
+    kernel_version = get_kernel_version()
+    if kernel_version is None or kernel_version[:2] not in CVE_2026_98432_FIXED_PATCH_LEVELS:
+        return None
+    return "{}.{}.{}".format(kernel_version[0], kernel_version[1], CVE_2026_98432_FIXED_PATCH_LEVELS[kernel_version[:2]])
+
+def get_kernel_version_string():
+    kernel_version = get_kernel_version()
+    if kernel_version is None:
+        return "unknown"
+    return ".".join(str(part) for part in kernel_version)
+
+def is_kernel_cve_mitigated_device():
+    return get_device_type() in ["raspi4", "raspi5"]
+
+def show_kernel_cve_warning():
+    if not os.path.isfile("/tmp/hide_kernel_cve_warning"):
+        return is_kernel_affected_by_cve_2026_98432(get_kernel_version())
+    return False
+def hide_kernel_cve_warning():
+    touch("/tmp/hide_kernel_cve_warning")
+
+# Created when an installed package, such as a new kernel, needs a reboot to take effect.
+# It is in /run, so a reboot removes it.
+def show_reboot_required_notice():
+    if not os.path.isfile("/tmp/hide_reboot_required_notice"):
+        return os.path.isfile("/var/run/reboot-required")
+    return False
+def hide_reboot_required_notice():
+    touch("/tmp/hide_reboot_required_notice")
+
+# Packages that bring in new kernels when they are upgraded. Automatic OS security updates
+# don't install Raspberry Pi kernels or Debian kernels from point releases, but
+# "Upgrade OS Packages" and MyNode upgrades do.
+KERNEL_PACKAGES = ["raspberrypi-kernel", "linux-image-rpi-2712", "linux-image-rpi-v8",
+                   "linux-image-amd64", "linux-image-arm64"]
+
+# Runs in a background thread: apt-cache can take several seconds when it has to rebuild
+# its cache after packages change
+def update_kernel_update_cache():
+    global cached_data
+    # The package lists and installed packages decide the answer, so only check again
+    # after one of them changes
+    try:
+        key = (os.path.getmtime("/var/lib/apt/lists"), os.path.getmtime("/var/lib/dpkg/status"))
+    except OSError:
+        return
+    if cached_data.get("kernel_update_key") == key:
+        return
+
+    update_version = None
+    try:
+        output = to_string(subprocess.check_output(["apt-cache", "policy"] + KERNEL_PACKAGES,
+                                                   stderr=subprocess.DEVNULL, timeout=60))
+    except Exception as e:
+        log_message("Unable to check for kernel updates: {}".format(str(e)))
+        return
+    installed = None
+    for line in output.splitlines():
+        line = line.strip()
+        if line.startswith("Installed:"):
+            installed = line.split(":", 1)[1].strip()
+        elif line.startswith("Candidate:"):
+            candidate = line.split(":", 1)[1].strip()
+            if installed not in [None, "(none)"] and candidate not in ["(none)", installed]:
+                update_version = candidate
+            installed = None
+
+    cached_data["kernel_update_key"] = key
+    cached_data["kernel_update_version"] = update_version
+
+# Returns the version of a newer kernel package that can be installed, or None
+def get_kernel_update_version():
+    return cached_data.get("kernel_update_version")
+
+# Dismissing the notice hides it until a different kernel version is available
+def show_kernel_update_notice():
+    update_version = get_kernel_update_version()
+    if update_version is None:
+        return False
+    if os.path.isfile("/tmp/hide_kernel_update_notice"):
+        return to_string(get_file_contents("/tmp/hide_kernel_update_notice")) != update_version
+    return True
+def hide_kernel_update_notice():
+    update_version = get_kernel_update_version()
+    if update_version is not None:
+        set_file_contents("/tmp/hide_kernel_update_notice", update_version)
+
+# Oldest NodeJS release accepted for each maintained major version. Majors that are not
+# listed and are older than the newest listed major are no longer maintained.
+NODE_MIN_VERSIONS = {
+    22: (22, 23, 4),
+    24: (24, 22, 1),
+    26: (26, 12, 1),
+}
+
+def get_node_version_warning():
+    # Returns None, "upgrade" (a MyNode upgrade installs a newer NodeJS) or "reflash"
+    # (MyNode keeps 32-bit and Debian 10 devices on NodeJS 18)
+    version = get_node_version()
+    try:
+        parts = tuple(int(p) for p in version.split("."))
+    except ValueError:
+        return None
+    major = parts[0]
+    if major in NODE_MIN_VERSIONS:
+        if parts >= NODE_MIN_VERSIONS[major]:
+            return None
+    elif major > max(NODE_MIN_VERSIONS):
+        return None
+
+    if get_device_bits() == 32 or get_debian_version() < 11:
+        return "reflash"
+    return "upgrade"
+
 
 #==================================
 # Product Key Functions
@@ -868,9 +1176,12 @@ def get_product_key():
 def is_valid_product_key():
     return not os.path.isfile("/home/bitcoin/.mynode/.product_key_error")
 def save_product_key(product_key):
-    pk = product_key.replace("-","")
-    os.system("echo '{}' > /home/bitcoin/.mynode/.product_key".format(pk))
-    os.system("echo '{}' > /mnt/hdd/mynode/settings/.product_key".format(pk))
+    pk = product_key.strip().replace("-","")
+    if not is_safe_name(pk):
+        return False
+    set_private_file_contents("/home/bitcoin/.mynode/.product_key", pk + "\n")
+    set_private_file_contents("/mnt/hdd/mynode/settings/.product_key", pk + "\n")
+    return True
 def mark_product_key_error():
     os.system("echo '{}' > /home/bitcoin/.mynode/.product_key_error".format("ERROR"))
 def delete_product_key_error():
@@ -983,14 +1294,14 @@ def get_premium_plus_token():
                 token = f.read().strip()
 
                 # Re-save to SD card since it was missing
-                set_file_contents("/home/bitcoin/.mynode/.premium_plus_token", token)
+                set_private_file_contents("/home/bitcoin/.mynode/.premium_plus_token", token)
     except:
         token = "error_2"
     return token
 def reset_premium_plus_token_status():
     delete_file("/home/bitcoin/.mynode/.premium_plus_token_status")
 def set_premium_plus_token_status(msg):
-    os.system("echo '{}' > /home/bitcoin/.mynode/.premium_plus_token_status".format(msg))
+    set_file_contents("/home/bitcoin/.mynode/.premium_plus_token_status", str(msg))
 def get_premium_plus_token_status():
     status = "UNKNOWN"
     if not has_premium_plus_token():
@@ -1025,8 +1336,8 @@ def get_premium_plus_last_sync():
     except Exception as e:
         return "Unknown"
 def save_premium_plus_token(token):
-    set_file_contents("/home/bitcoin/.mynode/.premium_plus_token", token)
-    set_file_contents("/mnt/hdd/mynode/settings/.premium_plus_token", token)
+    set_private_file_contents("/home/bitcoin/.mynode/.premium_plus_token", token)
+    set_private_file_contents("/mnt/hdd/mynode/settings/.premium_plus_token", token)
 
 def get_premium_plus_response_data():
     data = []
@@ -1254,6 +1565,81 @@ def get_docker_running_containers():
 
 
 #==================================
+# Allowed Host Names
+#==================================
+# The web interface and apps behind nginx answer to IP addresses, .onion names, the names below, and
+# names the user adds in Settings (one per line in ALLOWED_HOSTS_FILE).
+ALLOWED_HOSTS_FILE = "/mnt/hdd/mynode/settings/allowed_hosts"
+LOCAL_HOST_SUFFIXES = ["", ".local", ".lan", ".home", ".home.arpa", ".localdomain", ".internal"]
+HOSTNAME_REGEX = re.compile(r"^(?=.{1,253}\Z)[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*\Z")
+
+def is_ip_address(value):
+    import ipaddress
+    try:
+        ipaddress.ip_address(value)
+        return True
+    except ValueError:
+        return False
+
+def normalize_hostname(name):
+    if name == None:
+        return ""
+    return name.strip().lower().rstrip(".")
+
+def is_valid_hostname(name):
+    return HOSTNAME_REGEX.match(name) != None
+
+def get_builtin_hostnames():
+    import socket
+    names = ["localhost"]
+    for name in ["mynode", socket.gethostname().lower()]:
+        for suffix in LOCAL_HOST_SUFFIXES:
+            if name + suffix not in names:
+                names.append(name + suffix)
+    return names
+
+def get_allowed_hosts():
+    hosts = []
+    try:
+        if os.path.isfile(ALLOWED_HOSTS_FILE):
+            with open(ALLOWED_HOSTS_FILE) as f:
+                for line in f:
+                    name = normalize_hostname(line)
+                    if name != "" and not name.startswith("#") and name not in hosts:
+                        hosts.append(name)
+    except Exception as e:
+        log_message("Unable to read {}: {}".format(ALLOWED_HOSTS_FILE, str(e)))
+    return hosts
+
+def save_allowed_hosts(hosts):
+    if len(hosts) == 0:
+        delete_file(ALLOWED_HOSTS_FILE)
+        saved = True
+    else:
+        saved = set_file_contents(ALLOWED_HOSTS_FILE, "\n".join(hosts) + "\n")
+    # Apps behind nginx check the same names
+    os.system("/usr/bin/mynode_gen_nginx_allowed_hosts.sh && systemctl reload nginx")
+    return saved
+
+# With several devices on one network, Avahi publishes all but the first as mynode-2.local,
+# mynode-3.local and so on, and can rename the device at any time after boot
+def is_avahi_renamed_hostname(hostname):
+    import socket
+    for name in ["mynode", socket.gethostname().lower()]:
+        if re.match(r"^" + re.escape(name) + r"-[0-9]+\.local\Z", hostname):
+            return True
+    return False
+
+def is_builtin_hostname(hostname):
+    return hostname in get_builtin_hostnames() or is_avahi_renamed_hostname(hostname)
+
+def is_allowed_host(hostname):
+    if is_ip_address(hostname) or hostname.endswith(".onion"):
+        return True
+    return is_builtin_hostname(hostname) or hostname in get_allowed_hosts()
+
+
+#==================================
 # USB Extras Functions
 #==================================
 def get_usb_extras():
@@ -1362,8 +1748,24 @@ def delete_lnd_watchtower_server_data():
     return True
 
 def delete_lnd_macaroons():
-    os.system("find /mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/ -name '*.macaroon' -delete")
-    os.system("find /mnt/hdd/mynode/lnd/data/chain/bitcoin/testnet/ -name '*.macaroon' -delete")
+    # Delete each root key store with the macaroons, so new root keys are made at the next start
+    # and every earlier macaroon stops working. LND makes its own when the wallet unlocks; app
+    # macaroons baked from LND's (LNbits, Alby Hub, Sphinx Relay) are baked again when the app
+    # starts. LiT, Faraday, Loop and Pool have their own root key stores.
+    for network in ["mainnet", "testnet"]:
+        folders = ["/mnt/hdd/mynode/lnd/data/chain/bitcoin/{}".format(network)]
+        folders += ["/mnt/hdd/mynode/{}/{}".format(app, network) for app in ["lit", "faraday", "loop", "pool"]]
+        for folder in folders:
+            if os.path.isdir(folder):
+                subprocess.run(["find", folder, "-maxdepth", "1", "(", "-name", "*.macaroon", "-o",
+                                "-name", "macaroons.db", "-o", "-name", "macaroons.db.last-compacted", ")",
+                                "-delete"])
+        # Admin's copies (mynode_lnd_admin_files.sh copies them again)
+        admin_folders = ["/home/admin/.lnd/data/chain/bitcoin/{}".format(network)]
+        admin_folders += ["/home/admin/.{}/{}".format(app, network) for app in ["loop", "pool"]]
+        for folder in admin_folders:
+            if os.path.isdir(folder) and not os.path.islink(folder):
+                subprocess.run(["find", folder, "-maxdepth", "1", "-name", "*.macaroon", "-delete"])
     return True
 
 #==================================
@@ -1388,7 +1790,8 @@ def stop_electrs():
     os.system("systemctl stop electrs")
 
 def restart_electrs_actual():
-    os.system("systemctl restart electrs")
+    if is_service_enabled("electrs", force_refresh=True):
+        os.system("systemctl restart electrs")
 
 def restart_electrs():
     t = Timer(0.1, restart_electrs_actual)
@@ -1402,6 +1805,8 @@ def delete_electrs_data():
 def reset_electrs():
     stop_electrs()
     delete_electrs_data()
+    # After the delete - the update thread can re-mark electrs up to date while it runs
+    clear_electrs_info()
     restart_electrs()
 
 def get_electrs_index_lookup_limit():
@@ -1417,14 +1822,16 @@ def set_electrs_index_lookup_limit(limit):
 #==================================
 def reset_rtl_config():
     os.system("rm -rf /mnt/hdd/mynode/rtl/RTL-Config.json")
-    os.system("systemctl restart rtl")
+    if is_service_enabled("rtl", force_refresh=True):
+        os.system("systemctl restart rtl")
 
 #==================================
 # Thunderhub Functions
 #==================================
 def reset_thunderhub_config():
     os.system("rm -rf /mnt/hdd/mynode/thunderhub/thub_config.yaml")
-    os.system("systemctl restart thunderhub")
+    if is_service_enabled("thunderhub", force_refresh=True):
+        os.system("systemctl restart thunderhub")
 
 #==================================
 # Sphinx Relay Server Functions
@@ -1433,7 +1840,8 @@ def stop_sphinxrelay():
     os.system("systemctl stop sphinxrelay")
 
 def restart_sphinxrelay_actual():
-    os.system("systemctl restart sphinxrelay")
+    if is_service_enabled("sphinxrelay", force_refresh=True):
+        os.system("systemctl restart sphinxrelay")
 
 def restart_sphinxrelay():
     t = Timer(0.1, restart_sphinxrelay_actual)
@@ -1452,10 +1860,12 @@ def reset_sphinxrelay():
 # Mempool Functions
 #==================================
 def clear_mempool_cache():
+    os.system("systemctl stop mempool")
     os.system("rm -rf /mnt/hdd/mynode/mempool/data/*")
     os.system("rm -rf /mnt/hdd/mynode/mempool/mysql/data/*")
     os.system("sync")
-    os.system("systemctl restart mempool")
+    if is_service_enabled("mempool", force_refresh=True):
+        os.system("systemctl restart mempool")
 
 #==================================
 # LNbits Functions
@@ -1539,7 +1949,7 @@ def reset_lnbits_super_user_pwd():
     """
     try:
         super_user_id, super_user_username = fetch_super_user_info()
-        print(f"LNbits super_user password reset")
+        print("LNbits super_user password reset")
         print(f"super_user ID: {super_user_id}")
         print(f"super_user username: {super_user_username}")
 
@@ -1620,7 +2030,8 @@ def change_btcpay_password(email=None):
 #==================================
 def reset_specter_config():
     os.system("rm -rf /mnt/hdd/mynode/specter/config.json")
-    os.system("systemctl restart specter")
+    if is_service_enabled("specter", force_refresh=True):
+        os.system("systemctl restart specter")
 
 #==================================
 # BTC RPC Explorer Functions
@@ -1877,6 +2288,8 @@ def custom_settings_file_handler(name, enabled):
             os.system("sync")
     elif name == "tor_remote_access_disabled":
         apply_tor_remote_access_setting()
+    elif name == "unattended_upgrades_disabled":
+        os.system("/usr/bin/mynode_unattended_upgrades.sh")
     else:
         log_message("No custom setting handler for: "+name)
 #==================================

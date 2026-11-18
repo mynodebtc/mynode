@@ -24,4 +24,13 @@ if [ -f /mnt/hdd/mynode/sphinxrelay/app.json ]; then
     sed -i "s|\"macaroon_location\": \"/home/bitcoin/.lnd/data/chain/bitcoin/mainnet/admin.macaroon\"|\"macaroon_location\": \"$SPHINXRELAY_MACAROON\"|g" /mnt/hdd/mynode/sphinxrelay/app.json
 fi
 
+# Listen on 127.0.0.1 only; nginx serves 53001. The relay has no setting for this.
+SPHINXRELAY_APP=/opt/mynode/sphinxrelay/dist/app.js
+if [ -f $SPHINXRELAY_APP ]; then
+    sed -i "s/server.listen(port, (err) =>/server.listen(port, '127.0.0.1', (err) =>/" $SPHINXRELAY_APP
+    if ! grep -q "server.listen(port, '127.0.0.1'," $SPHINXRELAY_APP; then
+        echo "WARNING: Unable to limit Sphinx Relay to 127.0.0.1"
+    fi
+fi
+
 exit 0

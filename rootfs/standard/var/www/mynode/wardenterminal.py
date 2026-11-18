@@ -5,7 +5,6 @@ from systemctl_info import *
 import os
 import time
 import subprocess
-import os
 
 mynode_wardenterminal = Blueprint('mynode_wardenterminal',__name__)
 

@@ -5,7 +5,7 @@
 
         <script src="{{ url_for('static', filename='js/manage_apps.js')}}"></script>
 
-        <script>
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
             $(document).ready(function() {
                 $(".marketplace_app_tile").on("click", function() {
                     shortname = $(this).data("shortname");

@@ -3,12 +3,23 @@
         <title>{{ title }}</title>
         {% include 'includes/head.html' %}
 
-        <script>
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
+            $(document).on("click", "[data-customize-action]", function() {
+                var short_name = $(this).attr("data-short-name");
+                switch ($(this).attr("data-customize-action")) {
+                    case "show":  show_customize_fields(short_name); break;
+                    case "hide":  hide_customize_fields(short_name); break;
+                    case "save":  save_customize_fields(short_name); break;
+                    case "clear": clear_customize_fields(short_name); break;
+                }
+            });
+
             function show_customize_fields(short_name) {
                 $("#customize_"+short_name).hide();
                 $("#custom_save_"+short_name).show();
                 $("#custom_hide_"+short_name).show();
                 $("#custom_input_"+short_name).show();
+                $("#custom_password_"+short_name).show();
             }
 
             function hide_customize_fields(short_name) {
@@ -16,6 +27,7 @@
                 $("#custom_save_"+short_name).hide();
                 $("#custom_hide_"+short_name).hide();
                 $("#custom_input_"+short_name).hide();
+                $("#custom_password_"+short_name).hide();
             }
 
             function save_customize_fields(short_name) {
@@ -26,18 +38,6 @@
                 $("#custom_clear_form_"+short_name).submit();
             }
 
-            $(document).ready(function() {
-                $("#show_config_button").on("click", function() {
-                    visible = $("#default_version_config").is(':visible');
-                    if (visible) {
-                        $("#show_config_button").html("Show Default Version Config");
-                        $("#default_version_config").hide();
-                    } else {
-                        $("#show_config_button").html("Hide Default Version Config");
-                        $("#default_version_config").show();
-                    }
-                });
-            });
         </script>
      </head>
 
@@ -94,16 +94,17 @@
                                         <img style="display: inline; vertical-align: middle; width: 24px; padding-bottom: 2px;" src="{{ url_for('static', filename="images/pin.png")}}"/>
                                         <span style="vertical-align: middle;">{{app.latest_version}}</span>
                                         <!--<input id="custom_input_{{app.short_name}}" name="version" type="text" class="text ui-widget-content ui-corner-all ui-state-disabled" style="width: 80px;" value="{{app.latest_version}}"/>-->
-                                        <button id="custom_clear_{{app.short_name}}" type="button" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70px; margin-left: 15px;" onclick="clear_customize_fields('{{ app.short_name }}');">Clear</button>
+                                        <button id="custom_clear_{{app.short_name}}" type="button" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70px; margin-left: 15px;" data-customize-action="clear" data-short-name="{{ app.short_name }}">Clear</button>
                                     </form>
                                 {% else %}
-                                    <button id="customize_{{app.short_name}}" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" onclick="show_customize_fields('{{ app.short_name }}');">Customize</button>
+                                    <button id="customize_{{app.short_name}}" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 100px;" data-customize-action="show" data-short-name="{{ app.short_name }}">Customize</button>
 
                                     <form id="custom_form_{{app.short_name}}" action="/apps/save-app-version" method="POST" style="margin: 0px;">
                                         <input type="hidden" name="app" value="{{app.short_name}}">
                                         <input id="custom_input_{{app.short_name}}" name="version" type="text" class="text ui-widget-content ui-corner-all" style="width: 80px; vertical-align: middle; display: none;"/>
-                                        <button id="custom_save_{{app.short_name}}" type="button" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70px; display: none;" onclick="save_customize_fields('{{ app.short_name }}');">Save</button>
-                                        <button id="custom_hide_{{app.short_name}}" type="button" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70px; display: none;" onclick="hide_customize_fields('{{ app.short_name }}');">Cancel</button>
+                                        <input id="custom_password_{{app.short_name}}" name="password" type="password" placeholder="Password" class="text ui-widget-content ui-corner-all" style="width: 80px; vertical-align: middle; display: none;"/>
+                                        <button id="custom_save_{{app.short_name}}" type="button" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70px; display: none;" data-customize-action="save" data-short-name="{{ app.short_name }}">Save</button>
+                                        <button id="custom_hide_{{app.short_name}}" type="button" class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 70px; display: none;" data-customize-action="hide" data-short-name="{{ app.short_name }}">Cancel</button>
                                     </form>
                                 {% endif %}
                             </td>
@@ -115,34 +116,25 @@
         <br/><br/>
 
 
+        {% if has_customized_app_versions %}
         <div class="main_header">Legacy Custom Application Versions</div>
         <br/>
 
         <div class="text_block">
-            <b>Caution:</b> Errors in this file may prevent MyNode from booting properly.
-
-            To see the available variables, use the format from the included default MyNode version configuration.
-            <br/><br/>
-
-            <button id="show_config_button" class="ui-button ui-widget ui-corner-all mynode_button_small">Show Default Version Config</button>
-            <div id="default_version_config" style="display: none;"><pre>{{app_version_data}}</pre></div>
-            <br/>
-            {% if has_customized_app_versions %}
-            <br/>
-            <div class="settings_block_subheader_status_icon yellow"></div>
-            <i>You currently have saved data in a custom versions file.</i>
-            <div class="settings_block_subheader_status_icon yellow"></div>
-            {% endif %}
+            This device has a custom versions file from an older version of MyNode. It can no longer be
+            edited. Lines that set an app version (NAME="version") still apply. Clear it to use the
+            versions above instead.
         </div>
 
         <div class="centered_text_div">
+            <pre class="config_textarea" style="text-align: left; height: auto;">{{ custom_app_version_data }}</pre>
+            <br/>
             <form action="/apps/customize-app-versions" method="POST">
-                <textarea class="config_textarea" style="height: 100px;" name="app_data" id="app_data">{{ custom_app_version_data }}</textarea>
-                <br/><br/>
-                <input class="ui-button ui-widget ui-corner-all" type="submit" value="Save"/>
-                <a href="/apps/customize-app-versions?reset=1" class="ui-button ui-widget ui-corner-all">Reset Customization</a>
+                <input type="hidden" name="reset" value="1">
+                <input class="ui-button ui-widget ui-corner-all" type="submit" value="Clear Legacy Versions"/>
             </form>
         </div>
+        {% endif %}
 
         {% endif %}
 

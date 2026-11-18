@@ -43,3 +43,9 @@ elif grep -q "^joinmarket ALL=(ALL) NOPASSWD:ALL$" /etc/sudoers; then
     rm -f $SUDOERS_TMP
 fi
 passwd -l root
+
+# SSH password check (only once the script is installed)
+PAM_LINE="auth requisite pam_exec.so quiet expose_authtok /usr/bin/mynode_ssh_check_password.sh"
+if [ -x /usr/bin/mynode_ssh_check_password.sh ] && ! grep -qF "$PAM_LINE" /etc/pam.d/sshd; then
+    sed -i "0,/^@include common-auth/s||$PAM_LINE\n@include common-auth|" /etc/pam.d/sshd
+fi

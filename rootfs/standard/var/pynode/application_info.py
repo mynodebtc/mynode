@@ -66,6 +66,12 @@ def uninstall_app(app):
     # Sync
     os.system("sync")
 
+    # Close the app's ports to the internet
+    try:
+        open_application_ports()
+    except Exception as e:
+        log_message("ERROR: Updating firewall after uninstalling {} failed - {}".format(app, str(e)))
+
 # For Dynamic Apps (legacy apps use uninstall_app)
 def remove_app(app):
     # Remove install markers
@@ -101,7 +107,7 @@ def mark_app_installed(short_name):
     elif os.path.isfile(latest_version_2):
         touch(install_marker_2)
     else:
-        # App maybe dyanmic app (no version latest file) so mark sd card
+        # App maybe dynamic app (no version latest file) so mark sd card
         touch(install_marker_1)
 
 def clear_app_installed(short_name):
@@ -221,6 +227,9 @@ def initialize_application_defaults(app):
     if not "screenshots" in app: app["screenshots"] = get_app_screenshots( app["short_name"] )
     if not "app_tile_name" in app: app["app_tile_name"] = app["name"]
     if not "linux_user" in app: app["linux_user"] = "bitcoin"
+    if not is_safe_name(app["linux_user"]):
+        log_message("App {} has an unusable linux_user, using bitcoin".format(app["short_name"]))
+        app["linux_user"] = "bitcoin"
     if not "supported_archs" in app: app["supported_archs"] = None 
     if not "minimum_debian_version" in app: app["minimum_debian_version"] = 10
     if not "installed_app_dependencies" in app: app["installed_app_dependencies"] = []    # Prevents installation unless these apps are installed
@@ -282,6 +291,7 @@ def initialize_application_defaults(app):
     if not "app_tile_running_status_text" in app: app["app_tile_running_status_text"] = app["short_description"]
     if not "app_tile_button_href" in app: app["app_tile_button_href"] = "#"
     if not "app_tile_button_open_app_directly" in app: app["app_tile_button_open_app_directly"] = False
+    if not "app_tile_button_always_shown" in app: app["app_tile_button_always_shown"] = False
     if not "app_page_show_open_button" in app: app["app_page_show_open_button"] = True
     if not "app_page_additional_buttons" in app: app["app_page_additional_buttons"] = []
     if not "app_page_content" in app: app["app_page_content"] = []
@@ -405,7 +415,8 @@ def need_application_refresh():
 ######################################################################################
 ## Get Applications and App Info
 ######################################################################################
-def get_all_applications(order_by="none", include_status=False):
+# The shared list, not a copy - callers must not change it. Use get_all_applications for a copy.
+def get_applications_list(include_status=False):
     global mynode_applications
 
     if need_application_refresh():
@@ -417,7 +428,10 @@ def get_all_applications(order_by="none", include_status=False):
     if include_status:
         update_applications(include_status)
 
-    apps = copy.deepcopy(mynode_applications)
+    return mynode_applications
+
+def get_all_applications(order_by="none", include_status=False):
+    apps = copy.deepcopy(get_applications_list(include_status))
     if order_by == "alphabetic":
         apps.sort(key=lambda x: x["name"])
     elif order_by == "homepage":
@@ -443,15 +457,13 @@ def get_all_applications_from_json_cache():
     return get_dictionary_file_cache(JSON_APPLICATION_CACHE_FILE)
 
 def get_application(short_name):
-    apps = get_all_applications()
-    for app in apps:
+    for app in get_applications_list():
         if app["short_name"] == short_name:
-            return app
+            return copy.deepcopy(app)
     return None
 
 def is_application_valid(short_name):
-    apps = get_all_applications()
-    for app in apps:
+    for app in get_applications_list():
         if app["short_name"] == short_name:
             return True
     return False
@@ -487,7 +499,7 @@ def get_application_log(short_name):
         elif short_name == "i2pd":
             return get_file_log("/var/log/i2pd/i2pd.log")
         elif short_name == "linux":
-            return run_linux_cmd("dmesg | tac | head -n 200")
+            return "\n".join(run_linux_cmd(["dmesg"]).splitlines()[::-1][:200])
         else:
             return "ERROR: App or log not found ({})".format(short_name)
 
@@ -722,25 +734,12 @@ def has_customized_app_versions():
         return True
     return False
 
-def get_app_version_data():
-    try:
-        contents = to_string(subprocess.check_output('cat /usr/share/mynode/mynode_app_versions.sh | grep -v "_VERSION_FILE=" | grep "="', shell=True))
-        return contents
-    except Exception as e:
-        return "ERROR"
-
 def get_custom_app_version_data():
     if os.path.isfile("/usr/share/mynode/mynode_app_versions_custom.sh"):
         return to_string( get_file_contents("/usr/share/mynode/mynode_app_versions_custom.sh") )
     if os.path.isfile("/mnt/hdd/mynode/settings/mynode_app_versions_custom.sh"):
         return to_string( get_file_contents("/mnt/hdd/mynode/settings/mynode_app_versions_custom.sh") )
     return ""
-
-def save_custom_app_version_data(data):
-    set_file_contents("/usr/share/mynode/mynode_app_versions_custom.sh", data)
-    set_file_contents("/mnt/hdd/mynode/settings/mynode_app_versions_custom.sh", data)
-    os.system("sync")
-    trigger_application_refresh()
 
 def reset_custom_app_version_data():
     os.system("rm -f /usr/share/mynode/mynode_app_versions_custom.sh")
@@ -808,8 +807,8 @@ def save_custom_app_version(short_name, version):
     trigger_application_refresh()
 
 def clear_custom_app_version(short_name):
-    os.system("rm -f /home/bitcoin/.mynode/"+short_name+"_version_latest_custom")
-    os.system("rm -f /mnt/hdd/mynode/settings/"+short_name+"_version_latest_custom")
+    delete_file("/home/bitcoin/.mynode/"+short_name+"_version_latest_custom")
+    delete_file("/mnt/hdd/mynode/settings/"+short_name+"_version_latest_custom")
     os.system("sync")
     trigger_application_refresh()
 
@@ -837,25 +836,25 @@ def create_application_install_folder(app_data):
     # Clear old data (not storage)
     if os.path.isdir(app_folder):
         log_message("  App folder exists, deleting...")
-        run_linux_cmd("rm -rf {}".format(app_folder))
+        run_linux_cmd(["rm", "-rf", app_folder])
 
     log_message("  Making application install folder...")
-    run_linux_cmd("mkdir {}".format(app_folder))
+    run_linux_cmd(["mkdir", app_folder])
 
     # Set folder permissions (always set for now - could check to see if already proper user)
     log_message("  Updating install folder permissions...")
-    run_linux_cmd("chown -R {}:{} {}".format(app_data["linux_user"], app_data["linux_user"], app_folder))
+    run_linux_cmd(["chown", "-R", "{}:{}".format(app_data["linux_user"], app_data["linux_user"]), app_folder])
 
 def create_application_storage_folder(app_data):
     log_message("  Running create_application_storage_folder...")
     data_folder = app_data["storage_folder"]
 
     log_message("  Making application storage_folder...")
-    run_linux_cmd("mkdir -p {}".format(data_folder))
+    run_linux_cmd(["mkdir", "-p", data_folder])
 
     # Set folder permissions (always set for now - could check to see if already proper user)
     log_message("  Updating storage folder permissions...")
-    run_linux_cmd("chown -R {}:{} {}".format(app_data["linux_user"], app_data["linux_user"], data_folder))
+    run_linux_cmd(["chown", "-R", "{}:{}".format(app_data["linux_user"], app_data["linux_user"]), data_folder])
 
 def create_application_folders(app_data):
     log_message("  Running create_application_folders...")
@@ -865,7 +864,7 @@ def create_application_folders(app_data):
 
 def create_application_tor_service(app_data):
     has_ports = False
-    run_linux_cmd("mkdir -p /etc/torrc.d")
+    run_linux_cmd(["mkdir", "-p", "/etc/torrc.d"])
     torrc_file = "/etc/torrc.d/"+app_data["short_name"]
     contents = "# Hidden Service for {}\n".format(app_data["short_name"])
     contents += "HiddenServiceDir /var/lib/tor/mynode_{}/\n".format(app_data["short_name"])
@@ -883,7 +882,7 @@ def create_application_tor_service(app_data):
     if has_ports:
         with open(torrc_file, "w") as f:
             f.write(contents)
-        run_linux_cmd("/usr/bin/mynode_gen_tor_config.sh {}".format(app_data["short_name"]))
+        run_linux_cmd(["/usr/bin/mynode_gen_tor_config.sh", app_data["short_name"]])
 
 # Check a downloaded source tarball against the app's pinned "<version> <sha256>" value
 # (download_source_sha256, see scripts/print_app_download_hashes.sh). Apps without a pin
@@ -919,13 +918,16 @@ def install_application_tarball(app_data):
 
     ignore_failure = True
 
-    # Make tmp download folder
-    run_linux_cmd("rm -rf /tmp/mynode_dynamic_app_download", ignore_failure)
-    run_linux_cmd("mkdir /tmp/mynode_dynamic_app_download")
-    run_linux_cmd("chmod -R 777 /tmp/mynode_dynamic_app_download")
-    run_linux_cmd("rm -rf /tmp/mynode_dynamic_app_extract", ignore_failure)
-    run_linux_cmd("mkdir /tmp/mynode_dynamic_app_extract")
-    run_linux_cmd("chmod -R 777 /tmp/mynode_dynamic_app_extract")
+    # Make tmp download folder, owned by the user that installs into it
+    linux_user = app_data["linux_user"]
+    run_linux_cmd(["rm", "-rf", "/tmp/mynode_dynamic_app_download"], ignore_failure)
+    run_linux_cmd(["mkdir", "/tmp/mynode_dynamic_app_download"])
+    run_linux_cmd_args(["chown", linux_user, "/tmp/mynode_dynamic_app_download"])
+    run_linux_cmd(["chmod", "-R", "700", "/tmp/mynode_dynamic_app_download"])
+    run_linux_cmd(["rm", "-rf", "/tmp/mynode_dynamic_app_extract"], ignore_failure)
+    run_linux_cmd(["mkdir", "/tmp/mynode_dynamic_app_extract"])
+    run_linux_cmd_args(["chown", linux_user, "/tmp/mynode_dynamic_app_extract"])
+    run_linux_cmd(["chmod", "-R", "700", "/tmp/mynode_dynamic_app_extract"])
 
     # Download and extract
     if not app_data["download_skip"]:
@@ -950,35 +952,40 @@ def install_application_tarball(app_data):
         else:
             log_message("  UNKNOWN download_type {}".format(app_data["download_type"]))
             raise ValueError("  UNKNOWN download_type {}".format(app_data["download_type"]))
-        run_linux_cmd("wget -O /tmp/mynode_dynamic_app_download/app.tar.gz {}".format(download_url))
+        if not is_safe_download_url(download_url):
+            log_message("  REFUSING DOWNLOAD URL: {}".format(download_url))
+            raise ValueError("  REFUSING DOWNLOAD URL: {}".format(download_url))
+        run_linux_cmd_args(["wget", "-O", "/tmp/mynode_dynamic_app_download/app.tar.gz", download_url])
 
         time.sleep(1)
-        run_linux_cmd("sync")
+        run_linux_cmd(["sync"])
         check_app_download_hash(app_data, "/tmp/mynode_dynamic_app_download/app.tar.gz")
-        run_linux_cmd("sudo -u {} tar -xvf /tmp/mynode_dynamic_app_download/app.tar.gz -C /tmp/mynode_dynamic_app_extract/".format(app_data["linux_user"]))
-        run_linux_cmd("mv /tmp/mynode_dynamic_app_extract/* /tmp/mynode_dynamic_app_extract/app")
+        run_linux_cmd(["sudo", "-u", app_data["linux_user"], "tar", "-xvf", "/tmp/mynode_dynamic_app_download/app.tar.gz", "-C", "/tmp/mynode_dynamic_app_extract/"])
+        run_linux_cmd(["mv"] + glob.glob("/tmp/mynode_dynamic_app_extract/*") + ["/tmp/mynode_dynamic_app_extract/app"])
 
         # Move tarball contents to app folder
-        run_linux_cmd("rsync -var --delete-after /tmp/mynode_dynamic_app_extract/app/ {}/".format(app_data["install_folder"]))
+        run_linux_cmd(["rsync", "-var", "--delete-after", "/tmp/mynode_dynamic_app_extract/app/", app_data["install_folder"] + "/"])
 
     # Move additional app data to app installation folder
     app_data_source = get_dynamic_app_dir() + "/" + app_data["short_name"] + "/app_data"
     app_data_dest = app_data["install_folder"] + "/app_data"
-    run_linux_cmd("rm -rf {}".format(app_data_dest))
+    run_linux_cmd(["rm", "-rf", app_data_dest])
     if os.path.isdir(app_data_source):
-        run_linux_cmd("cp -r -f {} {}".format(app_data_source, app_data_dest))
-        run_linux_cmd("chown -R {}:{} {}".format(app_data["linux_user"],app_data["linux_user"],app_data_dest))
+        run_linux_cmd(["cp", "-r", "-f", app_data_source, app_data_dest])
+        run_linux_cmd(["chown", "-R", "{}:{}".format(app_data["linux_user"], app_data["linux_user"]), app_data_dest])
 
 def clear_installed_version(short_name):
-    run_linux_cmd("rm -rf /home/bitcoin/.mynode/{}_version".format(short_name))
-    run_linux_cmd("rm -rf /mnt/hdd/mynode/settings/{}_version".format(short_name))
+    run_linux_cmd(["rm", "-rf", "/home/bitcoin/.mynode/{}_version".format(short_name)])
+    run_linux_cmd(["rm", "-rf", "/mnt/hdd/mynode/settings/{}_version".format(short_name)])
 
 def restart_application(short_name):
     try:
-        subprocess.check_output('systemctl restart {}'.format(short_name), shell=True)
+        subprocess.check_output(["systemctl", "restart", short_name])
         return True
     except Exception as e:
         return False
+    finally:
+        clear_service_status_cache()
 
 def backup_data_folder(app_data):
     log_message("  Running backup_data_folder...")
@@ -1007,7 +1014,7 @@ def reset_data_folder(short_name):
 
     # Remove App data_folder
     log_message(f"  Removing storage folder '{data_folder}'…")
-    run_linux_cmd(f"rm -rf {data_folder}")
+    run_linux_cmd(["rm", "-rf", data_folder])
 
     # Re-create the storage folder
     log_message(f"  Creating storage folder '{data_folder}'…")
@@ -1041,6 +1048,9 @@ def get_dynamic_app_names():
     app_names = []
     for app_folder_name in os.listdir( app_dir ):
         if os.path.isdir(app_dir + "/" +app_folder_name):
+            if not is_safe_name(app_folder_name):
+                log_message("Skipping app folder with unusable name: {}".format(app_folder_name))
+                continue
             app_names.append(app_folder_name)
     return app_names
 
@@ -1120,10 +1130,10 @@ def init_dynamic_app(app_info):
     app_data_source = app_dir + "/app_data"
     app_data_dest = app_info["install_folder"] + "/app_data"
     if os.path.isdir(app_data_dest):
-        run_linux_cmd("rm -rf {}".format(app_data_dest))
+        run_linux_cmd(["rm", "-rf", app_data_dest])
         if os.path.isdir(app_data_source):
-            run_linux_cmd("cp -r -f {} {}".format(app_data_source, app_data_dest))
-            run_linux_cmd("chown -R {}:{} {}".format(app_info["linux_user"],app_info["linux_user"],app_data_dest))
+            run_linux_cmd(["cp", "-r", "-f", app_data_source, app_data_dest])
+            run_linux_cmd(["chown", "-R", "{}:{}".format(app_info["linux_user"], app_info["linux_user"]), app_data_dest])
 
     # Setup tor hidden service
     create_application_tor_service(app_info)
@@ -1222,7 +1232,7 @@ def upgrade_dynamic_apps(short_name="all"):
                             if app_data["install_env_vars"]:
                                 for key in app_data["install_env_vars"]:
                                     my_env[key] = app_data["install_env_vars"][key]
-                            # Home dir needs to be set to user so it doesn't inhert root home (causes docker issues)
+                            # Home dir needs to be set to user so it doesn't inherit root home (causes docker issues)
                             subprocess.check_output("cd {}; sudo -u {} --preserve-env HOME=/home/{} /bin/bash /usr/bin/service_scripts/install_{}.sh 1>&2".format(app_data["install_folder"], app_data["linux_user"], app_data["linux_user"], app_name), shell=True, env=my_env)
 
                             # Mark update latest version if success
@@ -1284,11 +1294,15 @@ def uninstall_dynamic_app(short_name):
     # Delete install marker files
     clear_app_installed(short_name)
 
-    # Disable service 
+    # Delete version files, or installing this version again is skipped
+    delete_file("/home/bitcoin/.mynode/"+short_name+"_version")
+    delete_file("/mnt/hdd/mynode/settings/"+short_name+"_version")
+
+    # Disable service
     disable_service(short_name)
 
     # Delete SD card folder
-    run_linux_cmd("rm -rf {}".format(app_data["install_folder"]))
+    run_linux_cmd(["rm", "-rf", app_data["install_folder"]])
 
     # Clear app data, including in the web UI if this is running from another process
     clear_application_cache()

@@ -8,7 +8,7 @@ After=network.target
 ConditionPathExists=/usr/local/lib/mynode/venv/glances/bin/glances
 
 [Service]
-ExecStart=/usr/local/lib/mynode/venv/glances/bin/glances -w
+ExecStart=/usr/local/lib/mynode/venv/glances/bin/glances -w -B 127.0.0.1 -p 61210
 User=root
 Group=root
 TimeoutSec=120

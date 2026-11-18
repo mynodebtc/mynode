@@ -1,10 +1,9 @@
 from flask import Blueprint, render_template, request, jsonify
-from user_management import check_logged_in
+from user_management import check_logged_in, is_admin_password_valid, get_admin_password_error
 from application_info import get_application, get_application_status, get_application_status_color
 from device_info import read_ui_settings
 import os
 import stat
-import pam
 
 
 mynode_canary = Blueprint("mynode_canary", __name__)
@@ -58,8 +57,8 @@ def canary_password_page():
     check_logged_in()
 
     pw = request.form.get("password")
-    if pw == None or pam.pam().authenticate("admin", pw) == False:
-        return jsonify({"error": "Invalid Password"})
+    if not is_admin_password_valid(pw):
+        return jsonify({"error": get_admin_password_error()})
     password = get_canary_password()
     if password == "":
         return jsonify({"error": "Not available"})

@@ -28,7 +28,7 @@
     <p style="text-align: center;">This page was loaded over an unencrypted HTTP connection. Switch to HTTPS so web traffic to and from your node is encrypted.</p>
     <p style="text-align: center;">
         <a href="/https-info" style="margin: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Learn More</a>
-        <a href="#" onclick="location.href = 'https:' + window.location.href.substring(window.location.protocol.length); return false;" style="margin: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Use HTTPS</a>
+        <a href="#" data-use-https style="margin: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Use HTTPS</a>
         <a href="/clear-https-warning" style="margin: 5px;" class="ui-button ui-widget ui-corner-all settings_button_small">Dismiss</a>
     </p>
 </div>
@@ -121,10 +121,91 @@
     <p style="text-align: center;">Your device is running Debian {{debian_version}}.
         Bitcoin Core, NodeJS and numerous apps, including RTL, Thunderhub, Balance of Satoshis, JoinInBox, Specter, WeTTY, Public Pool, and more
         stay on older versions on Debian {{debian_version}} that do not receive fixes or security patches. The Debian {{debian_version}} Operating System itself also no longer receives regular security updates.</p>
+    {% if os_release_upgrade.available %}
+    <p style="text-align: center;"><b>Upgrade the OS to keep receiving updates.</b></p>
+    <p style="text-align: center;">This upgrades your device to Debian {{os_release_upgrade.next_version}} ({{os_release_upgrade.next_codename}})
+        and reinstalls your apps for it, without changing your data drive. This can take several hours. Your node is offline until it
+        finishes, and your device reboots when it is done.
+        {% if os_release_upgrade.next_version < 12 %}Afterwards, upgrade again to get to Debian 12.{% endif %}</p>
+    <p style="text-align: center;">
+        <button class="home_upgrade_os_release ui-button ui-widget ui-corner-all settings_button_small">Upgrade OS</button>
+    </p>
+    <p style="text-align: center;">You can also reflash your OS drive with the latest MyNode image. The new image can be downloaded
+        <a href="https://mynodebtc.com/download" target="_blank">here</a> and a guide is
+        <a href="https://docs.mynodebtc.com/advanced/flash-sd-card.html" target="_blank">available</a>.</p>
+    {% else %}
     <p style="text-align: center;"><b>Reflash your OS drive with the latest MyNode image to keep receiving updates.</b></p>
     <p style="text-align: center;">The new image can be downloaded <a href="https://mynodebtc.com/download" target="_blank">here</a> and a guide is
         <a href="https://docs.mynodebtc.com/advanced/flash-sd-card.html" target="_blank">available</a>.</p>
     <p style="text-align: center;"><b>You need to re-flash your OS drive as soon as possible.</b></p>
+    {% endif %}
+</div>
+{% endif %}
+
+{% if show_kernel_cve_warning %}
+<div class="main_page_error_block">
+    <p style="text-align: center; font-size: 16px;"><b>Your Linux kernel has a known security issue</b></p>
+    <p style="text-align: center;">Your device is running Linux {{kernel_version}}, which is affected by
+        <a href="https://security-tracker.debian.org/tracker/CVE-2026-98432" target="_blank">CVE-2026-98432</a>.{% if kernel_cve_fixed_version %} The issue is fixed in Linux {{kernel_cve_fixed_version}} and newer.{% endif %}</p>
+    {% if kernel_cve_mitigated_device %}
+    <p style="text-align: center;">MyNode has mitigations in place for this issue on Raspberry Pi 4 and 5.{% if debian_version >= 12 %} Watch for later updates that include a fixed kernel.{% endif %}</p>
+    {% endif %}
+    {% if debian_version < 12 %}
+    <p style="text-align: center;"><b>Debian {{debian_version}} no longer receives kernel updates. Reflash your OS drive with the latest MyNode image to get a supported kernel.</b></p>
+    <p style="text-align: center;">The new image can be downloaded <a href="https://mynodebtc.com/download" target="_blank">here</a> and a guide is
+        <a href="https://docs.mynodebtc.com/advanced/flash-sd-card.html" target="_blank">available</a>.</p>
+    {% else %}
+    <p style="text-align: center;"><b>Upgrade OS packages on the <a href="/settings#os_packages">Settings</a> page, then reboot your device.</b></p>
+    <p style="text-align: center;">If this message returns after rebooting, a fixed kernel is not available for your device yet. Try again later.</p>
+    {% endif %}
+    <p style="text-align: center;">
+        <a href="/clear-kernel-cve-warning" class="ui-button ui-widget ui-corner-all settings_button_small">OK</a>
+    </p>
+</div>
+{% endif %}
+
+{% if show_reboot_required_notice %}
+<div class="main_page_warning_block">
+    <p style="text-align: center;"><b>Reboot to Finish Updates</b></p>
+    <p style="text-align: center;">Operating system updates were installed that take effect after a reboot. Reboot your device from the <a href="/settings#device">Settings</a> page when convenient.</p>
+    <p style="text-align: center;">
+        <a href="/clear-reboot-required-notice" class="ui-button ui-widget ui-corner-all settings_button_small">OK</a>
+    </p>
+</div>
+{% endif %}
+
+{% if show_kernel_update_notice %}
+<div class="main_page_warning_block">
+    <p style="text-align: center;"><b>Linux Kernel Update Available</b></p>
+    <p style="text-align: center;">A newer Linux kernel is available for your device. Upgrade OS packages on the <a href="/settings#os_packages">Settings</a> page, then reboot your device.</p>
+    <p style="text-align: center;">
+        <a href="/clear-kernel-update-notice" class="ui-button ui-widget ui-corner-all settings_button_small">OK</a>
+    </p>
+</div>
+{% endif %}
+
+{% if node_version_warning %}
+<div class="main_page_error_block">
+    <p style="text-align: center; font-size: 16px;"><b>NodeJS is out of date</b></p>
+    {% if node_version_warning == "reflash" and os_release_upgrade.available %}
+    <p style="text-align: center;">Your device is running NodeJS {{node_version}}, which no longer receives fixes or security patches.
+        Apps that use NodeJS run on this version, and MyNode upgrades cannot install a newer one on Debian {{debian_version}}.</p>
+    <p style="text-align: center;"><b>Upgrade the OS to Debian {{os_release_upgrade.next_version}} to get a supported version of NodeJS.</b>
+        This can take several hours.</p>
+    <p style="text-align: center;">
+        <button class="home_upgrade_os_release ui-button ui-widget ui-corner-all settings_button_small">Upgrade OS</button>
+    </p>
+    {% elif node_version_warning == "reflash" %}
+    <p style="text-align: center;">Your device is running NodeJS {{node_version}}, which no longer receives fixes or security patches.
+        Apps that use NodeJS run on this version, and MyNode upgrades cannot install a newer one on this device.</p>
+    <p style="text-align: center;"><b>Reflash your OS drive with the latest MyNode image to get a supported version of NodeJS.</b></p>
+    <p style="text-align: center;">The new image can be downloaded <a href="https://mynodebtc.com/download" target="_blank">here</a> and a guide is
+        <a href="https://docs.mynodebtc.com/advanced/flash-sd-card.html" target="_blank">available</a>.</p>
+    {% else %}
+    <p style="text-align: center;">Your device is running NodeJS {{node_version}}, which has known security issues. Apps that use NodeJS run on this version.</p>
+    <p style="text-align: center;"><b>Upgrade MyNode on the <a href="/settings#mynode">Settings</a> page to install the latest version of NodeJS.</b></p>
+    <p style="text-align: center;">If MyNode is already up to date, reinstall NodeJS from the Reinstall Applications section of the Settings page.</p>
+    {% endif %}
 </div>
 {% endif %}
 
@@ -256,7 +337,7 @@
                     {% if device.state == "new" %}
                     <a href="/usb_extras/opendime_init?id={{device.id}}" class="ui-button ui-widget ui-corner-all settings_button_small">Initialize</a>
                     {% endif %}
-                    <a href="#" onclick="open_new_mynode_tab('{{device.port}}', 'http')" class="ui-button ui-widget ui-corner-all settings_button_small">Open</a>
+                    <a href="#" data-open-app data-http-port="{{device.port}}" data-https-port="{{device.https_port}}" data-tor-address="NA" class="ui-button ui-widget ui-corner-all settings_button_small">Open</a>
                 </p>
             </div>
         {% endif %}

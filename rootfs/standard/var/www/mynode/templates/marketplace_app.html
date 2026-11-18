@@ -30,7 +30,11 @@
         <link href="{{ url_for('static', filename='css/hes-gallery.min.css')}}" rel="stylesheet">
         <script src="{{ url_for('static', filename='js/hes-gallery.min.js')}}"></script>
 
-        <script>
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
+            // Styles come from static/css/hes-gallery.min.css, and the page calls init() itself
+            HesGallery.options.hostedStyles = false;
+            HesGallery.options.autoInit = false;
+
             $(document).ready(function() {
                 HesGallery.init({
                     disableScrolling: false,
@@ -86,22 +90,22 @@
                             <!-- On Marketplace, only show install / uninstall (app pages show others) -->
                             {% if not app.is_installed %}
                                 <!-- Install -->
-                                <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button install_button" onclick="install('{{ app.name }}', '{{ app.short_name }}');">Install</button>
+                                <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button install_button" data-app-action="install" data-name="{{ app.name }}" data-short-name="{{ app.short_name }}">Install</button>
 
                                 {% if app.is_manually_added %}
                                     <br/><br/>
-                                    <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button uninstall_button" onclick="remove_from_device('{{ app.name }}', '{{ app.short_name }}');">Remove from Device</button>
+                                    <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button uninstall_button" data-app-action="remove_from_device" data-name="{{ app.name }}" data-short-name="{{ app.short_name }}">Remove from Device</button>
                                 {% endif %}
                             {% else %}
                                 <!-- Upgrade / Re-install / Uninstall -->
                                 {% if app.current_version != app.latest_version %}
-                                    <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button install_button" onclick="upgrade('{{ app.name }}', '{{ app.short_name }}');">Upgrade</button>
+                                    <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button install_button" data-app-action="upgrade" data-name="{{ app.name }}" data-short-name="{{ app.short_name }}">Upgrade</button>
                                 {% endif %}
                                 {% if app.can_reinstall %}
-                                    <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button" onclick="reinstall('{{ app.name }}', '{{ app.short_name }}');">Reinstall</button>
+                                    <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button" data-app-action="reinstall" data-name="{{ app.name }}" data-short-name="{{ app.short_name }}">Reinstall</button>
                                 {% endif %}
                                 {% if app.can_uninstall %}
-                                    <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button uninstall_button" onclick="uninstall('{{ app.name }}', '{{ app.short_name }}', 'marketplace_app');">Uninstall</button>
+                                    <button class="ui-button ui-widget ui-corner-all mynode_button marketplace_app_page_button uninstall_button" data-app-action="uninstall" data-name="{{ app.name }}" data-short-name="{{ app.short_name }}" data-return-page="marketplace_app">Uninstall</button>
                                 {% endif %}
                             {% endif %}
                         {% else %}

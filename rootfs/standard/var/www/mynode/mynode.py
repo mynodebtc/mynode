@@ -1,7 +1,9 @@
 
+import secrets
 import urllib.parse
 from config import *
-from flask import Flask, render_template, Markup, redirect, request, url_for, flash
+from flask import Flask, render_template, Markup, redirect, request, url_for, flash, session, g, has_request_context
+from flask.sessions import SecureCookieSessionInterface
 from user_management import *
 from api import mynode_api
 from bitcoin import mynode_bitcoin
@@ -36,13 +38,16 @@ from device_info import *
 from auto_upgrade import *
 from drive_info import *
 from device_warnings import *
+from health_info import get_health_checks, get_health_summary, HEALTH_CHECKS_HOME_MAX_AGE
 from systemctl_info import *
+from os_upgrade import get_os_release_upgrade_info
 from application_info import *
 from price_info import *
 from utilities import *
 import importlib
 import pam
 import re
+import glob
 import json
 import random
 import logging
@@ -54,17 +59,104 @@ import subprocess
 import os.path
 import psutil
 import time
+import socket
 
 # Proxy class to redirect to HTTP or HTTPS depending on connection
 class ReverseProxied(object):
+    TRUSTED_PROXY_IPS = ["127.0.0.1", "::1"]
+
     def __init__(self, app):
         self.app = app
 
     def __call__(self, environ, start_response):
         scheme = environ.get('HTTP_X_FORWARDED_PROTO')
-        if scheme:
+        if scheme and environ.get('REMOTE_ADDR') in self.TRUSTED_PROXY_IPS:
             environ['wsgi.url_scheme'] = scheme
         return self.app(environ, start_response)
+
+
+# The session cookie is named for the kind of connection it was issued on: an encrypted one gets a
+# Secure cookie under its own name, a plain one keeps the original name. Browsers do not let an
+# http:// response replace a cookie held with Secure, so a single shared name would strand a browser
+# that moves between the two. Both are decided when the cookie is read and written, so they follow
+# the connection rather than any setting.
+SESSION_COOKIE_NAME = "mynode_session_id"
+SESSION_COOKIE_NAME_ENCRYPTED = "__Secure-" + SESSION_COOKIE_NAME
+SESSION_COOKIE_NAMES = [SESSION_COOKIE_NAME, SESSION_COOKIE_NAME_ENCRYPTED]
+
+def is_onion_request():
+    return has_request_context() and get_request_hostname().endswith(".onion")
+
+def is_encrypted_request():
+    if not has_request_context():
+        return False
+    # The shared proxy params always say https, so the locations that need the scheme the client
+    # really used pass it separately
+    scheme = request.headers.get("X-MyNode-Client-Scheme", "") or request.scheme
+    if scheme != "https":
+        return False
+    # Onion addresses bring their own encryption and are reached over http://, so a Secure cookie
+    # there would only keep the browser from storing it. nginx claims https for an app's onion.
+    return not is_onion_request()
+
+def is_plaintext_request():
+    # Neither TLS nor an onion, so anything sent on it is readable on the way
+    return has_request_context() and not is_encrypted_request() and not is_onion_request()
+
+def get_session_cookie_domain():
+    # Older Flask stores False here once it has worked out there is no domain to set, and a
+    # cookie cannot be written with that. Either way it means the host the browser asked for.
+    return app.config["SESSION_COOKIE_DOMAIN"] or None
+
+def is_insecure_request():
+    # Readable on the way AND sent across the network: the desktop on the node itself, and a
+    # tunnel ending on it, both arrive from this device and have nothing in between to listen in
+    return is_plaintext_request() and not is_local_client()
+
+
+class MyNodeSessionInterface(SecureCookieSessionInterface):
+    def get_cookie_name(self, app):
+        if is_encrypted_request():
+            return SESSION_COOKIE_NAME_ENCRYPTED
+        return SESSION_COOKIE_NAME
+
+    def get_cookie_secure(self, app):
+        return is_encrypted_request()
+
+    def open_session(self, app, request):
+        session = super().open_session(app, request)
+        if session is None or session:
+            return session
+        # Nothing stored under this name. An encrypted connection takes over a session held under
+        # the plain name, so an upgrade keeps the owner signed in. A browser only offers the plain
+        # name here when it arrives on its own, such as a typed address or a bookmark: a link or a
+        # redirect from the plain port counts as a different site to it, and the cookie stays home.
+        if not is_encrypted_request():
+            return session
+        value = request.cookies.get(SESSION_COOKIE_NAME)
+        if not value:
+            return session
+        try:
+            data = self.get_signing_serializer(app).loads(
+                value, max_age=int(app.permanent_session_lifetime.total_seconds()))
+        except Exception:
+            return session
+        session = self.session_class(data)
+        session.modified = True
+        return session
+
+    def save_session(self, app, session, response):
+        super().save_session(app, session, response)
+        # While HTTPS is forced the plain name is not used, so take it back from the browser. Only an
+        # encrypted response can, and the browser is on its way to one whenever it has this cookie.
+        if (is_https_forced()
+                and is_encrypted_request()
+                and request.cookies.get(SESSION_COOKIE_NAME)):
+            response.delete_cookie(SESSION_COOKIE_NAME,
+                                   path=app.config["SESSION_COOKIE_PATH"] or "/",
+                                   domain=get_session_cookie_domain(),
+                                   httponly=True,
+                                   samesite=app.config["SESSION_COOKIE_SAMESITE"])
 
 
 app = Flask(__name__)
@@ -73,8 +165,9 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024     # 32 MB upload file max
 app.config['UPLOAD_FOLDER'] = "/tmp/flask_uploads"
 app.config['SESSION_PERMANENT'] = True
-app.config["SESSION_COOKIE_NAME"] = "mynode_session_id"
+app.config["SESSION_COOKIE_NAME"] = SESSION_COOKIE_NAME
 app.config["SESSION_COOKIE_SAMESITE"] = "Strict"
+app.session_interface = MyNodeSessionInterface()
 app.secret_key = get_flask_secret_key()
 timeout_days, timeout_hours = get_flask_session_timeout()
 app.permanent_session_lifetime = timedelta(days=timeout_days, hours=timeout_hours)
@@ -228,14 +321,115 @@ def get_active_notifications():
     return active_notifications
 
 
+### Request Host Check
+def get_request_hostname():
+    host = request.host.lower()
+    if host.startswith("["):
+        host = host[1:].split("]")[0]
+    else:
+        host = host.split(":")[0]
+    return host.rstrip(".")
+
+@app.before_request
+def check_request_host():
+    hostname = get_request_hostname()
+    if not is_allowed_host(hostname):
+        app.logger.warning("Blocked request for unknown host {}".format(hostname))
+        return "Unknown host name. Open MyNode using its IP address, then add this name in Settings under Networking, Allowed Host Names.", 421
+
+
+### Force HTTPS
+# Registered before the other request checks, so no page - including the login and
+# password pages - is ever served over HTTP while HTTPS is forced
+HTTPS_AVAILABLE_CACHE_SECONDS = 5
+https_available_cache = {"time": 0, "available": False}
+
+def is_https_available():
+    # nginx serves HTTPS on 443 and proxies to this server
+    now = time.time()
+    if now - https_available_cache["time"] > HTTPS_AVAILABLE_CACHE_SECONDS:
+        available = False
+        try:
+            with socket.create_connection(("127.0.0.1", 443), timeout=0.5):
+                available = True
+        except OSError:
+            pass
+        https_available_cache["available"] = available
+        https_available_cache["time"] = now
+    return https_available_cache["available"]
+
+HTTPS_WAIT_STATE_TEXT = {
+    STATE_DRIVE_MISSING: "Looking for drive...",
+    STATE_DRIVE_CONFIRM_FORMAT: "Drive needs to be formatted",
+    STATE_DRIVE_FORMATTING: "Formatting drive...",
+    STATE_DRIVE_MOUNTED: "Starting...",
+    STATE_DRIVE_CLONE: "Clone tool is running",
+    STATE_DRIVE_FULL: "Drive is full",
+    STATE_CHOOSE_NETWORK: "Waiting to choose network",
+    STATE_ROOTFS_READ_ONLY: "SD card is read only",
+    STATE_HDD_READ_ONLY: "Drive is read only",
+    STATE_SHUTTING_DOWN: "Shutting down...",
+    STATE_UPGRADING: "Upgrading...",
+    STATE_STABLE: "Running",
+}
+
+# Reachable over plain HTTP while HTTPS is forced: the two pages that explain how to reach the node
+# over HTTPS, and the files they are drawn with. Those files are the interface's own stylesheets and
+# images, and a browser that has not trusted the certificate yet cannot fetch them over HTTPS - the
+# pages would arrive as unstyled text, which is no way to meet someone's first connection.
+HTTPS_FORCED_ALLOWED_ENDPOINTS = [
+    "static",
+    "page_https_info",
+    "page_https_is_forced",
+]
+
+def wants_html_page():
+    # A page someone navigated to, rather than a file that page asks for or a program's request
+    return "text/html" in request.headers.get("Accept", "")
+
+@app.before_request
+def force_https():
+    if not is_https_forced():
+        return None
+    if not request.url.startswith('http://'):
+        return None
+    if request.endpoint in HTTPS_FORCED_ALLOWED_ENDPOINTS:
+        return None
+
+    if is_https_available():
+        # A browser is sent to the page that says why the link did not work. Going straight to the
+        # address in HTTPS instead leaves a first-time visitor looking at the certificate warning
+        # with nothing explaining it. Anything that is not a page still moves to HTTPS, and so does
+        # an onion address - that connection is encrypted, the certificate covers the .onion name,
+        # and its reader has no plain link to be told about.
+        if wants_html_page() and not is_onion_request():
+            return redirect("/https-is-forced", code=302)
+        url = request.url.replace('http://', 'https://', 1)
+        app.logger.info("Redirecting to HTTPS ({})".format(url))
+        return redirect(url, code=302)
+
+    # HTTPS is not up yet, which is normal early in boot. Show only the device status,
+    # and keep reloading this same address so it moves to HTTPS once available.
+    templateData = {
+        "title": "Waiting for HTTPS",
+        "status_text": HTTPS_WAIT_STATE_TEXT.get(get_mynode_status(), "Starting..."),
+        "ssh_host": get_request_hostname(),
+        "refresh_rate": 10,
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('https_wait.html', **templateData), 503
+
+
 ### Force Default Password Change
 # Endpoints that stay reachable while the device is still using the default
 # password. Everything else redirects to the change password page.
 DEFAULT_PASSWORD_ALLOWED_ENDPOINTS = [
     "static",
     "page_login",
+    "page_app_login",
     "page_logout",
     "page_https_info",
+    "page_https_is_forced",
 ]
 
 # Created by startup after its first USB driver check, which can reboot the device
@@ -302,6 +496,13 @@ def page_change_default_password():
     if not set_admin_password(p1):
         flash("Error setting password - password was not changed", category="error")
         return redirect("/change-default-password")
+
+    # Existing sessions are signed with the old key, so they stop being valid.
+    # Re-establish this one so the person changing the password stays signed in.
+    app.secret_key = rotate_flask_secret_key()
+    session.clear()
+    session["logged_in"] = True
+    session.permanent = True
 
     flash("Password Updated!", category="message")
     return redirect("/")
@@ -413,16 +614,16 @@ def index():
         }
         return render_template('reboot.html', **templateData)
     elif status == STATE_DRIVE_FULL:
-        message  = "Your drive is full!<br/><br/>"
-        message += "<p style='font-size: 16px; width: 800px; margin: auto;'>"
-        message += "To prevent corrupting any data, your device has stopped running most apps until more free space is available. "
-        message += "Please free up some space or attach a larger drive.<br/><br/>"
-        message += "To move to larger drive, try the <a href='/settings#clone_tool'>Clone Tool</a>."
-        message += "</p>"
+        message = Markup("Your drive is full!<br/><br/>"
+                         "<p style='font-size: 16px; width: 800px; margin: auto;'>"
+                         "To prevent corrupting any data, your device has stopped running most apps until more free space is available. "
+                         "Please free up some space or attach a larger drive.<br/><br/>"
+                         "To move to larger drive, try the <a href='/settings#clone_tool'>Clone Tool</a>."
+                         "</p>")
         templateData = {
             "title": "Drive Full",
             "header_text": "Drive Full",
-            "subheader_text": Markup(message),
+            "subheader_text": message,
             "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
@@ -448,17 +649,14 @@ def index():
 
             # Show Error
             error = get_clone_error()
-            msg  = ""
-            msg += "Clone Error<br/></br>"
-            msg += error
-            msg += "<br/><br/><br/>"
-            msg += "<a class='ui-button ui-widget ui-corner-all mynode_button_small' style='width: 120px;' href='/?clone_clear_error=1'>Try Again</a>"
-            msg += "<br/><br/>"
-            msg += "<a class='ui-button ui-widget ui-corner-all mynode_button_small' style='width: 120px;' href='/settings/reboot-device'>Exit Clone Tool</a>"
+            msg = Markup("Clone Error<br/><br/>{}<br/><br/><br/>"
+                         "<a class='ui-button ui-widget ui-corner-all mynode_button_small' style='width: 120px;' href='/?clone_clear_error=1'>Try Again</a>"
+                         "<br/><br/>"
+                         "<a class='ui-button ui-widget ui-corner-all mynode_button_small' style='width: 120px;' href='/settings/reboot-device'>Exit Clone Tool</a>").format(error)
             templateData = {
                 "title": "Clone Tool",
                 "header_text": "Cloning Tool",
-                "subheader_text": Markup(msg),
+                "subheader_text": msg,
                 "ui_settings": read_ui_settings(),
                 "refresh_rate": 10
             }
@@ -493,7 +691,7 @@ def index():
             templateData = {
                 "title": "Clone Tool",
                 "header_text": "Cloning Tool",
-                "subheader_text": Markup("Cloning...<br/><br/>" + progress),
+                "subheader_text": Markup("Cloning...<br/><br/>") + Markup("<br/>").join(progress.split("\n")),
                 "ui_settings": read_ui_settings(),
                 "refresh_rate": 5
             }
@@ -514,14 +712,6 @@ def index():
                 "ui_settings": read_ui_settings()
             }
             return render_template('state.html', **templateData)
-    elif status == STATE_GEN_DHPARAM:
-        templateData = {
-            "title": "Generating Data",
-            "header_text": "Generating Data",
-            "subheader_text": "This may take 15-20 minutes...",
-            "ui_settings": read_ui_settings()
-        }
-        return render_template('state.html', **templateData)
     elif not has_product_key() and not skipped_product_key():
         # Show product key page if key not set
         return redirect("/product-key")
@@ -550,25 +740,14 @@ def index():
             error_message = ""
             if bitcoin_status_code != 0 and uptime_in_seconds > 600:
                 error_message = "Bitcoin has experienced an error. Please check the Bitcoin log on the status page."
-            message = "<div class='small_message'>{}</<div>".format( get_message(include_funny=True) )
             templateData = {
                 "title": "Starting",
                 "header_text": "Starting...",
-                "subheader_text": Markup("Launching MyNode Services{}".format(message)),
-                "error_message": Markup(error_message + "<br/><br/>"),
+                "subheader_text": Markup("Launching MyNode Services<div class='small_message'>{}</div>").format(get_message(include_funny=True)),
+                "error_message": Markup("{}<br/><br/>").format(error_message),
                 "ui_settings": read_ui_settings()
             }
             return render_template('state.html', **templateData)
-
-        # if is_installing_docker_images():
-        #     message = "<div class='small_message'>{}</<div>".format( get_message(include_funny=True) )
-        #     templateData = {
-        #         "title": "Status",
-        #         "header_text": "Starting...",
-        #         "subheader_text": Markup("Building Docker Images...{}".format(message)),
-        #         "ui_settings": read_ui_settings()
-        #     }
-        #     return render_template('state.html', **templateData)
 
         # Display sync info if not synced
         if not is_bitcoin_synced():
@@ -623,14 +802,14 @@ def index():
             "config": CONFIG,
             "apps": get_all_applications(order_by="homepage"),
             "bitcoin_status_color": bitcoin_status_color,
-            "bitcoin_status": Markup(bitcoin_status),
+            "bitcoin_status": bitcoin_status,
             "current_block": current_block,
             "bitcoin_peer_count": get_bitcoin_peer_count(),
             "bitcoin_difficulty": get_bitcoin_difficulty(),
             "bitcoin_mempool_size": get_bitcoin_mempool_info()["display_bytes"],
             "bitcoin_version": get_bitcoin_version(),
             "lnd_status_color": lnd_status_color,
-            "lnd_status": Markup(lnd_status),
+            "lnd_status": lnd_status,
             "lnd_ready": lnd_ready,
             "lnd_peer_count": get_lightning_peer_count(),
             "lnd_channel_count": get_lightning_channel_count(),
@@ -669,8 +848,17 @@ def index():
             "show_32_bit_warning": show_32_bit_warning(),
             "show_old_debian_warning": show_old_debian_warning(),
             "debian_version": get_debian_version(),
+            "os_release_upgrade": get_os_release_upgrade_info(),
             "show_old_tor_warning": show_old_tor_warning(),
             "tor_version": get_tor_version(),
+            "show_kernel_cve_warning": show_kernel_cve_warning(),
+            "kernel_version": get_kernel_version_string(),
+            "kernel_cve_fixed_version": get_cve_2026_98432_fixed_kernel_version(),
+            "kernel_cve_mitigated_device": is_kernel_cve_mitigated_device(),
+            "show_reboot_required_notice": show_reboot_required_notice(),
+            "show_kernel_update_notice": show_kernel_update_notice(),
+            "node_version_warning": get_node_version_warning(),
+            "node_version": get_node_version(),
             "notifications": get_active_notifications(),
             "homepage_refresh_id": get_homepage_refresh_id(),
             "usb_extras": get_usb_extras(),
@@ -679,6 +867,7 @@ def index():
             "swap_usage": get_swap_usage(),
             "device_temp": get_device_temp(),
             "upgrade_available": upgrade_available,
+            "health_summary": get_health_summary(get_health_checks(max_age=HEALTH_CHECKS_HOME_MAX_AGE)),
             "auto_upgrade": get_auto_upgrade_status(),
             "set_timezone_from_browser": should_set_timezone_from_browser(),
             "show_https_warning": not request.is_secure and not is_https_warning_hidden(),
@@ -728,10 +917,12 @@ def page_product_key():
         
         # Save product key
         if submit != None and product_key != None:
+            if not save_product_key(product_key):
+                flash("Invalid product key", category="error")
+                return redirect("/product-key")
+
             unset_skipped_product_key()
             delete_product_key_error()
-
-            save_product_key(product_key)
 
             t = Timer(1.0, restart_check_in)
             t.start()
@@ -748,13 +939,23 @@ def page_ignore_warning():
         skip_warning(warning)
     return redirect("/")
 
+# Return page must be a local path
+def get_safe_return_page(return_page):
+    # Normalize the same way a URL parser would before checking it
+    return_page = return_page.translate({9: None, 10: None, 13: None})
+    if not return_page.startswith("/"):
+        return "/"
+    if return_page.startswith("//") or return_page.startswith("/\\"):
+        return "/"
+    return return_page
+
 @app.route("/toggle-enabled")
 def page_toggle_app():
     check_logged_in()
 
     return_page = "/"
     if request.args.get("return_page"):
-        return_page = request.args.get("return_page")
+        return_page = get_safe_return_page(request.args.get("return_page"))
 
     # Check application specified
     if not request.args.get("app"):
@@ -811,6 +1012,24 @@ def page_clear_old_tor_warning():
     hide_old_tor_warning()
     return redirect("/")
 
+@app.route("/clear-kernel-cve-warning")
+def page_clear_kernel_cve_warning():
+    check_logged_in()
+    hide_kernel_cve_warning()
+    return redirect("/")
+
+@app.route("/clear-reboot-required-notice")
+def page_clear_reboot_required_notice():
+    check_logged_in()
+    hide_reboot_required_notice()
+    return redirect("/")
+
+@app.route("/clear-kernel-update-notice")
+def page_clear_kernel_update_notice():
+    check_logged_in()
+    hide_kernel_update_notice()
+    return redirect("/")
+
 @app.route("/dismiss-expiration-warning")
 def page_dismiss_expiration_warning():
     check_logged_in()
@@ -824,6 +1043,78 @@ def page_dismiss_notification():
     version = request.args.get("version", "")
     dismiss_notification(notification_id, version)
     return redirect("/")
+
+def get_session_login_ports():
+    # Ports of the nginx servers in front of apps that use the web UI login
+    ports = set()
+    for conf_file in glob.glob("/etc/nginx/sites-enabled/*.conf"):
+        try:
+            with open(conf_file) as f:
+                conf = f.read()
+        except Exception:
+            continue
+        if "mynode_session_auth.conf" in conf:
+            for m in re.finditer(r"^\s*listen\s+(?:\S+:)?(\d+)\b", conf, re.MULTILINE):
+                ports.add(m.group(1))
+    return ports
+
+# Services behind the web UI login that are not in the app list, by port
+LOGIN_BUILTIN_APP_NAMES = {
+    "3002": "BTC RPC Explorer",
+    "3003": "BTC RPC Explorer",
+    "3020": "Caravan",
+    "3021": "Caravan",
+    "5010": "Warden Terminal",
+    "5011": "Warden Terminal",
+    "8443": "Lightning Terminal",
+    "61208": "Glances",
+    "61209": "Glances",
+}
+for opendime_port in range(8010, 8020):
+    LOGIN_BUILTIN_APP_NAMES[str(opendime_port)] = "Opendime"
+
+def get_login_app_name(app_port):
+    # The app the user is logging in to open, for the app login page
+    if app_port == "":
+        return ""
+    if app_port in LOGIN_BUILTIN_APP_NAMES:
+        return LOGIN_BUILTIN_APP_NAMES[app_port]
+    for app in get_all_applications():
+        if app_port in [str(app.get("http_port")), str(app.get("https_port"))]:
+            return app["name"]
+    return ""
+
+# The HTTPS port of the same nginx server, for the services above that are not in the app list
+LOGIN_BUILTIN_HTTPS_PORTS = {
+    "3002": "3003",
+    "3020": "3021",
+    "5010": "5011",
+    "61208": "61209",
+}
+# Each Opendime slot gets an HTTP port and the next one for HTTPS (mynode_usb_extras.py)
+for opendime_port in range(8010, 8020, 2):
+    LOGIN_BUILTIN_HTTPS_PORTS[str(opendime_port)] = str(opendime_port + 1)
+
+def get_login_https_port(app_port):
+    # The HTTPS port in front of the same app, read from the app's own definition so apps added
+    # later need no change here
+    if app_port in LOGIN_BUILTIN_HTTPS_PORTS:
+        return LOGIN_BUILTIN_HTTPS_PORTS[app_port]
+    for app in get_all_applications():
+        if app_port == str(app.get("http_port")) and app.get("https_port") not in [None, ""]:
+            return str(app["https_port"])
+    return ""
+
+def get_app_https_login_url(app_port, next_page):
+    # Same host over HTTPS, on the app's own HTTPS port, or the web UI's own login when the app
+    # has no HTTPS port at all
+    host = get_request_hostname()
+    if ":" in host:
+        host = "[" + host + "]"
+    https_port = get_login_https_port(app_port)
+    if https_port == "":
+        return "https://{}/login".format(host)
+    return "https://{}:{}/mynode_ui/login?{}".format(host, https_port, urllib.parse.urlencode({"next": next_page}))
 
 @app.route("/login", methods=["GET","POST"])
 def page_login():
@@ -841,10 +1132,74 @@ def page_login():
         flash(get_login_error_message(), category="error")
         return redirect("/login")
 
+# Login for apps behind the web UI login. nginx serves it on each app's own port and onion as
+# /mynode_ui/login, a path no app uses, so the user logs in and returns without leaving the app.
+@app.route("/mynode_ui/login", methods=["GET","POST"])
+def page_app_login():
+    source = request.args if request.method == 'GET' else request.form
+    next_page = get_safe_return_page(source.get("next", "") or "/")
+    if len(next_page) > 2048:
+        next_page = "/"
+    # Set by nginx in front of the app. Not offered on the web UI's own ports.
+    app_port = request.headers.get("X-MyNode-App-Port", "")
+    if app_port not in get_session_login_ports():
+        return "Not found", 404
+    # The shared proxy params always say https, so nginx passes this page the real scheme. While
+    # HTTPS is forced the form belongs on the app's HTTPS port, which is also where the session
+    # cookie is kept. Onion addresses are left alone - they are encrypted already.
+    if (is_https_forced()
+            and request.headers.get("X-MyNode-Client-Scheme", "https") == "http"
+            and not get_request_hostname().endswith(".onion")):
+        return redirect(get_app_https_login_url(app_port, next_page))
+    templateData = {
+        "app_name": get_login_app_name(app_port),
+        "login_next": next_page,
+        "change_default_password": False,
+        "ui_settings": read_ui_settings()
+    }
+
+    if request.method == 'POST':
+        if not login(request.form.get('password')):
+            flash(get_login_error_message(), category="error")
+            return redirect(url_for("page_app_login", next=next_page))
+
+    if is_logged_in():
+        # Apps refuse the session until the default password is changed in MyNode
+        if is_using_default_password():
+            templateData["change_default_password"] = True
+            return render_template('app_login.html', **templateData)
+        return redirect(next_page)
+    return render_template('app_login.html', **templateData)
+
 @app.route("/logout")
 def page_logout():
     logout()
-    return redirect("/")
+    response = redirect("/")
+    # The session clears the cookie for this connection itself. Clear the other name as well, so one
+    # logout ends both where the browser takes it - an http response cannot touch a Secure cookie.
+    current_name = app.session_interface.get_cookie_name(app)
+    for name in SESSION_COOKIE_NAMES:
+        if name == current_name:
+            continue
+        response.delete_cookie(name,
+                               path=app.config["SESSION_COOKIE_PATH"] or "/",
+                               domain=get_session_cookie_domain(),
+                               secure=(name == SESSION_COOKIE_NAME_ENCRYPTED),
+                               httponly=True,
+                               samesite=app.config["SESSION_COOKIE_SAMESITE"])
+    return response
+
+# Answers nginx auth_request checks for apps that share the web UI login
+@app.route("/auth/check")
+def page_auth_check():
+    # nginx asks this as https so the forced-HTTPS redirect stays out of a subrequest, so the check
+    # looks at the client's own connection itself. While HTTPS is forced, a session is not accepted
+    # on a plaintext one; the login page the 401 leads to moves the browser onto HTTPS.
+    if is_https_forced() and is_plaintext_request():
+        return "", 401
+    if is_logged_in():
+        return "", 204
+    return "", 401
 
 @app.route("/about")
 def page_about():
@@ -869,6 +1224,23 @@ def page_https_info():
         "ui_settings": read_ui_settings()
     }
     return render_template('https_info.html', **templateData)
+
+@app.route("/https-is-forced")
+def page_https_is_forced():
+    # No login check - this page is where an http:// link lands while HTTPS is forced, and it has
+    # to work before anyone can log in. It is served over that same plain connection on purpose.
+    hostname = get_request_hostname()
+    if ":" in hostname:
+        hostname = "[{}]".format(hostname)
+    templateData = {
+        "title": "HTTPS Required",
+        "https_url": "https://{}/".format(hostname),
+        "is_https": False,
+        "is_https_forced": True,
+        "ca_info": get_https_ca_info(),
+        "ui_settings": read_ui_settings()
+    }
+    return render_template('https_is_forced.html', **templateData)
 
 @app.route("/rebooting")
 def page_rebooting():
@@ -904,36 +1276,120 @@ def internal_error(error):
     }
     return render_template('state.html', **templateData), 500
 
-# Check for forced HTTPS
+# Endpoints that may be entered from another site. A top-level navigation to one of
+# these only displays a page to the user, so allowing them keeps ordinary links and
+# bookmarks working. Everything else is reachable only from the interface itself.
+CROSS_SITE_ENTRY_ENDPOINTS = set([
+    "static",
+    "index",
+    "page_login",
+    "page_app_login",
+    "page_logout",
+    "page_https_info",
+    "page_https_is_forced",
+    # Only reports whether the session is logged in, for nginx in front of apps on
+    # other ports. Over plain HTTP those arrive with a Referer from the main UI port.
+    "page_auth_check",
+])
+
+def get_request_site():
+    # Returns "same-origin", "cross-site" or "unknown".
+    # Modern browsers state the relationship directly.
+    fetch_site = request.headers.get("Sec-Fetch-Site")
+    if fetch_site == "same-origin":
+        return "same-origin"
+
+    # Otherwise compare what the browser claims as the origin against the host asked for.
+    # Over plain HTTP browsers do not send Sec-Fetch-Site at all. Our own pages moving
+    # between http:// and https:// are reported as "same-site" or "cross-site", but still
+    # name this host. Our apps on other ports include the port, so they do not match -
+    # they have no need to drive the interface.
+    for header_name in ["Origin", "Referer"]:
+        value = request.headers.get(header_name)
+        if value != None and value != "":
+            if urllib.parse.urlparse(value).netloc != request.host:
+                return "cross-site"
+            return "same-origin"
+
+    # "none" means no page started the request: a typed address, a bookmark, or a link opened
+    # from another program. Like no header at all, it starts from the home page. Reloading or
+    # going back to one of our pages keeps the Referer from our own page, checked above.
+    if fetch_site != None and fetch_site != "none":
+        return "cross-site"
+
+    # Nothing to go on - typed address, bookmark or link from another program
+    return "unknown"
+
 @app.before_request
 def before_request():
-    # Check for HTTPS forced (only enforce once drive mounted and stable state)
-    # Otherwise, web GUI may be inaccessible if error occurs (NGINX needs drive for cert)
-    if is_https_forced() and get_mynode_status() == STATE_STABLE:
-        if request.endpoint == "page_https_info":
-            return None
-        if request.url and request.url.startswith('http://'):
-            app.logger.info("REDIRECTING")
-            url = request.url.replace('http://', 'https://', 1)
-            code = 302
-            app.logger.info("Redirecting to HTTPS ({})".format(url))
-            return redirect(url, code=code)
+    # Only the interface itself may drive the interface. The home page acts on some
+    # query parameters, so only a plain link to it may come from elsewhere.
+    if request.endpoint not in CROSS_SITE_ENTRY_ENDPOINTS or (request.endpoint == "index" and len(request.args) > 0):
+        site = get_request_site()
+        if site == "cross-site":
+            app.logger.warning("Blocked cross-site request to {}".format(request.path))
+            return "Cross-site requests are not allowed", 403
+        if site == "unknown":
+            # Start from the home page, the same as following a link in from elsewhere
+            if request.method in ["GET", "HEAD"]:
+                app.logger.info("Request to {} without origin, going to home page".format(request.path))
+                return redirect("/")
+            app.logger.warning("Blocked request without origin to {}".format(request.path))
+            return "Cross-site requests are not allowed", 403
 
-# Disable browser caching
+### Content Security Policy
+# Scripts run only from our own files, or from inline <script> blocks that carry this
+# response's nonce: <script nonce="{{ csp_nonce() }}">. Inline event handlers (onclick=...)
+# never run; attach handlers with .on() in a script instead.
+CSP_ENFORCED = True
+CSP_POLICY = "; ".join([
+    "default-src 'self'",
+    "script-src 'self' 'nonce-{nonce}'",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data:",
+    "connect-src 'self' https://raw.githubusercontent.com https://www.mynodebtc.com",
+    "object-src 'none'",
+    "base-uri 'none'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+])
+
+def get_csp_nonce():
+    if "csp_nonce" not in g:
+        g.csp_nonce = secrets.token_urlsafe(16)
+    return g.csp_nonce
+
+@app.context_processor
+def inject_csp_nonce():
+    return {"csp_nonce": get_csp_nonce}
+
+@app.context_processor
+def inject_connection_info():
+    # The login page on an app's own port cannot reach the interface with a relative link, so
+    # the whole address is given here. HTTPS has its own port, which this page does not know.
+    hostname = get_request_hostname()
+    if ":" in hostname:
+        hostname = "[{}]".format(hostname)
+    return {
+        "insecure_connection": is_insecure_request(),
+        "https_info_url": "http://{}/https-info".format(hostname),
+    }
+
 @app.after_request
 def set_response_headers(response):
-    # Cache OK responses for 24 hrs
-    if response.status_code in [200]:
-        if "Cache-Control" not in response.headers:
-            response.headers['Cache-Control'] = 'max-age=86400, private'
-    else:
-        # Prevents 301 from saving forever
-        response.headers['Cache-Control'] = 'no-store'
+    # The interface is never shown inside a frame, and files are used as the type we send
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-Content-Type-Options'] = 'nosniff'
 
-    # No Caching
-    #response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    #response.headers['Pragma'] = 'no-cache'
-    #response.headers['Expires'] = '0'
+    csp_header = "Content-Security-Policy" if CSP_ENFORCED else "Content-Security-Policy-Report-Only"
+    response.headers[csp_header] = CSP_POLICY.format(nonce=get_csp_nonce())
+
+    # Disable browser caching.
+    # Static files keep Flask's own headers, so the browser keeps them and checks for
+    # changes. Everything else - pages, downloads, generated images - is not stored.
+    if request.endpoint == "static" and response.status_code in [200, 304]:
+        return response
+    response.headers['Cache-Control'] = 'no-store'
     return response
 
 # DEPRECATED IN FLASK 2.3 - IF EVER NEEDED, LOOK HERE
@@ -958,13 +1414,13 @@ def start_threads():
     btc_thread2 = BackgroundThread(update_bitcoin_other_info_thread, 60)
     btc_thread2.start()
     threads.append(btc_thread2)
-    electrs_info_thread = BackgroundThread(update_electrs_info_thread, 60)
+    electrs_info_thread = BackgroundThread(update_electrs_info_thread, 10) # Thread manages timing
     electrs_info_thread.start()
     threads.append(electrs_info_thread)
     lnd_thread = BackgroundThread(update_lnd_info_thread, 60)
     lnd_thread.start()
     threads.append(lnd_thread)
-    price_thread = BackgroundThread(update_price_info_thread, 60)
+    price_thread = BackgroundThread(update_price_info_thread, 300)
     price_thread.start()
     threads.append(price_thread)
     drive_thread = BackgroundThread(update_device_info, 60)
@@ -979,6 +1435,12 @@ def start_threads():
     app_data_cache_thread = BackgroundThread(update_application_json_cache, 300)
     app_data_cache_thread.start()
     threads.append(app_data_cache_thread)
+    service_status_thread = BackgroundThread(refresh_service_status_cache, 60)
+    service_status_thread.start()
+    threads.append(service_status_thread)
+    kernel_update_thread = BackgroundThread(update_kernel_update_cache, 60*10)
+    kernel_update_thread.start()
+    threads.append(kernel_update_thread)
 
     app.logger.info("STARTED {} THREADS".format(len(threads)))
 

@@ -156,9 +156,18 @@ while true; do
         if [ -f $BTCPAYSERVER_VERSION_FILE ]; then
             CURRENT=$(cat $BTCPAYSERVER_VERSION_FILE)
         fi
-        if [ "$CURRENT" != "$BTCPAYSERVER_VERSION" ]; then
-            # Create a folder for BTCPay
-            rm -rf /mnt/hdd/mynode/btcpayserver
+        CURRENT_NBXPLORER=""
+        if [ -f $NBXPLORER_VERSION_FILE ]; then
+            CURRENT_NBXPLORER=$(cat $NBXPLORER_VERSION_FILE)
+        fi
+        if [ "$CURRENT" != "$BTCPAYSERVER_VERSION" ] || [ "$CURRENT_NBXPLORER" != "$NBXPLORER_VERSION" ]; then
+            # Create a folder for BTCPay. The saved login stays with the database it belongs to,
+            # which is kept in a Docker volume, not in this folder.
+            if docker volume inspect generated_postgres_datadir >/dev/null 2>&1; then
+                find /mnt/hdd/mynode/btcpayserver -mindepth 1 -maxdepth 1 ! -name .app_password -exec rm -rf {} +
+            else
+                rm -rf /mnt/hdd/mynode/btcpayserver
+            fi
             mkdir -p /mnt/hdd/mynode/btcpayserver
             cd /mnt/hdd/mynode/btcpayserver
 
@@ -194,6 +203,9 @@ while true; do
 
                 cp -f /usr/share/btcpayserver/bitcoin.custom.yml /mnt/hdd/mynode/btcpayserver/btcpayserver-docker/docker-compose-generator/docker-fragments/bitcoin.custom.yml
                 cp -f /usr/share/btcpayserver/lnd.custom.yml /mnt/hdd/mynode/btcpayserver/btcpayserver-docker/docker-compose-generator/docker-fragments/lnd.custom.yml
+                if [ -n "$NBXPLORER_VERSION" ]; then
+                    sed -i "s|image: nicolasdorier/nbxplorer:.*|image: nicolasdorier/nbxplorer:$NBXPLORER_VERSION@${NBXPLORER_DIGEST##* }|" /mnt/hdd/mynode/btcpayserver/btcpayserver-docker/docker-compose-generator/docker-fragments/nbxplorer.yml
+                fi
 
                 rm -rf /usr/local/bin/btcpay-*
                 rm -rf /usr/local/bin/changedomain.sh
@@ -203,6 +215,7 @@ while true; do
 
                 # Update NBXplorer variables (needed to pull containers)
                 NBXPLORER_VARIABLES_FILE=/mnt/hdd/mynode/btcpayserver/btcpayserver-docker/Generated/nbxplorer-variables.env
+                install -m 600 /dev/null $NBXPLORER_VARIABLES_FILE
                 echo "NBXPLORER_BTCRPCUSER=mynode"            > $NBXPLORER_VARIABLES_FILE
                 set +x
                 echo "NBXPLORER_BTCRPCPASSWORD=$BTCRPCPW"    >> $NBXPLORER_VARIABLES_FILE
@@ -212,6 +225,7 @@ while true; do
                 /bin/bash -c  '. "/etc/profile.d/btcpay-env.sh" && cd "$BTCPAY_BASE_DIRECTORY/btcpayserver-docker" && . helpers.sh && btcpay_pull'
 
                 echo $BTCPAYSERVER_VERSION > $BTCPAYSERVER_VERSION_FILE
+                echo "$NBXPLORER_VERSION" > $NBXPLORER_VERSION_FILE
             fi
         fi
     else

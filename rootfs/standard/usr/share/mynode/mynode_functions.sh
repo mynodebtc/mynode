@@ -24,6 +24,51 @@ function is_service_enabled {
     systemctl is-enabled "$1" > /dev/null 2>&1
 }
 
+# Keep the daily apt jobs (automatic OS security updates) from starting while MyNode
+# uses apt, and wait for a run that already started to finish. The timers start again
+# on the next boot (see mynode_unattended_upgrades.sh).
+function pause_automatic_os_updates {
+    systemctl stop apt-daily.timer apt-daily-upgrade.timer > /dev/null 2>&1 || true
+    for i in $(seq 1 120); do
+        # These are oneshot services, so they are "activating" (not "active") while running
+        if ! systemctl show -p ActiveState --value apt-daily.service apt-daily-upgrade.service 2>/dev/null | grep -qxE "activating|active|deactivating"; then
+            return 0
+        fi
+        echo "Waiting for automatic OS updates to finish..."
+        sleep 10
+    done
+    return 0
+}
+
+# Runs "apt-get <options> update", trying twice. A single broken third-party repo (one that moved,
+# was removed or changed its signing key) makes apt-get update fail even though the other package
+# lists were updated, so a failure is not fatal: the errors are saved to APT_UPDATE_ERROR_FILE for the
+# Status and Settings pages, and the file is removed after a clean update.
+APT_UPDATE_ERROR_FILE="/mnt/hdd/mynode/settings/apt_update_error"
+function apt_get_update {
+    local output_file
+    local rc=0
+    local attempt
+    output_file=$(mktemp)
+    for attempt in 1 2; do
+        apt-get "$@" update --allow-releaseinfo-change > "$output_file" 2>&1 && rc=0 || rc=$?
+        cat "$output_file"
+        if [ $rc -eq 0 ]; then
+            rm -f "$APT_UPDATE_ERROR_FILE" "$output_file"
+            return 0
+        fi
+    done
+
+    # Keep the errors (and the lines under them, like "404  Not Found"), not the full output
+    mkdir -p "$(dirname "$APT_UPDATE_ERROR_FILE")"
+    if ! grep -E "^(E:|Err:)|^ +[0-9]{3} " "$output_file" > "$APT_UPDATE_ERROR_FILE"; then
+        tail -n 20 "$output_file" > "$APT_UPDATE_ERROR_FILE"
+    fi
+    rm -f "$output_file"
+    echo "WARNING: apt-get update failed (exit $rc). Continuing with the package lists that did update."
+    return 0
+}
+
 function skip_base_upgrades {
     if [ -f /tmp/skip_base_upgrades ]; then
         return 0
@@ -133,6 +178,49 @@ function has_app_password() {
     [ -s "/mnt/hdd/mynode/${1}/.app_password" ]
 }
 
+# Firewall rules the VPN needs: NAT for its clients and forwarding from its interface.
+# Run every time the VPN starts, since /etc/ufw is on the OS disk but the VPN config can be
+# restored from the drive, and the network device can change.
+function configure_vpn_firewall() {
+    local vpn_net="10.8.0.0/24"
+    local rules_changed=0
+    local dev
+
+    if ! command -v ufw > /dev/null; then
+        echo "ERROR: ufw is not installed, cannot set up the VPN firewall rules"
+        return 1
+    fi
+
+    dev=$(ip route get 8.8.8.8 | awk '{for(i=1;i<=NF;i++)if($i~/dev/)print $(i+1)}')
+    if [ -z "$dev" ]; then
+        echo "ERROR: no default route, cannot set up the VPN firewall rules"
+        return 1
+    fi
+
+    # NAT for VPN clients, in ufw's before.rules. Update the device in an existing rule
+    # (including one added by an older VPN setup), or add a new block.
+    if grep -q -E -- "-s ${vpn_net} -o [^ ]+ -j MASQUERADE" /etc/ufw/before.rules; then
+        if ! grep -q -- "-s ${vpn_net} -o ${dev} -j MASQUERADE" /etc/ufw/before.rules; then
+            sed -i -E "s#(-s ${vpn_net} -o )[^ ]+( -j MASQUERADE)#\1${dev}\2#" /etc/ufw/before.rules
+            rules_changed=1
+        fi
+    else
+        sed -i "/delete these required/i # MyNode VPN NAT\n*nat\n:POSTROUTING ACCEPT [0:0]\n-A POSTROUTING -s ${vpn_net} -o ${dev} -j MASQUERADE\nCOMMIT\n" /etc/ufw/before.rules
+        rules_changed=1
+    fi
+
+    # Forwarding for VPN clients (ufw's default forward policy is to drop)
+    if ! grep -q -- "-i tun0" /etc/ufw/user.rules; then
+        ufw route allow in on tun0 from ${vpn_net} comment 'allow VPN clients'
+    fi
+
+    sysctl -q -w net.ipv4.ip_forward=1
+
+    if [ $rules_changed = 1 ] && ufw status | grep -q "Status: active"; then
+        ufw reload
+    fi
+}
+
 function save_app_default_password() {
     # Record the login password MyNode set for an app, so the app page can show it.
     # Stored in the app's storage folder, which is owned by the app's user.
@@ -152,7 +240,8 @@ function save_app_password_user_set() {
 }
 
 function is_app_password_user_set() {
-    [ "$(cat "/mnt/hdd/mynode/${1}/.app_password" 2>/dev/null)" = "$APP_PASSWORD_USER_SET" ]
+    # Keep the saved password out of traced logs
+    grep -qsxF -- "$APP_PASSWORD_USER_SET" "/mnt/hdd/mynode/${1}/.app_password"
 }
 
 function remove_docker_images_by_name() {

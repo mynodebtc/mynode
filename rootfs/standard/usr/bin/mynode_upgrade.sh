@@ -30,19 +30,24 @@ rm -rf /opt/mynode_release.pub
 rm -rf /opt/upgrade/
 mkdir -p /opt/upgrade/
 mkdir -p /home/admin/upgrade_logs/
+chmod 700 /home/admin/upgrade_logs/
 
-# Download Latest
+# Download a release file, keeping the product key in its URL out of wget's output
+download_release_file() {
+    { torify wget "$1" -O "$2" || wget "$1" -O "$2"; } 2>&1 | sed -E "s/product_key=[^&' ]*/product_key=<hidden>/g"
+    return ${PIPESTATUS[0]}
+}
+
+# Download Latest (untraced, since the URLs hold the product key)
+set +x
 if [ $BETA = 0 ]; then
-    torify wget $UPGRADE_DOWNLOAD_URL -O /opt/mynode_release_latest.tar.gz || \
-           wget $UPGRADE_DOWNLOAD_URL -O /opt/mynode_release_latest.tar.gz
-    torify wget $UPGRADE_DOWNLOAD_SIGNATURE_URL -O /opt/mynode_release_latest.sha256 || \
-           wget $UPGRADE_DOWNLOAD_SIGNATURE_URL -O /opt/mynode_release_latest.sha256
+    download_release_file "$UPGRADE_DOWNLOAD_URL" /opt/mynode_release_latest.tar.gz
+    download_release_file "$UPGRADE_DOWNLOAD_SIGNATURE_URL" /opt/mynode_release_latest.sha256
 else
-    torify wget $UPGRADE_BETA_DOWNLOAD_URL -O /opt/mynode_release_latest.tar.gz || \
-           wget $UPGRADE_BETA_DOWNLOAD_URL -O /opt/mynode_release_latest.tar.gz
-    torify wget $UPGRADE_BETA_DOWNLOAD_SIGNATURE_URL -O /opt/mynode_release_latest.sha256 || \
-           wget $UPGRADE_BETA_DOWNLOAD_SIGNATURE_URL -O /opt/mynode_release_latest.sha256
+    download_release_file "$UPGRADE_BETA_DOWNLOAD_URL" /opt/mynode_release_latest.tar.gz
+    download_release_file "$UPGRADE_BETA_DOWNLOAD_SIGNATURE_URL" /opt/mynode_release_latest.sha256
 fi
+set -x
 
 VERIFIED=0
 for KEY in /usr/share/mynode/mynode_release.pub /usr/share/mynode/mynode_release_backup.pub; do
@@ -110,5 +115,10 @@ do
     printf "\n\n\n"
     sleep 10s
 done
+
+# Report the upgrade as incomplete if any component was skipped
+if [ -f $UPGRADE_INCOMPLETE_FILE ]; then
+    touch $UPGRADE_ERROR_FILE
+fi
 chown -R admin:admin /home/admin/upgrade_logs
 sync

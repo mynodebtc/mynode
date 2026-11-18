@@ -21,7 +21,7 @@ PKG_CACHE="/var/lib/apt/lists/"
 UPDATE_PKG_CACHE="${PKG_MANAGER} update"
 PKG_INSTALL="${PKG_MANAGER} --yes --no-install-recommends install"
 PKG_COUNT="${PKG_MANAGER} -s -o Debug::NoLocking=true upgrade | grep -c ^Inst || true"
-PIVPN_DEPS=(openvpn git tar wget grep iptables-persistent dnsutils expect whiptail net-tools)
+PIVPN_DEPS=(openvpn git tar wget grep dnsutils expect whiptail net-tools)
 ###          ###
 
 pivpnGitUrl="https://github.com/pivpn/pivpn.git"
@@ -298,9 +298,6 @@ install_dependent_packages() {
     # Install packages passed in via argument array
     # No spinner - conflicts with set -e
     declare -a argArray1=("${!1}")
-
-    echo iptables-persistent iptables-persistent/autosave_v4 boolean true | $SUDO debconf-set-selections
-    echo iptables-persistent iptables-persistent/autosave_v6 boolean false | $SUDO debconf-set-selections
 
     # Add support for https repositories if there are any that use it otherwise the installation will silently fail
     if grep -q https /etc/apt/sources.list; then
@@ -643,40 +640,9 @@ confNetwork() {
     $SUDO sed -i '/net.ipv4.ip_forward=1/s/^#//g' /etc/sysctl.conf
     $SUDO sysctl -p
 
-    # if ufw enabled, configure that (running as root because sometimes the executable is not in the user's $PATH, on Debian for example)
-    if $SUDO bash -c 'hash ufw' 2>/dev/null; then
-        if LANG=en_US.UTF-8 $SUDO ufw status | grep -q inactive
-        then
-            noUFW=1
-        else
-            echo "::: Detected UFW is enabled."
-            echo "::: Adding UFW rules..."
-            $SUDO sed "/delete these required/i *nat\n:POSTROUTING ACCEPT [0:0]\n-I POSTROUTING -s 10.8.0.0/24 -o $IPv4dev -j MASQUERADE\nCOMMIT\n" -i /etc/ufw/before.rules
-            # Insert rules at the beginning of the chain (in case there are other rules that may drop the traffic)
-            $SUDO ufw insert 1 allow "$PORT"/"$PROTO" >/dev/null
-            # Don't forward everything, just the traffic originated from the VPN subnet
-            $SUDO ufw route insert 1 allow in on tun0 from 10.8.0.0/24 out on "$IPv4dev" to any >/dev/null
-            $SUDO ufw reload >/dev/null
-            echo "::: UFW configuration completed."
-        fi
-    else
-        noUFW=1
-    fi
-    # else configure iptables
-    if [[ $noUFW -eq 1 ]]; then
-        echo 1 > /tmp/noUFW
-        $SUDO iptables -t nat -I POSTROUTING -s 10.8.0.0/24 -o "$IPv4dev" -j MASQUERADE
-        case ${PLAT} in
-            Ubuntu|Debian|Devuan)
-                $SUDO iptables-save | $SUDO tee /etc/iptables/rules.v4 > /dev/null
-                ;;
-            *)
-                $SUDO netfilter-persistent save
-                ;;
-        esac
-    else
-        echo 0 > /tmp/noUFW
-    fi
+    # MyNode - The firewall rules for the VPN are set up in ufw by mynode_vpn.sh
+    # (configure_vpn_firewall), every time the VPN starts
+    echo 0 > /tmp/noUFW
 
     $SUDO cp /tmp/noUFW /etc/pivpn/NO_UFW
 }
@@ -750,7 +716,7 @@ confOVPN() {
     if [ ! -d "/home/$pivpnUser/ovpns" ]; then
         $SUDO mkdir "/home/$pivpnUser/ovpns"
     fi
-    $SUDO chmod 0777 -R "/home/$pivpnUser/ovpns"
+    $SUDO chmod 0700 "/home/$pivpnUser/ovpns"
 }
 
 confLogging() {

@@ -19,7 +19,7 @@
             {% endif %}
         </style>
 
-        <script>
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
             $(document).ready(function() {
 
                 function set_token() {
@@ -135,10 +135,9 @@
                     content: function() {
                         var element = $( this );
                         if ( element.is( "[title]" ) ) {
-                            text =  "<b>"+element.attr( "title" )+"</b>"
-                            text += "<br/><br/>";
-                            text += ""+element.attr( "msg" )+"";
-                            return text;
+                            return $("<div>").append(
+                                $("<b>").text(element.attr( "title" )),
+                                $("<p>").text(element.attr( "msg" )));
                         }
                     }
                 });

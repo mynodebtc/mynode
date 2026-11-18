@@ -120,9 +120,13 @@ if [ "$#" -ge 2 ]; then
     elif [ "$2" = "files" ]; then
         echo "Only updating files... Done."
     elif [ "$2" = "nginx" ]; then
+        mynode-manage-apps init || true
         echo "Restarting nginx service..."
+        systemctl restart nginx
     elif [ "$2" = "reboot" ]; then
         echo "Rebooting..."
+        /usr/bin/mynode_stop_critical_services.sh
+        reboot
     else
         # Service not found, reboot
         echo "Unknown service, rebooting"

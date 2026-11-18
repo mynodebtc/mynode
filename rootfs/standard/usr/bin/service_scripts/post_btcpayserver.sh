@@ -13,32 +13,42 @@ BTCPAY_PASSWORD_TOOL="/usr/bin/mynode-python /usr/share/mynode/btcpay_password.p
 # the node's lightning wallet. Creating it here also leaves registration locked, which BTCPay
 # does itself once the first administrator exists.
 
-if is_app_password_user_set btcpayserver; then
-    # The user manages this login themselves
-    exit 0
-fi
-
-if has_app_password btcpayserver; then
-    # Stop showing the saved password once it is no longer the account's, which means the user
-    # changed it in BTCPay itself
-    set +x
-    $BTCPAY_PASSWORD_TOOL check < "$BTCPAY_DIR/.app_password"
-    case $? in
-        0) ;;                                         # still the password MyNode set
-        1) save_app_password_user_set btcpayserver ;;  # changed in BTCPay
-        *) echo "Could not read BTCPay's database, leaving the saved password alone" ;;
-    esac
-    set -x
-    exit 0
-fi
-
-# Wait for the API to answer - BTCPay brings up a container stack, so this takes a while
+# Wait for the API to answer - BTCPay brings up a container stack, so this takes a while. Its
+# database is only ready to read once this answers.
 for _ in $(seq 1 150); do
     if curl -s -o /dev/null --max-time 5 http://127.0.0.1:59392/api/v1/server/info; then
         break
     fi
     sleep 4
 done
+
+# A saved login says nothing about a database with no administrator, like the one Reset Docker
+# leaves behind. An empty list with a failed read means the database could not be asked.
+set +x
+ADMINS=$($BTCPAY_PASSWORD_TOOL admins)
+ADMINS_RESULT=$?
+set -x
+
+if [ "$ADMINS_RESULT" != "0" ] || [ -n "$ADMINS" ]; then
+    if is_app_password_user_set btcpayserver; then
+        # The user manages this login themselves
+        exit 0
+    fi
+
+    if has_app_password btcpayserver; then
+        # Stop showing the saved password once it is no longer the account's, which means the user
+        # changed it in BTCPay itself
+        set +x
+        $BTCPAY_PASSWORD_TOOL check < "$BTCPAY_DIR/.app_password"
+        case $? in
+            0) ;;                                         # still the password MyNode set
+            1) save_app_password_user_set btcpayserver ;;  # changed in BTCPay
+            *) echo "Could not read BTCPay's database, leaving the saved password alone" ;;
+        esac
+        set -x
+        exit 0
+    fi
+fi
 
 set +x
 BTCPAY_PASSWORD=$(generate_app_password)

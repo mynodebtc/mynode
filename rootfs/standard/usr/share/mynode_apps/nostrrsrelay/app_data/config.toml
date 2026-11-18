@@ -22,7 +22,7 @@ description = "A newly created nostr-rs-relay.\n\nCustomize this with your own i
 
 [database]
 # Directory for SQLite files.  Defaults to the current directory.  Can
-# also be specified (and overriden) with the "--db dirname" command
+# also be specified (and overridden) with the "--db dirname" command
 # line option.
 data_directory = "/mnt/hdd/mynode/nostrrsrelay/db"
 

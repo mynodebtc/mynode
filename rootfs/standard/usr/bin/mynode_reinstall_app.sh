@@ -125,5 +125,10 @@ do
     printf "\n\n\n"
     sleep 10s
 done
+
+# Report the upgrade as incomplete if any component was skipped
+if [ -f $UPGRADE_INCOMPLETE_FILE ]; then
+    touch $UPGRADE_ERROR_FILE
+fi
 chown -R admin:admin /home/admin/upgrade_logs
 sync

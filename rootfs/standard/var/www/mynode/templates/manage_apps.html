@@ -5,7 +5,7 @@
 
         <script src="{{ url_for('static', filename='js/manage_apps.js')}}"></script>
 
-        <script>
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
             $(document).ready(function() {
                 // Functions
                 function update_status_icon(status_icon_name, data) {
@@ -23,8 +23,8 @@
                 function update_page() {
                     {% for app in apps %}
                         {% if app.show_on_application_page %}
-                        $.getJSON("/api/get_service_status?service={{ app.short_name }}", function( data ) {
-                            update_status_icon("{{ app.short_name }}_status_icon", data);
+                        $.getJSON("/api/get_service_status?service=" + {{ app.short_name|tojson }}, function( data ) {
+                            update_status_icon({{ app.short_name|tojson }} + "_status_icon", data);
                         });
                         {% endif %}
                     {% endfor %}
@@ -95,32 +95,32 @@
                                 <td>
                                     {% if app.can_enable_disable %}
                                         {% if app.is_enabled %}
-                                            <button class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 80px;" onclick="toggleEnabled('{{app.short_name}}', '{{app.name}}', false, '/apps')">Disable</button>
+                                            <button class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 80px;" data-app-action="disable" data-short-name="{{app.short_name}}" data-name="{{app.name}}" data-return-page="/apps">Disable</button>
                                         {% else %}
-                                            <button class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 80px;" onclick="toggleEnabled('{{app.short_name}}', '{{app.name}}', true, '/apps')">Enable</button>
+                                            <button class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 80px;" data-app-action="enable" data-short-name="{{app.short_name}}" data-name="{{app.name}}" data-return-page="/apps">Enable</button>
                                         {% endif %}
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if app.is_installed and app.is_enabled %}
-                                        <button class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 80px;" onclick="restart('{{ app.name }}', '{{ app.short_name }}');">Restart</button>
+                                        <button class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 80px;" data-app-action="restart" data-name="{{ app.name }}" data-short-name="{{ app.short_name }}">Restart</button>
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if app.is_installed and app.current_version != app.latest_version %}
-                                        <button class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 80px;" onclick="upgrade('{{ app.name }}', '{{ app.short_name }}');">Upgrade</button>
+                                        <button class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 80px;" data-app-action="upgrade" data-name="{{ app.name }}" data-short-name="{{ app.short_name }}">Upgrade</button>
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if app.is_installed and app.can_reinstall %}
-                                    <button class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 80px;" onclick="reinstall('{{ app.name }}', '{{ app.short_name }}');">Reinstall</button>
+                                    <button class="ui-button ui-widget ui-corner-all mynode_button_small" style="width: 80px;" data-app-action="reinstall" data-name="{{ app.name }}" data-short-name="{{ app.short_name }}">Reinstall</button>
                                     {% elif not app.is_installed %}
-                                    <button class="ui-button ui-widget ui-corner-all mynode_button_small install_button" style="width: 80px;" onclick="install('{{ app.name }}', '{{ app.short_name }}');">Install</button>
+                                    <button class="ui-button ui-widget ui-corner-all mynode_button_small install_button" style="width: 80px;" data-app-action="install" data-name="{{ app.name }}" data-short-name="{{ app.short_name }}">Install</button>
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if app.is_installed and app.can_uninstall %}
-                                    <button class="ui-button ui-widget ui-corner-all mynode_button_small uninstall_button" style="width: 80px;" onclick="uninstall('{{ app.name }}', '{{ app.short_name }}');">Uninstall</button>
+                                    <button class="ui-button ui-widget ui-corner-all mynode_button_small uninstall_button" style="width: 80px;" data-app-action="uninstall" data-name="{{ app.name }}" data-short-name="{{ app.short_name }}">Uninstall</button>
                                     {% endif %}
                                 </td>
                             </tr>

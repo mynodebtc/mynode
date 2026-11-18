@@ -25,6 +25,7 @@ bitcoin_recommended_fees = None
 bitcoin_version = None
 bitcoin_connection_count = None
 bitcoin_sync_status = None
+bitcoin_no_peers_since = None
 header_tip_time_cache = {"height": None, "time": None}
 BITCOIN_CACHE_FILE = "/tmp/bitcoin_info.json"
 
@@ -59,11 +60,18 @@ def is_bitcoin_synced():
         return True
     return False
 
-def run_bitcoincli_command(cmd):
-    cmd = "bitcoin-cli --conf=/mnt/hdd/mynode/bitcoin/bitcoin.conf --datadir=/mnt/hdd/mynode/bitcoin "+cmd+"; exit 0"
-    log_message("Running bitcoin-cli cmd:  {}".format(cmd))
+def run_bitcoincli_command_args(args):
+    cmd = ["bitcoin-cli",
+           "--conf=/mnt/hdd/mynode/bitcoin/bitcoin.conf",
+           "--datadir=/mnt/hdd/mynode/bitcoin"] + args
+    # Log the method only, not its arguments
+    method = next((a for a in args if not a.startswith("-")), "")
+    log_message("Running bitcoin-cli method: {}".format(method))
     try:
-        results = to_string(subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True))
+        results = to_string(subprocess.check_output(cmd, stderr=subprocess.STDOUT,
+                                                    stdin=subprocess.DEVNULL))
+    except subprocess.CalledProcessError as e:
+        results = to_string(e.output)
     except Exception as e:
         results = str(e)
     return results
@@ -175,6 +183,7 @@ def update_bitcoin_main_info():
     global bitcoin_blockchain_info
     global bitcoin_connection_count
     global bitcoin_sync_status
+    global bitcoin_no_peers_since
 
     info = None
     try:
@@ -202,6 +211,11 @@ def update_bitcoin_main_info():
             if header_tip_time == None or int(time.time()) - header_tip_time > 600 * 144:
                 log_status = read_header_sync_from_log()
         bitcoin_sync_status = calculate_bitcoin_sync_status(info, bitcoin_connection_count, header_tip_time, log_status)
+        if bitcoin_connection_count == 0:
+            if bitcoin_no_peers_since == None:
+                bitcoin_no_peers_since = time.time()
+        else:
+            bitcoin_no_peers_since = None
 
         if info != None:
             # Save specific data
@@ -220,6 +234,7 @@ def update_bitcoin_main_info():
     except Exception as e:
         log_message("ERROR: In update_bitcoin_info - {} DATA: {}".format( str(e), str(info) ))
         bitcoin_sync_status = calculate_bitcoin_sync_status(None, None, None, None)
+        bitcoin_no_peers_since = None
         return False
 
     update_bitcoin_json_cache()
@@ -307,8 +322,13 @@ def update_bitcoin_other_info():
 
                 wallet_rpc_connection = AuthServiceProxy("http://%s:%s@127.0.0.1:8332/wallet/%s"%(rpc_user, rpc_pass, wallet_name), timeout=60)
                 wallet_info = wallet_rpc_connection.getwalletinfo()
+                # Bitcoin Core 30 removed the balances from getwalletinfo
+                if "balance" not in wallet_info:
+                    balances = wallet_rpc_connection.getbalances()["mine"]
+                    wallet_info["balance"] = balances["trusted"]
+                    wallet_info["unconfirmed_balance"] = balances["untrusted_pending"]
                 wallet_info["can_delete"] = True
-                if wallet_name == "wallet.dat":
+                if wallet_name in ["wallet.dat", "joinmarket_wallet.dat"]:
                     wallet_info["can_delete"] = False
                 wallet_data.append(wallet_info)
             bitcoin_wallets = wallet_data
@@ -322,12 +342,14 @@ def update_bitcoin_other_info():
                     data = r.json()
                     bitcoin_recommended_fees = ""
                     bitcoin_recommended_fees += "Low priority: {} sat/vB".format(data["hourFee"])
-                    bitcoin_recommended_fees += " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "
+                    bitcoin_recommended_fees += " " + "\u00a0" * 11 + " "
                     bitcoin_recommended_fees += "Medium priority: {} sat/vB".format(data["halfHourFee"])
-                    bitcoin_recommended_fees += " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "
+                    bitcoin_recommended_fees += " " + "\u00a0" * 11 + " "
                     bitcoin_recommended_fees += "High priority: {} sat/vB".format(data["fastestFee"])
                 except Exception as e:
-                    bitcoin_recommended_fees = "Fee error - " . str(e)
+                    # Mempool is often slow to answer while it starts or syncs, so hide the fees until it does
+                    log_message("update_bitcoin_other_info - MEMPOOL FEES UNAVAILABLE - {}".format(str(e)))
+                    bitcoin_recommended_fees = None
             else:
                 bitcoin_recommended_fees = None
         except Exception as e1:
@@ -350,7 +372,7 @@ def get_bitcoin_status():
         if remaining == 0:
             status = "Running"
         else:
-            status = "Syncing<br/>{} blocks remaining...".format(remaining)
+            status = "Syncing\n{} blocks remaining...".format(remaining)
     else:
         status = "Waiting for info..."
     return status
@@ -385,6 +407,22 @@ def get_bitcoin_sync_status():
     global bitcoin_sync_status
     return copy.deepcopy(bitcoin_sync_status)
 
+def get_bitcoin_no_peers_warning():
+    # Seconds of zero peers before warning, and the hint to show. Tor and I2P take minutes to connect,
+    # and with Clearnet off a working internet connection is not enough on its own.
+    generic = (10 * 60, "No peers connected. Check the device's internet connection.")
+    if using_bitcoin_custom_config() or settings_file_exists("btc_ipv4_enabled"):
+        return generic
+    networks = []
+    if settings_file_exists("btc_tor_enabled"):
+        networks.append("Tor")
+    if settings_file_exists("btc_i2p_enabled"):
+        networks.append("I2P")
+    if len(networks) == 0:
+        return generic
+    return (60 * 60, ("No peers connected. Bitcoin only uses {}, which some networks block and which need "
+                      "the correct date and time. Check the clock, or enable Clearnet in Settings.").format(" and ".join(networks)))
+
 def get_bitcoin_sync_display():
     # Text and the current stage (if any) for the sync page
     status = get_bitcoin_sync_status()
@@ -394,7 +432,14 @@ def get_bitcoin_sync_display():
     display = {}
     display["stage"] = status["stage"]
     display["peers"] = "{:,}".format(status["peers"]) if status["peers"] != None else "..."
-    display["no_peers"] = status["peers"] == 0
+    display["no_peers"] = False
+    display["no_peers_hint"] = ""
+    no_peers_since = bitcoin_no_peers_since
+    if status["peers"] == 0 and no_peers_since != None:
+        delay, hint = get_bitcoin_no_peers_warning()
+        if time.time() - no_peers_since >= delay:
+            display["no_peers"] = True
+            display["no_peers_hint"] = hint
     display["marked_synced"] = is_bitcoin_synced()
     display["step"] = None
 
@@ -497,8 +542,8 @@ def create_default_wallets():
                     break
             if not found:
                 log_message("Creating new default wallet {}".format(new_wallet))
-                run_bitcoincli_command("-named createwallet wallet_name={} descriptors=false".format(new_wallet))
-                run_bitcoincli_command("loadwallet {}".format(new_wallet))
+                run_bitcoincli_command_args(["-named", "createwallet", "wallet_name={}".format(new_wallet), "disable_private_keys=true"])
+                run_bitcoincli_command_args(["loadwallet", new_wallet])
 
 
 def get_default_bitcoin_config():

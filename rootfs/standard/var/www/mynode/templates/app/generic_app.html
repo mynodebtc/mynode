@@ -30,7 +30,11 @@
         <link href="{{ url_for('static', filename='css/hes-gallery.min.css')}}" rel="stylesheet">
         <script src="{{ url_for('static', filename='js/hes-gallery.min.js')}}"></script>
 
-        <script>
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
+        // Styles come from static/css/hes-gallery.min.css, and the page calls init() itself
+        HesGallery.options.hostedStyles = false;
+        HesGallery.options.autoInit = false;
+
         $(document).ready(function() {
             $( document ).tooltip();
 
@@ -70,13 +74,13 @@
 
                     {% if not app.is_installed %}
                         <!-- Install -->
-                        <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button install_button" onclick="install('{{ app.name }}', '{{ app.short_name }}');">Install</button>
+                        <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button install_button" data-app-action="install" data-name="{{ app.name }}" data-short-name="{{ app.short_name }}">Install</button>
                     {% else %}
 
                         <!-- Open -->
                         {% if app.is_enabled and app.app_page_show_open_button %}
                             {% if app.http_port != "" or app.https_port != "" %}
-                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="open_app_in_new_tab('{{app.http_port}}', '{{app.https_port}}', false, '{{app.tor_address}}')">Open</button>
+                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" data-open-app data-http-port="{{app.http_port}}" data-https-port="{{app.https_port}}" data-tor-address="{{app.tor_address}}">Open</button>
 
                                 <div class="divider button_divider"></div>
                             {% endif %}
@@ -84,18 +88,18 @@
 
                         <!-- Manage App: Restart, Reset Data, Etc... -->
                         {% if app.is_enabled %}
-                            <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="restart_app_via_api('{{ app.name }}', '{{ app.short_name }}');">Restart</button>
+                            <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" data-app-action="restart_app_via_api" data-name="{{ app.name }}" data-short-name="{{ app.short_name }}">Restart</button>
 
                             {% if app.is_enabled and app.data_manageable %}
-<!--                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="backup_data_folder_via_api('{{ app.name }}', '{{ app.short_name }}');">Backup Data</button>
-                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="restore_data_folder_via_api('{{ app.name }}', '{{ app.short_name }}');">Restore Data</button>
--->                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="reset_data_folder_via_api('{{ app.name }}', '{{ app.short_name }}');">Reset Data</button>
+<!--                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" data-app-action="backup_data_folder_via_api" data-name="{{ app.name }}" data-short-name="{{ app.short_name }}">Backup Data</button>
+                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" data-app-action="restore_data_folder_via_api" data-name="{{ app.name }}" data-short-name="{{ app.short_name }}">Restore Data</button>
+-->                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" data-app-action="reset_data_folder_via_api" data-name="{{ app.name }}" data-short-name="{{ app.short_name }}">Reset Data</button>
                             {% endif %}
 
                             {% for btn in app.app_page_additional_buttons %}
                                 <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button"
                                     {% if btn.href is defined and btn.href != "" %}
-                                        onclick='window.location={{btn.href|tojson}}'
+                                        data-href="{{btn.href}}"
                                     {% endif %}
                                         >{{btn.title}}</button>
                             {% endfor %}
@@ -106,9 +110,9 @@
                         <!-- Enable / Disable -->
                         {% if app.can_enable_disable %}
                             {% if not app.is_enabled %}
-                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="toggleEnabled('{{app.short_name}}', '{{app.name}}', true)">Enable</button>
+                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" data-app-action="enable" data-short-name="{{app.short_name}}" data-name="{{app.name}}">Enable</button>
                             {% else %}
-                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" onclick="toggleEnabled('{{app.short_name}}', '{{app.name}}', false)">Disable</button>
+                                <button class="ui-button ui-widget ui-corner-all mynode_button app_page_button" data-app-action="disable" data-short-name="{{app.short_name}}" data-name="{{app.name}}">Disable</button>
                             {% endif %}
                         {% endif %}
                     {% endif %}

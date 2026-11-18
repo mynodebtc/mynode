@@ -5,7 +5,6 @@ from systemctl_info import *
 import os
 import time
 import subprocess
-import os
 
 mynode_lndmanage = Blueprint('mynode_lndmanage',__name__)
 

@@ -7,10 +7,10 @@
         <meta http-equiv="refresh" content="{{ refresh_rate }}"> 
         {% endif %}
 
-        <script>
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
             $(document).ready(function() {
 
-                alias="{{alias}}"
+                alias={{ alias|default("")|tojson }}
 
                 $( document ).tooltip();
 
@@ -69,6 +69,35 @@
                     pair_wallet_dialog.dialog( "close" );
                 });
 
+                function macaroon_submit() {
+                    $("#macaroon_form").submit();
+                    macaroon_dialog.dialog( "close" );
+                }
+                macaroon_dialog = $( "#macaroon-dialog" ).dialog({
+                    autoOpen: false,
+                    resizable: false,
+                    height: "auto",
+                    width: 600,
+                    modal: true,
+                    position: { my: "center top", at: "center top", of: window, collision: "none" },
+                    buttons: {
+                        "Download": macaroon_submit,
+                        Cancel: function() {
+                            macaroon_dialog.dialog( "close" );
+                        }
+                    },
+                    open: function() {
+                        $("#password_macaroon").val("")
+                    }
+                });
+                $(".download_macaroon").on("click", function() {
+                    $("#macaroon_form").attr("action", "/lnd/"+$(this).attr("data-macaroon")+".macaroon");
+                    macaroon_dialog.dialog( "open" );
+                });
+                $("#macaroon_form").on("submit", function() {
+                    macaroon_dialog.dialog( "close" );
+                });
+
                 $("#rtl").on("click", function() {
                     port="3010"
                     if (location.protocol == "https:") {
@@ -93,7 +122,7 @@
                 })
 
                 function show_deposit_address(addr) {
-                    $("#lnd_deposit_address_text").html( addr );
+                    $("#lnd_deposit_address_text").text( addr );
                     $("#lnd_deposit_address_qrcode").attr("src", "/api/get_qr_code_image?url="+addr);
                     $("#lnd_deposit_address_qrcode").attr("title", addr);
                 }
@@ -106,22 +135,24 @@
 
                 // Initialize channel balance bars and show/hide button
                 {% for c in channels %}
-                    $( "#channel_bar_{{ c.chan_id }}" ).progressbar({
-                        value: Math.floor( {{ c.chan_percent }} )
+                    $( "#channel_bar_" + {{ c.chan_id|tojson }} ).progressbar({
+                        value: Math.floor( {{ c.chan_percent|tojson }} )
                     });
-                    $('#channel_bar_{{ c.chan_id }}').height(15);
+                    $('#channel_bar_' + {{ c.chan_id|tojson }}).height(15);
 
-                    show_channel_{{ c.chan_id }}_details = false;
-                    $("#show_channel_{{ c.chan_id }}").on("click", function() {
-                        if (show_channel_{{ c.chan_id }}_details == true) {
-                            $("#channel_table_{{ c.chan_id }}").slideUp(400);
-                            $("#show_channel_{{ c.chan_id }}").html("Show Details");
-                        } else {
-                            $("#channel_table_{{ c.chan_id }}").slideDown(400);
-                            $("#show_channel_{{ c.chan_id }}").html("Hide Details");
-                        }
-                        show_channel_{{ c.chan_id }}_details = ! show_channel_{{ c.chan_id }}_details;
-                    });
+                    (function(chan_id) {
+                        var showing_details = false;
+                        $("#show_channel_" + chan_id).on("click", function() {
+                            if (showing_details) {
+                                $("#channel_table_" + chan_id).slideUp(400);
+                                $("#show_channel_" + chan_id).text("Show Details");
+                            } else {
+                                $("#channel_table_" + chan_id).slideDown(400);
+                                $("#show_channel_" + chan_id).text("Hide Details");
+                            }
+                            showing_details = !showing_details;
+                        });
+                    })({{ c.chan_id|tojson }});
                 {% endfor %}     
             });
         </script>
@@ -237,9 +268,9 @@
                         <tr>
                             <th>Macaroons</th>
                             <td>
-                                <a class="ui-button ui-widget ui-corner-all mynode_button_small" href="/lnd/admin.macaroon">admin</a>
-                                <a class="ui-button ui-widget ui-corner-all mynode_button_small" href="/lnd/readonly.macaroon">readonly</a>
-                                <a class="ui-button ui-widget ui-corner-all mynode_button_small" href="/lnd/invoice.macaroon">invoice</a>
+                                <a class="ui-button ui-widget ui-corner-all mynode_button_small download_macaroon" data-macaroon="admin" href="#">admin</a>
+                                <a class="ui-button ui-widget ui-corner-all mynode_button_small download_macaroon" data-macaroon="readonly" href="#">readonly</a>
+                                <a class="ui-button ui-widget ui-corner-all mynode_button_small download_macaroon" data-macaroon="invoice" href="#">invoice</a>
                             </td>
                         </tr>
 {% endif %}
@@ -312,7 +343,7 @@
         <div class="app_tile_row">
             <div class="info_tile">
                 <div class="info_tile_header">URI</div>
-                <div class="info_tile_contents" style="font-size: 12px;">{{uri}}</div>
+                <div class="info_tile_contents" style="font-size: 12px; white-space: pre-line;">{{uri}}</div>
             </div>
         </div>
 {% endif %}
@@ -366,6 +397,12 @@
                             {% endif %}
                         </td>
                     </tr>
+                    {% if closing_balance != "0" %}
+                    <tr>
+                        <th><b>Closing Channels</b></th>
+                        <td>{{ closing_balance }} sats</td>
+                    </tr>
+                    {% endif %}
                 </table>
             </div>
         </div>
@@ -374,7 +411,7 @@
     {% if transactions and transactions|length > 0 or payments and payments|length > 0 or invoices and invoices|length > 0 %}
         <br/>
         <div class="main_header">Recent Transactions</div>
-        <div class="app_tile_row">
+        <div class="app_tile_row" style="align-items: flex-start;">
         {% if transactions and transactions|length > 0 %}
             <table style="font-size: 12px; width: 300px; margin: 10px;" class="bitcoin_table">
                 <thead class="bitcoin_table_header">
@@ -383,14 +420,24 @@
                 <thead class="bitcoin_table_header">
                     <td>Date</td>
                     <td>Amount</td>
-                    <td>Confirmations</td>
+                    <td></td>
                 </thead>
                 <tbody>
                     {% for tx in transactions[:tx_display_limit] %}
                         <tr>
                             <td>{{ tx.date_str }}</td>
                             <td>{{ tx.amount_str }}</td>
-                            <td>{{ tx.num_confirmations }}</td>
+                            <td>
+                                {% set confirmations = tx.num_confirmations|int %}
+                                {% if confirmations < 1 %}
+                                    <img style="width: 16px; vertical-align: middle;" src="{{ url_for('static', filename='images/confirm_pending.png') }}" title="pending transaction"/>
+                                {% elif confirmations <= 3 %}
+                                    <img style="width: 16px; vertical-align: middle;" src="{{ url_for('static', filename='images/confirm_bars_' ~ confirmations ~ '.png') }}" title="{{ confirmations }} confirmations"/>
+                                {% else %}
+                                    <img style="width: 16px; vertical-align: middle;" src="{{ url_for('static', filename='images/confirm_complete.png') }}" title="{{ confirmations }} confirmations"/>
+                                {% endif %}
+                                {% if tx.label_icon %}<img style="width: 16px; vertical-align: middle; margin-left: 4px;" src="{{ url_for('static', filename='images/' + tx.label_icon) }}" title="{{ tx.label_str }}"/>{% else %}<span style="display: inline-block; width: 16px; margin-left: 4px;"></span>{% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                     {% if transactions|length >= tx_display_limit %}
@@ -435,8 +482,7 @@
                 <thead class="bitcoin_table_header">
                     <td>Date</td>
                     <td>Amount</td>
-                    <td>Memo</td>
-                    <td>State</td>
+                    <td></td>
                 </thead>
                 <tbody>
                     {% for tx in invoices[:tx_display_limit] %}
@@ -444,11 +490,17 @@
                             <td>{{ tx.date_str }}</td>
                             <td>{{ tx.value_str }}</td>
                             <td>
-                                {% if tx.memo != "" %}
-                                    <img style="width: 16px;" src="{{ url_for('static', filename="images/memo.png")}}" title="{{ tx.memo }}"/>
+                                {% if tx.state == "OPEN" %}
+                                    <img style="width: 16px; vertical-align: middle;" src="{{ url_for('static', filename='images/invoice_pending.png') }}" title="open invoice"/>
+                                {% elif tx.state == "SETTLED" %}
+                                    <img style="width: 16px; vertical-align: middle;" src="{{ url_for('static', filename='images/invoice_complete.png') }}" title="settled invoice"/>
+                                {% elif tx.state in ["CANCELED", "CANCELLED"] %}
+                                    <img style="width: 16px; vertical-align: middle;" src="{{ url_for('static', filename='images/invoice_cancelled.png') }}" title="cancelled invoice"/>
+                                {% else %}
+                                    <img style="width: 16px; vertical-align: middle;" src="{{ url_for('static', filename='images/tooltip_icon.png') }}" title="{{ tx.state|lower }} invoice"/>
                                 {% endif %}
+                                {% if tx.memo != "" %}<img style="width: 16px; vertical-align: middle; margin-left: 4px;" src="{{ url_for('static', filename='images/memo.png') }}" title="{{ tx.memo }}"/>{% else %}<span style="display: inline-block; width: 16px; margin-left: 4px;"></span>{% endif %}
                             </td>
-                            <td>{{ tx.state }}</td>
                         </tr>
                     {% endfor %}
                     {% if invoices|length >= tx_display_limit %}
@@ -613,6 +665,20 @@
                 <br/>
                 <input type="password" name="password_pair_wallet" id="password_pair_wallet" value="" class="text ui-widget-content ui-corner-all">
             
+                <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </form>
+        </div>
+
+        <div id="macaroon-dialog" title="Download Macaroon" style="display:none;">
+            <form id="macaroon_form" name="macaroon_form" action="" method="POST">
+                <p>Macaroons grant access to your Lightning node. The admin macaroon gives full control of your funds.
+                    Do not share them with others.</p>
+                <p>Please enter your password to download the macaroon.</p>
+                <b>Password:</b>
+                <br/>
+                <input type="password" name="password_macaroon" id="password_macaroon" value="" class="text ui-widget-content ui-corner-all">
+
                 <!-- Allow form submission with keyboard without duplicating the dialog button -->
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
             </form>

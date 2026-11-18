@@ -14,14 +14,24 @@ date
 # Mark we are upgrading
 echo "upgrading" > $MYNODE_STATUS_FILE
 
+# Components that fail to upgrade are skipped so the rest can finish, and are
+# recorded so the upgrade is reported as incomplete
+rm -f $UPGRADE_INCOMPLETE_FILE
+function upgrade_component_failed()
+{
+    echo "$1"
+    touch $UPGRADE_INCOMPLETE_FILE
+}
+
 # Shut down main services to save memory and CPU
 /usr/bin/mynode_stop_critical_services.sh
 
-# Check if upgrades use tor
-TORIFY=""
-if [ -f /mnt/hdd/mynode/settings/torify_apt_get ]; then
-    TORIFY="torify"
-fi
+# Don't let automatic OS security updates use apt at the same time
+pause_automatic_os_updates
+
+# Remove the old setting to download upgrades via tor
+rm -f /mnt/hdd/mynode/settings/torify_apt_get /mnt/hdd/mynode/settings/.torify_apt_get
+rm -f /home/bitcoin/.mynode/torify_apt_get /home/bitcoin/.mynode/.torify_apt_get
 
 # Delete ramlog to prevent ram issues (remake necessary folders)
 rm -rf /var/log/*
@@ -37,6 +47,10 @@ if ! skip_base_upgrades ; then
     # Update SD card
     mkdir -p /etc/torrc.d
 
+    # Remove macOS metadata files (._*, .DS_Store) shipped by older releases
+    find -H / /home /lib /opt /usr /var -maxdepth 1 -type f \( -name '._*' -o -name '.DS_Store' \) -delete || true
+    find /etc /home/admin /home/bitcoin /lib/systemd /opt/mynode /usr/bin /usr/share /var/pynode /var/www -xdev -type f \( -name '._*' -o -name '.DS_Store' \) -delete || true
+
     # Initialize Users
     /usr/bin/mynode_initialize_users.sh
 
@@ -51,9 +65,6 @@ if ! skip_base_upgrades ; then
     systemctl stop https || true
     systemctl disable tls_proxy || true
     systemctl stop tls_proxy || true
-
-    # Create dhparam.pem (do before dpkg configure since its needed for nginx)
-    /usr/bin/mynode_gen_dhparam.sh
 
 
     # Check if any dpkg installs have failed and correct
@@ -94,6 +105,20 @@ if ! skip_base_upgrades ; then
         # Comment out nodesource repo for buster (doesn't work anymore)
         sed -i 's|^deb|#deb|' /etc/apt/sources.list.d/nodesource.list
     fi
+    if [ "$DEBIAN_CODENAME" = "bullseye" ]; then
+        # The Tor Project no longer serves bullseye
+        sed -i '/^deb https:\/\/deb.torproject.org/d' /etc/apt/sources.list
+        sed -i '/^deb-src https:\/\/deb.torproject.org/d' /etc/apt/sources.list
+    fi
+    # NodeSource removed its per-codename repos (e.g. "node_18.x bookworm main"), which now 404 and
+    # make apt-get update fail. Move an old entry to "nodistro", keeping its Node version, before updating.
+    if [ -f /etc/apt/sources.list.d/nodesource.list ] && grep -q "^deb .*deb\.nodesource\.com/node_" /etc/apt/sources.list.d/nodesource.list && ! grep -q "^deb .* nodistro main" /etc/apt/sources.list.d/nodesource.list; then
+        OLD_NODE_REPO_VERSION=$(sed -n 's|^deb .*deb\.nodesource\.com/node_\([0-9]*\.x\).*|\1|p' /etc/apt/sources.list.d/nodesource.list | head -n 1)
+        if [ "$OLD_NODE_REPO_VERSION" != "" ]; then
+            echo "Repairing stale NodeSource apt repo entry (codename -> nodistro) for node_${OLD_NODE_REPO_VERSION}"
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${OLD_NODE_REPO_VERSION} nodistro main" > /etc/apt/sources.list.d/nodesource.list
+        fi
+    fi
 
     # Raspbian mirrors
     #if [ $IS_RASPI = 1 ]; then
@@ -116,46 +141,52 @@ if ! skip_base_upgrades ; then
     gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 187F6ADD93AE3B0CF335AA6AB984570980684DCC # Lightning Terminal
     gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys C20A78516A0944900EBFCA29961CC8259AE675D4 # Lightning Terminal (Viktor)
     gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 3E9BD4436C288039CA827A9200C9E2BC2E45666F # RTL (Suheb)
-    $TORIFY wget -q https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc -O- | apt-key add - # Tor
+    wget -q https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc -O- | apt-key add - # Tor
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 648ACFD622F3D138   # Debian Backports
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E98404D386FA1D9   # Debian Backports
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 66F6C87B98EBCFE2   # I2P (R4SAS)
-    gpg --no-default-keyring --keyring /usr/share/keyrings/nodesource.gpg --keyserver keyserver.ubuntu.com --recv-keys 2F59B5F99B1BE0B4 # NodeJS
+    gpg --no-default-keyring --keyring /usr/share/keyrings/nodesource.gpg --keyserver keyserver.ubuntu.com --recv-keys 6F71F525282841EEDAF851B42F59B5F99B1BE0B4 # NodeJS
     set -e
 
     # Check for updates (might auto-install all updates later)
     export DEBIAN_FRONTEND=noninteractive
-    $TORIFY apt-get update --allow-releaseinfo-change || \
-            apt-get update --allow-releaseinfo-change
+    apt_get_update
 
     # Freeze any packages we don't want to update
     if [ $IS_X86 = 1 ]; then
         apt-mark hold grub*
     fi
-    #apt-mark hold redis-server
+    apt-mark unhold redis-server || true   # Images from 2020-2022 hold it
 
-    # Upgrade packages
-    $TORIFY apt-get -y upgrade
+    # Upgrade packages, including new kernels
+    apt-get -y --with-new-pkgs upgrade
 
     # Install any new software
-    $TORIFY apt-get -y install apt-transport-https lsb-release gnupg
-    $TORIFY apt-get -y install fonts-dejavu
-    $TORIFY apt-get -y install pv sysstat network-manager unzip pkg-config libfreetype6-dev libpng-dev
-    $TORIFY apt-get -y install libatlas-base-dev libffi-dev libssl-dev python3-bottle
-    $TORIFY apt-get -y -qq install apt-transport-https ca-certificates
-    $TORIFY apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
-    $TORIFY apt-get -y install libevent-dev ncurses-dev
-    $TORIFY apt-get -y install libudev-dev libusb-1.0-0-dev python3-venv gunicorn sqlite3 libsqlite3-dev
-    $TORIFY apt-get -y install torsocks python3-requests libsystemd-dev libjpeg-dev zlib1g-dev psmisc
-    $TORIFY apt-get -y install hexyl libbz2-dev liblzma-dev netcat-openbsd hdparm iotop nut obfs4proxy
-    $TORIFY apt-get -y install libpq-dev socat btrfs-progs i2pd apparmor pass gdisk xxd
-    $TORIFY apt-get -y install cmake pkgconf libcurl4-openssl-dev libjansson-dev libmicrohttpd-dev libsodium-dev
-    $TORIFY apt-get -y install --no-install-recommends smartmontools nvme-cli
+    apt-get -y install apt-transport-https lsb-release gnupg
+    apt-get -y install fonts-dejavu
+    apt-get -y install pv sysstat network-manager unzip pkg-config libfreetype6-dev libpng-dev
+    apt-get -y install libatlas-base-dev libffi-dev libssl-dev python3-bottle
+    apt-get -y -qq install apt-transport-https ca-certificates
+    apt-get -y install libgmp-dev automake libtool libltdl-dev libltdl7
+    apt-get -y install libevent-dev ncurses-dev
+    apt-get -y install libudev-dev libusb-1.0-0-dev python3-venv gunicorn sqlite3 libsqlite3-dev
+    apt-get -y install torsocks python3-requests libsystemd-dev libjpeg-dev zlib1g-dev psmisc
+    apt-get -y install hexyl libbz2-dev liblzma-dev netcat-openbsd hdparm iotop nut obfs4proxy
+    apt-get -y install libpq-dev socat btrfs-progs i2pd apparmor pass gdisk xxd
+    apt-get -y install cmake pkgconf libcurl4-openssl-dev libjansson-dev libmicrohttpd-dev libsodium-dev
+    apt-get -y install --no-install-recommends smartmontools nvme-cli
     # nvme-cli enables NVMe over Fabrics units MyNode doesn't use (they fail on kernels without nvme-fabrics)
     systemctl mask nvmf-autoconnect.service nvmf-connect@.service nvmefc-boot-connections.service > /dev/null 2>&1 || true
+    # smartmontools enables the smartd daemon, which MyNode doesn't use (the SMART test runs smartctl). It fails
+    # when no drive passes SMART through. The unit is smartmontools.service on Debian 12, smartd.service on 10.
+    systemctl disable --now smartmontools.service smartd.service > /dev/null 2>&1 || true
+    systemctl reset-failed smartmontools.service smartd.service > /dev/null 2>&1 || true
+
+    # Install automatic OS security updates (turned on or off in mynode_unattended_upgrades.sh)
+    apt-get -y install unattended-upgrades
 
     # Install Java
-    $TORIFY apt-get -y install default-jre
+    apt-get -y install default-jre
 
     # Install software specific to debian version
     if [ "$DEBIAN_CODENAME" == "bullseye" ]; then
@@ -163,7 +194,7 @@ if ! skip_base_upgrades ; then
     elif [ "$DEBIAN_CODENAME" == "bookworm" ]; then
         apt-get -y install wireguard
     elif [ "$DEBIAN_CODENAME" == "buster" ]; then
-        $TORIFY apt-get -y -t buster-backports install wireguard
+        apt-get -y -t buster-backports install wireguard
     else
         echo "========================================="
         echo "== UNKNOWN DEBIAN VERSION: $DEBIAN_CODENAME"
@@ -173,35 +204,48 @@ if ! skip_base_upgrades ; then
 
     # Use journald for the fail2ban sshd jail (no auth.log without rsyslog on Debian 12+)
     if [ "$DEBIAN_VERSION" -ge "12" ]; then
-        $TORIFY apt-get -y install python3-systemd
+        apt-get -y install python3-systemd
         mkdir -p /etc/fail2ban/jail.d
-        printf "[sshd]\nbackend = systemd\n" > /etc/fail2ban/jail.d/mynode_sshd.conf
+        printf "[sshd]\nbackend = systemd\njournalmatch = _SYSTEMD_UNIT=ssh.service + _COMM=sshd\n" > /etc/fail2ban/jail.d/mynode_sshd.conf
     fi
+
+    # The VPN setup used to install iptables-persistent, which replaces ufw on Debian 12.
+    # Remove it and its saved rules, and make sure ufw is installed. The VPN's rules are
+    # set up in ufw when the VPN starts.
+    if dpkg-query -W -f='${Status}\n' iptables-persistent netfilter-persistent 2>/dev/null | grep -q "ok installed" || \
+       ! dpkg-query -W -f='${Status}' ufw 2>/dev/null | grep -q "ok installed"; then
+        apt-get -y purge iptables-persistent netfilter-persistent || true
+        rm -f /etc/iptables/rules.v4 /etc/iptables/rules.v6
+        if [ -f /etc/pivpn/NO_UFW ]; then
+            echo 0 > /etc/pivpn/NO_UFW
+        fi
+    fi
+    apt-get -y install ufw
 
     # Install Openbox GUI
     if [ $IS_X86 = 1 ]; then
-        $TORIFY apt-get -y install xorg chromium openbox lightdm
+        apt-get -y install xorg chromium openbox lightdm
     fi
 
     # Install device specific packages
     if [ $IS_X86 = 1 ]; then
-        $TORIFY apt-get -y install cloud-init
-        $TORIFY apt-get -y install intel-microcode || true
+        apt-get -y install cloud-init
+        apt-get -y install intel-microcode || true
     fi
 
     # Use timesyncd for NTP
     apt-get -y purge ntp # (conflicts with systemd-timedatectl)
     apt-get -y purge chrony # (conflicts with systemd-timedatectl)
     if [ $IS_ARMBIAN = 1 ] ; then
-        $TORIFY apt-get -y install systemd-timesyncd || true
+        apt-get -y install systemd-timesyncd || true
         timedatectl set-ntp true || true
     fi
 
 
     # Install nginx
     mkdir -p /var/log/nginx || true
-    $TORIFY apt-get -y install nginx || true
-    $TORIFY apt-get install libnginx-mod-stream || true
+    apt-get -y install nginx || true
+    apt-get install libnginx-mod-stream || true
     # Install may fail, so we need to edit the default config file and reconfigure
     rm -f /etc/nginx/modules-enabled/50-mod-* || true
     echo "" > /etc/nginx/sites-available/default
@@ -269,7 +313,9 @@ if ! skip_base_upgrades ; then
 
     # Update Python3
     CURRENT_PYTHON3_VERSION=$(python3 --version)
-    if [[ "$CURRENT_PYTHON3_VERSION" != *"Python ${PYTHON_VERSION}"* ]]; then
+    # mynode_upgrade_os.sh asks for a rebuild after a Debian release upgrade changes its libraries
+    PYTHON_REBUILD_FILE=/home/bitcoin/.mynode/rebuild_python
+    if [[ "$CURRENT_PYTHON3_VERSION" != *"Python ${PYTHON_VERSION}"* ]] || [ -f $PYTHON_REBUILD_FILE ]; then
         mkdir -p /opt/download
         cd /opt/download
         rm -rf Python-*
@@ -284,6 +330,7 @@ if ! skip_base_upgrades ; then
         make -j4
         make install
         #make altinstall # Installs version, but doesn't become default python3
+        rm -f $PYTHON_REBUILD_FILE
 
         # Mark apps using python as needing re-install
         rm -f /home/bitcoin/.mynode/specter_version
@@ -315,16 +362,15 @@ if ! skip_base_upgrades ; then
 
 
     # Install any pip3 software
-    PIP_TOOLS="pip==$PYTHON_PIP_VERSION setuptools==$PYTHON_SETUPTOOLS_VERSION wheel==$PYTHON_WHEEL_VERSION"
-    /usr/local/bin/python3 -m pip install $PIP_TOOLS || /usr/local/bin/python3 -m pip install $PIP_TOOLS --use-deprecated=html5lib
+    PIP_TOOLS="pip==$PYTHON_PIP_VERSION setuptools==$PYTHON_SETUPTOOLS_VERSION wheel==$PYTHON_WHEEL_VERSION packaging==$PYTHON_PACKAGING_VERSION"
+    /usr/local/bin/python3 -m pip install $PIP_TOOLS
     
     # PyYAML Workaround (maybe only needed for python 3.10+)
     #echo 'Cython < 3.0' > /tmp/constraint.txt
     #PIP_CONSTRAINT=/tmp/constraint.txt pip3 wheel PyYAML==5.4.1
     #pip3 install 'PyYAML==5.4.1'
     
-    /usr/local/bin/python3 -m pip install -r /usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir || \
-        /usr/local/bin/python3 -m pip install -r /usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir --use-deprecated=html5lib
+    /usr/local/bin/python3 -m pip install -r /usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir
 
     # Install uv and the Python for apps with their own venv (64-bit only)
     if [ $IS_64_BIT = 1 ]; then
@@ -386,7 +432,7 @@ if ! skip_base_upgrades ; then
         CURRENT_NODE_VERSION=$(cat /etc/apt/sources.list.d/nodesource.list /etc/apt/sources.list.d/nodesource.sources 2>/dev/null || true)
         if [ $NODE_TOO_OLD = 1 ] || [[ "$CURRENT_NODE_VERSION" != *"node_${NODE_JS_VERSION}"* ]]; then
             # Upgrade node
-            curl -sL https://deb.nodesource.com/setup_${NODE_JS_VERSION} | bash -
+            install_nodesource_repo $NODE_JS_VERSION
             apt-get install -y nodejs
 
             # Mark apps using node as needing re-install
@@ -406,10 +452,6 @@ if ! skip_base_upgrades ; then
             # Remove global and cached packages built against the old version
             npm uninstall -g balanceofsatoshis || true
             npm cache clean --force || true
-        elif [[ "$CURRENT_NODE_VERSION" != *"nodistro"* ]]; then
-            # Same major version, but we need to handle nodesource's migration from codename -> nodistro
-            echo "Repairing stale NodeSource apt repo entry (codename -> nodistro)"
-            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODE_JS_VERSION} nodistro main" > /etc/apt/sources.list.d/nodesource.list
         else
             echo "Node version match"
         fi
@@ -422,12 +464,12 @@ if ! skip_base_upgrades ; then
     
     # Install Docker
     mkdir -p /etc/apt/keyrings
-    $TORIFY curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --batch --yes --dearmor -o /etc/apt/keyrings/docker.gpg
+    curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --batch --yes --dearmor -o /etc/apt/keyrings/docker.gpg
     echo \
         "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
         $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
-    $TORIFY apt-get update --allow-releaseinfo-change
-    $TORIFY apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin || true
+    apt_get_update
+    apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin || true
 
     # docker-compose is Compose v2 from docker-compose-plugin. The old pip Compose v1 fails to
     # recreate containers on current Docker. BTCPay's installer may already have put its own v2
@@ -437,7 +479,7 @@ if ! skip_base_upgrades ; then
         # BTCPay's installer also replaces the plugin with a link to /usr/local/bin/docker-compose
         if [ -L $COMPOSE_PLUGIN ]; then
             rm -f $COMPOSE_PLUGIN
-            $TORIFY apt-get install -y --reinstall docker-compose-plugin || true
+            apt-get install -y --reinstall docker-compose-plugin || true
         fi
         if [ -f $COMPOSE_PLUGIN ]; then
             /usr/local/bin/python3 -m pip uninstall -y docker-compose || true
@@ -520,7 +562,7 @@ if [ "$CURRENT" != "$BTC_VERSION" ]; then
     wget $BTC_UPGRADE_SHA256SUM_ASC_URL -O SHA256SUMS.asc
 
     if sha256sum --ignore-missing --check SHA256SUMS; then
-        if gpg --verify SHA256SUMS.asc SHA256SUMS |& grep "gpg: Good signature"; then
+        if check_gpg_signer SHA256SUMS.asc SHA256SUMS $BTC_SIGNER_FINGERPRINTS; then
             # Install Bitcoin
             tar -xvf bitcoin-$BTC_VERSION-$ARCH.tar.gz
             mv bitcoin-$BTC_VERSION bitcoin
@@ -533,10 +575,10 @@ if [ "$CURRENT" != "$BTC_VERSION" ]; then
             wget $BTC_CLI_COMPLETION_URL -O bitcoin-cli.bash
             sudo cp bitcoin-cli.bash /etc/bash_completion.d/bitcoin-cli
         else
-            echo "ERROR UPGRADING BITCOIN - GPG FAILED"
+            upgrade_component_failed "ERROR UPGRADING BITCOIN - GPG FAILED"
         fi
     else
-        echo "ERROR UPGRADING BITCOIN - SHASUM FAILED"
+        upgrade_component_failed "ERROR UPGRADING BITCOIN - SHASUM FAILED"
     fi
 elif [[ "$CURRENT" == *"_autoupdate" ]]; then
     # Handle custom versions that auto-update
@@ -572,10 +614,12 @@ if [ "$CURRENT" != "$LND_VERSION" ]; then
     wget $LND_UPGRADE_MANIFEST_SUHEB_SIG_URL -O manifest_suheb.txt.sig || true
     wget $LND_UPGRADE_MANIFEST_VICTORT_SIG_URL -O manifest_victort.txt.sig || true
 
-    if gpg --verify manifest_roasbeef.txt.sig manifest.txt || \
-       gpg --verify manifest_guggero.txt.sig manifest.txt || \
-       gpg --verify manifest_suheb.txt.sig manifest.txt || \
-       gpg --verify manifest_victort.txt.sig manifest.txt; then
+    # Check the signature, then the download against the signed manifest
+    if { check_gpg_signer manifest_roasbeef.txt.sig manifest.txt $LND_SIGNER_FINGERPRINTS || \
+         check_gpg_signer manifest_guggero.txt.sig manifest.txt $LND_SIGNER_FINGERPRINTS || \
+         check_gpg_signer manifest_suheb.txt.sig manifest.txt $LND_SIGNER_FINGERPRINTS || \
+         check_gpg_signer manifest_victort.txt.sig manifest.txt $LND_SIGNER_FINGERPRINTS; } &&
+       awk -v f="$LND_ARCH-$LND_VERSION.tar.gz" '$2 == f' manifest.txt | sha256sum --check -; then
         # Install LND
         tar -xzf lnd-*.tar.gz
         mv $LND_ARCH-$LND_VERSION lnd
@@ -584,7 +628,7 @@ if [ "$CURRENT" != "$LND_VERSION" ]; then
         # Mark current version
         echo $LND_VERSION > $LND_VERSION_FILE
     else
-        echo "ERROR UPGRADING LND - GPG FAILED"
+        upgrade_component_failed "ERROR UPGRADING LND - VERIFICATION FAILED"
     fi
 
     # Download bash-completion file for lncli
@@ -616,7 +660,9 @@ if [ "$CURRENT" != "$LOOP_VERSION" ]; then
     wget $LOOP_UPGRADE_MANIFEST_URL -O manifest.txt
     wget $LOOP_UPGRADE_MANIFEST_SIG_URL -O manifest.txt.sig
 
-    if gpg --verify manifest.txt.sig manifest.txt; then
+    # Check the signature, then the download against the signed manifest
+    if check_gpg_signer manifest.txt.sig manifest.txt $LOOP_SIGNER_FINGERPRINTS &&
+       awk -v f="$LOOP_ARCH-$LOOP_VERSION.tar.gz" '$2 == f' manifest.txt | sha256sum --check -; then
         # Install Loop
         tar -xzf loop-*.tar.gz
         mv $LOOP_ARCH-$LOOP_VERSION loop
@@ -625,7 +671,7 @@ if [ "$CURRENT" != "$LOOP_VERSION" ]; then
         # Mark current version
         echo $LOOP_VERSION > $LOOP_VERSION_FILE
     else
-        echo "ERROR UPGRADING LOOP - GPG FAILED"
+        upgrade_component_failed "ERROR UPGRADING LOOP - VERIFICATION FAILED"
     fi
 fi
 
@@ -653,7 +699,9 @@ if [ "$CURRENT" != "$POOL_VERSION" ]; then
     wget $POOL_UPGRADE_MANIFEST_URL -O manifest.txt
     wget $POOL_UPGRADE_MANIFEST_SIG_URL -O manifest.txt.sig
 
-    if gpg --verify manifest.txt.sig manifest.txt; then
+    # Check the signature, then the download against the signed manifest
+    if check_gpg_signer manifest.txt.sig manifest.txt $POOL_SIGNER_FINGERPRINTS &&
+       awk -v f="$POOL_ARCH-$POOL_VERSION.tar.gz" '$2 == f' manifest.txt | sha256sum --check -; then
         # Install Pool
         tar -xzf pool-*.tar.gz
         mv $POOL_ARCH-$POOL_VERSION pool
@@ -662,7 +710,7 @@ if [ "$CURRENT" != "$POOL_VERSION" ]; then
         # Mark current version
         echo $POOL_VERSION > $POOL_VERSION_FILE
     else
-        echo "ERROR UPGRADING POOL - GPG FAILED"
+        upgrade_component_failed "ERROR UPGRADING POOL - VERIFICATION FAILED"
     fi
 fi
 
@@ -689,9 +737,13 @@ if [ "$CURRENT" != "$LIT_VERSION" ] || [ ! -f /usr/local/bin/frcli ]; then
 
     wget $LIT_UPGRADE_URL
     wget $LIT_UPGRADE_MANIFEST_URL -O manifest.txt
-    wget $LIT_UPGRADE_MANIFEST_SIG_URL  -O manifest.txt.sig
+    wget $LIT_UPGRADE_MANIFEST_ROASBEEF_SIG_URL -O manifest_roasbeef.txt.sig || true
+    wget $LIT_UPGRADE_MANIFEST_VIKTORT_SIG_URL -O manifest_viktort.txt.sig || true
 
-    if gpg --verify manifest.txt.sig manifest.txt; then
+    # Check the signature, then the download against the signed manifest
+    if { check_gpg_signer manifest_roasbeef.txt.sig manifest.txt $LIT_SIGNER_FINGERPRINTS || \
+         check_gpg_signer manifest_viktort.txt.sig manifest.txt $LIT_SIGNER_FINGERPRINTS; } &&
+       awk -v f="$LIT_ARCH-$LIT_VERSION.tar.gz" '$2 == f' manifest.txt | sha256sum --check -; then
         # Install lit
         tar -xzf lightning-terminal-*.tar.gz
         mv $LIT_ARCH-$LIT_VERSION lightning-terminal
@@ -700,7 +752,7 @@ if [ "$CURRENT" != "$LIT_VERSION" ] || [ ! -f /usr/local/bin/frcli ]; then
         # Mark current version
         echo $LIT_VERSION > $LIT_VERSION_FILE
     else
-        echo "ERROR UPGRADING LIT - GPG FAILED"
+        upgrade_component_failed "ERROR UPGRADING LIT - VERIFICATION FAILED"
     fi
 fi
 
@@ -728,7 +780,9 @@ if [ "$CURRENT" != "$CHANTOOLS_VERSION" ]; then
     wget $CHANTOOLS_UPGRADE_MANIFEST_URL -O manifest.txt
     wget $CHANTOOLS_UPGRADE_MANIFEST_SIG_URL  -O manifest.txt.sig
 
-    if gpg --verify manifest.txt.sig manifest.txt; then
+    # Check the signature, then the download against the signed manifest
+    if check_gpg_signer manifest.txt.sig manifest.txt $CHANTOOLS_SIGNER_FINGERPRINTS &&
+       awk -v f="$CHANTOOLS_ARCH-$CHANTOOLS_VERSION.tar.gz" '$2 == f' manifest.txt | sha256sum --check -; then
         # Install lit
         tar -xzf chantools-*.tar.gz
         mv $CHANTOOLS_ARCH-$CHANTOOLS_VERSION chantools
@@ -737,7 +791,7 @@ if [ "$CURRENT" != "$CHANTOOLS_VERSION" ]; then
         # Mark current version
         echo $CHANTOOLS_VERSION > $CHANTOOLS_VERSION_FILE
     else
-        echo "ERROR UPGRADING CHANTOOLS - GPG FAILED"
+        upgrade_component_failed "ERROR UPGRADING CHANTOOLS - VERIFICATION FAILED"
     fi
 fi
 
@@ -766,7 +820,7 @@ if should_install_app "lndhub" ; then
 
             echo $LNDHUB_VERSION > $LNDHUB_VERSION_FILE
         else
-            echo "ERROR: LndHub install failed"
+            upgrade_component_failed "ERROR: LndHub install failed"
         fi
     fi
     cd ~
@@ -801,7 +855,7 @@ if should_install_app "caravan" ; then
             echo $CARAVAN_VERSION > $CARAVAN_VERSION_FILE
             touch $CARAVAN_SETTINGS_UPDATE_FILE
         else
-            echo "ERROR: Caravan build failed"
+            upgrade_component_failed "ERROR: Caravan build failed"
         fi
     fi
     cd ~
@@ -829,13 +883,23 @@ if [ "$CURRENT" != "$CORSPROXY_VERSION" ]; then
     if npm install; then
         echo $CORSPROXY_VERSION > $CORSPROXY_VERSION_FILE
     else
-        echo "ERROR: CORS Proxy install failed"
+        upgrade_component_failed "ERROR: CORS Proxy install failed"
     fi
 fi
 cd ~
 
 
 # Upgrade electrs (just mark version, included in overlay)
+# Record which electrs version built the index that is already on disk, before the installed
+# version is overwritten below. pre_electrs.sh uses it to decide whether the index has to be
+# rebuilt for the version this upgrade installs.
+if [ ! -f $ELECTRS_INDEX_FORMAT_FILE ] && [ -f $ELECTRS_VERSION_FILE ]; then
+    if [ -d /mnt/hdd/mynode/electrs/bitcoin ] || [ -d /mnt/hdd/mynode/electrs/testnet ]; then
+        PREVIOUS_ELECTRS_VERSION=$(cat $ELECTRS_VERSION_FILE)
+        echo "${PREVIOUS_ELECTRS_VERSION#v}" | cut -d. -f1,2 > $ELECTRS_INDEX_FORMAT_FILE
+        chown bitcoin:bitcoin $ELECTRS_INDEX_FORMAT_FILE || true
+    fi
+fi
 echo $ELECTRS_VERSION > $ELECTRS_VERSION_FILE
 
 
@@ -921,7 +985,7 @@ if should_install_app "joininbox"; then
                 echo $JOININBOX_PATCH_REVISION > $JOININBOX_PATCH_REVISION_FILE
                 echo $JOININBOX_VERSION > $JOININBOX_VERSION_FILE
             else
-                echo "ERROR: JoinInBox install failed"
+                upgrade_component_failed "ERROR: JoinInBox install failed"
             fi
         fi
     fi
@@ -929,27 +993,6 @@ else
     # Older images enabled ob-watcher without JoinMarket, so it failed and restarted every minute
     systemctl disable --now ob-watcher > /dev/null 2>&1 || true
 fi
-
-# Install Whirlpool
-if should_install_app "whirlpool" ; then
-    WHIRLPOOL_UPGRADE_URL=https://code.samourai.io/whirlpool/whirlpool-client-cli/uploads/$WHIRLPOOL_UPLOAD_FILE_ID/whirlpool-client-cli-$WHIRLPOOL_VERSION-run.jar
-    CURRENT=""
-    if [ -f $WHIRLPOOL_VERSION_FILE ]; then
-        CURRENT=$(cat $WHIRLPOOL_VERSION_FILE)
-    fi
-    if [ "$CURRENT" != "$WHIRLPOOL_VERSION" ]; then
-        sudo -u bitcoin mkdir -p /opt/mynode/whirlpool
-        cd /opt/mynode/whirlpool
-        sudo rm -rf *.jar
-        sudo -u bitcoin wget -O whirlpool.jar $WHIRLPOOL_UPGRADE_URL
-
-        cp -f /usr/share/whirlpool/whirlpool.asc whirlpool.asc
-        gpg --verify whirlpool.asc
-
-        echo $WHIRLPOOL_VERSION > $WHIRLPOOL_VERSION_FILE
-    fi
-fi
-
 
 # Upgrade RTL
 if should_install_app "rtl" ; then
@@ -966,7 +1009,7 @@ if should_install_app "rtl" ; then
         sudo -u bitcoin wget $RTL_UPGRADE_URL -O RTL.tar.gz
         sudo -u bitcoin wget $RTL_UPGRADE_ASC_URL -O RTL.tar.gz.asc
 
-        if gpg --verify RTL.tar.gz.asc RTL.tar.gz; then
+        if check_gpg_signer RTL.tar.gz.asc RTL.tar.gz $RTL_SIGNER_FINGERPRINTS; then
             sudo -u bitcoin tar -xvf RTL.tar.gz
             sudo -u bitcoin rm RTL.tar.gz RTL.tar.gz.asc
             sudo -u bitcoin mv RTL-* RTL
@@ -974,10 +1017,10 @@ if should_install_app "rtl" ; then
             if sudo -u bitcoin NG_CLI_ANALYTICS=false npm install --omit=dev --legacy-peer-deps; then
                 echo $RTL_VERSION > $RTL_VERSION_FILE
             else
-                echo "ERROR: RTL install failed"
+                upgrade_component_failed "ERROR: RTL install failed"
             fi
         else
-            echo "ERROR UPGRADING RTL - GPG FAILED"
+            upgrade_component_failed "ERROR UPGRADING RTL - GPG FAILED"
         fi
     fi
 fi
@@ -1001,7 +1044,7 @@ if should_install_app "btcrpcexplorer" ; then
         if sudo -u bitcoin npm install --omit=dev; then
             echo $BTCRPCEXPLORER_VERSION > $BTCRPCEXPLORER_VERSION_FILE
         else
-            echo "ERROR: BTC RPC Explorer install failed"
+            upgrade_component_failed "ERROR: BTC RPC Explorer install failed"
         fi
     fi
 fi
@@ -1026,7 +1069,14 @@ if should_install_app "specter" ; then
         sudo -u bitcoin mynode-uv venv --python $APP_PYTHON_MINOR_VERSION env
         sudo -u bitcoin mynode-uv pip install --require-hashes --python env/bin/python -r /usr/share/mynode/venvs/specter.lock
 
-        echo $SPECTER_VERSION > $SPECTER_VERSION_FILE
+        # Apply the MyNode patch
+        SPECTER_SITE_PACKAGES=$(env/bin/python -c "import sysconfig; print(sysconfig.get_paths()['purelib'])")
+        if [ -d "$SPECTER_SITE_PACKAGES" ] && \
+           (cd "$SPECTER_SITE_PACKAGES" && sudo -u bitcoin git apply --check $SPECTER_PATCH && sudo -u bitcoin git apply $SPECTER_PATCH); then
+            echo $SPECTER_VERSION > $SPECTER_VERSION_FILE
+        else
+            upgrade_component_failed "ERROR: Specter patch failed"
+        fi
     fi
 fi
 
@@ -1058,7 +1108,7 @@ if should_install_app "thunderhub" ; then
 
             echo $THUNDERHUB_VERSION > $THUNDERHUB_VERSION_FILE
         else
-            echo "ERROR: Thunderhub build failed"
+            upgrade_component_failed "ERROR: Thunderhub build failed"
         fi
     fi
 fi
@@ -1094,6 +1144,10 @@ fi
 # Remove ngrok (no longer used)
 rm -f /usr/bin/ngrok
 rm -rf /tmp/ngrok*
+
+# Remove the debug log bundle (replaced by upgrade log downloads)
+rm -f /usr/bin/mynode_gen_debug_tarball.sh
+rm -rf /tmp/mynode_logs.tar.gz /tmp/mynode_info
 
 
 # Stop WebSSH2 (replaced by the Terminal app)
@@ -1150,7 +1204,7 @@ if should_install_app "sphinxrelay" ; then
         if sudo -u bitcoin npm install; then
             echo $SPHINXRELAY_VERSION > $SPHINXRELAY_VERSION_FILE
         else
-            echo "ERROR: Sphinx Relay build failed"
+            upgrade_component_failed "ERROR: Sphinx Relay build failed"
         fi
     fi
 fi
@@ -1230,7 +1284,7 @@ if should_install_app "bos" ; then
         if npm install -g balanceofsatoshis@$BOS_VERSION; then
             echo $BOS_VERSION > $BOS_VERSION_FILE
         else
-            echo "ERROR: Balance of Satoshis install failed"
+            upgrade_component_failed "ERROR: Balance of Satoshis install failed"
         fi
     fi
 fi
@@ -1276,8 +1330,8 @@ mynode-manage-apps upgrade || true
 #rm -f /usr/local/bin/tor || true
 #TOR_VERSION=$(tor --version)
 #if [[ "$TOR_VERSION" != *"Tor version 0.4"* ]]; then
-#    $TORIFY apt-get remove -y tor
-#    $TORIFY apt-get install -y tor
+#    apt-get remove -y tor
+#    apt-get install -y tor
 #fi
 # On older Debian versions, build Tor from source if it is not the pinned version
 if [ "$DEBIAN_VERSION" -lt "12" ]; then
@@ -1324,6 +1378,15 @@ cp -f /usr/share/mynode/nginx.conf /etc/nginx/nginx.conf
 rm -f /home/bitcoin/.mynode/.hashedpw || true
 rm -f /home/bitcoin/.mynode/.hashedpw_bcrypt || true
 
+# VPN client configs are only read by root
+if [ -d /home/pivpn/ovpns ]; then
+    chmod 700 /home/pivpn/ovpns
+    find /home/pivpn/ovpns -type f -exec chmod 600 {} \;
+fi
+if [ -d /mnt/hdd/mynode/vpn ]; then
+    chmod 700 /mnt/hdd/mynode/vpn
+fi
+
 # Remove global node packages that are no longer used
 npm uninstall -g pug-cli browserify uglify-js babel-cli || true
 
@@ -1369,6 +1432,10 @@ systemctl enable tor
 systemctl enable loop
 systemctl enable pool
 systemctl enable rotate_logs
+# rotate_logs runs logrotate every 10 minutes; stop before mask, or the timer is left failed
+systemctl stop logrotate.timer > /dev/null 2>&1 || true
+systemctl disable logrotate.timer > /dev/null 2>&1 || true
+systemctl mask logrotate.timer > /dev/null 2>&1 || true
 systemctl enable corsproxy_btcrpc
 systemctl enable usb_extras
 

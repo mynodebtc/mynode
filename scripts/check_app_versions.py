@@ -38,6 +38,7 @@ BUILTIN_SOURCES = {
     "ELECTRS":      {"github": "romanz/electrs"},
     "LNBITS":       {"github": "lnbits/lnbits"},
     "BTCPAYSERVER": {"github": "btcpayserver/btcpayserver"},
+    "NBXPLORER":    {"github": "dgarage/NBXplorer"},
     "SPECTER":      {"github": "cryptoadvance/specter-desktop"},
     "LNDMANAGE":    {"github": "bitromortac/lndmanage"},
     "CKBUNKER":     {"github": "Coldcard/ckbunker"},

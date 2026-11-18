@@ -7,6 +7,12 @@
 # opened over HTTPS only (through nginx), since its pages do not load over HTTP.
 ORIGINS_FILE=/opt/mynode/wetty/.allowed_origins
 
+# The list is read once at start, so at boot wait (up to 30 seconds) for the LAN address
+for i in $(seq 1 30); do
+    ip -4 route get 1.1.1.1 2>/dev/null | grep -q " src " && break
+    sleep 1
+done
+
 HOSTS="localhost 127.0.0.1 mynode.local"
 NAME=$(hostname | tr '[:upper:]' '[:lower:]')
 if [ -n "$NAME" ]; then

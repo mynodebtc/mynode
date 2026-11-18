@@ -2,6 +2,12 @@
 
 source /usr/share/mynode/mynode_device_info.sh
 
+# Same rule as is_safe_version() in utilities.py
+function is_valid_app_version()
+{
+    [[ "$1" =~ ^[A-Za-z0-9_][A-Za-z0-9_.-]{0,63}$ ]] && [[ "$1" != *..* ]]
+}
+
 function get_app_version()
 {
     local official_version=$1
@@ -13,7 +19,35 @@ function get_app_version()
     if [ -f "/mnt/hdd/mynode/settings/${short_name}_version_latest_custom" ]; then
         version=$(cat /mnt/hdd/mynode/settings/${short_name}_version_latest_custom)
     fi
+    if [ "$version" != "$official_version" ] && ! is_valid_app_version "$version"; then
+        echo "Ignoring invalid custom $short_name version" >&2
+        version=$official_version
+    fi
     echo "$version"
+}
+
+# Apply a custom versions file. Only NAME=version and NAME="version" lines that
+# set a *_VERSION variable assigned in this file are used.
+function load_custom_app_versions()
+{
+    local file=$1
+    local line name value
+    while IFS= read -r line || [ -n "$line" ]; do
+        line=${line%$'\r'}
+        [[ "$line" =~ ^[[:space:]]*(#.*)?$ ]] && continue
+        name=${line%%=*}
+        value=${line#*=}
+        if [[ "$value" == \"*\" ]]; then
+            value=${value:1:${#value}-2}
+        fi
+        if [[ "$line" == *=* && "$name" =~ ^[A-Z0-9_]+_VERSION$ ]] && \
+           grep -q "^${name}=" "${BASH_SOURCE[0]}" && \
+           is_valid_app_version "$value"; then
+            printf -v "$name" '%s' "$value"
+        else
+            echo "Ignoring custom version line: $line" >&2
+        fi
+    done < "$file"
 }
 
 function is_custom_app_version()
@@ -70,15 +104,87 @@ function pull_app_docker_image()
     docker pull "$image@$pinned_digest" && docker tag "$image@$pinned_digest" "$image:$tag"
 }
 
-BTC_VERSION="29.3"
+# Check that a detached signature has a valid signature from one of the given
+# primary key fingerprints. Other signatures on the file are ignored.
+function check_gpg_signer()
+{
+    local sig_file=$1
+    local data_file=$2
+    shift 2
+    local signers
+    signers=$(gpg --status-fd 1 --verify "$sig_file" "$data_file" 2>/dev/null | awk '$2 == "VALIDSIG" {print $NF}')
+
+    local fingerprint
+    for fingerprint in "$@"; do
+        if echo "$signers" | grep -qxF "$fingerprint"; then
+            echo "Valid signature on $data_file from $fingerprint"
+            return 0
+        fi
+    done
+    echo "ERROR: no valid signature on $data_file from a known key"
+    return 1
+}
+
+# Set up the NodeSource apt repo with NodeSource's setup script, from the copy in
+# /usr/share/mynode/nodesource (or <script_dir>). Versions chosen by the user
+# download the script. Either way, the repo is removed unless its key is
+# NODESOURCE_KEY_FINGERPRINT.
+function install_nodesource_repo()
+{
+    local version=$1
+    local script_dir=${2:-/usr/share/mynode/nodesource}
+    local script="$script_dir/setup_${version}"
+
+    # NodeSource's script stops when "apt update" fails, which one broken repo anywhere on the
+    # device causes. Run it with an apt whose "update" failures are only warnings.
+    local apt_shim_dir
+    apt_shim_dir=$(mktemp -d)
+    cat > "$apt_shim_dir/apt" <<'EOF'
+#!/bin/bash
+if [ "$1" = "update" ]; then
+    /usr/bin/apt "$@" || echo "WARNING: apt update failed (exit $?). Continuing."
+    exit 0
+fi
+exec /usr/bin/apt "$@"
+EOF
+    chmod +x "$apt_shim_dir/apt"
+
+    local rc=0
+    if [ -f "$script" ]; then
+        PATH="$apt_shim_dir:$PATH" bash "$script" || rc=$?
+    elif is_custom_app_version "nodejs"; then
+        echo "Custom nodejs version $version, downloading NodeSource setup script"
+        curl -fsSL "https://deb.nodesource.com/setup_${version}" | PATH="$apt_shim_dir:$PATH" bash - || rc=$?
+    else
+        echo "ERROR: no NodeSource setup script for $version"
+        rc=1
+    fi
+    rm -rf "$apt_shim_dir"
+    if [ $rc -ne 0 ]; then
+        return $rc
+    fi
+
+    local fingerprints
+    fingerprints=$(gpg --show-keys --with-colons /usr/share/keyrings/nodesource.gpg 2>/dev/null | awk -F: '$1 == "pub" {want = 1; next} $1 == "fpr" && want {print $10; want = 0}')
+    if [ "$fingerprints" != "$NODESOURCE_KEY_FINGERPRINT" ]; then
+        echo "ERROR: unexpected NodeSource key: $fingerprints"
+        rm -f /etc/apt/sources.list.d/nodesource.list /etc/apt/sources.list.d/nodesource.sources
+        rm -f /usr/share/keyrings/nodesource.gpg
+        return 1
+    fi
+}
+
+BTC_VERSION="32.1"
 if [ "$DEBIAN_VERSION" -lt "12" ]; then
     BTC_VERSION="27.2"
 fi
 BTC_VERSION=$(get_app_version "$BTC_VERSION" "bitcoin")
 BTC_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version
 BTC_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version_latest
+# Bitcoin Core release signers: Wladimir van der Laan, Michael Ford (fanquake)
+BTC_SIGNER_FINGERPRINTS="01EA5486DE18A882D4C2684590C8019E36C2E964 E777299FC265DD04793070EB944D35F9AC3DB76A"
 
-LND_VERSION="v0.21.4-beta"
+LND_VERSION="v0.21.8-beta"
 LND_VERSION=$(get_app_version "$LND_VERSION" "lnd")
 LND_VERSION_FILE=/home/bitcoin/.mynode/lnd_version
 LND_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnd_version_latest
@@ -86,15 +192,19 @@ LND_UPGRADE_MANIFEST_URL=https://github.com/lightningnetwork/lnd/releases/downlo
 LND_UPGRADE_MANIFEST_ROASBEEF_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-roasbeef-$LND_VERSION.sig
 LND_UPGRADE_MANIFEST_GUGGERO_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-guggero-$LND_VERSION.sig
 LND_UPGRADE_MANIFEST_SUHEB_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-suheb-$LND_VERSION.sig
-LND_UPGRADE_MANIFEST_VICTORT_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-VictorT-11-$LND_VERSION.sig
+LND_UPGRADE_MANIFEST_VICTORT_SIG_URL=https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-ViktorT-11-$LND_VERSION.sig
+# LND release signers: roasbeef, guggero, suheb, ViktorT-11
+LND_SIGNER_FINGERPRINTS="A5B61896952D9FDA83BC054CDC42612E89237182 F4FC70F07310028424EFC20A8E4256593F177720 3E9BD4436C288039CA827A9200C9E2BC2E45666F C20A78516A0944900EBFCA29961CC8259AE675D4"
 
-LOOP_VERSION="v0.35.0-beta"
+LOOP_VERSION="v0.35.2-beta"
 LOOP_VERSION=$(get_app_version "$LOOP_VERSION" "loop")
 LOOP_VERSION_FILE=/home/bitcoin/.mynode/loop_version
 LOOP_LATEST_VERSION_FILE=/home/bitcoin/.mynode/loop_version_latest
 LOOP_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest-$LOOP_VERSION.txt
 LOOP_UPGRADE_MANIFEST_SIG_MODIFIER=""
 LOOP_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/loop/releases/download/$LOOP_VERSION/manifest$LOOP_UPGRADE_MANIFEST_SIG_MODIFIER-$LOOP_VERSION.txt.sig
+# Loop release signers: Alex Bosworth, Andras Banki-Horvath
+LOOP_SIGNER_FINGERPRINTS="DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E 9FC6B0BFD597A94DBF09708280E5375C094198D8"
 
 POOL_VERSION="v0.6.4-beta"
 POOL_VERSION=$(get_app_version "$POOL_VERSION" "pool")
@@ -102,31 +212,47 @@ POOL_VERSION_FILE=/home/bitcoin/.mynode/pool_version
 POOL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/pool_version_latest
 POOL_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/manifest-$POOL_VERSION.txt
 POOL_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/pool/releases/download/$POOL_VERSION/manifest-$POOL_VERSION.sig
+# Pool release signer: guggero
+POOL_SIGNER_FINGERPRINTS="F4FC70F07310028424EFC20A8E4256593F177720"
 
-LIT_VERSION="v0.17.6"
+LIT_VERSION="v0.17.10"
 LIT_VERSION=$(get_app_version "$LIT_VERSION" "lit")
 LIT_VERSION_FILE=/home/bitcoin/.mynode/lit_version
 LIT_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lit_version_latest
 LIT_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-$LIT_VERSION.txt
-LIT_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-roasbeef-$LIT_VERSION.sig
+LIT_UPGRADE_MANIFEST_ROASBEEF_SIG_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-roasbeef-$LIT_VERSION.sig
+LIT_UPGRADE_MANIFEST_VIKTORT_SIG_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-ViktorT-11-$LIT_VERSION.sig
+# Lightning Terminal release signers: roasbeef, Elle Mouton, Viktor Tigerstrom, ViktorT-11
+LIT_SIGNER_FINGERPRINTS="A5B61896952D9FDA83BC054CDC42612E89237182 26984CB69EB8C4A26196F7A4D7D916376026F177 187F6ADD93AE3B0CF335AA6AB984570980684DCC C20A78516A0944900EBFCA29961CC8259AE675D4"
 
-CHANTOOLS_VERSION="v0.11.3"
+CHANTOOLS_VERSION="v0.14.3"
 CHANTOOLS_VERSION=$(get_app_version "$CHANTOOLS_VERSION" "chantools")
 CHANTOOLS_VERSION_FILE=/home/bitcoin/.mynode/chantools_version
 CHANTOOLS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/chantools_version_latest
 CHANTOOLS_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/chantools/releases/download/$CHANTOOLS_VERSION/manifest-$CHANTOOLS_VERSION.txt
 CHANTOOLS_UPGRADE_MANIFEST_SIG_URL=https://github.com/lightninglabs/chantools/releases/download/$CHANTOOLS_VERSION/manifest-$CHANTOOLS_VERSION.sig
+# Chantools release signer: guggero
+CHANTOOLS_SIGNER_FINGERPRINTS="F4FC70F07310028424EFC20A8E4256593F177720"
 
-ELECTRS_VERSION="v0.10.9"
+ELECTRS_VERSION="v0.12.1"
+# electrs v0.12+ indexes over the bitcoind REST API and needs Bitcoin Core 31+, which the
+# older Debian releases do not run (see BTC_VERSION above). They stay on the last v0.11.
+if [ "$DEBIAN_VERSION" -lt "12" ]; then
+    ELECTRS_VERSION="v0.11.1"
+fi
 if [ "$IS_32_BIT" = "1" ]; then
     ELECTRS_VERSION="v0.9.9"
 fi
+# Records the electrs version (major.minor) that built the index on disk, and when the index
+# was last removed because no installed version could read it
+ELECTRS_INDEX_FORMAT_FILE=/mnt/hdd/mynode/electrs/index_format
+ELECTRS_INDEX_RESET_FILE=/mnt/hdd/mynode/electrs/index_last_reset
 ELECTRS_VERSION_FILE=/home/bitcoin/.mynode/electrs_version
 ELECTRS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/electrs_version_latest
 
-MEMPOOL_VERSION="v3.3.1"
-MEMPOOL_FRONTEND_DIGEST="v3.3.1 sha256:0a162e7e0d26a01e9686ddf69c96c4beae5fe10b0daa1020f3d392e033c058f1"
-MEMPOOL_BACKEND_DIGEST="v3.3.1 sha256:358c0a517c8dcf26e7f5c02447de5bab33ec7e3fa6318685cf8012ce36098e3a"
+MEMPOOL_VERSION="v3.3.2"
+MEMPOOL_FRONTEND_DIGEST="v3.3.2 sha256:83c5d1e20cd4fad358584f5921ca547d69ab80162d0e2f3138c2d142a91dbadd"
+MEMPOOL_BACKEND_DIGEST="v3.3.2 sha256:c358a20591285f77fb11e6f2502441e6b15bc7dd8282433e09bfd948b8ab0aa8"
 if [ "$IS_32_BIT" = "1" ]; then
     MEMPOOL_VERSION="v2.3.1"
     MEMPOOL_FRONTEND_DIGEST="v2.3.1 sha256:38c955caeb58014b266904b059bfabbdab8321d20b11e7cccb139be6dfc8e36e"
@@ -186,15 +312,17 @@ fi
 DOJO_VERSION_FILE=/mnt/hdd/mynode/settings/dojo_version
 DOJO_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/dojo_version_latest
 
-RTL_VERSION="v0.15.12"
+RTL_VERSION="v0.15.16"
 if [ "$IS_32_BIT" = "1" ] || [ "$DEBIAN_VERSION" -lt "11" ]; then
     RTL_VERSION="v0.15.0"   # Newer versions require NodeJS 20.19+ (these devices stay on NodeJS 18)
 fi
 RTL_VERSION=$(get_app_version "$RTL_VERSION" "rtl")
 RTL_VERSION_FILE=/home/bitcoin/.mynode/rtl_version
 RTL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/rtl_version_latest
+# RTL release signer: suheb
+RTL_SIGNER_FINGERPRINTS="3E9BD4436C288039CA827A9200C9E2BC2E45666F"
 
-BTCPAYSERVER_VERSION="2.4.4"
+BTCPAYSERVER_VERSION="2.4.7"
 if [ "$IS_32_BIT" = "1" ]; then
     BTCPAYSERVER_VERSION="1.3.6"
 fi
@@ -204,6 +332,14 @@ BTCPAYSERVER_GENERATOR_DIGEST="latest sha256:e92303cc1499331974aeb95099348791e6b
 BTCPAYSERVER_VERSION=$(get_app_version "$BTCPAYSERVER_VERSION" "btcpayserver")
 BTCPAYSERVER_VERSION_FILE=/home/bitcoin/.mynode/btcpayserver_version
 BTCPAYSERVER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/btcpayserver_version_latest
+# NBXplorer for BTCPay Server, in place of the one BTCPAYSERVER_DOCKER_COMMIT has. 32-bit devices
+# keep that one, for BTCPay Server 1.3.6.
+NBXPLORER_VERSION="2.6.21"
+NBXPLORER_DIGEST="2.6.21 sha256:117b061886f7b1f0a9ebdb0792c0195c77abda855b76dd51b0481bb4cae3fdc3"
+if [ "$IS_32_BIT" = "1" ]; then
+    NBXPLORER_VERSION=""
+fi
+NBXPLORER_VERSION_FILE=/home/bitcoin/.mynode/nbxplorer_version
 
 BTCRPCEXPLORER_VERSION="v3.5.1"
 BTCRPCEXPLORER_SHA256="v3.5.1 731aa12573d541f00a27117784c86307c4c3833d27d2cf33565f71a34b3aa38f"
@@ -211,19 +347,21 @@ BTCRPCEXPLORER_VERSION=$(get_app_version "$BTCRPCEXPLORER_VERSION" "btcrpcexplor
 BTCRPCEXPLORER_VERSION_FILE=/home/bitcoin/.mynode/btcrpcexplorer_version
 BTCRPCEXPLORER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/btcrpcexplorer_version_latest
 
-LNBITS_VERSION="v1.6.1"
-LNBITS_DIGEST="v1.6.1 sha256:fe328a130414d54e45c54e4c12b44ea10b4b542eace7df9e66f5b076b2e33816"
+LNBITS_VERSION="v1.7.0"
+LNBITS_DIGEST="v1.7.0 sha256:9fc5157f31339968537beedc9517d22a91b5f2e171fcb42f1ca76f5305502df1"
 LNBITS_VERSION=$(get_app_version "$LNBITS_VERSION" "lnbits")
 LNBITS_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version
 LNBITS_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lnbits_version_latest
 
-SPECTER_VERSION="2.1.10"   # Must match usr/share/mynode/venvs/specter.in
+SPECTER_VERSION="2.3.0"   # Must match usr/share/mynode/venvs/specter.in
 SPECTER_VERSION=$(get_app_version "$SPECTER_VERSION" "specter")
 SPECTER_VERSION_FILE=/home/bitcoin/.mynode/specter_version
 SPECTER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/specter_version_latest
+# Makes Specter ask Bitcoin Core 32+ for v0 PSBTs (applied inside the venv's site-packages)
+SPECTER_PATCH=/usr/share/mynode/patches/specter-v2.3.0.patch
 
-THUNDERHUB_VERSION="v0.19.0"
-THUNDERHUB_SHA256="v0.19.0 d646c89f89a6a275c7cd8b418965e4ddfe72d0172170bc7a4ce18cb09b7ea735"
+THUNDERHUB_VERSION="v0.19.1"
+THUNDERHUB_SHA256="v0.19.1 56b9cc6e29aa7dd85725cdb421a249c802e03675125bcf27d1353b05c994832d"
 if [ "$IS_32_BIT" = "1" ] || [ "$DEBIAN_VERSION" -lt "11" ]; then
     THUNDERHUB_VERSION="v0.14.6"   # Newer versions require NodeJS 24+ (these devices stay on NodeJS 18)
     THUNDERHUB_SHA256="v0.14.6 3506bbc78b7fa1239e345fb5310722b868b8af0d9055b10a14710cbe3fd8953e"
@@ -252,7 +390,7 @@ CKBUNKER_VERSION_FILE=/home/bitcoin/.mynode/ckbunker_version
 CKBUNKER_LATEST_VERSION_FILE=/home/bitcoin/.mynode/ckbunker_version_latest
 CKBUNKER_UPGRADE_URL=https://github.com/Coldcard/ckbunker/archive/ae87d17bdaa049e9ca85e706f1facf46a1552448.tar.gz
 
-BOS_VERSION="23.1.12"
+BOS_VERSION="25.5.0"
 if [ "$IS_32_BIT" = "1" ] || [ "$DEBIAN_VERSION" -lt "11" ]; then
     BOS_VERSION="13.31.5"   # Newer versions require NodeJS 22+ (these devices stay on NodeJS 18)
 fi
@@ -281,8 +419,8 @@ WARDENTERMINAL_LATEST_VERSION_FILE=/home/bitcoin/.mynode/wardenterminal_version_
 LOG2RAM_VERSION="v1.2.2"
 LOG2RAM_SHA256="v1.2.2 60423549533fc6eb1bc02743cbeda300eb0666b30e782d5701834c8e04324299"
 
-NETDATA_VERSION="v1.32.1"
-NETDATA_DIGEST="v1.32.1 sha256:1bbb572e57c5b0838bc4b1f7cdf0a220a962cf4cee83094fb4c1abac62fa82de"
+NETDATA_VERSION="v2.12.2"
+NETDATA_DIGEST="v2.12.2 sha256:3d00de3756e1e9150c6121080934168ab5f2ceffce6d494573316c09c18adf83"
 NETDATA_VERSION=$(get_app_version "$NETDATA_VERSION" "netdata")
 NETDATA_VERSION_FILE=/mnt/hdd/mynode/settings/netdata_version
 NETDATA_LATEST_VERSION_FILE=/mnt/hdd/mynode/settings/netdata_version_latest
@@ -298,6 +436,7 @@ PYTHON_SHA256="3.8.9 5e391f3ec45da2954419cab0beaefd8be38895ea5ce33577c3ec14940c4
 PYTHON_PIP_VERSION="25.0.1"
 PYTHON_SETUPTOOLS_VERSION="75.3.4"
 PYTHON_WHEEL_VERSION="0.45.1"
+PYTHON_PACKAGING_VERSION="24.2"
 
 # uv, and the Python it installs for apps that run in their own venv (64-bit only). Apps create
 # venvs with "mynode-uv venv --python $APP_PYTHON_MINOR_VERSION"; a new patch version in
@@ -317,6 +456,7 @@ if [ "$DEBIAN_VERSION" -lt "11" ]; then
     NODE_JS_VERSION="18.x"
 fi
 NODE_JS_VERSION=$(get_app_version "$NODE_JS_VERSION" "nodejs")
+NODESOURCE_KEY_FINGERPRINT="6F71F525282841EEDAF851B42F59B5F99B1BE0B4"
 
 RUST_VERSION="1.86.0"
 
@@ -332,7 +472,7 @@ TOR_SOURCE_SHA256="0.4.9.14 182449ac1c8ff43278da27b69b02040e11d03d0327db6d9126e4
 
 # Check for override files
 if [ -f /usr/share/mynode/mynode_app_versions_custom.sh ]; then
-    source /usr/share/mynode/mynode_app_versions_custom.sh
+    load_custom_app_versions /usr/share/mynode/mynode_app_versions_custom.sh
 elif [ -f /mnt/hdd/mynode/settings/mynode_app_versions_custom.sh ]; then
-    source /mnt/hdd/mynode/settings/mynode_app_versions_custom.sh
+    load_custom_app_versions /mnt/hdd/mynode/settings/mynode_app_versions_custom.sh
 fi

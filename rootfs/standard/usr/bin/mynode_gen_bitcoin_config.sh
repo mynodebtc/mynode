@@ -17,11 +17,9 @@ if [ ! -f /mnt/hdd/mynode/settings/btc_network_settings_defaulted ] && [ ! -f /h
             touch /mnt/hdd/mynode/settings/btc_ipv4_enabled
         fi
     else
-        # Set new defaults
+        # Set new defaults (Tor only - I2P stays off unless turned on in Settings)
         touch /home/bitcoin/.mynode/btc_tor_enabled
         touch /mnt/hdd/mynode/settings/btc_tor_enabled
-        touch /home/bitcoin/.mynode/btc_i2p_enabled
-        touch /mnt/hdd/mynode/settings/btc_i2p_enabled
     fi
 
     touch /mnt/hdd/mynode/settings/btc_network_settings_defaulted
@@ -87,7 +85,7 @@ else
         sed -i "s/dbcache=.*/dbcache=12000/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
         sed -i "s/maxmempool=.*/maxmempool=2000/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
     else
-        echo "UNKNOWN RAM AMMOUNT: $TOTAL_RAM_GB"
+        echo "UNKNOWN RAM AMOUNT: $TOTAL_RAM_GB"
         sed -i "s/dbcache=.*/dbcache=500/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
         sed -i "s/maxmempool=.*/maxmempool=50/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
     fi
@@ -178,9 +176,21 @@ else
     fi
 fi
 
+# Keep the RPC password out of traced logs
+case $- in *x*) GEN_BITCOIN_CONFIG_XTRACE=1 ;; *) GEN_BITCOIN_CONFIG_XTRACE=0 ;; esac
+set +x
 PW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
-RPCAUTH=$(gen_rpcauth.py mynode $PW)
+RPCAUTH=$(printf '%s\n' "$PW" | gen_rpcauth.py mynode -)
+unset PW
+if [ $GEN_BITCOIN_CONFIG_XTRACE = 1 ]; then set -x; fi
 #sed -i "s/rpcpassword=.*/rpcpassword=$PW/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
 sed -i "s/rpcauth=.*/$RPCAUTH/g" /mnt/hdd/mynode/bitcoin/bitcoin.conf
 
 chown bitcoin:bitcoin /mnt/hdd/mynode/bitcoin/bitcoin.conf
+
+# Run i2pd when Bitcoin uses it or when it was turned on in Settings
+if grep -q "^i2psam=" /mnt/hdd/mynode/bitcoin/bitcoin.conf; then
+    systemctl enable --now --no-block i2pd || true
+elif [ ! -f /mnt/hdd/mynode/settings/i2pd_enabled ]; then
+    systemctl disable --now --no-block i2pd || true
+fi

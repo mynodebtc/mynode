@@ -169,6 +169,12 @@ th td {
     background-color: #3a4750;
 }
 
+.insecure_connection_badge {
+    color: #ddd;
+    border: 1px solid orange;
+    background-color: #3a4750;
+}
+
 .main_page_info_block {
     color: #ddd;
     border: 2px solid #3399ff;
@@ -285,4 +291,131 @@ body .ui-tooltip.ui-widget {
     background: #20242B;
     border-color: #3a4750;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+}
+
+/* MyNode overview */
+.mn_label {
+    color: #8b949e;
+}
+.mn_stat,
+.mn_details,
+.mn_info_grid {
+    background-color: #ffffff06;
+    border-color: #ffffff14;
+}
+.mn_info {
+    border-color: #ffffff14;
+}
+.mn_stat_value,
+.mn_info_value {
+    color: #eeeeee;
+}
+.mn_bar {
+    background-color: #ffffff14;
+}
+.mn_label_toggle:hover {
+    color: orange;
+}
+.mn_bar_fill {
+    background-color: orange;
+}
+.mn_badge_good {
+    color: #69db7c;
+    background-color: #69db7c1a;
+}
+.mn_badge_bad {
+    color: #ff8787;
+    background-color: #ff87871a;
+}
+.mn_alert {
+    color: #ddd;
+}
+.mn_health_summary,
+.mn_health_list {
+    background-color: #ffffff06;
+    border-color: #ffffff14;
+}
+.mn_health_summary_ok {
+    border-left-color: #69db7c;
+}
+.mn_health_summary_warning {
+    border-left-color: orange;
+}
+.mn_health_summary_error {
+    border-left-color: #ff6b6b;
+}
+.mn_health_row {
+    border-color: #ffffff14;
+}
+.mn_health_row_error {
+    background-color: #ff6b6b12;
+}
+.mn_health_row_warning {
+    background-color: #ffb70012;
+}
+.mn_health_summary_text,
+.mn_health_name {
+    color: #eeeeee;
+}
+.mn_service {
+    background-color: #ffffff06;
+    border-color: #ffffff14;
+}
+.mn_service_name {
+    color: #eeeeee;
+}
+.mn_service_status {
+    color: #aaaaaa;
+}
+.mn_chip {
+    background-color: #ffffff14;
+    color: #cccccc;
+}
+.mn_card {
+    background-color: #ffffff06;
+    border-color: #ffffff14;
+}
+.mn_log_row {
+    border-color: #ffffff14;
+}
+.mn_log_date {
+    color: #8b949e;
+}
+.mn_badge_update {
+    color: #ffc04d;
+    background-color: #ffb70024;
+}
+.ui-button.ui-widget.ui-corner-all.mn_primary_button {
+    color: #1b2127;
+    background-color: orange;
+}
+.ui-button.ui-widget.ui-corner-all.mn_primary_button:hover {
+    color: #1b2127;
+    background-color: #ffb733;
+}
+.ui-button.ui-widget.ui-corner-all.mn_primary_button.ui-state-disabled {
+    color: #c3c3c3;
+    background-color: #2a343d;
+}
+.mn_field input {
+    background-color: #1b2127;
+    border-color: #ffffff24;
+    color: #ddd;
+}
+
+.mynode_dock {
+    background: rgba(40, 44, 52, 0.76);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.45);
+}
+.mynode_dock_separator {
+    background: rgba(255, 255, 255, 0.16);
+}
+/* Must follow the rule above: the narrow-width fallback has no pill */
+@media (max-width: 1010px) {
+    .mynode_dock {
+        background: none;
+        border: none;
+        box-shadow: none;
+    }
 }

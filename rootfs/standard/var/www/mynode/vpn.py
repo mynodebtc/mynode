@@ -1,10 +1,10 @@
 from flask import Blueprint, render_template, session, abort, Markup, request, redirect, url_for, flash
 from thread_functions import get_public_ip, find_public_ip
-from device_info import is_community_edition, read_ui_settings
-from user_management import check_logged_in
+from device_info import is_community_edition, read_ui_settings, get_local_ip
+from user_management import check_logged_in, is_admin_password_valid, get_admin_password_error
+from systemctl_info import is_service_enabled
 from utilities import *
 import subprocess
-import pam
 import os
 import json
 
@@ -23,25 +23,23 @@ def page_vpn_info():
     if is_community_edition():
         return redirect("/")
 
+    vpn_enabled = is_service_enabled("vpn")
+
     # Check if port is forwarded
     port_forwarded = False
     ip = get_public_ip()
-    if subprocess.call(["nc", "-v", "-u", "-w", "1", ip, "51194"]) == 0:
+    if vpn_enabled and subprocess.call(["nc", "-v", "-u", "-w", "1", ip, "51194"]) == 0:
         port_forwarded = True
 
-    # Get status
-    status = "Setting up..."
-    vpn_file_exists = False
-    if os.path.isfile("/home/pivpn/ovpns/mynode_vpn.ovpn"):
-        vpn_file_exists = True
-        status = "Running"
+    vpn_file_exists = os.path.isfile("/home/pivpn/ovpns/mynode_vpn.ovpn")
 
     templateData = {
         "title": "VPN Info",
-        "status": status,
+        "vpn_enabled": vpn_enabled,
         "vpn_file_exists": vpn_file_exists,
         "port_forwarded": port_forwarded,
         "public_ip": ip,
+        "local_ip": get_local_ip(),
         "port": "51194",
         "ui_settings": read_ui_settings()
     }
@@ -50,10 +48,14 @@ def page_vpn_info():
 @mynode_vpn.route("/regen-vpn", methods=["POST"])
 def page_regen_vpn():
     check_logged_in()
-    p = pam.pam()
     pw = request.form.get('password_regen_ovpn')
-    if pw == None or p.authenticate("admin", pw) == False:
-        flash("Invalid Password", category="error")
+    if not is_admin_password_valid(pw):
+        flash(get_admin_password_error(), category="error")
+        return redirect(url_for(".page_vpn_info"))
+
+    # Regenerating restarts the VPN, so only do it while the VPN is enabled
+    if not is_service_enabled("vpn"):
+        flash("Enable the VPN before regenerating its files", category="error")
         return redirect(url_for(".page_vpn_info"))
 
     # Stop
@@ -75,10 +77,9 @@ def page_regen_vpn():
 @mynode_vpn.route("/mynode.ovpn", methods=["POST"])
 def page_download_ovpn():
     check_logged_in()
-    p = pam.pam()
     pw = request.form.get('password_download_ovpn')
-    if pw == None or p.authenticate("admin", pw) == False:
-        flash("Invalid Password", category="error")
+    if not is_admin_password_valid(pw):
+        flash(get_admin_password_error(), category="error")
         return redirect(url_for(".page_vpn_info"))
 
     # Download ovpn

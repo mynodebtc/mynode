@@ -1,0 +1,24 @@
+// MyNode policy for automatic OS security updates
+//
+// Whether they run is set by /etc/apt/apt.conf.d/90mynode-auto-upgrades, which
+// mynode_unattended_upgrades.sh writes from the "Automatically Install OS Security
+// Updates" setting.
+
+// Only install updates from the Debian security archive. Point releases and
+// third-party repos (Tor, Docker, NodeJS, I2P, ...) are left to MyNode upgrades.
+#clear Unattended-Upgrade::Allowed-Origins;
+#clear Unattended-Upgrade::Origins-Pattern;
+Unattended-Upgrade::Origins-Pattern {
+    "origin=Debian,codename=${distro_codename}-security,label=Debian-Security";
+    "origin=Debian,codename=${distro_codename},label=Debian-Security";
+};
+
+// Never reboot on its own. A reboot can interrupt syncing or Lightning.
+Unattended-Upgrade::Automatic-Reboot "false";
+
+// Install in small steps so a power loss or shutdown leaves less half-done
+Unattended-Upgrade::MinimalSteps "true";
+
+// Don't remove packages on its own
+Unattended-Upgrade::Remove-Unused-Kernel-Packages "false";
+Unattended-Upgrade::Remove-Unused-Dependencies "false";

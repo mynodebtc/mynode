@@ -36,21 +36,38 @@ def get_price_up_down_flat_24hrs():
         return "down"
     return "flat"
 
+def parse_mempool_price(data):
+    return float(data["USD"])
+
+def parse_kraken_price(data):
+    # Last trade price of the only pair requested
+    return float(next(iter(data["result"].values()))["c"][0])
+
+# Tried in order. The onion needs no Tor exit, so exit-node blocking can't break it.
+PRICE_SOURCES = [
+    ("mempool.space onion", "http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion/api/v1/prices", parse_mempool_price),
+    ("Kraken", "https://api.kraken.com/0/public/Ticker?pair=XBTUSD", parse_kraken_price),
+]
+
+def fetch_price():
+    errors = []
+    for name, url, parse in PRICE_SOURCES:
+        try:
+            output = subprocess.check_output(["torify", "curl", "--max-time", "20", "--silent", "--fail", url], stderr=subprocess.DEVNULL, timeout=25)
+            price = parse(json.loads(to_string(output)))
+            if price > 0:
+                return price
+            errors.append("{}: bad price {}".format(name, price))
+        except Exception as e:
+            errors.append("{}: {}".format(name, str(e)))
+    log_message("update_price_info failed: {}".format(" | ".join(errors)))
+    return "ERR"
+
 def update_price_info():
     global price_data
 
     if get_ui_setting("price_ticker"):
-        price = "N/A"
-        try:
-            price_api_endpoint = "https://blockchain.info/ticker"
-            price_json_string = to_string(subprocess.check_output(f"torify curl --max-time 15 --silent {price_api_endpoint}", shell=True))
-            data = json.loads(price_json_string)
-            price = data["USD"]["last"]
-
-        except Exception as e:
-            log_message("update_price_info EXCEPTION: {}".format(str(e)))
-            price = "ERR"
-            pass
+        price = fetch_price()
 
         # Add latest price
         now = int(time.time())

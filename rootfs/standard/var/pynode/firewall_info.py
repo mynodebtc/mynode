@@ -49,7 +49,6 @@ FIREWALL_CORE_SERVICES = [
     {"id": "vpn",             "name": "VPN",                         "ports": ["51194"]},
     {"id": "glances",         "name": "Glances",                     "ports": ["61208/tcp", "61209/tcp"]},
     {"id": "joinmarket",      "name": "JoinMarket Orderbook",        "ports": ["62601/tcp", "62602/tcp"], "app": "joininbox"},
-    {"id": "joinmarket_api",  "name": "JoinMarket API",              "ports": ["27183/tcp", "28183/tcp", "28283/tcp"], "app": "joininbox"},
     {"id": "datum",           "name": "DATUM",                       "ports": ["23334/tcp"]},
 ]
 
@@ -126,7 +125,8 @@ def get_firewall_services(apps):
     used_names = []
     for service in services:
         service["default_public"] = service["id"] in FIREWALL_DEFAULT_PUBLIC_SERVICES
-        service["public"] = overrides.get(service["id"], service["default_public"])
+        # Apps that are not installed are not listed in Settings, so they stay local-only
+        service["public"] = service["installed"] and overrides.get(service["id"], service["default_public"])
         name = get_firewall_profile_name(service["name"], other_names)
         if name in used_names:
             name = get_firewall_profile_name("{} {}".format(service["name"], service["id"]), other_names)

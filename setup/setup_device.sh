@@ -30,6 +30,11 @@ IS_64_BIT=0
 IS_UNKNOWN=0
 DEVICE_TYPE="unknown"
 MODEL=$(cat /proc/device-tree/model) || IS_UNKNOWN=1
+# Minimal Debian installs do not include lsb_release
+if ! command -v lsb_release > /dev/null; then
+    apt-get update
+    apt-get -y install lsb-release
+fi
 DEBIAN_CODENAME=$(lsb_release -c -s) || DEBIAN_CODENAME="unknown"
 uname -a | grep -E 'amd64|x86_64' && IS_X86=1 && IS_64_BIT=1 && IS_UNKNOWN=0 || true
 if [[ $MODEL == *"Rock64"* ]]; then
@@ -159,8 +164,25 @@ elif [ $IS_X86 = 1 ]; then
     TARBALL="mynode_rootfs_debian.tar.gz"
 fi
 if [ "$SERVER_IP" == "online" ]; then
-    TARBALL="${TARBALL/"mynode_rootfs_"/"mynode_release_latest_"}"
-    wget https://mynodebtc.com/device/upgrade_images/${TARBALL} -O /tmp/rootfs.tar.gz
+    RELEASE_TYPE="${TARBALL#mynode_rootfs_}"
+    RELEASE_TYPE="${RELEASE_TYPE%.tar.gz}"
+    RELEASE_URL="https://www.mynodebtc.com/device_api/download_latest_standard.php?type=${RELEASE_TYPE}&product_key=community_edition"
+    wget "${RELEASE_URL}" -O /tmp/rootfs.tar.gz
+    wget "${RELEASE_URL}&hash=1" -O /tmp/rootfs.tar.gz.sha256
+
+    # Verify release signature
+    cat > /tmp/mynode_release.pub << 'EOF'
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApzQyKOKNBEhKWf1mJtqw
+qSLzSkMACMF0Zz0rr2UT7MnxTfHpVYLJEwBfIxCAqys8AGHWAQNalG8+UzmrsuWl
+yAGo+rqKiSKUQ5NmthC5B49eL26Tie4jwK9hbLmHlzbxP+/1gqwWFM9ZlozbtTW3
+LGzvT7evXdMOqCoVojJWCkCdKaWuXkCxlUQxs9wuMNdskKyA7ohifmHwS4DlkcZR
+PaiUcgXugMOrLwTuYvnmMG1Z4EA7UuFujX2jryKblo61VMZjo369RIZhdCWUJMdn
+vXkYNq4HtHk2hn3sdTIAWCfZ0+qoyhBI5DXn1Yh/zwCT0YwHPD/woP/my1zmIw6H
+uQIDAQAB
+-----END PUBLIC KEY-----
+EOF
+    openssl dgst -sha256 -verify /tmp/mynode_release.pub -signature /tmp/rootfs.tar.gz.sha256 /tmp/rootfs.tar.gz
 else
     wget http://${SERVER_IP}:8000/${TARBALL} -O /tmp/rootfs.tar.gz
 fi
@@ -251,8 +273,8 @@ fi
 #apt-mark hold redis-server
 
 # Upgrade packages
-# full-upgrade (not plain upgrade like mynode_post_upgrade.sh) since this only
-# runs once at image-build time and we want the image to ship with a new kernel
+# full-upgrade (not upgrade --with-new-pkgs like mynode_post_upgrade.sh) since
+# this only runs once at image-build time, where it's safe to remove packages
 apt-get -y full-upgrade
 
 # Install other tools (run section multiple times to make sure success)
@@ -264,7 +286,7 @@ apt-get -y install fail2ban ufw tclsh redis-server
 if [ "$DEBIAN_VERSION" -ge "12" ]; then
     apt-get -y install python3-systemd
     mkdir -p /etc/fail2ban/jail.d
-    printf "[sshd]\nbackend = systemd\n" > /etc/fail2ban/jail.d/mynode_sshd.conf
+    printf "[sshd]\nbackend = systemd\njournalmatch = _SYSTEMD_UNIT=ssh.service + _COMM=sshd\n" > /etc/fail2ban/jail.d/mynode_sshd.conf
 fi
 apt-get -y install clang hitch zlib1g-dev libffi-dev file toilet ncdu
 apt-get -y install toilet-fonts avahi-daemon figlet
@@ -276,6 +298,7 @@ apt -y -qq install apt-transport-https ca-certificates
 apt-get -y install libevent-dev ncurses-dev
 apt-get -y install zlib1g-dev libudev-dev libusb-1.0-0-dev python3-venv gunicorn
 apt-get -y install sqlite3 libsqlite3-dev torsocks python3-requests libsystemd-dev
+apt-get -y install unattended-upgrades
 apt-get -y install libjpeg-dev zlib1g-dev psmisc hexyl libbz2-dev liblzma-dev netcat-openbsd
 apt-get -y install hdparm iotop nut obfs4proxy libpq-dev socat btrfs-progs i2pd apparmor pass
 apt-get -y install gdisk xxd
@@ -323,6 +346,10 @@ apt-get -y install --no-install-recommends expect
 apt-get -y install --no-install-recommends smartmontools nvme-cli
 # nvme-cli enables NVMe over Fabrics units MyNode doesn't use (they fail on kernels without nvme-fabrics)
 systemctl mask nvmf-autoconnect.service nvmf-connect@.service nvmefc-boot-connections.service > /dev/null 2>&1 || true
+# smartmontools enables the smartd daemon, which MyNode doesn't use (the SMART test runs smartctl). It fails
+# when no drive passes SMART through. The unit is smartmontools.service on Debian 12, smartd.service on 10.
+systemctl disable --now smartmontools.service smartd.service > /dev/null 2>&1 || true
+systemctl reset-failed smartmontools.service smartd.service > /dev/null 2>&1 || true
 
 
 # Install nginx
@@ -436,15 +463,14 @@ fi
 
 
 # Install Python3 specific tools
-/usr/local/bin/python3 -m pip install pip==$PYTHON_PIP_VERSION setuptools==$PYTHON_SETUPTOOLS_VERSION wheel==$PYTHON_WHEEL_VERSION
+/usr/local/bin/python3 -m pip install pip==$PYTHON_PIP_VERSION setuptools==$PYTHON_SETUPTOOLS_VERSION wheel==$PYTHON_WHEEL_VERSION packaging==$PYTHON_PACKAGING_VERSION
 
 # PyYAML Workaround (maybe only needed for python 3.10+)
 #echo 'Cython < 3.0' > /tmp/constraint.txt
 #PIP_CONSTRAINT=/tmp/constraint.txt pip3 wheel PyYAML==5.4.1
 #pip3 install 'PyYAML==5.4.1'
 
-/usr/local/bin/python3 -m pip install -r $TMP_INSTALL_PATH/usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir || \
-    /usr/local/bin/python3 -m pip install -r $TMP_INSTALL_PATH/usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir --use-deprecated=html5lib
+/usr/local/bin/python3 -m pip install -r $TMP_INSTALL_PATH/usr/share/mynode/mynode_pip3_requirements.txt --no-cache-dir
 
 # Install uv and the Python for apps with their own venv (64-bit only)
 if [ $IS_64_BIT = 1 ]; then
@@ -489,7 +515,7 @@ fi
 
 # Install node
 if [ ! -f /tmp/installed_node ]; then
-    curl -sL https://deb.nodesource.com/setup_$NODE_JS_VERSION | bash -
+    install_nodesource_repo $NODE_JS_VERSION $(echo /tmp/upgrade/out/rootfs_*/usr/share/mynode/nodesource)
     apt-get install -y nodejs
     touch /tmp/installed_node
 fi
@@ -589,7 +615,7 @@ if [ "$CURRENT" != "$BTC_VERSION" ]; then
     wget $BTC_UPGRADE_SHA256SUM_ASC_URL -O SHA256SUMS.asc
 
     sha256sum --ignore-missing --check SHA256SUMS
-    gpg --verify SHA256SUMS.asc SHA256SUMS |& grep "gpg: Good signature"
+    check_gpg_signer SHA256SUMS.asc SHA256SUMS $BTC_SIGNER_FINGERPRINTS
 
     # Install Bitcoin
     tar -xvf bitcoin-$BTC_VERSION-$ARCH.tar.gz
@@ -635,9 +661,16 @@ if [ "$CURRENT" != "$LND_VERSION" ]; then
     wget $LND_UPGRADE_MANIFEST_URL -O manifest.txt
     wget $LND_UPGRADE_MANIFEST_ROASBEEF_SIG_URL -O manifest_roasbeef.txt.sig || true
     wget $LND_UPGRADE_MANIFEST_GUGGERO_SIG_URL -O manifest_guggero.txt.sig || true
+    wget $LND_UPGRADE_MANIFEST_SUHEB_SIG_URL -O manifest_suheb.txt.sig || true
+    wget $LND_UPGRADE_MANIFEST_VICTORT_SIG_URL -O manifest_victort.txt.sig || true
 
-    gpg --verify manifest_roasbeef.txt.sig manifest.txt || \
-    gpg --verify manifest_guggero.txt.sig manifest.txt
+    check_gpg_signer manifest_roasbeef.txt.sig manifest.txt $LND_SIGNER_FINGERPRINTS || \
+    check_gpg_signer manifest_guggero.txt.sig manifest.txt $LND_SIGNER_FINGERPRINTS || \
+    check_gpg_signer manifest_suheb.txt.sig manifest.txt $LND_SIGNER_FINGERPRINTS || \
+    check_gpg_signer manifest_victort.txt.sig manifest.txt $LND_SIGNER_FINGERPRINTS
+
+    # Check the download against the signed manifest
+    awk -v f="$LND_ARCH-$LND_VERSION.tar.gz" '$2 == f' manifest.txt | sha256sum --check -
 
     tar -xzf lnd-*.tar.gz
     mv $LND_ARCH-$LND_VERSION lnd
@@ -676,8 +709,11 @@ if [ "$CURRENT" != "$LOOP_VERSION" ]; then
     wget $LOOP_UPGRADE_MANIFEST_URL -O manifest.txt
     wget $LOOP_UPGRADE_MANIFEST_SIG_URL -O manifest.txt.sig
 
-    gpg --verify manifest.txt.sig manifest.txt
+    check_gpg_signer manifest.txt.sig manifest.txt $LOOP_SIGNER_FINGERPRINTS
     if [ $? == 0 ]; then
+        # Check the download against the signed manifest
+        awk -v f="$LOOP_ARCH-$LOOP_VERSION.tar.gz" '$2 == f' manifest.txt | sha256sum --check -
+
         # Install Loop
         tar -xzf loop-*.tar.gz
         mv $LOOP_ARCH-$LOOP_VERSION loop
@@ -714,8 +750,11 @@ if [ "$CURRENT" != "$POOL_VERSION" ]; then
     wget $POOL_UPGRADE_MANIFEST_URL -O manifest.txt
     wget $POOL_UPGRADE_MANIFEST_SIG_URL -O manifest.txt.sig
 
-    gpg --verify manifest.txt.sig manifest.txt
+    check_gpg_signer manifest.txt.sig manifest.txt $POOL_SIGNER_FINGERPRINTS
     if [ $? == 0 ]; then
+        # Check the download against the signed manifest
+        awk -v f="$POOL_ARCH-$POOL_VERSION.tar.gz" '$2 == f' manifest.txt | sha256sum --check -
+
         # Install Pool
         tar -xzf pool-*.tar.gz
         mv $POOL_ARCH-$POOL_VERSION pool
@@ -751,10 +790,15 @@ if [ "$CURRENT" != "$LIT_VERSION" ] || [ ! -f /usr/local/bin/frcli ]; then
 
     wget $LIT_UPGRADE_URL
     wget $LIT_UPGRADE_MANIFEST_URL -O manifest.txt
-    wget $LIT_UPGRADE_MANIFEST_SIG_URL  -O manifest.txt.sig
+    wget $LIT_UPGRADE_MANIFEST_ROASBEEF_SIG_URL -O manifest_roasbeef.txt.sig || true
+    wget $LIT_UPGRADE_MANIFEST_VIKTORT_SIG_URL -O manifest_viktort.txt.sig || true
 
-    gpg --verify manifest.txt.sig manifest.txt
+    check_gpg_signer manifest_roasbeef.txt.sig manifest.txt $LIT_SIGNER_FINGERPRINTS || \
+    check_gpg_signer manifest_viktort.txt.sig manifest.txt $LIT_SIGNER_FINGERPRINTS
     if [ $? == 0 ]; then
+        # Check the download against the signed manifest
+        awk -v f="$LIT_ARCH-$LIT_VERSION.tar.gz" '$2 == f' manifest.txt | sha256sum --check -
+
         # Install lit
         tar -xzf lightning-terminal-*.tar.gz
         mv $LIT_ARCH-$LIT_VERSION lightning-terminal
@@ -792,8 +836,11 @@ if [ "$CURRENT" != "$CHANTOOLS_VERSION" ]; then
     wget $CHANTOOLS_UPGRADE_MANIFEST_URL -O manifest.txt
     wget $CHANTOOLS_UPGRADE_MANIFEST_SIG_URL  -O manifest.txt.sig
 
-    gpg --verify manifest.txt.sig manifest.txt
+    check_gpg_signer manifest.txt.sig manifest.txt $CHANTOOLS_SIGNER_FINGERPRINTS
     if [ $? == 0 ]; then
+        # Check the download against the signed manifest
+        awk -v f="$CHANTOOLS_ARCH-$CHANTOOLS_VERSION.tar.gz" '$2 == f' manifest.txt | sha256sum --check -
+
         # Install lit
         tar -xzf chantools-*.tar.gz
         mv $CHANTOOLS_ARCH-$CHANTOOLS_VERSION chantools
@@ -865,7 +912,7 @@ if [ "$CURRENT" != "$RTL_VERSION" ]; then
     sudo -u bitcoin wget $RTL_UPGRADE_URL -O RTL.tar.gz
     sudo -u bitcoin wget $RTL_UPGRADE_ASC_URL -O RTL.tar.gz.asc
 
-    gpg --verify RTL.tar.gz.asc RTL.tar.gz
+    check_gpg_signer RTL.tar.gz.asc RTL.tar.gz $RTL_SIGNER_FINGERPRINTS
 
     sudo -u bitcoin tar -xvf RTL.tar.gz
     sudo -u bitcoin rm RTL.tar.gz RTL.tar.gz.asc
@@ -987,6 +1034,12 @@ rsync -r -K /tmp/upgrade/out/rootfs_*/* /
 sync
 sleep 1
 
+# Initialize users again, now that the installed files are in place
+/usr/bin/mynode_initialize_users.sh
+
+# Use MyNode's nginx config, which loads the modules its sites need
+cp -f /usr/share/mynode/nginx.conf /etc/nginx/nginx.conf
+
 # Build the venvs for the web UI and Glances (64-bit only)
 source /usr/share/mynode/mynode_functions.sh
 if has_app_python; then
@@ -1003,10 +1056,10 @@ if has_app_python; then
 fi
 
 
-# Mark dynamic applications as defalt application
+# Mark dynamic applications as default application
 # ... (none yet)
 
-# Upgrade Dyanmic Applications (must be done after file installation)
+# Upgrade Dynamic Applications (must be done after file installation)
 # mynode-manage-apps upgrade # not yet working during setup process
 
 
@@ -1047,6 +1100,7 @@ systemctl enable redis-server
 #systemctl enable mongodb
 #systemctl enable electrs # DISABLED BY DEFAULT
 #systemctl enable lndhub # DISABLED BY DEFAULT
+systemctl disable i2pd # Started when Bitcoin uses I2P
 #systemctl enable btcrpcexplorer # DISABLED BY DEFAULT
 systemctl enable rtl
 systemctl enable tor
@@ -1055,6 +1109,10 @@ systemctl enable docker_images
 systemctl enable glances
 #systemctl enable netdata # DISABLED BY DEFAULT
 systemctl enable rotate_logs
+# rotate_logs runs logrotate every 10 minutes; stop before mask, or the timer is left failed
+systemctl stop logrotate.timer > /dev/null 2>&1 || true
+systemctl disable logrotate.timer > /dev/null 2>&1 || true
+systemctl mask logrotate.timer > /dev/null 2>&1 || true
 systemctl enable corsproxy_btcrpc
 systemctl enable usb_extras
 

@@ -24,9 +24,11 @@ pool_version = None
 lit_version = None
 lightning_peers = None
 lightning_peer_aliases = {}
+lightning_peer_alias_misses = {}
 lightning_channels = None
 lightning_channel_balance = None
 lightning_wallet_balance = None
+lightning_pending_channels = None
 lightning_transactions = None
 lightning_payments = None
 lightning_invoices = None
@@ -36,6 +38,7 @@ lightning_watchtower_client_stats = {}
 lightning_watchtower_client_policy = {}
 lightning_desync_count = 0
 lightning_update_count = 0
+lightning_error_counts = {}
 
 LIGHTNING_CACHE_FILE = "/tmp/lightning_info.json"
 LND_FOLDER = "/mnt/hdd/mynode/lnd/"
@@ -43,17 +46,16 @@ TLS_CERT_FILE = "/mnt/hdd/mynode/lnd/tls.cert"
 LND_REST_PORT = "10080"
 
 # Functions
-def run_lncli_command(cmd):
+def run_lncli_command_args(args):
     try:
-        base =  "lncli "
-        base += "--lnddir=/mnt/hdd/mynode/lnd "
+        cmd = ["lncli", "--lnddir=/mnt/hdd/mynode/lnd"]
         if is_testnet_enabled():
-            base += "--network=testnet "
-        cmd = cmd.replace("lncli ", base)
-        output = subprocess.check_output(cmd, shell=True)
+            cmd.append("--network=testnet")
+        cmd += args
+        output = subprocess.check_output(cmd)
         return output
     except Exception as e:
-        log_message("ERROR in run_lncli_command: {}".format(str(e)))
+        log_message("ERROR in run_lncli_command_args: {}".format(str(e)))
         return None
 
 def update_lightning_info():
@@ -62,6 +64,7 @@ def update_lightning_info():
     global lightning_channels
     global lightning_channel_balance
     global lightning_wallet_balance
+    global lightning_pending_channels
     global lightning_transactions
     global lightning_payments
     global lightning_invoices
@@ -79,7 +82,7 @@ def update_lightning_info():
     #    time.sleep(10)
 
     # Get latest LN info
-    lightning_info = lnd_get("/getinfo")
+    lightning_info = lnd_get_keep_last("/getinfo", lightning_info)
     lightning_update_count = lightning_update_count + 1
 
     # Set is LND ready
@@ -94,7 +97,7 @@ def update_lightning_info():
         lightning_desync_count += 1
         os.system("printf \"%s | LND De-sync!!! Count: {} \\n\" \"$(date)\" >> /tmp/lnd_failures".format(lightning_desync_count))
         if lightning_desync_count >= 8:
-            os.system("printf \"%s | De-sync count too high! Retarting LND... \\n\" \"$(date)\" >> /tmp/lnd_failures")
+            os.system("printf \"%s | De-sync count too high! Restarting LND... \\n\" \"$(date)\" >> /tmp/lnd_failures")
             restart_lnd()
             lightning_desync_count = 0
         return True
@@ -105,27 +108,29 @@ def update_lightning_info():
             os.system("printf \"%s | De-sync greater than 0 (was {}), but now synced! Setting to 0. \\n\" \"$(date)\" >> /tmp/lnd_failures".format(lightning_desync_count))
             lightning_desync_count = 0
         log_message("update_lightning_info - GET PEERS, CHANNELS, BALANCE, WALLET")
-        lightning_peers = lnd_get("/peers")
-        lightning_channels = lnd_get("/channels")
-        lightning_channel_balance = lnd_get("/balance/channels")
-        lightning_wallet_balance = lnd_get("/balance/blockchain")
+        lightning_peers = lnd_get_keep_last("/peers", lightning_peers)
+        lightning_channels = lnd_get_keep_last("/channels", lightning_channels)
+        lightning_channel_balance = lnd_get_keep_last("/balance/channels", lightning_channel_balance)
+        lightning_wallet_balance = lnd_get_keep_last("/balance/blockchain", lightning_wallet_balance)
+        lightning_pending_channels = lnd_get_keep_last("/pendingchannels", lightning_pending_channels)
         log_message("update_lightning_info - GET WATCHTOWER")
         if is_watchtower_server_enabled():
             lightning_watchtower_server_info = lnd_get_v2("/watchtower/server")
-        towers = lnd_get_v2("/watchtower/client?include_sessions=1")
-        log_message("update_lightning_info - TOWER DETAILS")
-        tower_details = []
-        if towers != None and "towers" in towers:
-            for tower in towers["towers"]:
-                if "pubkey" in tower and tower["active_session_candidate"]:
-                    pubkey_decoded = base64.b64decode(tower['pubkey'])
-                    pubkey_b16 = to_string(base64.b16encode( pubkey_decoded )).lower()
-                    tower["pubkey_b16"] = pubkey_b16
-                    tower_details.append(tower)
-        lightning_watchtower_client_towers = tower_details
-        log_message("update_lightning_info - GET CLIENT STATS, POLICY")
-        lightning_watchtower_client_stats = lnd_get_v2("/watchtower/client/stats")
-        lightning_watchtower_client_policy = lnd_get_v2("/watchtower/client/policy")
+        if is_watchtower_client_enabled():
+            towers = lnd_get_v2("/watchtower/client?include_sessions=1")
+            log_message("update_lightning_info - TOWER DETAILS")
+            tower_details = []
+            if towers != None and "towers" in towers:
+                for tower in towers["towers"]:
+                    if "pubkey" in tower and tower["active_session_candidate"]:
+                        pubkey_decoded = base64.b64decode(tower['pubkey'])
+                        pubkey_b16 = to_string(base64.b16encode( pubkey_decoded )).lower()
+                        tower["pubkey_b16"] = pubkey_b16
+                        tower_details.append(tower)
+            lightning_watchtower_client_towers = tower_details
+            log_message("update_lightning_info - GET CLIENT STATS, POLICY")
+            lightning_watchtower_client_stats = lnd_get_v2("/watchtower/client/stats")
+            lightning_watchtower_client_policy = lnd_get_v2("/watchtower/client/policy")
 
         # Poll slower (make sure we gather data early)
         if lightning_update_count < 30 or lightning_update_count % 2 == 0:
@@ -208,14 +213,24 @@ def get_lightning_node_info(pubkey):
 
 def get_lightning_peer_alias(pubkey):
     global lightning_peer_aliases
+    global lightning_peer_alias_misses
     if pubkey in lightning_peer_aliases:
         return lightning_peer_aliases[pubkey]
+    # Time of the next lookup for a node without an alias
+    if time.time() < lightning_peer_alias_misses.get(pubkey, 0):
+        return "UNKNOWN"
 
     nodeinfo = get_lightning_node_info(pubkey)
     if nodeinfo != None and "node" in nodeinfo:
         if "alias" in nodeinfo["node"]:
             lightning_peer_aliases[pubkey] = nodeinfo["node"]["alias"]
             return nodeinfo["node"]["alias"]
+    # LND answers "unable to find node" (with a "code") for nodes not in the graph, such as private
+    # nodes, so wait an hour. Otherwise it did not answer, which is common while it starts.
+    if nodeinfo != None and "code" in nodeinfo:
+        lightning_peer_alias_misses[pubkey] = time.time() + 60 * 60
+    else:
+        lightning_peer_alias_misses[pubkey] = time.time() + 60
     return "UNKNOWN"
 
 def get_lightning_peer_count():
@@ -294,18 +309,21 @@ def get_lightning_wallet_balance():
     global lightning_wallet_balance
     return copy.deepcopy(lightning_wallet_balance)
 
-def get_lightning_balance_info():
-    channel_balance_data = get_lightning_channel_balance()
-    wallet_balance_data = get_lightning_wallet_balance()
+def get_lightning_pending_channels():
+    global lightning_pending_channels
+    return copy.deepcopy(lightning_pending_channels)
 
+def get_lightning_balance_info():
     balance_data = {}
     balance_data["channel_balance"] = "N/A"
     balance_data["channel_pending"] = "N/A"
     balance_data["wallet_balance"] = "N/A"
     balance_data["wallet_pending"] = "N/A"
+    balance_data["closing_balance"] = "0"
     balance_data["total_balance"] = "N/A"
     channel_num = -1
     wallet_num = -1
+    closing_num = 0
 
     channel_balance_data = get_lightning_channel_balance()
     if channel_balance_data != None and "balance" in channel_balance_data:
@@ -321,8 +339,14 @@ def get_lightning_balance_info():
     if wallet_balance_data != None and "unconfirmed_balance" in wallet_balance_data:
         balance_data["wallet_pending"] = format_sat_amount( wallet_balance_data["unconfirmed_balance"] )
 
+    # Funds in channels that are closing are in neither balance until the close (or its sweep) confirms
+    pending_channels_data = get_lightning_pending_channels()
+    if pending_channels_data != None and "total_limbo_balance" in pending_channels_data:
+        closing_num = int(pending_channels_data["total_limbo_balance"])
+        balance_data["closing_balance"] = format_sat_amount(closing_num)
+
     if channel_num >= 0 and wallet_num >= 0:
-        balance_data["total_balance"] = format_sat_amount(channel_num + wallet_num)
+        balance_data["total_balance"] = format_sat_amount(channel_num + wallet_num + closing_num)
 
     if settings_file_exists("randomize_balances"):
         if is_cached("randomized_channel_balance", 3600):
@@ -341,9 +365,28 @@ def get_lightning_balance_info():
         balance_data["channel_pending"] = "0"
         balance_data["wallet_balance"] = format_sat_amount(wallet_num)
         balance_data["wallet_pending"] = "0"
+        balance_data["closing_balance"] = "0"
         balance_data["total_balance"] = format_sat_amount(channel_num + wallet_num)
 
     return balance_data
+
+# Readable names for the labels LND gives its own transactions ("0:<type>:...")
+LND_TX_LABEL_TYPES = {
+    "openchannel": "Channel open",
+    "closechannel": "Channel close",
+    "sweep": "Sweep",
+    "justicetx": "Justice transaction",
+}
+LND_TX_LABEL_ICONS = {
+    "openchannel": "channel_open.svg",
+    "closechannel": "channel_close.svg",
+    "sweep": "channel_close.svg",
+    "justicetx": "channel_close.svg",
+}
+
+def get_lnd_tx_label_type(label):
+    m = re.match(r"^\d+:([a-z]+)", label)
+    return m.group(1) if m else None
 
 def get_lightning_transactions():
     global lightning_transactions
@@ -351,6 +394,14 @@ def get_lightning_transactions():
         transactions = []
         data = copy.deepcopy(lightning_transactions)
         for tx in data["transactions"]:
+            label = tx.get("label", "")
+            label_type = get_lnd_tx_label_type(label)
+            # A force close's commitment transaction moves none of the wallet's funds (amount 0), and
+            # LND can list it as unconfirmed after it confirms. The closing balance shows those funds.
+            if label_type == "closechannel" and str(tx.get("amount", "")) == "0":
+                continue
+            tx["label_str"] = LND_TX_LABEL_TYPES.get(label_type, label_type) if label_type else label
+            tx["label_icon"] = LND_TX_LABEL_ICONS.get(label_type, "tooltip_icon.png") if tx["label_str"] else ""
             tx["id"] = tx["tx_hash"]
             if settings_file_exists("randomize_balances"):
                 tx["amount_str"] = format_sat_amount(str(random.randint(-200000,500000)))
@@ -452,7 +503,7 @@ def get_lightning_watchtower_server_info():
                     if first_uri:
                         first_uri = False
                     else:
-                        text += "<br/>"
+                        text += "\n"
                     text += uri
                 server_info["watchtower_server_uri"] = text
             elif "pubkey" in server_info or "listeners" in server_info:
@@ -497,6 +548,19 @@ def lnd_get(path, timeout=10, params={}):
         return {"error": str(e)}
     return r.json()
 
+# LND's REST API sometimes times out, so keep the last answer through a few failed requests instead
+# of showing 0 peers, channels or balance until the next update
+def lnd_get_keep_last(path, last):
+    global lightning_error_counts
+    data = lnd_get(path)
+    if "error" in data:
+        lightning_error_counts[path] = lightning_error_counts.get(path, 0) + 1
+        if lightning_error_counts[path] <= 3:
+            return last
+    else:
+        lightning_error_counts[path] = 0
+    return data
+
 def lnd_get_v2(path, timeout=10):
     try:
         macaroon = get_macaroon()
@@ -519,6 +583,19 @@ def restart_lnd_actual():
     lnd_ready = False
     os.system("systemctl restart lnd")
     os.system("systemctl restart lnd_admin")
+
+def restart_lnd_when_synced():
+    # LND does not stop until it has synced to the chain, so wait for that first
+    for i in range(360):
+        try:
+            info = lnd_get("/getinfo")
+            if info.get("synced_to_chain") == True:
+                restart_lnd_actual()
+                return
+        except:
+            pass
+        time.sleep(10)
+    log_message("LND not synced after wallet creation, skipping restart")
 
 def restart_lnd():
     t = Timer(0.1, restart_lnd_actual)
@@ -545,11 +622,17 @@ def lnd_wallet_exists():
 
 def create_wallet(seed):
     try:
-        subprocess.check_call("create_lnd_wallet.tcl \""+seed+"\"", shell=True)
+        seed = " ".join(seed.split())
+        subprocess.check_call(["create_lnd_wallet.tcl"], env=dict(os.environ, LND_SEED=seed))
         
         # Sync FS and sleep so the success redirect understands the wallet was created
         os.system("sync")
         time.sleep(2)
+
+        # Restart LND to apply the listen addresses for a device with a wallet
+        t = Timer(10, restart_lnd_when_synced)
+        t.daemon = True
+        t.start()
 
         return True
     except:

@@ -14,8 +14,8 @@
 BTCEXP_COIN=BTC
 
 # Host/Port to bind to
-BTCEXP_HOST=0.0.0.0
-BTCEXP_PORT=3002
+BTCEXP_HOST=127.0.0.1
+BTCEXP_PORT=13002
 
 # Bitcoin RPC Credentials (URI -OR- HOST/PORT/USER/PASS)
 # Defaults:

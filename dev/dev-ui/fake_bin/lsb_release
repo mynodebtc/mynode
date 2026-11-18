@@ -1,0 +1,6 @@
+#!/bin/bash
+case "$*" in
+    *-c*) echo "bookworm" ;;
+    *-r*) echo "12" ;;
+    *) echo "Debian GNU/Linux 12 (bookworm) (mock)" ;;
+esac

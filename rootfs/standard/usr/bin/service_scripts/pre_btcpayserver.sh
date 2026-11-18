@@ -8,6 +8,7 @@ set -x
 set +x
 BTCRPCPW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
 NBXPLORER_VARIABLES_FILE=/mnt/hdd/mynode/btcpayserver/btcpayserver-docker/Generated/nbxplorer-variables.env
+install -m 600 /dev/null $NBXPLORER_VARIABLES_FILE
 echo "NBXPLORER_BTCRPCUSER=mynode"            > $NBXPLORER_VARIABLES_FILE
 echo "NBXPLORER_BTCRPCPASSWORD=$BTCRPCPW"    >> $NBXPLORER_VARIABLES_FILE
 set -x

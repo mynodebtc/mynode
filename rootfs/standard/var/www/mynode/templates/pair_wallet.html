@@ -3,7 +3,7 @@
         <title>{{ title }}</title>
         {% include 'includes/head.html' %}
 
-        <script>
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
             $(document).ready(function() {
     
                 $( "#lndconnect_tabs" ).tabs();
@@ -13,9 +13,9 @@
                         choice = data.item.value;
                         
                         {% for p in pairs %}
-                        if (choice == "{{ p.id }}") {
-                            $("#pairing_text").html("{{ p.text }}");
-                            $("#pairing_qr_code").attr("src","{{ p.image_src }}");
+                        if (choice == {{ p.id|tojson }}) {
+                            $("#pairing_text").text({{ p.text|tojson }});
+                            $("#pairing_qr_code").attr("src",{{ p.image_src|tojson }});
                             return;
                         }
                         {% endfor %}

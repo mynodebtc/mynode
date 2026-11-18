@@ -1,0 +1,57 @@
+#!/bin/bash
+# Fake systemctl for the mocked UI dev container.
+# Backs every service with a state file in /tmp/mock_services/<name> whose
+# content is one of: running | stopped | failed | disabled.
+# The python mock (mock_pynode/systemctl_info.py) reads the same files, so raw
+# "os.system('systemctl ...')" calls in the real code stay consistent with the
+# python view of the world.
+
+STATE_DIR=/tmp/mock_services
+mkdir -p "$STATE_DIR"
+
+VERB=""
+SERVICE=""
+for arg in "$@"; do
+    case "$arg" in
+        --*) ;;  # ignore flags like --no-pager
+        *)
+            if [ -z "$VERB" ]; then
+                VERB="$arg"
+            elif [ -z "$SERVICE" ]; then
+                SERVICE="$arg"
+            fi
+            ;;
+    esac
+done
+
+state_file="$STATE_DIR/$SERVICE"
+state="disabled"
+[ -n "$SERVICE" ] && [ -f "$state_file" ] && state=$(cat "$state_file")
+
+case "$VERB" in
+    is-enabled)
+        [ "$state" != "disabled" ] && exit 0 || exit 1
+        ;;
+    is-active|status)
+        [ "$state" = "running" ] && exit 0 || exit 3
+        ;;
+    enable)
+        [ "$state" = "disabled" ] && echo "stopped" > "$state_file"
+        exit 0
+        ;;
+    disable)
+        echo "disabled" > "$state_file"
+        exit 0
+        ;;
+    start|restart)
+        echo "running" > "$state_file"
+        exit 0
+        ;;
+    stop)
+        [ "$state" != "disabled" ] && echo "stopped" > "$state_file"
+        exit 0
+        ;;
+    daemon-reload|*)
+        exit 0
+        ;;
+esac

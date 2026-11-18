@@ -7,7 +7,7 @@
 export COPYFILE_DISABLE=1
 
 # Build all devices by default, or only those named on the command line
-ALL_DEVICES=('raspi4' 'raspi5' 'debian' 'rockpro64')
+ALL_DEVICES=('raspi4' 'raspi5' 'debian' 'rockpro64' 'raspi3' 'rock64' 'rockpi4')
 if [ "$#" -gt 0 ]; then
     DEVICES=("$@")
     for d in "${DEVICES[@]}"; do

@@ -4,11 +4,11 @@
         {% include 'includes/head.html' %}
         <meta http-equiv="refresh" content="30">
 
-        <script>
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
             $(document).ready(function() {
 
                 $("#warning-continue").on("click", function() {
-                    window.location.href="/ignore-warning?warning={{warning_name}}"
+                    window.location.href="/ignore-warning?warning=" + {{ warning_name|tojson }}
                 });
             });
         </script>

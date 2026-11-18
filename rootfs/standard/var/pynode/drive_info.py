@@ -7,6 +7,7 @@ import subprocess
 import random
 import string
 import re
+import glob
 
 
 #==================================
@@ -133,10 +134,14 @@ def find_unmounted_drives():
 #==================================
 # Drive Format Functions
 #==================================
+VALID_FILESYSTEM_TYPES = ["ext4", "btrfs"]
+
 def set_drive_filesystem_type(filesystem):
-    run_linux_cmd("rm -f /tmp/format_filesystem_*")
+    if filesystem not in VALID_FILESYSTEM_TYPES:
+        return
+    run_linux_cmd(["rm", "-f"] + glob.glob("/tmp/format_filesystem_*"))
     touch("/tmp/format_filesystem_{}".format(filesystem))
-    run_linux_cmd("sync")
+    run_linux_cmd(["sync"])
 
 def get_current_drive_filesystem_type():
     filesystem_type = "error"
@@ -154,12 +159,12 @@ def get_current_drive_filesystem_type():
     return filesystem_type
 
 #==================================
-# Mount / Unmount Parition Functions
+# Mount / Unmount Partition Functions
 #==================================
 def mount_partition(partition, folder_name, permissions="ro"):
     try:
         subprocess.check_output("mkdir -p /mnt/usb_extras/{}".format(folder_name), shell=True)
-        subprocess.check_output("mount -o {} /dev/{} /mnt/usb_extras/{}".format(permissions, partition, folder_name), shell=True)
+        subprocess.check_output("mount -o {},nosuid,nodev,noexec /dev/{} /mnt/usb_extras/{}".format(permissions, partition, folder_name), shell=True)
         return True
     except Exception as e:
         return False

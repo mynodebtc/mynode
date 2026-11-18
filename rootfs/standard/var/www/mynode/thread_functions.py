@@ -1,4 +1,5 @@
 import subprocess
+from markupsafe import Markup
 import psutil
 import os
 from config import *
@@ -9,10 +10,11 @@ from drive_info import *
 from utilities import *
 from enable_disable_functions import *
 from systemctl_info import *
-from electrum_info import update_electrs_info
+from electrum_info import update_electrs_info, get_electrum_server_current_block
 from price_info import update_price_info
 from requests import get
 import random
+import time
 
 # Info to get from the update threads
 has_updated_btc_info = False
@@ -60,29 +62,23 @@ def update_device_info():
         # Update every 3 days (72 hrs) (start at ~15 min)
         if device_info_call_count % (60*24*3) == 15:
             if not os.path.isfile(BITCOIN_SYNCED_FILE):
-                os_drive_usage_details = "<small>Waiting on Bitcoin sync...</small>"
-                data_drive_usage_details = "<small>Waiting on Bitcoin sync...</small>"
+                os_drive_usage_details = Markup("<small>Waiting on Bitcoin sync...</small>")
+                data_drive_usage_details = Markup("<small>Waiting on Bitcoin sync...</small>")
             else:
-                os_drive_usage_details = ""
-                os_drive_usage_details += "<small>"
-                os_drive_usage_details += "<b>App Storage</b><br/>"
-                os_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /opt/mynode/", ignore_failure=True) + "</pre><br/>"
-                os_drive_usage_details += "<b>User Storage</b><br/>"
-                os_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /home/", ignore_failure=True) + "</pre><br/>"
-                os_drive_usage_details += "<b>Rust Toolchain Storage</b><br/>"
+                # Markup.format escapes the command output
+                storage = Markup("<b>{}</b><br/><pre>{}</pre><br/>")
+                os_details = storage.format("App Storage", run_linux_cmd(["du", "-h", "-d1", "/opt/mynode/"], ignore_failure=True))
+                os_details += storage.format("User Storage", run_linux_cmd(["du", "-h", "-d1", "/home/"], ignore_failure=True))
+                os_details += Markup("<b>Rust Toolchain Storage</b><br/>")
                 if os.path.isdir("/root/.cargo/"):
-                    os_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /root/.cargo/", ignore_failure=True) + "</pre><br/>"
+                    os_details += Markup("<pre>{}</pre><br/>").format(run_linux_cmd(["du", "-h", "-d1", "/root/.cargo/"], ignore_failure=True))
                 if os.path.isdir("/home/admin/.cargo/"):
-                    os_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /home/admin/.cargo/", ignore_failure=True) + "</pre><br/>"
-                os_drive_usage_details += "</small>"
+                    os_details += Markup("<pre>{}</pre><br/>").format(run_linux_cmd(["du", "-h", "-d1", "/home/admin/.cargo/"], ignore_failure=True))
+                os_drive_usage_details = Markup("<small>{}</small>").format(os_details)
 
-                data_drive_usage_details = ""
-                data_drive_usage_details += "<small>"
-                data_drive_usage_details += "<b>Disk Format</b>"
-                data_drive_usage_details += "<p>" + get_current_drive_filesystem_type() + "</p>"
-                data_drive_usage_details += "<b>Data Storage</b><br/>"
-                data_drive_usage_details += "<pre>" + run_linux_cmd("du -h -d1 /mnt/hdd/mynode/", ignore_failure=True) + "</pre><br/>"
-                data_drive_usage_details += "</small>"
+                data_details = Markup("<b>Disk Format</b><p>{}</p>").format(get_current_drive_filesystem_type())
+                data_details += storage.format("Data Storage", run_linux_cmd(["du", "-h", "-d1", "/mnt/hdd/mynode/"], ignore_failure=True))
+                data_drive_usage_details = Markup("<small>{}</small>").format(data_details)
 
     except Exception as e:
         log_message("CAUGHT update_device_info EXCEPTION: " + str(e))
@@ -139,11 +135,27 @@ def update_bitcoin_other_info_thread():
         log_message("CAUGHT update_bitcoin_other_info_thread EXCEPTION: " + str(e))
 
 
-# Updates electrs info every 60 seconds
+# Updates electrs info every 10 seconds while the index is behind, so the sync percentage keeps
+# moving, then every 60 seconds once it has caught up. The thread itself runs every 10 seconds
+# and skips the updates it does not need.
+last_electrs_update = 0
+
 def update_electrs_info_thread():
+    global last_electrs_update
     try:
-        if is_service_enabled("electrs"):
-            update_electrs_info()
+        if not is_service_enabled("electrs"):
+            return
+
+        electrs_block = get_electrum_server_current_block()
+        bitcoin_block = get_bitcoin_block_height()
+        caught_up = electrs_block != None and bitcoin_block != None and electrs_block >= bitcoin_block - 5
+        interval = 60 if caught_up else 10
+
+        if time.time() - last_electrs_update < interval:
+            return
+        last_electrs_update = time.time()
+
+        update_electrs_info()
     except Exception as e:
         log_message("CAUGHT update_electrs_info_thread EXCEPTION: " + str(e))
 

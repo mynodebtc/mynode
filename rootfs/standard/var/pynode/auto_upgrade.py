@@ -11,11 +11,11 @@ import time
 #==================================
 # Automatic Upgrades
 #==================================
-# A new MyNode version is installed automatically 7 days after this device first sees it (the
+# A new MyNode version is installed automatically 5 days after this device first sees it (the
 # version check is already spread over several days), between 3 and 5 AM local time. /usr/bin/mynode_auto_upgrade.py runs this hourly.
 
 AUTO_UPGRADE_STATE_FILE = "/mnt/hdd/mynode/settings/auto_upgrade.json"
-AUTO_UPGRADE_DELAY_DAYS = 7
+AUTO_UPGRADE_DELAY_DAYS = 5
 AUTO_UPGRADE_WINDOW_START_HOUR = 3
 AUTO_UPGRADE_WINDOW_END_HOUR = 5
 AUTO_UPGRADE_NIGHTLY_ATTEMPTS = 3   # Failed installs retried on consecutive nights...

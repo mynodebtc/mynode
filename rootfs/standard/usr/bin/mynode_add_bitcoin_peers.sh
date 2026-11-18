@@ -3,7 +3,7 @@
 set -x
 set -e
 
-# Try to get peer info - if it fails serice will restart until bitcoin is ready
+# Try to get peer info - if it fails service will restart until bitcoin is ready
 bitcoin-cli getpeerinfo
 
 # Give bitcoin some time to start
