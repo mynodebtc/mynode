@@ -178,7 +178,7 @@ def check_failed_services():
         if p["state"] == "failed":
             descriptions.append("{} (failed)".format(p["name"]))
         else:
-            descriptions.append("{} (restarted {} times after crashing)".format(p["name"], p["restarts"]))
+            descriptions.append("{} (crashed {} times in the last {} minutes)".format(p["name"], p["restarts"], SERVICE_CRASH_RECENT_SECONDS // 60))
     status = "error" if any(p["name"] in CORE_SERVICES for p in problems) else "warning"
     return _check("Services", status, "{}. Their logs are in Service Status below.".format(", ".join(descriptions)))
 

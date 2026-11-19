@@ -85,18 +85,21 @@ def get_service_status_code(service_name):
         return 0
     return 3
 
-# Automatic restarts before a service that keeps running counts as crashing. Most MyNode services
+# Crashes within SERVICE_CRASH_RECENT_SECONDS before a service counts as crashing. Most MyNode services
 # restart 30-60 seconds after a crash, which never reaches systemd's start limit (5 starts in 10
 # seconds), so a crashing service is rarely marked failed. It restarts forever instead.
 SERVICE_CRASH_RESTARTS = 3
-# ...but only while it is still restarting. NRestarts is not reset until the service is started by
-# hand, and services that wait on bitcoind or the data drive often restart several times at boot and
-# then run fine for days. A crashing service starts again within RestartSec (at most 120 seconds).
+# A crashing service starts again within RestartSec (at most 120 seconds), so a crash loop with a
+# slow container start still crashes about 4 times in this window.
 SERVICE_CRASH_RECENT_SECONDS = 15 * 60
 
 def parse_service_problems(output, now_monotonic_usec):
     # Parses "systemctl show --property=Id,ActiveState,NRestarts,ExecMainStartTimestampMonotonic"
-    # output for several units (blocks of KEY=VALUE lines separated by blank lines)
+    # output for several units (blocks of KEY=VALUE lines separated by blank lines). Returns failed
+    # services, and services that may be crashing: restarted automatically SERVICE_CRASH_RESTARTS or
+    # more times, and started recently. NRestarts also counts starts that timed out before the main
+    # process ran, such as services waiting on bitcoind to sync, so get_service_problems() checks the
+    # journal before calling one crashing.
     problems = []
     for block in output.strip().split("\n\n"):
         props = dict(line.split("=", 1) for line in block.splitlines() if "=" in line)
@@ -118,10 +121,27 @@ def parse_service_problems(output, now_monotonic_usec):
             problems.append({"name": unit[:-len(".service")], "state": "restarting", "restarts": restarts})
     return sorted(problems, key=lambda p: p["name"])
 
+def count_main_process_crashes(journal_output):
+    # systemd logs "<unit>: Main process exited, code=..., status=..." when the main process exits
+    # with an error. Starts that time out in ExecStartPre log "Control process exited" instead.
+    return len([line for line in journal_output.splitlines() if "Main process exited" in line])
+
+def get_recent_service_crashes(service_name):
+    # How many times the service's main process crashed in the last SERVICE_CRASH_RECENT_SECONDS,
+    # from systemd's own journal lines for the unit, or None when the journal can't be read
+    since = int(time.time()) - SERVICE_CRASH_RECENT_SECONDS
+    try:
+        output = to_string(subprocess.check_output(["journalctl", "_PID=1", "UNIT={}.service".format(service_name),
+                                                    "--since=@{}".format(since), "-o", "cat", "--no-pager"],
+                                                   stderr=subprocess.DEVNULL, timeout=10))
+    except Exception as e:
+        log_message("get_recent_service_crashes: journalctl failed for {}: {}".format(service_name, str(e)))
+        return None
+    return count_main_process_crashes(output)
+
 def get_service_problems():
-    # Services that failed, or that crashed and were restarted automatically SERVICE_CRASH_RESTARTS
-    # or more times since they were last started by hand (or since boot), most recently in the last
-    # SERVICE_CRASH_RECENT_SECONDS
+    # Services that failed, or that crashed SERVICE_CRASH_RESTARTS or more times in the last
+    # SERVICE_CRASH_RECENT_SECONDS. For crashing services, "restarts" is that crash count.
     try:
         units = to_string(subprocess.check_output(["systemctl", "list-units", "--all", "--type=service",
                                                    "--plain", "--no-legend", "--no-pager"], timeout=10))
@@ -135,7 +155,15 @@ def get_service_problems():
         log_message("get_service_problems: systemctl show failed: {}".format(str(e)))
         return []
     # systemd's monotonic timestamps use the same clock as time.monotonic() (CLOCK_MONOTONIC)
-    return parse_service_problems(output, int(time.monotonic() * 1000000))
+    problems = []
+    for p in parse_service_problems(output, int(time.monotonic() * 1000000)):
+        if p["state"] == "restarting":
+            crashes = get_recent_service_crashes(p["name"])
+            if crashes is None or crashes < SERVICE_CRASH_RESTARTS:
+                continue
+            p["restarts"] = crashes
+        problems.append(p)
+    return problems
 
 def get_service_status_basic_text(service_name):
     if not is_service_enabled(service_name):
