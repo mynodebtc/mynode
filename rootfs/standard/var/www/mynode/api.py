@@ -13,6 +13,7 @@ from sphinxrelay import get_connection_string
 from drive_info import *
 from price_info import *
 from messages import *
+from memtest_info import get_manual_memtest_view
 if isPython3():
     from io import StringIO, BytesIO
 else:
@@ -45,6 +46,14 @@ def api_ping():
     data = {}
     data["status"] = get_mynode_status()
     data["uptime_seconds"] = get_system_uptime_in_seconds()
+    return generate_api_json_response(data)
+
+@mynode_api.route("/api/get_memtest_progress")
+def api_get_memtest_progress():
+    check_logged_in()
+
+    data = get_manual_memtest_view()
+    data["status"] = get_mynode_status()
     return generate_api_json_response(data)
 
 @mynode_api.route("/api/get_bitcoin_info")

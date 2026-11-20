@@ -74,7 +74,7 @@ DEVICE_STATES = [
     "drive_mounted", "drive_clone", "drive_full", "docker_reset",
     "gen_dhparam", "choose_network", "quicksync_download", "quicksync_copy",
     "quicksync_reset", "rootfs_read_only", "hdd_read_only", "shutting_down",
-    "upgrading", "unknown",
+    "upgrading", "memory_test", "unknown",
 ]
 
 THROTTLE_BITS = {
@@ -240,6 +240,14 @@ def dev_state():
             f.write(clone_state)
         with open("/tmp/.clone_progress", "w") as f:
             f.write("42.00% complete (289 GB / 689 GB) - mocked")
+    if value == "memory_test":
+        # A 2 pass memory test 42% done, with errors found if ?failures=N
+        now = int(time.time())
+        with open("/tmp/memtest_progress.json", "w") as f:
+            json.dump({"passes": 2, "pass": 1, "test": "Bit Flip", "percent": 42, "start": now - 58 * 60,
+                       "remaining_seconds": 81 * 60, "updated": now, "tested_mb": 14800,
+                       "failures": int(request.args.get("failures", "0") or 0),
+                       "bad_pages": [], "running": True}, f)
     return _ok(state=value)
 
 

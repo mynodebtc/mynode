@@ -109,6 +109,22 @@ fi
 /usr/bin/mynode-python /usr/bin/mynode_usb_driver_check.py
 touch /tmp/.usb_driver_checked
 
+# Memory tests. Save the result of the kernel's test if it ran on this boot. Then run the manual test
+# if one was asked for, before the drive mounts and before any service starts. If it found new bad
+# RAM, reboot so Linux stays off it.
+if [ $IS_X86 = 1 ]; then
+    /usr/bin/mynode-python /usr/bin/mynode_memtest.py collect || true
+    MEMTEST_RESULT=0
+    /usr/bin/mynode-python /usr/bin/mynode_memtest.py manual || MEMTEST_RESULT=$?
+    if [ $MEMTEST_RESULT -eq 3 ]; then
+        echo "Memory test found bad RAM, rebooting to keep Linux off it"
+        sync
+        /usr/bin/systemctl reboot
+        sleep 600
+        exit 1
+    fi
+fi
+
 
 # Setup SD Card (if necessary)
 mkdir -p /run/tor
@@ -296,6 +312,12 @@ done
 # Check USB drivers again now that the drive's settings can be read. A reboot here comes before the
 # network choice and the rest of setup.
 /usr/bin/mynode-python /usr/bin/mynode_usb_driver_check.py
+
+# Keep Linux off bad RAM pages found by memory tests (the list is also on the drive, for reflashes),
+# and keep the boot test in line with its setting
+if [ $IS_X86 = 1 ]; then
+    /usr/bin/mynode-python /usr/bin/mynode_memtest.py apply || true
+fi
 
 
 # Check for docker reset

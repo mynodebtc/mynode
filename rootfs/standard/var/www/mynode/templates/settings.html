@@ -156,6 +156,16 @@
                 });
 
 
+                $("#memtest_run_form").on("submit", function() {
+                    var passes = $("#memtest_passes option:selected").text();
+                    return confirm("Reboot and test the memory (" + passes + ")? Bitcoin, Lightning and apps don't run until the test ends. You can stop it early from the home page.");
+                });
+                $("#memtest_boot_checkbox").change(function () {
+                    $("#memtest_boot_save").show();
+                });
+                $("#memtest_clear_form").on("submit", function() {
+                    return confirm("Clear the bad memory pages? Only do this after replacing the RAM. Linux uses them again from the next reboot.");
+                });
                 $("#reset-blockchain").on("click", function() {
                     var okFunction = function() {
                         window.location.href="/settings/reset-blockchain"
@@ -640,6 +650,8 @@
                 $("#background").selectmenu();
 
                 $("#electrs_tx_lookup_limit").selectmenu();
+
+                $("#memtest_passes").selectmenu();
 
                 var swap_choice="";
                 $("#swap_size").selectmenu( {
@@ -1909,15 +1921,84 @@
 
             <div class="divider"></div>
 
+            {% if memtest.supported %}
+            <a id="memtest"></a>
+            <div class="settings_block_subheader">Memory Test</div>
+            Reboots and tests the RAM, before anything else starts. Each pass can take over an hour. If any bad
+            pages are found, MyNode stops them from being used in the future to help prevent data corruption.
+            <br/><br/>
+            {% if memtest.bad_page_count > 0 %}
+            <p>{{ memtest.bad_page_count }} bad memory page{% if memtest.bad_page_count != 1 %}s{% endif %} (4 KB each)
+                {% if memtest.too_many %}found, more than MyNode can keep Linux off.{% else %}blocked, so Linux doesn't use {% if memtest.bad_page_count != 1 %}them{% else %}it{% endif %}.{% endif %}
+                Contact support about replacing the RAM.</p>
+            <div style="text-align: left; font-size: 12px; overflow-x: auto;"><pre>{{ memtest.bad_pages | join("\n") }}</pre></div>
+            {% endif %}
+            {% if memtest.last_manual %}
+            <div class="settings_console">Last memory test: {{ memtest.last_manual_time }},
+            {% if memtest.last_manual.passes %}{% if memtest.last_manual.stopped %}stopped at {{ memtest.last_manual.percent }}%{% else %}{{ memtest.last_manual.passes_done }} of {{ memtest.last_manual.passes }} pass{% if memtest.last_manual.passes != 1 %}es{% endif %}{% endif %} in {{ memtest.last_manual_duration }}{% else %}{{ memtest.last_manual_duration }}{% endif %},
+            {{ "%.1f" | format(memtest.last_manual.tested_mb / 1024) }} GB tested,
+            {% if memtest.last_manual.failures %}{{ memtest.last_manual.failures }} error{% if memtest.last_manual.failures != 1 %}s{% endif %}, {{ memtest.last_manual.pages | length }} bad page{% if memtest.last_manual.pages | length != 1 %}s{% endif %} ({{ memtest.last_manual.new_pages }} new).{% else %}no errors.{% endif %}
+            {% if memtest.last_manual.error %}{{ memtest.last_manual.error }}.{% endif %}</div>
+            <br/>
+            {% endif %}
+            {% if memtest.manual_scheduled_passes %}
+            <p>A memory test runs on the next reboot.</p>
+            {% endif %}
+            {% if memtest.memtester_installed or memtest.bad_page_count > 0 %}
+            <div class="memtest_actions">
+                {% if memtest.memtester_installed %}
+                <form id="memtest_run_form" action="/settings/memtest/run" method="POST">
+                    <select name="passes" id="memtest_passes">
+                        {% for o in memtest.pass_options %}
+                        <option value="{{ o.passes }}">{{ o.label }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="submit" value="Test Memory" class="ui-button ui-widget ui-corner-all"/>
+                </form>
+                {% endif %}
+                {% if memtest.bad_page_count > 0 %}
+                <form id="memtest_clear_form" action="/settings/memtest/clear" method="POST">
+                    <input type="submit" value="Clear Bad Pages" class="ui-button ui-widget ui-corner-all"/>
+                </form>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% if not memtest.memtester_installed %}
+            <p>The memory test is installed with the next upgrade.</p>
+            {% endif %}
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Memory Test at Boot</div>
+            Runs a quick memory test each time the device starts. It adds about
+            {{ memtest.boot_estimate_minutes }} minute{% if memtest.boot_estimate_minutes != 1 %}s{% endif %} to each reboot.
+            {% if memtest.last_boot %}
+            <div class="settings_console" style="margin-top: 20px;">Last test: {{ memtest.last_boot_time }}, {% if memtest.last_boot.bad_ranges %}found {{ memtest.last_boot.bad_ranges | length }} bad area{% if memtest.last_boot.bad_ranges | length != 1 %}s{% endif %}.{% else %}no errors.{% endif %}</div>
+            {% else %}
+            <br/>
+            {% endif %}
+            <br/>
+            <form action="/settings/memtest/boot" method="POST">
+                <label class="switch">
+                    <input type="checkbox" id="memtest_boot_checkbox" name="enabled" value="1" {% if memtest.boot_enabled %}checked{% endif %}>
+                    <span class="slider round"></span>
+                </label>
+                <br/><br/>
+                <input type="submit" id="memtest_boot_save" value="Save" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small"/>
+            </form>
+
+            <div class="divider"></div>
+            {% endif %}
+
             <div class="settings_block_subheader">HTTPS Certificates</div>
             {% if https_ca_info %}
             Your MyNode is its own certificate authority. Download it and install it on your computers and
             phones, and your browser trusts MyNode's HTTPS pages without a warning, including every
             certificate MyNode renews later. <a href="/https-info#trust">Using HTTPS</a> has the steps for each system.
             <br/><br/>
-            Name: {{ https_ca_info.name }}<br/>
-            SHA-256: <span style="word-break: break-all;">{{ https_ca_info.fingerprint }}</span>
-            <br/><br/>
+            <div class="settings_console">Name: {{ https_ca_info.name }}<br/>
+            SHA-256: {{ https_ca_info.fingerprint }}</div>
+            <br/>
             Regenerate issues a new HTTPS certificate from the same authority, so there is nothing to reinstall.
             <br/>
             <a href="/settings/mynode_web.cert" class="ui-button ui-widget ui-corner-all settings_button">Download</a>

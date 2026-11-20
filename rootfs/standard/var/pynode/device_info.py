@@ -720,6 +720,7 @@ STATE_ROOTFS_READ_ONLY =      "rootfs_read_only"
 STATE_HDD_READ_ONLY =         "hdd_read_only"
 STATE_SHUTTING_DOWN =         "shutting_down"
 STATE_UPGRADING =             "upgrading"
+STATE_MEMORY_TEST =           "memory_test"
 STATE_UNKNOWN =               "unknown"
 
 def get_mynode_status():

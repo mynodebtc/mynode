@@ -330,6 +330,7 @@ fi
 if [ $IS_X86 = 1 ]; then
     apt-get -y install cloud-init
     apt-get -y install intel-microcode || true
+    apt-get -y install memtester || true
 fi
 if [ $IS_ARMBIAN = 1 ] ; then
     apt-get -y install systemd-timesyncd

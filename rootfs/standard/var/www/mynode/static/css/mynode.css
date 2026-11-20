@@ -791,6 +791,31 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
 .settings_input {
     font-size: 14px;
 }
+/* Console-like status lines in settings blocks (last test results, certificate details) */
+.settings_console {
+    font-family: monospace;
+    font-size: 12px;
+    text-align: left;
+    overflow-wrap: anywhere;
+    margin-top: 6px;
+}
+.memtest_actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 15px;
+}
+.memtest_actions form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+}
+.memtest_actions .ui-button.ui-widget {
+    margin: 0;
+    font-size: 14px;
+}
 .status_container_list {
     margin-left: 150px;
 }

@@ -16,6 +16,8 @@ from device_info import *
 from auto_upgrade import *
 from os_upgrade import get_os_release_upgrade_info, start_os_release_upgrade, did_os_release_upgrade_fail, get_os_release_upgrade_log_tail, get_interrupted_os_release_upgrade
 from health_info import get_health_checks, get_health_summary
+from memtest_info import get_memtest_status, is_memtest_supported, is_memtester_installed, schedule_manual_memtest, \
+    stop_manual_memtest, set_boot_memtest_enabled, clear_bad_ram_pages
 import time
 import os
 import subprocess
@@ -118,6 +120,7 @@ def page_settings():
         "is_local_traffic_allowed": settings_file_exists("local_traffic_allowed"),
         "skip_backup_dns_servers": settings_file_exists("skip_backup_dns_servers"),
         "is_testnet_enabled": is_testnet_enabled(),
+        "memtest": get_memtest_status(),
         "netdata_enabled": is_service_enabled("netdata"),
         "terminal_enabled": is_installed("wetty") and is_service_enabled("wetty"),
         "uas_usb": is_uas_usb_enabled(),
@@ -1415,6 +1418,54 @@ def toggle_testnet_page():
     t.start()
 
     return redirect("/rebooting")
+
+@mynode_settings.route("/settings/memtest/run", methods=['POST'])
+def memtest_run_page():
+    check_logged_in()
+    if not is_memtest_supported() or not is_memtester_installed():
+        flash("The memory test is not available on this device", category="error")
+        return redirect("/settings#memtest")
+    try:
+        passes = int(request.form.get("passes", ""))
+    except ValueError:
+        passes = 0
+
+    check_and_mark_reboot_action("memtest")
+    if not schedule_manual_memtest(passes):
+        delete_file("/tmp/mark_reboot___memtest")
+        flash("Could not set up the memory test", category="error")
+        return redirect("/settings#memtest")
+
+    # Trigger reboot
+    t = Timer(1.0, reboot_device)
+    t.start()
+
+    return redirect("/rebooting")
+
+@mynode_settings.route("/settings/memtest/stop", methods=['POST'])
+def memtest_stop_page():
+    check_logged_in()
+    stop_manual_memtest()
+    return redirect("/")
+
+@mynode_settings.route("/settings/memtest/boot", methods=['POST'])
+def memtest_boot_page():
+    check_logged_in()
+    if is_memtest_supported():
+        enable = request.form.get("enabled") == "1"
+        if set_boot_memtest_enabled(enable):
+            flash("Memory test at boot {}".format("enabled" if enable else "disabled"), category="message")
+        else:
+            flash("Could not change the boot options. Check the MyNode log.", category="error")
+    return redirect("/settings#memtest")
+
+@mynode_settings.route("/settings/memtest/clear", methods=['POST'])
+def memtest_clear_page():
+    check_logged_in()
+    if is_memtest_supported():
+        clear_bad_ram_pages()
+        flash("Bad RAM areas cleared. They are used again from the next reboot.", category="message")
+    return redirect("/settings#memtest")
 
 @mynode_settings.route("/settings/ping")
 def ping_page():

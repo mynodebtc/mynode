@@ -231,6 +231,7 @@ if ! skip_base_upgrades ; then
     if [ $IS_X86 = 1 ]; then
         apt-get -y install cloud-init
         apt-get -y install intel-microcode || true
+        apt-get -y install memtester || true
     fi
 
     # Use timesyncd for NTP

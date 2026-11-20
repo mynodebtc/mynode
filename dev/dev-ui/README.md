@@ -50,6 +50,7 @@ curl needs `-H 'Sec-Fetch-Site: same-origin'`. Examples:
 
 ```bash
 curl -H 'Sec-Fetch-Site: same-origin' 'localhost:8888/dev/state?value=drive_missing'
+curl -H 'Sec-Fetch-Site: same-origin' 'localhost:8888/dev/state?value=memory_test&failures=3'
 curl -H 'Sec-Fetch-Site: same-origin' 'localhost:8888/dev/sync?synced=0&progress=0.62'
 curl -H 'Sec-Fetch-Site: same-origin' 'localhost:8888/dev/app?name=specter&installed=1'
 curl -H 'Sec-Fetch-Site: same-origin' 'localhost:8888/dev/service?name=electrs&status=failed'

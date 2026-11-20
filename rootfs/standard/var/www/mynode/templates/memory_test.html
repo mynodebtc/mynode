@@ -1,0 +1,216 @@
+<!DOCTYPE html lang="en">
+    <head>
+        <title>{{ title }}</title>
+        {% include 'includes/head.html' %}
+        <style>
+            .mt_card {
+                --mt-text: #444;
+                --mt-muted: #888;
+                --mt-card: rgba(255, 255, 255, 0.85);
+                --mt-border: rgba(0, 0, 0, 0.08);
+                --mt-track: #ececec;
+                --mt-accent: #f7931a;
+                --mt-bad: #d64545;
+                --mt-good: #3a9a5b;
+                max-width: 520px;
+                margin: 10px auto 0 auto;
+                padding: 32px 28px 28px 28px;
+                background: var(--mt-card);
+                border: 1px solid var(--mt-border);
+                border-radius: 18px;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+                text-align: center;
+                color: var(--mt-text);
+                box-sizing: border-box;
+            }
+            .mt_card.mt_dark {
+                --mt-text: #ddd;
+                --mt-muted: #9aa5ad;
+                --mt-card: rgba(18, 28, 33, 0.9);
+                --mt-border: rgba(255, 255, 255, 0.08);
+                --mt-track: #2c363d;
+            }
+            .mt_title { font-size: 30px; font-weight: 600; margin-bottom: 6px; }
+            .mt_subtitle { font-size: 15px; color: var(--mt-muted); line-height: 1.4; }
+            .mt_ring { position: relative; width: 220px; height: 220px; margin: 26px auto 22px auto; }
+            .mt_ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+            .mt_ring circle { fill: none; stroke-width: 12; }
+            .mt_ring .mt_track { stroke: var(--mt-track); }
+            .mt_ring .mt_bar { stroke: var(--mt-accent); stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+            .mt_ring.mt_has_errors .mt_bar { stroke: var(--mt-bad); }
+            .mt_center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+            .mt_time { font-size: 46px; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: 1px; }
+            .mt_time_label { font-size: 13px; color: var(--mt-muted); margin-top: 4px; max-width: 150px; line-height: 1.3; }
+            .mt_stats { display: flex; gap: 12px; justify-content: center; margin-bottom: 22px; }
+            .mt_stat { flex: 1; padding: 12px 6px; border: 1px solid var(--mt-border); border-radius: 12px; }
+            .mt_stat_value { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
+            .mt_stat_label { font-size: 12px; color: var(--mt-muted); margin-top: 2px; }
+            .mt_stat.mt_bad .mt_stat_value { color: var(--mt-bad); }
+            .mt_stat.mt_good .mt_stat_value { color: var(--mt-good); }
+            .mt_note { font-size: 14px; color: var(--mt-muted); line-height: 1.45; margin-bottom: 20px; min-height: 20px; }
+            .mt_note.mt_bad { color: var(--mt-bad); }
+            .mt_stop { padding: 10px 28px; font-size: 15px; border-radius: 10px; }
+            @media (max-width: 480px) {
+                .mt_card { margin: 0 16px; padding: 24px 16px; }
+                .mt_ring { width: 180px; height: 180px; }
+                .mt_time { font-size: 38px; }
+                .mt_stats { gap: 8px; }
+            }
+        </style>
+     </head>
+
+    <body>
+        {% include 'includes/logo_header.html' %}
+
+        <div id="mt_card" class="mt_card{% if ui_settings['darkmode'] %} mt_dark{% endif %}"
+             data-started="{{ 1 if progress.started else 0 }}"
+             data-running="{{ 1 if progress.running else 0 }}"
+             data-percent="{{ progress.percent or 0 }}"
+             data-remaining="{{ progress.remaining_seconds or 0 }}"
+             data-failures="{{ progress.failures or 0 }}"
+             data-new-pages="{{ progress.new_pages or 0 }}"
+             data-test="{{ progress.test or '' }}">
+            <div class="mt_title">Testing Memory</div>
+            <div class="mt_subtitle">Bitcoin, Lightning and apps start when the test ends.</div>
+
+            <div id="mt_ring" class="mt_ring">
+                <svg viewBox="0 0 120 120">
+                    <circle class="mt_track" cx="60" cy="60" r="52"></circle>
+                    <circle id="mt_bar" class="mt_bar" cx="60" cy="60" r="52" stroke-dasharray="326.73" stroke-dashoffset="326.73"></circle>
+                </svg>
+                <div class="mt_center">
+                    <div id="mt_time" class="mt_time">0%</div>
+                    <div id="mt_time_label" class="mt_time_label">starting</div>
+                </div>
+            </div>
+
+            <div class="mt_stats">
+                <div class="mt_stat">
+                    <div id="mt_tested" class="mt_stat_value">{{ progress.tested_gb if progress.started else "-" }} GB</div>
+                    <div class="mt_stat_label">Memory tested</div>
+                </div>
+                <div class="mt_stat">
+                    <div id="mt_pass" class="mt_stat_value">{{ progress.pass if progress.started else 1 }} of {{ progress.passes if progress.started else 1 }}</div>
+                    <div class="mt_stat_label">Pass</div>
+                </div>
+                <div id="mt_errors_box" class="mt_stat">
+                    <div id="mt_errors" class="mt_stat_value">{{ progress.failures if progress.started else 0 }}</div>
+                    <div class="mt_stat_label">Errors</div>
+                </div>
+            </div>
+
+            <div id="mt_note" class="mt_note"></div>
+
+            <form id="mt_stop_form" action="/settings/memtest/stop" method="POST">
+                <input type="submit" value="Stop Test" class="ui-button ui-widget ui-corner-all mt_stop"/>
+            </form>
+        </div>
+
+        <div style="height: 40px;">&nbsp;</div>
+        {% include 'includes/footer.html' %}
+
+        <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
+            $(document).ready(function() {
+                var card = $("#mt_card");
+                var circumference = 2 * Math.PI * 52;
+                var state = {
+                    started: card.data("started") == 1,
+                    running: card.data("running") == 1,
+                    percent: Number(card.data("percent")),
+                    failures: Number(card.data("failures")),
+                    newPages: Number(card.data("new-pages")),
+                    test: String(card.data("test") || ""),
+                    endsAt: Date.now() + Number(card.data("remaining")) * 1000
+                };
+                var offline = false;
+                $("#mt_bar").attr("stroke-dasharray", circumference);
+
+                // Same rounding as format_duration() in memtest_info.py
+                function formatDuration(seconds) {
+                    var minutes = Math.max(1, Math.round(seconds / 60));
+                    if (minutes < 60) { return minutes + " min"; }
+                    var hours = Math.floor(minutes / 60);
+                    var rest = minutes % 60;
+                    if (hours >= 3 || rest == 0) { return (Math.round(minutes / 30) / 2) + " hr"; }
+                    return hours + " hr " + rest + " min";
+                }
+                function timeLeft(seconds) {
+                    return seconds < 60 ? "less than a minute left" : "about " + formatDuration(seconds) + " left";
+                }
+
+                function render() {
+                    var remaining = Math.max(0, Math.round((state.endsAt - Date.now()) / 1000));
+                    var percent = state.started ? (state.running ? state.percent : 100) : 0;
+                    $("#mt_bar").attr("stroke-dashoffset", circumference * (1 - percent / 100));
+                    $("#mt_ring").toggleClass("mt_has_errors", state.failures > 0);
+                    $("#mt_errors_box").toggleClass("mt_bad", state.failures > 0)
+                                       .toggleClass("mt_good", state.started && state.failures == 0);
+
+                    var note = $("#mt_note").removeClass("mt_bad");
+                    if (offline) {
+                        $("#mt_time").text("--");
+                        $("#mt_time_label").text("restarting");
+                        note.text("The device is restarting. This page reloads when it's back.");
+                        $("#mt_stop_form").hide();
+                    } else if (!state.started) {
+                        $("#mt_time").text("0%");
+                        $("#mt_time_label").text("starting");
+                        note.text("The memory test is starting...");
+                    } else if (state.running) {
+                        $("#mt_time").text(percent + "%");
+                        $("#mt_time_label").text(timeLeft(remaining));
+                        if (state.failures > 0) {
+                            note.addClass("mt_bad").text("Bad memory found. MyNode stops using the bad memory after the test.");
+                        } else {
+                            note.text(state.test ? "No errors so far. Now testing: " + state.test + "." : "No errors found so far.");
+                        }
+                    } else {
+                        $("#mt_time").text("100%");
+                        $("#mt_time_label").text("done");
+                        $("#mt_stop_form").hide();
+                        if (state.newPages > 0) {
+                            note.addClass("mt_bad").text("Bad memory found. Rebooting to keep Linux off it...");
+                        } else {
+                            note.text("Test complete. Starting MyNode...");
+                        }
+                    }
+                }
+
+                function poll() {
+                    $.ajax({ url: "/api/get_memtest_progress", dataType: "json", timeout: 4000 })
+                        .done(function(data) {
+                            if (offline || data.status != "memory_test") {
+                                window.location.href = "/";
+                                return;
+                            }
+                            state.started = data.started;
+                            if (data.started) {
+                                state.running = data.running;
+                                state.percent = data.percent;
+                                state.failures = data.failures;
+                                state.newPages = data.new_pages;
+                                state.test = data.test || "";
+                                state.endsAt = Date.now() + data.remaining_seconds * 1000;
+                                $("#mt_tested").text(data.tested_gb + " GB");
+                                $("#mt_pass").text(data.pass + " of " + data.passes);
+                                $("#mt_errors").text(data.failures);
+                            }
+                            render();
+                        })
+                        .fail(function() {
+                            offline = true;
+                            render();
+                        });
+                }
+
+                $("#mt_stop_form").on("submit", function() {
+                    return confirm("Stop the memory test now? Any bad memory it found so far is still kept out of use.");
+                });
+
+                render();
+                setInterval(render, 1000);
+                setInterval(poll, 5000);
+            });
+        </script>
+     </body>
+</html>

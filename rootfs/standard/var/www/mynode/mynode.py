@@ -35,6 +35,7 @@ from messages import get_message
 from thread_functions import *
 from datetime import timedelta
 from device_info import *
+from memtest_info import get_manual_memtest_view, get_memory_test_seconds_this_boot
 from auto_upgrade import *
 from drive_info import *
 from device_warnings import *
@@ -370,6 +371,7 @@ HTTPS_WAIT_STATE_TEXT = {
     STATE_HDD_READ_ONLY: "Drive is read only",
     STATE_SHUTTING_DOWN: "Shutting down...",
     STATE_UPGRADING: "Upgrading...",
+    STATE_MEMORY_TEST: "Testing memory...",
     STATE_STABLE: "Running",
 }
 
@@ -514,7 +516,8 @@ def index():
     check_logged_in()
     status = get_mynode_status()
 
-    uptime_in_seconds = get_system_uptime_in_seconds()
+    # Time since startup began, leaving out a memory test that held it up
+    uptime_in_seconds = get_system_uptime_in_seconds() - get_memory_test_seconds_this_boot()
     product_key_skipped = skipped_product_key()
     product_key_error = not is_valid_product_key()
 
@@ -542,6 +545,13 @@ def index():
             "ui_settings": read_ui_settings()
         }
         return render_template('state.html', **templateData)
+    elif status == STATE_MEMORY_TEST:
+        templateData = {
+            "title": "Testing Memory",
+            "progress": get_manual_memtest_view(),
+            "ui_settings": read_ui_settings()
+        }
+        return render_template('memory_test.html', **templateData)
     elif is_warning_present():
         warning = get_current_warning()
         templateData = {
