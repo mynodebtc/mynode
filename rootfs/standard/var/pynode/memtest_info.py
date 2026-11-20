@@ -70,8 +70,8 @@ MEMTESTER_TESTS = [
     ("Bit Flip", 1024.5, 512),
     ("Walking Ones", 256.5, 128),
     ("Walking Zeroes", 256.5, 128),
-    ("8-bit Writes", 12.5, 2),
-    ("16-bit Writes", 8.5, 2),
+    ("8-bit Writes", 90.5, 2),       # One byte (or two) per store: measured about 2 minutes each
+    ("16-bit Writes", 60.5, 2),      # on 14 GB, much slower per sweep than whole-word tests
 ]
 MEMTESTER_TEST_NAMES = [t[0] for t in MEMTESTER_TESTS]
 MEMTESTER_PASS_SWEEPS = sum(t[1] for t in MEMTESTER_TESTS)
@@ -462,24 +462,45 @@ def _set_mynode_status(status):
     except Exception:
         pass
 
+def _anonymous_mappings(pid):
+    # memtester's anonymous read/write mappings from /proc/<pid>/smaps: (start, end, locked bytes)
+    mappings = []
+    with open("/proc/{}/smaps".format(pid)) as f:
+        for line in f:
+            fields = line.split()
+            if re.match(r"^[0-9a-f]+-[0-9a-f]+$", fields[0]):
+                current = None
+                if len(fields) == 5 and fields[1].startswith("rw"):
+                    a, b = [int(x, 16) for x in fields[0].split("-")]
+                    current = [a, b, 0]
+                    mappings.append(current)
+            elif fields[0] == "Locked:" and current is not None:
+                current[2] = int(fields[1]) * 1024
+    return mappings
+
 def _find_memtester_buffer(pid, wantbytes):
     # memtester mallocs its buffer, and glibc serves a request this big with its own mapping: a 16 byte
     # header, then the buffer. memtester starts testing at the next page, and (memtester 4.6) subtracts
     # the bytes it skipped twice from the size. The first half is bufa, the second bufb.
+    # memtester locks only the tested area, so the tested area starts where the big locked mapping does.
     # Returns (start of the tested area, start of bufb) or None.
-    mapping_len = (wantbytes + 16 + PAGE_SIZE - 1) // PAGE_SIZE * PAGE_SIZE
+    skipped = PAGE_SIZE - 16
+    bufsize = wantbytes - 2 * skipped
     try:
-        with open("/proc/{}/maps".format(pid)) as f:
-            for line in f:
-                fields = line.split()
-                start, end = [int(x, 16) for x in fields[0].split("-")]
-                if end - start == mapping_len and fields[1].startswith("rw") and len(fields) == 5:
-                    buf = start + 16
-                    aligned = (buf & ~(PAGE_SIZE - 1)) + PAGE_SIZE
-                    bufsize = wantbytes - 2 * (aligned - buf)
-                    return aligned, aligned + bufsize // 2
+        mappings = _anonymous_mappings(pid)
     except Exception as e:
         _log("Memory test: could not read memtester's memory map: {}".format(str(e)))
+        return None
+    locked = [m for m in mappings if m[1] - m[0] >= bufsize // 2 and m[2] >= (m[1] - m[0]) - PAGE_SIZE]
+    # memtester locks before its second subtraction, so the locked length is the size minus one skip
+    expected = (wantbytes - skipped + PAGE_SIZE - 1) // PAGE_SIZE * PAGE_SIZE
+    if len(locked) == 1:
+        aligned = locked[0][0]
+        if locked[0][1] - aligned != expected:
+            _log("Memory test: memtester's locked mapping is {:#x} bytes, expected {:#x}".format(locked[0][1] - aligned, expected))
+        return aligned, aligned + bufsize // 2
+    _log("Memory test: could not find memtester's buffer, addresses won't be known. Large mappings: {}".format(
+        ["{:#x} size {:#x} locked {:#x}".format(a, b - a, l) for a, b, l in mappings if b - a >= (64 << 20)]))
     return None
 
 def _physical_page(pagemap, vaddr):
@@ -633,8 +654,6 @@ def run_manual_memtest():
                 if "locked." in line and wantbytes:
                     layout = _find_memtester_buffer(proc.pid, wantbytes)
                     pagemap = open("/proc/{}/pagemap".format(proc.pid), "rb")
-                    if not layout:
-                        _log("Memory test: could not find memtester's buffer, addresses won't be known")
                 stuck = MEMTESTER_STUCK_RE.search(line)
                 compare = MEMTESTER_COMPARE_RE.search(line)
                 if not (stuck or compare):
