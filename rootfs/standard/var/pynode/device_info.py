@@ -1678,6 +1678,17 @@ def get_bitcoin_log_file():
 def reset_bitcoin_env_file():
     os.system("echo 'BTCARGS=' > "+BITCOIN_ENV_FILE)
 
+def request_bitcoin_reindex(reindex_type):
+    # mynode_gen_bitcoin_config.sh adds the option to bitcoin.conf for the next start only, so it
+    # applies however long Bitcoin takes to stop
+    if reindex_type not in ["full", "chainstate"]:
+        return False
+    with open(BITCOIN_REINDEX_REQUEST_FILE, "w") as f:
+        f.write(reindex_type + "\n")
+    os.system("sync")
+    subprocess.call(["systemctl", "restart", "--no-block", "bitcoin"])
+    return True
+
 def delete_bitcoin_peer_database():
     os.system("rm -rf /mnt/hdd/mynode/bitcoin/peers.dat")
     os.system("rm -rf /mnt/hdd/mynode/bitcoin/testnet3/peers.dat")
@@ -1693,6 +1704,9 @@ def delete_bitcoin_data():
             if os.path.isfile(os.path.join(folder, name)):
                 os.remove(os.path.join(folder, name))
     os.system("rm -rf /mnt/hdd/mynode/.mynode_bitcoin_synced_at_least_once")
+    for f in [BITCOIN_REINDEX_REQUEST_FILE, BITCOIN_REINDEX_RUNNING_FILE]:
+        if os.path.isfile(f):
+            os.remove(f)
     #os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpc_environment")
     #os.system("rm -rf /mnt/hdd/mynode/settings/.btcrpcpw")
 

@@ -11,10 +11,15 @@
                 $("#sync_peers").text(sync["peers"]);
                 $("#sync_peers_row").toggleClass("sync_peers_warning", sync["no_peers"]);
                 $("#sync_no_peers_note").text(sync["no_peers_hint"]).toggle(sync["no_peers"]);
+                $("#sync_reindex_note").text(sync["reindex_note"]).toggle(sync["reindex_note"] != "");
 
                 var step = sync["step"];
                 if (step != null) {
-                    $("#sync_step_name").text("Stage " + step["number"] + " of " + step["count"] + ": " + step["name"]);
+                    if (step["count"] != null) {
+                        $("#sync_step_name").text("Stage " + step["number"] + " of " + step["count"] + ": " + step["name"]);
+                    } else {
+                        $("#sync_step_name").text(step["name"]);
+                    }
                     $("#sync_step_bar_fill").css("width", step["percent_str"] + "%");
                     $("#sync_step_detail").text(step["detail"]);
                     $("#sync_step").show();
@@ -73,10 +78,13 @@
             <div id="sync_no_peers_note" class="sync_no_peers_note" {% if not sync.no_peers %}style="display: none;"{% endif %}>
                 {{ sync.no_peers_hint }}
             </div>
+            <div id="sync_reindex_note" class="sync_reindex_note" {% if not sync.reindex_note %}style="display: none;"{% endif %}>
+                {{ sync.reindex_note }}
+            </div>
 
             <div id="sync_step" class="sync_step" {% if not sync.step %}style="display: none;"{% endif %}>
                 <div id="sync_step_name" class="sync_step_name">
-                    {% if sync.step %}Stage {{ sync.step.number }} of {{ sync.step.count }}: {{ sync.step.name }}{% endif %}
+                    {% if sync.step %}{% if sync.step.count %}Stage {{ sync.step.number }} of {{ sync.step.count }}: {% endif %}{{ sync.step.name }}{% endif %}
                 </div>
                 <div class="sync_step_bar">
                     <div id="sync_step_bar_fill" class="sync_step_bar_fill" style="width: {% if sync.step %}{{ sync.step.percent_str }}{% else %}0{% endif %}%;"></div>

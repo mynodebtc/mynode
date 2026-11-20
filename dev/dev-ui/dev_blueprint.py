@@ -66,6 +66,8 @@ def _dev_no_cache(resp):
 
 
 BITCOIN_SYNCED_FILE = "/mnt/hdd/mynode/.mynode_bitcoin_synced"
+BITCOIN_REINDEX_REQUEST_FILE = "/mnt/hdd/mynode/settings/.bitcoin_reindex"
+BITCOIN_REINDEX_RUNNING_FILE = "/mnt/hdd/mynode/.bitcoin_reindex_running"
 
 DEVICE_STATES = [
     "stable", "drive_missing", "drive_format_confirm", "drive_formatting",
@@ -175,6 +177,7 @@ def dev_status():
         "device_states": DEVICE_STATES,
         "bitcoin_synced": os.path.isfile(BITCOIN_SYNCED_FILE),
         "bitcoin_knob": get_knob("bitcoin", {"behind_blocks": 0}),
+        "bitcoin_reindex": bitcoin_info.read_bitcoin_reindex_type(),
         "starting": bool(get_knob("misc", {}).get("starting")),
         "lnd_ready": bool(get_knob("lnd", {"ready": True}).get("ready", True)),
         "lnd_wallet": lightning_info.lnd_wallet_exists(),
@@ -243,6 +246,7 @@ def dev_state():
 @mynode_dev.route("/dev/sync")
 def dev_sync():
     synced = request.args.get("synced", "1") == "1"
+    _clear_reindex()
     if synced:
         set_knob("bitcoin", {"behind_blocks": 0})
         if not os.path.isfile(BITCOIN_SYNCED_FILE):
@@ -257,6 +261,73 @@ def dev_sync():
     bitcoin_info.update_bitcoin_main_info()
     open("/tmp/homepage_needs_refresh", "a").close()
     return _ok(synced=synced)
+
+
+REINDEX_BLOCKS_FOLDER = "/mnt/hdd/mynode/bitcoin/blocks"
+REINDEX_DEBUG_LOG = "/mnt/hdd/mynode/bitcoin/debug.log"
+
+
+def _clear_reindex():
+    for path in [BITCOIN_REINDEX_REQUEST_FILE, BITCOIN_REINDEX_RUNNING_FILE]:
+        if os.path.isfile(path):
+            os.remove(path)
+    for path in glob.glob(os.path.join(REINDEX_BLOCKS_FOLDER, "blk*.dat")):
+        os.remove(path)
+    knob = get_knob("bitcoin", {"behind_blocks": 0})
+    knob.pop("ibd", None)
+    set_knob("bitcoin", knob)
+
+
+@mynode_dev.route("/dev/reindex")
+def dev_reindex():
+    """Mock a reindex started from Settings. The real code reads the running file, the debug.log
+    tail and the blk*.dat count, so this writes those rather than patching the parser.
+      type=full&file=1234&total=5000  reading block files (stage "reindex")
+      type=full&finished=1            files read, connecting blocks again (stage "sync_blocks")
+      type=chainstate                 rebuilding the chainstate (stage "sync_blocks")
+      type=none                       back to synced"""
+    reindex_type = request.args.get("type", "full")
+    if reindex_type not in ["full", "chainstate", "none"]:
+        return jsonify({"result": "error", "message": "type must be full, chainstate or none"}), 400
+    _clear_reindex()
+    if reindex_type == "none":
+        set_knob("bitcoin", {"behind_blocks": 0})
+        open(BITCOIN_SYNCED_FILE, "a").close()
+    else:
+        with open(BITCOIN_REINDEX_RUNNING_FILE, "w") as f:
+            f.write(reindex_type + "\n")
+        now = time.strftime("%Y-%m-%dT%H:%M:%SZ")
+        lines = []
+        if reindex_type == "full":
+            total = max(1, int(request.args.get("total", 5000)))
+            current = min(total - 1, max(0, int(request.args.get("file", 1234))))
+            os.makedirs(REINDEX_BLOCKS_FOLDER, exist_ok=True)
+            for i in range(total):
+                open(os.path.join(REINDEX_BLOCKS_FOLDER, "blk{:05d}.dat".format(i)), "a").close()
+            lines.append("{} Bitcoin Core version v32.1.0 (release build)".format(now))
+            lines.append("{} Setting nMinimumChainWork=0 (mock)".format(now))
+            for i in range(max(0, current - 3), current + 1):
+                lines.append("{} Reindexing block file blk{:05d}.dat...".format(now, i))
+                if i < current:
+                    lines.append("{} Loaded 812 blocks from external file in 4312ms".format(now))
+            if request.args.get("finished") == "1":
+                lines.append("{} Loaded 812 blocks from external file in 4312ms".format(now))
+                lines.append("{} Reindexing finished".format(now))
+                knob = {"behind_blocks": 520000, "progress": 0.31, "ibd": True}
+            else:
+                # Only genesis is connected while the block files are read
+                knob = {"behind_blocks": 905123, "progress": 0.0, "ibd": True}
+        else:
+            lines.append("{} Bitcoin Core version v32.1.0 (release build)".format(now))
+            knob = {"behind_blocks": 700000, "progress": 0.12, "ibd": True}
+        with open(REINDEX_DEBUG_LOG, "a") as f:
+            f.write("\n".join(lines) + "\n")
+        set_knob("bitcoin", knob)
+        if os.path.isfile(BITCOIN_SYNCED_FILE):
+            os.remove(BITCOIN_SYNCED_FILE)
+    bitcoin_info.update_bitcoin_main_info()
+    open("/tmp/homepage_needs_refresh", "a").close()
+    return _ok(reindex=reindex_type)
 
 
 @mynode_dev.route("/dev/starting")
@@ -441,6 +512,7 @@ def dev_shutdown():
 def dev_reset():
     # ensure(force=True) restores the premium-edition default
     seed_fixture_fs.ensure(force=True)
+    _clear_reindex()
     set_knob("lnd", {"ready": True})
     set_knob("misc", {"starting": False})
     set_knob("kernel", {})
@@ -586,6 +658,9 @@ _OVERLAY_JS = r"""
     button(s2, "synced", function () { act("/dev/sync?synced=1"); }, st.bitcoin_synced);
     button(s2, "syncing 62%", function () { act("/dev/sync?synced=0&progress=0.62&behind=344000"); }, !st.bitcoin_synced);
     button(s2, "syncing 12%", function () { act("/dev/sync?synced=0&progress=0.12&behind=796000"); });
+    button(s2, "full reindex", function () { act("/dev/reindex?type=full&file=1234&total=5000"); }, st.bitcoin_reindex === "full");
+    button(s2, "full reindex: files read", function () { act("/dev/reindex?type=full&finished=1"); });
+    button(s2, "rebuild chainstate", function () { act("/dev/reindex?type=chainstate"); }, st.bitcoin_reindex === "chainstate");
     button(s2, "starting page " + (st.starting ? "off" : "on"), function () {
       act("/dev/starting?value=" + (st.starting ? "0" : "1"));
     }, st.starting);

@@ -844,6 +844,11 @@ a:link.ui-button, a:visited.ui-button, .ui-button {
     margin-bottom: 15px;
     color: #e08a00;
 }
+.sync_reindex_note {
+    font-size: 14px;
+    margin-top: -5px;
+    margin-bottom: 15px;
+}
 .sync_step {
     border: 3px solid orange;
     border-radius: 15px;

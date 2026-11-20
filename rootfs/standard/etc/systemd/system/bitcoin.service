@@ -7,7 +7,7 @@ After=network.target mynode.service
 
 [Service]
 ExecStartPre=/usr/bin/is_not_shutting_down.sh
-ExecStartPre=+/usr/bin/mynode_gen_bitcoin_config.sh
+ExecStartPre=+/usr/bin/mynode_gen_bitcoin_config.sh --from-service
 ExecStartPre=+/usr/bin/service_scripts/pre_bitcoin.sh
 EnvironmentFile=/mnt/hdd/mynode/bitcoin/env
 ExecStart=/usr/local/bin/bitcoind -daemon $BTCARGS -deprecatedrpc=accounts -conf=/home/bitcoin/.bitcoin/bitcoin.conf -printtoconsole -pid=/home/bitcoin/.bitcoin/bitcoin.pid

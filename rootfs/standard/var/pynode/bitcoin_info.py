@@ -27,12 +27,17 @@ bitcoin_connection_count = None
 bitcoin_sync_status = None
 bitcoin_no_peers_since = None
 header_tip_time_cache = {"height": None, "time": None}
+reindex_log_cache = None
 BITCOIN_CACHE_FILE = "/tmp/bitcoin_info.json"
 
 # Header sync progress lines written to debug.log by bitcoind (pre-sync was added in Bitcoin Core v24)
 HEADER_PRESYNC_REGEX = re.compile(r"Pre-synchronizing blockheaders, height: (\d+) \(~([\d.]+)%\)")
 HEADER_SYNC_REGEX = re.compile(r"Synchronizing blockheaders, height: (\d+) \(~([\d.]+)%\)")
 BITCOIN_STARTUP_REGEX = re.compile(r"Bitcoin \w+ version v")
+# Full reindex (-reindex) progress: one line per block file read, then a final line
+REINDEX_FILE_REGEX = re.compile(r"Reindexing block file blk(\d+)\.dat")
+REINDEX_FINISHED_REGEX = re.compile(r"Reindexing finished")
+BLOCK_FILE_REGEX = re.compile(r"^blk\d+\.dat$")
 LOG_TAIL_BYTES = 256 * 1024
 
 # Functions
@@ -81,8 +86,8 @@ def get_bitcoin_debug_log_file():
         return "/mnt/hdd/mynode/bitcoin/testnet3/debug.log"
     return "/mnt/hdd/mynode/bitcoin/debug.log"
 
-def read_header_sync_from_log():
-    # Find the most recent header sync line logged since bitcoind last started
+def read_bitcoin_log_tail_lines():
+    # Lines at the end of debug.log, newest first
     try:
         with open(get_bitcoin_debug_log_file(), "rb") as f:
             f.seek(0, os.SEEK_END)
@@ -91,7 +96,14 @@ def read_header_sync_from_log():
             data = f.read().decode("utf-8", "ignore")
     except Exception:
         return None
-    for line in reversed(data.splitlines()):
+    return reversed(data.splitlines())
+
+def read_header_sync_from_log():
+    # Find the most recent header sync line logged since bitcoind last started
+    lines = read_bitcoin_log_tail_lines()
+    if lines == None:
+        return None
+    for line in lines:
         m = HEADER_PRESYNC_REGEX.search(line)
         if m:
             return {"presync": True, "height": int(m.group(1)), "percent": float(m.group(2))}
@@ -101,6 +113,50 @@ def read_header_sync_from_log():
         if BITCOIN_STARTUP_REGEX.search(line):
             break
     return None
+
+def count_bitcoin_block_files():
+    blocks_folder = os.path.join(os.path.dirname(get_bitcoin_debug_log_file()), "blocks")
+    try:
+        return len([name for name in os.listdir(blocks_folder) if BLOCK_FILE_REGEX.match(name)])
+    except Exception:
+        return 0
+
+def read_reindex_from_log():
+    # Block file a full reindex is reading, if one is running since bitcoind last started
+    global reindex_log_cache
+    lines = read_bitcoin_log_tail_lines()
+    if lines == None:
+        return reindex_log_cache
+    for line in lines:
+        m = REINDEX_FILE_REGEX.search(line)
+        if m:
+            current = int(m.group(1))
+            total = max(count_bitcoin_block_files(), current + 1)
+            reindex_log_cache = {"file": current, "total": total}
+            return reindex_log_cache
+        if REINDEX_FINISHED_REGEX.search(line) or BITCOIN_STARTUP_REGEX.search(line):
+            reindex_log_cache = None
+            return None
+    # Bitcoin connects blocks while it reads the files, and their log lines can push the last
+    # file line out of the tail. Keep the last position until the reindex finishes.
+    return reindex_log_cache
+
+def read_bitcoin_reindex_type():
+    # "full" or "chainstate" while a reindex started from Settings is running
+    try:
+        with open(BITCOIN_REINDEX_RUNNING_FILE, "r") as f:
+            reindex_type = f.read().strip()
+    except Exception:
+        return None
+    if reindex_type in ["full", "chainstate"]:
+        return reindex_type
+    return None
+
+def get_bitcoin_reindex_type():
+    status = bitcoin_sync_status
+    if status == None:
+        return None
+    return status.get("reindex_type")
 
 def get_header_tip_time(rpc_connection, header_height):
     # Block time of the best header, cached by height so it is only looked up when the header tip moves
@@ -114,8 +170,13 @@ def get_header_tip_time(rpc_connection, header_height):
             return header_tip_time_cache["time"]
     return None
 
-def calculate_bitcoin_sync_status(info, peer_count, header_tip_time, log_status):
+def calculate_bitcoin_sync_status(info, peer_count, header_tip_time, log_status, reindex_type=None, reindex_log=None):
     status = {}
+    status["reindex_type"] = reindex_type
+    status["reindex_active"] = False
+    status["reindex_file"] = 0
+    status["reindex_total"] = 0
+    status["reindex_percent"] = 0.0
     status["running"] = info != None
     status["peers"] = peer_count
     status["blocks"] = 0
@@ -147,6 +208,9 @@ def calculate_bitcoin_sync_status(info, peer_count, header_tip_time, log_status)
         status["headers_synced"] = True
     elif status["presync_active"]:
         status["headers_synced"] = False
+    elif reindex_type != None and status["blocks"] < status["headers"]:
+        # The headers come from the block files, and peers are only asked for newer ones once those are connected
+        status["headers_synced"] = True
     elif header_tip_time != None:
         blocks_left = max(0, int(time.time()) - header_tip_time) / 600.0
         total = status["headers"] + blocks_left
@@ -165,7 +229,17 @@ def calculate_bitcoin_sync_status(info, peer_count, header_tip_time, log_status)
     if status["blocks_synced"]:
         status["block_percent"] = 100.0
 
-    if status["presync_active"]:
+    # A full reindex reads every block file before it connects blocks again (sync_blocks)
+    if reindex_log != None:
+        status["reindex_active"] = True
+        status["reindex_file"] = reindex_log["file"]
+        status["reindex_total"] = reindex_log["total"]
+        if reindex_log["total"] > 0:
+            status["reindex_percent"] = 100.0 * reindex_log["file"] / reindex_log["total"]
+
+    if status["reindex_active"]:
+        status["stage"] = "reindex"
+    elif status["presync_active"]:
         status["stage"] = "presync_headers"
     elif status["headers"] == 0 and not status["headers_synced"]:
         status["stage"] = "starting"
@@ -202,7 +276,11 @@ def update_bitcoin_main_info():
             bitcoin_connection_count = None
         header_tip_time = None
         log_status = None
-        if info != None and info.get("initialblockdownload", True):
+        reindex_type = read_bitcoin_reindex_type()
+        reindex_log = None
+        if info != None and reindex_type == "full" and info.get("initialblockdownload", True):
+            reindex_log = read_reindex_from_log()
+        if info != None and reindex_log == None and info.get("initialblockdownload", True):
             try:
                 header_tip_time = get_header_tip_time(rpc_connection, info["headers"])
             except Exception:
@@ -210,7 +288,8 @@ def update_bitcoin_main_info():
             # The log is only needed while headers are behind (pre-sync, or no header tip time)
             if header_tip_time == None or int(time.time()) - header_tip_time > 600 * 144:
                 log_status = read_header_sync_from_log()
-        bitcoin_sync_status = calculate_bitcoin_sync_status(info, bitcoin_connection_count, header_tip_time, log_status)
+        bitcoin_sync_status = calculate_bitcoin_sync_status(info, bitcoin_connection_count, header_tip_time, log_status,
+                                                            reindex_type, reindex_log)
         if bitcoin_connection_count == 0:
             if bitcoin_no_peers_since == None:
                 bitcoin_no_peers_since = time.time()
@@ -233,7 +312,7 @@ def update_bitcoin_main_info():
 
     except Exception as e:
         log_message("ERROR: In update_bitcoin_info - {} DATA: {}".format( str(e), str(info) ))
-        bitcoin_sync_status = calculate_bitcoin_sync_status(None, None, None, None)
+        bitcoin_sync_status = calculate_bitcoin_sync_status(None, None, None, None, read_bitcoin_reindex_type())
         bitcoin_no_peers_since = None
         return False
 
@@ -367,6 +446,15 @@ def get_bitcoin_status():
     block = get_mynode_block_height()
     status = "unknown"
 
+    sync = get_bitcoin_sync_status()
+    if sync != None and sync["reindex_type"] != None:
+        if sync["stage"] == "reindex":
+            return "Reindexing...\n{:.0f}% of block files read".format(sync["reindex_percent"])
+        name = "Reindexing..." if sync["reindex_type"] == "full" else "Rebuilding chainstate..."
+        if height != None and block != None and height > block:
+            return "{}\n{} blocks remaining".format(name, height - block)
+        return name
+
     if height != None and block != None:
         remaining = height - block
         if remaining == 0:
@@ -442,8 +530,15 @@ def get_bitcoin_sync_display():
             display["no_peers_hint"] = hint
     display["marked_synced"] = is_bitcoin_synced()
     display["step"] = None
+    display["reindex_note"] = ""
+    if status["reindex_type"] != None:
+        display["reindex_note"] = "Most of MyNode is unavailable until this finishes."
 
-    if not status["running"]:
+    if status["reindex_type"] == "full" and status["stage"] != "synced":
+        display["stage_text"] = "Reindexing the blockchain..."
+    elif status["reindex_type"] == "chainstate" and status["stage"] != "synced":
+        display["stage_text"] = "Rebuilding the chainstate..."
+    elif not status["running"]:
         display["stage_text"] = "Waiting for Bitcoin to start..."
     elif status["stage"] == "starting":
         display["stage_text"] = "Connecting to peers..." if display["no_peers"] else "Waiting for block headers..."
@@ -453,7 +548,10 @@ def get_bitcoin_sync_display():
         display["stage_text"] = "Syncing..."
 
     step = None
-    if status["stage"] == "presync_headers":
+    if status["stage"] == "reindex":
+        step = {"number": 1, "name": "Reading Block Files", "percent": status["reindex_percent"]}
+        step["detail"] = "Block file {:,} of {:,} (~{:.2f}%)".format(status["reindex_file"] + 1, status["reindex_total"], step["percent"])
+    elif status["stage"] == "presync_headers":
         step = {"number": 1, "name": "Pre-synchronizing Headers", "percent": status["presync_percent"]}
         step["detail"] = "Height {:,} (~{:.2f}%)".format(status["presync_height"], step["percent"])
     elif status["stage"] == "sync_headers":
@@ -465,8 +563,19 @@ def get_bitcoin_sync_display():
     elif status["stage"] == "sync_blocks":
         step = {"number": 3, "name": "Synchronizing Blocks", "percent": status["block_percent"]}
         step["detail"] = "Block {:,} of {:,} (~{:.2f}%)".format(status["blocks"], status["headers"], step["percent"])
-    if step != None:
+    if step != None and status["reindex_type"] == "full":
+        # Reading block files, then connecting them again. Header stages only show if peers have newer blocks.
+        if status["stage"] == "sync_blocks":
+            step["number"] = 2
+            step["name"] = "Verifying Blocks"
+        step["count"] = 2 if status["stage"] in ["reindex", "sync_blocks"] else None
+    elif step != None and status["reindex_type"] == "chainstate":
+        if status["stage"] == "sync_blocks":
+            step["name"] = "Rebuilding Chainstate"
+        step["count"] = None
+    elif step != None:
         step["count"] = 3
+    if step != None:
         step["percent"] = min(100.0, max(0.0, step["percent"] or 0.0))
         step["percent_str"] = "{:.2f}".format(step["percent"])
         display["step"] = step

@@ -50,6 +50,8 @@ class FakeAuthServiceProxy(object):
         info["blocks"] = blocks
         info["verificationprogress"] = progress
         info["bestblockhash"] = _fake_block_hash(blocks)
+        if get_knob("bitcoin", {}).get("ibd"):
+            info["initialblockdownload"] = True
         return info
 
     def getblockhash(self, height):

@@ -218,16 +218,20 @@
                                       okFunction)
                 });
 
-                $("#reindex-blockchain").on("click", function() {
-                    // Enable electrs
-                    var okFunction = function() {
-                        window.location.href="/settings/reindex-blockchain"
-                    }
-                    openConfirmDialog("confirm-dialog",
-                                      "Reindex Bitcoin Blockchain",
-                                      "Reindexing may take a long time. "+
-                                      "Would you still like to reindex the bitcoin blockchain?",
-                                      okFunction)
+                $("#rebuild-chainstate").on("click", function() {
+                    openPasswordDialog("Rebuild Chainstate",
+                                       "Bitcoin will restart and rebuild its chainstate from the blocks already on the drive. "+
+                                       "This can take many hours, and most of MyNode is unavailable until it finishes. "+
+                                       "Enter your password to continue.",
+                                       "/settings/reindex-blockchain", {type: "chainstate"});
+                });
+
+                $("#full-reindex").on("click", function() {
+                    openPasswordDialog("Full Reindex",
+                                       "Bitcoin will restart, re-read every block file on the drive and download any damaged blocks again. "+
+                                       "This can take a day or more, and most of MyNode is unavailable until it finishes. "+
+                                       "Enter your password to continue.",
+                                       "/settings/reindex-blockchain", {type: "full"});
                 });
 
                 $("#run-disk-benchmark").on("click", function() {
@@ -1296,11 +1300,20 @@
 
             <div class="divider"></div>
 
-            <div class="settings_block_subheader">Reindex Blockchain</div>
-            Advanced: If you are having issues parsing the Bitcoin blockchain or blocks cannot be found, please try reindexing. This will 
-            take a long time.
+            <div class="settings_block_subheader">Rebuild Chainstate</div>
+            Advanced: If the Bitcoin log reports a corrupted or damaged chainstate (coins) database, rebuild it from the blocks already
+            on the drive. This takes many hours, and most of MyNode is unavailable until it finishes.
             <br/>
-            <button id="reindex-blockchain" class="ui-button ui-widget ui-corner-all settings_button">Reindex Blockchain</button>
+            <button id="rebuild-chainstate" class="ui-button ui-widget ui-corner-all settings_button">Rebuild Chainstate</button>
+
+            <div class="divider"></div>
+
+            <div class="settings_block_subheader">Full Reindex</div>
+            Advanced: If the Bitcoin log reports that a block can't be read from disk, an I/O error, or damaged block files, run a full
+            reindex. Bitcoin re-reads every block file and downloads damaged blocks again from peers. This is slower than rebuilding
+            the chainstate and can take a day or more. Most of MyNode is unavailable until it finishes.
+            <br/>
+            <button id="full-reindex" class="ui-button ui-widget ui-corner-all settings_button">Full Reindex</button>
 
             <div class="divider"></div>
 

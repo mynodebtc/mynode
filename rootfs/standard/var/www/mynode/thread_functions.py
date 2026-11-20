@@ -107,6 +107,8 @@ def update_bitcoin_main_info_thread():
                         open(BITCOIN_SYNCED_FILE, 'a').close() # touch file
                     if not os.path.isfile(BITCOIN_SYNCED_AT_LEAST_ONCE):
                         open(BITCOIN_SYNCED_AT_LEAST_ONCE, 'a').close() # touch file
+                    if os.path.isfile(BITCOIN_REINDEX_RUNNING_FILE):
+                        os.remove(BITCOIN_REINDEX_RUNNING_FILE)
                 elif remaining > 18:
                     synced = False
                     if os.path.isfile(BITCOIN_SYNCED_FILE):

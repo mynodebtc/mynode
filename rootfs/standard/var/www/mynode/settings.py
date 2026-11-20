@@ -644,13 +644,23 @@ def shutdown_device_page():
     }
     return render_template('shutdown.html', **templateData)
 
-@mynode_settings.route("/settings/reindex-blockchain")
+@mynode_settings.route("/settings/reindex-blockchain", methods=['POST'])
 def reindex_blockchain_page():
     check_logged_in()
-    os.system("echo 'BTCARGS=-reindex-chainstate' > "+BITCOIN_ENV_FILE)
-    os.system("systemctl restart bitcoin")
-    t = Timer(30.0, reset_bitcoin_env_file)
-    t.start()
+    pw = request.form.get('password')
+    if not is_admin_password_valid(pw):
+        flash(get_admin_password_error(), category="error")
+        return redirect("/settings")
+
+    reindex_type = request.form.get('type')
+    if not request_bitcoin_reindex(reindex_type):
+        flash("Unknown reindex option", category="error")
+        return redirect("/settings")
+
+    if reindex_type == "full":
+        flash("Bitcoin is restarting to reindex the blockchain. This can take a day or more.", category="message")
+    else:
+        flash("Bitcoin is restarting to rebuild the chainstate. This can take many hours.", category="message")
     return redirect("/settings")
 
 @mynode_settings.route("/settings/reset-app-passwords")

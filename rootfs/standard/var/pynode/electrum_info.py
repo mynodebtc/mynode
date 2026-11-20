@@ -1,4 +1,4 @@
-from bitcoin_info import get_bitcoin_block_height, get_bitcoin_version
+from bitcoin_info import get_bitcoin_block_height, get_bitcoin_version, get_bitcoin_reindex_type
 from prometheus_client.parser import text_string_to_metric_families
 from systemctl_info import *
 from utilities import *
@@ -125,6 +125,10 @@ def get_electrs_status():
 
     if not is_service_enabled("electrs"):
         return "Disabled"
+
+    # electrs cannot read blocks until Bitcoin has rebuilt its data
+    if get_bitcoin_reindex_type() != None:
+        return "Bitcoin reindexing..."
 
     bitcoin_block_height = get_bitcoin_block_height()
     compacting = False

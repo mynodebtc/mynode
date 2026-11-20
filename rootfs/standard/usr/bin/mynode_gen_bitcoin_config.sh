@@ -176,6 +176,31 @@ else
     fi
 fi
 
+# One-time reindex requested in Settings. Only bitcoin.service passes --from-service: mynode_startup.sh
+# also sources this script, and using the request there would leave it out of the start that follows.
+if [ "${1:-}" = "--from-service" ] && [ -f /mnt/hdd/mynode/settings/.bitcoin_reindex ]; then
+    REINDEX_TYPE=$(head -n 1 /mnt/hdd/mynode/settings/.bitcoin_reindex | tr -d '[:space:]')
+    REINDEX_OPTION=""
+    if [ "$REINDEX_TYPE" = "full" ]; then
+        REINDEX_OPTION="reindex=1"
+    elif [ "$REINDEX_TYPE" = "chainstate" ]; then
+        REINDEX_OPTION="reindex-chainstate=1"
+    fi
+    if [ -n "$REINDEX_OPTION" ]; then
+        # Put it first, so a [section] header in a custom or post config does not scope it
+        CONF_TMP=$(mktemp)
+        echo "# One-time reindex requested in Settings (gone on the next start)" > $CONF_TMP
+        echo "$REINDEX_OPTION" >> $CONF_TMP
+        echo "" >> $CONF_TMP
+        cat /mnt/hdd/mynode/bitcoin/bitcoin.conf >> $CONF_TMP
+        cat $CONF_TMP > /mnt/hdd/mynode/bitcoin/bitcoin.conf
+        rm -f $CONF_TMP
+        echo "$REINDEX_TYPE" > /mnt/hdd/mynode/.bitcoin_reindex_running
+    fi
+    rm -f /mnt/hdd/mynode/settings/.bitcoin_reindex
+    sync
+fi
+
 # Keep the RPC password out of traced logs
 case $- in *x*) GEN_BITCOIN_CONFIG_XTRACE=1 ;; *) GEN_BITCOIN_CONFIG_XTRACE=0 ;; esac
 set +x
