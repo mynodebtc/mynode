@@ -7,7 +7,7 @@
 #   apply        - at startup, after the drive mounts: keep the boot options up to date
 #   schedule <passes> - run the manual test on the next boot
 #   boot on|off  - test memory at every boot
-#   clear        - forget the bad pages (after replacing the RAM)
+#   clear        - forget the bad pages
 #   status       - print what is known
 
 import json

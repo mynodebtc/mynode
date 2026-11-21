@@ -10,7 +10,7 @@
 
             $(document).ready(function() {
 
-                $("#upgrade").on("click", function() {
+                $(".mn_upgrade_button").on("click", function() {
                     // Enable electrs
                     var okFunction = function() {
                         window.location.href="/settings/upgrade"
@@ -164,7 +164,11 @@
                     $("#memtest_boot_save").show();
                 });
                 $("#memtest_clear_form").on("submit", function() {
-                    return confirm("Clear the bad memory pages? Only do this after replacing the RAM. Linux uses them again from the next reboot.");
+                    return confirm("Clear the bad memory pages? Linux uses them again from the next reboot.");
+                });
+                $("#show_memtest_bad_pages").on("click", function() {
+                    $("#memtest_bad_pages").toggle();
+                    $(this).toggleClass("mn_open");
                 });
                 $("#reset-blockchain").on("click", function() {
                     var okFunction = function() {
@@ -202,8 +206,8 @@
                 });
 
                 $("#show_full_fsck_results").on("click", function() {
-                    $("#show_full_fsck_results").hide(0);
-                    $("#full_fsck_results").show();
+                    $("#full_fsck_results").toggle();
+                    $(this).toggleClass("mn_open");
                 });
 
                 $("#reboot-device").on("click", function() {
@@ -461,13 +465,13 @@
                 });
 
                 $("#show_firewall_rules").on("click", function() {
-                    $("#show_firewall_rules").hide(0);
-                    $("#firewall_rules").show();
+                    $("#firewall_rules").toggle();
+                    $(this).toggleClass("mn_open");
                 });
 
                 $("#show_firewall_public_services").on("click", function() {
-                    $("#show_firewall_public_services").hide(0);
-                    $("#firewall_public_services").show();
+                    $("#firewall_public_services").toggle();
+                    $(this).toggleClass("mn_open");
                 });
 
                 $("#show_product_key").on("click", function() {
@@ -581,13 +585,14 @@
                 })
 
                 {% if product_key_skipped %}
-                $( "#upgrade" ).button({
+                $( ".mn_upgrade_button" ).button({
                     disabled: true
                 });
                 {% endif %}
 
                 var reinstall_app_choice="";
                 $("#reinstall_app").selectmenu( {
+                    width: 180,
                     change: function( event, data ) {
                         reinstall_app_choice = data.item.value;
                         if (data.item.value == "none")
@@ -610,7 +615,8 @@
                 // Starts as the currently installed custom version (if any), otherwise "none"
                 var custom_bitcoin_choice=$("#custom_bitcoin_select").val();
                 $("#custom_bitcoin_select").selectmenu( {
-                    change: function( event, data ) {
+                    width: 210,
+                    change:function( event, data ) {
                         custom_bitcoin_choice = data.item.value;
                         if (data.item.value == "none")
                         {
@@ -643,18 +649,19 @@
                     }
                 });
 
-                $("#logout_days").selectmenu({width: 70});
-                $("#logout_hours").selectmenu({width: 70});
-                $("#timezone").selectmenu({width: 260}).selectmenu("menuWidget").css("max-height", "300px");
+                $("#logout_days").selectmenu({width: 56});
+                $("#logout_hours").selectmenu({width: 56});
+                $("#timezone").selectmenu({width: 210}).selectmenu("menuWidget").css("max-height", "300px");
 
-                $("#background").selectmenu();
+                $("#background").selectmenu({width: 120});
 
-                $("#electrs_tx_lookup_limit").selectmenu();
+                $("#electrs_tx_lookup_limit").selectmenu({width: 140});
 
-                $("#memtest_passes").selectmenu();
+                $("#memtest_passes").selectmenu({width: 110});
 
                 var swap_choice="";
                 $("#swap_size").selectmenu( {
+                    width: 96,
                     change: function( event, data ) {
                         swap_choice = data.item.value;
                         $("#swap_button").button("enable");
@@ -888,6 +895,51 @@
                 $("#upgrade_log_"+id).show();
                 $("#show_upgrade_log_"+id).text("Showing");
             }
+
+            // Switches whose route flips the current state. Save shows only while the
+            // switch differs from the saved state, so saving always means "change it".
+            $(document).ready(function() {
+                $(".mn_flip_switch").each(function() {
+                    $(this).data("saved", $(this).is(":checked"));
+                });
+                $(".mn_flip_switch").change(function() {
+                    var changed = $(this).is(":checked") != $(this).data("saved");
+                    $(this).closest(".mn_setting_control").find(".mn_flip_save").toggle(changed);
+                });
+                $(".mn_flip_save").on("click", function() {
+                    var url = $(this).closest(".mn_setting_control").find(".mn_flip_switch").attr("data-url");
+                    $('#loading_spinner_overlay').fadeIn();
+                    window.location.href = url;
+                });
+            });
+
+            // Select menus and the section nav
+            $(document).ready(function() {
+                // Dropdowns open outside the row, so mark them to match the smaller select boxes
+                $(".mn_setting_control select").each(function() {
+                    if ($(this).selectmenu("instance")) {
+                        $(this).selectmenu("menuWidget").addClass("mn_select_menu");
+                    }
+                });
+
+                // Highlight the section being read
+                var navLinks = $(".mn_section_nav a");
+                function updateActiveSection() {
+                    var current = null;
+                    navLinks.each(function() {
+                        var target = document.getElementById($(this).attr("href").substring(1));
+                        if (target && target.getBoundingClientRect().top < 120) {
+                            current = this;
+                        }
+                    });
+                    navLinks.removeClass("mn_active");
+                    if (current) {
+                        current.classList.add("mn_active");
+                    }
+                }
+                $(window).on("scroll", updateActiveSection);
+                updateActiveSection();
+            });
         </script>
      </head>
 
@@ -901,7 +953,23 @@
 
         {% include 'includes/message_display.html' %}
 
-        <br/>
+        <nav class="mn_section_nav" aria-label="Settings sections">
+            <a href="#mynode">MyNode</a>
+            <a href="#device">Device</a>
+            <a href="#ui">Interface</a>
+            <a href="#applications">Applications</a>
+            <a href="#networking">Networking</a>
+            <a href="#bitcoin">Bitcoin</a>
+            <a href="#lightning">Lightning</a>
+            <a href="#apps">App Settings</a>
+            <a href="#firewall">Firewall</a>
+            <a href="#tor">Tor</a>
+            <a href="#docker">Docker</a>
+            <a href="#data_drive">Data Drive</a>
+            <a href="#advanced">Advanced</a>
+            <a href="#developer">Developer</a>
+        </nav>
+
         <div class="settings_block">
             <a id="mynode"></a>
             <div class="settings_block_header">MyNode</div>
@@ -928,10 +996,10 @@
                 </div>
                 <div class="mn_actions mn_version_actions">
                     {% if update_available %}
-                        <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button_small mn_primary_button">Upgrade</button>
+                        <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button_small mn_primary_button mn_upgrade_button">Upgrade</button>
                         <button id="upgrade_changelog" class="ui-button ui-widget ui-corner-all settings_button_small">See Changes</button>
                     {% elif not product_key_skipped and upgrade_error %}
-                        <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button_small mn_primary_button">Retry Upgrade</button>
+                        <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button_small mn_primary_button mn_upgrade_button">Retry Upgrade</button>
                     {% endif %}
                     <button id="check_for_updates" class="ui-button ui-widget ui-corner-all settings_button_small">Check for Updates</button>
                     {% if auto_upgrade.available and not auto_upgrade.enabled %}
@@ -1020,72 +1088,83 @@
             <a id="device"></a>
             <div class="settings_block_header">Device</div>
 
-            <div class="settings_block_subheader">Reboot Device</div>
-            This will reboot or shutdown your device. After a shutown, you will need to power cycle the device to turn it back on.
-            <br/>
-            <button id="reboot-device" class="ui-button ui-widget ui-corner-all settings_button">Reboot Device</button>
-            <button id="shutdown-device" class="ui-button ui-widget ui-corner-all settings_button">Shutdown Device</button>
+            <div class="mn_setting_list">
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Reboot Device</div>
+                        <div class="mn_setting_desc">This will reboot or shutdown your device. After a shutown, you will need to power cycle the device to turn it back on.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="reboot-device" class="ui-button ui-widget ui-corner-all settings_button_small">Reboot Device</button>
+                        <button id="shutdown-device" class="ui-button ui-widget ui-corner-all settings_button_small mn_danger_button">Shutdown Device</button>
+                    </div>
+                </div>
 
-            <div class="divider"></div>
-
-            {% if auto_upgrade.available and auto_upgrade.enabled %}
-            <div class="settings_block_subheader">Automatic Updates</div>
-            New versions of MyNode can be installed automatically 5 days after they are released, between 3 and 5 AM local time. Your device reboots to finish the upgrade.
-            <br/><br/>
-            <form action="/settings/auto-upgrade" method="POST">
-                <label class="switch">
-                    <input type="checkbox" id="auto_upgrade_checkbox" name="enabled" value="1" {% if auto_upgrade.enabled %}checked{% endif %}>
-                    <span class="slider round"></span>
-                </label>
-                <br/><br/>
-                <input type="submit" id="auto_upgrade_save" value="Save" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small"/>
-            </form>
-            {% if auto_upgrade.enabled %}
-                {% if auto_upgrade.target and auto_upgrade.skipped %}
-                    <p>Version {{auto_upgrade.target}} is skipped and will not be installed automatically.</p>
-                {% elif auto_upgrade.target %}
-                    {% if auto_upgrade.weekly %}
-                        <p style="color: red;">Automatic upgrade to version {{auto_upgrade.target}} has failed {{auto_upgrade.attempts}} times. It will be retried once a week, next after {{auto_upgrade.scheduled}}.</p>
-                    {% elif auto_upgrade.attempts > 0 %}
-                        <p style="color: red;">Automatic upgrade to version {{auto_upgrade.target}} failed. It will be retried after {{auto_upgrade.scheduled}}.</p>
-                    {% else %}
-                        <p>Version {{auto_upgrade.target}} will be installed automatically after {{auto_upgrade.scheduled}}.</p>
-                    {% endif %}
-                    {% if auto_upgrade.last_result.result in ["failed", "not_installed"] and auto_upgrade.last_result.to == auto_upgrade.target %}
-                        <p>Last attempt: {{auto_upgrade.last_result.detail}} ({{auto_upgrade.last_result_time}}).</p>
-                    {% endif %}
+                {% if auto_upgrade.available and auto_upgrade.enabled %}
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Automatic Updates</div>
+                        <div class="mn_setting_desc">New versions of MyNode can be installed automatically 5 days after they are released, between 3 and 5 AM local time. Your device reboots to finish the upgrade.</div>
+                        {% if auto_upgrade.enabled %}
+                            {% if auto_upgrade.target and auto_upgrade.skipped %}
+                                <div class="mn_setting_note">Version {{auto_upgrade.target}} is skipped and will not be installed automatically.</div>
+                            {% elif auto_upgrade.target %}
+                                {% if auto_upgrade.weekly %}
+                                    <div class="mn_setting_note mn_setting_note_error">Automatic upgrade to version {{auto_upgrade.target}} has failed {{auto_upgrade.attempts}} times. It will be retried once a week, next after {{auto_upgrade.scheduled}}.</div>
+                                {% elif auto_upgrade.attempts > 0 %}
+                                    <div class="mn_setting_note mn_setting_note_error">Automatic upgrade to version {{auto_upgrade.target}} failed. It will be retried after {{auto_upgrade.scheduled}}.</div>
+                                {% else %}
+                                    <div class="mn_setting_note">Version {{auto_upgrade.target}} will be installed automatically after {{auto_upgrade.scheduled}}.</div>
+                                {% endif %}
+                                {% if auto_upgrade.last_result.result in ["failed", "not_installed"] and auto_upgrade.last_result.to == auto_upgrade.target %}
+                                    <div class="mn_setting_note">Last attempt: {{auto_upgrade.last_result.detail}} ({{auto_upgrade.last_result_time}}).</div>
+                                {% endif %}
+                            {% endif %}
+                            {% if auto_upgrade.last_result.result == "ok" %}
+                                <div class="mn_setting_note">Last automatic upgrade: version {{auto_upgrade.last_result['from']}} to {{auto_upgrade.last_result.to}} ({{auto_upgrade.last_result_time}}).</div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    <div class="mn_setting_control">
+                        {% if auto_upgrade.enabled and auto_upgrade.target %}
+                            {% if auto_upgrade.skipped %}
+                            <form action="/settings/auto-upgrade/unskip" method="POST">
+                                <input type="submit" value="Install Version {{auto_upgrade.target}} Automatically" class="ui-button ui-widget ui-corner-all settings_button_small"/>
+                            </form>
+                            {% else %}
+                            <form action="/settings/auto-upgrade/skip" method="POST">
+                                <input type="submit" value="Skip This Version" class="ui-button ui-widget ui-corner-all settings_button_small"/>
+                            </form>
+                            {% endif %}
+                        {% endif %}
+                        <form action="/settings/auto-upgrade" method="POST">
+                            <input type="submit" id="auto_upgrade_save" value="Save" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small"/>
+                            <label class="switch">
+                                <input type="checkbox" id="auto_upgrade_checkbox" name="enabled" value="1" {% if auto_upgrade.enabled %}checked{% endif %}>
+                                <span class="slider round"></span>
+                            </label>
+                        </form>
+                    </div>
+                </div>
                 {% endif %}
-                {% if auto_upgrade.last_result.result == "ok" %}
-                    <p>Last automatic upgrade: version {{auto_upgrade.last_result['from']}} to {{auto_upgrade.last_result.to}} ({{auto_upgrade.last_result_time}}).</p>
-                {% endif %}
-            {% endif %}
-            {% if auto_upgrade.enabled and auto_upgrade.target %}
-                {% if auto_upgrade.skipped %}
-                <form action="/settings/auto-upgrade/unskip" method="POST" style="display: inline;">
-                    <input type="submit" value="Install Version {{auto_upgrade.target}} Automatically" class="ui-button ui-widget ui-corner-all settings_button"/>
-                </form>
-                {% else %}
-                <form action="/settings/auto-upgrade/skip" method="POST" style="display: inline;">
-                    <input type="submit" value="Skip This Version" class="ui-button ui-widget ui-corner-all settings_button"/>
-                </form>
-                {% endif %}
-            {% endif %}
 
-            <div class="divider"></div>
-            {% endif %}
-
-            <div class="settings_block_subheader">Timezone</div>
-            Times shown by MyNode, and the hours automatic upgrades run, use this timezone.
-            <br/><br/>
-            <form action="/settings/timezone" method="POST">
-                <select name="timezone" id="timezone">
-                    {% for z in timezone_list %}
-                    <option value="{{z}}" {% if z == timezone %}selected{% endif %}>{{z}}</option>
-                    {% endfor %}
-                </select>
-                <input type="submit" value="Save" class="ui-button ui-widget ui-corner-all"/>
-            </form>
-
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Timezone</div>
+                        <div class="mn_setting_desc">Times shown by MyNode, and the hours automatic upgrades run, use this timezone.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <form action="/settings/timezone" method="POST">
+                            <select name="timezone" id="timezone">
+                                {% for z in timezone_list %}
+                                <option value="{{z}}" {% if z == timezone %}selected{% endif %}>{{z}}</option>
+                                {% endfor %}
+                            </select>
+                            <input type="submit" value="Save" class="ui-button ui-widget ui-corner-all settings_button_small"/>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
 
 
@@ -1093,77 +1172,93 @@
             <a id="ui"></a>
             <div class="settings_block_header">User Interface</div>
 
-            <div class="settings_block_subheader">Dark Mode</div>
-            This will enable or disable dark mode in the user interface.
-            <br/>
-            {% if ui_settings['darkmode'] %}
-                <a href="/settings/toggle-darkmode" class="ui-button ui-widget ui-corner-all settings_button">Disable</a>
-            {% else %}
-                <a href="/settings/toggle-darkmode" class="ui-button ui-widget ui-corner-all settings_button">Enable</a>
-            {% endif %}
+            <div class="mn_setting_list">
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Dark Mode</div>
+                        <div class="mn_setting_desc">This will enable or disable dark mode in the user interface.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="darkmode_save" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small mn_flip_save">Save</button>
+                        <label class="switch">
+                            <input type="checkbox" id="darkmode_checkbox" class="mn_flip_switch" data-url="/settings/toggle-darkmode" {% if ui_settings['darkmode'] %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
 
-            <div class="divider"></div>
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Price Ticker</div>
+                        <div class="mn_setting_desc">Display recent Bitcoin price on the main page.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="price_ticker_save" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small mn_flip_save">Save</button>
+                        <label class="switch">
+                            <input type="checkbox" id="price_ticker_checkbox" class="mn_flip_switch" data-url="/settings/toggle-price-ticker" {% if ui_settings['price_ticker'] %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
 
-            <div class="settings_block_subheader">Price Ticker</div>
-            Display recent Bitcoin price on the main page.
-            <br/>
-            {% if ui_settings['price_ticker'] %}
-                <a href="/settings/toggle-price-ticker" class="ui-button ui-widget ui-corner-all settings_button">Disable</a>
-            {% else %}
-                <a href="/settings/toggle-price-ticker" class="ui-button ui-widget ui-corner-all settings_button">Enable</a>
-            {% endif %}
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Background</div>
+                        <div class="mn_setting_desc">For fun, you can set a background image.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <form action="/settings/set-background" method="POST">
+                            <select name="background" id="background">
+                                <option value="none" {% if not ui_settings['background'] or ui_settings['background'] == "none" %}selected{% endif %}>None</option>
+                                <option value="digital" {% if ui_settings['background'] == "digital" %}selected{% endif %}>Digital</option>
+                                <option value="digital_mesh" {% if ui_settings['background'] == "digital_mesh" %}selected{% endif %}>Digital Mesh</option>
+                                <option value="laser_eyes" {% if ui_settings['background'] == "laser_eyes" %}selected{% endif %}>Laser Eyes</option>
+                                <option value="moon" {% if ui_settings['background'] == "moon" %}selected{% endif %}>Moon</option>
+                            </select>
+                            <input type="submit" id="background_save_button" value="Save" class="ui-button ui-widget ui-corner-all settings_button_small"/>
+                        </form>
+                    </div>
+                </div>
 
-            <div class="divider"></div>
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Automatic Logout</div>
+                        <div class="mn_setting_desc">Your MyNode will logout automatically after a period of inactivity.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <form action="/settings/logout_time" method="POST">
+                            {% set logoutHours = range(24) %}
+                            <span class="mn_setting_inline_label">Days</span>
+                            <select name="logout_days" id="logout_days">
+                                {% for d in logout_time_day_options %}
+                                <option value="{{d}}" {% if logout_time_days == d %}selected{% endif %}>{{d}}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="mn_setting_inline_label">Hours</span>
+                            <select name="logout_hours" id="logout_hours">
+                                {% for h in logoutHours %}
+                                <option value="{{h}}" {% if logout_time_hours == h %}selected{% endif %}>{{h}}</option>
+                                {% endfor %}
+                            </select>
+                            <input type="submit" id="logout_save_button" value="Save" class="ui-button ui-widget ui-corner-all settings_button_small"/>
+                        </form>
+                    </div>
+                </div>
 
-            <div class="settings_block_subheader">Background</div>
-            For fun, you can set a background image.
-            <br/><br/>
-
-            <form action="/settings/set-background" method="POST">
-                <select name="background" id="background">
-                    <option value="none" {% if not ui_settings['background'] or ui_settings['background'] == "none" %}selected{% endif %}>None</option>
-                    <option value="digital" {% if ui_settings['background'] == "digital" %}selected{% endif %}>Digital</option>
-                    <option value="digital_mesh" {% if ui_settings['background'] == "digital_mesh" %}selected{% endif %}>Digital Mesh</option>
-                    <option value="laser_eyes" {% if ui_settings['background'] == "laser_eyes" %}selected{% endif %}>Laser Eyes</option>
-                    <option value="moon" {% if ui_settings['background'] == "moon" %}selected{% endif %}>Moon</option>
-                </select>
-                <input type="submit" id="background_save_button" value="Save" class="ui-button ui-widget ui-corner-all"/>
-            </form>
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Automatic Logout</div>
-            Your MyNode will logout automatically after a period of inactivity. It can be changed below.
-            <br/><br/>
-
-            <form action="/settings/logout_time" method="POST">
-                {% set logoutHours = range(24) %}
-                Days: 
-                <select name="logout_days" id="logout_days">
-                    {% for d in logout_time_day_options %}
-                    <option value="{{d}}" {% if logout_time_days == d %}selected{% endif %}>{{d}}</option>
-                    {% endfor %}
-                </select>
-                Hours: 
-                <select name="logout_hours" id="logout_hours">
-                    {% for h in logoutHours %}
-                    <option value="{{h}}" {% if logout_time_hours == h %}selected{% endif %}>{{h}}</option>
-                    {% endfor %}
-                </select>
-                <input type="submit" id="logout_save_button" value="Save" class="ui-button ui-widget ui-corner-all"/>
-            </form>
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Force HTTPS</div>
-            You can force the MyNode web interface to only use HTTPS. You may be logged out and need to log in again after enabling it.
-            <br/><br/>
-            <label class="switch">
-                <input type="checkbox" id="https_forced_checkbox" {% if is_https_forced %}checked{% endif %}>
-                <span class="slider round"></span>
-            </label>
-            <br/><br/>
-            <button id="https_forced" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Force HTTPS</div>
+                        <div class="mn_setting_desc">You can force the MyNode web interface to only use HTTPS. You may be logged out and need to log in again after enabling it.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="https_forced" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                        <label class="switch">
+                            <input type="checkbox" id="https_forced_checkbox" {% if is_https_forced %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
         </div>
 
 
@@ -1171,113 +1266,118 @@
             <a id="applications"></a>
             <div class="settings_block_header">Applications</div>
 
-            <div class="settings_block_subheader">Manage Applications</div>
-            You can view application information and manage app upgrades on the Manage page. You can also customize and override the
-            application versions supported by MyNode.
-            <br/>
-            <a href="/apps" class="ui-button ui-widget ui-corner-all settings_button">Manage</a>
-            <a href="/apps/customize-app-versions" class="ui-button ui-widget ui-corner-all settings_button">Customize Application Versions</a>
-            <a href="/settings/refresh-app-database" class="ui-button ui-widget ui-corner-all settings_button">Refresh Application Database</a>
+            <div class="mn_setting_list">
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Manage Applications</div>
+                        <div class="mn_setting_desc">View application information and manage app upgrades on the Manage page.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <a href="/apps" class="ui-button ui-widget ui-corner-all settings_button_small">Manage</a>
+                    </div>
+                </div>
 
-            <div class="divider"></div>
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Application Versions</div>
+                        <div class="mn_setting_desc">Customize and override the application versions supported by MyNode, or refresh the application database.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <a href="/apps/customize-app-versions" class="ui-button ui-widget ui-corner-all settings_button_small">Customize Versions</a>
+                        <a href="/settings/refresh-app-database" class="ui-button ui-widget ui-corner-all settings_button_small">Refresh Database</a>
+                    </div>
+                </div>
 
-            <div class="settings_block_subheader">Reset App Default Passwords</div>
-            This will reset apps that are still using default passwords to new values. Those apps will be set to the new defaults and restarted.
-            <br/>
-            <button id="reset_app_passwords_button" class="ui-button ui-widget ui-corner-all settings_button">Reset Default Passwords</button>
-
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Reset App Default Passwords</div>
+                        <div class="mn_setting_desc">This will reset apps that are still using default passwords to new values. Those apps will be set to the new defaults and restarted.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="reset_app_passwords_button" class="ui-button ui-widget ui-corner-all settings_button_small mn_danger_button">Reset Default Passwords</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
 
         <div class="settings_block">
-            <a id="firewall"></a>
+            <a id="networking"></a>
             <div class="settings_block_header">Networking</div>
 
-            <div class="settings_block_subheader">Bitcoin and Lightning Networks</div>
-            You can use various networks for Bitcoin and Lightning. Tor and I2P increase privacy, however, they can slow down block download 
-            and cause less consistent connections.
-            <br/><br/>
-            Saving will trigger a reboot.
-            <br/><br/>
+            <div class="mn_setting_list">
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Bitcoin and Lightning Networks</div>
+                        <div class="mn_setting_desc">You can use various networks for Bitcoin and Lightning. Tor and I2P increase privacy, however, they can slow down block download and cause less consistent connections.</div>
+                        <div class="mn_setting_note">Saving will trigger a reboot.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <form action="/settings/save-network-settings" method="POST">
+                            <div class="mn_network_matrix">
+                                <span class="mn_label"></span>
+                                <span class="mn_label">Clearnet</span>
+                                <span class="mn_label">Tor</span>
+                                <span class="mn_label">I2P</span>
 
-            <form action="/settings/save-network-settings" method="POST">
-                <table border="0" style="font-size: 14px;">
-                    <tr>
-                        <td width="100px"></td>
-                        <td width="80px"><b>Clearnet</b></td>
-                        <td width="80px"><b>Tor</b></td>
-                        <td width="80px"><b>I2P</b></td>
-                    </tr>
-                    <tr>
-                        <td><b>Bitcoin</b></td>
-                        <td>
-                            <label class="switch">
-                                <input type="checkbox" name="btc_ipv4_checkbox" {% if is_btc_ipv4_enabled %}checked{% endif %}>
-                                <span class="slider round"></span>
-                            </label>
-                        </td>
-                        <td>
-                            <label class="switch">
-                                <input type="checkbox" name="btc_tor_checkbox" {% if is_btc_tor_enabled %}checked{% endif %}>
-                                <span class="slider round"></span>
-                            </label>
-                        </td>
-                        <td>
-                            <label class="switch">
-                                <input type="checkbox" name="btc_i2p_checkbox" {% if is_btc_i2p_enabled %}checked{% endif %}>
-                                <span class="slider round"></span>
-                            </label>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><b>Lightning</b></td>
-                        <td>
-                            <label class="switch">
-                                <input type="checkbox" name="lnd_ipv4_checkbox" {% if is_lnd_ipv4_enabled %}checked{% endif %}>
-                                <span class="slider round"></span>
-                            </label>
-                        </td>
-                        <td>
-                            <label class="switch">
-                                <input type="checkbox" name="lnd_tor_checkbox" {% if is_lnd_tor_enabled %}checked{% endif %}>
-                                <span class="slider round"></span>
-                            </label>
-                        </td>
-                        <td>
-                            N/A
-                        </td>
-                    </tr>
-                </table>
-                
-                <br/>
-                <input type="submit" id="btc_lnd_networks_save" class="ui-button ui-widget ui-corner-all" value="Save"/>
-            </form>
+                                <span class="mn_network_matrix_row">Bitcoin</span>
+                                <label class="switch">
+                                    <input type="checkbox" name="btc_ipv4_checkbox" {% if is_btc_ipv4_enabled %}checked{% endif %}>
+                                    <span class="slider round"></span>
+                                </label>
+                                <label class="switch">
+                                    <input type="checkbox" name="btc_tor_checkbox" {% if is_btc_tor_enabled %}checked{% endif %}>
+                                    <span class="slider round"></span>
+                                </label>
+                                <label class="switch">
+                                    <input type="checkbox" name="btc_i2p_checkbox" {% if is_btc_i2p_enabled %}checked{% endif %}>
+                                    <span class="slider round"></span>
+                                </label>
 
-            <div class="divider"></div>
+                                <span class="mn_network_matrix_row">Lightning</span>
+                                <label class="switch">
+                                    <input type="checkbox" name="lnd_ipv4_checkbox" {% if is_lnd_ipv4_enabled %}checked{% endif %}>
+                                    <span class="slider round"></span>
+                                </label>
+                                <label class="switch">
+                                    <input type="checkbox" name="lnd_tor_checkbox" {% if is_lnd_tor_enabled %}checked{% endif %}>
+                                    <span class="slider round"></span>
+                                </label>
+                                <span class="mn_network_na">N/A</span>
+                            </div>
+                            <input type="submit" id="btc_lnd_networks_save" class="ui-button ui-widget ui-corner-all settings_button_small" value="Save"/>
+                        </form>
+                    </div>
+                </div>
 
-            <div class="settings_block_subheader">I2P</div>
-            A privacy network option, similar to Tor. The I2P service runs in the background when Bitcoin uses it. Turn it on here to also run it when Bitcoin does not.
-            <br/><br/>
-            <label class="switch">
-                <input type="checkbox" id="i2p_checkbox" {% if is_i2p_enabled %}checked{% endif %}>
-                <span class="slider round"></span>
-            </label>
-            <br/><br/>
-            <button id="i2p" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">I2P</div>
+                        <div class="mn_setting_desc">A privacy network option, similar to Tor. The I2P service runs in the background when Bitcoin uses it. Turn it on here to also run it when Bitcoin does not.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="i2p" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                        <label class="switch">
+                            <input type="checkbox" id="i2p_checkbox" {% if is_i2p_enabled %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
 
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">IPv6</div>
-            IPv6 can be enabled or disabled. It is enabled by default, but some older nodes may have issues with some apps or connections while enabled, so it can be disabled here.
-            <br/><br/>
-            <label class="switch">
-                <input type="checkbox" id="ipv6_checkbox" {% if is_ipv6_enabled %}checked{% endif %}>
-                <span class="slider round"></span>
-            </label>
-            <br/><br/>
-            <button id="ipv6" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
-
-
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">IPv6</div>
+                        <div class="mn_setting_desc">IPv6 can be enabled or disabled. It is enabled by default, but some older nodes may have issues with some apps or connections while enabled, so it can be disabled here.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="ipv6" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                        <label class="switch">
+                            <input type="checkbox" id="ipv6_checkbox" {% if is_ipv6_enabled %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
         </div>
 
 
@@ -1285,114 +1385,133 @@
             <a id="bitcoin"></a>
             <div class="settings_block_header">Bitcoin</div>
 
-            <div class="settings_block_subheader">Edit Config</div>
-            You can edit the Bitcoin config. However, using your own config will prevent any future automatic config updates and may have adverse effects.
-            <br/>
-            {% if using_bitcoin_custom_config %}
-            <br/>
-            <div class="settings_block_subheader_status_icon yellow"></div>
-            <i>You are currently using a custom Bitcoin config.</i>
-            <br/><br/>
-            {% endif %}
-            <a href="/bitcoin/config" class="ui-button ui-widget ui-corner-all settings_button">Edit Config</a>
+            <div class="mn_setting_list">
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">
+                            Edit Config
+                            {% if using_bitcoin_custom_config %}<span class="mn_badge mn_badge_update">Custom config in use</span>{% endif %}
+                        </div>
+                        <div class="mn_setting_desc">You can edit the Bitcoin config. However, using your own config will prevent any future automatic config updates and may have adverse effects.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <a href="/bitcoin/config" class="ui-button ui-widget ui-corner-all settings_button_small">Edit Config</a>
+                    </div>
+                </div>
 
-            <div class="divider"></div>
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Reset Peers</div>
+                        <div class="mn_setting_desc">If Bitcoin is having issues connecting, you can reset the peers database. This will reboot and allow Bitcoin to find a new set of peers.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="reset-bitcoin-peers" class="ui-button ui-widget ui-corner-all settings_button_small">Reset Peers</button>
+                    </div>
+                </div>
 
-            <div class="settings_block_subheader">Reset Peers</div>
-            If Bitcoin is having issues connecting, you can reset the peers database. This will reboot and allow Bitcoin to find a new set of peers.
-            <br/>
-            <button id="reset-bitcoin-peers" class="ui-button ui-widget ui-corner-all settings_button">Reset Peers</button>
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Reset Blockchain</div>
+                        <div class="mn_setting_desc">If Bitcoin is having issues, you can reset the blockchain data. This will restart the initial block download and may take a long time. Bitcoin wallets are kept.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="reset-blockchain" class="ui-button ui-widget ui-corner-all settings_button_small mn_danger_button">Reset Blockchain</button>
+                    </div>
+                </div>
 
-            <div class="divider"></div>
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Rebuild Chainstate <span class="mn_tag">Advanced</span></div>
+                        <div class="mn_setting_desc">
+                            If the Bitcoin log reports a corrupted or damaged chainstate (coins) database, rebuild it from the blocks already
+                            on the drive. This takes many hours, and most of MyNode is unavailable until it finishes.
+                        </div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="rebuild-chainstate" class="ui-button ui-widget ui-corner-all settings_button_small mn_danger_button">Rebuild Chainstate</button>
+                    </div>
+                </div>
 
-            <div class="settings_block_subheader">Reset Blockchain</div>
-            If Bitcoin is having issues, you can reset the blockchain data. This will restart the initial block download and may take a long time. Bitcoin wallets are kept.
-            <br/>
-            <button id="reset-blockchain" class="ui-button ui-widget ui-corner-all settings_button">Reset Blockchain</button>
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Full Reindex <span class="mn_tag">Advanced</span></div>
+                        <div class="mn_setting_desc">
+                            If the Bitcoin log reports that a block can't be read from disk, an I/O error, or damaged block files, run a full
+                            reindex. Bitcoin re-reads every block file and downloads damaged blocks again from peers.
+                        </div>
+                        <div class="mn_setting_note">This is slower than rebuilding the chainstate and can take a day or more. Most of MyNode is unavailable until it finishes.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="full-reindex" class="ui-button ui-widget ui-corner-all settings_button_small mn_danger_button">Full Reindex</button>
+                    </div>
+                </div>
 
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Rebuild Chainstate</div>
-            Advanced: If the Bitcoin log reports a corrupted or damaged chainstate (coins) database, rebuild it from the blocks already
-            on the drive. This takes many hours, and most of MyNode is unavailable until it finishes.
-            <br/>
-            <button id="rebuild-chainstate" class="ui-button ui-widget ui-corner-all settings_button">Rebuild Chainstate</button>
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Full Reindex</div>
-            Advanced: If the Bitcoin log reports that a block can't be read from disk, an I/O error, or damaged block files, run a full
-            reindex. Bitcoin re-reads every block file and downloads damaged blocks again from peers. This is slower than rebuilding
-            the chainstate and can take a day or more. Most of MyNode is unavailable until it finishes.
-            <br/>
-            <button id="full-reindex" class="ui-button ui-widget ui-corner-all settings_button">Full Reindex</button>
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Custom Bitcoin Version</div>
-            <small>
-            <i>Advanced</i>
-            <br/><br/>
-            To install a specific fork or patched version of Bitcoin, you can select an option from the list below.
-            Installing a new version may take a long time and will reboot the device. To undo a previous change, select Default.
-            Using a custom version may break other features and applications or require configuration changes to work properly.
-            Only install versions you trust and are familiar with as misunderstandings or chain-splits could lead to lost funds. 
-            <br/><br/>
-            Custom Bitcoin versions with a specific version will stick to that version and versions listed with (autoupdate) will automatically update to new versions. The default option will also always auto-update. Updates only occur upon installing a new version of MyNode.
-            <br/><br/>
-            MyNode is not responsible for any issues or lost funds resulting from using custom Bitcoin versions.
-            <br/><br/>
-            Version Info<br/>
-            - Bitcoin Core 29.x: Auto-updates only within the Bitcoin Core 29.x release series. Your node will stay on 29.x even after MyNode starts using a newer major version of Bitcoin Core.
-            <br/><br/>
-            
-            {% if debian_version < 12 %}
-            <b>Note: </b>Some custom Bitcoin versions are not supported on Debian 11 or older. You can re-flash your OS drive to 
-            upgrade to Debian 12+.
-            <br/><br/>
-            {% endif %}
-            </small>
-
-            {# Custom Bitcoin versions - (value, name, requires debian 12+). A value of "none" is a separator. #}
-            {% set custom_bitcoin_versions = [
-                ("none",                "--- Recommended ---",                  False),
-                ("default",             "Bitcoin Core (default)",               False),
-                ("core29x_autoupdate",  "Bitcoin Core 29.x (autoupdate)",       True),
-                ("knots_autoupdate",    "Bitcoin Knots (autoupdate)",           True),
-                ("none",                "--- Specific Versions ---",            False),
-                ("knots_29_3_2",        "Bitcoin Knots (v29.3.knots20260507)",  True),
-                ("none",                "--- Old / Not Recommended ---",        False),
-                ("knots_29_2_2",        "Bitcoin Knots (v29.2.2)",              True)
-            ] %}
-            {% set custom_bitcoin_version_name = namespace(value="") %}
-            {% for value, name, requires_deb12 in custom_bitcoin_versions %}
-                {% if value != "none" and value == custom_bitcoin_version %}
-                    {% set custom_bitcoin_version_name.value = name %}
-                {% endif %}
-            {% endfor %}
-
-            {% if custom_bitcoin_version %}
-            <div class="custom_version_notice">
-                <b>Custom Bitcoin version currently selected:</b>
-                {% if custom_bitcoin_version_name.value != "" %}{{ custom_bitcoin_version_name.value }}{% else %}{{ custom_bitcoin_version }}{% endif %}
-                <br/>
-                This overrides the default version of Bitcoin. Select "Bitcoin Core (default)" below to undo this change.
-            </div>
-            {% endif %}
-
-            <select name="custom_bitcoin_select" id="custom_bitcoin_select">
-                {% if not custom_bitcoin_version %}
-                <option value="none" selected="selected">Choose...</option>
-                {% else %}
-                <option value="none">Choose...</option>
-                {% endif %}
+                {# Custom Bitcoin versions - (value, name, requires debian 12+). A value of "none" is a separator. #}
+                {% set custom_bitcoin_versions = [
+                    ("none",                "--- Recommended ---",                  False),
+                    ("default",             "Bitcoin Core (default)",               False),
+                    ("core29x_autoupdate",  "Bitcoin Core 29.x (autoupdate)",       True),
+                    ("knots_autoupdate",    "Bitcoin Knots (autoupdate)",           True),
+                    ("none",                "--- Specific Versions ---",            False),
+                    ("knots_29_3_2",        "Bitcoin Knots (v29.3.knots20260507)",  True),
+                    ("none",                "--- Old / Not Recommended ---",        False),
+                    ("knots_29_2_2",        "Bitcoin Knots (v29.2.2)",              True)
+                ] %}
+                {% set custom_bitcoin_version_name = namespace(value="") %}
                 {% for value, name, requires_deb12 in custom_bitcoin_versions %}
-                <option value="{{ value }}"
-                        {% if value != "none" and value == custom_bitcoin_version %}selected="selected"{% endif %}
-                        {% if requires_deb12 and debian_version < 12 %}disabled{% endif %}>{{ name }}</option>
+                    {% if value != "none" and value == custom_bitcoin_version %}
+                        {% set custom_bitcoin_version_name.value = name %}
+                    {% endif %}
                 {% endfor %}
-            </select>
-            <button id="custom_bitcoin_install_button">Install</button>
+
+                <div class="mn_setting mn_setting_wide">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Custom Bitcoin Version <span class="mn_tag">Advanced</span></div>
+                        <div class="mn_setting_desc">
+                            To install a specific fork or patched version of Bitcoin, you can select an option from the list.
+                            Installing a new version may take a long time and will reboot the device. To undo a previous change, select Default.
+                        </div>
+                        <div class="mn_setting_note">
+                            Using a custom version may break other features and applications or require configuration changes to work properly.
+                            Only install versions you trust and are familiar with as misunderstandings or chain-splits could lead to lost funds.
+                        </div>
+                        <div class="mn_setting_note">
+                            Custom Bitcoin versions with a specific version will stick to that version and versions listed with (autoupdate) will automatically update to new versions. The default option will also always auto-update. Updates only occur upon installing a new version of MyNode.
+                        </div>
+                        <div class="mn_setting_note">
+                            Bitcoin Core 29.x: Auto-updates only within the Bitcoin Core 29.x release series. Your node will stay on 29.x even after MyNode starts using a newer major version of Bitcoin Core.
+                        </div>
+                        <div class="mn_setting_note">MyNode is not responsible for any issues or lost funds resulting from using custom Bitcoin versions.</div>
+                        {% if debian_version < 12 %}
+                        <div class="mn_setting_note"><b>Note: </b>Some custom Bitcoin versions are not supported on Debian 11 or older. You can re-flash your OS drive to upgrade to Debian 12+.</div>
+                        {% endif %}
+                    </div>
+                    <div class="mn_setting_control">
+                        <select name="custom_bitcoin_select" id="custom_bitcoin_select">
+                            {% if not custom_bitcoin_version %}
+                            <option value="none" selected="selected">Choose...</option>
+                            {% else %}
+                            <option value="none">Choose...</option>
+                            {% endif %}
+                            {% for value, name, requires_deb12 in custom_bitcoin_versions %}
+                            <option value="{{ value }}"
+                                    {% if value != "none" and value == custom_bitcoin_version %}selected="selected"{% endif %}
+                                    {% if requires_deb12 and debian_version < 12 %}disabled{% endif %}>{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button id="custom_bitcoin_install_button" class="settings_button_small">Install</button>
+                    </div>
+                    {% if custom_bitcoin_version %}
+                    <div class="mn_setting_panel">
+                        <div class="mn_alert mn_alert_notice">
+                            <b>Custom Bitcoin version currently selected:</b>
+                            {% if custom_bitcoin_version_name.value != "" %}{{ custom_bitcoin_version_name.value }}{% else %}{{ custom_bitcoin_version }}{% endif %}.
+                            This overrides the default version of Bitcoin. Select "Bitcoin Core (default)" to undo this change.
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
 
 
@@ -1400,352 +1519,471 @@
             <a id="lightning"></a>
             <div class="settings_block_header">Lightning</div>
 
-            <div class="settings_block_subheader">Download Channel Backup</div>
-            This will download the latest copy of your static channel backup file.
-            <br/>
-            <a class="ui-button ui-widget ui-corner-all settings_button" href="/lnd/channel.backup">Download</a>
-            
-            <div class="divider"></div>
+            <div class="mn_setting_list">
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Download Channel Backup</div>
+                        <div class="mn_setting_desc">This will download the latest copy of your static channel backup file.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <a class="ui-button ui-widget ui-corner-all settings_button_small" href="/lnd/channel.backup">Download</a>
+                    </div>
+                </div>
 
-            <div class="settings_block_subheader">Edit Config</div>
-            You can edit the Lightning config. However, using your own config will prevent any future automatic updates and may have adverse effects.
-            <br/>
-            {% if using_lnd_custom_config %}
-            <br/>
-            <div class="settings_block_subheader_status_icon yellow"></div>
-            <i>You are currently using a custom Lightning config.</i>
-            <br/><br/>
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">
+                            Edit Config
+                            {% if using_lnd_custom_config %}<span class="mn_badge mn_badge_update">Custom config in use</span>{% endif %}
+                        </div>
+                        <div class="mn_setting_desc">You can edit the Lightning config. However, using your own config will prevent any future automatic updates and may have adverse effects.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <a href="/lnd/config" class="ui-button ui-widget ui-corner-all settings_button_small">Edit Config</a>
+                    </div>
+                </div>
+
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Reset Watchtower Info <span class="mn_tag">Advanced</span></div>
+                        <div class="mn_setting_desc">This will reset the Watchtower information. This can be used if LND is having issues after adding watchtowers.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="reset_lnd_watchtower_client" class="ui-button ui-widget ui-corner-all settings_button_small">Reset Client</button>
+                        <button id="reset_lnd_watchtower_server" class="ui-button ui-widget ui-corner-all settings_button_small">Reset Server</button>
+                    </div>
+                </div>
+
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Reset Macaroons <span class="mn_tag">Advanced</span></div>
+                        <div class="mn_setting_desc">This will delete your LND macaroons and any paired wallets will no longer work. It will delete both mainnet and testnet macaroons if you have them.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="reset_macaroons" class="ui-button ui-widget ui-corner-all settings_button_small mn_danger_button">Reset Macaroons</button>
+                    </div>
+                </div>
+
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Delete Lightning Wallet <span class="mn_tag">Advanced</span></div>
+                        <div class="mn_setting_desc">This will delete your Lightning Wallet. It will delete both mainnet and testnet wallets if you have them.</div>
+                        {% if lnd_delete_message %}<div class="mn_setting_note">{{lnd_delete_message}}</div>{% endif %}
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="delete_lnd_wallet" class="ui-button ui-widget ui-corner-all settings_button_small mn_danger_button">Delete Wallet</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="settings_block">
+            <a id="apps"></a>
+            <div class="settings_block_header">App Settings</div>
+
+            <div class="mn_setting_group">
+                <a id="electrum"></a>
+                <div class="settings_block_subheader">Electrum Server</div>
+                <div class="mn_setting_list">
+                    <div class="mn_setting">
+                        <div class="mn_setting_text">
+                            <div class="mn_setting_title">TX Lookup Limit</div>
+                            <div class="mn_setting_desc">Your device will limit the number of transactions per address to prevent Electrum from consuming too many resources.</div>
+                        </div>
+                        <div class="mn_setting_control">
+                            <form action="/settings/electrs_tx_lookup_limit" method="POST">
+                                <select name="electrs_tx_lookup_limit" id="electrs_tx_lookup_limit">
+                                    <option value="200"     {% if electrs_tx_lookup_limit == "200" %}selected{% endif %}>200 (RP4 Default)</option>
+                                    <option value="500"     {% if electrs_tx_lookup_limit == "500" %}selected{% endif %}>500</option>
+                                    <option value="1000"    {% if electrs_tx_lookup_limit == "1000" %}selected{% endif %}>1000 (PC Default)</option>
+                                    <option value="2000"    {% if electrs_tx_lookup_limit == "2000" %}selected{% endif %}>2000</option>
+                                    <option value="10000"   {% if electrs_tx_lookup_limit == "10000" %}selected{% endif %}>10000</option>
+                                    <option value="9999999" {% if electrs_tx_lookup_limit == "9999999" %}selected{% endif %}>Unlimited</option>
+                                </select>
+                                <input type="submit" id="electrs_tx_lookup_limit_save_button" value="Save" class="ui-button ui-widget ui-corner-all settings_button_small"/>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="mn_setting">
+                        <div class="mn_setting_text">
+                            <div class="mn_setting_title">Reset Electrum Server Certificate</div>
+                            <div class="mn_setting_desc">This will regenerate your Electrum Server certificate.</div>
+                        </div>
+                        <div class="mn_setting_control">
+                            <a href="/settings/regen-electrs-certs" class="ui-button ui-widget ui-corner-all settings_button_small">Regenerate</a>
+                        </div>
+                    </div>
+                    <div class="mn_setting">
+                        <div class="mn_setting_text">
+                            <div class="mn_setting_title">Reset Electrum Server</div>
+                            <div class="mn_setting_desc">This will delete your Electrum Server data and restart Electrum Server.</div>
+                        </div>
+                        <div class="mn_setting_control">
+                            <a href="/settings/reset-electrs" class="ui-button ui-widget ui-corner-all settings_button_small mn_danger_button">Reset Data</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mn_setting_group">
+                <a id="rtl"></a>
+                <div class="settings_block_subheader">Ride the Lightning</div>
+                <div class="mn_setting_list">
+                    <div class="mn_setting">
+                        <div class="mn_setting_text">
+                            <div class="mn_setting_title">Reset RTL Configuration</div>
+                            <div class="mn_setting_desc">This will delete your RTL configuration and restart the application.</div>
+                        </div>
+                        <div class="mn_setting_control">
+                            <a href="/settings/reset-rtl-config" class="ui-button ui-widget ui-corner-all settings_button_small">Reset Configuration</a>
+                        </div>
+                    </div>
+                    {% if "rtl" in settable_password_apps %}
+                    <div class="mn_setting">
+                        <div class="mn_setting_text">
+                            <div class="mn_setting_title">Set RTL Password</div>
+                            <div class="mn_setting_desc">This will set a new RTL login password and restart the application.</div>
+                        </div>
+                        <div class="mn_setting_control">
+                            <button class="set_app_password_button ui-button ui-widget ui-corner-all settings_button_small" data-app="rtl" data-name="RTL">Set Password</button>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mn_setting_group">
+                <a id="thunderhub"></a>
+                <div class="settings_block_subheader">Thunderhub</div>
+                <div class="mn_setting_list">
+                    <div class="mn_setting">
+                        <div class="mn_setting_text">
+                            <div class="mn_setting_title">Reset Thunderhub Configuration</div>
+                            <div class="mn_setting_desc">This will delete your Thunderhub configuration and restart the application.</div>
+                        </div>
+                        <div class="mn_setting_control">
+                            <a href="/settings/reset-thunderhub-config" class="ui-button ui-widget ui-corner-all settings_button_small">Reset Configuration</a>
+                        </div>
+                    </div>
+                    {% if "thunderhub" in settable_password_apps %}
+                    <div class="mn_setting">
+                        <div class="mn_setting_text">
+                            <div class="mn_setting_title">Set Thunderhub Password</div>
+                            <div class="mn_setting_desc">This will set a new Thunderhub login password and restart the application.</div>
+                        </div>
+                        <div class="mn_setting_control">
+                            <button class="set_app_password_button ui-button ui-widget ui-corner-all settings_button_small" data-app="thunderhub" data-name="Thunderhub">Set Password</button>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if "lndg" in settable_password_apps %}
+            <div class="mn_setting_group">
+                <a id="lndg"></a>
+                <div class="settings_block_subheader">LNDg</div>
+                <div class="mn_setting_list">
+                    <div class="mn_setting">
+                        <div class="mn_setting_text">
+                            <div class="mn_setting_title">Set LNDg Password</div>
+                            <div class="mn_setting_desc">This will set a new password for the LNDg admin login.</div>
+                        </div>
+                        <div class="mn_setting_control">
+                            <button class="set_app_password_button ui-button ui-widget ui-corner-all settings_button_small" data-app="lndg" data-name="LNDg">Set Password</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             {% endif %}
-            <a href="/lnd/config" class="ui-button ui-widget ui-corner-all settings_button">Edit Config</a>
 
-            <div class="divider"></div>
+            {% if "lndboss" in settable_password_apps %}
+            <div class="mn_setting_group">
+                <a id="lndboss"></a>
+                <div class="settings_block_subheader">LndBoss</div>
+                <div class="mn_setting_list">
+                    <div class="mn_setting">
+                        <div class="mn_setting_text">
+                            <div class="mn_setting_title">Set LndBoss Password</div>
+                            <div class="mn_setting_desc">This will set a new LndBoss login password.</div>
+                        </div>
+                        <div class="mn_setting_control">
+                            <button class="set_app_password_button ui-button ui-widget ui-corner-all settings_button_small" data-app="lndboss" data-name="LndBoss">Set Password</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
 
-            <div class="settings_block_subheader">Reset Macaroons</div>
-            Advanced: This will delete your LND macaroons and any paired wallets will no longer work. It will delete both mainnet and testnet macaroons if you have them.
-            <br/>
-            <button id="reset_macaroons" class="ui-button ui-widget ui-corner-all settings_button">Reset Macaroons</button>
+            <div class="mn_setting_group">
+                <a id="btcrpcexplorer"></a>
+                <div class="settings_block_subheader">BTC RPC Explorer</div>
+                <div class="mn_setting_list">
+                    <div class="mn_setting">
+                        <div class="mn_setting_text">
+                            <div class="mn_setting_title">Access Token</div>
+                            <div class="mn_setting_desc">
+                                To improve security, a token is required to access BTC RPC Explorer. This restricts access to people who have logged into MyNode and navigated to
+                                BTC RPC Explorer via the interface. To allow access to all users on the network, you can disable requiring the token. This is less secure.
+                            </div>
+                        </div>
+                        <div class="mn_setting_control">
+                            <button id="btcrpcexplorer_token" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                            <label class="switch">
+                                <input type="checkbox" id="btcrpcexplorer_token_checkbox" {% if btcrpcexplorer_token_enabled %}checked{% endif %}>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <div class="divider"></div>
+            <div class="mn_setting_group">
+                <a id="mempool"></a>
+                <div class="settings_block_subheader">Mempool</div>
+                <div class="mn_setting_list">
+                    <div class="mn_setting">
+                        <div class="mn_setting_text">
+                            <div class="mn_setting_title">Clear Mempool Cache</div>
+                            <div class="mn_setting_desc">This will clear the Mempool cache. If Mempool is having issues seeing new blocks, this may help. This can occur after switching between mainnet and testnet.</div>
+                        </div>
+                        <div class="mn_setting_control">
+                            <a href="/settings/clear-mempool-cache" class="ui-button ui-widget ui-corner-all settings_button_small">Clear Cache</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <div class="settings_block_subheader">Delete Lightning Wallet</div>
-            {{lnd_delete_message}}
-            Advanced: This will delete your Lightning Wallet. It will delete both mainnet and testnet wallets if you have them.
-            <br/>
-            <button id="delete_lnd_wallet" class="ui-button ui-widget ui-corner-all settings_button">Delete Wallet</button>
+            <div class="mn_setting_group">
+                <a id="lnbits"></a>
+                <div class="settings_block_subheader">LNbits</div>
+                <div class="mn_setting_list">
+                    <div class="mn_setting">
+                        <div class="mn_setting_text">
+                            <div class="mn_setting_title">Recover super_user</div>
+                            <div class="mn_setting_desc">
+                                This will restart LNbits and give its super_user a new password, shown on the <a href="/app/lnbits/info">LNbits app page</a>.
+                                Use this if you set your own LNbits password and lost it - Reset Default Passwords leaves your own passwords alone.
+                            </div>
+                        </div>
+                        <div class="mn_setting_control">
+                            <a href="/settings/reset-lnbits-super_user-pwd" class="ui-button ui-widget ui-corner-all settings_button_small">Reset Password</a>
+                        </div>
+                    </div>
+                    <div class="mn_setting">
+                        <div class="mn_setting_text">
+                            <div class="mn_setting_title">Reset LNbits Data</div>
+                            <div class="mn_setting_desc">This will delete your LNbits settings from the database. All users, wallets and extensions will be lost.</div>
+                        </div>
+                        <div class="mn_setting_control">
+                            <button id="reset_lnbits_data_button" class="ui-button ui-widget ui-corner-all settings_button_small mn_danger_button">Delete Settings</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <div class="divider"></div>
+            {% if btcpay_admins %}
+            <div class="mn_setting_group">
+                <a id="btcpayserver"></a>
+                <div class="settings_block_subheader">BTCPay Server</div>
+                <div class="mn_setting_list">
+                    <div class="mn_setting">
+                        <div class="mn_setting_text">
+                            <div class="mn_setting_title">Recover Administrator Access</div>
+                            <div class="mn_setting_desc">
+                                This will give a BTCPay Server administrator a new password, shown on the
+                                <a href="/app/btcpayserver/info">BTCPay Server app page</a>. Use this if you lost the
+                                password to your BTCPay account. There is a reset password button for each admin account detected.
+                            </div>
+                        </div>
+                        <div class="mn_setting_control">
+                            {% for admin in btcpay_admins %}
+                            <a href="/settings/reset-btcpay-admin-pwd?admin={{loop.index0}}" class="ui-button ui-widget ui-corner-all settings_button_small">Reset password for {{admin}}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
 
-            <div class="settings_block_subheader">Reset Watchtower Info</div>
-            Advanced: This will reset the Watchtower information. This can be used if LND is having issues after adding watchtowers.
-            <br/>
-            <button id="reset_lnd_watchtower_client" class="ui-button ui-widget ui-corner-all settings_button">Reset Watchtower Client</button>
-            <button id="reset_lnd_watchtower_server" class="ui-button ui-widget ui-corner-all settings_button">Reset Watchtower Server</button>
+            <div class="mn_setting_group">
+                <a id="specter"></a>
+                <div class="settings_block_subheader">Specter</div>
+                <div class="mn_setting_list">
+                    <div class="mn_setting">
+                        <div class="mn_setting_text">
+                            <div class="mn_setting_title">Reset Specter Configuration</div>
+                            <div class="mn_setting_desc">This will delete your Specter configuration and restart Specter. This should not impact wallets and devices stored in Specter. If Specter is having issues starting, this may help.</div>
+                        </div>
+                        <div class="mn_setting_control">
+                            <a href="/settings/reset-specter-config" class="ui-button ui-widget ui-corner-all settings_button_small">Reset Configuration</a>
+                        </div>
+                    </div>
+                    {% if "specter" in settable_password_apps %}
+                    <div class="mn_setting">
+                        <div class="mn_setting_text">
+                            <div class="mn_setting_title">Set Specter Password</div>
+                            <div class="mn_setting_desc">This will set a new password for the Specter admin login and restart the application.</div>
+                            <div class="mn_setting_note">A connected Swan account will need to be connected again.</div>
+                        </div>
+                        <div class="mn_setting_control">
+                            <button class="set_app_password_button ui-button ui-widget ui-corner-all settings_button_small" data-app="specter" data-name="Specter">Set Password</button>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
 
-        </div>
-
-
-        <div class="settings_block">
-            <a id="electrum"></a>
-            <div class="settings_block_header">Electrum Server</div>
-
-            <div class="settings_block_subheader">TX Lookup Limit</div>
-            Your device will limit the number of transactions per address to prevent Electrum from consuming too many resources. It can be changed below.
-            <br/><br/>
-
-            <form action="/settings/electrs_tx_lookup_limit" method="POST">
-                <select name="electrs_tx_lookup_limit" id="electrs_tx_lookup_limit">
-                    <option value="200"     {% if electrs_tx_lookup_limit == "200" %}selected{% endif %}>200 (RP4 Default)</option>
-                    <option value="500"     {% if electrs_tx_lookup_limit == "500" %}selected{% endif %}>500</option>
-                    <option value="1000"    {% if electrs_tx_lookup_limit == "1000" %}selected{% endif %}>1000 (PC Default)</option>
-                    <option value="2000"    {% if electrs_tx_lookup_limit == "2000" %}selected{% endif %}>2000</option>
-                    <option value="10000"   {% if electrs_tx_lookup_limit == "10000" %}selected{% endif %}>10000</option>
-                    <option value="9999999" {% if electrs_tx_lookup_limit == "9999999" %}selected{% endif %}>Unlimited</option>
-                </select>
-                <input type="submit" id="electrs_tx_lookup_limit_save_button" value="Save" class="ui-button ui-widget ui-corner-all"/>
-            </form>
-
-            <div class="divider"></div>
-            
-            <div class="settings_block_subheader">Reset Electrum Server</div>
-            This will delete your Electrum Server data and restart Electrum Server.
-            <br/>
-            <a href="/settings/reset-electrs" class="ui-button ui-widget ui-corner-all settings_button">Reset Data</a>
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Reset Electrum Server Certificate</div>
-            This will regenerate your Electrum Server certificate.
-            <br/>
-            <a href="/settings/regen-electrs-certs" class="ui-button ui-widget ui-corner-all settings_button">Regenerate</a>
-        </div>
-
-
-        <div class="settings_block">
-            <a id="rtl"></a>
-            <div class="settings_block_header">Ride the Lightning</div>
-            
-            <div class="settings_block_subheader">Reset RTL Configuration</div>
-            This will delete your RTL configuration and restart the application.
-            <br/>
-            <a href="/settings/reset-rtl-config" class="ui-button ui-widget ui-corner-all settings_button">Reset Configuration</a>
-
-            {% if "rtl" in settable_password_apps %}
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Set RTL Password</div>
-            This will set a new RTL login password and restart the application.
-            <br/>
-            <button class="set_app_password_button ui-button ui-widget ui-corner-all settings_button" data-app="rtl" data-name="RTL">Set Password</button>
+            {% if albyhub_installed %}
+            <div class="mn_setting_group">
+                <a id="albyhub"></a>
+                <div class="settings_block_subheader">Alby Hub</div>
+                <div class="mn_setting_list">
+                    <div class="mn_setting">
+                        <div class="mn_setting_text">
+                            <div class="mn_setting_title">Reset Password</div>
+                            <div class="mn_setting_desc">
+                                If you have forgotten your AlbyHub password, you can reset it here. This deletes all Alby Hub data and sets it up again with a new password, shown
+                                on the <a href="/app/albyhub/info">app page</a>. Funds in LND are not affected.
+                            </div>
+                        </div>
+                        <div class="mn_setting_control">
+                            <button id="reset_albyhub_password_button" class="ui-button ui-widget ui-corner-all settings_button_small mn_danger_button">Reset Password</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             {% endif %}
         </div>
-
-
-        <div class="settings_block">
-            <a id="thunderhub"></a>
-            <div class="settings_block_header">Thunderhub</div>
-
-            <div class="settings_block_subheader">Reset Thunderhub Configuration</div>
-            This will delete your Thunderhub configuration and restart the application.
-            <br/>
-            <a href="/settings/reset-thunderhub-config" class="ui-button ui-widget ui-corner-all settings_button">Reset Configuration</a>
-
-            {% if "thunderhub" in settable_password_apps %}
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Set Thunderhub Password</div>
-            This will set a new Thunderhub login password and restart the application.
-            <br/>
-            <button class="set_app_password_button ui-button ui-widget ui-corner-all settings_button" data-app="thunderhub" data-name="Thunderhub">Set Password</button>
-            {% endif %}
-        </div>
-
-
-        {% if "lndg" in settable_password_apps %}
-        <div class="settings_block">
-            <a id="lndg"></a>
-            <div class="settings_block_header">LNDg</div>
-
-            <div class="settings_block_subheader">Set LNDg Password</div>
-            This will set a new password for the LNDg admin login.
-            <br/>
-            <button class="set_app_password_button ui-button ui-widget ui-corner-all settings_button" data-app="lndg" data-name="LNDg">Set Password</button>
-        </div>
-        {% endif %}
-
-
-        {% if "lndboss" in settable_password_apps %}
-        <div class="settings_block">
-            <a id="lndboss"></a>
-            <div class="settings_block_header">LndBoss</div>
-
-            <div class="settings_block_subheader">Set LndBoss Password</div>
-            This will set a new LndBoss login password.
-            <br/>
-            <button class="set_app_password_button ui-button ui-widget ui-corner-all settings_button" data-app="lndboss" data-name="LndBoss">Set Password</button>
-        </div>
-        {% endif %}
-
-
-        <div class="settings_block">
-            <a id="btcrpcexplorer"></a>
-            <div class="settings_block_header">BTC RPC Explorer</div>
-            
-            <div class="settings_block_subheader">Access Token</div>
-            To improve security, a token is required to access BTC RPC Explorer. This restricts access to people who have logged into MyNode and navigated to
-            BTC RPC Explorer via the interface. To allow access to all users on the network, you can disable requiring the token. This is less secure.
-            <br/><br/>
-            <label class="switch">
-                <input type="checkbox" id="btcrpcexplorer_token_checkbox" {% if btcrpcexplorer_token_enabled %}checked{% endif %}>
-                <span class="slider round"></span>
-            </label>
-            <br/><br/>
-            <button id="btcrpcexplorer_token" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
-        </div>
-
-
-        <div class="settings_block">
-            <a id="mempool"></a>
-            <div class="settings_block_header">Mempool</div>
-            
-            <div class="settings_block_subheader">Clear Mempool Cache</div>
-            This will clear the Mempool cache. If Mempool is having issues seeing new blocks, this may help. This can occur after switching between mainnet and testnet.
-            <br/>
-            <a href="/settings/clear-mempool-cache" class="ui-button ui-widget ui-corner-all settings_button">Clear Cache</a>
-        </div>
-
-        <div class="settings_block">
-            <a id="lnbits"></a>
-            <div class="settings_block_header">LNbits</div>
-
-            <div class="settings_block_subheader">Recover super_user</div>
-            This will restart LNbits and give its super_user a new password, shown on the <a href="/app/lnbits/info">LNbits app page</a>.
-            Use this if you set your own LNbits password and lost it - Reset Default Passwords leaves your own passwords alone.</br>
-            <a href="/settings/reset-lnbits-super_user-pwd" class="ui-button ui-widget ui-corner-all settings_button">Reset password</a></br>
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Reset LNbits Data</div>
-            This will delete your LNbits settings from the database. All users, wallets and extensions will be lost.
-            <br/>
-            <button id="reset_lnbits_data_button" class="ui-button ui-widget ui-corner-all settings_button">Delete Settings</button>
-        </div>
-
-
-        {% if btcpay_admins %}
-        <div class="settings_block">
-            <a id="btcpayserver"></a>
-            <div class="settings_block_header">BTCPay Server</div>
-
-            <div class="settings_block_subheader">Recover Administrator Access</div>
-            This will give a BTCPay Server administrator a new password, shown on the
-            <a href="/app/btcpayserver/info">BTCPay Server app page</a>. Use this if you lost the
-            password to your BTCPay account. There will be a reset password button for each admin account detected.</br>
-            {% for admin in btcpay_admins %}
-            <a href="/settings/reset-btcpay-admin-pwd?admin={{loop.index0}}" class="ui-button ui-widget ui-corner-all settings_button">Reset password for {{admin}}</a></br>
-            {% endfor %}
-        </div>
-        {% endif %}
-
-
-        <div class="settings_block">
-            <a id="specter"></a>
-            <div class="settings_block_header">Specter</div>
-            
-            <div class="settings_block_subheader">Reset Specter Configuration</div>
-            This will delete your Specter configuration and restart Specter. This should not impact wallets and devices stored in Specter. If Specter is having issues starting, this may help.
-            <br/>
-            <a href="/settings/reset-specter-config" class="ui-button ui-widget ui-corner-all settings_button">Reset Configuration</a>
-
-            {% if "specter" in settable_password_apps %}
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Set Specter Password</div>
-            This will set a new password for the Specter admin login and restart the application.
-            A connected Swan account will need to be connected again.
-            <br/>
-            <button class="set_app_password_button ui-button ui-widget ui-corner-all settings_button" data-app="specter" data-name="Specter">Set Password</button>
-            {% endif %}
-        </div>
-
-
-        {% if albyhub_installed %}
-        <div class="settings_block">
-            <a id="albyhub"></a>
-            <div class="settings_block_header">Alby Hub</div>
-
-            <div class="settings_block_subheader">Reset Password</div>
-            If you have forgotten your AlbyHub password, you can reset it here. This deletes all Alby Hub data and sets it up again with a new password, shown 
-            on the <a href="/app/albyhub/info">app page</a>. Funds in LND are not affected.
-            <br/>
-            <button id="reset_albyhub_password_button" class="ui-button ui-widget ui-corner-all settings_button">Reset password</button>
-        </div>
-        {% endif %}
 
 
         <div class="settings_block">
             <a id="firewall"></a>
             <div class="settings_block_header">Firewall</div>
 
-            <div class="settings_block_subheader">Firewall Rules</div>
-            Show the current firewall configuration.
-            <br/>
-            <button id="show_firewall_rules" class="ui-button ui-widget ui-corner-all settings_button">Show</button>
-            <div id="firewall_rules" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{firewall_rules}}</pre></div>
-            
-            <div class="divider"></div>
+            <div class="mn_setting_list">
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Firewall Rules</div>
+                        <div class="mn_setting_desc">Show the current firewall configuration.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="show_firewall_rules" class="mn_label mn_label_toggle" title="Show Firewall Rules">Show <i class="fas fa-chevron-down"></i></button>
+                    </div>
+                    <div id="firewall_rules" class="mn_setting_panel mn_details" style="display: none;"><pre>{{firewall_rules}}</pre></div>
+                </div>
 
-            <div class="settings_block_subheader">Reachable From the Internet</div>
-            Services are reachable from the local network only (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, and
-            Tailscale's 100.64.0.0/10), except the ones selected here, which accept connections from any address.
-            Selecting a service does not forward it on your router. Only select services built to be exposed, or
-            that you need to reach without Tor, a VPN, or Tailscale.
-            <br/>
-            <button id="show_firewall_public_services" class="ui-button ui-widget ui-corner-all settings_button">Show Config</button>
-            <div id="firewall_public_services" style="display: none;">
-            <br/>
-            <form action="/settings/firewall-public-services" method="POST">
-                <table class="info_table">
-                    <tr>
-                        <th>Service</th>
-                        <th>Ports</th>
-                        <th>Any Address</th>
-                    </tr>
-                    {% for service in firewall_services %}
-                    <tr>
-                        <td>{{ service.name }}</td>
-                        <td>{{ service.port_text }}</td>
-                        <td><input type="checkbox" name="public_{{ service.id }}" {% if service.public %}checked{% endif %}></td>
-                    </tr>
-                    {% endfor %}
-                    <tr>
-                        <th>Password</th>
-                        <td colspan="2"><input type="password" name="password_firewall" autocomplete="current-password" width="20" class="ui-corner-all settings_input"/></td>
-                    </tr>
-                </table>
-                <input type="submit" value="Save" class="ui-button ui-widget ui-corner-all settings_button_small"/>
-            </form>
-            </div>
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Reset Firewall</div>
-            Resetting the firewall will disable and re-enable the firewall and then reboot the device.
-            <br/>
-            <a href="/settings/reset-firewall" class="ui-button ui-widget ui-corner-all settings_button">Reset Firewall</a>
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Allow All Local Network Traffic</div>
-            This will allow all local network traffic from 10.0.0.0/8, 192.168.0.0/16, and 172.16.0.0/12. This can be
-            helpful if you are having NAT-PMP or UPnP issues with LND. This will reboot the device.
-            <br/><br/>
-            <label class="switch">
-                <input type="checkbox" id="local_traffic_allowed_checkbox" {% if is_local_traffic_allowed %}checked{% endif %}>
-                <span class="slider round"></span>
-            </label>
-            <br/><br/>
-            <button id="local_traffic_allowed" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Skip Backup DNS Servers</div>
-            Some backup DNS servers are configured if your network does not give your device any. They are used as backup. If you do not want any backup DNS servers configured, enable this.
-            <br/><br/>
-            <label class="switch">
-                <input type="checkbox" id="skip_backup_dns_servers_checkbox" {% if skip_backup_dns_servers %}checked{% endif %}>
-                <span class="slider round"></span>
-            </label>
-            <br/><br/>
-            <button id="skip_backup_dns_servers" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
-
-            <div class="divider"></div>
-
-            <a id="allowed_hosts"></a>
-            <div class="settings_block_subheader">Allowed Host Names</div>
-            MyNode can always be opened using its IP address, mynode.local, or its Tor address. To open it using another name,
-            such as a Tailscale MagicDNS name or your own domain, add that name here.
-            <br/><br/>
-            {% if allowed_hosts %}
-            <table border="0" style="font-size: 14px;">
-                {% for host in allowed_hosts %}
-                <tr>
-                    <td style="padding-right: 20px;">{{ host }}</td>
-                    <td>
-                        <form action="/settings/allowed-hosts/remove" method="POST" style="margin: 0;">
-                            <input type="hidden" name="hostname" value="{{ host }}"/>
-                            <button type="submit" title="Remove" class="ui-button ui-widget ui-corner-all mynode_button_small red"><span class="ui-icon ui-icon-close"></span></button>
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Reachable From the Internet</div>
+                        <div class="mn_setting_desc">
+                            Services are reachable from the local network only (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, and
+                            Tailscale's 100.64.0.0/10), except the ones selected here, which accept connections from any address.
+                            Selecting a service does not forward it on your router. Only select services built to be exposed, or
+                            that you need to reach without Tor, a VPN, or Tailscale.
+                        </div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="show_firewall_public_services" class="mn_label mn_label_toggle" title="Show Config">Configure <i class="fas fa-chevron-down"></i></button>
+                    </div>
+                    <div id="firewall_public_services" class="mn_setting_panel" style="display: none;">
+                        <form action="/settings/firewall-public-services" method="POST">
+                            <table class="mn_table">
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Ports</th>
+                                    <th class="mn_table_center">Any Address</th>
+                                </tr>
+                                {% for service in firewall_services %}
+                                <tr>
+                                    <td>{{ service.name }}</td>
+                                    <td>{{ service.port_text }}</td>
+                                    <td class="mn_table_center"><input type="checkbox" name="public_{{ service.id }}" {% if service.public %}checked{% endif %}></td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                            <div class="mn_panel_actions">
+                                <label class="mn_field">
+                                    <span class="mn_label">Password</span>
+                                    <input type="password" name="password_firewall" autocomplete="current-password" class="ui-corner-all settings_input"/>
+                                </label>
+                                <input type="submit" value="Save" class="ui-button ui-widget ui-corner-all settings_button_small mn_primary_button"/>
+                            </div>
                         </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </table>
-            <br/>
-            {% endif %}
-            <form action="/settings/allowed-hosts/add" method="POST">
-                <input type="text" name="hostname" placeholder="mynode.example.com" maxlength="253" class="ui-corner-all settings_input"/>
-                <input type="submit" value="Add" class="ui-button ui-widget ui-corner-all"/>
-            </form>
+                    </div>
+                </div>
 
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Allow All Local Network Traffic</div>
+                        <div class="mn_setting_desc">
+                            This will allow all local network traffic from 10.0.0.0/8, 192.168.0.0/16, and 172.16.0.0/12. This can be
+                            helpful if you are having NAT-PMP or UPnP issues with LND.
+                        </div>
+                        <div class="mn_setting_note">Saving will reboot the device.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="local_traffic_allowed" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                        <label class="switch">
+                            <input type="checkbox" id="local_traffic_allowed_checkbox" {% if is_local_traffic_allowed %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Skip Backup DNS Servers</div>
+                        <div class="mn_setting_desc">Some backup DNS servers are configured if your network does not give your device any. They are used as backup. If you do not want any backup DNS servers configured, enable this.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="skip_backup_dns_servers" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                        <label class="switch">
+                            <input type="checkbox" id="skip_backup_dns_servers_checkbox" {% if skip_backup_dns_servers %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <a id="allowed_hosts"></a>
+                        <div class="mn_setting_title">Allowed Host Names</div>
+                        <div class="mn_setting_desc">
+                            MyNode can always be opened using its IP address, mynode.local, or its Tor address. To open it using another name,
+                            such as a Tailscale MagicDNS name or your own domain, add that name here.
+                        </div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <form action="/settings/allowed-hosts/add" method="POST">
+                            <input type="text" name="hostname" placeholder="mynode.example.com" maxlength="253" class="ui-corner-all settings_input mn_text_input"/>
+                            <input type="submit" value="Add" class="ui-button ui-widget ui-corner-all settings_button_small"/>
+                        </form>
+                    </div>
+                    {% if allowed_hosts %}
+                    <div class="mn_setting_panel mn_host_list">
+                        {% for host in allowed_hosts %}
+                        <form action="/settings/allowed-hosts/remove" method="POST" class="mn_host_chip">
+                            <span>{{ host }}</span>
+                            <input type="hidden" name="hostname" value="{{ host }}"/>
+                            <button type="submit" title="Remove" class="mn_host_remove"><i class="fas fa-times"></i></button>
+                        </form>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Reset Firewall</div>
+                        <div class="mn_setting_desc">Resetting the firewall will disable and re-enable the firewall and then reboot the device.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <a href="/settings/reset-firewall" class="ui-button ui-widget ui-corner-all settings_button_small mn_danger_button">Reset Firewall</a>
+                    </div>
+                </div>
+            </div>
         </div>
 
 
@@ -1753,73 +1991,92 @@
             <a id="tor"></a>
             <div class="settings_block_header">Tor</div>
 
-            <div class="settings_block_subheader">Tor Remote Access</div>
-            Publish your apps, web UI, and SSH as tor hidden services so you can reach your device from anywhere.
-            <br/><br/>
-            Disabling this does not turn off tor. Bitcoin and Lightning continue to use tor for their own connections, and your tor addresses are kept so they are the same if you enable this again.
-            <br/><br/>
-            <label class="switch">
-                <input type="checkbox" id="tor_remote_access_checkbox" {% if is_tor_remote_access_enabled %}checked{% endif %}>
-                <span class="slider round"></span>
-            </label>
-            <br/><br/>
-            <button id="tor_remote_access" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+            <div class="mn_setting_list">
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Tor Remote Access</div>
+                        <div class="mn_setting_desc">Publish your apps, web UI, and SSH as tor hidden services so you can reach your device from anywhere.</div>
+                        <div class="mn_setting_note">Disabling this does not turn off tor. Bitcoin and Lightning continue to use tor for their own connections, and your tor addresses are kept so they are the same if you enable this again.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="tor_remote_access" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                        <label class="switch">
+                            <input type="checkbox" id="tor_remote_access_checkbox" {% if is_tor_remote_access_enabled %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
 
-            <div class="divider"></div>
+                {% if is_lnd_tor_enabled %}
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Use Tor Stream Isolation for LND</div>
+                        <div class="mn_setting_desc">When using tor, enable stream isolation for LND. This increases privacy, but it can take significant resources with large numbers of lightning channels.</div>
+                        <div class="mn_setting_note">This is not recommended to disable unless you are having lnd issues with many channels.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="streamisolation_tor" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                        <label class="switch">
+                            <input type="checkbox" id="streamisolation_tor_checkbox" {% if is_streamisolation_tor_enabled %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+                {% endif %}
 
-            <div class="settings_block_subheader">Reset Tor Connections</div>
-            If your Tor performance is poor, you can reset your tor connections. Tor will be restarted with new connections, and your tor addresses will stay the same.
-            <br/>
-            <button id="reset_tor_connections" class="ui-button ui-widget ui-corner-all settings_button">Reset Tor Connections</button>
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Upgrade Tor</div>
+                        <div class="mn_setting_desc">During upgrades, the tor package is updated. In some locations, this can fail causing upgrade issues.</div>
+                        <div class="mn_setting_note">This should not be disabled unless you are having a specific upgrade issue accessing some package servers.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="tor_repo" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                        <label class="switch">
+                            <input type="checkbox" id="tor_repo_checkbox" {% if is_tor_repo_enabled %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
 
-            <div class="divider"></div>
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Reset Tor Connections</div>
+                        <div class="mn_setting_desc">If your Tor performance is poor, you can reset your tor connections. Tor will be restarted with new connections, and your tor addresses will stay the same.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="reset_tor_connections" class="ui-button ui-widget ui-corner-all settings_button_small">Reset Connections</button>
+                    </div>
+                </div>
 
-            <div class="settings_block_subheader">Upgrade Tor</div>
-            During upgrades, the tor package is updated. In some locations, this can fail causing upgrade issues.
-            <br/><br/>
-            This should not be disabled unless you are having a specific upgrade issue accessing some package servers.
-            <br/><br/>
-            <label class="switch">
-                <input type="checkbox" id="tor_repo_checkbox" {% if is_tor_repo_enabled %}checked{% endif %}>
-                <span class="slider round"></span>
-            </label>
-            <br/><br/>
-            <button id="tor_repo" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
-
-            <div class="divider"></div>
-
-            {% if is_lnd_tor_enabled %}
-            <div class="settings_block_subheader">Use Tor Stream Isolation for LND</div>
-            When using tor, enable stream isolation for LND. This increases privacy, but it can take significant resources with large numbers of lightning channels.
-            <br/><br/>
-            This is not recommended to disable unless you are having lnd issues with many channels.
-            <br/><br/>
-            <label class="switch">
-                <input type="checkbox" id="streamisolation_tor_checkbox" {% if is_streamisolation_tor_enabled %}checked{% endif %}>
-                <span class="slider round"></span>
-            </label>
-            <br/><br/>
-            <button id="streamisolation_tor" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
-
-            <div class="divider"></div>
-            {% endif %}
-            
-            <div class="settings_block_subheader">Reset Tor Data</div>
-            This will reset all of your Tor service settings and regenerate your Onion URLs.
-            <br/>
-            <button id="reset_tor" class="ui-button ui-widget ui-corner-all settings_button">Reset Tor</button>
-
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Reset Tor Data</div>
+                        <div class="mn_setting_desc">This will reset all of your Tor service settings and regenerate your Onion URLs.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="reset_tor" class="ui-button ui-widget ui-corner-all settings_button_small mn_danger_button">Reset Tor</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
 
         <div class="settings_block">
             <a id="docker"></a>
             <div class="settings_block_header">Docker</div>
-            
-            <div class="settings_block_subheader">Reset Docker</div>
-            This erases all Docker state and data. Docker apps like BTCPay Server will lose all data.
-            <br/>
-            <button id="reset_docker_button" class="ui-button ui-widget ui-corner-all settings_button">Reset Docker</button>
+
+            <div class="mn_setting_list">
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Reset Docker</div>
+                        <div class="mn_setting_desc">This erases all Docker state and data. Docker apps like BTCPay Server will lose all data.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="reset_docker_button" class="ui-button ui-widget ui-corner-all settings_button_small mn_danger_button">Reset Docker</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
 
@@ -1827,80 +2084,115 @@
             <a id="data_drive"></a>
             <div class="settings_block_header">Data Drive</div>
 
-            <div class="settings_block_subheader">Benchmark Data Drive</div>
-            Run a disk benchmark on the data drive and see results below.
-            <br/>
-            <button id="run-disk-benchmark" class="ui-button ui-widget ui-corner-all settings_button">Run Disk Benchmark</button>
-            <pre id="run-disk-benchmark-results"></pre>
-            
-            <div class="divider"></div>
+            <div class="mn_setting_list">
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Benchmark Data Drive</div>
+                        <div class="mn_setting_desc">Run a disk benchmark on the data drive and see the results.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="run-disk-benchmark" class="ui-button ui-widget ui-corner-all settings_button_small">Run Disk Benchmark</button>
+                    </div>
+                    <pre id="run-disk-benchmark-results" class="mn_setting_panel mn_details mn_result"></pre>
+                </div>
 
-            <div class="settings_block_subheader">Enable UAS USB Driver</div>
-            This will allow the device to use the UAS USB driver for data storage, which may change performance. Only affects Raspberry Pi 4. This will reboot your device.
-            <br/><br/>
-            <label class="switch">
-                <input type="checkbox" id="uas_usb_checkbox" {% if uas_usb %}checked{% endif %}>
-                <span class="slider round"></span>
-            </label>
-            <br/><br/>
-            <button id="uas_usb_button" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Data Drive Health Test</div>
+                        <div class="mn_setting_desc">Run a SMART short self-test on the data drive and see its health data. The test takes about 2 minutes, and MyNode keeps running while it does.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="run-smart-test" class="ui-button ui-widget ui-corner-all settings_button_small">Run SMART Short Test</button>
+                    </div>
+                    <div id="smart-test-status" class="mn_setting_panel mn_result_status" style="display: none;">
+                        <img src="{{ url_for('static', filename="images/loading.gif")}}" style="width: 24px; vertical-align: middle;"/>
+                        <span id="smart-test-status-text"></span>
+                    </div>
+                    <div id="smart-test-summary" class="mn_setting_panel mn_result_summary"></div>
+                    <pre id="smart-test-results" class="mn_setting_panel mn_details mn_result"></pre>
+                </div>
 
-            <div class="divider"></div>
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Automatically Check Data Drive</div>
+                        <div class="mn_setting_desc">The data drive will be checked for errors automatically on each boot. This can be disabled, but is not recommended.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="check_external_drive_save" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small mn_flip_save">Save</button>
+                        <label class="switch">
+                            <input type="checkbox" id="check_external_drive_checkbox" class="mn_flip_switch" data-url="/settings/toggle-check-external-drive" {% if not skip_fsck %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
 
-            <div class="settings_block_subheader">Remount Data Drive</div>
-            This will attempt to remount your data drive as read/write if it is read-only.
-            <br/>
-            <a href="/settings/remount-external-drive" class="ui-button ui-widget ui-corner-all settings_button">Remount Drive</a>
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Automatically Check Data Drive</div>
-            The data drive will be checked for errors automatically on each boot. This can be disabled, but is not recommended.
-            <br/>
-            <a href="/settings/toggle-check-external-drive" class="ui-button ui-widget ui-corner-all settings_button">{% if skip_fsck %}Enable{% else %}Disable{% endif %}</a>
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Full Data Drive Filesystem Check</div>
-            Run a full check of the data drive for filesystem errors and repair any that are found. Your device will reboot to run the check, and MyNode will be unavailable until it finishes. This usually takes a few minutes, but can take up to a couple of hours on a damaged drive. Results are shown on the home page when it is done.
-            <br/>
-            <button id="run-full-drive-check" class="ui-button ui-widget ui-corner-all settings_button">Run Full Check</button>
-            <button id="show_full_fsck_results" class="ui-button ui-widget ui-corner-all settings_button">View Last Results</button>
-            <div id="full_fsck_results" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{% if full_fsck_time %}Last full check: {{ full_fsck_time }}
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Full Data Drive Filesystem Check</div>
+                        <div class="mn_setting_desc">Run a full check of the data drive for filesystem errors and repair any that are found. Your device will reboot to run the check, and MyNode will be unavailable until it finishes.</div>
+                        <div class="mn_setting_note">This usually takes a few minutes, but can take up to a couple of hours on a damaged drive. Results are shown on the home page when it is done.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="show_full_fsck_results" class="mn_label mn_label_toggle" title="View Last Results">Last Results <i class="fas fa-chevron-down"></i></button>
+                        <button id="run-full-drive-check" class="ui-button ui-widget ui-corner-all settings_button_small">Run Full Check</button>
+                    </div>
+                    <div id="full_fsck_results" class="mn_setting_panel mn_details" style="display: none;"><pre>{% if full_fsck_time %}Last full check: {{ full_fsck_time }}
 
 {% endif %}{{ full_fsck_summary.text }}{% if full_fsck_results %}
 
 {{ full_fsck_results }}{% endif %}</pre></div>
+                </div>
 
-            <div class="divider"></div>
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Remount Data Drive</div>
+                        <div class="mn_setting_desc">This will attempt to remount your data drive as read/write if it is read-only.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <a href="/settings/remount-external-drive" class="ui-button ui-widget ui-corner-all settings_button_small">Remount Drive</a>
+                    </div>
+                </div>
 
-            <div class="settings_block_subheader">Data Drive Health Test</div>
-            Run a SMART short self-test on the data drive and see its health data below. The test takes about 2 minutes, and MyNode keeps running while it does.
-            <br/>
-            <button id="run-smart-test" class="ui-button ui-widget ui-corner-all settings_button">Run SMART Short Test</button>
-            <div id="smart-test-status" style="display: none;">
-                <img src="{{ url_for('static', filename="images/loading.gif")}}" style="width: 32px; vertical-align: middle;"/>
-                <span id="smart-test-status-text"></span>
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Enable UAS USB Driver</div>
+                        <div class="mn_setting_desc">This will allow the device to use the UAS USB driver for data storage, which may change performance. Only affects Raspberry Pi 4.</div>
+                        <div class="mn_setting_note">Saving will reboot the device.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="uas_usb_button" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                        <label class="switch">
+                            <input type="checkbox" id="uas_usb_checkbox" {% if uas_usb %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <a id="clone_tool"></a>
+                        <div class="mn_setting_title">Clone Tool</div>
+                        <div class="mn_setting_desc">The Clone Tool helps you migrate to a new data drive by copying your files from your current drive to a newly attached one. It's especially helpful when wanting to migrate data to a larger drive if you are running out of space.</div>
+                        <div class="mn_setting_note">Opening the Clone Tool will reboot your device.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <a href="/settings/open-clone-tool" class="ui-button ui-widget ui-corner-all settings_button_small">Open Clone Tool</a>
+                    </div>
+                </div>
+
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Format Data Drive</div>
+                        <div class="mn_setting_desc">
+                            This will reboot your device and re-prompt for formatting the drive. If your data drive has been corrupted, this
+                            may help and will be slightly less destructive than a factory reset. Make sure you have backed up all your keys and wallets!
+                        </div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="format-external-drive" class="ui-button ui-widget ui-corner-all settings_button_small mn_danger_button">Format Drive</button>
+                    </div>
+                </div>
             </div>
-            <p id="smart-test-summary" style="font-weight: bold;"></p>
-            <pre id="smart-test-results" style="text-align: left; font-size: 12px;"></pre>
-
-
-            <div class="divider"></div>
-
-            <a id="clone_tool"></a>
-            <div class="settings_block_subheader">Clone Tool</div>
-            The Clone Tool helps you migrate to a new data drive by copying your files from your current drive to a newly attached one. It's especially helpful when wanting to migrate data to a larger drive if you are running out of space. Opening the Clone Tool will reboot your device.
-            <br/>
-            <a href="/settings/open-clone-tool" class="ui-button ui-widget ui-corner-all settings_button">Open Clone Tool</a>
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Format Data Drive</div>
-            This will reboot your device and re-prompt for formatting the drive. If your data drive has been corrupted, this 
-            may help and will be slightly less destructive than a factory reset. Make sure you have backed up all your keys and wallets!
-            <br/>
-            <button id="format-external-drive" class="ui-button ui-widget ui-corner-all settings_button">Format Drive</button>
         </div>
 
 
@@ -1908,223 +2200,278 @@
             <a id="advanced"></a>
             <div class="settings_block_header">Advanced</div>
 
-            <div class="settings_block_subheader">Toggle Testnet</div>
-            Testnet can be enabled for Bitcoin and Lightning, which can be used to test various features, but may cause other applications to 
-            fail or become unstable if enabled. This testnet toggle does not work if you have customized your bitcoin or lnd configs. This will 
-            reboot your device.
-            <br/>
-            {% if not is_testnet_enabled %}
-                <a href="/settings/toggle-testnet" class="ui-button ui-widget ui-corner-all settings_button">Enable Testnet</a>
-            {% else %}
-                <a href="/settings/toggle-testnet" class="ui-button ui-widget ui-corner-all settings_button">Disable Testnet</a>
-            {% endif %}
-
-            <div class="divider"></div>
-
-            {% if memtest.supported %}
-            <a id="memtest"></a>
-            <div class="settings_block_subheader">Memory Test</div>
-            Reboots and tests the RAM, before anything else starts. Each pass can take over an hour. If any bad
-            pages are found, MyNode stops them from being used in the future to help prevent data corruption.
-            <br/><br/>
-            {% if memtest.bad_page_count > 0 %}
-            <p>{{ memtest.bad_page_count }} bad memory page{% if memtest.bad_page_count != 1 %}s{% endif %} (4 KB each)
-                {% if memtest.too_many %}found, more than MyNode can keep Linux off.{% else %}blocked, so Linux doesn't use {% if memtest.bad_page_count != 1 %}them{% else %}it{% endif %}.{% endif %}
-                Contact support about replacing the RAM.</p>
-            <div style="text-align: left; font-size: 12px; overflow-x: auto;"><pre>{{ memtest.bad_pages | join("\n") }}</pre></div>
-            {% endif %}
-            {% if memtest.last_manual %}
-            <div class="settings_console">Last memory test: {{ memtest.last_manual_time }},
-            {% if memtest.last_manual.passes %}{% if memtest.last_manual.stopped %}stopped at {{ memtest.last_manual.percent }}%{% else %}{{ memtest.last_manual.passes_done }} of {{ memtest.last_manual.passes }} pass{% if memtest.last_manual.passes != 1 %}es{% endif %}{% endif %} in {{ memtest.last_manual_duration }}{% else %}{{ memtest.last_manual_duration }}{% endif %},
-            {{ "%.1f" | format(memtest.last_manual.tested_mb / 1024) }} GB tested,
-            {% if memtest.last_manual.failures %}{{ memtest.last_manual.failures }} error{% if memtest.last_manual.failures != 1 %}s{% endif %}, {{ memtest.last_manual.pages | length }} bad page{% if memtest.last_manual.pages | length != 1 %}s{% endif %} ({{ memtest.last_manual.new_pages }} new).{% else %}no errors.{% endif %}
-            {% if memtest.last_manual.error %}{{ memtest.last_manual.error }}.{% endif %}</div>
-            <br/>
-            {% endif %}
-            {% if memtest.manual_scheduled_passes %}
-            <p>A memory test runs on the next reboot.</p>
-            {% endif %}
-            {% if memtest.memtester_installed or memtest.bad_page_count > 0 %}
-            <div class="memtest_actions">
-                {% if memtest.memtester_installed %}
-                <form id="memtest_run_form" action="/settings/memtest/run" method="POST">
-                    <select name="passes" id="memtest_passes">
-                        {% for o in memtest.pass_options %}
-                        <option value="{{ o.passes }}">{{ o.label }}</option>
-                        {% endfor %}
-                    </select>
-                    <input type="submit" value="Test Memory" class="ui-button ui-widget ui-corner-all"/>
-                </form>
-                {% endif %}
-                {% if memtest.bad_page_count > 0 %}
-                <form id="memtest_clear_form" action="/settings/memtest/clear" method="POST">
-                    <input type="submit" value="Clear Bad Pages" class="ui-button ui-widget ui-corner-all"/>
-                </form>
-                {% endif %}
-            </div>
-            {% endif %}
-            {% if not memtest.memtester_installed %}
-            <p>The memory test is installed with the next upgrade.</p>
-            {% endif %}
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Memory Test at Boot</div>
-            Runs a quick memory test each time the device starts. It adds about
-            {{ memtest.boot_estimate_minutes }} minute{% if memtest.boot_estimate_minutes != 1 %}s{% endif %} to each reboot.
-            {% if memtest.last_boot %}
-            <div class="settings_console" style="margin-top: 20px;">Last test: {{ memtest.last_boot_time }}, {% if memtest.last_boot.bad_ranges %}found {{ memtest.last_boot.bad_ranges | length }} bad area{% if memtest.last_boot.bad_ranges | length != 1 %}s{% endif %}.{% else %}no errors.{% endif %}</div>
-            {% else %}
-            <br/>
-            {% endif %}
-            <br/>
-            <form action="/settings/memtest/boot" method="POST">
-                <label class="switch">
-                    <input type="checkbox" id="memtest_boot_checkbox" name="enabled" value="1" {% if memtest.boot_enabled %}checked{% endif %}>
-                    <span class="slider round"></span>
-                </label>
-                <br/><br/>
-                <input type="submit" id="memtest_boot_save" value="Save" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small"/>
-            </form>
-
-            <div class="divider"></div>
-            {% endif %}
-
-            <div class="settings_block_subheader">HTTPS Certificates</div>
-            {% if https_ca_info %}
-            Your MyNode is its own certificate authority. Download it and install it on your computers and
-            phones, and your browser trusts MyNode's HTTPS pages without a warning, including every
-            certificate MyNode renews later. <a href="/https-info#trust">Using HTTPS</a> has the steps for each system.
-            <br/><br/>
-            <div class="settings_console">Name: {{ https_ca_info.name }}<br/>
-            SHA-256: {{ https_ca_info.fingerprint }}</div>
-            <br/>
-            Regenerate issues a new HTTPS certificate from the same authority, so there is nothing to reinstall.
-            <br/>
-            <a href="/settings/mynode_web.cert" class="ui-button ui-widget ui-corner-all settings_button">Download</a>
-            {% else %}
-            Your MyNode's certificate authority is created once the drive is set up. Until then, HTTPS uses a
-            temporary certificate that should not be installed.
-            <br/>
-            {% endif %}
-            <a href="/settings/regen-https-certs" class="ui-button ui-widget ui-corner-all settings_button">Regenerate</a>
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">SSH Keys</div>
-            This will regenerate your SSH host keys.
-            <br/>
-            <a href="/settings/regen-ssh-keys" class="ui-button ui-widget ui-corner-all settings_button">Regenerate</a>
-
-            <div class="divider"></div>
-
-            <a id="os_packages"></a>
-            <div class="settings_block_subheader">OS Packages</div>
-            This will install available updates for the operating system packages, such as security fixes, without waiting for a new MyNode release. Your device reboots to finish the upgrade.
-            <br/>
-            {% if os_packages_upgrade_error %}
-            <p style="color: red;">The last OS package upgrade failed, so your device was not rebooted. The end of its log is below. Fix the problem and try again.</p>
-            <div style='text-align: left; font-size: 12px; overflow-x: auto;'><pre>{{os_packages_upgrade_log}}</pre></div>
-            {% endif %}
-            {% if apt_update_error %}
-            <p style="color: red;">Some package sources could not be updated during the upgrade on {{apt_update_error.time}}, so packages from them
-                stay on older versions. The upgrade continued without them. This is often a third-party source that moved or changed its key, and
-                the next upgrade may fix it. The errors are below.</p>
-            <div style='text-align: left; font-size: 12px; overflow-x: auto;'><pre>{{apt_update_error.errors}}</pre></div>
-            {% endif %}
-            <button id="upgrade_os_packages" class="ui-button ui-widget ui-corner-all settings_button">Upgrade OS Packages</button>
-
-            <div class="divider"></div>
-
-            <a id="os_release"></a>
-            <div class="settings_block_subheader">Upgrade OS</div>
-            Your device runs Debian {{debian_version}} ({{debian_codename}}).
-            {% if os_release_upgrade.available %}
-            This will upgrade it to Debian {{os_release_upgrade.next_version}} ({{os_release_upgrade.next_codename}}) and reinstall your apps for it,
-            like flashing a new image but without changing your data drive. This can take several hours, and your device reboots when it finishes.
-            Upgrade one release at a time; after the reboot, run it again if a newer release is offered.
-            {% else %}
-            {{os_release_upgrade.reason}}
-            {% endif %}
-            <br/>
-            {% if os_release_upgrade_error %}
-            <p style="color: red;">The last OS upgrade failed, so your device was not rebooted. The end of its log is below. Fix the problem and
-                try again, or reboot your device.</p>
-            <div style='text-align: left; font-size: 12px; overflow-x: auto;'><pre>{{os_release_upgrade_log}}</pre></div>
-            {% elif os_release_upgrade_interrupted %}
-            <p style="color: red;">The last OS upgrade was interrupted before it finished. Upgrade the OS again to finish upgrading to
-                Debian {{os_release_upgrade.next_version}}. Do not turn off your device while it runs.</p>
-            {% endif %}
-            <button id="upgrade_os_release" class="ui-button ui-widget ui-corner-all settings_button {% if not os_release_upgrade.available %}ui-state-disabled{% endif %}" {% if not os_release_upgrade.available %}disabled{% endif %}>Upgrade OS</button>
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Automatically Install OS Security Updates</div>
-            {% if unattended_upgrades_supported %}
-            Once a day, check for security updates to the operating system packages and install them automatically. Only security fixes from Debian are installed, and your device is never rebooted automatically. Some updates take effect at the next reboot.
-            <br/><br/>
-            This is recommended. MyNode applications, such as Bitcoin and Lightning, are only updated by MyNode upgrades.
-            <br/><br/>
-            <label class="switch">
-                <input type="checkbox" id="unattended_upgrades_checkbox" {% if is_unattended_upgrades_enabled %}checked{% endif %}>
-                <span class="slider round"></span>
-            </label>
-            <br/><br/>
-            <button id="unattended_upgrades" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
-            {% else %}
-            Your device's operating system (Debian Buster) no longer receives security updates from Debian, so there are none to install automatically.
-            {% endif %}
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Reinstall Applications</div>
-            If you are having issues with a specific application, you can try to reinstall them via the list below.
-            <br/>
-            Reinstalling an app will trigger a reboot of your device.
-            <br/><br/>
-
-            <select name="reinstall_app" id="reinstall_app">
-                <option value="none" selected="selected">Choose...</option>
-                {% for app in apps %}
-                    {% if app.can_reinstall %}
-                        <option value="{{app.short_name}}">{{app.name}}</option>
+            <div class="mn_setting_list">
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <a id="os_packages"></a>
+                        <div class="mn_setting_title">OS Packages</div>
+                        <div class="mn_setting_desc">This will install available updates for the operating system packages, such as security fixes, without waiting for a new MyNode release. Your device reboots to finish the upgrade.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="upgrade_os_packages" class="ui-button ui-widget ui-corner-all settings_button_small">Upgrade OS Packages</button>
+                    </div>
+                    {% if os_packages_upgrade_error %}
+                    <div class="mn_setting_panel mn_alert">
+                        The last OS package upgrade failed, so your device was not rebooted. The end of its log is below. Fix the problem and try again.
+                        <pre class="mn_alert_pre">{{os_packages_upgrade_log}}</pre>
+                    </div>
                     {% endif %}
-                {% endfor %}
-            </select>
-            <button id="reinstall_button">Reinstall</button>
+                    {% if apt_update_error %}
+                    <div class="mn_setting_panel mn_alert">
+                        Some package sources could not be updated during the upgrade on {{apt_update_error.time}}, so packages from them
+                        stay on older versions. The upgrade continued without them. This is often a third-party source that moved or changed its key, and
+                        the next upgrade may fix it. The errors are below.
+                        <pre class="mn_alert_pre">{{apt_update_error.errors}}</pre>
+                    </div>
+                    {% endif %}
+                </div>
 
-            <div class="divider"></div>
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <a id="os_release"></a>
+                        <div class="mn_setting_title">Upgrade OS</div>
+                        <div class="mn_setting_desc">
+                            Your device runs Debian {{debian_version}} ({{debian_codename}}).
+                            {% if os_release_upgrade.available %}
+                            This will upgrade it to Debian {{os_release_upgrade.next_version}} ({{os_release_upgrade.next_codename}}) and reinstall your apps for it,
+                            like flashing a new image but without changing your data drive.
+                            {% else %}
+                            {{os_release_upgrade.reason}}
+                            {% endif %}
+                        </div>
+                        {% if os_release_upgrade.available %}
+                        <div class="mn_setting_note">This can take several hours, and your device reboots when it finishes. Upgrade one release at a time; after the reboot, run it again if a newer release is offered.</div>
+                        {% endif %}
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="upgrade_os_release" class="ui-button ui-widget ui-corner-all settings_button_small {% if not os_release_upgrade.available %}ui-state-disabled{% endif %}" {% if not os_release_upgrade.available %}disabled{% endif %}>Upgrade OS</button>
+                    </div>
+                    {% if os_release_upgrade_error %}
+                    <div class="mn_setting_panel mn_alert">
+                        The last OS upgrade failed, so your device was not rebooted. The end of its log is below. Fix the problem and
+                        try again, or reboot your device.
+                        <pre class="mn_alert_pre">{{os_release_upgrade_log}}</pre>
+                    </div>
+                    {% elif os_release_upgrade_interrupted %}
+                    <div class="mn_setting_panel mn_alert">
+                        The last OS upgrade was interrupted before it finished. Upgrade the OS again to finish upgrading to
+                        Debian {{os_release_upgrade.next_version}}. Do not turn off your device while it runs.
+                    </div>
+                    {% endif %}
+                </div>
 
-            <div class="settings_block_subheader">Swap</div>
-            Devices can use space on the data drive as additional RAM. The default is to use 2GB of space on the drive as additional memory, but this can be changed.
-            <br/><br/>
-            Modifying the amount of swap can affect overall performance. Saving will reboot the device.
-            
-            <br/><br/>
-            
-            <select name="swap_size" id="swap_size">
-                <option value="0" {% if swap_size == "0" %}selected="selected"{% endif %}>No Swap</option>
-                <option value="1" {% if swap_size == "1" %}selected="selected"{% endif %}>1 GB</option>
-                <option value="2" {% if swap_size == "2" %}selected="selected"{% endif %}>2 GB</option>
-                <option value="3" {% if swap_size == "3" %}selected="selected"{% endif %}>3 GB</option>
-                <option value="4" {% if swap_size == "4" %}selected="selected"{% endif %}>4 GB</option>
-            </select>
-            <button id="swap_button">Save</button>
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Automatically Install OS Security Updates</div>
+                        {% if unattended_upgrades_supported %}
+                        <div class="mn_setting_desc">Once a day, check for security updates to the operating system packages and install them automatically. Only security fixes from Debian are installed, and your device is never rebooted automatically. Some updates take effect at the next reboot.</div>
+                        <div class="mn_setting_note">This is recommended. MyNode applications, such as Bitcoin and Lightning, are only updated by MyNode upgrades.</div>
+                        {% else %}
+                        <div class="mn_setting_desc">Your device's operating system (Debian Buster) no longer receives security updates from Debian, so there are none to install automatically.</div>
+                        {% endif %}
+                    </div>
+                    {% if unattended_upgrades_supported %}
+                    <div class="mn_setting_control">
+                        <button id="unattended_upgrades" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                        <label class="switch">
+                            <input type="checkbox" id="unattended_upgrades_checkbox" {% if is_unattended_upgrades_enabled %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    {% endif %}
+                </div>
 
-            <div class="divider"></div>
+                {% if memtest.supported %}
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <a id="memtest"></a>
+                        <div class="mn_setting_title">Memory Test</div>
+                        <div class="mn_setting_desc">
+                            Reboots and tests the RAM, before anything else starts. Each pass can take over an hour. If any bad
+                            pages are found, MyNode stops them from being used in the future to help prevent data corruption.
+                        </div>
+                        {% if memtest.last_manual %}
+                        <div class="mn_setting_note settings_console">Last memory test: {{ memtest.last_manual_time }},
+                        {% if memtest.last_manual.passes %}{% if memtest.last_manual.stopped %}stopped at {{ memtest.last_manual.percent }}%{% else %}{{ memtest.last_manual.passes_done }} of {{ memtest.last_manual.passes }} pass{% if memtest.last_manual.passes != 1 %}es{% endif %}{% endif %} in {{ memtest.last_manual_duration }}{% else %}{{ memtest.last_manual_duration }}{% endif %},
+                        {{ "%.1f" | format(memtest.last_manual.tested_mb / 1024) }} GB tested,
+                        {% if memtest.last_manual.failures %}{{ memtest.last_manual.failures }} error{% if memtest.last_manual.failures != 1 %}s{% endif %}, {{ memtest.last_manual.pages | length }} bad page{% if memtest.last_manual.pages | length != 1 %}s{% endif %} ({{ memtest.last_manual.new_pages }} new).{% else %}no errors.{% endif %}
+                        {% if memtest.last_manual.error %}{{ memtest.last_manual.error }}.{% endif %}</div>
+                        {% endif %}
+                        {% if memtest.bad_page_count > 0 %}
+                        <div class="mn_setting_note mn_memtest_blocked">
+                            {{ memtest.bad_page_count }} memory page{% if memtest.bad_page_count != 1 %}s{% endif %}
+                            {% if memtest.too_many %}found, more than MyNode can block{% else %}blocked{% endif %}
+                            (4KB each)
+                            <button type="button" id="show_memtest_bad_pages" class="mn_label mn_label_toggle" title="Show the blocked pages">Show Blocks <i class="fas fa-chevron-down"></i></button>
+                        </div>
+                        {% endif %}
+                        {% if memtest.manual_scheduled_passes %}
+                        <div class="mn_setting_note">A memory test runs on the next reboot.</div>
+                        {% endif %}
+                        {% if not memtest.memtester_installed %}
+                        <div class="mn_setting_note">The memory test is installed with the next upgrade.</div>
+                        {% endif %}
+                    </div>
+                    {% if memtest.memtester_installed or memtest.bad_page_count > 0 %}
+                    <div class="mn_setting_control">
+                        {% if memtest.memtester_installed %}
+                        <form id="memtest_run_form" action="/settings/memtest/run" method="POST">
+                            <select name="passes" id="memtest_passes">
+                                {% for o in memtest.pass_options %}
+                                <option value="{{ o.passes }}">{{ o.label }}</option>
+                                {% endfor %}
+                            </select>
+                            <input type="submit" value="Test Memory" class="ui-button ui-widget ui-corner-all settings_button_small"/>
+                        </form>
+                        {% endif %}
+                        {% if memtest.bad_page_count > 0 %}
+                        <form id="memtest_clear_form" action="/settings/memtest/clear" method="POST">
+                            <input type="submit" value="Clear Bad Pages" class="ui-button ui-widget ui-corner-all settings_button_small mn_danger_button"/>
+                        </form>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    {% if memtest.bad_page_count > 0 %}
+                    <div id="memtest_bad_pages" class="mn_setting_panel mn_details" style="display: none;"><pre>{{ memtest.bad_pages | join("\n") }}</pre></div>
+                    {% endif %}
+                </div>
 
-            <div class="settings_block_subheader">View USB Information</div>
-            View information about the current USB devices.
-            <br/>
-            <button id="view-usb-info" class="ui-button ui-widget ui-corner-all settings_button">Show USB Info</button>
-            <pre id="view-usb-info-results"></pre>
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Memory Test at Boot</div>
+                        <div class="mn_setting_desc">
+                            Runs a quick memory test each time the device starts. It adds about
+                            {{ memtest.boot_estimate_minutes }} minute{% if memtest.boot_estimate_minutes != 1 %}s{% endif %} to each reboot.
+                        </div>
+                        {% if memtest.last_boot %}
+                        <div class="mn_setting_note settings_console">Last test: {{ memtest.last_boot_time }}, {% if memtest.last_boot.bad_ranges %}found {{ memtest.last_boot.bad_ranges | length }} bad area{% if memtest.last_boot.bad_ranges | length != 1 %}s{% endif %}.{% else %}no errors.{% endif %}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mn_setting_control">
+                        <form action="/settings/memtest/boot" method="POST">
+                            <input type="submit" id="memtest_boot_save" value="Save" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small"/>
+                            <label class="switch">
+                                <input type="checkbox" id="memtest_boot_checkbox" name="enabled" value="1" {% if memtest.boot_enabled %}checked{% endif %}>
+                                <span class="slider round"></span>
+                            </label>
+                        </form>
+                    </div>
+                </div>
+                {% endif %}
 
-            <div class="divider"></div>
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">HTTPS Certificates</div>
+                        {% if https_ca_info %}
+                        <div class="mn_setting_desc">
+                            Your MyNode is its own certificate authority. Download it and install it on your computers and
+                            phones, and your browser trusts MyNode's HTTPS pages without a warning, including every
+                            certificate MyNode renews later. <a href="/https-info#trust">Using HTTPS</a> has the steps for each system.
+                        </div>
+                        <div class="mn_setting_note settings_console">Name: {{ https_ca_info.name }}<br/>
+                            SHA-256: {{ https_ca_info.fingerprint }}</div>
+                        <div class="mn_setting_note">Regenerate issues a new HTTPS certificate from the same authority, so there is nothing to reinstall.</div>
+                        {% else %}
+                        <div class="mn_setting_desc">
+                            Your MyNode's certificate authority is created once the drive is set up. Until then, HTTPS uses a
+                            temporary certificate that should not be installed.
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="mn_setting_control">
+                        {% if https_ca_info %}
+                        <a href="/settings/mynode_web.cert" class="ui-button ui-widget ui-corner-all settings_button_small">Download</a>
+                        {% endif %}
+                        <a href="/settings/regen-https-certs" class="ui-button ui-widget ui-corner-all settings_button_small">Regenerate</a>
+                    </div>
+                </div>
 
-            <div class="settings_block_subheader">Factory Reset</div>
-            This will factory reset your mynode and all storage will be completely reset. Make sure you have backed up all your keys and wallets!
-            <br/>
-            <button id="factory-reset" class="ui-button ui-widget ui-corner-all settings_button">Factory Reset</button>
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">SSH Keys</div>
+                        <div class="mn_setting_desc">This will regenerate your SSH host keys.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <a href="/settings/regen-ssh-keys" class="ui-button ui-widget ui-corner-all settings_button_small">Regenerate</a>
+                    </div>
+                </div>
+
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Toggle Testnet</div>
+                        <div class="mn_setting_desc">
+                            Testnet can be enabled for Bitcoin and Lightning, which can be used to test various features, but may cause other applications to
+                            fail or become unstable if enabled. This testnet toggle does not work if you have customized your bitcoin or lnd configs.
+                        </div>
+                        <div class="mn_setting_note">This will reboot your device.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="testnet_save" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small mn_flip_save">Save</button>
+                        <label class="switch">
+                            <input type="checkbox" id="testnet_checkbox" class="mn_flip_switch" data-url="/settings/toggle-testnet" {% if is_testnet_enabled %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Swap</div>
+                        <div class="mn_setting_desc">Devices can use space on the data drive as additional RAM. The default is to use 2GB of space on the drive as additional memory, but this can be changed.</div>
+                        <div class="mn_setting_note">Modifying the amount of swap can affect overall performance. Saving will reboot the device.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <select name="swap_size" id="swap_size">
+                            <option value="0" {% if swap_size == "0" %}selected="selected"{% endif %}>No Swap</option>
+                            <option value="1" {% if swap_size == "1" %}selected="selected"{% endif %}>1 GB</option>
+                            <option value="2" {% if swap_size == "2" %}selected="selected"{% endif %}>2 GB</option>
+                            <option value="3" {% if swap_size == "3" %}selected="selected"{% endif %}>3 GB</option>
+                            <option value="4" {% if swap_size == "4" %}selected="selected"{% endif %}>4 GB</option>
+                        </select>
+                        <button id="swap_button" class="settings_button_small">Save</button>
+                    </div>
+                </div>
+
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Reinstall Applications</div>
+                        <div class="mn_setting_desc">If you are having issues with a specific application, you can try to reinstall it.</div>
+                        <div class="mn_setting_note">Reinstalling an app will trigger a reboot of your device.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <select name="reinstall_app" id="reinstall_app">
+                            <option value="none" selected="selected">Choose...</option>
+                            {% for app in apps %}
+                                {% if app.can_reinstall %}
+                                    <option value="{{app.short_name}}">{{app.name}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        <button id="reinstall_button" class="settings_button_small">Reinstall</button>
+                    </div>
+                </div>
+
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">View USB Information</div>
+                        <div class="mn_setting_desc">View information about the current USB devices.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="view-usb-info" class="ui-button ui-widget ui-corner-all settings_button_small">Show USB Info</button>
+                    </div>
+                    <pre id="view-usb-info-results" class="mn_setting_panel mn_details mn_result"></pre>
+                </div>
+
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Factory Reset</div>
+                        <div class="mn_setting_desc">This will factory reset your mynode and all storage will be completely reset. Make sure you have backed up all your keys and wallets!</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="factory-reset" class="ui-button ui-widget ui-corner-all settings_button_small mn_danger_button">Factory Reset</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
 
@@ -2132,80 +2479,98 @@
             <a id="developer"></a>
             <div class="settings_block_header">Developer</div>
 
-            {% if not product_key_skipped %}
-                <div class="settings_block_subheader">Reinstall Latest Version</div>
-                If you are running a beta or are having issues, it may be helpful to reinstall the latest official release.
-                <br/>
-                <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Install Latest Version</button>
+            <div class="mn_setting_list">
+                {% if not product_key_skipped %}
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Reinstall Latest Version</div>
+                        <div class="mn_setting_desc">If you are running a beta or are having issues, it may be helpful to reinstall the latest official release.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="reinstall_latest_version" class="ui-button ui-widget ui-corner-all settings_button_small mn_upgrade_button">Install Latest Version</button>
+                    </div>
+                </div>
 
-                <div class="divider"></div>
-            {% endif %}
-
-            {% if not product_key_skipped %}
-                <div class="settings_block_subheader">Install Beta</div>
-                You can install beta releases of MyNode software to help test. These may be less stable.
-                <br/><br/>
-                <table class="info_table">
-                    <tr>
-                        <th>Current Beta Version</th>
-                        <td>{{current_beta_version}}</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <th>Latest Beta Version</th>
-                        <td>{{latest_beta_version}}</td>
-                        <td>&nbsp;<button id="check_for_updates_beta" class="ui-button ui-widget ui-corner-all settings_button_small">Check for Updates</button></td>
-                    </tr>
-                </table>
-                {% if current_beta_version != latest_beta_version and latest_beta_version != "" %}
-                    <button id="upgrade-beta" class="ui-button ui-widget ui-corner-all settings_button">Install Beta</button>
-                    {% if product_key_skipped %}
-                        <p>Upgrade to MyNode Premium to get one-click updates!</p>
-                        <p>For manual upgrades, see our <a target="_blank" href="https://docs.mynodebtc.com/device/upgrading-device.html">upgrade guide</a>!</p>
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Install Beta</div>
+                        <div class="mn_setting_desc">You can install beta releases of MyNode software to help test. These may be less stable.</div>
+                        <div class="mn_beta_versions">
+                            <div>
+                                <div class="mn_label">Current Beta</div>
+                                <div class="mn_beta_value">{{current_beta_version}}</div>
+                            </div>
+                            <div>
+                                <div class="mn_label">Latest Beta</div>
+                                <div class="mn_beta_value">{{latest_beta_version}}</div>
+                            </div>
+                        </div>
+                        {% if current_beta_version != latest_beta_version and latest_beta_version != "" %}
+                            {% if product_key_skipped %}
+                                <div class="mn_setting_note">Upgrade to MyNode Premium to get one-click updates!</div>
+                                <div class="mn_setting_note">For manual upgrades, see our <a target="_blank" href="https://docs.mynodebtc.com/device/upgrading-device.html">upgrade guide</a>!</div>
+                            {% endif %}
+                        {% elif upgrade_error %}
+                            <div class="mn_setting_note mn_setting_note_error">It appears a recent upgrade may not have fully completed.</div>
+                        {% endif %}
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="check_for_updates_beta" class="ui-button ui-widget ui-corner-all settings_button_small">Check for Updates</button>
+                        {% if current_beta_version != latest_beta_version and latest_beta_version != "" %}
+                            <button id="upgrade-beta" class="ui-button ui-widget ui-corner-all settings_button_small mn_primary_button">Install Beta</button>
+                        {% elif upgrade_error %}
+                            <button id="show_upgrade_log_beta" class="ui-button ui-widget ui-corner-all settings_button_small">Show Upgrade Log</button>
+                            <button id="retry_upgrade_beta" class="ui-button ui-widget ui-corner-all settings_button_small mn_upgrade_button">Retry Upgrade</button>
+                        {% endif %}
+                    </div>
+                    {% if not (current_beta_version != latest_beta_version and latest_beta_version != "") and upgrade_error %}
+                    <div id="upgrade_log_beta" class="mn_setting_panel mn_details" style="display: none;"><pre>{{upgrade_log}}</pre></div>
                     {% endif %}
-                {% elif upgrade_error %}
-                    <p style="color: red;">It appears a recent upgrade may not have fully completed.</p>
-                    <button id="upgrade" class="ui-button ui-widget ui-corner-all settings_button">Retry Upgrade</button>
-                    <button id="show_upgrade_log_beta" class="ui-button ui-widget ui-corner-all settings_button">Show Upgrade Log</button>
-                    <div id="upgrade_log_beta" style='text-align: left; font-size: 12px; width: 800px; display: none;'><pre>{{upgrade_log}}</pre></div>
+                </div>
                 {% endif %}
 
-                <div class="divider"></div>
-            {% endif %}
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Randomize Balances</div>
+                        <div class="mn_setting_desc">This shows random balances for taking screenshots and testing the interface.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="randomize_balances_button" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                        <label class="switch">
+                            <input type="checkbox" id="randomize_balances_checkbox" {% if randomize_balances %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
 
-            <div class="settings_block_subheader">Randomize Balances</div>
-            This shows random balances for taking screenshots and testing the interface.
-            <br/><br/>
-            <label class="switch">
-                <input type="checkbox" id="randomize_balances_checkbox" {% if randomize_balances %}checked{% endif %}>
-                <span class="slider round"></span>
-            </label>
-            <br/><br/>
-            <button id="randomize_balances_button" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Hide Password Warning</div>
+                        <div class="mn_setting_desc">This hides the default password warning for taking screenshots.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="hide_password_warning_button" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                        <label class="switch">
+                            <input type="checkbox" id="hide_password_warning_checkbox" {% if hide_password_warning %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
 
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Hide Password Warning</div>
-            This hides the default password warning for taking screenshots.
-            <br/><br/>
-            <label class="switch">
-                <input type="checkbox" id="hide_password_warning_checkbox" {% if hide_password_warning %}checked{% endif %}>
-                <span class="slider round"></span>
-            </label>
-            <br/><br/>
-            <button id="hide_password_warning_button" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
-
-            <div class="divider"></div>
-
-            <div class="settings_block_subheader">Keep Bitcoin Debug Log</div>
-            The Bitcoin debug log will shrink once it reaches 10MB. This will stop shrinking the Bitcoin log.
-            <br/><br/>
-            <label class="switch">
-                <input type="checkbox" id="keep_bitcoin_debug_log_checkbox" {% if keep_bitcoin_debug_log %}checked{% endif %}>
-                <span class="slider round"></span>
-            </label>
-            <br/><br/>
-            <button id="keep_bitcoin_debug_log_button" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                <div class="mn_setting">
+                    <div class="mn_setting_text">
+                        <div class="mn_setting_title">Keep Bitcoin Debug Log</div>
+                        <div class="mn_setting_desc">The Bitcoin debug log will shrink once it reaches 10MB. This will stop shrinking the Bitcoin log.</div>
+                    </div>
+                    <div class="mn_setting_control">
+                        <button id="keep_bitcoin_debug_log_button" style="display: none;" class="ui-button ui-widget ui-corner-all settings_button_small">Save</button>
+                        <label class="switch">
+                            <input type="checkbox" id="keep_bitcoin_debug_log_checkbox" {% if keep_bitcoin_debug_log %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
         </div>
 
 

@@ -419,3 +419,87 @@ body .ui-tooltip.ui-widget {
         box-shadow: none;
     }
 }
+
+/* Settings rows */
+.mn_setting_list {
+    background-color: #ffffff06;
+    border-color: #ffffff14;
+}
+.mn_setting {
+    border-color: #ffffff14;
+}
+.mn_setting_title {
+    color: #dddddd;
+}
+.mn_setting_desc,
+.mn_setting_note,
+.mn_setting_inline_label {
+    color: #9aa1a9;
+}
+.mn_setting_note_error {
+    color: #ff6b6b;
+}
+.ui-button.ui-widget.ui-corner-all.mn_danger_button {
+    color: #ff8787;
+    background-color: #e031311f;
+}
+.ui-button.ui-widget.ui-corner-all.mn_danger_button:hover {
+    color: #1b2127;
+    background-color: #ff6b6b;
+}
+.mn_tag {
+    border-color: #ffffff2e;
+    color: #9aa1a9;
+}
+.mn_table th {
+    color: #8b949e;
+}
+.mn_table td {
+    border-color: #ffffff14;
+}
+.mn_text_input {
+    background-color: #1b2127;
+    border-color: #ffffff24;
+    color: #ddd;
+}
+.mn_host_chip {
+    background-color: #ffffff14;
+    color: #dddddd;
+}
+.mn_host_remove {
+    color: #9aa1a9;
+}
+.mn_host_remove:hover {
+    color: #1b2127;
+    background-color: #ff6b6b;
+}
+.mn_text_input::placeholder {
+    color: #6b7079;
+}
+.mn_section_nav {
+    background-color: #1b2127eb;
+    border-color: #ffffff14;
+}
+.mn_section_nav a,
+.mn_section_nav a:link,
+.mn_section_nav a:visited {
+    color: #9aa1a9;
+}
+.mn_section_nav a:hover {
+    color: #dddddd;
+    background-color: #ffffff14;
+}
+.mn_section_nav a.mn_active {
+    color: #ffc04d;
+    background-color: #ffb70024;
+}
+.mn_select_menu.ui-menu.ui-widget-content {
+    background: #20242B;
+    border-color: #3a4750;
+    color: #dddddd;
+}
+.mn_select_menu .ui-menu-item-wrapper.ui-state-active {
+    background: #2a343d;
+    border-color: #2a343d;
+    color: #ffffff;
+}
