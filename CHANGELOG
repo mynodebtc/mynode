@@ -1,9 +1,3 @@
-=== v0.3.55 ===
-- Add a full reindex option for damaged block files
-- Ask for the password before reindexing Bitcoin
-- Fix the Bitcoin reindex option sometimes not running
-- Show reindex progress on the sync page, home page and Electrum Server status
-
 === v0.3.54 ===
 - Released 11/14/26
 - Upgrade electrs to v0.12.1 (database will be rebuilt)
