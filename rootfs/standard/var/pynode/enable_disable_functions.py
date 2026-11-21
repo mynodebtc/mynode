@@ -38,6 +38,9 @@ def disable_actions(short_name):
     if short_name == "tailscale":
         # Leave the tailnet only when the app is turned off, not on every stop or reboot
         os.system("/usr/bin/tailscale down")
+    if short_name == "tunnelsats":
+        # Restore LND to Tor-only and tear down the managed dataplane when disabled
+        os.system("/usr/share/mynode_apps/tunnelsats/root_scripts/reconcile_mynode.sh restore")
 
 # Function to start/stop/restart service
 def start_service(short_name):

@@ -82,6 +82,10 @@ elif [ "$APP" = "mempool" ]; then
     cd ~
 elif [ "$APP" = "rtl" ]; then
     rm -rf /opt/mynode/RTL
+elif [ "$APP" = "tunnelsats" ]; then
+    if [ -x /usr/share/mynode_apps/tunnelsats/root_scripts/reconcile_mynode.sh ]; then
+        /usr/share/mynode_apps/tunnelsats/root_scripts/reconcile_mynode.sh uninstall || true
+    fi
 else
     echo "No custom uninstall steps"
 fi

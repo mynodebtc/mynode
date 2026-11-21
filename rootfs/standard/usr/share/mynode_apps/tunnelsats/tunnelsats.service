@@ -1,0 +1,29 @@
+# tunnelsats service
+# /etc/systemd/system/tunnelsats.service
+
+[Unit]
+Description=TunnelSats Lightning VPN Controller
+Wants=www.service lnd.service
+After=www.service bitcoin.service lnd.service
+
+[Service]
+WorkingDirectory=/opt/mynode/tunnelsats
+Environment="TUNNELSATS_DATA_DIR=/mnt/hdd/mynode/tunnelsats"
+
+ExecStartPre=/usr/bin/is_not_shutting_down.sh
+ExecStartPre=+/bin/bash -c 'if [ -f /usr/bin/service_scripts/pre_tunnelsats.sh ]; then /bin/bash /usr/bin/service_scripts/pre_tunnelsats.sh; fi'
+ExecStart=/usr/bin/python3 -u /opt/mynode/tunnelsats/bridge.py start --host 127.0.0.1 --port 18739
+ExecStartPost=+/bin/bash -c 'if [ -f /usr/bin/service_scripts/post_tunnelsats.sh ]; then /bin/bash /usr/bin/service_scripts/post_tunnelsats.sh; fi'
+
+User=tunnelsats
+Group=tunnelsats
+Type=simple
+TimeoutSec=300
+Restart=always
+RestartSec=15
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=tunnelsats
+
+[Install]
+WantedBy=multi-user.target
