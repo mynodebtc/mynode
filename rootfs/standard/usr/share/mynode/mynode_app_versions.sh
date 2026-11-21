@@ -111,8 +111,9 @@ function check_gpg_signer()
     local sig_file=$1
     local data_file=$2
     shift 2
-    local signers
-    signers=$(gpg --status-fd 1 --verify "$sig_file" "$data_file" 2>/dev/null | awk '$2 == "VALIDSIG" {print $NF}')
+    local output signers
+    output=$(gpg --status-fd 1 --verify "$sig_file" "$data_file" 2>&1)
+    signers=$(echo "$output" | awk '$1 == "[GNUPG:]" && $2 == "VALIDSIG" {print $NF}')
 
     local fingerprint
     for fingerprint in "$@"; do
@@ -122,6 +123,8 @@ function check_gpg_signer()
         fi
     done
     echo "ERROR: no valid signature on $data_file from a known key"
+    # gpg's own messages, e.g. which key is missing
+    echo "$output" | grep -v '^\[GNUPG:\]'
     return 1
 }
 

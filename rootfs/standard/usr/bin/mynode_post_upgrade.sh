@@ -41,6 +41,11 @@ if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
     log2ram stop || true
 fi
 
+# Import the keys that sign app releases (see check_gpg_signer). They ship in the rootfs, so this
+# works without a keyserver, and also runs for app installs. Update them with
+# scripts/check_release_keys.sh in the repository.
+gpg --batch --import /usr/share/mynode/release_keys/*.asc || true
+
 # Skip base upgrades if we are doing an app install / uninstall
 if ! skip_base_upgrades ; then
 
@@ -126,21 +131,8 @@ if ! skip_base_upgrades ; then
     #    grep -qxF "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_CODENAME} main" /etc/apt/sources.list  || echo "deb http://mirrors.ocf.berkeley.edu/raspbian/raspbian ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list
     #fi
 
-    # Import Keys
+    # Import Keys (app release signing keys are imported from the rootfs above)
     set +e
-    curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
-    curl https://keybase.io/bitconner/pgp_keys.asc | gpg --import
-    curl https://keybase.io/guggero/pgp_keys.asc | gpg --import # Pool
-    curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/refs/heads/master/pubkeys/AdamGibson-LOST-Aug-2024.asc | gpg --import # JoinMarket
-    gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964 # Bitcoin Core - Wladimir van der Laan
-    gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys E777299FC265DD04793070EB944D35F9AC3DB76A # Bitcoin Core - Michael Ford (fanquake)
-    curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
-    gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E # Loop (abosworth)
-    gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 9FC6B0BFD597A94DBF09708280E5375C094198D8 # Loop (bhandras)
-    gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 26984CB69EB8C4A26196F7A4D7D916376026F177 # Lightning Terminal
-    gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 187F6ADD93AE3B0CF335AA6AB984570980684DCC # Lightning Terminal
-    gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys C20A78516A0944900EBFCA29961CC8259AE675D4 # Lightning Terminal (Viktor)
-    gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 3E9BD4436C288039CA827A9200C9E2BC2E45666F # RTL (Suheb)
     wget -q https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc -O- | apt-key add - # Tor
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 648ACFD622F3D138   # Debian Backports
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E98404D386FA1D9   # Debian Backports
