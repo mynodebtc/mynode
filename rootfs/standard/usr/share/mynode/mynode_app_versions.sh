@@ -112,7 +112,8 @@ function check_gpg_signer()
     local data_file=$2
     shift 2
     local output signers
-    output=$(gpg --status-fd 1 --verify "$sig_file" "$data_file" 2>&1)
+    # gpg fails when any signature can't be checked, even if a listed key's is valid
+    output=$(gpg --status-fd 1 --verify "$sig_file" "$data_file" 2>&1) || true
     signers=$(echo "$output" | awk '$1 == "[GNUPG:]" && $2 == "VALIDSIG" {print $NF}')
 
     local fingerprint
