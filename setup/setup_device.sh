@@ -244,19 +244,8 @@ fi
 /bin/bash $TMP_INSTALL_PATH/usr/share/mynode/scripts/add_i2p_repo.sh
 
 # Import Keys
-curl https://keybase.io/roasbeef/pgp_keys.asc | gpg --import
-curl https://keybase.io/bitconner/pgp_keys.asc | gpg --import
-curl https://keybase.io/guggero/pgp_keys.asc | gpg --import # Pool
-curl https://raw.githubusercontent.com/JoinMarket-Org/joinmarket-clientserver/refs/heads/master/pubkeys/AdamGibson-LOST-Aug-2024.asc | gpg --import # JoinMarket
-gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 01EA5486DE18A882D4C2684590C8019E36C2E964
-gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys E777299FC265DD04793070EB944D35F9AC3DB76A # Bitcoin - Michael Ford (fanquake)
-curl https://keybase.io/suheb/pgp_keys.asc | gpg --import
-gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E # Loop (abosworth)
-gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 9FC6B0BFD597A94DBF09708280E5375C094198D8 # Loop (bhandras)
-gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 26984CB69EB8C4A26196F7A4D7D916376026F177 # Lightning Terminal
-gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 187F6ADD93AE3B0CF335AA6AB984570980684DCC # Lightning Terminal
-gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys C20A78516A0944900EBFCA29961CC8259AE675D4 # Lightning Terminal (Viktor)
-gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 3E9BD4436C288039CA827A9200C9E2BC2E45666F # RTL (Suheb)
+# App release signing keys ship in the rootfs (see scripts/check_release_keys.sh)
+gpg --batch --import $TMP_INSTALL_PATH/usr/share/mynode/release_keys/*.asc || true
 wget -q https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc -O- | apt-key add - # Tor
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 648ACFD622F3D138     # Debian Backports
 gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 0E98404D386FA1D9     # Debian Backports
