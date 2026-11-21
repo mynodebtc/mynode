@@ -184,8 +184,8 @@ fi
 BTC_VERSION=$(get_app_version "$BTC_VERSION" "bitcoin")
 BTC_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version
 BTC_LATEST_VERSION_FILE=/home/bitcoin/.mynode/bitcoin_version_latest
-# Bitcoin Core release signers: Wladimir van der Laan, Michael Ford (fanquake)
-BTC_SIGNER_FINGERPRINTS="01EA5486DE18A882D4C2684590C8019E36C2E964 E777299FC265DD04793070EB944D35F9AC3DB76A"
+# Bitcoin Core release signer: Michael Ford (fanquake)
+BTC_SIGNER_FINGERPRINTS="E777299FC265DD04793070EB944D35F9AC3DB76A"
 
 LND_VERSION="v0.21.8-beta"
 LND_VERSION=$(get_app_version "$LND_VERSION" "lnd")
@@ -225,8 +225,8 @@ LIT_LATEST_VERSION_FILE=/home/bitcoin/.mynode/lit_version_latest
 LIT_UPGRADE_MANIFEST_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-$LIT_VERSION.txt
 LIT_UPGRADE_MANIFEST_ROASBEEF_SIG_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-roasbeef-$LIT_VERSION.sig
 LIT_UPGRADE_MANIFEST_VIKTORT_SIG_URL=https://github.com/lightninglabs/lightning-terminal/releases/download/$LIT_VERSION/manifest-ViktorT-11-$LIT_VERSION.sig
-# Lightning Terminal release signers: roasbeef, Elle Mouton, Viktor Tigerstrom, ViktorT-11
-LIT_SIGNER_FINGERPRINTS="A5B61896952D9FDA83BC054CDC42612E89237182 26984CB69EB8C4A26196F7A4D7D916376026F177 187F6ADD93AE3B0CF335AA6AB984570980684DCC C20A78516A0944900EBFCA29961CC8259AE675D4"
+# Lightning Terminal release signers: roasbeef, ViktorT-11
+LIT_SIGNER_FINGERPRINTS="A5B61896952D9FDA83BC054CDC42612E89237182 C20A78516A0944900EBFCA29961CC8259AE675D4"
 
 CHANTOOLS_VERSION="v0.14.3"
 CHANTOOLS_VERSION=$(get_app_version "$CHANTOOLS_VERSION" "chantools")

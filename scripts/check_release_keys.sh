@@ -43,9 +43,6 @@ F4FC70F07310028424EFC20A8E4256593F177720 guggero https://keybase.io/guggero/pgp_
 C20A78516A0944900EBFCA29961CC8259AE675D4 ViktorT-11 https://raw.githubusercontent.com/lightningnetwork/lnd/master/scripts/keys/ViktorT-11.asc https://github.com/ViktorT-11.gpg
 9FC6B0BFD597A94DBF09708280E5375C094198D8 bhandras https://raw.githubusercontent.com/lightningnetwork/lnd/master/scripts/keys/bhandras.asc https://github.com/bhandras.gpg
 DE23E73BFA8A0AD5587D2FCDE80D2F3F311FD87E alexbosworth https://github.com/alexbosworth.gpg
-26984CB69EB8C4A26196F7A4D7D916376026F177 ellemouton https://github.com/ellemouton.gpg
-187F6ADD93AE3B0CF335AA6AB984570980684DCC ViktorTigerstrom https://github.com/ViktorTigerstrom.gpg
-01EA5486DE18A882D4C2684590C8019E36C2E964 laanwj https://raw.githubusercontent.com/bitcoin-core/guix.sigs/main/builder-keys/laanwj.gpg
 E777299FC265DD04793070EB944D35F9AC3DB76A fanquake https://raw.githubusercontent.com/bitcoin-core/guix.sigs/main/builder-keys/fanquake.gpg
 "
 
