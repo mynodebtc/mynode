@@ -32,7 +32,7 @@
         {% include 'includes/logo_header.html' %}
 
         <div class="mynode_top_left_div">
-            <a href="/"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/home.png")}}"/></a>
+            <a href="{{ https_url if is_https_forced and not is_https else '/' }}"><img class="mynode_nav_icon" src="{{ url_for('static', filename="images/home.png")}}"/></a>
         </div>
 
         <div class="main_header">Using HTTPS</div>
@@ -51,6 +51,17 @@
                 {% endif %}
                 <br/><br/>
                 <a href="/" class="ui-button ui-widget ui-corner-all settings_button">Back to Home</a>
+            </p>
+        </div>
+        {% elif is_https_forced %}
+        <div class="main_page_warning_block">
+            <p style="text-align: center;">This MyNode is set to answer only over an encrypted connection.</p>
+            <p style="text-align: center;">
+                <a href="{{ https_url }}" class="ui-button ui-widget ui-corner-all settings_button">Open MyNode over HTTPS</a>
+            </p>
+            <p style="text-align: center;">
+                Your browser may warn you the first time. That is expected here: continue past the warning as
+                described below, then log in with your usual password. Nothing needs to be downloaded first.
             </p>
         </div>
         {% else %}
@@ -80,9 +91,10 @@
             <div class="settings_block_header">HTTPS Is Already Required</div>
             <p>
                 Force HTTPS is on, so every other page moves to HTTPS and your password is never sent unencrypted.
-                This page is the one exception, so these steps can be read before logging in.
+                This page is the one exception, so these steps can be read before logging in. Force HTTPS can be
+                turned off in Settings once you are logged in.
                 <br/><br/>
-                <a href="/settings#ui" class="ui-button ui-widget ui-corner-all settings_button">Settings</a>
+                <a href="{{ https_url if not is_https else '/' }}settings#ui" class="ui-button ui-widget ui-corner-all settings_button">Settings</a>
             </p>
         </div>
         {% else %}

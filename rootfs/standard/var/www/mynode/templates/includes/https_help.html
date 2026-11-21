@@ -1,5 +1,7 @@
 <!-- The steps for meeting this node's certificate. Shown on /https-info and on the page an
-     http:// link lands on while HTTPS is forced. Needs is_https and ca_info. -->
+     http:// link lands on while HTTPS is forced. Needs is_https, is_https_forced, is_logged_in,
+     https_url and ca_info. Over plain HTTP while HTTPS is forced, no one is logged in and every
+     link other than these pages leads back to the forced page, so links there go to https_url. -->
         {% if not is_https %}
         <div class="settings_block">
             <div class="settings_block_header">Why Your Browser Shows a Warning</div>
@@ -35,9 +37,9 @@
                 to the site.
                 <br/><br/>
                 If the warning has no option to continue, your browser remembers trusting an earlier certificate for
-                that address and now refuses to accept any other.
-                {% if ca_info %}Install the certificate authority below, or reach{% else %}Reach{% endif %}
-                your node by its IP address instead, which is never blocked this way.
+                that address and now refuses to accept any other. Reach your node by its IP address instead, which
+                is never blocked this way{% if ca_info %}, and install the certificate authority below so the name
+                works again{% endif %}.
             </p>
         </div>
         {% endif %}
@@ -52,10 +54,22 @@
                 per device: your node renews its certificate automatically, and every renewal is trusted without
                 reinstalling anything.
                 <br/><br/>
-                <b>1. Download it.</b> You may be asked to log in first. It is also on the
-                <a href="/settings#advanced">settings</a> page under HTTPS Certificates.
+                {% if is_https_forced and not is_https %}
+                <b>1. Download it.</b> The download needs you to be logged in, so it is not offered on this
+                unencrypted page. You do not need it to log in: continue past the warning as described above, log in,
+                then download it from the <a href="{{ https_url }}https-info#trust">Using HTTPS</a> page or from the
+                settings page under HTTPS Certificates.
+                {% elif not is_logged_in %}
+                <b>1. Download it.</b> The download needs you to be logged in. Log in, then come back to this page
+                or open the settings page and find it under HTTPS Certificates.
+                <br/><br/>
+                <a href="/login" class="ui-button ui-widget ui-corner-all settings_button">Log In</a>
+                {% else %}
+                <b>1. Download it.</b> It is also on the <a href="/settings#advanced">settings</a> page under HTTPS
+                Certificates.
                 <br/><br/>
                 <a href="/settings/mynode_web.cert" class="ui-button ui-widget ui-corner-all settings_button">Download Certificate Authority</a>
+                {% endif %}
                 <br/><br/>
                 <b>2. Check it is yours.</b> Once installed, your system shows the certificate's name and SHA-256
                 fingerprint. They should match these. If you have more than one MyNode, the name tells their

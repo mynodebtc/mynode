@@ -1230,23 +1230,30 @@ def page_https_info():
     templateData = {
         "is_https": request.is_secure,
         "is_https_forced": is_https_forced(),
+        "is_logged_in": is_logged_in(),
+        "https_url": get_https_url(),
         "ca_info": get_https_ca_info(),
         "ui_settings": read_ui_settings()
     }
     return render_template('https_info.html', **templateData)
 
+def get_https_url():
+    # The interface's HTTPS address for the name this request used
+    hostname = get_request_hostname()
+    if ":" in hostname:
+        hostname = "[{}]".format(hostname)
+    return "https://{}/".format(hostname)
+
 @app.route("/https-is-forced")
 def page_https_is_forced():
     # No login check - this page is where an http:// link lands while HTTPS is forced, and it has
     # to work before anyone can log in. It is served over that same plain connection on purpose.
-    hostname = get_request_hostname()
-    if ":" in hostname:
-        hostname = "[{}]".format(hostname)
     templateData = {
         "title": "HTTPS Required",
-        "https_url": "https://{}/".format(hostname),
+        "https_url": get_https_url(),
         "is_https": False,
         "is_https_forced": True,
+        "is_logged_in": False,
         "ca_info": get_https_ca_info(),
         "ui_settings": read_ui_settings()
     }
