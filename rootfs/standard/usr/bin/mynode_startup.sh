@@ -624,11 +624,6 @@ fi
 # The password goes to sed on stdin, since command lines are visible to every user.
 set +x
 BTCRPCPW=$(cat /mnt/hdd/mynode/settings/.btcrpcpw)
-if [ -f /opt/mynode/LndHub/config.js ]; then
-    cp -f /usr/share/mynode/lndhub-config.js /opt/mynode/LndHub/config.js
-    #sed -i "s/mynode:.*@/mynode:$BTCRPCPW@/g" /opt/mynode/LndHub/config.js
-    chown bitcoin:bitcoin /opt/mynode/LndHub/config.js
-fi
 if [ -f /opt/mynode/btc-rpc-explorer/.env ]; then
     printf 's/BTCEXP_BITCOIND_PASS=.*/BTCEXP_BITCOIND_PASS=%s/g\n' "$BTCRPCPW" | sed -i -f - /opt/mynode/btc-rpc-explorer/.env
     chmod 600 /opt/mynode/btc-rpc-explorer/.env
@@ -754,6 +749,8 @@ USER=$(stat -c '%U' /mnt/hdd/mynode/redis)
 if [ "$USER" != "redis" ]; then
     chown -R redis:redis /mnt/hdd/mynode/redis
 fi
+chmod 700 /mnt/hdd/mynode/redis
+find /mnt/hdd/mynode/redis -type f -exec chmod 600 {} +
 chown -R redis:redis /etc/redis/
 #USER=$(stat -c '%U' /mnt/hdd/mynode/mongodb)
 #if [ "$USER" != "mongodb" ]; then

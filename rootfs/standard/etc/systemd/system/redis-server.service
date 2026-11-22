@@ -5,6 +5,9 @@ After=mynode.service network.target lnd.target
 [Service]
 User=redis
 Group=redis
+# Only Redis reads its own database files
+UMask=0077
+ExecStartPre=+/usr/bin/mynode_redis_password.sh
 ExecStart=/usr/bin/redis-server /etc/redis/redis.conf
 Restart=always
 RestartSec=30

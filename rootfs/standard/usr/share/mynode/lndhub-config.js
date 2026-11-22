@@ -11,7 +11,7 @@ let config = {
       port: 6379,
       host: '127.0.0.1',
       family: 4,
-      password: '',
+      password: 'MYNODE_REDIS_PASSWORD', // filled in by mynode_redis_password.sh
       db: 0,
     },
     lnd: {
