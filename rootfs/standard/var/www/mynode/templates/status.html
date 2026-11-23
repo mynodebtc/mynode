@@ -4,24 +4,36 @@
         {% include 'includes/head.html' %}
 
         <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
+            // A service card toggles its log on click; a double-click counts as one click
+            $(document).on("mousedown", "[data-show-log]", function(e) {
+                if (e.detail > 1) {
+                    e.preventDefault(); // no word selection on double-click
+                }
+            });
             $(document).on("click", "[data-show-log]", function(e) {
-                // Don't toggle when the click ends a text selection inside the card
-                if (String(window.getSelection()) !== "" && !e.target.closest("button")) {
+                if (e.detail > 1) {
                     return;
                 }
-                showLog($(this).attr("data-show-log"));
+                showLog(this.getAttribute("data-show-log"));
             });
 
             function showLog(name) {
-                visible = $("#"+name+"_log").is(':visible');
-                if (visible) {
-                    $("#show_"+name+"_log").removeClass("mn_open");
-                    $("#"+name+"_log").hide();
+                var toggle = document.getElementById("show_" + name + "_log");
+                var log = document.getElementById(name + "_log");
+                if (toggle.classList.contains("mn_open")) {
+                    toggle.classList.remove("mn_open");
+                    log.style.display = "none";
                 } else {
-                    $("#show_"+name+"_log").addClass("mn_open");
-                    $.get( "/api/get_log?app="+name, function( data ) {
-                        $("#"+name+"_log").empty().append($("<pre>").text(data["log"]));
-                        $("#"+name+"_log").show();
+                    toggle.classList.add("mn_open");
+                    $.get("/api/get_log?app=" + encodeURIComponent(name), function(data) {
+                        if (!toggle.classList.contains("mn_open")) {
+                            return; // closed again while loading
+                        }
+                        var pre = document.createElement("pre");
+                        pre.textContent = data["log"];
+                        log.textContent = "";
+                        log.appendChild(pre);
+                        log.style.display = "";
                     });
                 }
             }
