@@ -1928,6 +1928,12 @@ body .ui-tooltip.ui-widget {
     flex: 0 0 auto;
     line-height: 20px;
 }
+.mn_service_clickable {
+    cursor: pointer;
+}
+.mn_service_clickable:hover .mn_service_log_toggle {
+    color: #f19c00;
+}
 .mn_service_log {
     grid-column: 1 / -1;
     margin-bottom: 0;

@@ -4,7 +4,11 @@
         {% include 'includes/head.html' %}
 
         <script nonce="{{ csp_nonce() if csp_nonce is defined }}">
-            $(document).on("click", "[data-show-log]", function() {
+            $(document).on("click", "[data-show-log]", function(e) {
+                // Don't toggle when the click ends a text selection inside the card
+                if (String(window.getSelection()) !== "" && !e.target.closest("button")) {
+                    return;
+                }
                 showLog($(this).attr("data-show-log"));
             });
 
@@ -139,7 +143,7 @@
 
         {# One card per service. The log opens full width below the card's row. #}
         {% macro service_card(key, name, color, status, log, status_id=none, containers=none, running=[]) %}
-            <div class="mn_service">
+            <div class="mn_service mn_service_clickable" data-show-log="{{key}}">
                 <div {% if status_id %}id="{{status_id}}_status_icon" {% endif %}class="settings_block_subheader_status_icon {{ color }}"></div>
                 <div class="mn_service_main">
                     <div class="mn_service_name">{{ name }}</div>
@@ -155,7 +159,7 @@
                     </div>
                     {% endif %}
                 </div>
-                <button id="show_{{key}}_log" data-show-log="{{key}}" class="mn_label mn_label_toggle mn_service_log_toggle" title="Show Log">Log <i class="fas fa-chevron-down"></i></button>
+                <button id="show_{{key}}_log" class="mn_label mn_label_toggle mn_service_log_toggle" title="Show Log">Log <i class="fas fa-chevron-down"></i></button>
             </div>
             <div id="{{key}}_log" class="mn_details mn_service_log" style="display: none;"><pre>{{ log }}</pre></div>
         {% endmacro %}
