@@ -1,3 +1,19 @@
+=== v0.3.55 ===
+- Released 11/22/26
+- Upgrade Specter to v2.3.0
+- Upgrade Canary to v1.7.2
+- Tor Upgrade to v0.4.9.17
+- Add Full Reindex and Rebuild Chainstate options for Bitcoin
+- Add a Memory Test
+- Modernize the Settings page interface
+- Add Set Password for Specter in Settings
+- Add local copy of application signing keys
+- Improve detection of failed services
+- Ask for the password before reindexing Bitcoin
+- Show reindex progress on the sync page
+- Bug Fixes
+- Security Updates
+
 === v0.3.54 ===
 - Released 11/14/26
 - Upgrade electrs to v0.12.1 (database will be rebuilt)
