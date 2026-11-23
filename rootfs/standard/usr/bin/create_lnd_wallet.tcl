@@ -11,8 +11,8 @@ close $f
 
 set seed $env(LND_SEED)
 set backup_args ""
-if { [file exists "/tmp/lnd_channel_backup"] == 1} {      
-    set backup_args "--multi_file=/tmp/lnd_channel_backup"
+if { [file exists "/run/mynode/lnd_channel_backup"] == 1} {      
+    set backup_args "--multi_file=/run/mynode/lnd_channel_backup"
 }
 
 set tls_cert "/home/bitcoin/.lnd/tls.cert" 

@@ -201,7 +201,7 @@ def has_recent_reboot_action():
     # Markers left by check_and_mark_reboot_action() for actions that reboot; ignore old ones
     # left by an action that never rebooted
     now = time.time()
-    for marker in glob.glob("/tmp/mark_reboot___*"):
+    for marker in glob.glob("/run/mynode/mark_reboot___*"):
         try:
             if now - os.path.getmtime(marker) < 6 * 60 * 60:
                 return True
@@ -256,7 +256,7 @@ def auto_upgrade_device(state):
         state["last_result"] = {"result": "not_installed", "to": target, "time": now, "detail": detail}
         state.update(stage=None, from_version=None)
         save_auto_upgrade_state(state)
-        delete_file("/tmp/upgrade_started")
+        delete_file("/run/mynode/upgrade_started")
         log_message("Auto Upgrade: {} (exit {}), will retry".format(detail, rc))
         return False
 

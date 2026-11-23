@@ -23,6 +23,8 @@ def is_mynode_drive_mounted():
     return mounted
 
 def is_device_mounted(d):
+    if not is_safe_name(d):
+        return True
     mounted = True
     try:
         # Command fails and throws exception if not mounted
@@ -33,6 +35,8 @@ def is_device_mounted(d):
 
 def get_drive_size(drive):
     size = -1
+    if not is_safe_name(drive):
+        return size
     try:
         lsblk_output = to_string(subprocess.check_output("lsblk -b /dev/{} | grep disk".format(drive), shell=True))
         parts = lsblk_output.split()
@@ -80,6 +84,8 @@ def get_os_drive_usage():
 
 def check_partition_for_mynode(partition):
     is_mynode = False
+    if not is_safe_name(partition):
+        return is_mynode
     try:
         subprocess.check_output("mount -o ro,nosuid,nodev /dev/{} /mnt/hdd".format(partition), shell=True)
         if os.path.isfile("/mnt/hdd/.mynode"):
@@ -95,6 +101,8 @@ def check_partition_for_mynode(partition):
 
 def find_partitions_for_drive(drive):
     partitions = []
+    if not is_safe_name(drive):
+        return partitions
     try:
         ls_output = to_string(subprocess.check_output("ls /sys/block/{}/ | grep {}".format(drive, drive), shell=True))
         partitions = ls_output.split()
@@ -104,6 +112,8 @@ def find_partitions_for_drive(drive):
 
 def is_device_detected_by_fdisk(d):
     detected = False
+    if not is_safe_name(d):
+        return detected
     try:
         # Command fails and throws exception if not mounted
         output = to_string(subprocess.check_output("fdisk -l /dev/{}".format(d), shell=True))
@@ -139,8 +149,8 @@ VALID_FILESYSTEM_TYPES = ["ext4", "btrfs"]
 def set_drive_filesystem_type(filesystem):
     if filesystem not in VALID_FILESYSTEM_TYPES:
         return
-    run_linux_cmd(["rm", "-f"] + glob.glob("/tmp/format_filesystem_*"))
-    touch("/tmp/format_filesystem_{}".format(filesystem))
+    run_linux_cmd(["rm", "-f"] + glob.glob("/run/mynode/format_filesystem_*"))
+    touch("/run/mynode/format_filesystem_{}".format(filesystem))
     run_linux_cmd(["sync"])
 
 def get_current_drive_filesystem_type():
@@ -162,6 +172,8 @@ def get_current_drive_filesystem_type():
 # Mount / Unmount Partition Functions
 #==================================
 def mount_partition(partition, folder_name, permissions="ro"):
+    if not is_safe_name(partition) or not is_safe_name(folder_name):
+        return False
     try:
         subprocess.check_output("mkdir -p /mnt/usb_extras/{}".format(folder_name), shell=True)
         subprocess.check_output("mount -o {},nosuid,nodev,noexec /dev/{} /mnt/usb_extras/{}".format(permissions, partition, folder_name), shell=True)

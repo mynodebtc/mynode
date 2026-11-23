@@ -3,11 +3,11 @@
 # Find 
 drive=""
 
-drive=$(cat /tmp/.mynode_drive)
+drive=$(cat /run/mynode/.mynode_drive)
 while [ -z "$drive" ]; do
     sleep 10
     echo "Waiting on MyNode Drive..."
-    drive=$(cat /tmp/.mynode_drive)
+    drive=$(cat /run/mynode/.mynode_drive)
 done
 
 echo "Found Drive: $drive"
@@ -23,7 +23,7 @@ while [ $? -eq 0 ]; do
         # Usage is 99.9%+, reboot to get into drive_full state with services stopped if first detected
         echo "High Drive Usage: $mb_available MB available"
 
-        current_state=$(cat /tmp/.mynode_status)
+        current_state=$(cat /run/mynode/.mynode_status)
         if [ "$current_state" == "drive_full" ]; then
             echo "Drive full already detected, not rebooting"
             sleep 15m

@@ -456,7 +456,7 @@ def upgrade_os_release_page():
     check_and_mark_reboot_action("upgrade_os_release")
 
     if not start_os_release_upgrade():
-        delete_file("/tmp/mark_reboot___upgrade_os_release")
+        delete_file("/run/mynode/mark_reboot___upgrade_os_release")
         flash("The OS upgrade could not be started. Another upgrade may be running.", category="error")
         return redirect("/settings#os_release")
 
@@ -1435,7 +1435,7 @@ def memtest_run_page():
 
     check_and_mark_reboot_action("memtest")
     if not schedule_manual_memtest(passes):
-        delete_file("/tmp/mark_reboot___memtest")
+        delete_file("/run/mynode/mark_reboot___memtest")
         flash("Could not set up the memory test", category="error")
         return redirect("/settings#memtest")
 

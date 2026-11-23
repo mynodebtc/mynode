@@ -11,7 +11,7 @@ done
 parted --script /dev/$dev mklabel gpt || true
 
 # Make new partition with entire drive
-if [ -f /tmp/format_filesystem_btrfs ]; then
+if [ -f /run/mynode/format_filesystem_btrfs ]; then
     parted --script /dev/$dev mkpart primary btrfs 0% 100%
 else
     parted --script /dev/$dev mkpart primary ext4 0% 100%

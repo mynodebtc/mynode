@@ -123,10 +123,10 @@ def on_connect_success(connect_response_data):
 ## Save and manage response data
 ##############################################################
 def clear_response_data():
-    os.system("rm -f /tmp/premium_plus_response.json")
+    os.system("rm -f /run/mynode/premium_plus_response.json")
 def save_response_data(data):
     try:
-        with open("/tmp/premium_plus_response.json", "w") as file:
+        with open("/run/mynode/premium_plus_response.json", "w") as file:
             json.dump(data, file, indent=4, sort_keys=True)
     except Exception as e:
         log_message("save_response_data exception: failed to save response - {}".format(str(e)))

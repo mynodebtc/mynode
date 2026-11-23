@@ -18,7 +18,7 @@ mynode_bitcoin = Blueprint('mynode_bitcoin',__name__)
 
 
 def cleanup_download_wallets():
-    os.system("rm -rf /tmp/download_wallets/*")
+    os.system("rm -rf /run/mynode/download_wallets/*")
 
 ### Page functions
 @mynode_bitcoin.route("/bitcoin")
@@ -116,21 +116,21 @@ def bitcoin_download_wallet():
         flash("Invalid wallet name", category="error")
         return redirect("/bitcoin")
 
-    os.system("mkdir -p /tmp/download_wallets")
-    os.system("chown bitcoin:bitcoin /tmp/download_wallets")
-    os.system("chmod 700 /tmp/download_wallets")
+    os.system("mkdir -p /run/mynode/download_wallets")
+    os.system("chown bitcoin:bitcoin /run/mynode/download_wallets")
+    os.system("chmod 700 /run/mynode/download_wallets")
     run_bitcoincli_command_args(["-rpcwallet={}".format(wallet_name),
                                  "backupwallet",
-                                 "/tmp/download_wallets/{}".format(wallet_name)])
+                                 "/run/mynode/download_wallets/{}".format(wallet_name)])
 
-    if not os.path.isfile("/tmp/download_wallets/"+wallet_name):
+    if not os.path.isfile("/run/mynode/download_wallets/"+wallet_name):
         flash("Error exporting wallet data for download", category="error")
         return redirect("/bitcoin")
 
     t = Timer(3.0, cleanup_download_wallets)
     t.start()
 
-    return download_file(directory="/tmp/download_wallets/", filename=wallet_name)
+    return download_file(directory="/run/mynode/download_wallets/", filename=wallet_name)
 
 @mynode_bitcoin.route("/bitcoin/delete_wallet", methods=["POST"])
 def bitcoin_delete_wallet():

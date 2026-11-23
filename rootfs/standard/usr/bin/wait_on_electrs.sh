@@ -5,7 +5,7 @@ set -e
 
 # Wait to see if electrs is synced
 echo "Checking if electrum server is ready is synced..."
-while [ ! -f "/tmp/electrs_up_to_date" ]; do
+while [ ! -f "/run/mynode/electrs_up_to_date" ]; do
     echo "electrs not synced, sleeping 1m"
     /bin/sleep 30s
 done

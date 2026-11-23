@@ -25,17 +25,17 @@ latest_version_check_count = 0
 
 # Helper functions
 def clear_response_data():
-    os.system("rm -f /tmp/check_in_response.json")
+    os.system("rm -f /run/mynode/check_in_response.json")
 def save_response_data(data):
     try:
-        with open("/tmp/check_in_response.json", "w") as file:
+        with open("/run/mynode/check_in_response.json", "w") as file:
             json.dump(data, file, indent=4, sort_keys=True)
     except Exception as e:
         log_message("save_response_data exception: failed to save response - {}".format(str(e)))
 def get_saved_notifications():
     # Notifications from the previously saved check-in response
     try:
-        with open("/tmp/check_in_response.json", "r") as file:
+        with open("/run/mynode/check_in_response.json", "r") as file:
             return json.load(file).get("notifications", [])
     except Exception:
         return []
@@ -154,7 +154,7 @@ def check_in(check_for_updates):
                                 unset_skipped_product_key()
                             delete_product_key_error()
 
-                            os.system("rm -f /tmp/check_in_error")
+                            os.system("rm -f /run/mynode/check_in_error")
                             check_in_success = True
                             log_message("Check In Success: {}".format(r.text))
                         else:
@@ -174,7 +174,7 @@ def check_in(check_for_updates):
                 # direct (non-tor) attempt has also failed, so the slow network
                 # right after boot doesn't show a transient error.
                 if fail_count + 1 >= CHECKIN_FAILURES_BEFORE_ERROR:
-                    os.system("touch /tmp/check_in_error")
+                    os.system("touch /run/mynode/check_in_error")
                 time.sleep(repeat_delay)
                 fail_count = fail_count + 1
 

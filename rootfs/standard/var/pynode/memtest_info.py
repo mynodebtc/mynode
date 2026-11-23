@@ -32,8 +32,8 @@ PAGE_SIZE = 4096
 
 MEMTESTER = "/usr/sbin/memtester"
 MANUAL_MARKER_FILE = "/home/bitcoin/.mynode/memtest_manual_passes"    # OS drive only: one test, this unit
-MANUAL_PROGRESS_FILE = "/tmp/memtest_progress.json"
-MANUAL_STOP_FILE = "/tmp/memtest_stop"
+MANUAL_PROGRESS_FILE = "/run/mynode/memtest_progress.json"
+MANUAL_STOP_FILE = "/run/mynode/memtest_stop"
 MANUAL_PASSES = [1, 2, 4]
 MANUAL_MAX_HOURS = 24                   # In case memtester stops making progress
 MANUAL_RESERVE_MB = 768                 # Left free for the web UI and the rest of the OS while testing
@@ -391,7 +391,7 @@ def get_manual_memtest_progress():
         return None
 
 def get_memory_test_seconds_this_boot():
-    # How long a manual test held up startup on this boot (its progress file is in /tmp)
+    # How long a manual test held up startup on this boot (its progress file is in /run/mynode)
     progress = get_manual_memtest_progress()
     if not progress or "start" not in progress:
         return 0
@@ -455,10 +455,10 @@ def _write_progress(progress):
 def _set_mynode_status(status):
     try:
         if status:
-            with open("/tmp/.mynode_status", "w") as f:
+            with open("/run/mynode/.mynode_status", "w") as f:
                 f.write(status)
         else:
-            os.remove("/tmp/.mynode_status")
+            os.remove("/run/mynode/.mynode_status")
     except Exception:
         pass
 

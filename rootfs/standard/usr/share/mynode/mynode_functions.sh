@@ -70,7 +70,7 @@ function apt_get_update {
 }
 
 function skip_base_upgrades {
-    if [ -f /tmp/skip_base_upgrades ]; then
+    if [ -f /run/mynode/skip_base_upgrades ]; then
         return 0
     fi
     return 1

@@ -40,7 +40,7 @@ lightning_desync_count = 0
 lightning_update_count = 0
 lightning_error_counts = {}
 
-LIGHTNING_CACHE_FILE = "/tmp/lightning_info.json"
+LIGHTNING_CACHE_FILE = "/run/mynode/lightning_info.json"
 LND_FOLDER = "/mnt/hdd/mynode/lnd/"
 TLS_CERT_FILE = "/mnt/hdd/mynode/lnd/tls.cert"
 LND_REST_PORT = "10080"
@@ -95,9 +95,9 @@ def update_lightning_info():
     # Hopefully patch comes soon to enable TCP keepalive to prevent this from happening
     if lnd_ready and lightning_info != None and "synced_to_chain" in lightning_info and not lightning_info['synced_to_chain']:
         lightning_desync_count += 1
-        os.system("printf \"%s | LND De-sync!!! Count: {} \\n\" \"$(date)\" >> /tmp/lnd_failures".format(lightning_desync_count))
+        os.system("printf \"%s | LND De-sync!!! Count: {} \\n\" \"$(date)\" >> /run/mynode/lnd_failures".format(lightning_desync_count))
         if lightning_desync_count >= 8:
-            os.system("printf \"%s | De-sync count too high! Restarting LND... \\n\" \"$(date)\" >> /tmp/lnd_failures")
+            os.system("printf \"%s | De-sync count too high! Restarting LND... \\n\" \"$(date)\" >> /run/mynode/lnd_failures")
             restart_lnd()
             lightning_desync_count = 0
         return True
@@ -105,7 +105,7 @@ def update_lightning_info():
     if lnd_ready:
         log_message("update_lightning_info - LND READY")
         if lightning_desync_count > 0:
-            os.system("printf \"%s | De-sync greater than 0 (was {}), but now synced! Setting to 0. \\n\" \"$(date)\" >> /tmp/lnd_failures".format(lightning_desync_count))
+            os.system("printf \"%s | De-sync greater than 0 (was {}), but now synced! Setting to 0. \\n\" \"$(date)\" >> /run/mynode/lnd_failures".format(lightning_desync_count))
             lightning_desync_count = 0
         log_message("update_lightning_info - GET PEERS, CHANNELS, BALANCE, WALLET")
         lightning_peers = lnd_get_keep_last("/peers", lightning_peers)
@@ -152,8 +152,8 @@ def update_lightning_tx_info():
         lightning_invoices = lnd_get("/invoices", params={"reversed":"true", "index_offset": "0", "num_max_invoices": tx_cache_limit})
 
 def get_lnd_deposit_address():
-    if os.path.isfile("/tmp/lnd_deposit_address"):
-        addr = get_file_contents("/tmp/lnd_deposit_address")
+    if os.path.isfile("/run/mynode/lnd_deposit_address"):
+        addr = get_file_contents("/run/mynode/lnd_deposit_address")
     else:
         addr = get_new_lnd_deposit_address()
     return to_string(addr)
@@ -163,7 +163,7 @@ def get_new_lnd_deposit_address():
     try:
         addressdata = lnd_get("/newaddress")
         address = addressdata["address"]
-        set_file_contents("/tmp/lnd_deposit_address", address)
+        set_file_contents("/run/mynode/lnd_deposit_address", address)
     except:
         address = "ERROR"
     return address

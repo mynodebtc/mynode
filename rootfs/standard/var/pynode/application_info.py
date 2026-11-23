@@ -16,12 +16,13 @@ import time
 import subprocess
 import importlib
 import os
+import tempfile
 
 # Globals
 DYNAMIC_APPLICATIONS_FOLDER = "/usr/share/mynode_apps"
 
 # Cached data
-JSON_APPLICATION_CACHE_FILE = "/tmp/app_cache.json"
+JSON_APPLICATION_CACHE_FILE = "/run/mynode/app_cache.json"
 mynode_applications = None
 
 # Utility functions
@@ -32,7 +33,7 @@ def reinstall_app(app):
         # Clear app data
         clear_application_cache()
 
-        touch("/tmp/skip_base_upgrades")
+        touch("/run/mynode/skip_base_upgrades")
 
         # Reinstall
         os.system("mkdir -p /home/admin/upgrade_logs")
@@ -399,14 +400,14 @@ def clear_application_cache():
     mynode_applications = None
 
 def trigger_application_refresh():
-    touch("/tmp/need_application_refresh")
+    touch("/run/mynode/need_application_refresh")
 
 def need_application_refresh():
     global mynode_applications
     if mynode_applications == None:
         return True
-    if os.path.isfile("/tmp/need_application_refresh"):
-        os.system("rm /tmp/need_application_refresh")
+    if os.path.isfile("/run/mynode/need_application_refresh"):
+        os.system("rm /run/mynode/need_application_refresh")
         os.system("sync")
         return True
     return False
@@ -918,16 +919,7 @@ def install_application_tarball(app_data):
 
     ignore_failure = True
 
-    # Make tmp download folder, owned by the user that installs into it
     linux_user = app_data["linux_user"]
-    run_linux_cmd(["rm", "-rf", "/tmp/mynode_dynamic_app_download"], ignore_failure)
-    run_linux_cmd(["mkdir", "/tmp/mynode_dynamic_app_download"])
-    run_linux_cmd_args(["chown", linux_user, "/tmp/mynode_dynamic_app_download"])
-    run_linux_cmd(["chmod", "-R", "700", "/tmp/mynode_dynamic_app_download"])
-    run_linux_cmd(["rm", "-rf", "/tmp/mynode_dynamic_app_extract"], ignore_failure)
-    run_linux_cmd(["mkdir", "/tmp/mynode_dynamic_app_extract"])
-    run_linux_cmd_args(["chown", linux_user, "/tmp/mynode_dynamic_app_extract"])
-    run_linux_cmd(["chmod", "-R", "700", "/tmp/mynode_dynamic_app_extract"])
 
     # Download and extract
     if not app_data["download_skip"]:
@@ -955,16 +947,26 @@ def install_application_tarball(app_data):
         if not is_safe_download_url(download_url):
             log_message("  REFUSING DOWNLOAD URL: {}".format(download_url))
             raise ValueError("  REFUSING DOWNLOAD URL: {}".format(download_url))
-        run_linux_cmd_args(["wget", "-O", "/tmp/mynode_dynamic_app_download/app.tar.gz", download_url])
+        # New folders for each install: the download stays root's (readable by the app user), and the
+        # extract folder belongs to the app user, who unpacks into it
+        download_dir = tempfile.mkdtemp(prefix="mynode_app_download_")
+        extract_dir = tempfile.mkdtemp(prefix="mynode_app_extract_")
+        try:
+            os.chmod(download_dir, 0o755)
+            run_linux_cmd_args(["chown", linux_user, extract_dir])
+            tarball = os.path.join(download_dir, "app.tar.gz")
+            run_linux_cmd_args(["wget", "-O", tarball, download_url])
 
-        time.sleep(1)
-        run_linux_cmd(["sync"])
-        check_app_download_hash(app_data, "/tmp/mynode_dynamic_app_download/app.tar.gz")
-        run_linux_cmd(["sudo", "-u", app_data["linux_user"], "tar", "-xvf", "/tmp/mynode_dynamic_app_download/app.tar.gz", "-C", "/tmp/mynode_dynamic_app_extract/"])
-        run_linux_cmd(["mv"] + glob.glob("/tmp/mynode_dynamic_app_extract/*") + ["/tmp/mynode_dynamic_app_extract/app"])
+            time.sleep(1)
+            run_linux_cmd(["sync"])
+            check_app_download_hash(app_data, tarball)
+            run_linux_cmd(["sudo", "-u", linux_user, "tar", "-xvf", tarball, "-C", extract_dir + "/"])
+            run_linux_cmd(["mv"] + glob.glob(extract_dir + "/*") + [extract_dir + "/app"])
 
-        # Move tarball contents to app folder
-        run_linux_cmd(["rsync", "-var", "--delete-after", "/tmp/mynode_dynamic_app_extract/app/", app_data["install_folder"] + "/"])
+            # Move tarball contents to app folder
+            run_linux_cmd(["rsync", "-var", "--delete-after", extract_dir + "/app/", app_data["install_folder"] + "/"])
+        finally:
+            run_linux_cmd(["rm", "-rf", download_dir, extract_dir], ignore_failure)
 
     # Move additional app data to app installation folder
     app_data_source = get_dynamic_app_dir() + "/" + app_data["short_name"] + "/app_data"

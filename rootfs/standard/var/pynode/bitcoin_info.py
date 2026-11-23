@@ -28,7 +28,7 @@ bitcoin_sync_status = None
 bitcoin_no_peers_since = None
 header_tip_time_cache = {"height": None, "time": None}
 reindex_log_cache = None
-BITCOIN_CACHE_FILE = "/tmp/bitcoin_info.json"
+BITCOIN_CACHE_FILE = "/run/mynode/bitcoin_info.json"
 
 # Header sync progress lines written to debug.log by bitcoind (pre-sync was added in Bitcoin Core v24)
 HEADER_PRESYNC_REGEX = re.compile(r"Pre-synchronizing blockheaders, height: (\d+) \(~([\d.]+)%\)")

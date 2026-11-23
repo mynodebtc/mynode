@@ -7,7 +7,7 @@ proc checkPartitionForExistingMyNodeFs {partition} {
     }
     if { [file exists /mnt/hdd/.mynode] } {
         puts "Found existing MyNode FS on ${partition}"
-        runCommand echo /dev/${partition} > /tmp/.mynode_drive
+        runCommand echo /dev/${partition} > /run/mynode/.mynode_drive
         return 1
     }
 
@@ -82,13 +82,13 @@ proc createMyNodeFsOnBlockDevice {blockDevice} {
         runCommand /usr/bin/mynode-python /usr/bin/mynode_usb_driver_check.py > /dev/null
 
         puts "Waiting on format confirmation..."
-        runCommand echo "drive_format_confirm" > /tmp/.mynode_status
-        while { [file exists "/tmp/format_ok"] == 0 } {
+        runCommand echo "drive_format_confirm" > /run/mynode/.mynode_status
+        while { [file exists "/run/mynode/format_ok"] == 0 } {
             after 500
         }
 
         puts "Creating new partition table on ${blockDevice}"
-        runCommand echo "drive_formatting" > /tmp/.mynode_status
+        runCommand echo "drive_formatting" > /run/mynode/.mynode_status
         runCommand /usr/bin/format_drive.sh ${blockDevice}
         after 5000
 
@@ -99,7 +99,7 @@ proc createMyNodeFsOnBlockDevice {blockDevice} {
         }
 
         puts "Formatting new partition ${blockPartition}"
-        if [file exists "/tmp/format_filesystem_btrfs"] {
+        if [file exists "/run/mynode/format_filesystem_btrfs"] {
             runCommand mkfs.btrfs -f -L MyNode /dev/${blockPartition}
         } else {
             runCommand mkfs.ext4 -F -L MyNode /dev/${blockPartition}
@@ -108,7 +108,7 @@ proc createMyNodeFsOnBlockDevice {blockDevice} {
         #runCommand mount /dev/${blockPartition} /mnt/hdd -o errors=continue
         runCommand mount -o nosuid,nodev /dev/${blockPartition} /mnt/hdd
         runCommand date >/mnt/hdd/.mynode
-        runCommand echo /dev/${blockPartition} > /tmp/.mynode_drive
+        runCommand echo /dev/${blockPartition} > /run/mynode/.mynode_drive
     }] {
         puts "Formatting on ${blockDevice} failed: $::errorInfo"
         return 0

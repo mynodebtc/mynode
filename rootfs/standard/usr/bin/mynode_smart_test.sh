@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # Runs a SMART short self-test on the MyNode drive and saves a report.
-# While running, /tmp/smart_test_running holds the expected finish time (epoch seconds).
+# While running, /run/mynode/smart_test_running holds the expected finish time (epoch seconds).
 # Short tests usually take 1-2 minutes.
 
-RUNNING_FILE=/tmp/smart_test_running
-RESULTS_FILE=/tmp/smart_test_results
-TMP_RESULTS=/tmp/smart_test_results.tmp
+RUNNING_FILE=/run/mynode/smart_test_running
+RESULTS_FILE=/run/mynode/smart_test_results
+TMP_RESULTS=/run/mynode/smart_test_results.tmp
 
-exec 9>/tmp/smart_test.lock
+exec 9>/run/mynode/smart_test.lock
 flock -n 9 || exit 1
 
 echo "" > $RUNNING_FILE
@@ -20,7 +20,7 @@ finish() {
     exit 0
 }
 
-PARTITION=$(cat /tmp/.mynode_drive 2>/dev/null)
+PARTITION=$(cat /run/mynode/.mynode_drive 2>/dev/null)
 DRIVE=""
 if [ -n "$PARTITION" ]; then
     DRIVE="/dev/$(lsblk -no pkname $PARTITION 2>/dev/null)"
@@ -130,10 +130,10 @@ if [ $STARTED -eq 1 ]; then
             echo "" >> $TMP_RESULTS
             break
         fi
-        echo "$REMAINING" > /tmp/smart_test_remaining
+        echo "$REMAINING" > /run/mynode/smart_test_remaining
         sleep 10
     done
-    rm -f /tmp/smart_test_remaining
+    rm -f /run/mynode/smart_test_remaining
 else
     echo "The short self-test could not be started on this drive. Showing the drive's health data instead." >> $TMP_RESULTS
     echo "" >> $TMP_RESULTS

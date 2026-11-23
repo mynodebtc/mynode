@@ -55,7 +55,7 @@ def shutdown_device():
     os.system("shutdown -h now")
 
 def is_shutting_down():
-    return os.path.isfile("/tmp/shutting_down")
+    return os.path.isfile("/run/mynode/shutting_down")
 
 def factory_reset():
     # Try and make sure drive is r/w
@@ -91,7 +91,7 @@ def factory_reset():
     reboot_device()
 
 def check_and_mark_reboot_action(tmp_marker):
-    tmp_marker_file = "/tmp/mark_reboot___{}".format(tmp_marker)
+    tmp_marker_file = "/run/mynode/mark_reboot___{}".format(tmp_marker)
     if os.path.isfile(tmp_marker_file):
         flash(u'Refresh prevented - action already triggered', category="error")
         raise RequestRedirect("/")
@@ -99,8 +99,8 @@ def check_and_mark_reboot_action(tmp_marker):
 
 def reload_throttled_data():
     global cached_data
-    if os.path.isfile("/tmp/get_throttled_data"):
-        cached_data["get_throttled_data"] = to_string( get_file_contents("/tmp/get_throttled_data") )
+    if os.path.isfile("/run/mynode/get_throttled_data"):
+        cached_data["get_throttled_data"] = to_string( get_file_contents("/run/mynode/get_throttled_data") )
 
 def get_throttled_data():
     global cached_data
@@ -169,10 +169,10 @@ def get_latest_beta_version():
     return beta_version
 
 def mark_upgrade_started():
-    touch("/tmp/upgrade_started")
+    touch("/run/mynode/upgrade_started")
 
 def is_upgrade_running():
-    return os.path.isfile("/tmp/upgrade_started") 
+    return os.path.isfile("/run/mynode/upgrade_started") 
 
 # mynode_upgrade.sh exits 1 when the download or its signature check fails, before installing anything
 UPGRADE_EXIT_NOT_VERIFIED = 1
@@ -240,8 +240,8 @@ def upgrade_os_packages():
             # package installs (dpkg --configure -a).
             log_message("OS package upgrade failed (exit {})".format(ret))
             create_settings_file(OS_PACKAGES_UPGRADE_ERROR)
-            delete_file("/tmp/upgrade_started")
-            delete_file("/tmp/mark_reboot___upgrade_os_packages")
+            delete_file("/run/mynode/upgrade_started")
+            delete_file("/run/mynode/mark_reboot___upgrade_os_packages")
             return
 
         # Sync
@@ -407,7 +407,7 @@ def get_all_upgrade_logs():
     return log_list
 
 def has_checkin_error():
-    return os.path.isfile("/tmp/check_in_error")
+    return os.path.isfile("/run/mynode/check_in_error")
 
 
 #==================================
@@ -725,7 +725,7 @@ STATE_UNKNOWN =               "unknown"
 
 def get_mynode_status():
     try:
-        status_file = "/tmp/.mynode_status"
+        status_file = "/run/mynode/.mynode_status"
         status = STATE_UNKNOWN
 
         # Get status
@@ -761,22 +761,22 @@ CLONE_STATE_IN_PROGRESS     = "in_progress"
 CLONE_STATE_COMPLETE        = "complete"
 
 def get_clone_state():
-    return to_string( get_file_contents("/tmp/.clone_state") )
+    return to_string( get_file_contents("/run/mynode/.clone_state") )
 
 def get_clone_error():
-    return to_string( get_file_contents("/tmp/.clone_error") )
+    return to_string( get_file_contents("/run/mynode/.clone_error") )
 
 def get_clone_progress():
-    return to_string( get_file_contents("/tmp/.clone_progress") )
+    return to_string( get_file_contents("/run/mynode/.clone_progress") )
 
 def get_clone_source_drive():
-    return to_string( get_file_contents("/tmp/.clone_source") )
+    return to_string( get_file_contents("/run/mynode/.clone_source") )
 
 def get_clone_target_drive():
-    return to_string( get_file_contents("/tmp/.clone_target") )
+    return to_string( get_file_contents("/run/mynode/.clone_target") )
 
 def get_clone_target_drive_has_mynode():
-    return os.path.isfile("/tmp/.clone_target_drive_has_mynode")
+    return os.path.isfile("/run/mynode/.clone_target_drive_has_mynode")
 
 def get_drive_info(drive):
     data = {}
@@ -976,33 +976,33 @@ def restart_flask():
 # Warning Message Functions
 #==================================
 def show_32_bit_warning():
-    if not os.path.isfile("/tmp/hide_32_bit_warning"):
+    if not os.path.isfile("/run/mynode/hide_32_bit_warning"):
         if get_device_type() == "raspi4" and get_device_arch() != "aarch64":
             return True
     return False
 def hide_32_bit_warning():
-    touch("/tmp/hide_32_bit_warning")
+    touch("/run/mynode/hide_32_bit_warning")
 
 def is_https_warning_hidden():
-    return os.path.isfile("/tmp/hide_https_warning")
+    return os.path.isfile("/run/mynode/hide_https_warning")
 def hide_https_warning():
-    touch("/tmp/hide_https_warning")
+    touch("/run/mynode/hide_https_warning")
 
 def show_old_debian_warning():
-    if not os.path.isfile("/tmp/hide_old_debian_warning"):
+    if not os.path.isfile("/run/mynode/hide_old_debian_warning"):
         if get_debian_version() < 12:
             return True
     return False
 def hide_old_debian_warning():
-    touch("/tmp/hide_old_debian_warning")
+    touch("/run/mynode/hide_old_debian_warning")
 
 def show_old_tor_warning():
-    if not os.path.isfile("/tmp/hide_old_tor_warning"):
+    if not os.path.isfile("/run/mynode/hide_old_tor_warning"):
         if get_tor_version().startswith("0.4.8"):
             return True
     return False
 def hide_old_tor_warning():
-    touch("/tmp/hide_old_tor_warning")
+    touch("/run/mynode/hide_old_tor_warning")
 
 # First patch level with the CVE-2026-98432 fix, for each kernel branch that received it
 CVE_2026_98432_FIXED_PATCH_LEVELS = {
@@ -1040,20 +1040,20 @@ def is_kernel_cve_mitigated_device():
     return get_device_type() in ["raspi4", "raspi5"]
 
 def show_kernel_cve_warning():
-    if not os.path.isfile("/tmp/hide_kernel_cve_warning"):
+    if not os.path.isfile("/run/mynode/hide_kernel_cve_warning"):
         return is_kernel_affected_by_cve_2026_98432(get_kernel_version())
     return False
 def hide_kernel_cve_warning():
-    touch("/tmp/hide_kernel_cve_warning")
+    touch("/run/mynode/hide_kernel_cve_warning")
 
 # Created when an installed package, such as a new kernel, needs a reboot to take effect.
 # It is in /run, so a reboot removes it.
 def show_reboot_required_notice():
-    if not os.path.isfile("/tmp/hide_reboot_required_notice"):
+    if not os.path.isfile("/run/mynode/hide_reboot_required_notice"):
         return os.path.isfile("/var/run/reboot-required")
     return False
 def hide_reboot_required_notice():
-    touch("/tmp/hide_reboot_required_notice")
+    touch("/run/mynode/hide_reboot_required_notice")
 
 # Packages that bring in new kernels when they are upgraded. Automatic OS security updates
 # don't install Raspberry Pi kernels or Debian kernels from point releases, but
@@ -1104,13 +1104,13 @@ def show_kernel_update_notice():
     update_version = get_kernel_update_version()
     if update_version is None:
         return False
-    if os.path.isfile("/tmp/hide_kernel_update_notice"):
-        return to_string(get_file_contents("/tmp/hide_kernel_update_notice")) != update_version
+    if os.path.isfile("/run/mynode/hide_kernel_update_notice"):
+        return to_string(get_file_contents("/run/mynode/hide_kernel_update_notice")) != update_version
     return True
 def hide_kernel_update_notice():
     update_version = get_kernel_update_version()
     if update_version is not None:
-        set_file_contents("/tmp/hide_kernel_update_notice", update_version)
+        set_file_contents("/run/mynode/hide_kernel_update_notice", update_version)
 
 # Oldest NodeJS release accepted for each maintained major version. Majors that are not
 # listed and are older than the newest listed major are no longer maintained.
@@ -1202,17 +1202,17 @@ def restart_check_in():
 def get_check_in_data():
     data = []
     try:
-        with open("/tmp/check_in_response.json", "r") as f:
+        with open("/run/mynode/check_in_response.json", "r") as f:
             data = json.load(f)
     except Exception as e:
         data = None
     return data
 
 def dismiss_expiration_warning():
-    touch("/tmp/dismiss_expiration_warning")
+    touch("/run/mynode/dismiss_expiration_warning")
 
 def is_expiration_warning_dismissed():
-    return os.path.isfile("/tmp/dismiss_expiration_warning")
+    return os.path.isfile("/run/mynode/dismiss_expiration_warning")
 
 # Generic dismiss-by-id mechanism for server-pushed check-in notifications
 # (see get_active_notifications() in mynode.py). Keyed by id+version so the
@@ -1222,12 +1222,12 @@ NOTIFICATION_ID_REGEX = re.compile(r"^[a-zA-Z0-9_-]+$")
 def dismiss_notification(notification_id, version):
     if not NOTIFICATION_ID_REGEX.match(str(notification_id)) or not str(version).isdigit():
         return
-    touch("/tmp/dismiss_notification_{}_v{}".format(notification_id, version))
+    touch("/run/mynode/dismiss_notification_{}_v{}".format(notification_id, version))
 
 def is_notification_dismissed(notification_id, version):
     if not NOTIFICATION_ID_REGEX.match(str(notification_id)) or not str(version).isdigit():
         return True
-    return os.path.isfile("/tmp/dismiss_notification_{}_v{}".format(notification_id, version))
+    return os.path.isfile("/run/mynode/dismiss_notification_{}_v{}".format(notification_id, version))
 
 def is_support_near_expiration():
     data = get_check_in_data()
@@ -1254,7 +1254,7 @@ def is_premium_plus_near_expiration():
 #==================================
 # ID that tells open home pages they need a full page reload. Each page renders
 # the current ID and its ajax updates ask if it changed, so every open client reloads.
-HOMEPAGE_REFRESH_ID_FILE = "/tmp/homepage_refresh_id"
+HOMEPAGE_REFRESH_ID_FILE = "/run/mynode/homepage_refresh_id"
 
 def get_homepage_refresh_id():
     try:
@@ -1343,7 +1343,7 @@ def save_premium_plus_token(token):
 def get_premium_plus_response_data():
     data = []
     try:
-        with open("/tmp/premium_plus_response.json", "r") as f:
+        with open("/run/mynode/premium_plus_response.json", "r") as f:
             data = json.load(f)
     except Exception as e:
         data = None
@@ -1368,14 +1368,14 @@ def get_premium_plus_settings():
 # Drive Repair Functions
 #==================================
 def is_drive_being_repaired():
-    return os.path.isfile("/tmp/repairing_drive")
+    return os.path.isfile("/run/mynode/repairing_drive")
 def has_fsck_error():
-    return os.path.isfile("/tmp/fsck_error")
+    return os.path.isfile("/run/mynode/fsck_error")
 def clear_fsck_error():
-    os.system("rm -f /tmp/fsck_error")
+    os.system("rm -f /run/mynode/fsck_error")
 def get_fsck_results():
     try:
-        with open("/tmp/fsck_results", "r") as f:
+        with open("/run/mynode/fsck_results", "r") as f:
             return f.read()
     except:
         return "ERROR"
@@ -1429,29 +1429,29 @@ def get_full_fsck_summary():
 def is_smart_test_running():
     # The test script normally gives up within ~10 minutes, so an older marker was left behind
     try:
-        return time.time() - os.path.getmtime("/tmp/smart_test_running") < 20 * 60
+        return time.time() - os.path.getmtime("/run/mynode/smart_test_running") < 20 * 60
     except:
         return False
 def start_smart_test():
     if is_smart_test_running():
         return
-    delete_file("/tmp/smart_test_results")
-    touch("/tmp/smart_test_running")
+    delete_file("/run/mynode/smart_test_results")
+    touch("/run/mynode/smart_test_running")
     os.system("/usr/bin/mynode_smart_test.sh > /dev/null 2>&1 &")
 def get_smart_test_seconds_remaining():
     try:
-        end_time = int(get_file_contents("/tmp/smart_test_running"))
+        end_time = int(get_file_contents("/run/mynode/smart_test_running"))
         return max(0, end_time - int(time.time()))
     except:
         return None
 def get_smart_test_percent_remaining():
     try:
-        return int(get_file_contents("/tmp/smart_test_remaining"))
+        return int(get_file_contents("/run/mynode/smart_test_remaining"))
     except:
         return None
 def get_smart_test_results():
     try:
-        with open("/tmp/smart_test_results", "r") as f:
+        with open("/run/mynode/smart_test_results", "r") as f:
             return f.read()
     except:
         return None
@@ -1476,42 +1476,42 @@ def get_smart_test_summary(results):
     return {"error": True, "text": "The SMART short test reported a problem. Back up your data and consider replacing the drive."}
 
 def has_sd_rw_error():
-    return os.path.isfile("/tmp/sd_rw_error")
+    return os.path.isfile("/run/mynode/sd_rw_error")
 
 
 #==================================
 # Dmesg Device Error Functions
 #==================================
 def has_oom_error():
-    return os.path.isfile("/tmp/oom_error")
+    return os.path.isfile("/run/mynode/oom_error")
 def clear_oom_error():
-    delete_file("/tmp/oom_error")
-    delete_file("/tmp/oom_info")
+    delete_file("/run/mynode/oom_error")
+    delete_file("/run/mynode/oom_info")
 def set_oom_error(oom_error):
-    touch("/tmp/oom_error")
-    set_file_contents("/tmp/oom_info", oom_error)
+    touch("/run/mynode/oom_error")
+    set_file_contents("/run/mynode/oom_info", oom_error)
 def get_oom_error_info():
     try:
-        with open("/tmp/oom_info", "r") as f:
+        with open("/run/mynode/oom_info", "r") as f:
             return f.read()
     except:
         return "ERROR"
     return "ERROR"
 
 def has_usb_error():
-    return os.path.isfile("/tmp/usb_error")
+    return os.path.isfile("/run/mynode/usb_error")
 def set_usb_error():
-    touch("/tmp/usb_error")
+    touch("/run/mynode/usb_error")
 def clear_usb_error():
     clear_cached_data("dmesg_reset_usb_count")
     clear_cached_data("dmesg_io_error_count")
-    delete_file("/tmp/usb_error")
+    delete_file("/run/mynode/usb_error")
 
 #==================================
 # Docker Functions
 #==================================
 def is_installing_docker_images():
-    return os.path.isfile("/tmp/installing_docker_images")
+    return os.path.isfile("/run/mynode/installing_docker_images")
 
 def get_docker_image_build_status():
     status_code = get_service_status_code("docker_images")
@@ -1645,7 +1645,7 @@ def is_allowed_host(hostname):
 #==================================
 def get_usb_extras():
     devices = []
-    json_path = "/tmp/usb_extras.json"
+    json_path = "/run/mynode/usb_extras.json"
     if os.path.isfile(json_path):
         try:
             with open(json_path) as f:
@@ -1723,7 +1723,7 @@ def reset_blockchain():
 
 def install_custom_bitcoin_version(version):
     mark_upgrade_started()
-    touch("/tmp/skip_base_upgrades")
+    touch("/run/mynode/skip_base_upgrades")
 
     # Install custom version
     os.system("mkdir -p /home/admin/upgrade_logs")
@@ -1747,7 +1747,7 @@ def delete_lnd_data():
     os.system("rm -rf /mnt/hdd/mynode/loop/*")
     os.system("rm -rf /mnt/hdd/mynode/lit/*")
     os.system("rm -rf /mnt/hdd/mynode/faraday/*")
-    os.system("rm -rf /tmp/lnd_deposit_address")
+    os.system("rm -rf /run/mynode/lnd_deposit_address")
     os.system("rm -rf /home/bitcoin/.lnd-admin/credentials.json")
     os.system("rm -rf /mnt/hdd/mynode/settings/.lndpw")
     os.system("rm -rf /home/admin/.lnd/")
@@ -2347,12 +2347,12 @@ def set_timezone(zone):
     set_file_contents("/home/bitcoin/.mynode/timezone", zone)
     if os.path.isdir("/mnt/hdd/mynode/settings"):
         set_file_contents("/mnt/hdd/mynode/settings/timezone", zone)
-    delete_file("/tmp/timezone_from_browser")
+    delete_file("/run/mynode/timezone_from_browser")
     return True
 
 def should_set_timezone_from_browser():
     # Marked at startup when no timezone has been saved in MyNode
-    return os.path.isfile("/tmp/timezone_from_browser")
+    return os.path.isfile("/run/mynode/timezone_from_browser")
 
 def set_timezone_from_browser(zone):
     if not should_set_timezone_from_browser() or zone in UTC_TIMEZONES:

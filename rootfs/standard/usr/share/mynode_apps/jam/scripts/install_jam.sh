@@ -30,14 +30,14 @@ pull_app_docker_image ghcr.io/joinmarket-webui/${DOCKER_IMAGE_NAME%%:*} "${DOCKE
 # Tag latest as "jam:latest"
 docker tag ghcr.io/joinmarket-webui/$DOCKER_IMAGE_NAME jam-orig:latest
 
-rm -rf /tmp/jam
-mkdir -p /tmp/jam
-cat << EOF > /tmp/jam/Dockerfile
+JAM_BUILD_DIR=$(mktemp -d)
+cat << EOF > $JAM_BUILD_DIR/Dockerfile
 FROM jam-orig:latest
 
 RUN sed -i 's/zone upstreams 64K/zone upstreams 256K/g' /etc/nginx/conf.d/default.conf
 RUN sed -i 's/zone upstreams 64K/zone upstreams 256K/g' /etc/nginx/templates/default.conf.template
 EOF
-docker build --no-cache -t jam:latest /tmp/jam
+docker build --no-cache -t jam:latest $JAM_BUILD_DIR
+rm -rf $JAM_BUILD_DIR
 
 echo "================== DONE INSTALLING APP ================="

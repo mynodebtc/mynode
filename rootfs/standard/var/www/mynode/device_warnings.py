@@ -40,7 +40,7 @@ def init_warning_data():
     warning_data[undervoltage_warning["name"]] = undervoltage_warning
 
 def is_warning_skipped(warning):
-    if os.path.isfile("/tmp/warning_skipped_{}".format(warning)):
+    if os.path.isfile("/run/mynode/warning_skipped_{}".format(warning)):
         return True
     return False
 
@@ -49,7 +49,7 @@ def skip_warning(warning):
     init_warning_data()
     if warning not in warning_data:
         return
-    touch("/tmp/warning_skipped_{}".format(warning))
+    touch("/run/mynode/warning_skipped_{}".format(warning))
 
 def is_warning_present():
     global warning_data

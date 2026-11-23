@@ -116,21 +116,21 @@ POST_REBOOT_UPTIME = 170
 
 def _simulate_power_cycle(downtime=6):
     def _do():
-        _real.touch("/tmp/shutting_down")
-        with open("/tmp/.mynode_status", "w") as f:
+        _real.touch("/run/mynode/shutting_down")
+        with open("/run/mynode/.mynode_status", "w") as f:
             f.write("shutting_down")
         time.sleep(downtime)
         # Clear one-shot markers exactly like a real reboot would
-        for marker in glob.glob("/tmp/mark_reboot___*"):
+        for marker in glob.glob("/run/mynode/mark_reboot___*"):
             try:
                 os.remove(marker)
             except OSError:
                 pass
-        for f in ["/tmp/upgrade_started", "/tmp/shutting_down", "/tmp/skip_base_upgrades"]:
+        for f in ["/run/mynode/upgrade_started", "/run/mynode/shutting_down", "/run/mynode/skip_base_upgrades"]:
             if os.path.exists(f):
                 os.remove(f)
         _set_fake_boot_time(time.time() - POST_REBOOT_UPTIME)
-        with open("/tmp/.mynode_status", "w") as f:
+        with open("/run/mynode/.mynode_status", "w") as f:
             f.write("stable")
 
     threading.Thread(target=_do, daemon=True).start()

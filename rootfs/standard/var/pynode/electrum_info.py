@@ -72,7 +72,7 @@ def update_electrs_info():
         bitcoin_block_height = get_bitcoin_block_height()
         if electrum_server_current_block != None and bitcoin_block_height != None:
             if electrum_server_current_block > bitcoin_block_height - 2:
-                touch("/tmp/electrs_up_to_date")
+                touch("/run/mynode/electrs_up_to_date")
                 electrs_active = True
     except:
         pass
@@ -85,7 +85,7 @@ def clear_electrs_info():
     global electrs_active
     electrum_server_current_block = None
     electrs_active = False
-    delete_file("/tmp/electrs_up_to_date")
+    delete_file("/run/mynode/electrs_up_to_date")
 
 def get_electrs_version():
     global electrs_version

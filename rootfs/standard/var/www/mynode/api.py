@@ -363,7 +363,7 @@ def api_set_setting():
     return generate_api_json_response(data)
 
 def get_benchmark_drive():
-    drive = to_string( get_file_contents("/tmp/.mynode_drive") ).strip()
+    drive = to_string( get_file_contents("/run/mynode/.mynode_drive") ).strip()
     # Rebuild the path from the base name so it can only ever point inside /dev
     path = "/dev/" + os.path.basename(drive)
     if path != drive:

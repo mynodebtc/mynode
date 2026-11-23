@@ -20,8 +20,10 @@ APP="$1"
 
 # Custom re-install steps
 if [ "$APP" = "rust" ] || [ "$APP" = "cargo" ]; then
-    wget https://sh.rustup.rs -O /tmp/setup_rust.sh
-    /bin/bash /tmp/setup_rust.sh -y --default-toolchain none
+    RUST_SETUP=$(mktemp)
+    wget https://sh.rustup.rs -O $RUST_SETUP
+    /bin/bash $RUST_SETUP -y --default-toolchain none
+    rm -f $RUST_SETUP
     sync
     if [ -f $HOME/.cargo/env ]; then
         # Remove old toolchains

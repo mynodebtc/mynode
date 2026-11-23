@@ -1,7 +1,7 @@
 """Build the fixture filesystem for the mocked UI dev container.
 
 The real MyNode code reads absolute paths (/mnt/hdd/..., /home/bitcoin/...,
-/usr/share/mynode/..., /tmp/...) as inline literals, so instead of trying to
+/usr/share/mynode/..., /run/mynode/...) as inline literals, so instead of trying to
 intercept paths we recreate the device's filesystem inside the container.
 
 Idempotent: safe to run on every container start and on werkzeug reloads.
@@ -45,6 +45,7 @@ NOOP_BINS = [
 def _write(path, contents, overwrite=True):
     if not overwrite and os.path.exists(path):
         return
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w") as f:
         f.write(contents)
 
@@ -186,7 +187,7 @@ def seed_edition(premium=True, force=False):
     pk_files = [os.path.join(home, ".product_key"), os.path.join(settings, ".product_key")]
     skip_files = [os.path.join(home, ".product_key_skipped"),
                   os.path.join(settings, ".product_key_skipped")]
-    checkin = "/tmp/check_in_response.json"
+    checkin = "/run/mynode/check_in_response.json"
 
     # Preserve a session's edition choice across warm restarts
     already_set = any(os.path.exists(p) for p in pk_files + skip_files)
@@ -283,27 +284,28 @@ def seed_onion_hostnames():
 
 def seed_tmp_state(force=False):
     os.makedirs("/tmp/mock_state", exist_ok=True)
-    os.makedirs("/tmp/flask_uploads", exist_ok=True)
+    os.makedirs("/run/mynode", exist_ok=True)
+    os.makedirs("/run/mynode/flask_uploads", exist_ok=True)
     os.makedirs("/opt/mynode/custom", exist_ok=True)
     os.makedirs("/var/log", exist_ok=True)
 
-    _write("/tmp/.mynode_status", "stable", overwrite=force)
+    _write("/run/mynode/.mynode_status", "stable", overwrite=force)
     # Uptime gate in index() requires > 180s; pretend we booted 2 hours ago
     if force or not os.path.isfile("/tmp/fake_boot_time"):
         _write("/tmp/fake_boot_time", str(time.time() - 7200))
 
-    _write("/tmp/lnd_deposit_address", "bc1qmockdepositaddressxxxxxxxxxxxxxxxxxxxxx", overwrite=False)
+    _write("/run/mynode/lnd_deposit_address", "bc1qmockdepositaddressxxxxxxxxxxxxxxxxxxxxx", overwrite=False)
     _write("/tmp/mock_state/bitcoin.json", json.dumps({"behind_blocks": 0}), overwrite=force)
     _write("/tmp/mock_state/drive.json", json.dumps({"data": "61%", "os": "34%"}), overwrite=force)
 
     if force:
         # Clear dev-panel side effects
-        for f in os.listdir("/tmp"):
+        for f in os.listdir("/run/mynode"):
             if f.startswith("mark_reboot___") or f.startswith("warning_skipped_"):
-                os.remove(os.path.join("/tmp", f))
-        for f in ["/tmp/get_throttled_data", "/tmp/fsck_error", "/tmp/fsck_results",
-                  "/tmp/usb_error", "/tmp/oom_error", "/tmp/upgrade_started",
-                  "/tmp/shutting_down", "/tmp/skip_base_upgrades"]:
+                os.remove(os.path.join("/run/mynode", f))
+        for f in ["/run/mynode/get_throttled_data", "/run/mynode/fsck_error", "/run/mynode/fsck_results",
+                  "/run/mynode/usb_error", "/run/mynode/oom_error", "/run/mynode/upgrade_started",
+                  "/run/mynode/shutting_down", "/run/mynode/skip_base_upgrades"]:
             if os.path.exists(f):
                 os.remove(f)
         _touch("/mnt/hdd/mynode/.mynode_bitcoin_synced")

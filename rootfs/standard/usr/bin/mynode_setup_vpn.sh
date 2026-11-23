@@ -11,6 +11,10 @@
 # Make sure you have `curl` installed
 set -e
 
+# Scratch files for this run
+VPN_TMP_DIR=$(mktemp -d)
+trap 'rm -rf "$VPN_TMP_DIR"' EXIT
+
 ######## VARIABLES #########
 setupVars=/etc/pivpn/setupVars.conf
 useUpdateVars=false
@@ -107,7 +111,7 @@ distro_check() {
         ;;
     esac
 
-    echo "${PLAT}" > /tmp/DET_PLATFORM
+    echo "${PLAT}" > ${VPN_TMP_DIR}/DET_PLATFORM
 }
 
 ####### FUNCTIONS ##########
@@ -132,7 +136,7 @@ welcomeDialogs() {
 }
 
 chooseUser() {
-    echo "pivpn" > /tmp/pivpnUSR
+    echo "pivpn" > ${VPN_TMP_DIR}/pivpnUSR
 }
 
 verifyFreeDiskSpace() {
@@ -144,7 +148,7 @@ verifyFreeDiskSpace() {
 chooseInterface() {
     # We use the ethernet port
     pivpnInterface="eth0"
-    echo ${pivpnInterface} > /tmp/pivpnINT
+    echo ${pivpnInterface} > ${VPN_TMP_DIR}/pivpnINT
 }
 
 avoidStaticIPv4Ubuntu() {
@@ -231,7 +235,7 @@ installScripts() {
     $SUDO cp /etc/.pivpn/scripts/bash-completion /etc/bash_completion.d/pivpn
     . /etc/bash_completion.d/pivpn
     # Copy interface setting for debug
-    $SUDO cp /tmp/pivpnINT /etc/pivpn/pivpnINTERFACE
+    $SUDO cp ${VPN_TMP_DIR}/pivpnINT /etc/pivpn/pivpnINTERFACE
 
     $SUDO echo " done."
 }
@@ -409,15 +413,15 @@ setCustomProto() {
     # We'll use UDP
     pivpnProto="udp"
     PROTO="udp"
-    $SUDO cp /tmp/pivpnPROTO /etc/pivpn/INSTALL_PROTO
+    $SUDO cp ${VPN_TMP_DIR}/pivpnPROTO /etc/pivpn/INSTALL_PROTO
 }
 
 
 setCustomPort() {
     # We'll use port 51194
     PORT=51194
-    echo ${PORT} > /tmp/INSTALL_PORT
-    $SUDO cp /tmp/INSTALL_PORT /etc/pivpn/INSTALL_PORT
+    echo ${PORT} > ${VPN_TMP_DIR}/INSTALL_PORT
+    $SUDO cp ${VPN_TMP_DIR}/INSTALL_PORT /etc/pivpn/INSTALL_PORT
 }
 
 setClientDNS() {
@@ -464,9 +468,9 @@ setCustomDomain() {
 
 confOpenVPN() {
     # Generate a random, alphanumeric identifier of 16 characters for this server so that we can use verify-x509-name later that is unique for this server installation. Source: Earthgecko (https://gist.github.com/earthgecko/3089509)
-    #(trap - PIPE; cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | head -n 1 > /tmp/pivpn_uuid)
-    dd bs=16 count=1 if=/dev/urandom | base64 | tr -dc 'a-zA-Z0-9' > /tmp/pivpn_uuid
-    NEW_UUID=$(cat /tmp/pivpn_uuid)
+    #(trap - PIPE; cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | head -n 1 > ${VPN_TMP_DIR}/pivpn_uuid)
+    dd bs=16 count=1 if=/dev/urandom | base64 | tr -dc 'a-zA-Z0-9' > ${VPN_TMP_DIR}/pivpn_uuid
+    NEW_UUID=$(cat ${VPN_TMP_DIR}/pivpn_uuid)
     SERVER_NAME="server_${NEW_UUID}"
 
     if [[ ${useUpdateVars} == false ]]; then
@@ -642,9 +646,9 @@ confNetwork() {
 
     # MyNode - The firewall rules for the VPN are set up in ufw by mynode_vpn.sh
     # (configure_vpn_firewall), every time the VPN starts
-    echo 0 > /tmp/noUFW
+    echo 0 > ${VPN_TMP_DIR}/noUFW
 
-    $SUDO cp /tmp/noUFW /etc/pivpn/NO_UFW
+    $SUDO cp ${VPN_TMP_DIR}/noUFW /etc/pivpn/NO_UFW
 }
 
 confOVPN() {
@@ -655,8 +659,8 @@ confOVPN() {
             exit 1
         fi
     fi
-    $SUDO cp /tmp/pivpnUSR /etc/pivpn/INSTALL_USER
-    $SUDO cp /tmp/DET_PLATFORM /etc/pivpn/DET_PLATFORM
+    $SUDO cp ${VPN_TMP_DIR}/pivpnUSR /etc/pivpn/INSTALL_USER
+    $SUDO cp ${VPN_TMP_DIR}/DET_PLATFORM /etc/pivpn/DET_PLATFORM
 
     $SUDO cp /etc/.pivpn/Default.txt /etc/openvpn/easy-rsa/pki/Default.txt
 
@@ -818,11 +822,11 @@ updatePiVPN() {
     # setCustomProto
     # write out the PROTO
     PROTO=$pivpnProto
-    $SUDO cp /tmp/pivpnPROTO /etc/pivpn/INSTALL_PROTO
+    $SUDO cp ${VPN_TMP_DIR}/pivpnPROTO /etc/pivpn/INSTALL_PROTO
 
     #setCustomPort
     # write out the port
-    $SUDO cp /tmp/INSTALL_PORT /etc/pivpn/INSTALL_PORT
+    $SUDO cp ${VPN_TMP_DIR}/INSTALL_PORT /etc/pivpn/INSTALL_PORT
 
     confOpenVPN
     confNetwork
@@ -966,15 +970,15 @@ main() {
         source ${setupVars}
 
         echo "::: Using IP address: $IPv4addr"
-        echo "${IPv4addr%/*}" > /tmp/pivpnIP
+        echo "${IPv4addr%/*}" > ${VPN_TMP_DIR}/pivpnIP
         echo "::: Using interface: $pivpnInterface"
-        echo "${pivpnInterface}" > /tmp/pivpnINT
+        echo "${pivpnInterface}" > ${VPN_TMP_DIR}/pivpnINT
         echo "::: Using User: $pivpnUser"
-        echo "${pivpnUser}" > /tmp/pivpnUSR
+        echo "${pivpnUser}" > ${VPN_TMP_DIR}/pivpnUSR
         echo "::: Using protocol: $pivpnProto"
-        echo "${pivpnProto}" > /tmp/pivpnPROTO
+        echo "${pivpnProto}" > ${VPN_TMP_DIR}/pivpnPROTO
         echo "::: Using port: $PORT"
-        echo ${PORT} > /tmp/INSTALL_PORT
+        echo ${PORT} > ${VPN_TMP_DIR}/INSTALL_PORT
         echo ":::"
 
         # Only try to set static on Raspbian

@@ -29,7 +29,7 @@ stays clean.
 Every page gets a floating **DEV** button (bottom-right) that opens the state
 switcher:
 
-- **Device state** — flip `/tmp/.mynode_status` to any state (`stable`,
+- **Device state** — flip `/run/mynode/.mynode_status` to any state (`stable`,
   `drive_missing`, `drive_formatting`, `choose_network`, `quicksync_*`,
   `upgrading`, `shutting_down`, ...) to render every state page.
 - **Bitcoin** — synced / syncing at an arbitrary progress (renders the real
@@ -86,7 +86,7 @@ with three mock layers around it:
 
 2. **Fixture filesystem (`seed_fixture_fs.py`)** — the real code reads inline
    absolute paths (`/mnt/hdd/...`, `/home/bitcoin/.mynode/...`,
-   `/usr/share/mynode/...`, `/tmp/...`), so the container recreates a
+   `/usr/share/mynode/...`, `/run/mynode/...`), so the container recreates a
    provisioned device's filesystem. `/mnt/hdd` is a tmpfs *mount* because the
    code greps `/proc/mounts` for it.
 

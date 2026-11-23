@@ -12,7 +12,8 @@ set -e
 
 source /usr/share/mynode/mynode_config.sh
 
-tarball="/tmp/mynode_rootfs_${DEVICE_TYPE}.tar.gz"
+WORK_DIR=$(mktemp -d)
+tarball="${WORK_DIR}/mynode_rootfs_${DEVICE_TYPE}.tar.gz"
 local_file=""
 
 # Prompt for IP (or use a local rootfs tarball if given one)
@@ -49,23 +50,23 @@ fi
 # Extract to temp location
 echo -n "Extracting rootfs TAR for ${DEVICE_TYPE}... "
 start_time=$(date +%s)
-rm -rf /tmp/rootfs/
-mkdir -p /tmp/rootfs/
-tar --warning=no-unknown-keyword -xf "${tarball}" -C /tmp/rootfs/
+EXTRACT_DIR="${WORK_DIR}/rootfs"
+mkdir "${EXTRACT_DIR}"
+tar --warning=no-unknown-keyword -xf "${tarball}" -C "${EXTRACT_DIR}/"
 end_time=$(date +%s)
 diff_time=$((end_time - start_time))
 echo "Done in ${diff_time}s!"
 
 # Make sure the tarball actually contains a rootfs for this device
-if [ ! -d "/tmp/rootfs/out/rootfs_${DEVICE_TYPE}" ]; then
+if [ ! -d "${EXTRACT_DIR}/out/rootfs_${DEVICE_TYPE}" ]; then
     echo "ERROR: Tarball does not contain a rootfs for this device (${DEVICE_TYPE})!"
-    found=$(ls -1d /tmp/rootfs/out/rootfs_* 2>/dev/null | sed 's|.*/rootfs_||' | tr '\n' ' ')
+    found=$(ls -1d "${EXTRACT_DIR}"/out/rootfs_* 2>/dev/null | sed 's|.*/rootfs_||' | tr '\n' ' ')
     if [ -n "${found}" ]; then
         echo "       Tarball contains: ${found}"
     else
         echo "       Tarball does not look like a MyNode rootfs build."
     fi
-    rm -rf /tmp/rootfs/
+    rm -rf "${WORK_DIR}"
     exit 1
 fi
 
@@ -83,7 +84,8 @@ echo "Done in ${diff_time}s!"
 # Install files
 echo -n "Copying new rootfs... "
 start_time=$(date +%s)
-rsync -r -K /tmp/rootfs/out/rootfs_${DEVICE_TYPE}/* /
+rsync -r -K "${EXTRACT_DIR}"/out/rootfs_${DEVICE_TYPE}/* /
+rm -rf "${WORK_DIR}"
 end_time=$(date +%s)
 diff_time=$((end_time - start_time))
 echo "Done in ${diff_time}s!"

@@ -4,9 +4,9 @@ source /usr/share/mynode/mynode_config.sh
 
 umask 077
 # Start from a folder of our own, never one that is already there
-rm -rf /tmp/mynode_lndconnect
-mkdir -m 700 /tmp/mynode_lndconnect || exit 1
-cd /tmp/mynode_lndconnect/ || exit 1
+rm -rf /run/mynode/mynode_lndconnect
+mkdir -m 700 /run/mynode/mynode_lndconnect || exit 1
+cd /run/mynode/mynode_lndconnect/ || exit 1
 
 echo "Starting lndconnect script..."
 
@@ -24,7 +24,7 @@ sleep 30s
 
 while true; do
     echo "Generating lndconnect QR codes..."
-    rm -rf /tmp/mynode_lndconnect/*
+    rm -rf /run/mynode/mynode_lndconnect/*
 
     while [ ! -f $LND_ADMIN_MACAROON_FILE ] || [ ! -f $LND_WALLET_FILE ] || [ ! -f $LND_TLS_CERT_FILE ]; do
         sleep 15s

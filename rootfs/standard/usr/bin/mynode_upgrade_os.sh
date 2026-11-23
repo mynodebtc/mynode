@@ -30,7 +30,7 @@ chown -R admin:admin $LOG_DIR
 function fail {
     echo "OS upgrade failed: $1"
     touch $ERROR_FILE
-    rm -f /tmp/upgrade_started /tmp/mark_reboot___upgrade_os_release
+    rm -f /run/mynode/upgrade_started /run/mynode/mark_reboot___upgrade_os_release
     chown -R admin:admin $LOG_DIR
     exit 1
 }
@@ -78,7 +78,7 @@ fi
 
 # Stop MyNode's services to free memory, and keep automatic OS updates and MyNode auto-upgrades out
 echo "upgrading" > $MYNODE_STATUS_FILE
-touch /tmp/upgrade_started
+touch /run/mynode/upgrade_started
 /usr/bin/mynode_stop_critical_services.sh
 pause_automatic_os_updates
 trap "systemctl start apt-daily.timer apt-daily-upgrade.timer > /dev/null 2>&1 || true" EXIT

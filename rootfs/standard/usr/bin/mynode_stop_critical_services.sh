@@ -4,7 +4,7 @@
 echo "Stopping MyNode services..."
 
 # Mark we are shutting down
-touch /tmp/shutting_down
+touch /run/mynode/shutting_down
 
 # Stop dynamic apps
 date

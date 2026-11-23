@@ -14,6 +14,15 @@ from decimal import Decimal
 
 mynode_logger = None
 
+# Runtime state (status, flags, caches). systemd-tmpfiles makes the folder at boot; it is made here
+# too in case this runs from a newly installed rootfs before the next reboot.
+MYNODE_RUN_DIR = "/run/mynode"
+try:
+    if not os.path.isdir(MYNODE_RUN_DIR):
+        os.makedirs(MYNODE_RUN_DIR, mode=0o755, exist_ok=True)
+except Exception:
+    pass
+
 #==================================
 # Python Info
 #==================================
@@ -159,7 +168,7 @@ def decimal_serializer(obj):
 
 def set_dictionary_file_cache(data, file_path):
     try:
-        with open(file_path, 'w') as file:
+        with os.fdopen(os.open(file_path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600), 'w') as file:
             json.dump(data, file, default=decimal_serializer)
         return True
     except Exception as e:

@@ -48,7 +48,7 @@ The app then appears on the Marketplace page, where it can be enabled and uninst
 Deploying the whole rootfs works too, and picks up changes outside the app folder. Build it with `make rootfs`, copy it to the device as described in the [development guide](development.md), then reload the apps without rebooting:
 
 ```
-sudo mynode-local-upgrade /tmp/mynode_rootfs_<device type>.tar.gz apps
+sudo mynode-local-upgrade ~/mynode_rootfs_<device type>.tar.gz apps
 ```
 
 ## Publishing an Application

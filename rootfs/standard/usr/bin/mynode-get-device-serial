@@ -22,7 +22,13 @@ else
     if [[ "$SERIAL_NUM" == "" ]]; then
         # Caution - dmidecode seem to cause issues on some platforms (used on VM)
         #SERIAL_NUM=$(sudo dmidecode | grep UUID | cut -d ' ' -f 2)
-        SERIAL_NUM=$(cat /tmp/dmidecode_serial)
+        # Startup saves it each boot. Root saves it here too if it is missing, such as after a new
+        # rootfs is installed and before the reboot.
+        if [ ! -f /run/mynode/dmidecode_serial ] && [ "$(id -u)" = "0" ]; then
+            mkdir -p -m 0755 /run/mynode
+            dmidecode | grep UUID | cut -d ' ' -f 2 > /run/mynode/dmidecode_serial
+        fi
+        SERIAL_NUM=$(cat /run/mynode/dmidecode_serial 2>/dev/null)
         if [[ "$SERIAL_NUM" == "03000200-0400-0500-0006-000700080009" ]]; then
              # Some mini PCs return this hard coded value
             SERIAL_NUM=$BACKUP_SERIAL

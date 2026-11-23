@@ -196,12 +196,12 @@ def find_public_ip():
 
 
 def dmesg_log_clear():
-    f = open("/tmp/dmesg", "w")
+    f = open("/run/mynode/dmesg", "w")
     f.write("")
     f.close()
 def dmesg_log(msg):
     print(msg)
-    f = open("/tmp/dmesg", "a")
+    f = open("/run/mynode/dmesg", "a")
     f.write(msg)
     f.close()
 

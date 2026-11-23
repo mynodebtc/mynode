@@ -164,7 +164,7 @@ app = Flask(__name__)
 app.config['DEBUG'] = False
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024     # 32 MB upload file max
-app.config['UPLOAD_FOLDER'] = "/tmp/flask_uploads"
+app.config['UPLOAD_FOLDER'] = "/run/mynode/flask_uploads"
 app.config['SESSION_PERMANENT'] = True
 app.config["SESSION_COOKIE_NAME"] = SESSION_COOKIE_NAME
 app.config["SESSION_COOKIE_SAMESITE"] = "Strict"
@@ -435,7 +435,7 @@ DEFAULT_PASSWORD_ALLOWED_ENDPOINTS = [
 ]
 
 # Created by startup after its first USB driver check, which can reboot the device
-USB_DRIVER_CHECKED_FILE = "/tmp/.usb_driver_checked"
+USB_DRIVER_CHECKED_FILE = "/run/mynode/.usb_driver_checked"
 
 @app.before_request
 def block_default_password():
@@ -583,7 +583,7 @@ def index():
         return render_template('state.html', **templateData)
     elif status == STATE_DRIVE_CONFIRM_FORMAT:
         if request.args.get('format'):
-            touch("/tmp/format_ok")
+            touch("/run/mynode/format_ok")
             os.system("rm -f /home/bitcoin/.mynode/force_format_prompt")
             time.sleep(1)
             return redirect("/")
@@ -653,7 +653,7 @@ def index():
         elif clone_state == CLONE_STATE_ERROR:
             # Error is being cleared
             if request.args.get('clone_clear_error'):
-                os.system("rm /tmp/.clone_error")
+                os.system("rm /run/mynode/.clone_error")
                 time.sleep(3)
                 return redirect("/")
 
@@ -674,11 +674,11 @@ def index():
         elif clone_state == CLONE_STATE_NEED_CONFIRM:
             # Clone was confirmed
             if request.args.get('clone_confirm'):
-                touch("/tmp/.clone_confirm")
+                touch("/run/mynode/.clone_confirm")
                 time.sleep(3)
                 return redirect("/")
             if request.args.get('clone_rescan'):
-                touch("/tmp/.clone_rescan")
+                touch("/run/mynode/.clone_rescan")
                 time.sleep(3)
                 return redirect("/")
 

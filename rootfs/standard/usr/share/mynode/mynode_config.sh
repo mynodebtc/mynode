@@ -4,13 +4,17 @@ source /usr/share/mynode/mynode_device_info.sh
 
 # Set all default / standard bash config settings
 MYNODE_DIR=/mnt/hdd/mynode
-MYNODE_STATUS_FILE=/tmp/.mynode_status
+# Runtime state (status, flags, caches). systemd-tmpfiles makes the folder at boot; it is made here
+# too for scripts that run from a newly installed rootfs before the next reboot.
+MYNODE_RUN_DIR=/run/mynode
+[ -d $MYNODE_RUN_DIR ] || mkdir -p -m 0755 $MYNODE_RUN_DIR 2>/dev/null || true
+MYNODE_STATUS_FILE=$MYNODE_RUN_DIR/.mynode_status
 DEVICE_ARCHITECTURE_FILE="/mnt/hdd/mynode/settings/.device_arch"
 VPN_BACKUP_DIR=/mnt/hdd/mynode/vpn
 LATEST_VERSION_URL="https://www.mynodebtc.com/device_api/get_latest_version.php?type=${DEVICE_TYPE}"
 LATEST_BETA_VERSION_URL="https://www.mynodebtc.com/device_api/get_latest_version.php?type=${DEVICE_TYPE}&beta=1"
 UPGRADE_ERROR_FILE="/mnt/hdd/mynode/settings/upgrade_error"
-UPGRADE_INCOMPLETE_FILE="/tmp/upgrade_incomplete"
+UPGRADE_INCOMPLETE_FILE="$MYNODE_RUN_DIR/upgrade_incomplete"
 LND_BACKUP_FOLDER="/home/bitcoin/lnd_backup/"
 LND_TLS_CERT_FILE="/mnt/hdd/mynode/lnd/tls.cert"
 LND_WALLET_FILE="/mnt/hdd/mynode/lnd/data/chain/bitcoin/mainnet/wallet.db"

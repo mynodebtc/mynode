@@ -159,7 +159,7 @@ def _ok(**extra):
 def dev_status():
     status = "unknown"
     try:
-        with open("/tmp/.mynode_status") as f:
+        with open("/run/mynode/.mynode_status") as f:
             status = f.read().strip()
     except Exception:
         pass
@@ -192,7 +192,7 @@ def dev_status():
 
 def _current_warning_file():
     try:
-        with open("/tmp/get_throttled_data") as f:
+        with open("/run/mynode/get_throttled_data") as f:
             value = int(f.read().strip(), 16)
         for name, bit in THROTTLE_BITS.items():
             if value & bit:
@@ -204,7 +204,7 @@ def _current_warning_file():
     return "none"
 
 
-CHECK_IN_FILE = "/tmp/check_in_response.json"
+CHECK_IN_FILE = "/run/mynode/check_in_response.json"
 
 
 def _load_check_in():
@@ -232,18 +232,18 @@ def dev_state():
     value = request.args.get("value", "")
     if value not in DEVICE_STATES:
         return jsonify({"result": "error", "message": "unknown state", "valid": DEVICE_STATES}), 400
-    with open("/tmp/.mynode_status", "w") as f:
+    with open("/run/mynode/.mynode_status", "w") as f:
         f.write(value)
     if value == "drive_clone":
         clone_state = request.args.get("clone", "detecting")
-        with open("/tmp/.clone_state", "w") as f:
+        with open("/run/mynode/.clone_state", "w") as f:
             f.write(clone_state)
-        with open("/tmp/.clone_progress", "w") as f:
+        with open("/run/mynode/.clone_progress", "w") as f:
             f.write("42.00% complete (289 GB / 689 GB) - mocked")
     if value == "memory_test":
         # A 2 pass memory test 42% done, with errors found if ?failures=N
         now = int(time.time())
-        with open("/tmp/memtest_progress.json", "w") as f:
+        with open("/run/mynode/memtest_progress.json", "w") as f:
             json.dump({"passes": 2, "pass": 1, "test": "Bit Flip", "percent": 42, "start": now - 58 * 60,
                        "remaining_seconds": 81 * 60, "updated": now, "tested_mb": 14800,
                        "failures": int(request.args.get("failures", "0") or 0),
@@ -405,27 +405,27 @@ def dev_warning():
     name = request.args.get("name", "clear")
     dev_info_real = real("device_info")
     if name in THROTTLE_BITS:
-        with open("/tmp/get_throttled_data", "w") as f:
+        with open("/run/mynode/get_throttled_data", "w") as f:
             f.write("0x{:x}".format(THROTTLE_BITS[name]))
         # Re-arm in case the warning was previously skipped via the UI
-        for marker in glob.glob("/tmp/warning_skipped_*"):
+        for marker in glob.glob("/run/mynode/warning_skipped_*"):
             os.remove(marker)
         dev_info_real.reload_throttled_data()
     elif name == "fsck":
-        open("/tmp/fsck_error", "a").close()
-        with open("/tmp/fsck_results", "w") as f:
+        open("/run/mynode/fsck_error", "a").close()
+        with open("/run/mynode/fsck_results", "w") as f:
             f.write("(mock) fsck found and repaired 3 inode errors on /dev/sda1")
     elif name == "usb":
-        open("/tmp/usb_error", "a").close()
+        open("/run/mynode/usb_error", "a").close()
     elif name == "kernel":
         set_knob("kernel", {"version": "6.12.100"})
-        device_info.delete_file("/tmp/hide_kernel_cve_warning")
+        device_info.delete_file("/run/mynode/hide_kernel_cve_warning")
     elif name == "clear":
         set_knob("kernel", {})
-        for path in ["/tmp/get_throttled_data", "/tmp/fsck_error", "/tmp/fsck_results", "/tmp/usb_error"]:
+        for path in ["/run/mynode/get_throttled_data", "/run/mynode/fsck_error", "/run/mynode/fsck_results", "/run/mynode/usb_error"]:
             if os.path.exists(path):
                 os.remove(path)
-        for marker in glob.glob("/tmp/warning_skipped_*"):
+        for marker in glob.glob("/run/mynode/warning_skipped_*"):
             os.remove(marker)
         dev_info_real.cached_data["get_throttled_data"] = ""
     else:
@@ -490,7 +490,7 @@ def dev_premium_plus_warning():
     with open(CHECK_IN_FILE, "w") as f:
         json.dump(data, f)
     # Un-dismiss so the banner is not suppressed by a prior dismissal
-    device_info.delete_file("/tmp/dismiss_expiration_warning")
+    device_info.delete_file("/run/mynode/dismiss_expiration_warning")
     return _ok(premium_plus_warning=state)
 
 

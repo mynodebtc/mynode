@@ -10,7 +10,7 @@ source /usr/share/mynode/mynode_app_versions.sh
 
 # Verify FS is mounted as R/W
 if [ ! -w / ]; then
-    touch /tmp/sd_rw_error
+    touch /run/mynode/sd_rw_error
     mount -o remount,rw /;
 fi
 
@@ -24,7 +24,7 @@ chmod +t /tmp
 echo "180" > /proc/sys/kernel/hung_task_timeout_secs || true
 
 # Save dmidecode info
-dmidecode | grep UUID | cut -d ' ' -f 2 > /tmp/dmidecode_serial
+dmidecode | grep UUID | cut -d ' ' -f 2 > /run/mynode/dmidecode_serial
 
 # Add some DNS servers to make domain lookup more likely
 if settings_file_exists "skip_backup_dns_servers" ; then
@@ -107,7 +107,7 @@ fi
 # The web UI waits for this before asking to change the default password. Checked again once the
 # drive is mounted.
 /usr/bin/mynode-python /usr/bin/mynode_usb_driver_check.py
-touch /tmp/.usb_driver_checked
+touch /run/mynode/.usb_driver_checked
 
 # Memory tests. Save the result of the kernel's test if it ran on this boot. Then run the manual test
 # if one was asked for, before the drive mounts and before any service starts. If it found new bad
@@ -253,8 +253,8 @@ if [ -f /home/bitcoin/.mynode/full_fsck ]; then
     sync
 fi
 if [ ! -f /home/bitcoin/.mynode/skip_fsck ] || [ $FULL_FSCK = 1 ]; then
-    touch /tmp/repairing_drive
-    rm -f /tmp/fsck_results
+    touch /run/mynode/repairing_drive
+    rm -f /run/mynode/fsck_results
     FSCK_ARGS="-y"
     if [ $FULL_FSCK = 1 ]; then
         FSCK_ARGS="-f -y"
@@ -269,25 +269,25 @@ if [ ! -f /home/bitcoin/.mynode/skip_fsck ] || [ $FULL_FSCK = 1 ]; then
             continue
         fi
         echo "Repairing drive $d ...";
-        echo "Drive: $d" >> /tmp/fsck_results
-        fsck $FSCK_ARGS $d >> /tmp/fsck_results 2>&1
+        echo "Drive: $d" >> /run/mynode/fsck_results
+        fsck $FSCK_ARGS $d >> /run/mynode/fsck_results 2>&1
         RC=$?
-        echo "" >> /tmp/fsck_results
-        echo "Code: $RC" >> /tmp/fsck_results
+        echo "" >> /run/mynode/fsck_results
+        echo "Code: $RC" >> /run/mynode/fsck_results
         if [ "$RC" -ne 0 ] && [ "$RC" -ne 8 ] ; then
-            touch /tmp/fsck_error
+            touch /run/mynode/fsck_error
         fi
     done
     if [ $FULL_FSCK = 1 ]; then
-        if [ ! -f /tmp/fsck_results ]; then
-            echo "No unmounted MyNode drive was found to check." > /tmp/fsck_results
+        if [ ! -f /run/mynode/fsck_results ]; then
+            echo "No unmounted MyNode drive was found to check." > /run/mynode/fsck_results
         fi
-        cp -f /tmp/fsck_results /home/bitcoin/.mynode/full_fsck_results
+        cp -f /run/mynode/fsck_results /home/bitcoin/.mynode/full_fsck_results
         touch /home/bitcoin/.mynode/full_fsck_notice
         sync
     fi
 fi
-rm -f /tmp/repairing_drive
+rm -f /run/mynode/repairing_drive
 set -e
 
 # Delay startup for checking drives, etc..
@@ -370,7 +370,7 @@ mkdir -p /mnt/hdd/mynode/sphinxrelay
 mkdir -p /mnt/hdd/mynode/joinmarket
 mkdir -p /mnt/hdd/mynode/mempool
 mkdir -p /mnt/hdd/mynode/tor_backup
-mkdir -p /tmp/flask_uploads
+mkdir -p /run/mynode/flask_uploads
 
 # Migrate any containerd data left on the OS drive to the external drive
 # (config.toml now points containerd's root at /mnt/hdd/mynode/containerd, but
@@ -828,7 +828,7 @@ systemctl restart nginx || true
 
 # Update latest version files
 /usr/bin/mynode_update_latest_version_files.sh
-touch /tmp/need_application_refresh
+touch /run/mynode/need_application_refresh
 
 # Mark some internal app versions
 echo "v1.0" > /home/bitcoin/.mynode/tor_version
@@ -848,7 +848,7 @@ elif [ -f /home/bitcoin/.mynode/timezone ]; then
     SAVED_TZ=$(cat /home/bitcoin/.mynode/timezone)
 fi
 if [ "$SAVED_TZ" = "" ]; then
-    touch /tmp/timezone_from_browser
+    touch /run/mynode/timezone_from_browser
 elif [ "$SAVED_TZ" != "$(timedatectl show -p Timezone --value || echo '')" ]; then
     if timedatectl list-timezones | grep -qxF "$SAVED_TZ"; then
         timedatectl set-timezone "$SAVED_TZ" || true

@@ -308,7 +308,7 @@ def page_lnd_create_wallet_with_seed():
     seed = request.form.get('seed', '').strip()
 
     # Check for channel backup
-    channel_backup_filename = "/tmp/lnd_channel_backup"
+    channel_backup_filename = "/run/mynode/lnd_channel_backup"
     os.system("rm -f " + channel_backup_filename)
 
     if 'channel_backup' in request.files and request.files['channel_backup'] != "":
@@ -386,17 +386,17 @@ def page_lnd_pair_wallet():
             return redirect(url_for(".page_lnd"))
 
     # Lndconnect Data
-    lndconnect_local_grpc_text = get_text_contents("/tmp/mynode_lndconnect/lndconnect_local_grpc.txt")
-    lndconnect_local_rest_text = get_text_contents("/tmp/mynode_lndconnect/lndconnect_local_rest.txt")
-    lndconnect_tor_grpc_text = get_text_contents("/tmp/mynode_lndconnect/lndconnect_tor_grpc.txt")
-    lndconnect_tor_rest_text = get_text_contents("/tmp/mynode_lndconnect/lndconnect_tor_rest.txt")
-    zap_tor_text = get_text_contents("/tmp/mynode_lndconnect/zap_tor.txt")
+    lndconnect_local_grpc_text = get_text_contents("/run/mynode/mynode_lndconnect/lndconnect_local_grpc.txt")
+    lndconnect_local_rest_text = get_text_contents("/run/mynode/mynode_lndconnect/lndconnect_local_rest.txt")
+    lndconnect_tor_grpc_text = get_text_contents("/run/mynode/mynode_lndconnect/lndconnect_tor_grpc.txt")
+    lndconnect_tor_rest_text = get_text_contents("/run/mynode/mynode_lndconnect/lndconnect_tor_rest.txt")
+    zap_tor_text = get_text_contents("/run/mynode/mynode_lndconnect/zap_tor.txt")
 
-    lndconnect_local_grpc_img = get_image_src_b64("/tmp/mynode_lndconnect/lndconnect_local_grpc.png")
-    lndconnect_local_rest_img = get_image_src_b64("/tmp/mynode_lndconnect/lndconnect_local_rest.png")
-    lndconnect_tor_grpc_img = get_image_src_b64("/tmp/mynode_lndconnect/lndconnect_tor_grpc.png")
-    lndconnect_tor_rest_img = get_image_src_b64("/tmp/mynode_lndconnect/lndconnect_tor_rest.png")
-    zap_tor_img = get_image_src_b64("/tmp/mynode_lndconnect/zap_tor.png")
+    lndconnect_local_grpc_img = get_image_src_b64("/run/mynode/mynode_lndconnect/lndconnect_local_grpc.png")
+    lndconnect_local_rest_img = get_image_src_b64("/run/mynode/mynode_lndconnect/lndconnect_local_rest.png")
+    lndconnect_tor_grpc_img = get_image_src_b64("/run/mynode/mynode_lndconnect/lndconnect_tor_grpc.png")
+    lndconnect_tor_rest_img = get_image_src_b64("/run/mynode/mynode_lndconnect/lndconnect_tor_rest.png")
+    zap_tor_img = get_image_src_b64("/run/mynode/mynode_lndconnect/zap_tor.png")
 
     # Blue Wallet Data
     electrs_onion_url = get_onion_url_electrs()

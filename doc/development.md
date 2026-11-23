@@ -54,10 +54,10 @@ Best for a one-off update, or when the device cannot reach your PC over HTTP.
 1. On your PC, run `make rootfs`, then copy the artifact to the device (the device type must match your device)
 
     ```
-    scp out/mynode_rootfs_[device type].tar.gz admin@[device ip]:/tmp/
+    scp out/mynode_rootfs_[device type].tar.gz admin@[device ip]:
     ```
 
-2. On your device, run `sudo mynode-local-upgrade /tmp/mynode_rootfs_[device type].tar.gz`
+2. On your device, run `sudo mynode-local-upgrade ~/mynode_rootfs_[device type].tar.gz`
     * This installs the copied artifact directly, downloading nothing
     * Your device will automatically reboot to ensure updates take effect
 

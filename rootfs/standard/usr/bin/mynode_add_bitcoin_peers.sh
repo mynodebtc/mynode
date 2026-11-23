@@ -16,20 +16,20 @@ while true; do
     if [ "$PEER_COUNT" -lt "8" ]; then
         echo "$PEER_COUNT outbound peers. Try adding one."
 
-        echo -n "" > /tmp/new_peer
+        NEW_PEERS=""
         if [ -f /mnt/hdd/mynode/settings/btc_ipv4_enabled ] || [ -f /home/bitcoin/.mynode/btc_ipv4_enabled ]; then
             RANDOM_PEER=$(shuf /usr/share/mynode/bitcoin_peers.txt | egrep "([0-9]{1,3}[\.]){3}[0-9]{1,3}" | head -n 1)
-            echo "$RANDOM_PEER" >> /tmp/new_peer
+            NEW_PEERS="${NEW_PEERS}${RANDOM_PEER}"$'\n'
         fi
         if [ -f /mnt/hdd/mynode/settings/btc_tor_enabled ] || [ -f /home/bitcoin/.mynode/btc_tor_enabled ]; then
             RANDOM_PEER=$(shuf /usr/share/mynode/bitcoin_peers.txt | grep ".onion" | head -n 1)
-            echo "$RANDOM_PEER" >> /tmp/new_peer
+            NEW_PEERS="${NEW_PEERS}${RANDOM_PEER}"$'\n'
         fi
         if [ -f /mnt/hdd/mynode/settings/btc_i2p_enabled ] || [ -f /home/bitcoin/.mynode/btc_i2p_enabled ]; then
             RANDOM_PEER=$(shuf /usr/share/mynode/bitcoin_peers.txt | grep "b32.i2p:0" | head -n 1)
-            echo "$RANDOM_PEER" >> /tmp/new_peer
+            NEW_PEERS="${NEW_PEERS}${RANDOM_PEER}"$'\n'
         fi
-        RANDOM_PEER=$(shuf /tmp/new_peer | head -n 1)
+        RANDOM_PEER=$(printf "%s" "$NEW_PEERS" | shuf | head -n 1)
 
         echo "Attempting to add peer $RANDOM_PEER"
         bitcoin-cli addnode "$RANDOM_PEER" "onetry"

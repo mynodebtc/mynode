@@ -121,12 +121,12 @@ else
 
     # Add assumevalid setting
     if [ ! -f /mnt/hdd/mynode/.mynode_bitcoin_synced_at_least_once ]; then
-        rm -f /tmp/bitcoin_assumevalid
-        torify wget https://mynodebtc.com/device_api/get_assumevalid.php --timeout 5 --tries 2 -q -O /tmp/bitcoin_assumevalid || \
-               wget https://mynodebtc.com/device_api/get_assumevalid.php --timeout 5 --tries 2 -q -O /tmp/bitcoin_assumevalid || \
+        ASSUMEVALID_FILE=$(mktemp)
+        torify wget https://mynodebtc.com/device_api/get_assumevalid.php --timeout 5 --tries 2 -q -O $ASSUMEVALID_FILE || \
+               wget https://mynodebtc.com/device_api/get_assumevalid.php --timeout 5 --tries 2 -q -O $ASSUMEVALID_FILE || \
                true
-        if [ -f /tmp/bitcoin_assumevalid ]; then
-            assumevalid_hash=$(cat /tmp/bitcoin_assumevalid)
+        if [ -f $ASSUMEVALID_FILE ]; then
+            assumevalid_hash=$(cat $ASSUMEVALID_FILE)
             echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
             echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
             echo "# Dynamic Assume Valid Setting for Faster Initial Sync" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
@@ -138,6 +138,7 @@ else
             echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
             echo "" >> /mnt/hdd/mynode/bitcoin/bitcoin.conf
         fi
+        rm -f $ASSUMEVALID_FILE
     fi
 
     # Update Debug Log Settings

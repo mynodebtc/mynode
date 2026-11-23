@@ -8,7 +8,7 @@ source /usr/share/mynode/mynode_functions.sh
 source /usr/share/mynode/mynode_app_versions.sh
 
 echo "Starting mynode_docker_images.sh ..."
-touch /tmp/installing_docker_images
+touch /run/mynode/installing_docker_images
 
 # Wait for name resolution before downloading anything. This can run seconds after boot, before
 # DNS is usable, and a download that fails then is not retried until the next pass.
@@ -47,7 +47,7 @@ echo "Waiting on bitcoin to sync so drive usage is lower..."
 
 while true; do
     echo "Checking for building new docker images..."
-    touch /tmp/installing_docker_images
+    touch /run/mynode/installing_docker_images
 
     # Set to 1 by any install that failed for a reason worth retrying soon, rather than waiting
     # a full day with the app enabled and not installed
@@ -101,7 +101,7 @@ while true; do
                 echo $NETDATA_VERSION > $NETDATA_VERSION_FILE
             fi
         fi
-        touch /tmp/need_application_refresh
+        touch /run/mynode/need_application_refresh
     fi
 
 
@@ -147,7 +147,7 @@ while true; do
             fi
         fi
     fi
-    touch /tmp/need_application_refresh
+    touch /run/mynode/need_application_refresh
 
 
     # Upgrade BTCPay Server
@@ -242,7 +242,7 @@ while true; do
         remove_docker_images_by_name 'nicolasdorier/nbxplorer'
         remove_docker_images_by_name 'btcpayserver/postgres'
     fi
-    touch /tmp/need_application_refresh
+    touch /run/mynode/need_application_refresh
 
 
     # Upgrade LNbits
@@ -268,10 +268,10 @@ while true; do
             fi
         fi
     fi
-    touch /tmp/need_application_refresh
+    touch /run/mynode/need_application_refresh
 
-    rm -f /tmp/installing_docker_images
-    touch /tmp/installing_docker_images_completed_once
+    rm -f /run/mynode/installing_docker_images
+    touch /run/mynode/installing_docker_images_completed_once
 
     if [ $INSTALL_FAILED = 1 ]; then
         # Something transient - come back in five minutes instead of a day

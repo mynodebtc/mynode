@@ -16,11 +16,14 @@ echo "upgrading" > $MYNODE_STATUS_FILE
 
 # Components that fail to upgrade are skipped so the rest can finish, and are
 # recorded so the upgrade is reported as incomplete
-rm -f $UPGRADE_INCOMPLETE_FILE
+rm -f $UPGRADE_INCOMPLETE_FILE /tmp/upgrade_incomplete
 function upgrade_component_failed()
 {
     echo "$1"
     touch $UPGRADE_INCOMPLETE_FILE
+    # v0.3.54 and older keep this in /tmp, and their upgrade script is the one that runs this
+    # script and checks it afterwards. Can be removed once upgrades from those versions are rare.
+    touch /tmp/upgrade_incomplete || true
 }
 
 # Shut down main services to save memory and CPU
@@ -281,8 +284,10 @@ if ! skip_base_upgrades ; then
 
     # Install Rust (only needed on 32-bit RPi for building some python wheels)
     if [ ! -f $HOME/.cargo/env ]; then
-        wget https://sh.rustup.rs -O /tmp/setup_rust.sh
-        /bin/bash /tmp/setup_rust.sh -y --default-toolchain none
+        RUST_SETUP=$(mktemp)
+        wget https://sh.rustup.rs -O $RUST_SETUP
+        /bin/bash $RUST_SETUP -y --default-toolchain none
+        rm -f $RUST_SETUP
         sync
     fi
     if [ -f $HOME/.cargo/env ]; then
@@ -1285,8 +1290,8 @@ fi
 # Install Log2Ram
 if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
     if [ ! -f /usr/local/bin/log2ram ]; then
-        cd /tmp
-        rm -rf log2ram* || true
+        LOG2RAM_BUILD_DIR=$(mktemp -d)
+        cd $LOG2RAM_BUILD_DIR
         LOG2RAM_UPGRADE_URL=https://github.com/azlux/log2ram/archive/$LOG2RAM_VERSION.tar.gz
         wget $LOG2RAM_UPGRADE_URL -O log2ram.tar.gz
         check_app_download log2ram.tar.gz log2ram $LOG2RAM_VERSION "$LOG2RAM_SHA256"
@@ -1297,6 +1302,7 @@ if [ $IS_RASPI = 1 ] || [ $IS_X86 = 1 ]; then
         service log2ram stop || true
         ./install.sh || true
         cd ~
+        rm -rf $LOG2RAM_BUILD_DIR
     fi
 fi
 
@@ -1333,8 +1339,8 @@ if [ "$DEBIAN_VERSION" -lt "12" ]; then
         echo "Upgrading Tor..."
         set +e
 
-        cd /tmp
-        rm -rf tor.tar.gz tor_src
+        TOR_BUILD_DIR=$(mktemp -d)
+        cd $TOR_BUILD_DIR
         wget https://archive.torproject.org/tor-package-archive/tor-$TOR_SOURCE_VERSION.tar.gz -O tor.tar.gz
         if check_app_download tor.tar.gz tor $TOR_SOURCE_VERSION "$TOR_SOURCE_SHA256"; then
             tar xzf tor.tar.gz
@@ -1344,8 +1350,8 @@ if [ "$DEBIAN_VERSION" -lt "12" ]; then
             # Only install if the build succeeds, so a failed build leaves the old Tor in place
             ./configure --disable-unittests --prefix=/usr && make -j2 && make install && systemctl restart tor
         fi
-        cd /tmp
-        rm -rf tor.tar.gz tor_src
+        cd ~
+        rm -rf $TOR_BUILD_DIR
 
         set -e
     fi

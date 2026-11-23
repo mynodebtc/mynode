@@ -47,7 +47,7 @@ def remove_usb_device(usb_device):
 def write_usb_devices_json():
     global usb_devices
     json_str = json.dumps([ob.to_dict() for ob in usb_devices])
-    with open('/tmp/usb_extras.json', 'w') as f:
+    with open('/run/mynode/usb_extras.json', 'w') as f:
         f.write(json_str)
         f.close()
 
@@ -58,7 +58,7 @@ def write_usb_devices_json():
 def set_usb_extras_state(state):
     log_message("USB Extras State: {}".format(state))
     try:
-        with open("/tmp/.usb_extras_state", "w") as f:
+        with open("/run/mynode/.usb_extras_state", "w") as f:
             f.write(state)
         os.system("sync")
         return True

@@ -126,7 +126,8 @@ tarball_date=$(date -r "${tarball_mtime}" '+%Y-%m-%d %H:%M' 2>/dev/null \
 echo "Using $(basename "${tarball}") (${tarball_size}, built ${tarball_date}, ${age_str})"
 
 # Copy the tarball to the device
-remote_tarball="/tmp/mynode_rootfs_${device_type}.tar.gz"
+# Relative to the login user's home folder, for both scp and the ssh commands
+remote_tarball="mynode_rootfs_${device_type}.tar.gz"
 echo "Copying rootfs to ${ssh_target}:${remote_tarball}..."
 scp "${tarball}" "${ssh_target}:${remote_tarball}"
 

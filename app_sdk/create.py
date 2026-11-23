@@ -543,11 +543,13 @@ def push(short_name, device, user, reinstall):
 
     app_dir = os.path.join(APPS_DIR, short_name)
     target = "{}@{}".format(user, device)
-    tmp_dir = "/tmp/mynode_app_push"
 
     print("Copying {} to {}...".format(short_name, device))
     sys.stdout.flush()
-    subprocess.check_call(["ssh", target, "rm -rf {0} && mkdir -p {0}".format(tmp_dir)])
+    tmp_dir = subprocess.check_output(["ssh", target, "mktemp -d"]).decode().strip()
+    if not re.match(r"^/[A-Za-z0-9_./-]+$", tmp_dir):
+        print("Unexpected folder from mktemp on {}: {}".format(device, tmp_dir))
+        exit(1)
     subprocess.check_call(["rsync", "-a", "--delete", "--exclude", "__pycache__", "--exclude", ".DS_Store",
                            app_dir + "/", "{}:{}/{}/".format(target, tmp_dir, short_name)])
 

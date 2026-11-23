@@ -7,7 +7,7 @@ sleep 15s
 
 # Check if 
 echo "Checking if docker images have been installed..."
-while [ -f /tmp/installing_docker_images ]; do
+while [ -f /run/mynode/installing_docker_images ]; do
     sleep 30s
 done
 

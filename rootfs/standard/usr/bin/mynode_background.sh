@@ -18,7 +18,7 @@ while true; do
         if [ $IS_RASPI -eq 1 ]; then
             STATUS=$(vcgencmd get_throttled)
             STATUS=${STATUS#*=}
-            echo $STATUS > /tmp/get_throttled_data
+            echo $STATUS > /run/mynode/get_throttled_data
         fi
     fi
 
