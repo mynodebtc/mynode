@@ -1,5 +1,6 @@
 #!/usr/bin/mynode-python
 import os
+import hashlib
 import requests
 import time
 import subprocess
@@ -73,7 +74,15 @@ def remote_backup(original, backup):
         log_message("Remote Backup: Skipping (not Premium+)")
         return
 
-    md5_1 = get_md5_file_hash(original_scb)
+    # Read the file once so the hash and every upload attempt use the same data
+    try:
+        with open(original,'rb') as f:
+            scb_data = f.read()
+    except Exception as e:
+        log_message("Remote Backup: Error reading SCB file.")
+        return
+
+    md5_1 = hashlib.md5(scb_data).hexdigest()
     md5_2 = get_saved_remote_backup_hash()
     log_message("  Hash 1: {}".format(md5_1))
     log_message("  Hash 2: {}".format(md5_2))
@@ -82,11 +91,7 @@ def remote_backup(original, backup):
         return
 
     # POST Data
-    try:
-        file_data = {'scb': open(original,'rb')}
-    except Exception as e:
-        log_message("Remote Backup: Error reading SCB file.")
-        return
+    file_data = {'scb': (os.path.basename(original), scb_data)}
 
     data = {
         "token": get_premium_plus_token(),
