@@ -21,8 +21,8 @@
     "download_skip": true,
     "requires_docker_image_installation": true,
     "install_env_vars": {
-        "BACKEND_IMAGE_DIGEST": "v1.7.3 sha256:f06231eaf15f680a6b5058d4e919228107aef87c2bef9133b0a90809f18eea27",
-        "FRONTEND_IMAGE_DIGEST": "v1.7.3 sha256:a4662300b0970df8bc62ce832e45bd71476492ec5605559af8e1632eb739bf9b"
+        "BACKEND_IMAGE_DIGEST": "v1.7.3 sha256:e9dff67fc604b8a76bcd1cd3ad482cd609e2d541b54f8fd76318f26fd66f9376",
+        "FRONTEND_IMAGE_DIGEST": "v1.7.3 sha256:2486963395b76011bac714897f38d0febca1711ee45c909fa7e8edf87ee73bf3"
     },
     "requires_electrs": true,
     "requires_bitcoin": false,
